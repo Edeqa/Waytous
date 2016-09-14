@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_start_and_share"
+            android:icon="@drawable/ic_share_black_24dp"
+            android:title="Start and share" />
+    </group>
+    <group
+        android:id="@+id/nav_map">
+        <item
+            android:id="@+id/nav_traffic"
+            android:icon="@drawable/ic_traffic_black_24dp"
+            android:title="Traffic" />
+        <item
+            android:id="@+id/nav_public_transit"
+            android:icon="@drawable/ic_train_black_24dp"
+            android:title="Public transit" />
+        <item
+            android:id="@+id/nav_bicycling"
+            android:icon="@drawable/ic_directions_bike_black_24dp"
+            android:title="Bicycling" />
+        <item
+            android:id="@+id/nav_satellite"
+            android:icon="@drawable/ic_satellite_black_24dp"
+            android:title="Satellite" />
+        <item
+            android:id="@+id/nav_terrain"
+            android:icon="@drawable/ic_terrain_black_24dp"
+            android:title="Terrain" />
+    </group>
+    <group
+        android:id="@+id/nav_other"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="Settings" />
+    </group>
+</menu>
