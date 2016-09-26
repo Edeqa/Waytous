@@ -14,14 +14,6 @@
             android:icon="@drawable/ic_traffic_black_24dp"
             android:title="Traffic" />
         <item
-            android:id="@+id/nav_public_transit"
-            android:icon="@drawable/ic_train_black_24dp"
-            android:title="Public transit" />
-        <item
-            android:id="@+id/nav_bicycling"
-            android:icon="@drawable/ic_directions_bike_black_24dp"
-            android:title="Bicycling" />
-        <item
             android:id="@+id/nav_satellite"
             android:icon="@drawable/ic_satellite_black_24dp"
             android:title="Satellite" />

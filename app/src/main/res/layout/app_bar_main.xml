@@ -23,12 +23,111 @@
 
     <include layout="@layout/content_main" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.LinearLayoutCompat
+        android:id="@+id/fab_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+        android:orientation="vertical"
+        app:layout_behavior=".helpers.LinearLayoutCompatBehavior">
 
+        <ru.wtg.whereaminow.helpers.FabMenu
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:visibility="invisible"
+            app:menu_animationDelayPerItem="5"
+            app:menu_colorNormal="@color/colorAccent"
+            app:menu_colorPressed="@color/colorPrimary"
+            app:menu_colorRipple="@color/colorPrimaryDark"
+            app:menu_icon="@drawable/ic_add_white_24dp"
+            app:menu_labels_hideAnimation="@anim/jump_to_down"
+            app:menu_labels_showAnimation="@anim/jump_from_down"
+            app:menu_labels_style="@style/MenuLabelsStyle"
+            app:menu_shadowColor="#888">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_switch_to_friend"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_people_white_24dp"
+                app:fab_label="Switch to friend" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_switch_to_me"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_person_white_24dp"
+                app:fab_label="Switch to me" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_navigate"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_navigation_white_24dp"
+                app:fab_label="Navigate" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_show_us"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_fullscreen_white_24dp"
+                app:fab_label="Show us" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_messages"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_chat_white_24dp"
+                app:fab_label="Messages" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_start_tracking_and_send_link"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share_white_24dp"
+                app:fab_label="Start tracking and send link" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_send_link"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share_white_24dp"
+                app:fab_label="Resend link" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_stop_tracking"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_clear_white_24dp"
+                app:fab_label="Stop tracking" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_cancel_tracking"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_clear_white_24dp"
+                app:fab_label="Cancel tracking" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_split_screen"
+                style="@style/MenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_view_agenda_white_24dp"
+                app:fab_label="Split screen" />
+
+        </ru.wtg.whereaminow.helpers.FabMenu>
+    </android.support.v7.widget.LinearLayoutCompat>
 </android.support.design.widget.CoordinatorLayout>
