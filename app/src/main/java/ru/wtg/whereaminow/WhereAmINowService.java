@@ -5,16 +5,23 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import ru.wtg.whereaminow.helpers.State;
+
 public class WhereAmINowService extends Service {
-    public WhereAmINowService() {
-    }
 
     private ServiceBinder binder = new ServiceBinder();
+    private State state;
+
     private int id;
+
+    public WhereAmINowService() {
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        state = State.getInstance();
 
         System.out.println("Service:onCreate");
     }
@@ -24,6 +31,13 @@ public class WhereAmINowService extends Service {
         id = startId;
         String mode = "initial";
         if(intent != null && intent.hasExtra("mode")) mode = intent.getStringExtra("mode");
+
+        if("start".equals(mode)){
+            state.setTracking(State.TRACKING_ACTIVE);
+        } else if("stop".equals(mode)){
+            state.setTracking(State.TRACKING_DISABLED);
+        }
+
         System.out.println("Service:onStartCommand:"+startId+":"+mode);
 
         return super.onStartCommand(intent, flags, startId);
@@ -43,11 +57,9 @@ public class WhereAmINowService extends Service {
         }
     }
 
-
     @Override
     public boolean onUnbind(Intent intent) {
         System.out.println("Service:onUnbind");
-
         return super.onUnbind(intent);
     }
 
@@ -55,7 +67,6 @@ public class WhereAmINowService extends Service {
     public void onDestroy() {
         super.onDestroy();
         System.out.println("Service:onDestroy");
-
     }
 
     @Override
