@@ -50,7 +50,7 @@ public class MyMarker {
     }
 
     public void showDraft(Location location){
-        System.out.println("showDraft:"+location);
+//        System.out.println("showDraft:"+location);
         if(location == null) return;
 
         setLocation(location);
@@ -72,11 +72,11 @@ public class MyMarker {
 
     private void createMarker(){
         Drawable drawable;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            drawable = context.getResources().getDrawable(R.drawable.navigation_marker,context.getTheme());
-        } else {
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//            drawable = context.getResources().getDrawable(R.drawable.navigation_marker,context.getTheme());
+//        } else {
             drawable = context.getResources().getDrawable(R.drawable.navigation_marker);
-        }
+//        }
         if(isDraft()) {
             drawable.setColorFilter(new ColorMatrixColorFilter(getColorMatrix(Color.GRAY)));
         } else {
@@ -124,7 +124,7 @@ public class MyMarker {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final float durationInMs = 500;
+        final float durationInMs = 1000;
 
         handler.post(new Runnable() {
             long elapsed;

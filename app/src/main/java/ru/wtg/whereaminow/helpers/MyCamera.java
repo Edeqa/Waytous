@@ -2,6 +2,7 @@ package ru.wtg.whereaminow.helpers;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,13 +37,15 @@ public class MyCamera {
     private float bearing;
     private float tilt;
     private float zoom;
-    private int orientation;
-    private int previousOrientation;
+    private int orientation = ORIENTATION_NORTH;
+    private int previousOrientation = ORIENTATION_NORTH;
     private boolean orientationChanged = false;
     private boolean locationChanged = false;
     private boolean zoomChanged = false;
     private boolean tiltChanged = false;
     private boolean bearingChanged = false;
+    private boolean moveFromHardware = false;
+    private boolean canceled = false;
 
     public MyCamera(Context context){
         setContext(context);
@@ -55,9 +58,7 @@ public class MyCamera {
 
     }
 
-
     public void update(){
-
         if(orientationChanged){
             switch (orientation){
                 case ORIENTATION_NORTH:
@@ -65,8 +66,9 @@ public class MyCamera {
                     setTilt(0);
                     break;
                 case ORIENTATION_DIRECTION:
-                    if(location != null)
+                    if(location != null) {
                         setBearing(location.getBearing());
+                    }
                     setTilt(0);
                     break;
                 case ORIENTATION_PERSPECTIVE:
@@ -76,14 +78,10 @@ public class MyCamera {
                     break;
                 case ORIENTATION_STAY:
                     position.target(map.getCameraPosition().target);
-                    setBearing(map.getCameraPosition().bearing);
-                    setTilt(map.getCameraPosition().tilt);
-                    setZoom(map.getCameraPosition().zoom);
                     break;
             }
             orientationChanged = false;
         }
-
         if(locationChanged && location != null && orientation != ORIENTATION_STAY) {
             position.target(new LatLng(location.getLatitude(), location.getLongitude()));
 //            camera = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), getZoom());
@@ -118,37 +116,58 @@ public class MyCamera {
     private GoogleMap.CancelableCallback cancelableCallback = new GoogleMap.CancelableCallback() {
         @Override
         public void onFinish() {
-                        System.out.println("GoogleMap.CancelableCallback.onFinish");
+//            System.out.println("GoogleMap.CancelableCallback.onFinish");
         }
 
         @Override
         public void onCancel() {
-                        System.out.println("GoogleMap.CancelableCallback.onCancel");
+//            System.out.println("GoogleMap.CancelableCallback.onCancel");
         }
     };
 
     public GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int i) {
-            System.out.println("onCameraMoveStarted");
+            if(zoom != map.getCameraPosition().zoom)
+                moveFromHardware = true;
+
+//            System.out.println("onCameraMoveStarted");
         }
     };
 
     public GoogleMap.OnCameraIdleListener onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
+            if(canceled && zoom != map.getCameraPosition().zoom){
+                setOrientation(getPreviousOrientation());
+                moveFromHardware = true;
+            } else if(zoom != map.getCameraPosition().zoom){
+                moveFromHardware = true;
+            }
+
             setZoom(map.getCameraPosition().zoom);
             setBearing(map.getCameraPosition().bearing);
             setTilt(map.getCameraPosition().tilt);
-            System.out.println("onCameraIdle");
+
+//            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
+            if(!moveFromHardware){
+                setOrientation(ORIENTATION_STAY);
+            }
+
+            moveFromHardware = false;
+            canceled = false;
         }
     };
 
     public GoogleMap.OnCameraMoveCanceledListener onCameraMoveCanceledListener = new GoogleMap.OnCameraMoveCanceledListener() {
         @Override
         public void onCameraMoveCanceled() {
-//            setOrientation(MyMarker.ORIENTATION_STAY);
-            System.out.println("onCameraMoveCanceled");
+//            System.out.println("onCameraMoveCanceled:"+zoom+":"+map.getCameraPosition().zoom);
+            if(zoom == map.getCameraPosition().zoom){
+                setOrientation(ORIENTATION_STAY);
+                moveFromHardware = false;
+                canceled = true;
+            }
         }
     };
 
@@ -162,9 +181,12 @@ public class MyCamera {
     public GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
         @Override
         public boolean onMyLocationButtonClick() {
-            System.out.println("onMyLocationButtonClick:"+getPreviousOrientation());
-            setOrientation(getPreviousOrientation());
-            setZoom(MyCamera.DEFAULT_ZOOM);
+//            System.out.println("onMyLocationButtonClick:"+getPreviousOrientation());
+            moveFromHardware = true;
+            if(orientation > ORIENTATION_LAST) {
+                setOrientation(getPreviousOrientation());
+            }
+//            setZoom(DEFAULT_ZOOM);
             update();
             return false;
         }
@@ -192,6 +214,7 @@ public class MyCamera {
 
     public MyCamera setLocation(Location location) {
         this.location = location;
+        moveFromHardware = true;
         locationChanged = true;
         return this;
     }
@@ -215,15 +238,26 @@ public class MyCamera {
     }
 
     public int nextOrientation(){
-        orientation++;
-        if(orientation > ORIENTATION_LAST) orientation = ORIENTATION_NORTH;
+
+        if(orientation > ORIENTATION_LAST) {
+            orientation = previousOrientation;
+        } else if(orientation == ORIENTATION_LAST){
+            orientation = ORIENTATION_NORTH;
+        } else {
+            orientation++;
+        }
+
         previousOrientation = orientation;
+        moveFromHardware = true;
         setOrientation(orientation);
         update();
         return orientation;
     }
 
     public MyCamera setOrientation(int orientation) {
+        if(this.orientation <= ORIENTATION_LAST){
+            previousOrientation = this.orientation;
+        }
         this.orientation = orientation;
         orientationChanged = true;
         return this;
@@ -266,4 +300,5 @@ public class MyCamera {
     public int getPreviousOrientation() {
         return previousOrientation;
     }
+
 }
