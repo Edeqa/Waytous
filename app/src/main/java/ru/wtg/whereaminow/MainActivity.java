@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -25,7 +28,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,47 +38,55 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import org.java_websocket.WebSocket;
-import org.java_websocket.client.WebSocketClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import ru.wtg.whereaminow.helpers.FabMenu;
+import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyCamera;
 import ru.wtg.whereaminow.helpers.MyMarker;
-import ru.wtg.whereaminow.helpers.MyWebSocketClient;
 import ru.wtg.whereaminow.helpers.State;
+import ru.wtg.whereaminow.helpers.UserButtons;
+
+import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
+import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_ACTION_DISCONNECTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PERMISSION_LOCATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_ACTIVE;
+import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_DISABLED;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    public final static String BROADCAST_ACTION = "ru.wtg.whereaminow.whereaminowservice";
-    public final static String SERVER_URL = "wss://192.168.56.1:8080";
-    public final static int REQUEST_PERMISSION_LOCATION = 1;
-
     private DrawerLayout drawer;
-    private LocationManager locationManager = null;
+    private LocationManager locationManager;
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
     private Intent intent;
     private FabMenu buttons;
     private Snackbar snackbar;
-    private URI serverUri;
     private State state;
+    private UserButtons userButtons;
 
     private ArrayList<MyMarker> markers = new ArrayList<>();
     private ArrayList<MyCamera> cameras = new ArrayList<>();
 
     private boolean serviceBound;
-    private boolean locationManagerDefined = false;
-    private WebSocketClient webSocketClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -81,15 +94,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        try {
-            serverUri = new URI(SERVER_URL);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        webSocketClient = new MyWebSocketClient(serverUri);
-        state = State.getInstance();
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        state = State.getInstance();
+        state.setMainContext(this);
+        state.checkDeviceId();
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -102,35 +111,42 @@ public class MainActivity extends AppCompatActivity
 
         buttons = (FabMenu) findViewById(R.id.fab);
 
+        userButtons = new UserButtons();
+        userButtons.setLayout((LinearLayout) findViewById(R.id.layout_users));
+        userButtons.hide();
+
+        intent = new Intent(MainActivity.this, WhereAmINowService.class);
+        if (!serviceBound) bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        IntentFilter intentFilter = new IntentFilter(BROADCAST_ACTION);
+        IntentFilter intentFilter = new IntentFilter(BROADCAST);
+        System.out.println("REGREC");
         registerReceiver(receiver, intentFilter);
-        webSocketClient.connect();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        enableLocationManager();
+        if(enableLocationManager()) {
+            if (state.tracking()) userButtons.show();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (locationManager != null && locationListener != null) {
-            locationManager.removeUpdates(locationListener);
-            locationManagerDefined = false;
-        }
+        locationManager.removeUpdates(locationListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        webSocketClient.close();
+        System.out.println("UNREGREC");
+
         unregisterReceiver(receiver);
     }
 
@@ -163,7 +179,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.action_save_location:
+                System.out.println("action_save_location");
+                snackbar.setText("Location saved.").setDuration(Snackbar.LENGTH_LONG).setAction("Edit", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        System.out.println("edit location");
+                    }
+                }).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -173,8 +196,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_start_and_share:
+                System.out.println("nav_start_and_share");
+                break;
+            case R.id.nav_saved_locations:
+                System.out.println("nav_saved_locations");
                 break;
             case R.id.nav_settings:
+                System.out.println("nav_settings");
                 break;
             case R.id.nav_traffic:
                 mMap.setTrafficEnabled(!mMap.isTrafficEnabled());
@@ -201,27 +229,38 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        intent = new Intent(MainActivity.this, WhereAmINowService.class);
-        if (!serviceBound) bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        checkPermissions(REQUEST_PERMISSION_LOCATION,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
 
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        System.out.println("onRequestPermissionsResult=" + requestCode+":");
-        for(int i:grantResults){
-            System.out.println("RES="+i);
+        System.out.println("onRequestPermissionsResult=" + requestCode + ":");
+        for (int i : grantResults) {
+            System.out.println("RES=" + i);
         }
 
         switch (requestCode) {
             case REQUEST_PERMISSION_LOCATION:
                 int res = 0;
-                for(int i:grantResults){
+                for (int i : grantResults) {
                     res += i;
                 }
-                System.out.println("PERM="+res);
-                if(res==0){
+                System.out.println("PERM=" + res);
+                if (res == 0) {
+                    buttons.setPlus();
                     onMapReadyPermitted();
                 } else {
+                    buttons.initAndSetOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            buttons.hideMenu(true);
+                            checkPermissions(REQUEST_PERMISSION_LOCATION,
+                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+                        }
+                    });
+                    buttons.setGpsOff();
+                    Toast.makeText(getApplicationContext(), "GPS access is not granted.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 break;
@@ -232,27 +271,6 @@ public class MainActivity extends AppCompatActivity
         public void onServiceConnected(ComponentName name, final IBinder binder) {
             serviceBound = true;
             System.out.println("onServiceConnected");
-
-            if(!checkPermissions(MainActivity.REQUEST_PERMISSION_LOCATION,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION})) return;
-
-      /*      if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MainActivity.REQUEST_PERMISSION_LOCATION);
-                System.out.println("checkSelfPermission");
-            } else {
-                onMapReadyPermitted();
-            }*/
         }
 
         public void onServiceDisconnected(ComponentName name) {
@@ -263,14 +281,12 @@ public class MainActivity extends AppCompatActivity
 
     public void onMapReadyPermitted() {
         System.out.println("onMapReadyPermitted");
+        if(!enableLocationManager()) return;
+
         MyMarker.setMap(mMap);
         MyCamera.setMap(mMap);
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            System.err.println("NOT locationManager.isProviderEnabled");
-            return;
-        }
-        enableLocationManager();
+        adjustButtonsPositions();
 
         cameras.add(new MyCamera(getApplicationContext()));
         markers.add(new MyMarker(getApplicationContext()).setMyCamera(cameras.get(0)));
@@ -282,21 +298,11 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnCameraMoveCanceledListener(cameras.get(0).onCameraMoveCanceledListener);
 //        mMap.setOnMapClickListener(onMapClickListener);
 
-        Location lastLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-        if (lastLocation == null)
-            lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (lastLocation == null)
-            lastLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        Location lastLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false));
         if (lastLocation != null) {
             markers.get(0).showDraft(lastLocation);
             cameras.get(0).setLocation(lastLocation).update();
-        }
-
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (lastLocation != null) {
-                locationListener.onLocationChanged(lastLocation);
-            }
+            locationListener.onLocationChanged(lastLocation);
         }
 
         mMap.setBuildingsEnabled(true);
@@ -304,7 +310,16 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                System.out.println("MAP CLICK");
+                if(!DEBUGGING) return;
+                try {
+                    Location location = markers.get(0).getLocation();
+                    location.setLatitude(latLng.latitude);
+                    location.setLongitude(latLng.longitude);
+                    locationListener.onLocationChanged(location);
+                    state.myTracking.locationListener.onLocationChanged(location);
+                }catch(Exception e){
+                    System.out.println("Error setOnMapClickListener: "+e.getMessage());
+                }
             }
         });
         mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -314,62 +329,74 @@ public class MainActivity extends AppCompatActivity
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
 
-        connectWebSocket();
-
-
-    }
-
-    //MARK - temp
-    private void connectWebSocket() {
-        URI uri;
-        try {
-            uri = new URI("wss://192.168.56.1:8080");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
+        Intent intent2 = getIntent();
+        Uri data = intent2.getData();
+        if(data != null){
+            intent.putExtra("mode", "join");
+            String query = data.getEncodedPath().replaceFirst("/track/","");
+            intent.putExtra("token", query);
+            startService(intent);
         }
 
-        webSocketClient = new MyWebSocketClient(uri);
-//        webSocketClient.connect();
+        System.out.println("INTENT:"+data+":"+intent.getType());
+
+
+
     }
+
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            System.out.println("onReceive");
+
+            String r = intent.getStringExtra(BROADCAST_MESSAGE);
+            System.out.println("onReceive:" + r);
+            JSONObject o;
+            try {
+                o = new JSONObject(r);
+                if (!o.has(RESPONSE_STATUS)) return;
+
+                switch (o.getString(RESPONSE_STATUS)) {
+                    case BROADCAST_ACTION_DISCONNECTED:
+                        View v = new View(context);
+                        v.setId(R.id.fab_stop_tracking);
+                        onFabClickListener.onClick(v);
+                        state.setStatus(TRACKING_DISABLED);
+                        snackbar.dismiss();
+                        userButtons.hide();
+                        break;
+                    case RESPONSE_STATUS_ACCEPTED:
+                        state.setToken(o.getString(RESPONSE_TOKEN));
+                        state.setStatus(TRACKING_ACTIVE);
+                        snackbar.dismiss();
+                        userButtons.show();
+                        new InviteSender(MainActivity.this).send(state.getToken());
+
+                        break;
+                    case RESPONSE_STATUS_ERROR:
+                        String message = o.getString(RESPONSE_MESSAGE);
+                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        state.setStatus(TRACKING_DISABLED);
+                        snackbar.dismiss();
+                        userButtons.hide();
+                        break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     };
 
-    private void enableLocationManager() {
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    MainActivity.REQUEST_PERMISSION_LOCATION);
-            System.out.println("checkSelfPermission");
+    private boolean enableLocationManager() {
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+            return false;
         } else {
-//            onMapReadyPermitted();
-            if (!locationManagerDefined && locationManager != null && locationListener != null) {
-                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    System.err.println("NOT locationManager.isProviderEnabled");
-                    return;
-                }
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
-                locationManagerDefined = true;
-            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1, locationListener);
+            return true;
         }
-
-
-
     }
 
     private LocationListener locationListener = new LocationListener() {
@@ -378,14 +405,6 @@ public class MainActivity extends AppCompatActivity
             System.out.println("onLocationChanged");
 
             if (!buttons.isInitialized()) {
-                adjustButtonsPositions();
-//        buttons.setOnMenuButtonLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                System.out.println("fab.onLongClick");
-//                return false;
-//            }
-//        });
 
                 buttons.initAndSetOnClickListener(onFabClickListener);
                 initSnackbar();
@@ -397,19 +416,7 @@ public class MainActivity extends AppCompatActivity
             }
             if (cameras.size() > 0) {
                 cameras.get(0).setLocation(location).update();
-
-
-//                new ServletPostAsyncTask().execute(new Pair<Context, String>(getApplicationContext(), cameras.get(0).toString()));
             }
-
-            /*if(webSocketClient.getReadyState() == WebSocket.READYSTATE.OPEN) {
-                webSocketClient.send(""+location);
-            } else if(webSocketClient.getReadyState() == WebSocket.READYSTATE.CLOSED) {
-                webSocketClient = new MyWebSocketClient(serverUri);
-                System.out.println("WEBSOCKET:CLOSED_RECONNECT");
-                webSocketClient.connect();
-            }*/
-
         }
 
         @Override
@@ -434,27 +441,31 @@ public class MainActivity extends AppCompatActivity
         public void onClick(View view) {
             switch (view.getId()) {
                 case -1:
-                    if(state.waiting()){
+                    if (state.rejected()) {
+                        checkPermissions(REQUEST_PERMISSION_LOCATION,
+                                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                        android.Manifest.permission.ACCESS_COARSE_LOCATION});
+                    } else if (state.waiting()) {
                         System.out.println("fab.onClick:start");
 
-                        intent.putExtra("mode","start");
+                        intent.putExtra("mode", "start");
                         startService(intent);
 
                         snackbar.setText("Starting tracking...").setAction("Cancel", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 System.out.println("snackbar.onClick");
-                                intent.putExtra("mode","stop");
+                                intent.putExtra("mode", "stop");
                                 startService(intent);
                                 buttons.close(true);
                             }
                         }).show();
-                    } else {
+                    } else if (state.tracking()) {
                         System.out.println("fab.onClick:toggle");
                         if (!buttons.isOpened()) {
                             buttons.removeAllMenuButtons();
-                            buttons.addMenuButton(buttons.startTrackingAndSendLink);
-                            buttons.addMenuButton(buttons.navigate);
+                            buttons.addMenuButton(buttons.sendLink);
+//                            buttons.addMenuButton(buttons.navigate);
                             buttons.addMenuButton(buttons.cancelTracking);
                         }
                         buttons.toggle(true);
@@ -463,19 +474,20 @@ public class MainActivity extends AppCompatActivity
                 case R.id.fab_send_link:
                     System.out.println("fab_send_link");
                     buttons.close(true);
+                    new InviteSender(MainActivity.this).send(state.getToken());
                     break;
                 case R.id.fab_stop_tracking:
                     System.out.println("fab_stop_tracking");
                     buttons.close(true);
                     snackbar.dismiss();
-                    intent.putExtra("mode","stop");
+                    intent.putExtra("mode", "stop");
                     startService(intent);
                     break;
                 case R.id.fab_cancel_tracking:
                     System.out.println("fab_cancel_tracking");
                     buttons.close(true);
                     snackbar.dismiss();
-                    intent.putExtra("mode","stop");
+                    intent.putExtra("mode", "cancel");
                     startService(intent);
                     break;
                 case R.id.fab_switch_to_friend:
@@ -589,27 +601,27 @@ public class MainActivity extends AppCompatActivity
 
     // permissionsForCheck = android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION
     // requestCode = MainActivity.REQUEST_PERMISSION_LOCATION
-    private boolean checkPermissions(int requestCode, String[] permissionsForCheck){
+    private boolean checkPermissions(int requestCode, String[] permissionsForCheck) {
         ArrayList<String> permissions = new ArrayList<>();
         int[] grants = new int[permissionsForCheck.length];
-        for(int i=0;i<permissionsForCheck.length;i++){
-            if(ActivityCompat.checkSelfPermission(MainActivity.this, permissionsForCheck[i]) != PackageManager.PERMISSION_GRANTED){
+        for (int i = 0; i < permissionsForCheck.length; i++) {
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, permissionsForCheck[i]) != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(permissionsForCheck[i]);
                 grants[i] = PackageManager.PERMISSION_DENIED;
             } else {
                 grants[i] = PackageManager.PERMISSION_GRANTED;
             }
         }
-        for(int i=0;i<grants.length;i++){
+        for (int i = 0; i < grants.length; i++) {
         }
-        if(permissions.size()>0){
+        if (permissions.size() > 0) {
             ActivityCompat.requestPermissions(MainActivity.this,
                     permissions.toArray(new String[permissions.size()]),
                     requestCode);
-            System.out.println("checkPermission:"+requestCode+":"+permissionsForCheck+":"+permissions);
+            System.out.println("checkPermission:" + requestCode + ":" + permissionsForCheck + ":" + permissions);
             return false;
         } else {
-            onRequestPermissionsResult(requestCode,permissionsForCheck,grants);
+            onRequestPermissionsResult(requestCode, permissionsForCheck, grants);
             return true;
         }
     }

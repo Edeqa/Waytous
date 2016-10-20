@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 import ru.wtg.whereaminow.R;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_DEFAULT_ZOOM;
+
 /**
  * Created by tujger on 9/18/16.
  */
@@ -72,18 +74,19 @@ public class MyMarker {
 
     private void createMarker(){
         Drawable drawable;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-//            drawable = context.getResources().getDrawable(R.drawable.navigation_marker,context.getTheme());
-//        } else {
-            drawable = context.getResources().getDrawable(R.drawable.navigation_marker);
-//        }
-        if(isDraft()) {
-            drawable.setColorFilter(new ColorMatrixColorFilter(getColorMatrix(Color.GRAY)));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            drawable = context.getResources().getDrawable(R.drawable.navigation_marker,context.getTheme());
         } else {
-            drawable.setColorFilter(new ColorMatrixColorFilter(getColorMatrix(color)));
-        }
+            drawable = /*ContextCompat.getDrawable(context, R.drawable.navigation_marker);*/ context.getResources().getDrawable(R.drawable.navigation_marker);
 
+        }
+        if(isDraft()) {
+            drawable.setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(Color.GRAY)));
+        } else {
+            drawable.setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(color)));
+        }
         Canvas canvas = new Canvas();
+
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
@@ -110,7 +113,7 @@ public class MyMarker {
             createMarker();
         } else if(marker == null){
             if(myCamera != null){
-                myCamera.setZoom(MyCamera.DEFAULT_ZOOM);
+                myCamera.setZoom(CAMERA_DEFAULT_ZOOM);
             }
             createMarker();
         }
@@ -150,46 +153,6 @@ public class MyMarker {
                 }
             }
         });
-    }
-
-    private float[] getColorMatrix(int color) {
-        switch (color) {
-            case Color.RED:
-                return new float[]{
-                        1, 0, 0, 0, 255, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.GREEN:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 255, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.BLUE:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 255, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.GRAY:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, .5f, 0 //alpha
-                };
-            default:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-        }
     }
 
     private void setContext(Context context) {

@@ -6,11 +6,12 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import ru.wtg.whereaminow.helpers.State;
+import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 public class WhereAmINowService extends Service {
 
     private ServiceBinder binder = new ServiceBinder();
-    private State state;
+    private MyTracking tracking;
 
     private int id;
 
@@ -21,9 +22,11 @@ public class WhereAmINowService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        state = State.getInstance();
-
+        tracking = new MyTracking(WhereAmINowService.this);
         System.out.println("Service:onCreate");
+//to be deleted
+        State state = State.getInstance();
+        state.myTracking = tracking;
     }
 
     @Override
@@ -31,21 +34,23 @@ public class WhereAmINowService extends Service {
         id = startId;
         String mode = "initial";
         if(intent != null && intent.hasExtra("mode")) mode = intent.getStringExtra("mode");
-
-        if("start".equals(mode)){
-            state.setTracking(State.TRACKING_ACTIVE);
-        } else if("stop".equals(mode)){
-            state.setTracking(State.TRACKING_DISABLED);
-        }
-
         System.out.println("Service:onStartCommand:"+startId+":"+mode);
 
+        if("start".equals(mode)){
+            tracking.start();
+        } else if("join".equals(mode)){
+            String token = intent.getStringExtra("token");
+            tracking.join(token);
+        } else if("stop".equals(mode)){
+            tracking.stop();
+        } else if("cancel".equals(mode)){
+            tracking.cancel();
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         String mode = intent.getStringExtra("mode");
         System.out.println("Service:onBind:"+mode);
         return binder;
@@ -67,6 +72,7 @@ public class WhereAmINowService extends Service {
     public void onDestroy() {
         super.onDestroy();
         System.out.println("Service:onDestroy");
+//        tracking.stop();
     }
 
     @Override
@@ -84,4 +90,6 @@ public class WhereAmINowService extends Service {
     public int getId(){
         return id;
     }
+
+
 }
