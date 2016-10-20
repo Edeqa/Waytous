@@ -29,22 +29,24 @@ public class FabMenu extends FloatingActionMenu {
         super(context);
     }
 
-    public FabMenu(Context context,AttributeSet attrs) {
-        super(context,attrs);
+    public FabMenu(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     public void initAndSetOnClickListener(View.OnClickListener onClickListener) {
 
-        startTrackingAndSendLink = (FloatingActionButton) findViewById(R.id.fab_start_tracking_and_send_link);
-        sendLink = (FloatingActionButton) findViewById(R.id.fab_send_link);
-        stopTracking = (FloatingActionButton) findViewById(R.id.fab_stop_tracking);
-        cancelTracking = (FloatingActionButton) findViewById(R.id.fab_cancel_tracking);
-        switchToFriend = (FloatingActionButton) findViewById(R.id.fab_switch_to_friend);
-        switchToMe = (FloatingActionButton) findViewById(R.id.fab_switch_to_me);
-        navigate = (FloatingActionButton) findViewById(R.id.fab_navigate);
-        showUs = (FloatingActionButton) findViewById(R.id.fab_show_us);
-        messages = (FloatingActionButton) findViewById(R.id.fab_messages);
-        splitScreen = (FloatingActionButton) findViewById(R.id.fab_split_screen);
+        if (!initialized) {
+            startTrackingAndSendLink = (FloatingActionButton) findViewById(R.id.fab_start_tracking_and_send_link);
+            sendLink = (FloatingActionButton) findViewById(R.id.fab_send_link);
+            stopTracking = (FloatingActionButton) findViewById(R.id.fab_stop_tracking);
+            cancelTracking = (FloatingActionButton) findViewById(R.id.fab_cancel_tracking);
+            switchToFriend = (FloatingActionButton) findViewById(R.id.fab_switch_to_friend);
+            switchToMe = (FloatingActionButton) findViewById(R.id.fab_switch_to_me);
+            navigate = (FloatingActionButton) findViewById(R.id.fab_navigate);
+            showUs = (FloatingActionButton) findViewById(R.id.fab_show_us);
+            messages = (FloatingActionButton) findViewById(R.id.fab_messages);
+            splitScreen = (FloatingActionButton) findViewById(R.id.fab_split_screen);
+        }
 
         removeAllMenuButtons();
         setClosedOnTouchOutside(true);
@@ -66,6 +68,16 @@ public class FabMenu extends FloatingActionMenu {
         toggleMenuButton(true);
 
         setInitialized(true);
+
+
+    }
+
+    public void setGpsOff() {
+        getMenuIconView().setImageDrawable(getResources().getDrawable(R.drawable.ic_gps_off_white_24dp));
+    }
+
+    public void setPlus() {
+        getMenuIconView().setImageDrawable(getResources().getDrawable(R.drawable.ic_add_white_24dp));
     }
 
     public boolean isInitialized() {

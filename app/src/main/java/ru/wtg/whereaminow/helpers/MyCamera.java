@@ -2,7 +2,6 @@ package ru.wtg.whereaminow.helpers;
 
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationManager;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,21 +11,20 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_DEFAULT_BEARING;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_DEFAULT_TILT;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_DEFAULT_ZOOM;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_DIRECTION;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_LAST;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_NORTH;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_PERSPECTIVE;
+import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_STAY;
+
 /**
  * Created by tujger on 9/20/16.
  */
 
 public class MyCamera {
-    public final static int ORIENTATION_NORTH = 0;
-    public final static int ORIENTATION_DIRECTION = 1;
-    public final static int ORIENTATION_PERSPECTIVE = 2;
-    public final static int ORIENTATION_STAY = 3;
-    public final static int ORIENTATION_USER = 4;
-
-    public static final float DEFAULT_ZOOM = 15.f;
-    public static final float DEFAULT_TILT = 0.f;
-    public static final float DEFAULT_BEARING = 0.f;
-    final static int ORIENTATION_LAST = 2;
 
     private static GoogleMap map;
     private Context context;
@@ -37,8 +35,8 @@ public class MyCamera {
     private float bearing;
     private float tilt;
     private float zoom;
-    private int orientation = ORIENTATION_NORTH;
-    private int previousOrientation = ORIENTATION_NORTH;
+    private int orientation = CAMERA_ORIENTATION_NORTH;
+    private int previousOrientation = CAMERA_ORIENTATION_NORTH;
     private boolean orientationChanged = false;
     private boolean locationChanged = false;
     private boolean zoomChanged = false;
@@ -50,9 +48,9 @@ public class MyCamera {
     public MyCamera(Context context){
         setContext(context);
 
-        zoom = DEFAULT_ZOOM;
-        tilt = DEFAULT_TILT;
-        bearing = DEFAULT_BEARING;
+        zoom = CAMERA_DEFAULT_ZOOM;
+        tilt = CAMERA_DEFAULT_TILT;
+        bearing = CAMERA_DEFAULT_BEARING;
 
         position = new CameraPosition.Builder().bearing(bearing).tilt(tilt).zoom(zoom);
 
@@ -61,31 +59,31 @@ public class MyCamera {
     public void update(){
         if(orientationChanged){
             switch (orientation){
-                case ORIENTATION_NORTH:
+                case CAMERA_ORIENTATION_NORTH:
                     setBearing(0);
                     setTilt(0);
                     break;
-                case ORIENTATION_DIRECTION:
+                case CAMERA_ORIENTATION_DIRECTION:
                     if(location != null) {
                         setBearing(location.getBearing());
                     }
                     setTilt(0);
                     break;
-                case ORIENTATION_PERSPECTIVE:
+                case CAMERA_ORIENTATION_PERSPECTIVE:
                     if(location != null)
                         setBearing(location.getBearing());
                     setTilt(60);
                     break;
-                case ORIENTATION_STAY:
+                case CAMERA_ORIENTATION_STAY:
                     position.target(map.getCameraPosition().target);
                     break;
             }
             orientationChanged = false;
         }
-        if(locationChanged && location != null && orientation != ORIENTATION_STAY) {
+        if(locationChanged && location != null && orientation != CAMERA_ORIENTATION_STAY) {
             position.target(new LatLng(location.getLatitude(), location.getLongitude()));
 //            camera = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), getZoom());
-            if(orientation == ORIENTATION_DIRECTION || orientation == ORIENTATION_PERSPECTIVE){
+            if(orientation == CAMERA_ORIENTATION_DIRECTION || orientation == CAMERA_ORIENTATION_PERSPECTIVE){
                 setBearing(location.getBearing());
             }
             locationChanged = false;
@@ -106,7 +104,11 @@ public class MyCamera {
             bearingChanged = false;
         }
         System.out.println(toString());
-        camera = CameraUpdateFactory.newCameraPosition(position.build());
+        try{
+            camera = CameraUpdateFactory.newCameraPosition(position.build());
+        }catch(Exception e){
+            System.out.println("Error CameraUpdateFactory: "+e.getMessage());
+        }
 
         if(camera != null) {
             map.animateCamera(camera, 1000, cancelableCallback);
@@ -151,7 +153,7 @@ public class MyCamera {
 
 //            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
             if(!moveFromHardware){
-                setOrientation(ORIENTATION_STAY);
+                setOrientation(CAMERA_ORIENTATION_STAY);
             }
 
             moveFromHardware = false;
@@ -164,7 +166,7 @@ public class MyCamera {
         public void onCameraMoveCanceled() {
 //            System.out.println("onCameraMoveCanceled:"+zoom+":"+map.getCameraPosition().zoom);
             if(zoom == map.getCameraPosition().zoom){
-                setOrientation(ORIENTATION_STAY);
+                setOrientation(CAMERA_ORIENTATION_STAY);
                 moveFromHardware = false;
                 canceled = true;
             }
@@ -183,10 +185,10 @@ public class MyCamera {
         public boolean onMyLocationButtonClick() {
 //            System.out.println("onMyLocationButtonClick:"+getPreviousOrientation());
             moveFromHardware = true;
-            if(orientation > ORIENTATION_LAST) {
+            if(orientation > CAMERA_ORIENTATION_LAST) {
                 setOrientation(getPreviousOrientation());
             }
-//            setZoom(DEFAULT_ZOOM);
+//            setZoom(CAMERA_DEFAULT_ZOOM);
             update();
             return false;
         }
@@ -239,10 +241,10 @@ public class MyCamera {
 
     public int nextOrientation(){
 
-        if(orientation > ORIENTATION_LAST) {
+        if(orientation > CAMERA_ORIENTATION_LAST) {
             orientation = previousOrientation;
-        } else if(orientation == ORIENTATION_LAST){
-            orientation = ORIENTATION_NORTH;
+        } else if(orientation == CAMERA_ORIENTATION_LAST){
+            orientation = CAMERA_ORIENTATION_NORTH;
         } else {
             orientation++;
         }
@@ -255,7 +257,7 @@ public class MyCamera {
     }
 
     public MyCamera setOrientation(int orientation) {
-        if(this.orientation <= ORIENTATION_LAST){
+        if(this.orientation <= CAMERA_ORIENTATION_LAST){
             previousOrientation = this.orientation;
         }
         this.orientation = orientation;

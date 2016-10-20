@@ -6,6 +6,10 @@
             android:id="@+id/nav_start_and_share"
             android:icon="@drawable/ic_share_black_24dp"
             android:title="Start and share" />
+        <item
+            android:id="@+id/nav_saved_locations"
+            android:icon="@drawable/ic_pin_drop_black_24dp"
+            android:title="Saved" />
     </group>
     <group
         android:id="@+id/nav_map">
