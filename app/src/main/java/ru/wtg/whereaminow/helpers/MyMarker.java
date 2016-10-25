@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.R;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_DEFAULT_ZOOM;
+import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
  * Created by tujger on 9/18/16.
@@ -41,7 +42,7 @@ public class MyMarker {
 
     private boolean draft;
 
-    public MyMarker(){
+    private MyMarker(){
         locations = new ArrayList<>();
         color = Color.BLUE;
     }
@@ -66,13 +67,14 @@ public class MyMarker {
         update();
     }
 
-    public void addLocation(Location location) {
+    public MyMarker addLocation(Location location) {
         locations.add(location);
         setLocation(location);
-        update();
+        return this;
+//        update();
     }
 
-    private void createMarker(){
+    public void createMarker(){
         Drawable drawable;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             drawable = context.getResources().getDrawable(R.drawable.navigation_marker,context.getTheme());
@@ -106,7 +108,6 @@ public class MyMarker {
 
     public void update(){
         if(locations.size()==0) return;
-
         if(marker != null && isDraft()){
             marker.remove();
             setDraft(false);
@@ -127,8 +128,7 @@ public class MyMarker {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final float durationInMs = 1000;
-
+        final float durationInMs = LOCATION_UPDATES_DELAY;
         handler.post(new Runnable() {
             long elapsed;
             float t, v;
@@ -191,7 +191,6 @@ public class MyMarker {
         return location;
     }
 
-
     public MyCamera getMyCamera() {
         return myCamera;
     }
@@ -203,6 +202,17 @@ public class MyMarker {
 
     public Marker getMarker(){
         return marker;
+    }
+
+    public void remove(){
+        if(marker != null) {
+            try {
+                marker.remove();
+                marker = null;
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
 }

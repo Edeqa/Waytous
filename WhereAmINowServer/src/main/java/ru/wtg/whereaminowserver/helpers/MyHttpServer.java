@@ -4,6 +4,9 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -49,7 +52,7 @@ public class MyHttpServer implements HttpHandler {
 //            os.close();
         };
 
-        System.out.println("QUERY:"+query);
+//        System.out.println("QUERY:"+query);
 
         Headers headers = exchange.getRequestHeaders();
         for (String header : headers.keySet()) {
@@ -63,6 +66,21 @@ public class MyHttpServer implements HttpHandler {
         tableIpToUser(div);
         tableIpToToken(div);
         tableChecks();
+
+        if(query.containsKey("list")) {
+            try {
+                String list = query.get("list").get(0);
+
+                if("user".equals(list)){
+                    tableUser(query.get("token").get(0),query.get("id").get(0));
+                }
+
+            } catch(NullPointerException | JSONException e) {
+//                e.printStackTrace();
+            }
+        }
+
+
         builder.append(html.build());
 
         byte[] bytes = builder.toString().getBytes();
@@ -79,6 +97,7 @@ public class MyHttpServer implements HttpHandler {
         html.addHead().add("title").with("Admin");
         html.getHead().add("style").with("table {width: 100%; border-style: solid;border-width: 1px; border-spacing:0px; font-family: sans-serif; }");
         html.getHead().add("style").with("td {vertical-align:top; }");
+        html.getHead().add("meta").with("http-equiv","refresh").with("content",2);
 
         html.addBody();
     }
@@ -92,13 +111,15 @@ public class MyHttpServer implements HttpHandler {
         HtmlGenerator.Tag td2 = thr.add("th").with("Owner").with("rowspan",2);
         HtmlGenerator.Tag td3 = thr.add("th").with("Changed").with("rowspan",2);
 
-        HtmlGenerator.Tag td4 = thr.add("th").with("Users").with("colspan",5);
+        HtmlGenerator.Tag td4 = thr.add("th").with("Users").with("colspan",7);
 
         thr = table.add("tr");
-        td4 = thr.add("th").with("DeviceId");
+        td4 = thr.add("th").with("#");
+        thr.add("th").with("DeviceId");
         thr.add("th").with("Address");
-        thr.add("th").with("Joined");
+        thr.add("th").with("Created");
         thr.add("th").with("Control");
+        thr.add("th").with("Pos");
         thr.add("th").with("X");
         HtmlGenerator.Tag tr;
 
@@ -112,10 +133,12 @@ public class MyHttpServer implements HttpHandler {
             int indent = 0;
             for(Map.Entry<String,MyUser> y:x.getValue().users.entrySet()){
                 if(indent>0) tr = table.add("tr");
-                tr.add("td").with(y.getValue().getDeviceId());
+                tr.add("td").with(y.getValue().getNumber());
+                tr.add("td").add("a").with(y.getValue().getDeviceId()).with("href","/?list=user&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
                 tr.add("td").with(y.getValue().getAddress());
-                tr.add("td").with(new Date(y.getValue().getTimestamp()).toString());
+                tr.add("td").with(new Date(y.getValue().getChanged()).toString());
                 tr.add("td").with(y.getValue().getControl());
+                tr.add("td").with(y.getValue().getPositions().size());
                 tr.add("td").add("a").with("Del").with("href","/?action=del&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
 
                 indent ++;
@@ -136,7 +159,7 @@ public class MyHttpServer implements HttpHandler {
         tr.add("th").with("Control");
         tr.add("th").with("Timestamp");
 
-        for(Map.Entry<String,MyWssServer.CheckReq> x: wssProcessor.checkUsers.entrySet()){
+        for(Map.Entry<String,MyWssServer.CheckReq> x: wssProcessor.ipToCheck.entrySet()){
             tr = table.add("tr");
 
             tr.add("td").with(x.getKey());
@@ -144,6 +167,50 @@ public class MyHttpServer implements HttpHandler {
             tr.add("td").with(x.getValue().control);
             tr.add("td").with(new Date(x.getValue().timestamp).toString());
 
+        }
+    }
+
+    private void tableUser(String tokenId, String userId) {
+
+        MyToken token = wssProcessor.tokens.get(tokenId);
+        MyUser user = token.users.get(userId);
+
+        html.getBody().add("h1").with("User").add("small").add("small").add("a").with("[Del]").with("href","/?action=del&token="+tokenId+"&id="+userId);;
+        html.getBody().add("div").with("Token: "+tokenId);
+        html.getBody().add("div").with("Address: "+user.getConnection().getRemoteSocketAddress());
+        html.getBody().add("div").with("Number in token: "+user.getNumber());
+        html.getBody().add("div").with("DeviceID: "+userId);
+        html.getBody().add("div").with("Color: "+user.getColor());
+        if(user.hasName()) html.getBody().add("div").with("Name: "+user.getName());
+        html.getBody().add("div").with("Model: "+user.getModel());
+        html.getBody().add("div").with("Created: "+new Date(user.getCreated()).toString());
+        html.getBody().add("div").with("Changed: "+new Date(user.getChanged()).toString());
+
+        HtmlGenerator.Tag table = html.getBody().add("table").with("border",1);
+        HtmlGenerator.Tag tr = table.add("tr");
+        tr.add("th").with("#");
+        tr.add("th").with("Time");
+        tr.add("th").with("Latitude");
+        tr.add("th").with("Longitude");
+        tr.add("th").with("Altitude");
+        tr.add("th").with("Accuracy");
+        tr.add("th").with("Bearing");
+        tr.add("th").with("Speed");
+
+        int count = 1;
+        for(MyUser.MyPosition x: user.getPositions()){
+            tr = table.add("tr");
+
+            tr.add("td").add("a").with(count).with("target","_blank").with("href","http://maps.google.com/?q="+x.latitude+"+"+x.longitude+"&z=13");
+            tr.add("td").with(new Date(x.timestamp).toString());
+            tr.add("td").with(x.latitude);
+            tr.add("td").with(x.longitude);
+            tr.add("td").with(x.altitude);
+            tr.add("td").with(x.accuracy);
+            tr.add("td").with(x.bearing);
+            tr.add("td").with(x.speed);
+
+            count++;
         }
     }
 
@@ -188,10 +255,10 @@ public class MyHttpServer implements HttpHandler {
         if(query.containsKey("action")){
             for(String x:query.get("action")){
                 processAction(x,query);
-    processed = true;
+                processed = true;
             }
         }
-return processed;
+        return processed;
     }
 
     private void processAction(String action, Map<String, List<String>> query) {

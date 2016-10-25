@@ -13,8 +13,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_SERVER_URL;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -28,12 +31,17 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
 /**
  * Created by tujger on 10/5/16.
@@ -44,14 +52,14 @@ public class MyWssServer extends WebSocketServer {
     public HashMap<String, MyToken> tokens;
     public HashMap<String, MyToken> ipToToken;
     public HashMap<String, MyUser> ipToUser;
-    public HashMap<String, CheckReq> checkUsers;
+    public HashMap<String, CheckReq> ipToCheck;
 
     public MyWssServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
         tokens = new HashMap<>();
         ipToToken = new HashMap<>();
         ipToUser = new HashMap<>();
-        checkUsers = new HashMap<>();
+        ipToCheck = new HashMap<>();
 
         String a = HTTP_SERVER_URL;
 
@@ -75,9 +83,33 @@ public class MyWssServer extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
-        if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
+        if(ipToToken.containsKey(ip)){
+            final MyToken token = ipToToken.get(ip);
+            ipToToken.remove(ip);
+
+            try {
+                MyUser user = ipToUser.get(ip);
+                JSONObject o = new JSONObject();
+                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                o.put(USER_DISMISSED, user.getNumber());
+                token.sendToAllFrom(o, user);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+            executor.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    if(token.isEmpty() && new Date().getTime() - token.getChanged() >= LIFETIME_INACTIVE_TOKEN) {
+                        tokens.remove(token.getId());
+                    }
+                }
+            }, LIFETIME_INACTIVE_TOKEN+10, TimeUnit.SECONDS);
+
+        }
         if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
-        if(checkUsers.containsKey(ip)) checkUsers.remove(ip);
+        if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
 
         System.out.println("WSS:ONCLOSE:" + conn.getRemoteSocketAddress() + " disconnected");
     }
@@ -116,6 +148,7 @@ public class MyWssServer extends WebSocketServer {
 //                    }
                     responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
                     responce.put(RESPONSE_TOKEN, token.getId());
+                    responce.put(RESPONSE_NUMBER, user.getNumber());
 
                     ipToToken.put(ip, token);
                     ipToUser.put(ip, user);
@@ -136,17 +169,45 @@ public class MyWssServer extends WebSocketServer {
                         MyToken token = tokens.get(tokenId);
 
                         if(request.has(REQUEST_DEVICE_ID)){
-                            MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-                            user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
-                            user.setModel(request.getString(REQUEST_MODEL));
-                            user.setOs(request.getString(REQUEST_OS));
-                            token.addUser(user);
+                            String deviceId1 = request.getString(REQUEST_DEVICE_ID);
+                            MyUser user = null;
+                            for(Map.Entry<String,MyUser> x:token.users.entrySet()){
+                                if(deviceId1.equals(x.getValue().getDeviceId())){
+                                    user = x.getValue();
+                                    break;
+                                }
+                            }
+                            if(user != null) {
+                                CheckReq check = new CheckReq();
+                                check.control = Utils.getUnique();
+                                check.token = token;
 
-                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                            responce.put(RESPONSE_TOKEN, token.getId());
+                                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
+                                responce.put(RESPONSE_CONTROL,check.control);
+                                ipToCheck.put(ip,check);
+                            } else {
 
-                            ipToToken.put(ip, token);
-                            ipToUser.put(ip, user);
+                                user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                                user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
+                                user.setModel(request.getString(REQUEST_MODEL));
+                                user.setOs(request.getString(REQUEST_OS));
+                                token.addUser(user);
+
+                                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                                responce.put(RESPONSE_NUMBER, user.getNumber());
+
+                                ipToToken.put(ip, token);
+                                ipToUser.put(ip, user);
+
+                                token.sendInitialTo(responce,user);
+
+                                JSONObject o = new JSONObject();
+                                o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
+                                o.put(USER_COLOR,user.getColor());
+                                o.put(USER_JOINED,user.getNumber());
+
+                                token.sendToAllFrom(o,user);
+                            }
 
                         } else {
                             CheckReq check = new CheckReq();
@@ -155,13 +216,8 @@ public class MyWssServer extends WebSocketServer {
 
                             responce.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                             responce.put(RESPONSE_CONTROL,check.control);
-                            checkUsers.put(ip,check);
+                            ipToCheck.put(ip,check);
                         }
-
-
-//                        System.out.println("REQUEST_TOKEN FOUND, TRY TO JOIN:" + tokenId);
-//                        ipToToken.put(ip, tokenId);
-//                        ipToHash.put(conn.getRemoteSocketAddress().toString(), user.getHash());
                     } else {
                         responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                         responce.put(RESPONSE_MESSAGE, "This tracking is expired.");
@@ -176,11 +232,13 @@ public class MyWssServer extends WebSocketServer {
             case REQUEST_CHECK_USER:
                 if(request.has(REQUEST_HASH)) {
                     String hash = request.getString((REQUEST_HASH));
-                    if(checkUsers.containsKey(ip)){
-                        CheckReq check = checkUsers.get(ip);
+                    System.out.println(("HASH:"+hash+":"+ipToCheck));
+                    if(ipToCheck.containsKey(ip)){
+                        CheckReq check = ipToCheck.get(ip);
 
                         MyUser user = null;
                         for(Map.Entry<String,MyUser> x:check.token.users.entrySet()){
+                            System.out.println("CHECK:"+check.control+":"+x.getValue().getDeviceId()+":"+x.getValue().calculateHash(check.control));
                             if(hash.equals(x.getValue().calculateHash(check.control))){
                                 user = x.getValue();
                                 break;
@@ -189,25 +247,41 @@ public class MyWssServer extends WebSocketServer {
                         if(user != null) {
                             System.out.println("USER ACCEPTED:"+user);
                             responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                            responce.put(RESPONSE_NUMBER, user.getNumber());
+                            user.setConnection(conn);
+                            user.setChanged();
+
                             ipToToken.put(ip,check.token);
                             ipToUser.put(ip,user);
 
+                            check.token.sendInitialTo(responce,user);
+
+                            JSONObject o = new JSONObject();//user.getPosition().toJSON();
+                            o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
+                            o.put(USER_COLOR,user.getColor());
+                            o.put(USER_JOINED,user.getNumber());
+                            check.token.sendToAllFrom(o,user);
+
 //                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
 //                            responce.put(RESPONSE_MESSAGE, "User not granted.");
+                        } else {
+                            System.out.println("USER NOT ACCEPTED:"+hash);
+                            if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
+                            if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
+
+                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                            responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not accepted).");
                         }
 
-                        checkUsers.remove(ip);
+                        ipToCheck.remove(ip);
                     } else {
                         responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                        responce.put(RESPONSE_MESSAGE, "Wrong request (user is forgotten or server has been restarted).");
+                        responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not authorized).");
                     }
-
-
                 } else {
                     responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    responce.put(RESPONSE_MESSAGE, "Wrong request (hash not defined).");
+                    responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (hash not defined).");
                 }
-
 
                 System.out.println("WSS:TO:" + responce);
                 conn.send(responce.toString());
@@ -216,11 +290,18 @@ public class MyWssServer extends WebSocketServer {
                     MyToken token = ipToToken.get(ip);
                     MyUser user = ipToUser.get(ip);
 
-                    System.out.println("REQUEST_UPDATE:TOKEN AND USER FOUND:"+token.getId()+"::"+user);
+                    user.addPosition(request);
+                    token.setChanged();
+
+                    JSONObject o = user.getPosition().toJSON();
+                    o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
+                    token.sendToAllFrom(o,user);
+
+                    System.out.println("REQUEST_UPDATE:TOKEN AND USER FOUND:"+token.getId()+":"+user);
                 } else {
                     System.out.println("REQUEST_UPDATE:TOKEN NOT FOUND");
                     responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    responce.put(RESPONSE_MESSAGE, "Token not exists.");
+                    responce.put(RESPONSE_MESSAGE, "Tracking not exists.");
                     conn.send(responce.toString());
                     conn.close();
                 }
@@ -278,8 +359,8 @@ public class MyWssServer extends WebSocketServer {
             MyUser user = t.users.get(id);
             if(user != null){
                 JSONObject response = new JSONObject();
-                response.put(RESPONSE_STATUS,RESPONSE_STATUS_ERROR);
-                response.put(RESPONSE_MESSAGE,"You have been rejected by tracking.");
+                response.put(RESPONSE_STATUS, USER_DISMISSED);
+                response.put(RESPONSE_MESSAGE,"You have been dismissed.");
                 user.send(response);
                 user.disconnect();
                 t.removeUser(id);

@@ -47,21 +47,28 @@ import ru.wtg.whereaminow.helpers.FabMenu;
 import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyCamera;
 import ru.wtg.whereaminow.helpers.MyMarker;
+import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.helpers.UserButtons;
+import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
-import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_ACTION_DISCONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
+import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PERMISSION_LOCATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_ACTIVE;
-import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_DISABLED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -71,12 +78,12 @@ public class MainActivity extends AppCompatActivity
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
     private Intent intent;
-    private FabMenu buttons;
+    private FabMenu fabButtons;
     private Snackbar snackbar;
     private State state;
     private UserButtons userButtons;
 
-    private ArrayList<MyMarker> markers = new ArrayList<>();
+    private int myNumber = 0;
     private ArrayList<MyCamera> cameras = new ArrayList<>();
 
     private boolean serviceBound;
@@ -109,9 +116,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        buttons = (FabMenu) findViewById(R.id.fab);
+        fabButtons = (FabMenu) findViewById(R.id.fab);
 
-        userButtons = new UserButtons();
+        userButtons = new UserButtons(getApplicationContext());
         userButtons.setLayout((LinearLayout) findViewById(R.id.layout_users));
         userButtons.hide();
 
@@ -248,18 +255,18 @@ public class MainActivity extends AppCompatActivity
                 }
                 System.out.println("PERM=" + res);
                 if (res == 0) {
-                    buttons.setPlus();
+                    fabButtons.setPlus();
                     onMapReadyPermitted();
                 } else {
-                    buttons.initAndSetOnClickListener(new View.OnClickListener() {
+                    fabButtons.initAndSetOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            buttons.hideMenu(true);
+                            fabButtons.hideMenu(true);
                             checkPermissions(REQUEST_PERMISSION_LOCATION,
                                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
                         }
                     });
-                    buttons.setGpsOff();
+                    fabButtons.setGpsOff();
                     Toast.makeText(getApplicationContext(), "GPS access is not granted.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -288,8 +295,17 @@ public class MainActivity extends AppCompatActivity
 
         adjustButtonsPositions();
 
+        Location lastLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false));
         cameras.add(new MyCamera(getApplicationContext()));
-        markers.add(new MyMarker(getApplicationContext()).setMyCamera(cameras.get(0)));
+
+        if (lastLocation != null) {
+            state.getUsers().setMe().showDraft(lastLocation);
+            state.getUsers().getMe().setMyCamera(cameras.get(0));
+            userButtons.setMyId(state.getUsers().getMe());
+
+            cameras.get(0).setLocation(lastLocation).update();
+            locationListener.onLocationChanged(lastLocation);
+        }
 
         mMap.setOnMarkerClickListener(onMarkerClickListener);
         mMap.setOnCameraMoveStartedListener(cameras.get(0).onCameraMoveStartedListener);
@@ -298,12 +314,15 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnCameraMoveCanceledListener(cameras.get(0).onCameraMoveCanceledListener);
 //        mMap.setOnMapClickListener(onMapClickListener);
 
-        Location lastLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false));
-        if (lastLocation != null) {
-            markers.get(0).showDraft(lastLocation);
-            cameras.get(0).setLocation(lastLocation).update();
-            locationListener.onLocationChanged(lastLocation);
-        }
+
+        state.getUsers().forAllUsersExceptMe(new MyUsers.Callback(){
+            @Override
+            public void call(Integer number, MyMarker marker) {
+                System.out.println("forAllUsers:"+number);
+
+                marker.createMarker();
+            }
+        });
 
         mMap.setBuildingsEnabled(true);
         mMap.setIndoorEnabled(true);
@@ -312,7 +331,7 @@ public class MainActivity extends AppCompatActivity
             public void onMapClick(LatLng latLng) {
                 if(!DEBUGGING) return;
                 try {
-                    Location location = markers.get(0).getLocation();
+                    Location location = state.getUsers().getMe().getLocation();
                     location.setLatitude(latLng.latitude);
                     location.setLongitude(latLng.longitude);
                     locationListener.onLocationChanged(location);
@@ -328,14 +347,28 @@ public class MainActivity extends AppCompatActivity
         mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
+        if (!fabButtons.isInitialized()) {
+            fabButtons.initAndSetOnClickListener(new View.OnClickListener() {
+                                                  @Override
+                                                  public void onClick(View view) {
+                                                      onFabClick(view.getId());
+                                                  }
+                                              });
+            initSnackbar();
+        }
 
         Intent intent2 = getIntent();
         Uri data = intent2.getData();
         if(data != null){
-            intent.putExtra("mode", "join");
-            String query = data.getEncodedPath().replaceFirst("/track/","");
-            intent.putExtra("token", query);
-            startService(intent);
+            String tokenId = data.getEncodedPath().replaceFirst("/track/","");
+
+            if(state.tracking() && tokenId.equals(state.getToken())) {
+
+            } else {
+                intent.putExtra("mode", "join");
+                intent.putExtra("token", tokenId);
+                startService(intent);
+            }
         }
 
         System.out.println("INTENT:"+data+":"+intent.getType());
@@ -357,28 +390,84 @@ public class MainActivity extends AppCompatActivity
                 if (!o.has(RESPONSE_STATUS)) return;
 
                 switch (o.getString(RESPONSE_STATUS)) {
-                    case BROADCAST_ACTION_DISCONNECTED:
-                        View v = new View(context);
-                        v.setId(R.id.fab_stop_tracking);
-                        onFabClickListener.onClick(v);
-                        state.setStatus(TRACKING_DISABLED);
-                        snackbar.dismiss();
+                    case RESPONSE_STATUS_DISCONNECTED:
                         userButtons.hide();
-                        break;
-                    case RESPONSE_STATUS_ACCEPTED:
-                        state.setToken(o.getString(RESPONSE_TOKEN));
-                        state.setStatus(TRACKING_ACTIVE);
-                        snackbar.dismiss();
-                        userButtons.show();
-                        new InviteSender(MainActivity.this).send(state.getToken());
+                        if(!state.disconnected()) {
+                            onFabClick(R.id.fab_stop_tracking);
+                            userButtons.hide();
+
+                            snackbar.setText("You have been disconnected.").setAction("Reconnect", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    onFabClick(100);
+                                }
+                            }).show();
+                        }
+                        state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                            @Override
+                            public void call(Integer number, MyMarker marker) {
+                                marker.remove();
+                            }
+                        });
 
                         break;
-                    case RESPONSE_STATUS_ERROR:
-                        String message = o.getString(RESPONSE_MESSAGE);
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-                        state.setStatus(TRACKING_DISABLED);
+                    case RESPONSE_STATUS_ACCEPTED:
                         snackbar.dismiss();
+                        userButtons.show();
+
+                        if (o.has(RESPONSE_TOKEN)) {
+                            new InviteSender(MainActivity.this).send(state.getToken());
+                        }
+//                        if (o.has(RESPONSE_NUMBER)) {
+//                            userButtons.setMyId(state.getNumber());
+//                        }
+                        if (o.has(RESPONSE_INITIAL)) {
+                            state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                                @Override
+                                public void call(Integer number, MyMarker marker) {
+                                    marker.update();
+                                    userButtons.add(number,marker);
+                                }
+                            });
+                        }
+                        break;
+                    case RESPONSE_STATUS_ERROR:
                         userButtons.hide();
+
+                        String message = o.getString(RESPONSE_MESSAGE);
+                        if(message == null) message = "Failed join to tracking.";
+                        snackbar.setText(message).setAction("New tracking", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                onFabClick(-1);//R.id.fab_start_tracking_and_send_link);
+                            }
+                        }).show();
+
+                        break;
+                    case RESPONSE_STATUS_UPDATED:
+                        if(o.has(USER_DISMISSED)) {
+                            userButtons.removeUnused(state.getUsers());
+                        } else if(o.has(USER_JOINED)) {
+                            int number = o.getInt(USER_JOINED);
+                            state.getUsers().forUser(number,new MyUsers.Callback() {
+                                @Override
+                                public void call(Integer number, MyMarker marker) {
+                                    marker.update();
+                                    userButtons.add(number,marker);
+                                }
+                            });
+                        }
+                        if(o.has(USER_PROVIDER)){
+                            final Location location = Utils.jsonToLocation(o);
+                            int number = o.getInt(USER_NUMBER);
+                            state.getUsers().forUser(number,new MyUsers.Callback() {
+                                @Override
+                                public void call(Integer number, MyMarker marker) {
+                                    marker.addLocation(location).update();
+                                }
+                            });
+                        }
+
                         break;
                 }
             } catch (JSONException e) {
@@ -393,27 +482,24 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             return false;
         } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_UPDATES_DELAY, 1, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_UPDATES_DELAY, 1, locationListener);
             return true;
         }
     }
 
     private LocationListener locationListener = new LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {
+        public void onLocationChanged(final Location location) {
             System.out.println("onLocationChanged");
 
-            if (!buttons.isInitialized()) {
+            state.getUsers().forMe(new MyUsers.Callback() {
+                @Override
+                public void call(Integer number, MyMarker marker) {
+                    marker.addLocation(location).update();
+                }
+            });
 
-                buttons.initAndSetOnClickListener(onFabClickListener);
-                initSnackbar();
-
-            }
-
-            if (markers.size() > 0) {
-                markers.get(0).addLocation(location);
-            }
             if (cameras.size() > 0) {
                 cameras.get(0).setLocation(location).update();
             }
@@ -422,12 +508,12 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onProviderDisabled(String provider) {
             System.out.println("onProviderDisabled:" + provider);
-            buttons.hideMenuButton(true);
+            fabButtons.hideMenuButton(true);
         }
 
         public void onProviderEnabled(String provider) {
             System.out.println("onProviderEnabled:" + provider);
-            buttons.showMenuButton(true);
+            fabButtons.showMenuButton(true);
         }
 
         @Override
@@ -436,16 +522,14 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    private View.OnClickListener onFabClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
+    private void onFabClick(int id) {
+            switch (id) {
                 case -1:
                     if (state.rejected()) {
                         checkPermissions(REQUEST_PERMISSION_LOCATION,
                                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
                                         android.Manifest.permission.ACCESS_COARSE_LOCATION});
-                    } else if (state.waiting()) {
+                    } else if (state.disconnected()) {
                         System.out.println("fab.onClick:start");
 
                         intent.putExtra("mode", "start");
@@ -457,65 +541,100 @@ public class MainActivity extends AppCompatActivity
                                 System.out.println("snackbar.onClick");
                                 intent.putExtra("mode", "stop");
                                 startService(intent);
-                                buttons.close(true);
+                                fabButtons.close(true);
                             }
                         }).show();
+                    } else if (state.connecting()) {
+                        if (!fabButtons.isOpened()) {
+                            fabButtons.removeAllMenuButtons();
+//                            fabButtons.addMenuButton(fabButtons.navigate);
+                            fabButtons.addMenuButton(fabButtons.cancelTracking);
+                        }
+                        fabButtons.toggle(true);
                     } else if (state.tracking()) {
                         System.out.println("fab.onClick:toggle");
-                        if (!buttons.isOpened()) {
-                            buttons.removeAllMenuButtons();
-                            buttons.addMenuButton(buttons.sendLink);
-//                            buttons.addMenuButton(buttons.navigate);
-                            buttons.addMenuButton(buttons.cancelTracking);
+                        if (!fabButtons.isOpened()) {
+                            fabButtons.removeAllMenuButtons();
+                            fabButtons.addMenuButton(fabButtons.sendLink);
+//                            fabButtons.addMenuButton(fabButtons.navigate);
+                            fabButtons.addMenuButton(fabButtons.cancelTracking);
                         }
-                        buttons.toggle(true);
+                        fabButtons.toggle(true);
                     }
                     break;
+//                case R.id.fab_start_tracking_and_send_link:
+//                    System.out.println("fab_start_tracking_and_send_link");
+//
+//                    System.out.println("snackbar.onClick");
+//                    intent.putExtra("mode", "start");
+//                    startService(intent);
+//                    fabButtons.close(true);
+//
+//                    break;
                 case R.id.fab_send_link:
                     System.out.println("fab_send_link");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     new InviteSender(MainActivity.this).send(state.getToken());
                     break;
                 case R.id.fab_stop_tracking:
                     System.out.println("fab_stop_tracking");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     snackbar.dismiss();
+                    state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                        @Override
+                        public void call(Integer number, MyMarker marker) {
+                            marker.remove();
+                            userButtons.remove(number);
+                        }
+                    });
                     intent.putExtra("mode", "stop");
                     startService(intent);
                     break;
                 case R.id.fab_cancel_tracking:
                     System.out.println("fab_cancel_tracking");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     snackbar.dismiss();
+                    state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                        @Override
+                        public void call(Integer number, MyMarker marker) {
+                            marker.remove();
+                            userButtons.remove(number);
+                        }
+                    });
                     intent.putExtra("mode", "cancel");
                     startService(intent);
                     break;
                 case R.id.fab_switch_to_friend:
                     System.out.println("fab_switch_to_friend");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     break;
                 case R.id.fab_switch_to_me:
                     System.out.println("fab_switch_to_me");
-                    buttons.toggle(true);
+                    fabButtons.toggle(true);
                     break;
                 case R.id.fab_navigate:
                     System.out.println("fab_navigate");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     break;
                 case R.id.fab_show_us:
                     System.out.println("fab_show_us");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     break;
                 case R.id.fab_messages:
                     System.out.println("fab_messages");
-                    buttons.close(true);
+                    fabButtons.close(true);
                     break;
                 case R.id.fab_split_screen:
                     System.out.println("fab_split_screen");
-                    buttons.close(true);
+                    fabButtons.close(true);
+                    break;
+                case 100:
+                    System.out.println("fab_reconnect");
+                    intent.putExtra("mode", "join");
+                    intent.putExtra("token", state.getToken());
+                    startService(intent);
                     break;
             }
-        }
     };
 
     private void adjustButtonsPositions() {
@@ -549,16 +668,19 @@ public class MainActivity extends AppCompatActivity
 
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
-        public boolean onMarkerClick(Marker marker) {
-            MyMarker m = null;
-            for (MyMarker x : markers) {
-                if (marker.getId().equals(x.getMarker().getId())) {
-                    m = x;
-                    break;
+        public boolean onMarkerClick(final Marker marker) {
+            final MyMarker[] m = new MyMarker[1];
+            state.getUsers().forAllUsers(new MyUsers.Callback() {
+                @Override
+                public void call(Integer number, MyMarker user) {
+                    System.out.println("LOOKING MARKER:"+number+":"+marker.getId()+":"+user.getMarker().getId());
+                    if (marker.getId().equals(user.getMarker().getId())) {
+                        m[0] = user;
+                    }
                 }
-            }
-            if (m != null) {
-                m.getMyCamera().nextOrientation();
+            });
+            if (m[0] != null && m[0].getMyCamera() != null) {
+                m[0].getMyCamera().nextOrientation();
             }
             return true;
         }

@@ -3,7 +3,9 @@ package ru.wtg.whereaminow;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 
 import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
@@ -12,6 +14,7 @@ public class WhereAmINowService extends Service {
 
     private ServiceBinder binder = new ServiceBinder();
     private MyTracking tracking;
+    private State state;
 
     private int id;
 
@@ -25,12 +28,12 @@ public class WhereAmINowService extends Service {
         tracking = new MyTracking(WhereAmINowService.this);
         System.out.println("Service:onCreate");
 //to be deleted
-        State state = State.getInstance();
+        state = State.getInstance();
         state.myTracking = tracking;
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
         id = startId;
         String mode = "initial";
         if(intent != null && intent.hasExtra("mode")) mode = intent.getStringExtra("mode");
@@ -39,8 +42,26 @@ public class WhereAmINowService extends Service {
         if("start".equals(mode)){
             tracking.start();
         } else if("join".equals(mode)){
-            String token = intent.getStringExtra("token");
-            tracking.join(token);
+            if(state.tracking()) {
+                tracking.stop();
+            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(!state.disconnected()) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        public void run() {
+                            String token = intent.getStringExtra("token");
+                            tracking.join(token);
+                        }
+                    });
+                }
+            }).start();
         } else if("stop".equals(mode)){
             tracking.stop();
         } else if("cancel".equals(mode)){

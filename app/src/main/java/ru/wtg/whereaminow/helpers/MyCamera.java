@@ -19,6 +19,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_LAST
 import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_NORTH;
 import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_PERSPECTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_ORIENTATION_STAY;
+import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
  * Created by tujger on 9/20/16.
@@ -111,7 +112,7 @@ public class MyCamera {
         }
 
         if(camera != null) {
-            map.animateCamera(camera, 1000, cancelableCallback);
+            map.animateCamera(camera, LOCATION_UPDATES_DELAY, cancelableCallback);
         }
     }
 

@@ -39,11 +39,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="10.0.0.96"
-                    android:pathPrefix="/track/"
-                    android:port="8080"
-                    android:scheme="https" />
+                <data android:host="10.0.0.96"/>
+                <data android:pathPrefix="/track/"/>
+                <data android:port="8080"/>
+                <data android:scheme="https" />
             </intent-filter>
 
         </activity>
