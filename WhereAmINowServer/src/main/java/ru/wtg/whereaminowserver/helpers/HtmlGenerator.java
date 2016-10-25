@@ -95,7 +95,9 @@ public class HtmlGenerator {
                 res += "\n";
                 for (int i = 0; i < level; i++) res += "   ";
             }
-            res += "</" + tag +">";
+            if(!"br".equals(tag)) {
+                res += "</" + tag + ">";
+            }
             return res;
         }
 
@@ -111,6 +113,11 @@ public class HtmlGenerator {
 
         public Tag with(String text){
             inner.add(text);
+            return this;
+        }
+
+        public Tag with(Number number){
+            inner.add(number.toString());
             return this;
         }
 

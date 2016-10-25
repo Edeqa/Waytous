@@ -1,10 +1,20 @@
 package ru.wtg.whereaminowserver.helpers;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
+import org.java_websocket.WebSocket;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
  * Created by tujger on 10/8/16.
@@ -12,10 +22,11 @@ import java.util.Map;
 
 public class MyToken {
     public Map<String,MyUser> users = new HashMap<>();
-    private Long timestamp;
+    private Long created;
     private Long changed;
     private String id;
     private String owner;
+    private int count;
 
     public MyToken(){
 
@@ -24,7 +35,7 @@ public class MyToken {
         System.out.println("NEW TOKEN CREATED:"+token);
 
         this.id = token;
-        timestamp = new Date().getTime();
+        created = new Date().getTime();
     }
     public String getId(){
         return id;
@@ -32,13 +43,27 @@ public class MyToken {
 
     public void addUser(MyUser user){
 
-        user.setToken(id);
+//        user.setToken(id);
         users.put(user.getDeviceId(),user);
+        user.setNumber(count++);
         if(owner == null) setOwner(user.getDeviceId());
+
+        if(user.getColor() == 0){
+            user.setColor(selectColor(user.getNumber()));
+        }
 
         setChanged();
 
         return;
+    }
+
+    private ArrayList<Color> colors = new ArrayList<>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
+            Color.CYAN, Color.YELLOW
+    ));
+
+    private int selectColor(int number) {
+        int color = colors.get(number).getRGB();
+        return color;
     }
 
     public boolean removeUser(String hash){
@@ -63,7 +88,7 @@ public class MyToken {
 
     public String toString(){
         String res = "";
-        res += "Token id:"+id+", owner:"+owner+", timestamp:"+new Date(timestamp);
+        res += "Token id:"+id+", owner:"+owner+", created:"+new Date(created);
 
         for (Map.Entry<String,MyUser> x: users.entrySet()) {
             res += ", \n\tuser: ["+x.getValue().toString()+"]";
@@ -84,4 +109,54 @@ public class MyToken {
         changed = new Date().getTime();
     }
 
+    public boolean isEmpty() {
+        for(Map.Entry<String,MyUser> x:users.entrySet()){
+            if(x.getValue().getAddress() != null){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void sendToAllFrom(JSONObject o, MyUser fromUser) {
+        ArrayList<MyUser> dest = new ArrayList<>();
+        o.put(USER_NUMBER,fromUser.getNumber());
+        for(Map.Entry<String,MyUser> x:users.entrySet()){
+            if(x.getValue() != fromUser){
+                dest.add(x.getValue());
+            }
+        }
+        System.out.println("SENDTOALL:"+o+":"+dest);
+        sendToUsers(o,dest);
+
+    }
+
+    public void sendToUsers(JSONObject o,ArrayList<MyUser> users) {
+        for(MyUser x:users){
+            WebSocket conn = x.getConnection();
+            if(conn != null && conn.isOpen()){
+                conn.send(o.toString());
+            }
+        }
+    }
+
+    public void sendInitialTo(JSONObject initial, MyUser user) {
+        ArrayList<JSONObject> initialUsers = new ArrayList<>();
+        for(Map.Entry<String,MyUser> x:users.entrySet()){
+            if(x.getValue() == user) continue;
+            MyUser.MyPosition p = x.getValue().getPosition();
+            if(p.timestamp > 0 && x.getValue().getConnection().getRemoteSocketAddress() != null){
+                JSONObject o = p.toJSON();
+
+                o.put(RESPONSE_NUMBER,x.getValue().getNumber());
+                o.put(USER_COLOR,x.getValue().getColor());
+                initialUsers.add(o);
+            }
+
+        }
+        if(initialUsers.size()>0){
+            initial.put(RESPONSE_INITIAL,initialUsers);
+        }
+        user.send(initial.toString());
+    }
 }

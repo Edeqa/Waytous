@@ -1,8 +1,21 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.graphics.Color;
+import android.location.Location;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
+
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_LONGITUDE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
  * Created by tujger on 10/8/16.
@@ -97,4 +110,18 @@ public class Utils {
                 };
         }
     }
+
+    public static Location jsonToLocation(JSONObject json) throws JSONException {
+        Location loc = null;
+        loc = new Location(json.getString(USER_PROVIDER));
+        loc.setLatitude(json.getDouble(USER_LATITUDE));
+        loc.setLongitude(json.getDouble(USER_LONGITUDE));
+        loc.setAltitude(json.getDouble(USER_ALTITUDE));
+        loc.setAccuracy((float) json.getDouble(USER_ACCURACY));
+        loc.setBearing((float) json.getDouble(USER_BEARING));
+        loc.setSpeed((float) json.getDouble(USER_SPEED));
+        loc.setTime(json.getLong(USER_TIMESTAMP));
+        return loc;
+    }
+
 }

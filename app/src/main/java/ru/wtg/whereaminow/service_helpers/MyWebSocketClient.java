@@ -16,7 +16,6 @@ import java.util.Date;
 import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.helpers.Utils;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_ACTION_DISCONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -33,6 +32,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CONNECTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
@@ -47,6 +47,7 @@ public class MyWebSocketClient {
     private Context context;
     private WebSocketClient webSocketClient;
     private JSONObject post;
+    private JSONObject builder;
     private MyTracking tracking;
     private String token;
     private boolean wasConnected = false;
@@ -86,6 +87,9 @@ public class MyWebSocketClient {
     }
 
     public void setToken(String token) {
+        if(token == null || !token.equals(this.token)){
+            wasConnected = false;
+        }
         this.token = token;
     }
 
@@ -94,10 +98,7 @@ public class MyWebSocketClient {
     }
 
     public void removeToken() {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .remove(RESPONSE_TOKEN)
-                .remove(RESPONSE_CONTROL)
-                .remove("hash").apply();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().remove(RESPONSE_TOKEN).apply();
         setToken(null);
     }
 
@@ -108,7 +109,7 @@ public class MyWebSocketClient {
 
         @Override
         public void onOpen(ServerHandshake serverHandshake) {
-            System.out.println("WEBSOCKET:OPENED:" + post);
+//            System.out.println("WEBSOCKET:OPENED:" + post);
             /*if (post != null) {
                 webSocketClient.send(post.toString());
                 post = null;
@@ -118,14 +119,14 @@ public class MyWebSocketClient {
         @Override
         public void onMessage(String s) {
             final String message = s;
-            System.out.println("WEBSOCKET:MESSAGE:" + s);
+//            System.out.println("WEBSOCKET:MESSAGE:" + s);
             JSONObject o;
             try {
                 o = new JSONObject(s);
                 if (!o.has(RESPONSE_STATUS)) return;
                 switch (o.getString(RESPONSE_STATUS)) {
                     case RESPONSE_STATUS_CONNECTED:
-                        System.out.println("RESPONSE_STATUS_CONNECTED");
+//                        System.out.println("RESPONSE_STATUS_CONNECTED");
                         if(hasToken()){
                             requestJoinToken();
                         } else {
@@ -136,15 +137,16 @@ public class MyWebSocketClient {
                         checkUser(o);
                         break;
                     case RESPONSE_STATUS_ACCEPTED:
-                        System.out.println("RESPONSE_STATUS_ACCEPTED");
                         tokenAccepted(o);
                         break;
                     case RESPONSE_STATUS_UPDATED:
-                        System.out.println("RESPONSE_STATUS_UPDATED");
+//                        System.out.println("RESPONSE_STATUS_UPDATED");
                         tracking.fromServer(o);
                         break;
                     case RESPONSE_STATUS_ERROR:
-                        System.out.println("RESPONSE_STATUS_ERROR");
+//                        System.out.println("RESPONSE_STATUS_ERROR");
+                        wasConnected = false;
+                        setToken(null);
                         tracking.fromServer(o);
                         break;
                 }
@@ -166,10 +168,10 @@ public class MyWebSocketClient {
 
         @Override
         public void onClose(int i, String s, boolean b) {
-            System.out.println("WEBSOCKET:CLOSED:" + s);
+//            System.out.println("WEBSOCKET:CLOSED:" + s);
             JSONObject o = new JSONObject();
             try {
-                o.put(RESPONSE_STATUS, BROADCAST_ACTION_DISCONNECTED);
+                o.put(RESPONSE_STATUS, RESPONSE_STATUS_DISCONNECTED);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -180,13 +182,13 @@ public class MyWebSocketClient {
 
         @Override
         public void onError(Exception e) {
-            System.out.println("WEBSOCKET:ERROR:" + e.getMessage());
+//            System.out.println("WEBSOCKET:ERROR:" + e.getMessage());
         }
 
     }
 
     private void requestJoinToken() {
-        System.out.println("WEBSOCKET:REQUEST_JOIN_TOKEN:" + getToken());
+//        System.out.println("WEBSOCKET:REQUEST_JOIN_TOKEN:" + getToken());
         put(REQUEST, REQUEST_JOIN_TOKEN);
         put(REQUEST_TOKEN, getToken());
 
@@ -202,7 +204,7 @@ public class MyWebSocketClient {
     }
 
     private void requestNewToken() {
-        System.out.println("WEBSOCKET:REQUEST_NEW_TOKEN");
+//        System.out.println("WEBSOCKET:REQUEST_NEW_TOKEN");
         put(REQUEST, REQUEST_NEW_TOKEN);
 
         put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
@@ -219,7 +221,7 @@ public class MyWebSocketClient {
                 String control = o.getString(RESPONSE_CONTROL);
                 String deviceId = State.getInstance().getDeviceId();
                 String hash = Utils.getEncryptedHash(control + ":" + deviceId);
-
+//                System.out.println("CHECK:"+control+":"+deviceId+":"+hash);
                 put(REQUEST,REQUEST_CHECK_USER);
                 put(REQUEST_HASH,hash);
                 send();
@@ -230,23 +232,20 @@ public class MyWebSocketClient {
     }
 
     private void tokenAccepted(JSONObject o) {
-        System.out.println("RESPONSE_STATUS_ACCEPTED:" + o);
+//        System.out.println("RESPONSE_STATUS_ACCEPTED:" + o);
         wasConnected = true;
         try {
             if (o.has(RESPONSE_TOKEN)) {
                 setToken(o.getString(RESPONSE_TOKEN));
+
                 PreferenceManager.getDefaultSharedPreferences(context).edit()
                         .putString(RESPONSE_TOKEN, getToken()).apply();
             }
-            tracking.fromServer(o);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        tracking.fromServer(o);
     }
-
-
-    private JSONObject builder;
 
     public MyWebSocketClient put(String key, String value) {
         if (builder == null) builder = new JSONObject();
@@ -258,27 +257,7 @@ public class MyWebSocketClient {
         return this;
     }
 
-    public MyWebSocketClient put(String key, Float value) {
-        if (builder == null) builder = new JSONObject();
-        try {
-            builder.put(key, value);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
-
-    public MyWebSocketClient put(String key, Integer value) {
-        if (builder == null) builder = new JSONObject();
-        try {
-            builder.put(key, value);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
-
-    public MyWebSocketClient put(String key, Double value) {
+    public MyWebSocketClient put(String key, Number value) {
         if (builder == null) builder = new JSONObject();
         try {
             builder.put(key, value);
@@ -329,14 +308,14 @@ public class MyWebSocketClient {
 
     public void send(JSONObject o) {
         try {
-            System.out.println("webSocketClient.getReadyState:" + webSocketClient.getReadyState());
+//            System.out.println("webSocketClient.getReadyState:" + webSocketClient.getReadyState());
             switch (webSocketClient.getReadyState()) {
                 case OPEN:
                     o.put("timestamp", new Date().getTime());
                     webSocketClient.send(o.toString());
                     break;
                 case CLOSED:
-                    System.out.println("RECONNECT");
+//                    System.out.println("RECONNECT");
                     o.put("timestamp", new Date().getTime());
 //                o.put("reconnect", "NewToken");
                     post = o;

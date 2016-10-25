@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import java.util.HashMap;
+
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_ACTIVE;
+import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_CONNECTING;
 import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_DISABLED;
 import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_GPS_REJECTED;
 
@@ -20,7 +23,6 @@ public class State {
 
     private int tracking = TRACKING_DISABLED;
 
-
     private static volatile State instance = null;
     private Context context;
     private MainActivity mainContext;
@@ -28,10 +30,12 @@ public class State {
 
     private String deviceId;
     private String token;
+    private int number;
+    private MyUsers users;
     public MyTracking myTracking;
 
     private State() {
-
+        users = new MyUsers(context);
     }
 
     public static State getInstance() {
@@ -46,7 +50,7 @@ public class State {
     }
 
 
-    public boolean waiting(){
+    public boolean disconnected(){
         return tracking == TRACKING_DISABLED;
     }
 
@@ -56,6 +60,10 @@ public class State {
 
     public boolean tracking(){
         return tracking == TRACKING_ACTIVE;
+    }
+
+    public boolean connecting(){
+        return tracking == TRACKING_CONNECTING;
     }
 
 
@@ -82,6 +90,7 @@ public class State {
 
     public void setContext(Context context) {
         this.context = context;
+        users.setContext(context);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -95,5 +104,17 @@ public class State {
 
     public String getToken() {
         return token;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public MyUsers getUsers() {
+        return users;
     }
 }
