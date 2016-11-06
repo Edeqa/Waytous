@@ -18,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
+
 
 /**
  * Created by tujger on 10/5/16.
@@ -75,7 +77,9 @@ public class MyHttpServer implements HttpHandler {
                     tableUser(query.get("token").get(0),query.get("id").get(0));
                 }
 
-            } catch(NullPointerException | JSONException e) {
+            } catch(NullPointerException e) {
+//                e.printStackTrace();
+            } catch(JSONException e) {
 //                e.printStackTrace();
             }
         }
@@ -95,11 +99,14 @@ public class MyHttpServer implements HttpHandler {
     private void header() {
 
         html.addHead().add("title").with("Admin");
-        html.getHead().add("style").with("table {width: 100%; border-style: solid;border-width: 1px; border-spacing:0px; font-family: sans-serif; }");
+        html.getHead().add("style").with("table {width: 100%; border-style: solid;border-width: 1px; border-spacing:0px; font-family: sans-serif; font-size:13px }");
         html.getHead().add("style").with("td {vertical-align:top; }");
         html.getHead().add("meta").with("http-equiv","refresh").with("content",2);
 
         html.addBody();
+
+        html.getBody().add("div").with("Build: "+SERVER_BUILD).with("style","float: right; font-family: sans-serif; font-size: 10px;");
+
     }
 
     private void tableTokens() {
@@ -109,15 +116,17 @@ public class MyHttpServer implements HttpHandler {
         HtmlGenerator.Tag thr = table.add("tr");
         HtmlGenerator.Tag td1 = thr.add("th").with("Token").with("rowspan",2);
         HtmlGenerator.Tag td2 = thr.add("th").with("Owner").with("rowspan",2);
-        HtmlGenerator.Tag td3 = thr.add("th").with("Changed").with("rowspan",2);
+        HtmlGenerator.Tag td3 = thr.add("th").with("Created").with("rowspan",2);
+        HtmlGenerator.Tag td4 = thr.add("th").with("Changed").with("rowspan",2);
 
-        HtmlGenerator.Tag td4 = thr.add("th").with("Users").with("colspan",7);
+        thr.add("th").with("Users").with("colspan",8);
 
         thr = table.add("tr");
-        td4 = thr.add("th").with("#");
+        thr.add("th").with("#");
         thr.add("th").with("DeviceId");
         thr.add("th").with("Address");
         thr.add("th").with("Created");
+        thr.add("th").with("Changed");
         thr.add("th").with("Control");
         thr.add("th").with("Pos");
         thr.add("th").with("X");
@@ -128,7 +137,8 @@ public class MyHttpServer implements HttpHandler {
 
             td1 = tr.add("td").with(x.getKey());
             td2 = tr.add("td").with(x.getValue().getOwner());
-            td3 = tr.add("td").with(new Date(x.getValue().getChanged()).toString());
+            td3 = tr.add("td").with(new Date(x.getValue().getCreated()).toString());
+            td4 = tr.add("td").with(new Date(x.getValue().getChanged()).toString());
 
             int indent = 0;
             for(Map.Entry<String,MyUser> y:x.getValue().users.entrySet()){
@@ -136,6 +146,7 @@ public class MyHttpServer implements HttpHandler {
                 tr.add("td").with(y.getValue().getNumber());
                 tr.add("td").add("a").with(y.getValue().getDeviceId()).with("href","/?list=user&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
                 tr.add("td").with(y.getValue().getAddress());
+                tr.add("td").with(new Date(y.getValue().getCreated()).toString());
                 tr.add("td").with(new Date(y.getValue().getChanged()).toString());
                 tr.add("td").with(y.getValue().getControl());
                 tr.add("td").with(y.getValue().getPositions().size());
@@ -146,6 +157,7 @@ public class MyHttpServer implements HttpHandler {
             td1.with("rowspan",indent);
             td2.with("rowspan",indent);
             td3.with("rowspan",indent);
+            td4.with("rowspan",indent);
         }
     }
 
@@ -277,7 +289,7 @@ public class MyHttpServer implements HttpHandler {
     }
 
     public static Map<String, List<String>> splitQuery(String url) throws UnsupportedEncodingException {
-        final Map<String, List<String>> query_pairs = new LinkedHashMap<>();
+        final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
         String[] a = url.split("\\?");
 
         if(a.length>0) {

@@ -56,10 +56,10 @@ public class MyWssServer extends WebSocketServer {
 
     public MyWssServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
-        tokens = new HashMap<>();
-        ipToToken = new HashMap<>();
-        ipToUser = new HashMap<>();
-        ipToCheck = new HashMap<>();
+        tokens = new HashMap<String, MyToken>();
+        ipToToken = new HashMap<String, MyToken>();
+        ipToUser = new HashMap<String, MyUser>();
+        ipToCheck = new HashMap<String, CheckReq>();
 
         String a = HTTP_SERVER_URL;
 
@@ -124,18 +124,17 @@ public class MyWssServer extends WebSocketServer {
         request = new JSONObject(message);
         if(!request.has(REQUEST)) return;
 
-        switch(request.getString(REQUEST)) {
-            case REQUEST_NEW_TOKEN:
-                String deviceId = "";
-                if (request.has(REQUEST_DEVICE_ID)) {
-                    MyToken token = new MyToken();
-                    MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-                    user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
-                    user.setModel(request.getString(REQUEST_MODEL));
-                    user.setOs(request.getString(REQUEST_OS));
+        String req = request.getString(REQUEST);
+        if(REQUEST_NEW_TOKEN.equals(req)) {
+            if (request.has(REQUEST_DEVICE_ID)) {
+                MyToken token = new MyToken();
+                MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
+                user.setModel(request.getString(REQUEST_MODEL));
+                user.setOs(request.getString(REQUEST_OS));
 
-                    token.addUser(user);
-                    tokens.put(token.getId(), token);
+                token.addUser(user);
+                tokens.put(token.getId(), token);
 
 //                    if(request.has(REQUEST_MODEL)){
 //                        user.setModel(request.getString(REQUEST_MODEL));
@@ -146,70 +145,40 @@ public class MyWssServer extends WebSocketServer {
 //                    if(request.has(REQUEST_OS)){
 //                        user.setOs(request.getString(REQUEST_OS));
 //                    }
-                    responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                    responce.put(RESPONSE_TOKEN, token.getId());
-                    responce.put(RESPONSE_NUMBER, user.getNumber());
+                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                responce.put(RESPONSE_TOKEN, token.getId());
+                responce.put(RESPONSE_NUMBER, user.getNumber());
 
-                    ipToToken.put(ip, token);
-                    ipToUser.put(ip, user);
-                    System.out.println("WSS:TOKEN:" + token);
+                ipToToken.put(ip, token);
+                ipToUser.put(ip, user);
+                System.out.println("WSS:TOKEN:" + token);
 
-                } else {
-                    responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    responce.put(RESPONSE_MESSAGE, "Your device id is not defined");
-                }
+            } else {
+                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                responce.put(RESPONSE_MESSAGE, "Your device id is not defined");
+            }
 
-                System.out.println("WSS:TO:" + responce);
-                conn.send(responce.toString());
-                break;
-            case REQUEST_JOIN_TOKEN:
-                if (request.has(REQUEST_TOKEN)) {
-                    String tokenId = request.getString(REQUEST_TOKEN);
-                    if (tokens.containsKey(tokenId)) {
-                        MyToken token = tokens.get(tokenId);
+            System.out.println("WSS:TO:" + responce);
 
-                        if(request.has(REQUEST_DEVICE_ID)){
-                            String deviceId1 = request.getString(REQUEST_DEVICE_ID);
-                            MyUser user = null;
-                            for(Map.Entry<String,MyUser> x:token.users.entrySet()){
-                                if(deviceId1.equals(x.getValue().getDeviceId())){
-                                    user = x.getValue();
-                                    break;
-                                }
+            Utils.pause(2);
+
+            conn.send(responce.toString());
+        } else if(REQUEST_JOIN_TOKEN.equals(req)){
+            if (request.has(REQUEST_TOKEN)) {
+                String tokenId = request.getString(REQUEST_TOKEN);
+                if (tokens.containsKey(tokenId)) {
+                    MyToken token = tokens.get(tokenId);
+
+                    if(request.has(REQUEST_DEVICE_ID)){
+                        String deviceId1 = request.getString(REQUEST_DEVICE_ID);
+                        MyUser user = null;
+                        for(Map.Entry<String,MyUser> x:token.users.entrySet()){
+                            if(deviceId1.equals(x.getValue().getDeviceId())){
+                                user = x.getValue();
+                                break;
                             }
-                            if(user != null) {
-                                CheckReq check = new CheckReq();
-                                check.control = Utils.getUnique();
-                                check.token = token;
-
-                                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
-                                responce.put(RESPONSE_CONTROL,check.control);
-                                ipToCheck.put(ip,check);
-                            } else {
-
-                                user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-                                user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
-                                user.setModel(request.getString(REQUEST_MODEL));
-                                user.setOs(request.getString(REQUEST_OS));
-                                token.addUser(user);
-
-                                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                                responce.put(RESPONSE_NUMBER, user.getNumber());
-
-                                ipToToken.put(ip, token);
-                                ipToUser.put(ip, user);
-
-                                token.sendInitialTo(responce,user);
-
-                                JSONObject o = new JSONObject();
-                                o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
-                                o.put(USER_COLOR,user.getColor());
-                                o.put(USER_JOINED,user.getNumber());
-
-                                token.sendToAllFrom(o,user);
-                            }
-
-                        } else {
+                        }
+                        if(user != null) {
                             CheckReq check = new CheckReq();
                             check.control = Utils.getUnique();
                             check.token = token;
@@ -217,96 +186,127 @@ public class MyWssServer extends WebSocketServer {
                             responce.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                             responce.put(RESPONSE_CONTROL,check.control);
                             ipToCheck.put(ip,check);
-                        }
-                    } else {
-                        responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                        responce.put(RESPONSE_MESSAGE, "This tracking is expired.");
-                    }
-                } else {
-                    responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    responce.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
-                }
-                System.out.println("WSS:TO:" + responce);
-                conn.send(responce.toString());
-                break;
-            case REQUEST_CHECK_USER:
-                if(request.has(REQUEST_HASH)) {
-                    String hash = request.getString((REQUEST_HASH));
-                    System.out.println(("HASH:"+hash+":"+ipToCheck));
-                    if(ipToCheck.containsKey(ip)){
-                        CheckReq check = ipToCheck.get(ip);
+                        } else {
 
-                        MyUser user = null;
-                        for(Map.Entry<String,MyUser> x:check.token.users.entrySet()){
-                            System.out.println("CHECK:"+check.control+":"+x.getValue().getDeviceId()+":"+x.getValue().calculateHash(check.control));
-                            if(hash.equals(x.getValue().calculateHash(check.control))){
-                                user = x.getValue();
-                                break;
-                            }
-                        }
-                        if(user != null) {
-                            System.out.println("USER ACCEPTED:"+user);
+                            user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                            user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
+                            user.setModel(request.getString(REQUEST_MODEL));
+                            user.setOs(request.getString(REQUEST_OS));
+                            token.addUser(user);
+
                             responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
                             responce.put(RESPONSE_NUMBER, user.getNumber());
-                            user.setConnection(conn);
-                            user.setChanged();
 
-                            ipToToken.put(ip,check.token);
-                            ipToUser.put(ip,user);
+                            ipToToken.put(ip, token);
+                            ipToUser.put(ip, user);
 
-                            check.token.sendInitialTo(responce,user);
+                            token.sendInitialTo(responce,user);
 
-                            JSONObject o = new JSONObject();//user.getPosition().toJSON();
+                            JSONObject o = new JSONObject();
                             o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
                             o.put(USER_COLOR,user.getColor());
                             o.put(USER_JOINED,user.getNumber());
-                            check.token.sendToAllFrom(o,user);
 
-//                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-//                            responce.put(RESPONSE_MESSAGE, "User not granted.");
-                        } else {
-                            System.out.println("USER NOT ACCEPTED:"+hash);
-                            if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
-                            if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
-
-                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                            responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not accepted).");
+                            token.sendToAllFrom(o,user);
+                            return;
                         }
 
-                        ipToCheck.remove(ip);
                     } else {
-                        responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                        responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not authorized).");
+                        CheckReq check = new CheckReq();
+                        check.control = Utils.getUnique();
+                        check.token = token;
+
+                        responce.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
+                        responce.put(RESPONSE_CONTROL,check.control);
+                        ipToCheck.put(ip,check);
                     }
                 } else {
                     responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (hash not defined).");
+                    responce.put(RESPONSE_MESSAGE, "This tracking is expired.");
                 }
+            } else {
+                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                responce.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
+            }
+            System.out.println("WSS:TO:" + responce);
+            conn.send(responce.toString());
+        } else if(REQUEST_CHECK_USER.equals(req)){
+            if(request.has(REQUEST_HASH)) {
+                String hash = request.getString((REQUEST_HASH));
+                System.out.println(("HASH:"+hash+":"+ipToCheck));
+                if(ipToCheck.containsKey(ip)){
+                    CheckReq check = ipToCheck.get(ip);
 
-                System.out.println("WSS:TO:" + responce);
-                conn.send(responce.toString());
-            case REQUEST_UPDATE:
-                if(ipToToken.containsKey(ip)){
-                    MyToken token = ipToToken.get(ip);
-                    MyUser user = ipToUser.get(ip);
+                    MyUser user = null;
+                    for(Map.Entry<String,MyUser> x:check.token.users.entrySet()){
+                        System.out.println("CHECK:"+check.control+":"+x.getValue().getDeviceId()+":"+x.getValue().calculateHash(check.control));
+                        if(hash.equals(x.getValue().calculateHash(check.control))){
+                            user = x.getValue();
+                            break;
+                        }
+                    }
+                    if(user != null) {
+                        System.out.println("USER ACCEPTED:"+user);
+                        responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                        responce.put(RESPONSE_NUMBER, user.getNumber());
+                        user.setConnection(conn);
+                        user.setChanged();
 
-                    user.addPosition(request);
-                    token.setChanged();
+                        ipToToken.put(ip,check.token);
+                        ipToUser.put(ip,user);
 
-                    JSONObject o = user.getPosition().toJSON();
-                    o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
-                    token.sendToAllFrom(o,user);
+                        check.token.sendInitialTo(responce,user);
 
-                    System.out.println("REQUEST_UPDATE:TOKEN AND USER FOUND:"+token.getId()+":"+user);
+                        JSONObject o = new JSONObject();//user.getPosition().toJSON();
+                        o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
+                        o.put(USER_COLOR,user.getColor());
+                        o.put(USER_JOINED,user.getNumber());
+                        check.token.sendToAllFrom(o,user);
+
+//                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+//                            responce.put(RESPONSE_MESSAGE, "User not granted.");
+                    } else {
+                        System.out.println("USER NOT ACCEPTED:"+hash);
+                        if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
+                        if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
+
+                        responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                        responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not accepted).");
+                    }
+
+                    ipToCheck.remove(ip);
                 } else {
-                    System.out.println("REQUEST_UPDATE:TOKEN NOT FOUND");
                     responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    responce.put(RESPONSE_MESSAGE, "Tracking not exists.");
-                    conn.send(responce.toString());
-                    conn.close();
+                    responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not authorized).");
                 }
+            } else {
+                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                responce.put(RESPONSE_MESSAGE, "Cannot join to tracking (hash not defined).");
+            }
 
-                break;
+            System.out.println("WSS:TO:" + responce);
+            Utils.pause(2);
+            conn.send(responce.toString());
+        } else if(REQUEST_UPDATE.equals(req)) {
+            if (ipToToken.containsKey(ip)) {
+                MyToken token = ipToToken.get(ip);
+                MyUser user = ipToUser.get(ip);
+
+                user.addPosition(request);
+                token.setChanged();
+
+                JSONObject o = user.getPosition().toJSON();
+                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                token.sendToAllFrom(o, user);
+
+                System.out.println("REQUEST_UPDATE:TOKEN AND USER FOUND:" + token.getId() + ":" + user);
+            } else {
+                System.out.println("REQUEST_UPDATE:TOKEN NOT FOUND");
+                responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                responce.put(RESPONSE_MESSAGE, "Tracking not exists.");
+                conn.send(responce.toString());
+                conn.close();
+            }
 //        this.sendToAll(message, conn);
         }
     }
@@ -317,6 +317,10 @@ public class MyWssServer extends WebSocketServer {
         if (conn != null) {
             System.out.println("WSS:ONERROR:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
 
+            String ip = conn.getRemoteSocketAddress().toString();
+            if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
+            if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
+            if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
             // some errors like port binding failed may not be assignable to a specific websocket
         }
     }

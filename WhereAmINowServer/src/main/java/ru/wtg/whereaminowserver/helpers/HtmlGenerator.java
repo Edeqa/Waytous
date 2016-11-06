@@ -49,8 +49,8 @@ public class HtmlGenerator {
         String tag;
         String text;
 
-        ArrayList<Object> inner = new ArrayList<>();
-        Map<String,String> properties = new HashMap<>();
+        ArrayList<Object> inner = new ArrayList<Object>();
+        Map<String,String> properties = new HashMap<String,String>();
 
         public Tag(String tag){
             this.tag = tag;

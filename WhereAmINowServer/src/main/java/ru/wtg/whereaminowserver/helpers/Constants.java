@@ -4,15 +4,39 @@ package ru.wtg.whereaminowserver.helpers;
  * Created by tujger on 10/14/16.
  */
 public class Constants {
-//        public final static String WSS_SERVER_URL = "wss://10.0.0.96:8081";
-//    public final static boolean DEBUGGING = true;
+    public final static int SERVER_BUILD = 3;
+
+// device debug local version
+/*
+    public final static String WSS_SERVER_URL = "wss://10.0.0.96:8081";
+    public final static boolean DEBUGGING = true;
+    public final static String HTTP_SERVER_URL = "https://10.0.0.96:8080";
+*/
+
+// emulator local version
     public final static String WSS_SERVER_URL = "wss://192.168.56.1:8081";
     public final static boolean DEBUGGING = false;
-
     public final static String HTTP_SERVER_URL = "https://10.0.0.96:8080";
+
+// emulator internet version
+/*
+    public final static String WSS_SERVER_URL = "wss://inchem.kstu.ru:8081";
+    public final static boolean DEBUGGING = false;
+    public final static String HTTP_SERVER_URL = "https://inchem.kstu.ru:8080";
+*/
+
+// device debug internet version
+/*
+    public final static String WSS_SERVER_URL = "wss://inchem.kstu.ru:8081";
+    public final static boolean DEBUGGING = true;
+    public final static String HTTP_SERVER_URL = "https://inchem.kstu.ru:8080";
+*/
+
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
     public final static String BROADCAST_MESSAGE = "message";
+
     public final static int REQUEST_PERMISSION_LOCATION = 1;
+    public final static int REQUEST_PERMISSION_LOCATION_ONRESUME = 2;
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
 

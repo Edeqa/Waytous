@@ -21,7 +21,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
  */
 
 public class MyToken {
-    public Map<String,MyUser> users = new HashMap<>();
+    public Map<String,MyUser> users = new HashMap<String,MyUser>();
     private Long created;
     private Long changed;
     private String id;
@@ -57,7 +57,7 @@ public class MyToken {
         return;
     }
 
-    private ArrayList<Color> colors = new ArrayList<>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
+    private ArrayList<Color> colors = new ArrayList<Color>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
             Color.CYAN, Color.YELLOW
     ));
 
@@ -101,6 +101,10 @@ public class MyToken {
         return changed;
     }
 
+    public Long getCreated() {
+        return changed;
+    }
+
     public void setChanged(Long changed) {
         this.changed = changed;
     }
@@ -119,7 +123,7 @@ public class MyToken {
     }
 
     public void sendToAllFrom(JSONObject o, MyUser fromUser) {
-        ArrayList<MyUser> dest = new ArrayList<>();
+        ArrayList<MyUser> dest = new ArrayList<MyUser>();
         o.put(USER_NUMBER,fromUser.getNumber());
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue() != fromUser){
@@ -141,7 +145,7 @@ public class MyToken {
     }
 
     public void sendInitialTo(JSONObject initial, MyUser user) {
-        ArrayList<JSONObject> initialUsers = new ArrayList<>();
+        ArrayList<JSONObject> initialUsers = new ArrayList<JSONObject>();
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue() == user) continue;
             MyUser.MyPosition p = x.getValue().getPosition();

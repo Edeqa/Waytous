@@ -39,7 +39,7 @@ public class MyUser {
         this.webSocket = webSocket;
         this.deviceId = deviceId;
         created = new Date().getTime();
-        positions = new ArrayList<>();
+        positions = new ArrayList<MyPosition>();
 
         newControl();
         System.out.println("USER CONTROL:" + control);

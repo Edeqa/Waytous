@@ -2,15 +2,12 @@ package ru.wtg.whereaminow.service_helpers;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.NotificationCompat;
 
 import org.json.JSONArray;
@@ -19,7 +16,8 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
-import ru.wtg.whereaminow.helpers.MyMarker;
+import ru.wtg.whereaminow.WhereAmINowService;
+import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.helpers.Utils;
@@ -28,7 +26,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
@@ -42,7 +39,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_DISABLED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
@@ -62,17 +58,14 @@ public class MyTracking {
     private State state;
     private MyWebSocketClient webClient;
     private LocationManager locationManager = null;
-    private Service context;
 
-    public MyTracking(Service service) {
-        this.context = service;
+    public MyTracking() {
 
         state = State.getInstance();
         state.setStatus(TRACKING_DISABLED);
         webClient = MyWebSocketClient.getInstance(WSS_SERVER_URL);
-        webClient.setContext(service);
         webClient.setTracking(this);
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) state.getApplication().getSystemService(Context.LOCATION_SERVICE);
 
     }
 
@@ -119,28 +112,46 @@ public class MyTracking {
     }
 
     public void start() {
+        state.setToken(null);
+        webClient.setToken(null);
+        doTrack();
+    }
+
+    public void join(String token) {
+        state.setToken(token);
+        webClient.setToken(token);
+        doTrack();
+    }
+
+    private void doTrack(){
         state.setStatus(TRACKING_CONNECTING);
 
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent notificationIntent = new Intent(state.getApplication(), MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(state.getApplication(), 0, notificationIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(context)
+        Notification notification = new NotificationCompat.Builder(state.getApplication())
                 .setSmallIcon(R.drawable.ic_navigation_twinks_white_24dp)
-                .setContentTitle(context.getString(R.string.app_name))
+                .setContentTitle(state.getApplication().getString(R.string.app_name))
                 .setContentText("Doing some work...")
-                .setContentIntent(pendingIntent).build();
+                .setAutoCancel(true)
+                .addAction(R.drawable.ic_navigation_twinks_black_24dp, "View tracking", pendingIntent)
+                .addAction(R.drawable.ic_clear_black_24dp, "Stop tracking",
+                        PendingIntent.getService(state.getApplication(), (int) System.currentTimeMillis(), new Intent(state.getApplication(), WhereAmINowService.class).putExtra("mode", "stop"),0))
+                .setContentIntent(pendingIntent)
+                .build();
 
-        context.startForeground(1976, notification);
+        state.setNotification(notification);
 
-        webClient.setToken(null);
+        state.getService().startForeground(1976, notification);
+
         webClient.start();
         enableLocationManager();
     }
 
     public void stop() {
-        context.stopForeground(true);
+        state.getService().stopForeground(true);
         state.setStatus(TRACKING_DISABLED);
         webClient.stop();
 
@@ -161,7 +172,7 @@ public class MyTracking {
         try {
             switch (o.getString(RESPONSE_STATUS)) {
                 case RESPONSE_STATUS_DISCONNECTED:
-                    state.setStatus(TRACKING_DISABLED);
+//                    state.setStatus(TRACKING_DISABLED);
                     break;
                 case RESPONSE_STATUS_ACCEPTED:
                     state.setStatus(TRACKING_ACTIVE);
@@ -169,8 +180,7 @@ public class MyTracking {
                         state.setToken(o.getString(RESPONSE_TOKEN));
                     }
                     if (o.has(RESPONSE_NUMBER)) {
-                        int newNumber = o.getInt(RESPONSE_NUMBER);
-                        state.getUsers().setMyNumber(newNumber);
+                        state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
                     }
                     if (o.has(RESPONSE_INITIAL)) {
                         JSONArray initialUsers = o.getJSONArray(RESPONSE_INITIAL);
@@ -182,7 +192,8 @@ public class MyTracking {
                     }
                     break;
                 case RESPONSE_STATUS_ERROR:
-                    state.setStatus(TRACKING_DISABLED);
+                    stop();
+//                    state.setStatus(TRACKING_DISABLED);
                     break;
                 case RESPONSE_STATUS_UPDATED:
 //                        System.out.println("RESPONSE_STATUS_UPDATED:"+o);
@@ -191,13 +202,9 @@ public class MyTracking {
                         int number = o.getInt(USER_DISMISSED);
                         state.getUsers().forUser(number,new MyUsers.Callback() {
                             @Override
-                            public void call(Integer number, final MyMarker marker) {
+                            public void call(Integer number, final MyUser marker) {
                                 System.out.println("DISMISS:"+number+":"+marker);
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    public void run() {
-                                        marker.remove();
-                                    }
-                                });
+                                marker.hide();
 
                             }
                         });
@@ -211,7 +218,7 @@ public class MyTracking {
 
                         state.getUsers().forUser(number,new MyUsers.Callback() {
                             @Override
-                            public void call(Integer number, MyMarker marker) {
+                            public void call(Integer number, MyUser marker) {
                                 marker.addLocation(location);
                             }
                         });
@@ -221,32 +228,9 @@ public class MyTracking {
         }catch(JSONException e){
             e.printStackTrace();
         }
-        context.sendBroadcast(new Intent(BROADCAST)
+        state.getApplication().sendBroadcast(new Intent(BROADCAST)
                 .putExtra(BROADCAST_MESSAGE, o.toString()));
 
     }
 
-    public void join(String token) {
-
-        state.setStatus(TRACKING_CONNECTING);
-        state.setToken(token);
-
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_navigation_twinks_white_24dp)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("Doing some work...")
-                .setContentIntent(pendingIntent).build();
-
-        context.startForeground(1976, notification);
-
-//        System.out.println("SETTOKEN:" + token);
-        webClient.setToken(token);
-        webClient.start();
-        enableLocationManager();
-    }
 }
