@@ -75,5 +75,12 @@ public class Utils {
         return token;
     }
 
+    public static void pause(int i) {
+        try {
+            Thread.sleep(i*1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

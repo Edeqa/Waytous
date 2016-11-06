@@ -32,6 +32,7 @@ public class MyCamera {
     private Location location;
     private CameraUpdate camera;
     private CameraPosition.Builder position;
+    private MyUser user;
 
     private float bearing;
     private float tilt;
@@ -57,7 +58,7 @@ public class MyCamera {
 
     }
 
-    public void update(){
+    public MyCamera update(){
         if(orientationChanged){
             switch (orientation){
                 case CAMERA_ORIENTATION_NORTH:
@@ -110,9 +111,17 @@ public class MyCamera {
         }catch(Exception e){
             System.out.println("Error CameraUpdateFactory: "+e.getMessage());
         }
+        return this;
+    }
 
+    public void animate(){
         if(camera != null) {
             map.animateCamera(camera, LOCATION_UPDATES_DELAY, cancelableCallback);
+        }
+    }
+    public void force(){
+        if(camera != null) {
+            map.moveCamera(camera);
         }
     }
 
@@ -190,7 +199,7 @@ public class MyCamera {
                 setOrientation(getPreviousOrientation());
             }
 //            setZoom(CAMERA_DEFAULT_ZOOM);
-            update();
+            update().animate();
             return false;
         }
     };
@@ -253,7 +262,7 @@ public class MyCamera {
         previousOrientation = orientation;
         moveFromHardware = true;
         setOrientation(orientation);
-        update();
+        update().animate();
         return orientation;
     }
 
@@ -304,4 +313,11 @@ public class MyCamera {
         return previousOrientation;
     }
 
+    public MyUser getUser() {
+        return user;
+    }
+
+    public void setUser(MyUser user) {
+        this.user = user;
+    }
 }

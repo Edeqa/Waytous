@@ -2,15 +2,14 @@ package ru.wtg.whereaminow.helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -28,28 +27,31 @@ import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 /**
  * Created by tujger on 9/18/16.
  */
-public class MyMarker {
-
+public class MyUser {
 
     private static GoogleMap map;
-    private Context context;
-    private MyCamera myCamera;
+    private static Context context;
 
+    private MyCamera myCamera;
+    private GoogleMap currentMap;
     private Marker marker;
-    private int color;
     private ArrayList<Location> locations;
     private Location location;
 
+    private int color;
     private boolean draft;
 
-    private MyMarker(){
+    public MyUser(){
         locations = new ArrayList<>();
         color = Color.BLUE;
     }
 
-    public MyMarker(Context context){
-        this();
-        setContext(context);
+    public static void setMap(GoogleMap map) {
+        MyUser.map = map;
+    }
+
+    public static void setContext(Context context) {
+        MyUser.context = context;
     }
 
     public void showDraft(Location location){
@@ -67,7 +69,7 @@ public class MyMarker {
         update();
     }
 
-    public MyMarker addLocation(Location location) {
+    public MyUser addLocation(Location location) {
         locations.add(location);
         setLocation(location);
         return this;
@@ -75,25 +77,15 @@ public class MyMarker {
     }
 
     public void createMarker(){
-        Drawable drawable;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            drawable = context.getResources().getDrawable(R.drawable.navigation_marker,context.getTheme());
-        } else {
-            drawable = /*ContextCompat.getDrawable(context, R.drawable.navigation_marker);*/ context.getResources().getDrawable(R.drawable.navigation_marker);
-
-        }
+        Bitmap bitmap;
+        int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
         if(isDraft()) {
-            drawable.setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(Color.GRAY)));
+            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,Color.GRAY,size,size);
         } else {
-            drawable.setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(color)));
+            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,color,size,size);
         }
-        Canvas canvas = new Canvas();
 
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        drawable.draw(canvas);
-
+        currentMap = map;
         marker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(location.getLatitude(), location.getLongitude()))
                 .rotation(location.getBearing())
@@ -108,6 +100,11 @@ public class MyMarker {
 
     public void update(){
         if(locations.size()==0) return;
+
+        if(marker != null && map != currentMap){
+            marker.remove();
+            marker = null;
+        }
         if(marker != null && isDraft()){
             marker.remove();
             setDraft(false);
@@ -135,6 +132,7 @@ public class MyMarker {
 
             @Override
             public void run() {
+//                if(marker == null) return;
                 elapsed = SystemClock.uptimeMillis() - start;
                 t = elapsed / durationInMs;
                 v = interpolator.getInterpolation(t);
@@ -145,26 +143,21 @@ public class MyMarker {
 
                 float rot = v * finalRotation + (1 - v) * startRotation;
 
-                marker.setRotation(-rot > 180 ? rot/2 : rot);
-                marker.setPosition(currentPosition);
+                if(marker != null) {
+                    marker.setRotation(-rot > 180 ? rot / 2 : rot);
+                    marker.setPosition(currentPosition);
+                }
 
                 if (t < 1) {
                     handler.postDelayed(this, 16);
                 }
             }
         });
-    }
 
-    private void setContext(Context context) {
-        this.context = context;
-    }
+        if(myCamera != null){
+            myCamera.setLocation(location).update().animate();
+        }
 
-    public static GoogleMap getMap() {
-        return map;
-    }
-
-    public static void setMap(GoogleMap map) {
-        MyMarker.map = map;
     }
 
     public int getColor() {
@@ -195,8 +188,22 @@ public class MyMarker {
         return myCamera;
     }
 
-    public MyMarker setMyCamera(MyCamera myCamera) {
+    public MyUser setMyCamera(MyCamera myCamera) {
+        if(this.myCamera == myCamera) {
+            return this;
+        } else if(this.myCamera != null) {
+            this.myCamera.setUser(null);
+        }
+        if(myCamera != null){
+            if(myCamera.getUser() != null){
+                myCamera.getUser().setMyCamera(null);
+            }
+            myCamera.setUser(this);
+        }
         this.myCamera = myCamera;
+        if(location != null && myCamera != null) {
+            myCamera.setLocation(location).update().animate();
+        }
         return this;
     }
 
@@ -204,15 +211,26 @@ public class MyMarker {
         return marker;
     }
 
-    public void remove(){
+    public void hide(){
         if(marker != null) {
             try {
-                marker.remove();
-                marker = null;
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    public void run() {
+                        marker.remove();
+                        marker = null;
+                    }
+                });
             }catch(Exception e){
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getId(){
+        if(marker != null){
+            return marker.getId();
+        }
+        return null;
     }
 
 }

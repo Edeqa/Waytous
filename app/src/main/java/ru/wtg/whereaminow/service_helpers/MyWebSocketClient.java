@@ -44,8 +44,8 @@ public class MyWebSocketClient {
 
     private static URI uri;
     private static volatile MyWebSocketClient instance = null;
-    private Context context;
     private WebSocketClient webSocketClient;
+    private State state;
     private JSONObject post;
     private JSONObject builder;
     private MyTracking tracking;
@@ -54,7 +54,7 @@ public class MyWebSocketClient {
 
     private MyWebSocketClient(URI serverURI) {
         webSocketClient = new MWebSocketClient(serverURI);
-
+        state = State.getInstance();
     }
 
     public static MyWebSocketClient getInstance(String serverURI) {
@@ -78,10 +78,6 @@ public class MyWebSocketClient {
         this.tracking = tracking;
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
     public String getToken() {
         return token;
     }
@@ -98,7 +94,7 @@ public class MyWebSocketClient {
     }
 
     public void removeToken() {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().remove(RESPONSE_TOKEN).apply();
+        PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit().remove(RESPONSE_TOKEN).apply();
         setToken(null);
     }
 
@@ -139,6 +135,7 @@ public class MyWebSocketClient {
                     case RESPONSE_STATUS_ACCEPTED:
                         tokenAccepted(o);
                         break;
+                    case RESPONSE_STATUS_DISCONNECTED:
                     case RESPONSE_STATUS_UPDATED:
 //                        System.out.println("RESPONSE_STATUS_UPDATED");
                         tracking.fromServer(o);
@@ -176,7 +173,6 @@ public class MyWebSocketClient {
                 e.printStackTrace();
             }
             tracking.fromServer(o);
-            webSocketClient = new MWebSocketClient(uri);
 //            tracking.stop();
         }
 
@@ -238,7 +234,7 @@ public class MyWebSocketClient {
             if (o.has(RESPONSE_TOKEN)) {
                 setToken(o.getString(RESPONSE_TOKEN));
 
-                PreferenceManager.getDefaultSharedPreferences(context).edit()
+                PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit()
                         .putString(RESPONSE_TOKEN, getToken()).apply();
             }
         } catch (JSONException e) {
@@ -344,11 +340,10 @@ public class MyWebSocketClient {
     public void stop() {
 //        if(webSocketClient.getReadyState())
         webSocketClient.close();
-
-
     }
 
     public void start() {
+        webSocketClient = new MWebSocketClient(uri);
         webSocketClient.connect();
     }
 

@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.helpers.FabMenu;
 import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyCamera;
-import ru.wtg.whereaminow.helpers.MyMarker;
+import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.helpers.UserButtons;
@@ -57,8 +57,10 @@ import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PERMISSION_LOCATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PERMISSION_LOCATION_ONRESUME;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 
     private DrawerLayout drawer;
     private LocationManager locationManager;
-    private GoogleMap mMap;
+    private GoogleMap map;
     private SupportMapFragment mapFragment;
     private Intent intent;
     private FabMenu fabButtons;
@@ -83,7 +85,6 @@ public class MainActivity extends AppCompatActivity
     private State state;
     private UserButtons userButtons;
 
-    private int myNumber = 0;
     private ArrayList<MyCamera> cameras = new ArrayList<>();
 
     private boolean serviceBound;
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        System.out.println("onCreate:Activity");
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -104,7 +105,8 @@ public class MainActivity extends AppCompatActivity
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         state = State.getInstance();
-        state.setMainContext(this);
+        state.setApplication(getApplicationContext());
+        state.setActivity(this);
         state.checkDeviceId();
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -138,9 +140,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if(enableLocationManager()) {
-            if (state.tracking()) userButtons.show();
-        }
+
+        checkPermissions(REQUEST_PERMISSION_LOCATION_ONRESUME,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+
     }
 
     @Override
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity
             unbindService(serviceConnection);
             serviceBound = false;
         }
+        state.setActivity(null);
     }
 
     @Override
@@ -212,19 +216,19 @@ public class MainActivity extends AppCompatActivity
                 System.out.println("nav_settings");
                 break;
             case R.id.nav_traffic:
-                mMap.setTrafficEnabled(!mMap.isTrafficEnabled());
+                map.setTrafficEnabled(!map.isTrafficEnabled());
                 break;
             case R.id.nav_satellite:
-                if (mMap.getMapType() != GoogleMap.MAP_TYPE_SATELLITE)
-                    mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                if (map.getMapType() != GoogleMap.MAP_TYPE_SATELLITE)
+                    map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 else
-                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 break;
             case R.id.nav_terrain:
-                if (mMap.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
-                    mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                if (map.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
+                    map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                 else
-                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 break;
         }
 
@@ -234,7 +238,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        map = googleMap;
 
         checkPermissions(REQUEST_PERMISSION_LOCATION,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
@@ -271,6 +275,11 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 break;
+            case REQUEST_PERMISSION_LOCATION_ONRESUME:
+                if(enableLocationManager()) {
+                    if (state.tracking()) userButtons.show();
+                }
+                break;
         }
     }
 
@@ -286,47 +295,58 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+
+    public GoogleMap getMap(){
+        return map;
+    }
+
     public void onMapReadyPermitted() {
         System.out.println("onMapReadyPermitted");
         if(!enableLocationManager()) return;
 
-        MyMarker.setMap(mMap);
-        MyCamera.setMap(mMap);
+        MyCamera.setMap(map);
+        MyUser.setContext(getApplicationContext());
+        MyUser.setMap(map);
 
         adjustButtonsPositions();
 
         Location lastLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), false));
         cameras.add(new MyCamera(getApplicationContext()));
 
+        state.getUsers().setMe();
         if (lastLocation != null) {
-            state.getUsers().setMe().showDraft(lastLocation);
+            state.getUsers().getMe().showDraft(lastLocation);
             state.getUsers().getMe().setMyCamera(cameras.get(0));
-            userButtons.setMyId(state.getUsers().getMe());
 
-            cameras.get(0).setLocation(lastLocation).update();
+            cameras.get(0).setLocation(lastLocation).update().force();
             locationListener.onLocationChanged(lastLocation);
         }
-
-        mMap.setOnMarkerClickListener(onMarkerClickListener);
-        mMap.setOnCameraMoveStartedListener(cameras.get(0).onCameraMoveStartedListener);
-        mMap.setOnCameraMoveListener(cameras.get(0).onCameraMoveListener);
-        mMap.setOnCameraIdleListener(cameras.get(0).onCameraIdleListener);
-        mMap.setOnCameraMoveCanceledListener(cameras.get(0).onCameraMoveCanceledListener);
-//        mMap.setOnMapClickListener(onMapClickListener);
-
-
-        state.getUsers().forAllUsersExceptMe(new MyUsers.Callback(){
+        userButtons.setOnClickCallback(new UserButtons.Callback() {
             @Override
-            public void call(Integer number, MyMarker marker) {
-                System.out.println("forAllUsers:"+number);
-
-                marker.createMarker();
+            public void call(MyUser marker) {
+                marker.setMyCamera(cameras.get(0));
             }
         });
 
-        mMap.setBuildingsEnabled(true);
-        mMap.setIndoorEnabled(true);
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+            @Override
+            public void call(Integer number, MyUser marker) {
+                marker.update();
+            }
+        });
+        userButtons.synchronizeWith(state.getUsers());
+
+        map.setOnMarkerClickListener(onMarkerClickListener);
+        map.setOnCameraMoveStartedListener(cameras.get(0).onCameraMoveStartedListener);
+        map.setOnCameraMoveListener(cameras.get(0).onCameraMoveListener);
+        map.setOnCameraIdleListener(cameras.get(0).onCameraIdleListener);
+        map.setOnCameraMoveCanceledListener(cameras.get(0).onCameraMoveCanceledListener);
+//        map.setOnMapClickListener(onMapClickListener);
+
+
+        map.setBuildingsEnabled(true);
+        map.setIndoorEnabled(true);
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 if(!DEBUGGING) return;
@@ -341,19 +361,19 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setAllGesturesEnabled(true);
-        mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
+        map.getUiSettings().setCompassEnabled(true);
+        map.getUiSettings().setAllGesturesEnabled(true);
+        map.getUiSettings().setIndoorLevelPickerEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
 
         if (!fabButtons.isInitialized()) {
             fabButtons.initAndSetOnClickListener(new View.OnClickListener() {
-                                                  @Override
-                                                  public void onClick(View view) {
-                                                      onFabClick(view.getId());
-                                                  }
-                                              });
+                @Override
+                public void onClick(View view) {
+                    onFabClick(view.getId());
+                }
+            });
             initSnackbar();
         }
 
@@ -370,13 +390,10 @@ public class MainActivity extends AppCompatActivity
                 startService(intent);
             }
         }
-
         System.out.println("INTENT:"+data+":"+intent.getType());
 
 
-
     }
-
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -391,10 +408,18 @@ public class MainActivity extends AppCompatActivity
 
                 switch (o.getString(RESPONSE_STATUS)) {
                     case RESPONSE_STATUS_DISCONNECTED:
-                        userButtons.hide();
+
+//                        state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+//                            @Override
+//                            public void call(Integer number, final MyUser marker) {
+//                                marker.hide();
+//                            }
+//                        });
+
+
                         if(!state.disconnected()) {
-                            onFabClick(R.id.fab_stop_tracking);
-                            userButtons.hide();
+//                            onFabClick(R.id.fab_stop_tracking);
+//                            userButtons.hide();
 
                             snackbar.setText("You have been disconnected.").setAction("Reconnect", new View.OnClickListener() {
                                 @Override
@@ -403,33 +428,39 @@ public class MainActivity extends AppCompatActivity
                                 }
                             }).show();
                         }
+                        userButtons.hide();
                         state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
                             @Override
-                            public void call(Integer number, MyMarker marker) {
-                                marker.remove();
+                            public void call(Integer number, MyUser marker) {
+                                marker.hide();
                             }
                         });
 
                         break;
                     case RESPONSE_STATUS_ACCEPTED:
                         snackbar.dismiss();
-                        userButtons.show();
+
+//                        userButtons.setMyId(state.getUsers().getMe().getId());
 
                         if (o.has(RESPONSE_TOKEN)) {
                             new InviteSender(MainActivity.this).send(state.getToken());
                         }
-//                        if (o.has(RESPONSE_NUMBER)) {
-//                            userButtons.setMyId(state.getNumber());
-//                        }
+                        if (o.has(RESPONSE_NUMBER)) {
+                            userButtons.setMyNumber(o.getInt(RESPONSE_NUMBER));
+//                            userButtons.add( )setMyId(state.getNumber());
+                        }
                         if (o.has(RESPONSE_INITIAL)) {
                             state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
                                 @Override
-                                public void call(Integer number, MyMarker marker) {
+                                public void call(Integer number, MyUser marker) {
                                     marker.update();
-                                    userButtons.add(number,marker);
+//                                    userButtons.add(number,marker);
                                 }
                             });
                         }
+
+                        userButtons.synchronizeWith(state.getUsers());
+                        userButtons.show();
                         break;
                     case RESPONSE_STATUS_ERROR:
                         userButtons.hide();
@@ -446,23 +477,25 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case RESPONSE_STATUS_UPDATED:
                         if(o.has(USER_DISMISSED)) {
-                            userButtons.removeUnused(state.getUsers());
-                        } else if(o.has(USER_JOINED)) {
+                            userButtons.synchronizeWith(state.getUsers()).show();
+                        }
+                        if(o.has(USER_JOINED)) {
                             int number = o.getInt(USER_JOINED);
                             state.getUsers().forUser(number,new MyUsers.Callback() {
                                 @Override
-                                public void call(Integer number, MyMarker marker) {
+                                public void call(Integer number, MyUser marker) {
                                     marker.update();
-                                    userButtons.add(number,marker);
+//                                    userButtons.add(number,marker);
                                 }
                             });
+                            userButtons.synchronizeWith(state.getUsers()).show();
                         }
                         if(o.has(USER_PROVIDER)){
                             final Location location = Utils.jsonToLocation(o);
                             int number = o.getInt(USER_NUMBER);
                             state.getUsers().forUser(number,new MyUsers.Callback() {
                                 @Override
-                                public void call(Integer number, MyMarker marker) {
+                                public void call(Integer number, MyUser marker) {
                                     marker.addLocation(location).update();
                                 }
                             });
@@ -495,14 +528,12 @@ public class MainActivity extends AppCompatActivity
 
             state.getUsers().forMe(new MyUsers.Callback() {
                 @Override
-                public void call(Integer number, MyMarker marker) {
-                    marker.addLocation(location).update();
+                public void call(Integer number, MyUser marker) {
+                    if(marker != null) {
+                        marker.addLocation(location).update();
+                    }
                 }
             });
-
-            if (cameras.size() > 0) {
-                cameras.get(0).setLocation(location).update();
-            }
         }
 
         @Override
@@ -582,8 +613,8 @@ public class MainActivity extends AppCompatActivity
                     snackbar.dismiss();
                     state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
                         @Override
-                        public void call(Integer number, MyMarker marker) {
-                            marker.remove();
+                        public void call(Integer number, MyUser marker) {
+                            marker.hide();
                             userButtons.remove(number);
                         }
                     });
@@ -596,8 +627,8 @@ public class MainActivity extends AppCompatActivity
                     snackbar.dismiss();
                     state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
                         @Override
-                        public void call(Integer number, MyMarker marker) {
-                            marker.remove();
+                        public void call(Integer number, MyUser marker) {
+                            marker.hide();
                             userButtons.remove(number);
                         }
                     });
@@ -669,11 +700,11 @@ public class MainActivity extends AppCompatActivity
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(final Marker marker) {
-            final MyMarker[] m = new MyMarker[1];
+            final MyUser[] m = new MyUser[1];
             state.getUsers().forAllUsers(new MyUsers.Callback() {
                 @Override
-                public void call(Integer number, MyMarker user) {
-                    System.out.println("LOOKING MARKER:"+number+":"+marker.getId()+":"+user.getMarker().getId());
+                public void call(Integer number, MyUser user) {
+//                    System.out.println("LOOKING MARKER:"+number+":"+marker.getId()+":"+user.getMarker().getId());
                     if (marker.getId().equals(user.getMarker().getId())) {
                         m[0] = user;
                     }

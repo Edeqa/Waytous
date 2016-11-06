@@ -25,10 +25,13 @@ public class WhereAmINowService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        tracking = new MyTracking(WhereAmINowService.this);
         System.out.println("Service:onCreate");
 //to be deleted
         state = State.getInstance();
+        if(state.getApplication() == null) state.setApplication(getApplicationContext());
+        state.setService(this);
+
+        tracking = new MyTracking();
         state.myTracking = tracking;
     }
 
@@ -92,6 +95,7 @@ public class WhereAmINowService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        state.setService(null);
         System.out.println("Service:onDestroy");
 //        tracking.stop();
     }

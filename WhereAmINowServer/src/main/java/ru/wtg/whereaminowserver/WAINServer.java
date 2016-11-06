@@ -49,9 +49,10 @@ public class WAINServer {
                             wssProcessor.start();
                             break;
                         }
-
                     }
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
