@@ -6,7 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
-import com.google.android.gms.iid.InstanceID;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.WhereAmINowService;
@@ -23,8 +24,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_GPS_REJECTED;
 
 public class State {
 
-    private int tracking = TRACKING_DISABLED;
-
     private static State instance = null;
     private static Context application;
     private static WhereAmINowService service;
@@ -35,8 +34,11 @@ public class State {
     private String token;
     private int number;
     private MyUsers users;
+    private MyUser me;
     public MyTracking myTracking;
     private Notification notification;
+    private boolean gpsAccessEnabled;
+    private boolean gpsAccessRequested;
 
     private State() {
         users = new MyUsers();
@@ -44,11 +46,11 @@ public class State {
 
     public static State getInstance() {
         if (instance == null) {
-//            synchronized (State.class){
+            synchronized (State.class){
                 if (instance == null) {
                     instance = new State();
                 }
-//            }
+            }
         }
         return instance ;
     }
@@ -79,28 +81,23 @@ public class State {
     }
 
     public boolean disconnected(){
-        return tracking == TRACKING_DISABLED;
+        if(myTracking == null) return true;
+        return myTracking.getStatus() == TRACKING_DISABLED;
     }
 
     public boolean rejected(){
-        return tracking == TRACKING_GPS_REJECTED;
+        if(myTracking == null) return false;
+        return myTracking.getStatus() == TRACKING_GPS_REJECTED;
     }
 
     public boolean tracking(){
-        return tracking == TRACKING_ACTIVE;
+        if(myTracking == null) return false;
+        return myTracking.getStatus() == TRACKING_ACTIVE;
     }
 
     public boolean connecting(){
-        return tracking == TRACKING_CONNECTING;
-    }
-
-
-    public int getTracking() {
-        return tracking;
-    }
-
-    public void setStatus(int tracking) {
-        this.tracking = tracking;
+        if(myTracking == null) return false;
+        return myTracking.getStatus() == TRACKING_CONNECTING;
     }
 
     public void checkDeviceId() {
@@ -143,5 +140,53 @@ public class State {
 
     public Notification getNotification() {
         return notification;
+    }
+
+
+    public void setGpsAccessEnabled(boolean gpsAccessEnabled) {
+        this.gpsAccessEnabled = gpsAccessEnabled;
+    }
+
+    public void setGpsAccessRequested(boolean gpsAccessRequested) {
+        this.gpsAccessRequested = gpsAccessRequested;
+    }
+
+    public boolean isGpsAccessRequested() {
+        return gpsAccessRequested;
+    }
+
+
+    public String getStringPreference(String key, String defaultValue){
+        return sharedPreferences.getString(key,defaultValue);
+    }
+
+    public void setPreference(String key, String value){
+        if(value != null && value.length()>0){
+            sharedPreferences.edit().putString(key,value).apply();
+        } else {
+            sharedPreferences.edit().remove(key).apply();
+        }
+    }
+
+    public MyUser getMe() {
+        return me;
+    }
+
+    public void setMe(MyUser me) {
+        this.me = me;
+    }
+
+    private HashMap<String,ViewHolder> viewHolders = new HashMap<>();
+
+    public void registerViewHolder(ViewHolder viewHolder) {
+        viewHolders.put(viewHolder.getType(), viewHolder);
+    }
+
+    public HashMap<String,ViewHolder> getViewHolders(){
+        return viewHolders;
+    }
+
+    public void clearViewHolders(){
+        viewHolders.clear();
     }
 }

@@ -31,6 +31,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +39,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -56,6 +57,17 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:host="inchem.kstu.ru"/>
+                <data android:pathPrefix="/track/"/>
+                <data android:port="8080"/>
+                <data android:scheme="https" />
+            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*"/>
                 <data android:pathPrefix="/track/"/>
                 <data android:port="8080"/>
                 <data android:scheme="https" />

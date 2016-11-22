@@ -4,33 +4,38 @@ package ru.wtg.whereaminowserver.helpers;
  * Created by tujger on 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 3;
+    public final static int SERVER_BUILD = 5;
 
 // device debug local version
-/*
-    public final static String WSS_SERVER_URL = "wss://10.0.0.96:8081";
+    public final static String WSS_SERVER_HOST = "10.0.0.96";
     public final static boolean DEBUGGING = true;
-    public final static String HTTP_SERVER_URL = "https://10.0.0.96:8080";
-*/
+    public final static boolean SHARE_ERROR = false;
+    public final static String HTTP_SERVER_HOST = "10.0.0.96";
 
 // emulator local version
-    public final static String WSS_SERVER_URL = "wss://192.168.56.1:8081";
+/*
+    public final static String WSS_SERVER_HOST = "192.168.56.1";
     public final static boolean DEBUGGING = false;
-    public final static String HTTP_SERVER_URL = "https://10.0.0.96:8080";
+    public final static boolean SHARE_ERROR = false;
+    public final static String HTTP_SERVER_HOST = "10.0.0.96";
+*/
 
 // emulator internet version
 /*
-    public final static String WSS_SERVER_URL = "wss://inchem.kstu.ru:8081";
+    public final static String WSS_SERVER_HOST = "wss://inchem.kstu.ru:8081";
     public final static boolean DEBUGGING = false;
-    public final static String HTTP_SERVER_URL = "https://inchem.kstu.ru:8080";
+    public final static boolean SHARE_ERROR = false;
+    public final static String HTTP_SERVER_HOST = "https://inchem.kstu.ru:8080";
 */
 
 // device debug internet version
 /*
-    public final static String WSS_SERVER_URL = "wss://inchem.kstu.ru:8081";
+    public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
     public final static boolean DEBUGGING = true;
-    public final static String HTTP_SERVER_URL = "https://inchem.kstu.ru:8080";
+    public final static boolean SHARE_ERROR = true;
+    public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 */
+
 
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
     public final static String BROADCAST_MESSAGE = "message";
@@ -39,16 +44,6 @@ public class Constants {
     public final static int REQUEST_PERMISSION_LOCATION_ONRESUME = 2;
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
-
-    public final static int CAMERA_ORIENTATION_NORTH = 0;
-    public final static int CAMERA_ORIENTATION_DIRECTION = 1;
-    public final static int CAMERA_ORIENTATION_PERSPECTIVE = 2;
-    public final static int CAMERA_ORIENTATION_STAY = 3;
-    public final static int CAMERA_ORIENTATION_USER = 4;
-    public static final float CAMERA_DEFAULT_ZOOM = 15.f;
-    public static final float CAMERA_DEFAULT_TILT = 0.f;
-    public static final float CAMERA_DEFAULT_BEARING = 0.f;
-    public final static int CAMERA_ORIENTATION_LAST = 2;
 
     public static final int TRACKING_DISABLED = 0;
     public static final int TRACKING_CONNECTING = 1;
@@ -76,6 +71,7 @@ public class Constants {
     public static final String RESPONSE_STATUS_CHECK = "check";
     public static final String RESPONSE_STATUS_DISCONNECTED = "disconnected";
     public static final String RESPONSE_STATUS_ERROR = "error";
+    public static final String RESPONSE_STATUS_STOPPED = "stopped";
 
     public static final String RESPONSE_MESSAGE = "message";
     public static final String RESPONSE_TOKEN = "token";
@@ -96,7 +92,8 @@ public class Constants {
     public static final String USER_SPEED = "spd";
     public static final String USER_NUMBER = "number";
     public static final String USER_COLOR = "color";
+    public static final String USER_NAME = "name";
 
-    public static final int LIFETIME_INACTIVE_TOKEN = 60;
+    public static final int LIFETIME_INACTIVE_TOKEN = 600;
 
 }

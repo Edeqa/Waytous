@@ -10,10 +10,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
@@ -62,8 +64,15 @@ public class MyToken {
     ));
 
     private int selectColor(int number) {
-        int color = colors.get(number).getRGB();
-        return color;
+        Random randomGenerator = new Random();
+        int red = randomGenerator.nextInt(256);
+        int green = randomGenerator.nextInt(256);
+        int blue = randomGenerator.nextInt(256);
+
+        return new Color(red,green,blue).getRGB();
+
+//        int color = colors.get(number).getRGB();
+//        return color;
     }
 
     public boolean removeUser(String hash){
@@ -130,7 +139,7 @@ public class MyToken {
                 dest.add(x.getValue());
             }
         }
-        System.out.println("SENDTOALL:"+o+":"+dest);
+        System.out.println("SENDTOALL:"+o);
         sendToUsers(o,dest);
 
     }
@@ -154,6 +163,9 @@ public class MyToken {
 
                 o.put(RESPONSE_NUMBER,x.getValue().getNumber());
                 o.put(USER_COLOR,x.getValue().getColor());
+                if(x.getValue().getName() != null && x.getValue().getName().length()>0){
+                    o.put(USER_NAME,x.getValue().getName());
+                }
                 initialUsers.add(o);
             }
 

@@ -7,12 +7,21 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 
 import ru.wtg.whereaminow.R;
 
@@ -42,6 +51,7 @@ public class Utils {
     public static final int DIGEST_METHOD_SHA256 = 256;
     public static final int DIGEST_METHOD_SHA512 = 512;
 
+    @Nullable
     public static String getEncryptedHash(String str, int type) {
         String sType;
         switch (type) {
@@ -85,7 +95,7 @@ public class Utils {
         int g = Color.green(color);
         int b = Color.blue(color);
         int a = Color.alpha(color);
-        System.out.println("COLOR:"+r+":"+g+":"+b+":"+a);
+//        System.out.println("COLOR:"+r+":"+g+":"+b+":"+a);
 
         if(true)
         return new float[] {
@@ -155,6 +165,19 @@ public class Utils {
         return loc;
     }
 
+    public static JSONObject locationToJson(Location location) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put(USER_PROVIDER,location.getProvider());
+        json.put(USER_LATITUDE,location.getLatitude());
+        json.put(USER_LONGITUDE,location.getLongitude());
+        json.put(USER_ALTITUDE,location.getAltitude());
+        json.put(USER_ACCURACY,location.getAccuracy());
+        json.put(USER_BEARING,location.getBearing());
+        json.put(USER_SPEED,location.getSpeed());
+        json.put(USER_TIMESTAMP,location.getTime());
+        return json;
+    }
+
     public static Drawable renderDrawable(Context context, int resource, int color){
         Drawable drawable;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -217,4 +240,34 @@ public class Utils {
         return bitmap;
     }
 
+    public static String getUrl(String url) throws IOException {
+        return Utils.getUrl(url, "UTF-8");
+    }
+
+    public static String getUrl(String url, String urlCharset) throws IOException {
+        String line;
+        StringBuilder sb = new StringBuilder();
+        InputStream in;
+        URLConnection feedUrl;
+        feedUrl = new URL(url).openConnection();
+        feedUrl.setConnectTimeout(5000);
+        feedUrl.setRequestProperty(
+                "User-Agent",
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
+
+        in = feedUrl.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));
+        while ((line = reader.readLine()) != null) {
+            sb.append(new String(line.getBytes("UTF-8"))).append("\n");
+        }
+        in.close();
+
+        return sb.toString();
+    }
+
+    public static String getUnique() {
+        SecureRandom random = new SecureRandom();
+        String token = new BigInteger(48, random).toString(32).toUpperCase();
+        return token;
+    }
 }

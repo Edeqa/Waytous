@@ -24,7 +24,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 /**
  * Created by tujger on 10/5/16.
  */
-public class MyHttpServer implements HttpHandler {
+public class MyHttpAdminServer implements HttpHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
     private volatile MyWssServer wssProcessor;
@@ -39,7 +39,7 @@ public class MyHttpServer implements HttpHandler {
         Map<String, List<String>> query = splitQuery(uri.toString());
 
         if(query.containsKey("text")){
-//            synchronized (MyHttpServer.class){
+//            synchronized (MyHttpAdminServer.class){
                 wssProcessor.sendToAll(query.get("text").toString(), null);
 //            }
 
