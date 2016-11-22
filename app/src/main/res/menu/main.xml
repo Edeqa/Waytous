@@ -6,4 +6,19 @@
         android:orderInCategory="100"
         android:title="Save location"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_set_my_name"
+        android:orderInCategory="100"
+        android:title="Set my name"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_show_tracks"
+        android:orderInCategory="100"
+        android:title="Show tracks"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_hide_tracks"
+        android:orderInCategory="100"
+        android:title="Hide tracks"
+        app:showAsAction="never" />
 </menu>

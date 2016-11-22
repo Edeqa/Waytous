@@ -6,33 +6,32 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.widget.Toast;
 
+import java.net.URISyntaxException;
+
+import ru.wtg.whereaminow.helpers.GlobalExceptionHandler;
 import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 public class WhereAmINowService extends Service {
 
     private ServiceBinder binder = new ServiceBinder();
-    private MyTracking tracking;
     private State state;
 
     private int id;
 
     public WhereAmINowService() {
+//        new GlobalExceptionHandler(WhereAmINowService.this);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        System.out.println("Service:onCreate");
-//to be deleted
         state = State.getInstance();
         if(state.getApplication() == null) state.setApplication(getApplicationContext());
         state.setService(this);
-
-        tracking = new MyTracking();
-        state.myTracking = tracking;
     }
 
     @Override
@@ -40,35 +39,31 @@ public class WhereAmINowService extends Service {
         id = startId;
         String mode = "initial";
         if(intent != null && intent.hasExtra("mode")) mode = intent.getStringExtra("mode");
-        System.out.println("Service:onStartCommand:"+startId+":"+mode);
 
         if("start".equals(mode)){
-            tracking.start();
+            try {
+                state.myTracking = new MyTracking();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
+                return super.onStartCommand(intent, flags, startId);
+            }
+            state.myTracking.start();
         } else if("join".equals(mode)){
             if(state.tracking()) {
-                tracking.stop();
+                state.myTracking.stop();
             }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(!state.disconnected()) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        public void run() {
-                            String token = intent.getStringExtra("token");
-                            tracking.join(token);
-                        }
-                    });
-                }
-            }).start();
+            try {
+                state.myTracking = new MyTracking(intent.getStringExtra("host"));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
+                return super.onStartCommand(intent, flags, startId);
+            }
+            String token = intent.getStringExtra("token");
+            state.myTracking.join(token);
         } else if("stop".equals(mode)){
-            tracking.stop();
-        } else if("cancel".equals(mode)){
-            tracking.cancel();
+            state.myTracking.stop();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -76,7 +71,6 @@ public class WhereAmINowService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         String mode = intent.getStringExtra("mode");
-        System.out.println("Service:onBind:"+mode);
         return binder;
     }
 
@@ -88,7 +82,6 @@ public class WhereAmINowService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        System.out.println("Service:onUnbind");
         return super.onUnbind(intent);
     }
 
@@ -96,20 +89,16 @@ public class WhereAmINowService extends Service {
     public void onDestroy() {
         super.onDestroy();
         state.setService(null);
-        System.out.println("Service:onDestroy");
-//        tracking.stop();
     }
 
     @Override
     public void onRebind(Intent intent) {
         super.onRebind(intent);
-        System.out.println("Service:onRebind");
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        System.out.println("Service:onTaskRemoved");
     }
 
     public int getId(){

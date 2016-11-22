@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_SERVER_URL;
+import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_SERVER_HOST;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -42,6 +42,9 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 
 /**
  * Created by tujger on 10/5/16.
@@ -61,7 +64,7 @@ public class MyWssServer extends WebSocketServer {
         ipToUser = new HashMap<String, MyUser>();
         ipToCheck = new HashMap<String, CheckReq>();
 
-        String a = HTTP_SERVER_URL;
+        String a = HTTP_SERVER_HOST;
 
     }
 
@@ -132,6 +135,7 @@ public class MyWssServer extends WebSocketServer {
                 user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
                 user.setModel(request.getString(REQUEST_MODEL));
                 user.setOs(request.getString(REQUEST_OS));
+                if(request.has(USER_NAME)) user.setName(request.getString(USER_NAME));
 
                 token.addUser(user);
                 tokens.put(token.getId(), token);
@@ -182,6 +186,7 @@ public class MyWssServer extends WebSocketServer {
                             CheckReq check = new CheckReq();
                             check.control = Utils.getUnique();
                             check.token = token;
+                            if(request.has(USER_NAME)) check.name = request.getString(USER_NAME);
 
                             responce.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                             responce.put(RESPONSE_CONTROL,check.control);
@@ -192,6 +197,9 @@ public class MyWssServer extends WebSocketServer {
                             user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
                             user.setModel(request.getString(REQUEST_MODEL));
                             user.setOs(request.getString(REQUEST_OS));
+                            if(request.has(USER_NAME) && request.getString(USER_NAME) != null && request.getString(USER_NAME).length()>0){
+                                user.setName(request.getString(USER_NAME));
+                            }
                             token.addUser(user);
 
                             responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
@@ -206,7 +214,9 @@ public class MyWssServer extends WebSocketServer {
                             o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
                             o.put(USER_COLOR,user.getColor());
                             o.put(USER_JOINED,user.getNumber());
-
+                            if(user.getName() != null && user.getName().length()>0){
+                                o.put(USER_NAME,user.getName());
+                            }
                             token.sendToAllFrom(o,user);
                             return;
                         }
@@ -251,6 +261,9 @@ public class MyWssServer extends WebSocketServer {
                         responce.put(RESPONSE_NUMBER, user.getNumber());
                         user.setConnection(conn);
                         user.setChanged();
+                        if(check.name != null && check.name.length()>0){
+                            user.setName(check.name);
+                        }
 
                         ipToToken.put(ip,check.token);
                         ipToUser.put(ip,user);
@@ -261,6 +274,9 @@ public class MyWssServer extends WebSocketServer {
                         o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
                         o.put(USER_COLOR,user.getColor());
                         o.put(USER_JOINED,user.getNumber());
+                        if(check.name != null && check.name.length()>0){
+                            o.put(USER_NAME,check.name);
+                        }
                         check.token.sendToAllFrom(o,user);
 
 //                            responce.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
@@ -292,10 +308,17 @@ public class MyWssServer extends WebSocketServer {
                 MyToken token = ipToToken.get(ip);
                 MyUser user = ipToUser.get(ip);
 
-                user.addPosition(request);
-                token.setChanged();
-
-                JSONObject o = user.getPosition().toJSON();
+                JSONObject o = new JSONObject();
+                if(request.has(USER_NAME)){
+                    o.put(USER_NAME,request.getString(USER_NAME));
+                    user.setName(request.getString(USER_NAME));
+                    token.setChanged();
+                }
+                if(request.has(USER_PROVIDER)){
+                    user.addPosition(request);
+                    token.setChanged();
+                    o = user.getPosition().toJSON();
+                }
                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
                 token.sendToAllFrom(o, user);
 
@@ -376,6 +399,7 @@ public class MyWssServer extends WebSocketServer {
 
         MyToken token;
         String control;
+        String name;
         public long timestamp;
 
         public CheckReq() {

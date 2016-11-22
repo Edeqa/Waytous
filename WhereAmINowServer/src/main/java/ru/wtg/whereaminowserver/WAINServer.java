@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 
-import ru.wtg.whereaminowserver.helpers.MyHttpServer;
+import ru.wtg.whereaminowserver.helpers.MyHttpAdminServer;
 import ru.wtg.whereaminowserver.helpers.MyWssServer;
 
 
@@ -20,7 +20,7 @@ import ru.wtg.whereaminowserver.helpers.MyWssServer;
 public class WAINServer {
 
     private static MyWssServer wssProcessor;
-    private static MyHttpServer httpServer;
+    private static MyHttpAdminServer httpServer;
 
     private final static int PORT_HTTP = 8080;
     private final static int PORT_WSS = 8081;
@@ -58,7 +58,7 @@ public class WAINServer {
             }
         }.start();
 
-        httpServer = new MyHttpServer();
+        httpServer = new MyHttpAdminServer();
         httpServer.setWssProcessor(wssProcessor);
         new Thread() {
             public void run() {

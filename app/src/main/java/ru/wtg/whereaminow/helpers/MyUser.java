@@ -1,48 +1,57 @@
 package ru.wtg.whereaminow.helpers;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Interpolator;
-import android.widget.Button;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
-
-import ru.wtg.whereaminow.R;
-
-import static ru.wtg.whereaminowserver.helpers.Constants.CAMERA_DEFAULT_ZOOM;
-import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by tujger on 9/18/16.
  */
 public class MyUser {
+    public static final int ASSIGN_TO_CAMERA = 1;
+    public static final int REFUSE_FROM_CAMERA = 2;
+    public static final int CHANGE_NAME = 3;
+    public static final int CAMERA_NEXT_ORIENTATION = 4;
+    public static final int MENU_ITEM_NAVIGATE = 6;
+    public static final int MENU_ITEM_PIN = 7;
+    public static final int MENU_ITEM_UNPIN = 8;
+    public static final int MENU_ITEM_SHOW_TRACK = 9;
+    public static final int MENU_ITEM_HIDE_TRACK = 10;
+
 
     private static GoogleMap map;
-    private static Context context;
 
-    private MyCamera myCamera;
+    private LinkedHashMap<String,AbstractView> views;
+
+//    private MyCamera myCamera;
     private GoogleMap currentMap;
-    private Marker marker;
+//    private Marker marker;
+    private Polyline route;
     private ArrayList<Location> locations;
     private Location location;
 
+    private String name;
     private int color;
+    private int number;
     private boolean draft;
+    private boolean active;
+    private boolean selected;
 
     public MyUser(){
         locations = new ArrayList<>();
+        views = new LinkedHashMap<>();
         color = Color.BLUE;
     }
 
@@ -50,9 +59,6 @@ public class MyUser {
         MyUser.map = map;
     }
 
-    public static void setContext(Context context) {
-        MyUser.context = context;
-    }
 
     public void showDraft(Location location){
 //        System.out.println("showDraft:"+location);
@@ -60,105 +66,33 @@ public class MyUser {
 
         setLocation(location);
         setDraft(true);
-        createMarker();
+//        createMarker();
         /*CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(location.getLatitude(), location.getLongitude())).radius(location.getAccuracy())
                 .fillColor(Color.CYAN).strokeColor(Color.BLUE).strokeWidth(2f);
         circle = map.addCircle(circleOptions);*/
 
-        update();
+//        update();
     }
 
     public MyUser addLocation(Location location) {
         locations.add(location);
         setLocation(location);
         return this;
-//        update();
     }
 
-    public void createMarker(){
-        Bitmap bitmap;
-        int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
-        if(isDraft()) {
-            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,Color.GRAY,size,size);
-        } else {
-            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,color,size,size);
+    /*public void update(){
+
+        if(showTrack){
+            if(route != null) route.remove();
+            route = map.addPolyline(new PolylineOptions().width(10).color(color).geodesic(true).zIndex(100f));
+            route.setPoints(getTrail());
+        } else if(route != null) {
+            route.remove();
+            route = null;
         }
 
-        currentMap = map;
-        marker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .rotation(location.getBearing())
-                .anchor(0.5f, 0.5f)
-                .flat(true)
-//                .title("Melbourne")
-//                .snippet("Population: 4,137,400")
-                .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-//        marker.showInfoWindow();
-
-    }
-
-    public void update(){
-        if(locations.size()==0) return;
-
-        if(marker != null && map != currentMap){
-            marker.remove();
-            marker = null;
-        }
-        if(marker != null && isDraft()){
-            marker.remove();
-            setDraft(false);
-            createMarker();
-        } else if(marker == null){
-            if(myCamera != null){
-                myCamera.setZoom(CAMERA_DEFAULT_ZOOM);
-            }
-            createMarker();
-        }
-
-        final LatLng startPosition = marker.getPosition();
-        final LatLng finalPosition = new LatLng(location.getLatitude(), location.getLongitude());
-
-        final float startRotation = marker.getRotation();
-        final float finalRotation = location.getBearing();
-
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final float durationInMs = LOCATION_UPDATES_DELAY;
-        handler.post(new Runnable() {
-            long elapsed;
-            float t, v;
-
-            @Override
-            public void run() {
-//                if(marker == null) return;
-                elapsed = SystemClock.uptimeMillis() - start;
-                t = elapsed / durationInMs;
-                v = interpolator.getInterpolation(t);
-
-                LatLng currentPosition = new LatLng(
-                        startPosition.latitude*(1-t)+finalPosition.latitude*t,
-                        startPosition.longitude*(1-t)+finalPosition.longitude*t);
-
-                float rot = v * finalRotation + (1 - v) * startRotation;
-
-                if(marker != null) {
-                    marker.setRotation(-rot > 180 ? rot / 2 : rot);
-                    marker.setPosition(currentPosition);
-                }
-
-                if (t < 1) {
-                    handler.postDelayed(this, 16);
-                }
-            }
-        });
-
-        if(myCamera != null){
-            myCamera.setLocation(location).update().animate();
-        }
-
-    }
+    }*/
 
     public int getColor() {
         return color;
@@ -178,59 +112,124 @@ public class MyUser {
 
     private void setLocation(Location location) {
         this.location = location;
+        onChangeLocation();
     }
 
     public Location getLocation(){
         return location;
     }
 
-    public MyCamera getMyCamera() {
-        return myCamera;
+    public String getName() {
+        return name;
     }
 
-    public MyUser setMyCamera(MyCamera myCamera) {
-        if(this.myCamera == myCamera) {
-            return this;
-        } else if(this.myCamera != null) {
-            this.myCamera.setUser(null);
-        }
-        if(myCamera != null){
-            if(myCamera.getUser() != null){
-                myCamera.getUser().setMyCamera(null);
-            }
-            myCamera.setUser(this);
-        }
-        this.myCamera = myCamera;
-        if(location != null && myCamera != null) {
-            myCamera.setLocation(location).update().animate();
-        }
-        return this;
+    public void setName(final String name) {
+        this.name = name;
     }
 
-    public Marker getMarker(){
-        return marker;
+    public boolean isActive() {
+        return active;
     }
 
-    public void hide(){
-        if(marker != null) {
-            try {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    public void run() {
-                        marker.remove();
-                        marker = null;
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void createViews(){
+        if(isActive()) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                public void run() {
+                    for(Map.Entry<String, ViewHolder> entry: State.getInstance().getViewHolders().entrySet()){
+                        if(views.containsKey(entry.getKey()) && views.get(entry.getKey()) != null){
+                            views.get(entry.getKey()).remove();
+                        }
+                        views.put(entry.getKey(), entry.getValue().createView(MyUser.this));
                     }
-                });
-            }catch(Exception e){
-                e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    public void fire(final int EVENT, final Object object){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                for(Map.Entry<String,AbstractView> entry: views.entrySet()){
+                    if(entry.getValue() != null){
+                        entry.getValue().onEvent(EVENT, object);
+                    }
+                }
             }
-        }
+        });
     }
 
-    public String getId(){
-        if(marker != null){
-            return marker.getId();
-        }
-        return null;
+    public void fire(final int EVENT){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
+                    if (entry.getValue() != null) {
+                        entry.getValue().onEvent(EVENT, null);
+                    }
+                }
+            }
+        });
     }
 
+    public void onChangeLocation(){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
+                    if (isActive() && entry.getValue() == null) {
+                        ViewHolder holder = State.getInstance().getViewHolders().get(entry.getKey());
+                        entry.setValue(holder.createView(MyUser.this));
+                    }
+                    if (entry.getValue() != null && entry.getValue().dependsOnLocation() && getLocation() != null) {
+                        entry.getValue().onChangeLocation(getLocation());
+                    }
+
+                }
+            }
+        });
+    }
+
+    public void removeViews(){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                Iterator<Map.Entry<String,AbstractView>> iter = views.entrySet().iterator();
+                while(iter.hasNext()){
+                    Map.Entry<String,AbstractView> entry = iter.next();
+                    if(entry.getValue() != null) entry.getValue().remove();
+                    iter.remove();
+                }
+            }
+        });
+    }
+
+    public void assignToCamera(int numberOfCamera){
+        fire(ASSIGN_TO_CAMERA,numberOfCamera);
+    }
+
+    public List<LatLng> getTrail(){
+        List<LatLng> points = new ArrayList<>();
+        for(Location location: locations){
+//            System.out.println(location.getLatitude()+":"+location.getLongitude());
+            points.add(new LatLng(location.getLatitude(),location.getLongitude()));
+        }
+        return points;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }

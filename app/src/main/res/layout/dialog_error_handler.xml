@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="text|textMultiLine"
+        tools:text="Error message"
+        android:ems="10"
+        android:id="@+id/etErrorMessage"
+        android:selectAllOnFocus="true"
+        android:gravity="top|left" />
+</LinearLayout>
