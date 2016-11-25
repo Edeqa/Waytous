@@ -4,5 +4,16 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_exception">ExceptionActivity</string>
+
+
+    <string name="app_information">Information</string>
+    <string name="caught_an_exception_s">Caught an exception <b>\"%1$s\"</b></string>
+    <string name="email" translatable="false"><![CDATA[WAIN support <support@wtg.ru>]]></string>
+    <string name="uncaught_exception_in_wain">Uncaught exception in WAIN</string>
+    <string name="send_report_about_an_error">Send report about an error</string>
+    <string name="restart">Restart</string>
+    <string name="report">Report</string>
+    <string name="close">Close</string>
 
 </resources>

@@ -36,4 +36,20 @@
         <item name="fab_colorRipple">@color/colorPrimaryDark</item>
     </style>
 
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="DayTheme" parent="AppTheme.NoActionBar">
+        <item name="attr/buttonPerson">@drawable/ic_person_black_24dp</item>
+    </style>
+
+    <style name="NightTheme" parent="AppTheme.NoActionBar">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="attr/buttonPerson">@drawable/ic_person_white_24dp</item>
+    </style>
+
 </resources>

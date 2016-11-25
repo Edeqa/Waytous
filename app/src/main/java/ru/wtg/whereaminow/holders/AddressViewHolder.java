@@ -1,4 +1,4 @@
-package ru.wtg.whereaminow.helpers;
+package ru.wtg.whereaminow.holders;
 
 import android.location.Location;
 import android.os.Handler;
@@ -9,14 +9,19 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.Utils;
+import ru.wtg.whereaminow.interfaces.SimpleCallback;
+
 import static ru.wtg.whereaminow.helpers.MyUser.ASSIGN_TO_CAMERA;
 import static ru.wtg.whereaminow.helpers.MyUser.REFUSE_FROM_CAMERA;
 
 /**
- * Created by tujger on 11/18/16.
+ * Created 11/18/16.
  */
-public class AddressViewHolder implements ViewHolder<AddressViewHolder.AddressView> {
-    public static final String TYPE = "address";
+public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
+    private static final String TYPE = "address";
     private SimpleCallback<String> callback;
 
     @Override
@@ -25,9 +30,8 @@ public class AddressViewHolder implements ViewHolder<AddressViewHolder.AddressVi
     }
 
     @Override
-    public AddressView createView(MyUser myUser) {
+    public AddressView create(MyUser myUser) {
         if (myUser == null) return null;
-
         return new AddressView(myUser);
     }
 
@@ -36,17 +40,17 @@ public class AddressViewHolder implements ViewHolder<AddressViewHolder.AddressVi
         return this;
     }
 
-    public class AddressView implements AbstractView {
-        private MyUser myUser;
+    private void setTitle(final String text){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                callback.call(text);
+            }
+        });
+    }
 
-        public AddressView(MyUser myUser){
-            this.myUser = myUser;
-        }
-
-        @Override
-        public void remove() {
-            myUser.fire(REFUSE_FROM_CAMERA);
-            setTitle(null);
+    class AddressView extends AbstractView {
+        AddressView(MyUser myUser) {
+            super(myUser);
         }
 
         @Override
@@ -60,35 +64,23 @@ public class AddressViewHolder implements ViewHolder<AddressViewHolder.AddressVi
         }
 
         @Override
-        public void setNumber(int number) {
-        }
-
-        @Override
-        public int getNumber() {
-            return myUser.getNumber();
-        }
-
-        @Override
         public void onEvent(int event, Object object) {
             switch(event){
                 case ASSIGN_TO_CAMERA:
-                    myUser.setSelected(true);
-                    /*if(State.getInstance().getCamera(0).getUsers().size()>1) {
+                case REFUSE_FROM_CAMERA:
+                    if(State.getInstance().getUsers().getCountSelected() != 1){
                         callback.call(null);
                         return;
                     } else {
                         callback.call("...");
-                    }*///TODO
-                    onChangeLocation(myUser.getLocation());
+                        onChangeLocation(myUser.getLocation());
+                    }
                     break;
-                case REFUSE_FROM_CAMERA:
-                    myUser.setSelected(false);
             }
         }
 
         private void resolveAddress(final Location location) {
-//            System.out.println("RESOLVE ADDRESS"+location);
-            if(!myUser.isSelected() || location == null){
+            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountSelected() != 1){
                 return;
             }
             new Thread(new Runnable() {
@@ -113,11 +105,4 @@ public class AddressViewHolder implements ViewHolder<AddressViewHolder.AddressVi
         }
     }
 
-    private void setTitle(final String text){
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                callback.call(text);
-            }
-        });
-    }
 }

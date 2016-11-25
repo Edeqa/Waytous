@@ -1,7 +1,7 @@
-package ru.wtg.whereaminow.helpers;
+package ru.wtg.whereaminow.interfaces;
 
 /**
- * Created by tujger on 11/20/16.
+ * Created 11/20/16.
  */
 
 public interface SimpleCallback<T> {

@@ -1,113 +1,65 @@
 package ru.wtg.whereaminow.helpers;
 
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
+import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.holders.AbstractView;
+import ru.wtg.whereaminow.holders.AbstractViewHolder;
+import ru.wtg.whereaminow.holders.PropertiesHolder;
+import ru.wtg.whereaminow.interfaces.Entity;
+import ru.wtg.whereaminow.interfaces.EntityHolder;
+
 /**
- * Created by tujger on 9/18/16.
+ * Created 9/18/16.
  */
 public class MyUser {
     public static final int ASSIGN_TO_CAMERA = 1;
     public static final int REFUSE_FROM_CAMERA = 2;
-    public static final int CHANGE_NAME = 3;
-    public static final int CAMERA_NEXT_ORIENTATION = 4;
-    public static final int MENU_ITEM_NAVIGATE = 6;
-    public static final int MENU_ITEM_PIN = 7;
-    public static final int MENU_ITEM_UNPIN = 8;
-    public static final int MENU_ITEM_SHOW_TRACK = 9;
-    public static final int MENU_ITEM_HIDE_TRACK = 10;
+    public static final int CAMERA_NEXT_ORIENTATION = 3;
+    public static final int CHANGE_NAME = 4;
+    public static final int CHANGE_NUMBER = 5;
+    public static final int CHANGE_COLOR = 6;
+    public static final int MENU_ITEM_NAVIGATE = 8;
+    public static final int MENU_ITEM_PIN_ALL = 9;
+    public static final int MENU_ITEM_PIN = 10;
+    public static final int MENU_ITEM_UNPIN = 11;
+    public static final int MENU_ITEM_SHOW_TRACK = 12;
+    public static final int MENU_ITEM_HIDE_TRACK = 13;
+    public static final int MENU_ITEM_SHOW_ALL_TRACKS = 14;
+    public static final int MENU_ITEM_HIDE_ALL_TRACKS = 15;
+    public static final int MENU_ITEM_CHANGE_NAME = 16;
+    public static final int ADJUST_ZOOM = 17;
+    public static final int MAKE_ACTIVE = 18;
+    public static final int MAKE_INACTIVE = 19;
+    public static final int SHOW_TRACK = 20;
+    public static final int HIDE_TRACK = 21;
 
-
-    private static GoogleMap map;
-
-    private LinkedHashMap<String,AbstractView> views;
-
-//    private MyCamera myCamera;
-    private GoogleMap currentMap;
-//    private Marker marker;
-    private Polyline route;
+    private LinkedHashMap<String,Entity> entities;
     private ArrayList<Location> locations;
     private Location location;
 
-    private String name;
-    private int color;
-    private int number;
-    private boolean draft;
-    private boolean active;
-    private boolean selected;
-
     public MyUser(){
         locations = new ArrayList<>();
-        views = new LinkedHashMap<>();
-        color = Color.BLUE;
+        entities = new LinkedHashMap<>();
+        createProperties();
     }
 
-    public static void setMap(GoogleMap map) {
-        MyUser.map = map;
-    }
-
-
-    public void showDraft(Location location){
-//        System.out.println("showDraft:"+location);
-        if(location == null) return;
-
-        setLocation(location);
-        setDraft(true);
-//        createMarker();
         /*CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(location.getLatitude(), location.getLongitude())).radius(location.getAccuracy())
                 .fillColor(Color.CYAN).strokeColor(Color.BLUE).strokeWidth(2f);
         circle = map.addCircle(circleOptions);*/
 
-//        update();
-    }
-
     public MyUser addLocation(Location location) {
         locations.add(location);
         setLocation(location);
         return this;
-    }
-
-    /*public void update(){
-
-        if(showTrack){
-            if(route != null) route.remove();
-            route = map.addPolyline(new PolylineOptions().width(10).color(color).geodesic(true).zIndex(100f));
-            route.setPoints(getTrail());
-        } else if(route != null) {
-            route.remove();
-            route = null;
-        }
-
-    }*/
-
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    private boolean isDraft() {
-        return draft;
-    }
-
-    private void setDraft(boolean draft) {
-        this.draft = draft;
     }
 
     private void setLocation(Location location) {
@@ -119,42 +71,53 @@ public class MyUser {
         return location;
     }
 
-    public String getName() {
-        return name;
+    public ArrayList<Location> getLocations(){
+        return locations;
     }
 
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
+    private void createProperties(){
+        for(Map.Entry<String, EntityHolder> entry: State.getInstance().getEntityHolders().entrySet()){
+            if(entry.getValue() instanceof AbstractViewHolder) continue;
+            if(entities.containsKey(entry.getKey())) continue;
+            Entity property = entry.getValue().create(this);
+            if(property != null){
+                entities.put(entry.getKey(),property);
+            }
+        }
     }
 
     public void createViews(){
-        if(isActive()) {
+        if(getProperties().isActive()) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 public void run() {
-                    for(Map.Entry<String, ViewHolder> entry: State.getInstance().getViewHolders().entrySet()){
-                        if(views.containsKey(entry.getKey()) && views.get(entry.getKey()) != null){
-                            views.get(entry.getKey()).remove();
+                    for(Map.Entry<String, EntityHolder> entry: State.getInstance().getEntityHolders().entrySet()){
+                        if(!(entry.getValue() instanceof AbstractViewHolder)) continue;
+                        if(entities.containsKey(entry.getKey()) && entities.get(entry.getKey()) != null){
+                            entities.get(entry.getKey()).remove();
                         }
-                        views.put(entry.getKey(), entry.getValue().createView(MyUser.this));
+                        entities.put(entry.getKey(), entry.getValue().create(MyUser.this));
                     }
                 }
             });
         }
     }
 
+    public void fire(final int EVENT){
+        fire(EVENT, null);
+    }
+
     public void fire(final int EVENT, final Object object){
+        for(Map.Entry<String,Entity> entry: entities.entrySet()){
+            if(entry.getValue() instanceof AbstractView) continue;
+            if(entry.getValue() != null){
+                entry.getValue().onEvent(EVENT, object);
+            }
+        }
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                for(Map.Entry<String,AbstractView> entry: views.entrySet()){
-                    if(entry.getValue() != null){
+                for(Map.Entry<String,Entity> entry: entities.entrySet()){
+                    if(entry.getValue() instanceof AbstractView){
                         entry.getValue().onEvent(EVENT, object);
                     }
                 }
@@ -162,30 +125,27 @@ public class MyUser {
         });
     }
 
-    public void fire(final int EVENT){
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
-                    if (entry.getValue() != null) {
-                        entry.getValue().onEvent(EVENT, null);
-                    }
-                }
+    private void onChangeLocation(){
+        for(Map.Entry<String,Entity> entry: entities.entrySet()){
+            if(!(entry.getValue() instanceof AbstractView)
+                    && entry.getValue() != null
+                    && entry.getValue().dependsOnLocation()
+                    && getLocation() != null){
+                entry.getValue().onChangeLocation(getLocation());
             }
-        });
-    }
-
-    public void onChangeLocation(){
+        }
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
-                    if (isActive() && entry.getValue() == null) {
-                        ViewHolder holder = State.getInstance().getViewHolders().get(entry.getKey());
-                        entry.setValue(holder.createView(MyUser.this));
+                for (Map.Entry<String, Entity> entry : entities.entrySet()) {
+                    if (getProperties().isActive() && entry.getValue() == null) {
+                        EntityHolder holder = State.getInstance().getEntityHolders().get(entry.getKey());
+                        entry.setValue(holder.create(MyUser.this));
                     }
-                    if (entry.getValue() != null && entry.getValue().dependsOnLocation() && getLocation() != null) {
+                    if (entry.getValue() instanceof AbstractView
+                            && entry.getValue().dependsOnLocation()
+                            && getLocation() != null) {
                         entry.getValue().onChangeLocation(getLocation());
                     }
-
                 }
             }
         });
@@ -194,42 +154,20 @@ public class MyUser {
     public void removeViews(){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                Iterator<Map.Entry<String,AbstractView>> iter = views.entrySet().iterator();
+                Iterator<Map.Entry<String,Entity>> iter = entities.entrySet().iterator();
                 while(iter.hasNext()){
-                    Map.Entry<String,AbstractView> entry = iter.next();
-                    if(entry.getValue() != null) entry.getValue().remove();
-                    iter.remove();
+                    Map.Entry<String,Entity> entry = iter.next();
+                    if(entry.getValue() instanceof AbstractView){
+                        entry.getValue().remove();
+                        iter.remove();
+                    }
                 }
             }
         });
     }
 
-    public void assignToCamera(int numberOfCamera){
-        fire(ASSIGN_TO_CAMERA,numberOfCamera);
+    public PropertiesHolder.Properties getProperties(){
+        return (PropertiesHolder.Properties) entities.get(PropertiesHolder.TYPE);
     }
 
-    public List<LatLng> getTrail(){
-        List<LatLng> points = new ArrayList<>();
-        for(Location location: locations){
-//            System.out.println(location.getLatitude()+":"+location.getLongitude());
-            points.add(new LatLng(location.getLatitude(),location.getLongitude()));
-        }
-        return points;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
 }

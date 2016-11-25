@@ -1,12 +1,12 @@
-package ru.wtg.whereaminow.helpers;
+package ru.wtg.whereaminow.interfaces;
 
 import android.location.Location;
 
 /**
- * Created by tujger on 11/18/16.
+ * Created 11/18/16.
  */
 
-interface AbstractView {
+public interface Entity {
 
     void remove();
 
@@ -16,8 +16,5 @@ interface AbstractView {
 
     void onChangeLocation(Location location);
 
-    void setNumber(int number);
-
-    int getNumber();
-
+    boolean isView();
 }
