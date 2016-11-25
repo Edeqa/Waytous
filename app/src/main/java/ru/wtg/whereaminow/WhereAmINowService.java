@@ -3,15 +3,11 @@ package ru.wtg.whereaminow;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.widget.Toast;
 
 import java.net.URISyntaxException;
 
-import ru.wtg.whereaminow.helpers.GlobalExceptionHandler;
-import ru.wtg.whereaminow.helpers.State;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 public class WhereAmINowService extends Service {
@@ -30,7 +26,6 @@ public class WhereAmINowService extends Service {
         super.onCreate();
 
         state = State.getInstance();
-        if(state.getApplication() == null) state.setApplication(getApplicationContext());
         state.setService(this);
     }
 
@@ -42,7 +37,7 @@ public class WhereAmINowService extends Service {
 
         if("start".equals(mode)){
             try {
-                state.myTracking = new MyTracking();
+                state.myTracking = new MyTracking(this);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
@@ -54,7 +49,8 @@ public class WhereAmINowService extends Service {
                 state.myTracking.stop();
             }
             try {
-                state.myTracking = new MyTracking(intent.getStringExtra("host"));
+                assert intent != null;
+                state.myTracking = new MyTracking(this,intent.getStringExtra("host"));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
@@ -62,7 +58,7 @@ public class WhereAmINowService extends Service {
             }
             String token = intent.getStringExtra("token");
             state.myTracking.join(token);
-        } else if("stop".equals(mode)){
+        } else if("stop".equals(mode) && state.tracking()){
             state.myTracking.stop();
         }
         return super.onStartCommand(intent, flags, startId);
@@ -70,7 +66,6 @@ public class WhereAmINowService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        String mode = intent.getStringExtra("mode");
         return binder;
     }
 

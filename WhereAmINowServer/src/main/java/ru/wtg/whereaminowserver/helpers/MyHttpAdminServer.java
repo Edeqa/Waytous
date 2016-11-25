@@ -52,7 +52,7 @@ public class MyHttpAdminServer implements HttpHandler {
 //            OutputStream os = exchange.getResponseBody();
 //            os.write(bytes);
 //            os.close();
-        };
+        }
 
 //        System.out.println("QUERY:"+query);
 
@@ -187,7 +187,7 @@ public class MyHttpAdminServer implements HttpHandler {
         MyToken token = wssProcessor.tokens.get(tokenId);
         MyUser user = token.users.get(userId);
 
-        html.getBody().add("h1").with("User").add("small").add("small").add("a").with("[Del]").with("href","/?action=del&token="+tokenId+"&id="+userId);;
+        html.getBody().add("h1").with("User").add("small").add("small").add("a").with("[Del]").with("href","/?action=del&token="+tokenId+"&id="+userId);
         html.getBody().add("div").with("Token: "+tokenId);
         html.getBody().add("div").with("Address: "+user.getConnection().getRemoteSocketAddress());
         html.getBody().add("div").with("Number in token: "+user.getNumber());

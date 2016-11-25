@@ -1,7 +1,7 @@
 package ru.wtg.whereaminow.helpers;
 
 /**
- * Created by tujger on 7/15/16.
+ * Created 7/15/16.
  */
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
+@SuppressWarnings("unused")
 public class LinearLayoutCompatBehavior extends CoordinatorLayout.Behavior<LinearLayoutCompat> {
 
     public LinearLayoutCompatBehavior(Context context, AttributeSet attrs) {

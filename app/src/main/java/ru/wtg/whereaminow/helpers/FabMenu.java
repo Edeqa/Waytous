@@ -10,7 +10,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import ru.wtg.whereaminow.R;
 
 /**
- * Created by tujger on 7/15/16.
+ * Created 7/15/16.
  */
 public class FabMenu extends FloatingActionMenu {
     private boolean initialized = false;
@@ -68,8 +68,6 @@ public class FabMenu extends FloatingActionMenu {
         toggleMenuButton(true);
 
         setInitialized(true);
-
-
     }
 
     public void setGpsOff() {

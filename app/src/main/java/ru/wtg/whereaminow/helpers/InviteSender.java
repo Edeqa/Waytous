@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 /**
- * Created by tujger on 10/12/16.
+ * Created 10/12/16.
  */
 
 public class InviteSender {

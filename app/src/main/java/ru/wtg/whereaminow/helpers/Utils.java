@@ -8,7 +8,6 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,8 +22,6 @@ import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
-import ru.wtg.whereaminow.R;
-
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
@@ -35,7 +32,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
- * Created by tujger on 10/8/16.
+ * Created 10/8/16.
  */
 
 public class Utils {
@@ -51,6 +48,7 @@ public class Utils {
     public static final int DIGEST_METHOD_SHA256 = 256;
     public static final int DIGEST_METHOD_SHA512 = 512;
 
+    @SuppressWarnings("WeakerAccess")
     @Nullable
     public static String getEncryptedHash(String str, int type) {
         String sType;
@@ -89,13 +87,13 @@ public class Utils {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static float[] getColorMatrix(int color) {
 
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
         int a = Color.alpha(color);
-//        System.out.println("COLOR:"+r+":"+g+":"+b+":"+a);
 
         if(true)
         return new float[] {
@@ -153,8 +151,7 @@ public class Utils {
     }
 
     public static Location jsonToLocation(JSONObject json) throws JSONException {
-        Location loc = null;
-        loc = new Location(json.getString(USER_PROVIDER));
+        Location loc = new Location(json.getString(USER_PROVIDER));
         loc.setLatitude(json.getDouble(USER_LATITUDE));
         loc.setLongitude(json.getDouble(USER_LONGITUDE));
         loc.setAltitude(json.getDouble(USER_ALTITUDE));
@@ -266,8 +263,6 @@ public class Utils {
     }
 
     public static String getUnique() {
-        SecureRandom random = new SecureRandom();
-        String token = new BigInteger(48, random).toString(32).toUpperCase();
-        return token;
+        return new BigInteger(48, new SecureRandom()).toString(32).toUpperCase();
     }
 }

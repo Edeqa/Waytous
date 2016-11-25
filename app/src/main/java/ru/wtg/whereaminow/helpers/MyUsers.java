@@ -9,13 +9,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import ru.wtg.whereaminow.State;
+
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 
 /**
- * Created by tujger on 10/23/16.
+ * Created 10/23/16.
  */
 
 public class MyUsers {
@@ -30,26 +32,10 @@ public class MyUsers {
         if(users.containsKey(myNumber)){
             users.remove(myNumber);
         }
-        MyUser me = State.getInstance().getMe();
-        if(me == null){
-            me = new MyUser();
-            me.setSelected(true);
-            State.getInstance().setMe(me);
-        }
-        me.setNumber(myNumber);
-        users.put(myNumber,me);
-        me.setActive(true);
+        State.getInstance().getMe().fire(MyUser.CHANGE_NUMBER, myNumber);
+        users.put(myNumber,State.getInstance().getMe());
 
-        String name = State.getInstance().getStringPreference("my_name",null);
-        if(name != null){
-            me.setName(name);
-        }
-
-        return me;
-    }
-
-    public MyUser getMe(){
-        return users.get(myNumber);
+        return State.getInstance().getMe();
     }
 
     public void forAllUsers(Callback callback) {
@@ -85,7 +71,7 @@ public class MyUsers {
         if(newNumber == myNumber) return;
         users.put(newNumber,users.get(myNumber));
         users.remove(myNumber);
-        users.get(newNumber).setNumber(newNumber);
+        users.get(newNumber).fire(MyUser.CHANGE_NUMBER,newNumber);
         myNumber = newNumber;
     }
 
@@ -100,27 +86,22 @@ public class MyUsers {
         setMyNumber(0);
     }
 
-    public void removeUser(int number){
-        users.get(number).removeViews();
-        users.remove(number);
-    }
-
     public MyUser addUser(JSONObject o) throws JSONException {
         if (!users.containsKey(o.getInt(RESPONSE_NUMBER))) {
             MyUser myUser = new MyUser();
-            if(o.has(USER_COLOR)) myUser.setColor(o.getInt(USER_COLOR));
-            if(o.has(USER_NAME)) myUser.setName(o.getString(USER_NAME));
+            if(o.has(USER_COLOR)) myUser.fire(MyUser.CHANGE_COLOR,o.getInt(USER_COLOR));
+            if(o.has(USER_NAME)) myUser.fire(MyUser.CHANGE_NAME,o.getString(USER_NAME));
             if(o.has(USER_PROVIDER)) {
                 Location location = Utils.jsonToLocation(o);
                 myUser.addLocation(location);
             }
             users.put(o.getInt(RESPONSE_NUMBER), myUser);
-            myUser.setNumber(o.getInt(RESPONSE_NUMBER));
+            myUser.fire(MyUser.CHANGE_NUMBER,o.getInt(RESPONSE_NUMBER));
             return myUser;
         } else {
-            if(o.has(USER_COLOR)) users.get(o.getInt(RESPONSE_NUMBER)).setColor(o.getInt(USER_COLOR));
+            if(o.has(USER_COLOR)) users.get(o.getInt(RESPONSE_NUMBER)).fire(MyUser.CHANGE_COLOR,o.getInt(USER_COLOR));
         }
-        users.get(o.getInt(RESPONSE_NUMBER)).setActive(true);
+        users.get(o.getInt(RESPONSE_NUMBER)).fire(MyUser.MAKE_ACTIVE);
         return users.get(o.getInt(RESPONSE_NUMBER));
     }
 
@@ -133,36 +114,28 @@ public class MyUsers {
     }
 
 
-    public void setNameFor(int number, final String name){
-        if(!users.containsKey(number)) return;
-        String newName = name;
-//        String name = users.get(number).getName();
-        if(newName != null && newName.length()>0) {
-
-        } else if (number == myNumber) {
-            newName = "Me";
-        } else if (number == 0) {
-            newName = "Leader";
-        } else {
-            newName = "Friend " + number;
-        }
-        final String oldName = users.get(number).getName();
-        if(!newName.equals(oldName)) {
-            users.get(number).setName(newName);
-            forUser(number, new Callback() {
-                @Override
-                public void call(Integer number, MyUser myUser) {
-                    myUser.fire(MyUser.CHANGE_NAME,null);
-//                    myUser.removeViews();
-//                    myUser.createViews();
-                }
-            });
-        }
-        if(number == myNumber){
-            if(State.getInstance().myTracking != null) State.getInstance().myTracking.sendMessage(USER_NAME,newName);
-        }
-
+    public int getCountSelected(){
+        final int[] count = {0};
+        forAllUsers(new Callback() {
+            @Override
+            public void call(Integer number, MyUser myUser) {
+                if(myUser.getProperties().isActive() && myUser.getProperties().isSelected())
+                    count[0]++;
+            }
+        });
+        return count[0];
     }
 
+    public int getCountActive(){
+        final int[] count = {0};
+        forAllUsers(new Callback() {
+            @Override
+            public void call(Integer number, MyUser myUser) {
+                if(myUser.getProperties().isActive())
+                    count[0]++;
+            }
+        });
+        return count[0];
+    }
 
 }

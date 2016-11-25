@@ -1,4 +1,4 @@
-package ru.wtg.whereaminow.helpers;
+package ru.wtg.whereaminow.holders;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,19 +15,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import ru.wtg.whereaminow.R;
+import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
- * Created by tujger on 11/18/16.
+ * Created 11/18/16.
  */
-public class MarkerViewHolder implements ViewHolder<MarkerViewHolder.MarkerView> {
-    public static final String TYPE = "marker";
+public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
+    private static final String TYPE = "marker";
     private final Context context;
 
     private GoogleMap map;
-    private MarkerViewHolder.MarkerView markerView;
-    private int number;
 
     public MarkerViewHolder(Context context) {
         this.context = context;
@@ -39,16 +39,16 @@ public class MarkerViewHolder implements ViewHolder<MarkerViewHolder.MarkerView>
     }
 
     @Override
-    public MarkerView createView(MyUser myUser) {
+    public MarkerView create(MyUser myUser) {
         if(myUser == null || myUser.getLocation() == null || map == null) return null;
-        this.number = myUser.getNumber();
-        markerView = this.new MarkerView(myUser);
+        int number = myUser.getProperties().getNumber();
+        MarkerView markerView = this.new MarkerView(myUser);
         Bitmap bitmap;
         int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
 //        if(isDraft()) {
 //            bitmap = Utils.renderBitmap(context, R.drawable.navigation_marker,Color.GRAY,size,size);
 //        } else {
-            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getColor(),size,size);
+            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getProperties().getColor(),size,size);
 //        }
         Marker marker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()))
@@ -70,17 +70,16 @@ public class MarkerViewHolder implements ViewHolder<MarkerViewHolder.MarkerView>
         return this;
     }
 
-    public class MarkerView implements AbstractView {
+    class MarkerView extends AbstractView {
         private Marker marker;
-        private int number;
+//        private int number;
         private MyUser myUser;
-        private int cameraNumber = -1;
 
-        public MarkerView(MyUser myUser){
+        MarkerView(MyUser myUser){
             this.myUser = myUser;
         }
 
-        public void setMarker(Marker marker){
+        void setMarker(Marker marker){
             this.marker = marker;
         }
 
@@ -97,7 +96,6 @@ public class MarkerViewHolder implements ViewHolder<MarkerViewHolder.MarkerView>
 
         @Override
         public void onChangeLocation(Location location) {
-
             final LatLng startPosition = marker.getPosition();
             final LatLng finalPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -139,16 +137,14 @@ public class MarkerViewHolder implements ViewHolder<MarkerViewHolder.MarkerView>
 
         }
 
-        @Override
         public void setNumber(int number) {
-            this.number = number;
+//            this.number = number;
             marker.setTag(number);
         }
 
-        @Override
-        public int getNumber() {
-            return number;
-        }
+//        public int getNumber() {
+//            return number;
+//        }
 
         @Override
         public void onEvent(int event, Object object) {

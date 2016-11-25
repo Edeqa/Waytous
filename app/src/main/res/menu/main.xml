@@ -12,6 +12,11 @@
         android:title="Set my name"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_fit_to_screen"
+        android:orderInCategory="100"
+        android:title="Fit to screen"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_show_tracks"
         android:orderInCategory="100"
         android:title="Show tracks"

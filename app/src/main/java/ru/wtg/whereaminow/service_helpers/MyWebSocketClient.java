@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow.service_helpers;
 
-import android.content.Context;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
@@ -13,7 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 
-import ru.wtg.whereaminow.helpers.State;
+import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
@@ -39,7 +38,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**
- * Created by tujger on 10/2/16.
+ * Created 10/2/16.
  */
 public class MyWebSocketClient {
 
@@ -52,7 +51,7 @@ public class MyWebSocketClient {
     private String token;
     private boolean wasConnected = false;
 
-    public MyWebSocketClient(URI uri) throws URISyntaxException {
+    MyWebSocketClient(URI uri) throws URISyntaxException {
         this.uri = uri;
         webSocketClient = new MWebSocketClient(uri);
         state = State.getInstance();
@@ -115,7 +114,6 @@ public class MyWebSocketClient {
 
         @Override
         public void onMessage(String s) {
-            final String message = s;
             JSONObject o;
             try {
                 o = new JSONObject(s);
@@ -180,8 +178,8 @@ public class MyWebSocketClient {
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
             put(REQUEST_OS, "android");
-            if(state.getMe().getName() != null && state.getMe().getName().length()>0){
-                put(USER_NAME,state.getMe().getName());
+            if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
+                put(USER_NAME,state.getMe().getProperties().getName());
             }
         }
 
@@ -195,8 +193,8 @@ public class MyWebSocketClient {
         put(REQUEST_MODEL, Build.MODEL);
         put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
         put(REQUEST_OS, "android");
-        if(state.getMe().getName() != null && state.getMe().getName().length()>0){
-            put(USER_NAME,state.getMe().getName());
+        if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
+            put(USER_NAME,state.getMe().getProperties().getName());
         }
 
         send();
