@@ -241,6 +241,16 @@ public class MyWebSocketClient {
         return this;
     }
 
+    public MyWebSocketClient put(String key, Boolean value) {
+        if (builder == null) builder = new JSONObject();
+        try {
+            builder.put(key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
     public MyWebSocketClient put(String key, Number value) {
         if (builder == null) builder = new JSONObject();
         try {

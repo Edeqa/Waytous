@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -16,10 +17,14 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 
-import static ru.wtg.whereaminow.helpers.MyUser.ADJUST_ZOOM;
-import static ru.wtg.whereaminow.helpers.MyUser.ASSIGN_TO_CAMERA;
-import static ru.wtg.whereaminow.helpers.MyUser.CHANGE_NAME;
-import static ru.wtg.whereaminow.helpers.MyUser.REFUSE_FROM_CAMERA;
+import static ru.wtg.whereaminow.State.ACCEPTED;
+import static ru.wtg.whereaminow.State.ADJUST_ZOOM;
+import static ru.wtg.whereaminow.State.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.ERROR;
+import static ru.wtg.whereaminow.State.SELECT_USER;
+import static ru.wtg.whereaminow.State.STOPPED;
+import static ru.wtg.whereaminow.State.STOP_TRACKING;
+import static ru.wtg.whereaminow.State.UNSELECT_USER;
 
 /**
  * Created 11/18/16.
@@ -40,6 +45,11 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     }
 
     @Override
+    public String[] getOwnEvents() {
+        return new String[0];
+    }
+
+    @Override
     public ButtonView create(MyUser myUser) {
         if (myUser == null) return null;
         return this.new ButtonView(myUser);
@@ -47,8 +57,32 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
     public ButtonViewHolder setLayout(LinearLayout layout) {
         this.layout = layout;
-        layout.setVisibility(View.INVISIBLE);
+        if(State.getInstance().tracking()){
+            show();
+        } else {
+            hide();
+        }
         return this;
+    }
+
+    @Override
+    public boolean dependsOnEvent() {
+        return true;
+    }
+
+    @Override
+    public boolean onEvent(String event, Object object) {
+        switch(event){
+            case ACCEPTED:
+                show();
+                break;
+            case STOP_TRACKING:
+            case STOPPED:
+            case ERROR:
+                hide();
+                break;
+        }
+        return true;
     }
 
     public void hide(){
@@ -126,17 +160,16 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 //        }
 
         @Override
-        public void onEvent(int event, Object object) {
+        public boolean onEvent(String event, Object object) {
             switch(event){
-                case ASSIGN_TO_CAMERA:
+                case SELECT_USER:
                     button.setTypeface(Typeface.DEFAULT_BOLD);
                     break;
-                case REFUSE_FROM_CAMERA:
+                case UNSELECT_USER:
                     button.setTypeface(Typeface.DEFAULT);
                     break;
                 case CHANGE_NAME:
                     String name = myUser.getProperties().getName();
-//        String name = users.get(number).getName();
                     if(object == null){
                         if(myUser == State.getInstance().getMe()){
                             name = "Me";
@@ -149,6 +182,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     button.setText((myUser.getProperties().getNumber()==0 ? "*" : "")+name);
 
             }
+            return true;
         }
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -162,11 +196,11 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         @Override
                         public void call(Integer number, MyUser user) {
                             if(user != myUser) {
-                                user.fire(REFUSE_FROM_CAMERA);
+                                user.fire(UNSELECT_USER);
                             }
                         }
                     });
-                    myUser.fire(ASSIGN_TO_CAMERA, 0);
+                    myUser.fire(SELECT_USER, 0);
                     clicked = true;
                     new Handler().postDelayed(new Runnable() {
                         @Override

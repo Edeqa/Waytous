@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
+import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -15,9 +17,9 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 
-import static ru.wtg.whereaminow.helpers.MyUser.CHANGE_NAME;
-import static ru.wtg.whereaminow.helpers.MyUser.MENU_ITEM_CHANGE_NAME;
-import static ru.wtg.whereaminow.helpers.MyUser.MENU_ITEM_NAVIGATE;
+import static ru.wtg.whereaminow.State.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 
 /**
  * Created 11/18/16.
@@ -36,6 +38,11 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     }
 
     @Override
+    public String[] getOwnEvents() {
+        return new String[0];
+    }
+
+    @Override
     public MenuView create(MyUser myUser) {
         if (myUser == null) return null;
         return this.new MenuView(myUser);
@@ -49,37 +56,13 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         }
 
         @Override
-        public void onEvent(int event, Object object) {
-            if(object == null) return;
+        public boolean onEvent(String event, Object object) {
+            if(object == null) return true;
             switch (event){
-                case MENU_ITEM_NAVIGATE:
-                    MenuItem item = (MenuItem) object;
-                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem) {
-                            Uri uri = Uri.parse("google.navigation:q="
-                                    + String.valueOf(myUser.getLocation().getLatitude())
-                                    + "," + String.valueOf(myUser.getLocation().getLongitude()));
-                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            try {
-                                context.startActivity(intent);
-                            } catch(ActivityNotFoundException ex) {
-                                try {
-                                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, uri);
-                                    unrestrictedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                case CREATE_OPTIONS_MENU:
+                    Menu optionsMenu = (Menu) object;
 
-                                    context.startActivity(unrestrictedIntent);
-                                } catch(ActivityNotFoundException innerEx) {
-                                    Toast.makeText(context.getApplicationContext(), "Please install a navigation application.", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                            return false;
-                        }
-                    });
-                    break;
-                case MENU_ITEM_CHANGE_NAME:
-                    item = (MenuItem) object;
+                    MenuItem item = optionsMenu.findItem(R.id.action_set_my_name);
                     item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -122,7 +105,37 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
                         }
                     });
                     break;
+
+                case CREATE_CONTEXT_MENU:
+                    ContextMenu contextMenu = (ContextMenu) object;
+
+                    item = contextMenu.findItem(R.id.action_navigate);
+                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            Uri uri = Uri.parse("google.navigation:q="
+                                    + String.valueOf(myUser.getLocation().getLatitude())
+                                    + "," + String.valueOf(myUser.getLocation().getLongitude()));
+                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            try {
+                                context.startActivity(intent);
+                            } catch(ActivityNotFoundException ex) {
+                                try {
+                                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, uri);
+                                    unrestrictedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                    context.startActivity(unrestrictedIntent);
+                                } catch(ActivityNotFoundException innerEx) {
+                                    Toast.makeText(context.getApplicationContext(), "Please install a navigation application.", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                            return false;
+                        }
+                    });
+                    break;
             }
+            return true;
         }
 
         @Override

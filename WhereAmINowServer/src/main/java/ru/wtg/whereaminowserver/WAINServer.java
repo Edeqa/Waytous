@@ -14,7 +14,7 @@ import ru.wtg.whereaminowserver.helpers.MyWssServer;
 
 
 /**
- * Created by tujger on 10/2/16.
+ * Created 10/2/16.
  */
 
 public class WAINServer {

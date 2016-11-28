@@ -3,13 +3,13 @@ package ru.wtg.whereaminow.holders;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 
-import static ru.wtg.whereaminow.helpers.MyUser.ASSIGN_TO_CAMERA;
-import static ru.wtg.whereaminow.helpers.MyUser.CHANGE_COLOR;
-import static ru.wtg.whereaminow.helpers.MyUser.CHANGE_NAME;
-import static ru.wtg.whereaminow.helpers.MyUser.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.helpers.MyUser.MAKE_ACTIVE;
-import static ru.wtg.whereaminow.helpers.MyUser.MAKE_INACTIVE;
-import static ru.wtg.whereaminow.helpers.MyUser.REFUSE_FROM_CAMERA;
+import static ru.wtg.whereaminow.State.CHANGE_COLOR;
+import static ru.wtg.whereaminow.State.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
+import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
+import static ru.wtg.whereaminow.State.SELECT_USER;
+import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**
@@ -21,6 +21,11 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
     @Override
     public String getType(){
         return TYPE;
+    }
+
+    @Override
+    public String[] getOwnEvents() {
+        return new String[0];
     }
 
     @Override
@@ -47,12 +52,12 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
         }
 
         @Override
-        public void onEvent(int event, Object object) {
+        public boolean onEvent(String event, Object object) {
             switch(event){
-                    case ASSIGN_TO_CAMERA:
+                    case SELECT_USER:
                         selected = true;
                         break;
-                    case REFUSE_FROM_CAMERA:
+                    case UNSELECT_USER:
                         selected = false;
                         break;
                     case MAKE_ACTIVE:
@@ -77,6 +82,7 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
                         }
                         break;
             }
+            return true;
         }
 
         public String getName() {

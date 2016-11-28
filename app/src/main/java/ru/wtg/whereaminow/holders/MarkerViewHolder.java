@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.text.style.TtsSpan;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
@@ -18,6 +19,7 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 
+import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
@@ -36,6 +38,11 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
     @Override
     public String getType(){
         return TYPE;
+    }
+
+    @Override
+    public String[] getOwnEvents() {
+        return new String[0];
     }
 
     @Override
@@ -147,7 +154,14 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 //        }
 
         @Override
-        public void onEvent(int event, Object object) {
+        public boolean onEvent(String event, Object object) {
+            switch (event){
+                case CHANGE_NUMBER:
+                    int number = (int) object;
+                    setNumber(number);
+                    break;
+            }
+            return true;
         }
     }
 

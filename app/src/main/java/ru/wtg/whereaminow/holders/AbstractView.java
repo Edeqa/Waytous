@@ -25,9 +25,6 @@ abstract public class AbstractView implements Entity {
     }
 
     @Override
-    abstract public boolean dependsOnLocation();
-
-    @Override
     public void onChangeLocation(Location location){
         System.out.println("onChangeLocation:"+(this.getClass().getSimpleName()));
     }
@@ -37,7 +34,5 @@ abstract public class AbstractView implements Entity {
         return true;
     }
 
-    @Override
-    abstract public void onEvent(int event, Object object);
 
 }

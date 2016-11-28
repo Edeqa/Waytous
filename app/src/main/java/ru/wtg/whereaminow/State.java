@@ -7,19 +7,24 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
+import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
@@ -32,10 +37,42 @@ import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_GPS_REJECTED;
 
 public class State extends MultiDexApplication {
 
+    public static final String SELECT_USER = "select";
+    public static final String UNSELECT_USER = "unselect";
+    public static final String CHANGE_NAME = "change_name";
+    public static final String CHANGE_NUMBER = "change_number";
+    public static final String CHANGE_COLOR = "change_color";
+    public static final String CREATE_CONTEXT_MENU = "create_context_menu";
+    public static final String CREATE_OPTIONS_MENU = "create_options_menu";
+
+    public static final String ADJUST_ZOOM = "adjust_zoom";
+    public static final String MAKE_ACTIVE = "make_active";
+    public static final String MAKE_INACTIVE = "make_inactive";
+
+    public static final String NEW_TRACKING = "new_tracking";
+    public static final String JOIN_TRACKING = "join_tracking";
+    public static final String DISCONNECTED = "disconnected";
+    public static final String STOP_TRACKING = "stop_tracking";
+    public static final String ACCEPTED = "accepted";
+    public static final String ERROR = "error";
+    public static final String STOPPED = "stopped";
+    public static final String SEND_LINK = "send_link";
+    public static final String NEW_MESSAGE = "new_message";
+    public static final String SEND_MESSAGE = "send_message";
+    public static final String PRIVATE_MESSAGE = "private_message";
+    public static final String USER_MESSAGE = "user_message";
+    public static final String SHOW_MESSAGES = "show_messages";
+
     private static State instance = null;
     private static WhereAmINowService service;
     private static MainActivity activity;
     private SharedPreferences sharedPreferences;
+
+    private ArrayList<String> userEntityActions = new ArrayList<>();
+    private ArrayList<String> entityActions = new ArrayList<>();
+    private ArrayList<String> userViewActions = new ArrayList<>();
+    private ArrayList<String> viewActions = new ArrayList<>();
+
 
     private String deviceId;
     private String token;
@@ -55,18 +92,20 @@ public class State extends MultiDexApplication {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         registerEntityHolder(new PropertiesHolder());
+        registerEntityHolder(new MessagesHolder());
+
 
         MyUser me = State.getInstance().getMe();
         if(me == null){
             me = new MyUser();
             setMe(me);
-            me.fire(MyUser.ASSIGN_TO_CAMERA, 0);
+            me.fire(SELECT_USER, 0);
 
             String name = getStringPreference("my_name",null);
-            me.fire(MyUser.CHANGE_NAME, name);
-            me.fire(MyUser.CHANGE_COLOR, Color.BLUE);
+            me.fire(CHANGE_NAME, name);
+            me.fire(CHANGE_COLOR, Color.BLUE);
         }
-        me.fire(MyUser.MAKE_ACTIVE);
+        me.fire(MAKE_ACTIVE);
 
         users = new MyUsers();
 
@@ -210,24 +249,76 @@ public class State extends MultiDexApplication {
         this.me = me;
     }
 
-    private HashMap<String,EntityHolder> entityHolders = new HashMap<>();
+    private HashMap<String,EntityHolder> entityHolders = new LinkedHashMap<>();
+    private HashMap<String,EntityHolder> userEntityHolders = new LinkedHashMap<>();
+    private HashMap<String,AbstractViewHolder> viewHolders = new LinkedHashMap<>();
+    private HashMap<String,AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
 
-    public void registerEntityHolder(EntityHolder entityHolder) {
-        entityHolders.put(entityHolder.getType(), entityHolder);
+    public void registerEntityHolder(EntityHolder holder) {
+        if(holder instanceof AbstractViewHolder){
+            if(holder.dependsOnEvent()) {
+                viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+            }
+            if(holder.dependsOnUser()) {
+                userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+            }
+        } else {
+            if(holder.dependsOnEvent()) {
+                entityHolders.put(holder.getType(), holder);
+            }
+            if(holder.dependsOnUser()) {
+                userEntityHolders.put(holder.getType(), holder);
+            }
+        }
+//        updateActions();
     }
 
     public HashMap<String,EntityHolder> getEntityHolders(){
         return entityHolders;
     }
 
-    public void clearViewHolders(){
-        Iterator<Map.Entry<String,EntityHolder>> iter = entityHolders.entrySet().iterator();
-        while (iter.hasNext()){
-            Map.Entry<String, EntityHolder> entry = iter.next();
-            if(entry.getValue() instanceof AbstractViewHolder) {
-                iter.remove();
-            }
+    public HashMap<String,EntityHolder> getUserEntityHolders(){
+        return userEntityHolders;
+    }
+
+    public HashMap<String,AbstractViewHolder> getViewHolders(){
+        return viewHolders;
+    }
+
+    public HashMap<String,AbstractViewHolder> getUserViewHolders(){
+        return userViewHolders;
+    }
+
+    public HashMap<String,EntityHolder> getAllHolders(){
+        HashMap<String,EntityHolder> res = new LinkedHashMap<>();
+        for(Map.Entry<String,EntityHolder> entry: entityHolders.entrySet()){
+            res.put(entry.getKey(),entry.getValue());
         }
+        for(Map.Entry<String,EntityHolder> entry: userEntityHolders.entrySet()){
+            res.put(entry.getKey(),entry.getValue());
+        }
+        for(Map.Entry<String,AbstractViewHolder> entry: viewHolders.entrySet()){
+            res.put(entry.getKey(),entry.getValue());
+        }
+        for(Map.Entry<String,AbstractViewHolder> entry: userViewHolders.entrySet()){
+            res.put(entry.getKey(),entry.getValue());
+        }
+        return res;
+    }
+
+    public void clearViewHolders(){
+        viewHolders.clear();
+        viewActions.clear();
+        userViewHolders.clear();
+        userViewActions.clear();
+    }
+
+    public EntityHolder getEntityHolder(String type){
+        if(entityHolders.containsKey(type)) return entityHolders.get(type);
+        if(userEntityHolders.containsKey(type)) return userEntityHolders.get(type);
+        if(viewHolders.containsKey(type)) return viewHolders.get(type);
+        if(userViewHolders.containsKey(type)) return userViewHolders.get(type);
+        return null;
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -241,4 +332,64 @@ public class State extends MultiDexApplication {
             System.out.println("onServiceDisconnected");
         }
     };
+
+    private void updateActions(){
+        entityActions.clear();
+        userEntityActions.clear();
+        viewActions.clear();
+        userViewActions.clear();
+
+        userViewActions.addAll(Arrays.asList(SELECT_USER, UNSELECT_USER,
+                CHANGE_NUMBER,CHANGE_COLOR,
+                CREATE_CONTEXT_MENU,CREATE_OPTIONS_MENU,
+                ADJUST_ZOOM,MAKE_ACTIVE,MAKE_INACTIVE));
+
+        for(Map.Entry<String, EntityHolder> entry: getEntityHolders().entrySet()){
+            entityActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+        }
+        for(Map.Entry<String, EntityHolder> entry: getUserEntityHolders().entrySet()){
+            userEntityActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+        }
+        for(Map.Entry<String, AbstractViewHolder> entry: getViewHolders().entrySet()){
+            viewActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+        }
+        for(Map.Entry<String, AbstractViewHolder> entry: getUserViewHolders().entrySet()){
+            userViewActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+        }
+        System.out.println("ENTITYACTIONS:"+ entityActions);
+        System.out.println("USERENTITYACTIONS:"+ userEntityActions);
+        System.out.println("VIEWACTIONS:"+ viewActions);
+        System.out.println("USERVIEWACTIONS:"+ userViewActions);
+    }
+
+    public void fire(final String EVENT, final Object object){
+        for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
+            if(entry.getValue() != null){
+                try {
+                    if(!entry.getValue().onEvent(EVENT, object)) break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
+                    if(entry.getValue() != null){
+                        try {
+                            if(!entry.getValue().onEvent(EVENT, object)) break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void fire(final String EVENT){
+        fire(EVENT, null);
+    }
+
+
 }

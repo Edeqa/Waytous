@@ -8,10 +8,20 @@ import ru.wtg.whereaminow.interfaces.EntityHolder;
  */
 abstract public class AbstractViewHolder<B extends AbstractView> implements EntityHolder<AbstractView> {
 
-    AbstractViewHolder(){}
-
-    abstract public String getType();
-
     abstract public B create(MyUser myUser);
 
+    @Override
+    public boolean dependsOnUser(){
+        return true;
+    }
+
+    @Override
+    public boolean dependsOnEvent() {
+        return false;
+    }
+
+    @Override
+    public boolean onEvent(String event, Object object) {
+        return true;
+    }
 }

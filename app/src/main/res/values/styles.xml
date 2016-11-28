@@ -49,6 +49,7 @@
 
     <style name="NightTheme" parent="AppTheme.NoActionBar">
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@android:color/darker_gray</item>
         <item name="attr/buttonPerson">@drawable/ic_person_white_24dp</item>
     </style>
 

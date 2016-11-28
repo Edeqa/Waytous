@@ -14,8 +14,8 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.helpers.MyUser.ASSIGN_TO_CAMERA;
-import static ru.wtg.whereaminow.helpers.MyUser.REFUSE_FROM_CAMERA;
+import static ru.wtg.whereaminow.State.SELECT_USER;
+import static ru.wtg.whereaminow.State.UNSELECT_USER;
 
 /**
  * Created 11/18/16.
@@ -27,6 +27,11 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     @Override
     public String getType(){
         return TYPE;
+    }
+
+    @Override
+    public String[] getOwnEvents() {
+        return new String[0];
     }
 
     @Override
@@ -64,19 +69,20 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         }
 
         @Override
-        public void onEvent(int event, Object object) {
+        public boolean onEvent(String event, Object object) {
             switch(event){
-                case ASSIGN_TO_CAMERA:
-                case REFUSE_FROM_CAMERA:
+                case SELECT_USER:
+                case UNSELECT_USER:
                     if(State.getInstance().getUsers().getCountSelected() != 1){
                         callback.call(null);
-                        return;
+                        return true;
                     } else {
                         callback.call("...");
                         onChangeLocation(myUser.getLocation());
                     }
                     break;
             }
+            return true;
         }
 
         private void resolveAddress(final Location location) {

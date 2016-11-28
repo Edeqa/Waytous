@@ -20,4 +20,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
     android:id="@+id/action_hide_track"
     android:title="Hide track"
     android:visible="false"/>
+<item
+    android:id="@+id/action_private_message"
+    android:title="Private message"
+    android:visible="false"/>
 </menu>

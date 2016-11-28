@@ -10,8 +10,18 @@ abstract class AbstractPropertyHolder<B extends AbstractProperty> implements Ent
 
     AbstractPropertyHolder(){}
 
-    abstract public String getType();
+    @Override
+    public boolean onEvent(String event, Object object) {
+        return true;
+    }
 
-    abstract public B create(MyUser myUser);
+    @Override
+    public boolean dependsOnUser() {
+        return true;
+    }
 
+    @Override
+    public boolean dependsOnEvent() {
+        return false;
+    }
 }

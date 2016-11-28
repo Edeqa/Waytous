@@ -73,20 +73,20 @@
                 app:fab_label="Navigate" />
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_show_us"
+                android:id="@+id/fab_fit_to_screen"
                 style="@style/MenuButtonsStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_fullscreen_white_24dp"
-                app:fab_label="Show us" />
+                app:fab_label="Fit to screen" />
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_messages"
+                android:id="@+id/fab_new_message"
                 style="@style/MenuButtonsStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_chat_white_24dp"
-                app:fab_label="Messages" />
+                app:fab_label="New message" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_start_tracking_and_send_link"
