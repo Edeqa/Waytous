@@ -21,9 +21,9 @@ public class FabMenu extends FloatingActionMenu {
     public FloatingActionButton splitScreen;
     public FloatingActionButton switchToFriend;
     public FloatingActionButton switchToMe;
-    public FloatingActionButton showUs;
+    public FloatingActionButton fitToScreen;
     public FloatingActionButton navigate;
-    public FloatingActionButton messages;
+    public FloatingActionButton newMessage;
 
     public FabMenu(Context context) {
         super(context);
@@ -43,8 +43,8 @@ public class FabMenu extends FloatingActionMenu {
             switchToFriend = (FloatingActionButton) findViewById(R.id.fab_switch_to_friend);
             switchToMe = (FloatingActionButton) findViewById(R.id.fab_switch_to_me);
             navigate = (FloatingActionButton) findViewById(R.id.fab_navigate);
-            showUs = (FloatingActionButton) findViewById(R.id.fab_show_us);
-            messages = (FloatingActionButton) findViewById(R.id.fab_messages);
+            fitToScreen = (FloatingActionButton) findViewById(R.id.fab_fit_to_screen);
+            newMessage = (FloatingActionButton) findViewById(R.id.fab_new_message);
             splitScreen = (FloatingActionButton) findViewById(R.id.fab_split_screen);
         }
 
@@ -58,9 +58,9 @@ public class FabMenu extends FloatingActionMenu {
         splitScreen.setOnClickListener(onClickListener);
         switchToFriend.setOnClickListener(onClickListener);
         switchToMe.setOnClickListener(onClickListener);
-        showUs.setOnClickListener(onClickListener);
+        fitToScreen.setOnClickListener(onClickListener);
         navigate.setOnClickListener(onClickListener);
-        messages.setOnClickListener(onClickListener);
+        newMessage.setOnClickListener(onClickListener);
 
         setOnMenuButtonClickListener(onClickListener);
         toggleMenuButton(false);

@@ -32,6 +32,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CONNECTED;
@@ -43,6 +44,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 
@@ -319,8 +321,16 @@ public class MyWssServer extends WebSocketServer {
                     token.setChanged();
                     o = user.getPosition().toJSON();
                 }
+                if(request.has(USER_MESSAGE)){
+                    o.put(USER_MESSAGE,request.getString(USER_MESSAGE));
+                }
                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                token.sendToAllFrom(o, user);
+                if(request.has(RESPONSE_PRIVATE)){
+                    o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
+                    token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                } else {
+                    token.sendToAllFrom(o, user);
+                }
 
                 System.out.println("REQUEST_UPDATE:TOKEN AND USER FOUND:" + token.getId() + ":" + user);
             } else {

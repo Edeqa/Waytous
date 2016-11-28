@@ -144,7 +144,29 @@ public class MyToken {
 
     }
 
-    public void sendToUsers(JSONObject o,ArrayList<MyUser> users) {
+    public void sendToFrom(JSONObject o, int toUserNumber, MyUser fromUser) {
+        ArrayList<MyUser> dest = new ArrayList<MyUser>();
+        for(Map.Entry<String,MyUser> x:users.entrySet()){
+            if(x.getValue().getNumber() == toUserNumber){
+                dest.add(x.getValue());
+                break;
+            }
+        }
+        o.put(USER_NUMBER,fromUser.getNumber());
+        System.out.println("SENDTOUSER:"+toUserNumber+":"+o);
+        sendToUsers(o,dest);
+    }
+
+    public void sendToFrom(JSONObject o, MyUser toUser, MyUser fromUser) {
+        ArrayList<MyUser> dest = new ArrayList<MyUser>();
+        dest.add(toUser);
+        o.put(USER_NUMBER,fromUser.getNumber());
+        System.out.println("SENDTOUSER:"+toUser.getName()+":"+o);
+        sendToUsers(o,dest);
+
+    }
+
+    public void sendToUsers(JSONObject o, ArrayList<MyUser> users) {
         for(MyUser x:users){
             WebSocket conn = x.getConnection();
             if(conn != null && conn.isOpen()){

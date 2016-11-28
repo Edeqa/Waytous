@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created by tujger on 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 5;
+    public final static int SERVER_BUILD = 6;
 
 // device debug local version
     public final static String WSS_SERVER_HOST = "10.0.0.96";
@@ -78,6 +78,7 @@ public class Constants {
     public static final String RESPONSE_CONTROL = "control";
     public static final String RESPONSE_NUMBER = "number";
     public static final String RESPONSE_INITIAL = "initial";
+    public static final String RESPONSE_PRIVATE = "to";
 
     public static final String USER_DISMISSED = "dismissed";
     public static final String USER_JOINED = "joined";
@@ -93,6 +94,7 @@ public class Constants {
     public static final String USER_NUMBER = "number";
     public static final String USER_COLOR = "color";
     public static final String USER_NAME = "name";
+    public static final String USER_MESSAGE = "user_message";
 
     public static final int LIFETIME_INACTIVE_TOKEN = 600;
 

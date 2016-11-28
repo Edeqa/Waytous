@@ -10,7 +10,7 @@ public interface Entity {
 
     void remove();
 
-    void onEvent(int event, Object object);
+    boolean onEvent(String event, Object object);
 
     boolean dependsOnLocation();
 

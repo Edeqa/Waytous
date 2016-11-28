@@ -10,6 +10,14 @@ public interface EntityHolder<T extends Entity> {
 
     String getType();
 
+    String[] getOwnEvents();
+
+    boolean dependsOnUser();
+
+    boolean dependsOnEvent();
+
     T create(MyUser myUser);
+
+    boolean onEvent(String event, Object object);
 
 }

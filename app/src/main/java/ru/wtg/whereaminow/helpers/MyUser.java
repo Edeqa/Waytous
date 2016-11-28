@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.holders.AbstractProperty;
 import ru.wtg.whereaminow.holders.AbstractView;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
@@ -20,26 +21,6 @@ import ru.wtg.whereaminow.interfaces.EntityHolder;
  * Created 9/18/16.
  */
 public class MyUser {
-    public static final int ASSIGN_TO_CAMERA = 1;
-    public static final int REFUSE_FROM_CAMERA = 2;
-    public static final int CAMERA_NEXT_ORIENTATION = 3;
-    public static final int CHANGE_NAME = 4;
-    public static final int CHANGE_NUMBER = 5;
-    public static final int CHANGE_COLOR = 6;
-    public static final int MENU_ITEM_NAVIGATE = 8;
-    public static final int MENU_ITEM_PIN_ALL = 9;
-    public static final int MENU_ITEM_PIN = 10;
-    public static final int MENU_ITEM_UNPIN = 11;
-    public static final int MENU_ITEM_SHOW_TRACK = 12;
-    public static final int MENU_ITEM_HIDE_TRACK = 13;
-    public static final int MENU_ITEM_SHOW_ALL_TRACKS = 14;
-    public static final int MENU_ITEM_HIDE_ALL_TRACKS = 15;
-    public static final int MENU_ITEM_CHANGE_NAME = 16;
-    public static final int ADJUST_ZOOM = 17;
-    public static final int MAKE_ACTIVE = 18;
-    public static final int MAKE_INACTIVE = 19;
-    public static final int SHOW_TRACK = 20;
-    public static final int HIDE_TRACK = 21;
 
     private LinkedHashMap<String,Entity> entities;
     private ArrayList<Location> locations;
@@ -76,8 +57,7 @@ public class MyUser {
     }
 
     private void createProperties(){
-        for(Map.Entry<String, EntityHolder> entry: State.getInstance().getEntityHolders().entrySet()){
-            if(entry.getValue() instanceof AbstractViewHolder) continue;
+        for(Map.Entry<String, EntityHolder> entry: State.getInstance().getUserEntityHolders().entrySet()){
             if(entities.containsKey(entry.getKey())) continue;
             Entity property = entry.getValue().create(this);
             if(property != null){
@@ -90,8 +70,7 @@ public class MyUser {
         if(getProperties().isActive()) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 public void run() {
-                    for(Map.Entry<String, EntityHolder> entry: State.getInstance().getEntityHolders().entrySet()){
-                        if(!(entry.getValue() instanceof AbstractViewHolder)) continue;
+                    for(Map.Entry<String, AbstractViewHolder> entry: State.getInstance().getUserViewHolders().entrySet()){
                         if(entities.containsKey(entry.getKey()) && entities.get(entry.getKey()) != null){
                             entities.get(entry.getKey()).remove();
                         }
@@ -102,23 +81,29 @@ public class MyUser {
         }
     }
 
-    public void fire(final int EVENT){
+    public void fire(final String EVENT){
         fire(EVENT, null);
     }
 
-    public void fire(final int EVENT, final Object object){
+    public void fire(final String EVENT, final Object object){
         for(Map.Entry<String,Entity> entry: entities.entrySet()){
-            if(entry.getValue() instanceof AbstractView) continue;
-            if(entry.getValue() != null){
-                entry.getValue().onEvent(EVENT, object);
+            if(entry.getValue() instanceof AbstractProperty){
+                try {
+                    if(!entry.getValue().onEvent(EVENT, object)) break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
-
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 for(Map.Entry<String,Entity> entry: entities.entrySet()){
                     if(entry.getValue() instanceof AbstractView){
-                        entry.getValue().onEvent(EVENT, object);
+                        try {
+                            if(!entry.getValue().onEvent(EVENT, object)) break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -127,24 +112,31 @@ public class MyUser {
 
     private void onChangeLocation(){
         for(Map.Entry<String,Entity> entry: entities.entrySet()){
-            if(!(entry.getValue() instanceof AbstractView)
-                    && entry.getValue() != null
+            if(entry.getValue() instanceof AbstractProperty
                     && entry.getValue().dependsOnLocation()
                     && getLocation() != null){
-                entry.getValue().onChangeLocation(getLocation());
+                try {
+                    entry.getValue().onChangeLocation(getLocation());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 for (Map.Entry<String, Entity> entry : entities.entrySet()) {
                     if (getProperties().isActive() && entry.getValue() == null) {
-                        EntityHolder holder = State.getInstance().getEntityHolders().get(entry.getKey());
+                        AbstractViewHolder holder = State.getInstance().getUserViewHolders().get(entry.getKey());
                         entry.setValue(holder.create(MyUser.this));
                     }
                     if (entry.getValue() instanceof AbstractView
                             && entry.getValue().dependsOnLocation()
                             && getLocation() != null) {
-                        entry.getValue().onChangeLocation(getLocation());
+                        try {
+                            entry.getValue().onChangeLocation(getLocation());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
