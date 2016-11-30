@@ -265,4 +265,16 @@ public class Utils {
     public static String getUnique() {
         return new BigInteger(48, new SecureRandom()).toString(32).toUpperCase();
     }
+
+    public static Location normalizeLocation(GeoTrackFilter filter, Location location) {
+        filter.update_velocity2d(location.getLatitude(),location.getLongitude(),location.getTime());
+        double[] latlng = filter.get_lat_long();
+        location.setLatitude(latlng[0]);
+        location.setLongitude(latlng[1]);
+        location.setBearing((float) filter.get_bearing());
+        location.setSpeed((float) filter.get_speed(location.getAltitude()));
+        return location;
+
+    }
+
 }

@@ -54,7 +54,12 @@ public class FabViewHolder extends AbstractViewHolder {
     public FabViewHolder setFab(final FabMenu fab) {
         this.fab = fab;
 
-        fab.initAndSetOnClickListener(onClickListener);
+//        fab.showMenu(true);
+        fab.toggleMenuButton(false);
+        fab.setVisibility(View.VISIBLE);
+        fab.toggleMenuButton(true);
+
+        fab.setOnClickListener(onClickListener);
         fab.removeAllMenuButtons();
         /*fab.initAndSetOnClickListener(new View.OnClickListener() {
             @Override

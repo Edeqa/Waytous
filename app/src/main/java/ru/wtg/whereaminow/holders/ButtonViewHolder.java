@@ -85,7 +85,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         return true;
     }
 
-    public void hide(){
+    private void hide(){
         layout.setVisibility(View.INVISIBLE);
     }
 
@@ -130,12 +130,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 //            button.getBackground().setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(Color.CYAN)));
 
             if(myUser.getProperties().isSelected()) button.setTypeface(Typeface.DEFAULT_BOLD);
-            button.setText((myUser.getProperties().getNumber()==0 ? "*" : "")+myUser.getProperties().getName());
+            button.setText(getDisplayName(myUser));
 
 //            int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Drawable drawable = Utils.renderDrawable(context, R.drawable.semi_transparent_background, myUser.getProperties().getColor(), size, size);
 
-            button.setBackgroundDrawable(drawable);
+            button.setBackground(drawable);
             button.setTag(myUser.getProperties().getNumber());
 
         }
@@ -151,14 +151,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             return false;
         }
 
-//        public void setNumber(int number) {
-//            button.setTag(number);
-//        }
-//
-//        public int getNumber() {
-//            return myUser.getProperties().getNumber();
-//        }
-
         @Override
         public boolean onEvent(String event, Object object) {
             switch(event){
@@ -169,17 +161,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     button.setTypeface(Typeface.DEFAULT);
                     break;
                 case CHANGE_NAME:
-                    String name = myUser.getProperties().getName();
-                    if(object == null){
-                        if(myUser == State.getInstance().getMe()){
-                            name = "Me";
-                        } else if (myUser.getProperties().getNumber() == 0) {
-                            name = "Leader";
-                        } else {
-                            name = "Friend "+myUser.getProperties().getNumber();
-                        }
-                    }
-                    button.setText((myUser.getProperties().getNumber()==0 ? "*" : "")+name);
+                    button.setText(getDisplayName(myUser));
 
             }
             return true;
@@ -192,6 +174,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     myUser.fire(ADJUST_ZOOM);
                     clicked = false;
                 } else {
+                    myUser.fire(SELECT_USER, 0);
                     State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser user) {
@@ -200,7 +183,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                             }
                         }
                     });
-                    myUser.fire(SELECT_USER, 0);
                     clicked = true;
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -219,6 +201,20 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 return true;
             }
         };
+
+        private String getDisplayName(MyUser myUser){
+            String name = myUser.getProperties().getName();
+            if(name == null){
+                if(myUser == State.getInstance().getMe()){
+                    name = "Me";
+                } else if (myUser.getProperties().getNumber() == 0) {
+                    name = "Leader";
+                } else {
+                    name = "Friend "+myUser.getProperties().getNumber();
+                }
+            }
+            return (myUser.getProperties().getNumber()==0 ? "*" : "") + name;
+        }
     }
 
 }

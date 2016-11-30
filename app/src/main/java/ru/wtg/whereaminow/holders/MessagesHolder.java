@@ -9,6 +9,8 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import static ru.wtg.whereaminow.State.PRIVATE_MESSAGE;
 import static ru.wtg.whereaminow.State.SEND_MESSAGE;
 import static ru.wtg.whereaminow.State.USER_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
 /**
  * Created 11/27/16.
@@ -47,13 +49,29 @@ public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messag
 
     @Override
     public boolean onEvent(String event, Object object) {
+        final MyUser user;
         switch(event){
             case SEND_MESSAGE:
                 String text = (String) object;
-                System.out.println("SEND_MES:"+text);
                 UserMessage m = new UserMessage();
                 m.setBody(text);
                 m.setFrom(State.getInstance().getMe());
+                messages.add(m);
+                break;
+            case USER_JOINED:
+                user = (MyUser) object;
+                m = new UserMessage();
+                m.setBody("User has joined the group.");
+                m.setFrom(user);
+                m.setSystemMessage(true);
+                messages.add(m);
+                break;
+            case USER_DISMISSED:
+                user = (MyUser) object;
+                m = new UserMessage();
+                m.setBody("User left the group.");
+                m.setFrom(user);
+                m.setSystemMessage(true);
                 messages.add(m);
                 break;
         }
@@ -74,6 +92,7 @@ public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messag
         private String body;
         private long timestamp;
         private boolean privateMessage;
+        private boolean systemMessage;
 
         UserMessage(){
             timestamp = new Date().getTime();
@@ -114,6 +133,14 @@ public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messag
         public void setPrivateMessage(boolean privateMessage) {
             this.privateMessage = privateMessage;
         }
+
+        public boolean isSystemMessage() {
+            return systemMessage;
+        }
+
+        public void setSystemMessage(boolean systemMessage) {
+            this.systemMessage = systemMessage;
+        }
     }
 
 
@@ -128,7 +155,6 @@ public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messag
             switch (event){
                 case USER_MESSAGE:
                     String text = (String) object;
-                    System.out.println("USER_MES:"+text);
                     UserMessage m = new UserMessage();
                     m.setBody(text);
                     m.setFrom(myUser);
@@ -136,17 +162,15 @@ public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messag
                     break;
                 case PRIVATE_MESSAGE:
                     text = (String) object;
-                    System.out.println("PRIVATE_MES:"+text);
                     m = new UserMessage();
                     m.setBody(text);
                     m.setFrom(myUser);
                     m.setTo(State.getInstance().getMe());
                     m.setPrivateMessage(true);
-                    messages    .add(m);
+                    messages.add(m);
                     break;
                 case SEND_MESSAGE:
                     text = (String) object;
-                    System.out.println("SEND_PRIV_MES:"+text);
                     m = new UserMessage();
                     m.setBody(text);
                     m.setFrom(State.getInstance().getMe());

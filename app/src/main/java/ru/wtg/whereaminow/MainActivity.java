@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
@@ -30,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,19 +40,21 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
+import ru.wtg.whereaminow.helpers.ContinueDialog;
 import ru.wtg.whereaminow.helpers.FabMenu;
 import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.LightSensorManager;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.holders.AddressViewHolder;
 import ru.wtg.whereaminow.holders.ButtonViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
+import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
 import ru.wtg.whereaminow.holders.MarkerViewHolder;
 import ru.wtg.whereaminow.holders.MenuViewHolder;
 import ru.wtg.whereaminow.holders.MessagesViewHolder;
-import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
 import ru.wtg.whereaminow.holders.TrackViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
@@ -62,14 +64,12 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.JOIN_TRACKING;
 import static ru.wtg.whereaminow.State.NEW_MESSAGE;
 import static ru.wtg.whereaminow.State.NEW_TRACKING;
-import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.SEND_LINK;
 import static ru.wtg.whereaminow.State.STOP_TRACKING;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PERMISSION_LOCATION;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PERMISSION_LOCATION_ONRESUME;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity
     private Intent intent;
     private State state;
     private CameraViewHolder camera;
+    private FabMenu fab;
     private LightSensorManager lightSensor;
 
     @Override
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         state.setActivity(this);
         state.checkDeviceId();
 
-        /*lightSensor = new LightSensorManager(this);
+        lightSensor = new LightSensorManager(this);
         lightSensor.setOnEnvironmentChangeListener(new SimpleCallback<String>() {
             @Override
             public void call(String environment) {
@@ -121,7 +122,10 @@ public class MainActivity extends AppCompatActivity
                         break;
                 }
             }
-        });*/
+        });
+
+        fab = (FabMenu) findViewById(R.id.fab);
+        fab.initialize();
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -150,12 +154,17 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         if(!state.isGpsAccessRequested()) {
-            checkPermissions(REQUEST_PERMISSION_LOCATION_ONRESUME,
+            state.setGpsAccessRequested(true);
+            fab.hideMenu(true);
+            checkPermissions(REQUEST_PERMISSION_LOCATION,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+        } else if(state.isGpsAccessAllowed()) {
+            onRequestPermissionsResult(REQUEST_PERMISSION_LOCATION, new String[]{}, new int[]{});
         } else {
-            onRequestPermissionsResult(REQUEST_PERMISSION_LOCATION_ONRESUME, new String[]{}, new int[]{});
+            fab.setGpsOff();
+            fab.showMenu(true);
         }
-        if(lightSensor != null) lightSensor.enable();
+        lightSensor.enable();
     }
 
     @Override
@@ -163,7 +172,7 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         SmartLocation.with(MainActivity.this).location().stop();
-        if(lightSensor != null) lightSensor.disable();
+        lightSensor.disable();
     }
 
     @Override
@@ -273,14 +282,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        checkPermissions(REQUEST_PERMISSION_LOCATION,
-                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+        if(state.isGpsAccessAllowed()) {
+            checkPermissions(REQUEST_PERMISSION_LOCATION,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+        }
     }
 
     // permissionsForCheck = android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION
     // requestCode = MainActivity.REQUEST_PERMISSION_LOCATION
-    public boolean checkPermissions(int requestCode, String[] permissionsForCheck) {
-        ArrayList<String> permissions = new ArrayList<>();
+    public boolean checkPermissions(final int requestCode, String[] permissionsForCheck) {
+        final ArrayList<String> permissions = new ArrayList<>();
         int[] grants = new int[permissionsForCheck.length];
         for (int i = 0; i < permissionsForCheck.length; i++) {
             if (ActivityCompat.checkSelfPermission(MainActivity.this, permissionsForCheck[i]) != PackageManager.PERMISSION_GRANTED) {
@@ -293,11 +304,16 @@ public class MainActivity extends AppCompatActivity
 
         System.out.println("CHECK:"+permissions.size());
         if (permissions.size() > 0) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    permissions.toArray(new String[permissions.size()]),
-                    requestCode);
-            System.out.println("checkPermission:" + requestCode);
             Thread.dumpStack();
+            new ContinueDialog(this).setMessage("Request for permissions").setCallback(new SimpleCallback<Void>() {
+                @Override
+                public void call(Void arg) {
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            permissions.toArray(new String[permissions.size()]),
+                            requestCode);
+                    System.out.println("checkPermission:" + requestCode);
+                }
+            }).show();
             return false;
         } else {
             onRequestPermissionsResult(requestCode, permissionsForCheck, grants);
@@ -307,9 +323,6 @@ public class MainActivity extends AppCompatActivity
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         System.out.println("onRequestPermissionsResult=" + requestCode + ":");
-        for (int i : grantResults) {
-            System.out.println("RES=" + i);
-        }
 
         switch (requestCode) {
             case REQUEST_PERMISSION_LOCATION:
@@ -318,48 +331,34 @@ public class MainActivity extends AppCompatActivity
                 for (int i : grantResults) {
                     res += i;
                 }
-                System.out.println("PERM=" + res);
                 if (res == 0) {
-//                    fabButtons.setPlus();
+                    fab.setPlus();
+                    state.setGpsAccessAllowed(true);
                     onMapReadyPermitted();
-                } else {
-
-//                    fabButtons.setGpsOff();
-                    Toast.makeText(getApplicationContext(), "GPS access is not granted.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                break;
-            case REQUEST_PERMISSION_LOCATION_ONRESUME:
-                state.setGpsAccessRequested(true);
-                res = 0;
-                for (int i : grantResults) {
-                    res += i;
-                }
-                System.out.println("PERM=" + res);
-                if (res == 0) {
-//                    fabButtons.setPlus();
 //                    if(enableLocationManager()) {
-                    if(SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) {
-                        state.getUsers().forAllUsers(new MyUsers.Callback() {
-                            @Override
-                            public void call(Integer number, MyUser myUser) {
-                                myUser.createViews();
-                            }
-                        });
-                        if(state.tracking()){
-                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                        }
-                    }
+//                    if(SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) {
+//                        state.getUsers().forAllUsers(new MyUsers.Callback() {
+//                            @Override
+//                            public void call(Integer number, MyUser myUser) {
+//                                myUser.createViews();
+//                            }
+//                        });
+//                        if(state.tracking()){
+//                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                        }
+//                    }
                 } else {
-                    /*fabButtons.initAndSetOnClickListener(new View.OnClickListener() {
+                    state.setGpsAccessAllowed(false);
+                    fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            fabButtons.hideMenu(true);
+                            fab.hideMenu(true);
                             checkPermissions(REQUEST_PERMISSION_LOCATION,
                                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
                         }
                     });
-                    fabButtons.setGpsOff();*/
+                    fab.setGpsOff();
+                    fab.showMenu(true);
                     Toast.makeText(getApplicationContext(), "GPS access is not granted.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -368,9 +367,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onMapReadyPermitted() {
+        if(map == null) return;
         System.out.println("onMapReadyPermitted");
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) return;
 
+        new MapButtonsViewHolder(mapFragment);
         state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
         state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
         state.registerEntityHolder(new MenuViewHolder(this));
@@ -383,13 +384,12 @@ public class MainActivity extends AppCompatActivity
         }));
         state.registerEntityHolder(camera = CameraViewHolder.getInstance(this,0)
                 .setMap(map).setScaleView((MapScaleView) findViewById(R.id.scaleView)));
-        state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
-        state.registerEntityHolder(new FabViewHolder().setFab((FabMenu) findViewById(R.id.fab)).setOnFabClick(onFabClick));
         state.registerEntityHolder(new MessagesViewHolder(MainActivity.this));
-
-        adjustButtonsPositions();
+        state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
+        state.registerEntityHolder(new FabViewHolder().setFab(fab).setOnFabClick(onFabClick));
 
         state.getUsers().setMe();
+
         SmartLocation.with(MainActivity.this).location().oneFix().start(locationUpdateListener);
 
         map.setBuildingsEnabled(true);
@@ -508,10 +508,8 @@ public class MainActivity extends AppCompatActivity
                             state.getUsers().forUser(number,new MyUsers.Callback() {
                                 @Override
                                 public void call(Integer number, final MyUser myUser) {
+                                    myUser.fire(USER_DISMISSED);
                                     myUser.removeViews();
-                                    if(camera.getCountAssigned()==0){
-                                        state.getMe().fire(SELECT_USER,0);
-                                    }
                                 }
                             });
                         }
@@ -521,6 +519,7 @@ public class MainActivity extends AppCompatActivity
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
                                     myUser.createViews();
+                                    myUser.fire(USER_JOINED);
                                 }
                             });
                         }
@@ -558,7 +557,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onLocationUpdated(final Location location) {
             if(!state.tracking()) {
-                state.getMe().addLocation(location);
+                state.getMe().addLocation(Utils.normalizeLocation(state.getGpsFilter(), location));
             }
         }
     };
@@ -590,33 +589,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
-
-    private void adjustButtonsPositions() {
-        View myLocationButton  = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(myLocationButton.getLayoutParams().width, myLocationButton.getLayoutParams().height);
-
-        myLocationButton.setVisibility(View.VISIBLE);
-        myLocationButton.setEnabled(true);
-        myLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                camera.onMyLocationButtonClickListener.onMyLocationButtonClick();
-            }
-        });
-
-        View zoomButtons = (View) mapFragment.getView().findViewWithTag("GoogleMapZoomInButton").getParent();
-
-        int positionWidth = zoomButtons.getLayoutParams().width;
-        int positionHeight = zoomButtons.getLayoutParams().height;
-
-        RelativeLayout.LayoutParams zoomParams = new RelativeLayout.LayoutParams(positionWidth, positionHeight);
-        int margin = positionWidth / 5;
-        zoomParams.setMargins(margin, 0, 0, margin);
-        zoomParams.addRule(RelativeLayout.BELOW, myLocationButton.getId());
-        zoomParams.addRule(RelativeLayout.ALIGN_LEFT, myLocationButton.getId());
-        zoomButtons.setLayoutParams(zoomParams);
-    }
-
 
 /*    GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
         @Override

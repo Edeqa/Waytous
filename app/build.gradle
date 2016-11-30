@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "ru.wtg.whereaminow"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -34,7 +34,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.google.android.gms:play-services:10.0.0'
+    compile 'com.google.android.gms:play-services:9.8.0'
     compile 'com.android.support:design:25.0.1'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
@@ -47,4 +47,8 @@ dependencies {
 // smart location https://github.com/mrmans0n/smart-location-lib
     compile 'io.nlopez.smartlocation:library:3.2.9'
 
+    // https://aodevblue.github.io/MaterialValues/
+    compile 'blue.aodev:material-values:1.1.1'
+
+    // https://github.com/andreynovikov/GeoTrackFilter
 }

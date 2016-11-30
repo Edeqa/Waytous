@@ -91,8 +91,9 @@ public class MyUsers {
     }
 
     public MyUser addUser(JSONObject o) throws JSONException {
+        MyUser myUser;
         if (!users.containsKey(o.getInt(RESPONSE_NUMBER))) {
-            MyUser myUser = new MyUser();
+            myUser = new MyUser();
             if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
             if(o.has(USER_NAME)) myUser.fire(CHANGE_NAME,o.getString(USER_NAME));
             if(o.has(USER_PROVIDER)) {
@@ -101,12 +102,12 @@ public class MyUsers {
             }
             users.put(o.getInt(RESPONSE_NUMBER), myUser);
             myUser.fire(CHANGE_NUMBER,o.getInt(RESPONSE_NUMBER));
-            return myUser;
         } else {
-            if(o.has(USER_COLOR)) users.get(o.getInt(RESPONSE_NUMBER)).fire(CHANGE_COLOR,o.getInt(USER_COLOR));
+            myUser = users.get(o.getInt(RESPONSE_NUMBER));
+            if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
         }
-        users.get(o.getInt(RESPONSE_NUMBER)).fire(MAKE_ACTIVE);
-        return users.get(o.getInt(RESPONSE_NUMBER));
+        myUser.fire(MAKE_ACTIVE);
+        return myUser;
     }
 
     public interface Callback {
@@ -123,7 +124,7 @@ public class MyUsers {
         forAllUsers(new Callback() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                if(myUser.getProperties().isActive() && myUser.getProperties().isSelected())
+                if(myUser.getProperties().isSelected())
                     count[0]++;
             }
         });

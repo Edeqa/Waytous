@@ -1,20 +1,14 @@
 package ru.wtg.whereaminow.holders;
 
-import android.content.Context;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -28,6 +22,7 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.ADJUST_ZOOM;
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
@@ -41,7 +36,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
  * Created 11/20/16.
  */
 public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraUpdateView> {
-    private static final String TYPE = "camera";
+    public static final String TYPE = "camera";
 
     private static final String CAMERA_NEXT_ORIENTATION = "change_next_orientation";
 
@@ -55,7 +50,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private static final float CAMERA_DEFAULT_BEARING = 0.f;
     private final static int CAMERA_ORIENTATION_LAST = 2;
 
-    private HashMap<Integer,CameraUpdateView> cameraUpdates;
     private CameraUpdateView cameraUpdate;
     private final AppCompatActivity context;
     private static ArrayList<CameraViewHolder> instance = new ArrayList<>();
@@ -68,7 +62,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     private CameraViewHolder(AppCompatActivity context) {
         this.context = context;
-        cameraUpdates = new HashMap<>();
         padding = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
     }
 
@@ -103,30 +96,32 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         this.cameraNumber = cameraNumber;
     }
 
-    public int getCountAssigned(){
-        return cameraUpdates.size();
-    }
-
     private void update(boolean move) {
         if(cameraUpdate == null) return;
         CameraUpdate camera;
-        if(cameraUpdates.size()>1){
+        MyUser user;
+        if(State.getInstance().getUsers().getCountSelected()>1){
             double lat1=0f,lat2=0f,lng1=0f,lng2=0f;
             //noinspection LoopStatementThatDoesntLoop
-            for(Map.Entry<Integer,CameraUpdateView> entry: cameraUpdates.entrySet()){
-                lat1 = entry.getValue().getLocation().getLatitude();
-                lat2 = entry.getValue().getLocation().getLatitude();
-                lng1 = entry.getValue().getLocation().getLongitude();
-                lng2 = entry.getValue().getLocation().getLongitude();
-                break;
+            for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
+                user = entry.getValue();
+                if(user.getProperties().isSelected()){
+                    lat1 = user.getLocation().getLatitude();
+                    lat2 = user.getLocation().getLatitude();
+                    lng1 = user.getLocation().getLongitude();
+                    lng2 = user.getLocation().getLongitude();
+                    break;
+                }
             }
-            for(Map.Entry<Integer,CameraUpdateView> entry: cameraUpdates.entrySet()){
-                lat1 = Math.min(lat1,entry.getValue().getLocation().getLatitude());
-                lat2 = Math.max(lat2,entry.getValue().getLocation().getLatitude());
-                lng1 = Math.min(lng1,entry.getValue().getLocation().getLongitude());
-                lng2 = Math.max(lng2,entry.getValue().getLocation().getLongitude());
+            for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
+                user = entry.getValue();
+                if(user.getProperties().isSelected()){
+                    lat1 = Math.min(lat1,user.getLocation().getLatitude());
+                    lat2 = Math.max(lat2,user.getLocation().getLatitude());
+                    lng1 = Math.min(lng1,user.getLocation().getLongitude());
+                    lng2 = Math.max(lng2,user.getLocation().getLongitude());
+                }
             }
-
             LatLng latLngLB = new LatLng(lat1, lng1);
             LatLng latLngRT = new LatLng(lat2, lng2);
 
@@ -159,7 +154,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         map.setOnCameraIdleListener(onCameraIdleListener);
         map.setOnCameraMoveCanceledListener(onCameraMoveCanceledListener);
         map.setOnMarkerClickListener(onMarkerClickListener);
-
 
         return this;
     }
@@ -204,7 +198,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             if(myUser.getProperties().isSelected()) {
                 myUser.fire(SELECT_USER, cameraNumber);
             }
-            System.out.println("CAMERAUPDATESSIZE:"+myUser.getProperties().getName()+":"+myUser.getProperties().isSelected()+":"+getCountAssigned());
         }
 
         @Override
@@ -241,7 +234,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     break;
             }
             position.zoom(zoom);
-            if(orientationChanged) {
+            /*if(orientationChanged) {
                 switch (orientation) {
                     case CAMERA_ORIENTATION_NORTH:
                     case CAMERA_ORIENTATION_DIRECTION:
@@ -251,8 +244,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //                        map.setPadding(0, (int) (context.getResources().getDisplayMetrics().heightPixels / 3), 0, 0);
                         break;
                 }
-                orientationChanged = false;
-            }
+            }*/
+            orientationChanged = false;
             CameraViewHolder.this.setCameraUpdate(this);
             CameraViewHolder.this.update(false);
         }
@@ -262,19 +255,24 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             switch (event) {
                 case SELECT_USER:
                     if(object != null && (int) object == cameraNumber) {
-                        cameraUpdates.put(number,this);
                         orientation = previousOrientation;
                         orientationChanged = true;
-
                         onChangeLocation(myUser.getLocation());
                     }
                     break;
                 case UNSELECT_USER:
-                    if(cameraUpdates.containsKey(number))
-                        cameraUpdates.remove(number);
-
-                    CameraViewHolder.this.update(false);
-
+                    if(State.getInstance().getUsers().getCountSelected()==1){
+                        State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                            @Override
+                            public void call(Integer number, MyUser user) {
+                                if(user.getProperties().isSelected()) {
+                                    user.fire(SELECT_USER, cameraNumber);
+                                }
+                            }
+                        });
+                    } else {
+                        CameraViewHolder.this.update(false);
+                    }
                     break;
                 case CAMERA_NEXT_ORIENTATION:
                     if(orientation > CAMERA_ORIENTATION_LAST) {
@@ -301,7 +299,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
-                            myUser.fire(SELECT_USER, 0);
+                            myUser.fire(SELECT_USER, cameraNumber);
                             return false;
                         }
                     });
@@ -321,34 +319,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     });
 
                     break;
-                case CREATE_OPTIONS_MENU:
-                    /*Menu optionsMenu = (Menu) object;
-                    item = optionsMenu.findItem(R.id.action_fit_to_screen);
-                    if(State.getInstance().getUsers().getCountActive() < 2 || State.getInstance().getUsers().getCountActive() == getCountAssigned()) {
-                        item.setVisible(false);
-                    } else {
-                        item.setVisible(true);
-                        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.fire(SELECT_USER, 0);
-                                    }
-                                });
-                                return false;
-                            }
-                        });
-                    }*/
-                    break;
                 case CHANGE_NUMBER:
                     int newNumber = (int) object;
                     if(newNumber == number) break;
-                    if(cameraUpdates.containsKey(number)){
-                        cameraUpdates.remove(number);
-                        cameraUpdates.put(newNumber, this);
-                    }
                     number = newNumber;
                     break;
             }
@@ -394,7 +367,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 scaleView.update(map.getProjection(), map.getCameraPosition());
             }
 
-            if(cameraUpdate == null || cameraUpdates.size() != 1) return;
+            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
             if(canceled && cameraUpdate.zoom != map.getCameraPosition().zoom){
                 cameraUpdate.setOrientation(cameraUpdate.previousOrientation);
                 moveFromHardware = true;
@@ -425,7 +398,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             }
 
 //            System.out.println("onCameraMoveCanceled");
-            if(cameraUpdate == null || cameraUpdates.size() != 1) return;
+            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
             if(cameraUpdate.zoom == map.getCameraPosition().zoom){
                 cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
                 moveFromHardware = false;

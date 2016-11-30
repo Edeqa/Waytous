@@ -23,6 +23,8 @@ import static ru.wtg.whereaminow.State.NEW_TRACKING;
 import static ru.wtg.whereaminow.State.SHOW_MESSAGES;
 import static ru.wtg.whereaminow.State.STOP_TRACKING;
 import static ru.wtg.whereaminow.State.USER_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
 /**
  * Created 11/27/16.
@@ -87,6 +89,7 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
 
     @Override
     public boolean onEvent(String event, Object object) {
+        final MyUser user;
         switch(event){
             case NEW_TRACKING:
                 snackbar.setText("Starting tracking...").setAction("Cancel", new View.OnClickListener() {
@@ -141,6 +144,24 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
 //                        onFabClick(-1);
                     }
                 }).show();
+                break;
+            case USER_JOINED:
+                user = (MyUser) object;
+                snackbar.setText(user.getProperties().getName() + " has joined the group.").setDuration(Snackbar.LENGTH_LONG).setAction("Send message", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        user.fire(NEW_MESSAGE);
+                    }
+                }).show();
+                break;
+            case USER_DISMISSED:
+                user = (MyUser) object;
+                snackbar.setText(user.getProperties().getName() + " left the group.").setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(android.R.string.ok), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                }).show();
+                break;
 
         }
         return true;

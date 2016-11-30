@@ -59,12 +59,16 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
                         break;
                     case UNSELECT_USER:
                         selected = false;
+                        if(State.getInstance().getUsers().getCountSelected()<=0){
+                            State.getInstance().getMe().fire(SELECT_USER, 0);
+                        }
                         break;
                     case MAKE_ACTIVE:
                         active = true;
                         break;
                     case MAKE_INACTIVE:
                         active = false;
+                        myUser.fire(UNSELECT_USER);
                         break;
                     case CHANGE_NUMBER:
                         number = (int) object;

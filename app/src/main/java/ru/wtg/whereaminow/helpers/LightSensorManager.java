@@ -69,10 +69,10 @@ public class LightSensorManager implements SensorEventListener {
         if (oldEnvironment != currentEnvironment && environmentChangeCallback != null){
             switch (currentEnvironment) {
                 case DAY:
-                    environmentChangeCallback.call(1);
+                    environmentChangeCallback.call("day");
                     break;
                 case NIGHT:
-                    environmentChangeCallback.call(2);
+                    environmentChangeCallback.call("night");
                     break;
             }
         }
