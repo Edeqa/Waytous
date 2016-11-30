@@ -41,7 +41,6 @@ public class Constants {
     public final static String BROADCAST_MESSAGE = "message";
 
     public final static int REQUEST_PERMISSION_LOCATION = 1;
-    public final static int REQUEST_PERMISSION_LOCATION_ONRESUME = 2;
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
 

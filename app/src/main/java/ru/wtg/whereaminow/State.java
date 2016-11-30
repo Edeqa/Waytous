@@ -21,10 +21,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import ru.wtg.whereaminow.helpers.GeoTrackFilter;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
+import ru.wtg.whereaminow.holders.LoggerHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
+import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
@@ -44,6 +47,8 @@ public class State extends MultiDexApplication {
     public static final String CHANGE_COLOR = "change_color";
     public static final String CREATE_CONTEXT_MENU = "create_context_menu";
     public static final String CREATE_OPTIONS_MENU = "create_options_menu";
+    public static final String CREATE_FAB_MENU = "create_fab_menu";
+    public static final String CREATE_DRAWER_MENU = "create_drawer_menu";
 
     public static final String ADJUST_ZOOM = "adjust_zoom";
     public static final String MAKE_ACTIVE = "make_active";
@@ -55,6 +60,7 @@ public class State extends MultiDexApplication {
     public static final String STOP_TRACKING = "stop_tracking";
     public static final String ACCEPTED = "accepted";
     public static final String ERROR = "error";
+    public static final String STARTED = "started";
     public static final String STOPPED = "stopped";
     public static final String SEND_LINK = "send_link";
     public static final String NEW_MESSAGE = "new_message";
@@ -80,9 +86,10 @@ public class State extends MultiDexApplication {
     private MyUser me;
     public MyTracking myTracking;
     private Notification notification;
-    private boolean gpsAccessEnabled;
+    private boolean gpsAccessAllowed;
     private boolean gpsAccessRequested;
     private boolean serviceBound;
+    private GeoTrackFilter gpsFilter;
 
     @Override
     public void onCreate() {
@@ -92,8 +99,11 @@ public class State extends MultiDexApplication {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         registerEntityHolder(new PropertiesHolder());
+//        registerEntityHolder(new LoggerHolder(this));
         registerEntityHolder(new MessagesHolder());
+        registerEntityHolder(new NotificationHolder(this));
 
+        gpsFilter = new GeoTrackFilter(1.);
 
         MyUser me = State.getInstance().getMe();
         if(me == null){
@@ -130,13 +140,6 @@ public class State extends MultiDexApplication {
     }
 
     public static State getInstance() {
-//        if (instance == null) {
-//            synchronized (State.class){
-//                if (instance == null) {
-//                    instance = new State();
-//                }
-//            }
-//        }
         return instance ;
     }
 
@@ -216,10 +219,6 @@ public class State extends MultiDexApplication {
     }
 
 
-    public void setGpsAccessEnabled(boolean gpsAccessEnabled) {
-        this.gpsAccessEnabled = gpsAccessEnabled;
-    }
-
     public void setGpsAccessRequested(boolean gpsAccessRequested) {
         this.gpsAccessRequested = gpsAccessRequested;
     }
@@ -255,6 +254,7 @@ public class State extends MultiDexApplication {
     private HashMap<String,AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
 
     public void registerEntityHolder(EntityHolder holder) {
+        if(holder.getType() == null) return;
         if(holder instanceof AbstractViewHolder){
             if(holder.dependsOnEvent()) {
                 viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
@@ -392,4 +392,15 @@ public class State extends MultiDexApplication {
     }
 
 
+    public GeoTrackFilter getGpsFilter() {
+        return gpsFilter;
+    }
+
+    public boolean isGpsAccessAllowed() {
+        return gpsAccessAllowed;
+    }
+
+    public void setGpsAccessAllowed(boolean gpsAccessAllowed) {
+        this.gpsAccessAllowed = gpsAccessAllowed;
+    }
 }

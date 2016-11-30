@@ -34,6 +34,7 @@ import static ru.wtg.whereaminow.State.ERROR;
 import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.SELECT_USER;
+import static ru.wtg.whereaminow.State.STARTED;
 import static ru.wtg.whereaminow.State.STOPPED;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
@@ -105,6 +106,9 @@ public class MyTracking {
             System.out.println("Service:onLocationChanged");
 
             if(status == TRACKING_ACTIVE) {
+
+                location = Utils.normalizeLocation(state.getGpsFilter(), location);
+
                 try {
                     JSONObject o = Utils.locationToJson(location);
                     o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
@@ -151,28 +155,13 @@ public class MyTracking {
 
     private void doTrack(){
         setStatus(TRACKING_CONNECTING);
-        Intent notificationIntent = new Intent(state, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
+        state.fire(STARTED);
 
-        Notification notification = new NotificationCompat.Builder(state)
-                .setSmallIcon(R.drawable.ic_navigation_twinks_white_24dp)
-                .setContentTitle(state.getApplication().getString(R.string.app_name))
-                .setContentText("Doing some work...")
-                .setAutoCancel(true)
-                .addAction(R.drawable.ic_navigation_twinks_black_24dp, "View", pendingIntent)
-                .addAction(R.drawable.ic_clear_black_24dp, "Stop",
-                        PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0))
-                .setContentIntent(pendingIntent)
-                .build();
-
-        state.setNotification(notification);
-        state.getService().startForeground(1976, notification);
+        state.getService().startForeground(1976, state.getNotification());
 
         webClient.start();
 
-        enableLocationManager();
     }
 
     public void stop() {
@@ -205,6 +194,8 @@ public class MyTracking {
                     if (o.has(RESPONSE_NUMBER)) {
                         state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
                     }
+                    enableLocationManager();
+
                     if (o.has(RESPONSE_INITIAL)) {
                         JSONArray initialUsers = o.getJSONArray(RESPONSE_INITIAL);
                         for (int i = 0; i < initialUsers.length(); i++) {
@@ -230,9 +221,9 @@ public class MyTracking {
                             @Override
                             public void call(Integer number, final MyUser myUser) {
                                 myUser.fire(MAKE_INACTIVE);
+                                state.fire(USER_DISMISSED,myUser);
                             }
                         });
-                        state.fire(USER_DISMISSED);
                     } else if (o.has(USER_JOINED)) {
                         int number = o.getInt(USER_JOINED);
                         state.getUsers().addUser(o);
@@ -240,9 +231,9 @@ public class MyTracking {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(MAKE_ACTIVE);
+                                state.fire(USER_JOINED,myUser);
                             }
                         });
-                        state.fire(USER_JOINED);
                     }
                     if (o.has(USER_PROVIDER)) {
                         final Location location = Utils.jsonToLocation(o);
@@ -286,7 +277,6 @@ public class MyTracking {
                     setStatus(TRACKING_DISABLED);
                     state.getMe().fire(SELECT_USER, 0);
                     state.getService().stopForeground(true);
-                    state.setNotification(null);
 
                     webClient.removeToken();
                     webClient.stop();

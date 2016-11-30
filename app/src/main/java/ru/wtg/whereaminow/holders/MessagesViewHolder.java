@@ -7,8 +7,11 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -17,8 +20,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +43,7 @@ import static ru.wtg.whereaminow.State.PRIVATE_MESSAGE;
 import static ru.wtg.whereaminow.State.SEND_MESSAGE;
 import static ru.wtg.whereaminow.State.SHOW_MESSAGES;
 import static ru.wtg.whereaminow.State.USER_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 
 /**
@@ -44,6 +53,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
     private final Activity context;
     private final MessagesHolder messagesHolder;
+    private MessagesAdapter adapter;
 
     public MessagesViewHolder(Activity context) {
         this.context = context;
@@ -142,12 +152,11 @@ public class MessagesViewHolder extends AbstractViewHolder {
     private void showMessages() {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
-        dialog.setTitle("Chat");
 
         @SuppressLint("InflateParams") View content = context.getLayoutInflater().inflate(R.layout.dialog_show_messages, null);
 
         RecyclerView list = (RecyclerView) content.findViewById(R.id.listMessages);
-        MessagesAdapter adapter = new MessagesAdapter(context);
+        adapter = new MessagesAdapter(context);
         /*adapter.setOnItemClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,6 +170,10 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         list.setLayoutManager(new LinearLayoutManager(context));
 
+        DividerItemDecoration divider = new DividerItemDecoration(list.getContext(), ((LinearLayoutManager) list.getLayoutManager()).getOrientation());
+        list.addItemDecoration(divider);
+
+        dialog.setTitle("Chat (" + adapter.getItemCount() + ")");
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "New message", new DialogInterface.OnClickListener() {
             @Override
@@ -177,12 +190,34 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         dialog.setView(content);
 
-        ColorDrawable drawable = new ColorDrawable(Color.WHITE);
-        drawable.setAlpha(100);
+        final ColorDrawable drawable = new ColorDrawable(Color.WHITE);
         dialog.getWindow().setBackgroundDrawable(drawable);
 
-
         dialog.show();
+//        if(true) return; //FIXME
+
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+        final float durationInMs = LOCATION_UPDATES_DELAY;
+        handler.post(new Runnable() {
+            float t,v;
+            long elapsed;
+            @Override
+            public void run() {
+                elapsed = SystemClock.uptimeMillis() - start;
+                t = elapsed / durationInMs;
+                v = interpolator.getInterpolation(t);
+                float q = v * 100 + (1 - v) * 255;
+                drawable.setAlpha((int) q);
+                if (t<1) {
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
+
+
+
     }
 
     private class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder>{
@@ -203,7 +238,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         @Override
         public void onBindViewHolder(MessagesAdapter.ViewHolder holder, int position) {
             MessagesHolder.UserMessage message = messagesHolder.getMessages().get(position);
-            holder.tvUserName.setText(message.getFrom().getProperties().getName());
+            holder.tvUsername.setText(message.getFrom().getProperties().getName());
             holder.tvTimestamp.setText(message.getTimestamp().toLocaleString());
             holder.tvMessageBody.setText(message.getBody());
         }
@@ -215,13 +250,13 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
-            private final TextView tvUserName;
             private final TextView tvTimestamp;
             private final TextView tvMessageBody;
+            private final TextView tvUsername;
 
             private ViewHolder(View view) {
                 super(view);
-                tvUserName = (TextView) view.findViewById(R.id.tvUserName);
+                tvUsername = (TextView) view.findViewById(R.id.tvUsername);
                 tvTimestamp = (TextView) view.findViewById(R.id.tvTimestamp);
                 tvMessageBody = (TextView) view.findViewById(R.id.tvMessageBody);
             }
@@ -242,10 +277,16 @@ public class MessagesViewHolder extends AbstractViewHolder {
         @Override
         public boolean onEvent(String event, Object object) {
             switch (event) {
-//                case USER_MESSAGE:
-//                    String text = (String) object;
-//                    State.getInstance().fire(USER_MESSAGE, myUser.getProperties().getName() + ": " + text);
-//                    break;
+                case USER_MESSAGE:
+                    if(adapter != null){
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
+                case PRIVATE_MESSAGE:
+                    if(adapter != null){
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
                 case NEW_MESSAGE:
                     newMessage(myUser, false);
                     break;
