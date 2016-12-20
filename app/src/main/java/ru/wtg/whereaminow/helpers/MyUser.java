@@ -1,6 +1,7 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -40,12 +41,12 @@ public class MyUser {
     public MyUser addLocation(Location location) {
         locations.add(location);
         setLocation(location);
+        onChangeLocation();
         return this;
     }
 
     private void setLocation(Location location) {
         this.location = location;
-        onChangeLocation();
     }
 
     public Location getLocation(){
@@ -110,7 +111,7 @@ public class MyUser {
         });
     }
 
-    private void onChangeLocation(){
+    public void onChangeLocation(){
         for(Map.Entry<String,Entity> entry: entities.entrySet()){
             if(entry.getValue() instanceof AbstractProperty
                     && entry.getValue().dependsOnLocation()
@@ -127,7 +128,9 @@ public class MyUser {
                 for (Map.Entry<String, Entity> entry : entities.entrySet()) {
                     if (getProperties().isActive() && entry.getValue() == null) {
                         AbstractViewHolder holder = State.getInstance().getUserViewHolders().get(entry.getKey());
-                        entry.setValue(holder.create(MyUser.this));
+                        if(holder != null) {
+                            entry.setValue(holder.create(MyUser.this));
+                        }
                     }
                     if (entry.getValue() instanceof AbstractView
                             && entry.getValue().dependsOnLocation()
@@ -160,6 +163,22 @@ public class MyUser {
 
     public PropertiesHolder.Properties getProperties(){
         return (PropertiesHolder.Properties) entities.get(PropertiesHolder.TYPE);
+    }
+
+    public Entity getEntity(String TYPE) {
+        if(entities.containsKey(TYPE)){
+            return entities.get(TYPE);
+        }
+        return null;
+    }
+
+    public boolean isUser(){
+        return location != null
+            && (location.getProvider().equals(LocationManager.GPS_PROVIDER)
+                || location.getProvider().equals(LocationManager.NETWORK_PROVIDER)
+                || location.getProvider().equals(LocationManager.PASSIVE_PROVIDER)
+                || location.getProvider().equals("fused")
+                || location.getProvider().equals("touch"));
     }
 
 }

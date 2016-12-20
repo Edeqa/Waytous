@@ -34,22 +34,22 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 
 /**
- * Created by tujger on 10/5/16.
+ * Created 10/5/16.
  */
 
 public class MyWssServer extends WebSocketServer {
@@ -65,8 +65,6 @@ public class MyWssServer extends WebSocketServer {
         ipToToken = new HashMap<String, MyToken>();
         ipToUser = new HashMap<String, MyUser>();
         ipToCheck = new HashMap<String, CheckReq>();
-
-        String a = HTTP_SERVER_HOST;
 
     }
 
@@ -164,9 +162,9 @@ public class MyWssServer extends WebSocketServer {
                 response.put(RESPONSE_MESSAGE, "Your device id is not defined");
             }
 
-            System.out.println("WSS:TO:" + response);
+            System.out.println("WSS:NEW_TOKEN:TO:" + response);
 
-            Utils.pause(2);
+            Utils.pause(2);//FIXME remove pause
 
             conn.send(response.toString());
         } else if(REQUEST_JOIN_TOKEN.equals(req)){
@@ -240,8 +238,8 @@ public class MyWssServer extends WebSocketServer {
                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                 response.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
             }
-            System.out.println("WSS:TO:" + response);
             conn.send(response.toString());
+            System.out.println("WSS:JOIN_TOKEN:TO:" + response);
         } else if(REQUEST_CHECK_USER.equals(req)){
             if(request.has(REQUEST_HASH)) {
                 String hash = request.getString((REQUEST_HASH));
@@ -280,7 +278,7 @@ public class MyWssServer extends WebSocketServer {
                             o.put(USER_NAME,check.name);
                         }
                         check.token.sendToAllFrom(o,user);
-
+                        return;
 //                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
 //                            response.put(RESPONSE_MESSAGE, "User not granted.");
                     } else {
@@ -302,8 +300,8 @@ public class MyWssServer extends WebSocketServer {
                 response.put(RESPONSE_MESSAGE, "Cannot join to tracking (hash not defined).");
             }
 
-            System.out.println("WSS:TO:" + response);
-            Utils.pause(2);
+            System.out.println("WSS:CHECK_USER:TO:" + response);
+            Utils.pause(2);//FIXME remove pause
             conn.send(response.toString());
         } else if(REQUEST_UPDATE.equals(req)) {
             if (ipToToken.containsKey(ip)) {
@@ -325,9 +323,14 @@ public class MyWssServer extends WebSocketServer {
                     o.put(USER_MESSAGE,request.getString(USER_MESSAGE));
                 }
                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                if(request.has(RESPONSE_PRIVATE)){
+                if(request.has(RESPONSE_PRIVATE)) {
                     o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
                     token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                } else if(request.has(RESPONSE_WELCOME_MESSAGE)) {
+                    String text = request.getString(RESPONSE_WELCOME_MESSAGE);
+                    if(user.getNumber() == 0 && text != null) {
+                        token.setWelcomeMessage(text);
+                    }
                 } else {
                     token.sendToAllFrom(o, user);
                 }
@@ -362,7 +365,6 @@ public class MyWssServer extends WebSocketServer {
      * Sends <var>text</var> to all currently connected WebSocket clients.
      *
      * @param text The String to send across the network.
-     * @throws InterruptedException When socket related I/O errors occur.
      */
     public void sendToAll(String text, WebSocket insteadConnection) {
         Collection<WebSocket> con = connections();

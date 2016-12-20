@@ -9,18 +9,14 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -29,43 +25,48 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
-import io.nlopez.smartlocation.location.config.LocationAccuracy;
-import io.nlopez.smartlocation.location.config.LocationParams;
 import ru.wtg.whereaminow.helpers.ContinueDialog;
-import ru.wtg.whereaminow.helpers.FabMenu;
-import ru.wtg.whereaminow.helpers.InviteSender;
-import ru.wtg.whereaminow.helpers.LightSensorManager;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.holders.AddressViewHolder;
 import ru.wtg.whereaminow.holders.ButtonViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
+import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
+import ru.wtg.whereaminow.holders.FacebookViewHolder;
 import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
 import ru.wtg.whereaminow.holders.MarkerViewHolder;
 import ru.wtg.whereaminow.holders.MenuViewHolder;
 import ru.wtg.whereaminow.holders.MessagesViewHolder;
+import ru.wtg.whereaminow.holders.SavedLocationsViewHolder;
+import ru.wtg.whereaminow.holders.SensorsViewHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
 import ru.wtg.whereaminow.holders.TrackViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
+import static ru.wtg.whereaminow.State.ACTIVITY_CREATE;
+import static ru.wtg.whereaminow.State.ACTIVITY_DESTROY;
+import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
+import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
+import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.JOIN_TRACKING;
-import static ru.wtg.whereaminow.State.NEW_MESSAGE;
-import static ru.wtg.whereaminow.State.NEW_TRACKING;
-import static ru.wtg.whereaminow.State.SEND_LINK;
-import static ru.wtg.whereaminow.State.STOP_TRACKING;
+import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.TRACKING_JOIN;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
+import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
@@ -82,21 +83,18 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private DrawerLayout drawer;
     private GoogleMap map;
     private SupportMapFragment mapFragment;
-    private Intent intent;
+    private Intent intentService;
     private State state;
-    private CameraViewHolder camera;
-    private FabMenu fab;
-    private LightSensorManager lightSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         setContentView(R.layout.activity_main);
 
@@ -104,81 +102,49 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         state = State.getInstance();
-        state.setActivity(this);
-        state.checkDeviceId();
-
-        lightSensor = new LightSensorManager(this);
-        lightSensor.setOnEnvironmentChangeListener(new SimpleCallback<String>() {
-            @Override
-            public void call(String environment) {
-                switch(environment){
-                    case "day":
-                        if(map != null) map.setMapStyle(null);
-                        setTheme(R.style.DayTheme);
-                        break;
-                    case "night":
-                        if(map != null) map.setMapStyle(MapStyleOptions.loadRawResourceStyle(MainActivity.this, R.raw.mapstyle_night));
-                        setTheme(R.style.NightTheme);
-                        break;
-                }
-            }
-        });
-
-        fab = (FabMenu) findViewById(R.id.fab);
-        fab.initialize();
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        state.registerEntityHolder(new FabViewHolder(this).setView(findViewById(R.id.fab_layout)));
+        state.registerEntityHolder(new FacebookViewHolder());
+        state.registerEntityHolder(new DrawerViewHolder(this).setViewAndToolbar(findViewById(R.id.drawer_layout),toolbar).setCallback(onNavigationDrawerCallback));
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        intentService = new Intent(MainActivity.this, WhereAmINowService.class);
 
-        intent = new Intent(MainActivity.this, WhereAmINowService.class);
+        state.fire(ACTIVITY_CREATE, this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        IntentFilter intentFilter = new IntentFilter(BROADCAST);
-        registerReceiver(receiver, intentFilter);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        IntentFilter intentFilter = new IntentFilter(BROADCAST);
+        registerReceiver(receiver, intentFilter);
 
         if(!state.isGpsAccessRequested()) {
             state.setGpsAccessRequested(true);
-            fab.hideMenu(true);
             checkPermissions(REQUEST_PERMISSION_LOCATION,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
         } else if(state.isGpsAccessAllowed()) {
             onRequestPermissionsResult(REQUEST_PERMISSION_LOCATION, new String[]{}, new int[]{});
-        } else {
-            fab.setGpsOff();
-            fab.showMenu(true);
         }
-        lightSensor.enable();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        SmartLocation.with(MainActivity.this).location().stop();
-        lightSensor.disable();
+        state.fire(ACTIVITY_PAUSE);
+        unregisterReceiver(receiver);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(receiver);
     }
 
     @Override
@@ -191,29 +157,44 @@ public class MainActivity extends AppCompatActivity
             }
         });
         state.clearViewHolders();
-        state.setActivity(null);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        DrawerViewHolder holder = (DrawerViewHolder) state.getEntityHolder(DrawerViewHolder.TYPE);
+        if (holder != null && holder.isDrawerOpen()) {
+            holder.closeDrawer();
         } else {
             super.onBackPressed();
+            state.fire(ACTIVITY_DESTROY);
         }
     }
 
+
+    private boolean day = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        state.getMe().fire(CREATE_OPTIONS_MENU, menu);
+        state.fire(CREATE_OPTIONS_MENU, menu);
+
+        /*menu.findItem(R.id.switch_day_night).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                state.fire((day = !day) ? REQUEST_MODE_DAY : REQUEST_MODE_NIGHT);
+
+                return true;
+            }
+        });*/
+
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
-        state.getMe().fire(CREATE_OPTIONS_MENU, menu);
-        return super.onPrepareOptionsMenu(menu);
+        state.getMe().fire(PREPARE_OPTIONS_MENU, menu);
+        state.fire(PREPARE_OPTIONS_MENU, menu);
+        return true;
     }
 
     @Override
@@ -222,69 +203,63 @@ public class MainActivity extends AppCompatActivity
 
         getMenuInflater().inflate(R.menu.user_menu, menu);
 
-        int number = (int) v.getTag();
-        MyUser user = state.getUsers().getUsers().get(number);
-        menu.setHeaderTitle(user.getProperties().getName());
+        Object tag = v.getTag();
+        if(tag != null) {
+            int number = (int) tag;
+            MyUser user = state.getUsers().getUsers().get(number);
+            menu.setHeaderTitle(user.getProperties().getDisplayName());
+            user.fire(CREATE_CONTEXT_MENU, menu);
+        } else {
+            state.fire(CREATE_CONTEXT_MENU, menu);
+        }
 
-        user.fire(CREATE_CONTEXT_MENU, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save_location:
-//                System.out.println("TRY");
-//                System.out.println("TRY1:"+(1/0));
-                System.out.println("action_save_location");
-                /*snackbar.setText("Location saved.").setDuration(Snackbar.LENGTH_LONG).setAction("Edit", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        System.out.println("edit location");
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bundle m = new Bundle();
+        m.putInt("requestCode",requestCode);
+        m.putInt("resultCode",resultCode);
+        m.putParcelable("data",data);
+        state.fire(ACTIVITY_RESULT, m);
+    }
+
+    SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
+        @Override
+        public void call(Integer id) {
+            switch(id) {
+                case R.id.nav_settings:
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    System.out.println("nav_settings");
+                    break;
+                case R.id.nav_traffic:
+                    map.setTrafficEnabled(!map.isTrafficEnabled());
+                    break;
+                case R.id.nav_satellite:
+                    if (map.getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
+                        state.fire(REQUEST_MODE_SATELLITE);
+                    } else {
+                        state.fire(REQUEST_MODE_NORMAL);
                     }
-                }).show();*/
-                return true;
+                    break;
+                case R.id.nav_terrain:
+                    if (map.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
+                        state.fire(REQUEST_MODE_TERRAIN);
+                    else
+                        state.fire(REQUEST_MODE_NORMAL);
+                    break;
+            }
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_start_and_share:
-                System.out.println("nav_start_and_share");
-                break;
-            case R.id.nav_saved_locations:
-                System.out.println("nav_saved_locations");
-                break;
-            case R.id.nav_settings:
-                System.out.println("nav_settings");
-                break;
-            case R.id.nav_traffic:
-                map.setTrafficEnabled(!map.isTrafficEnabled());
-                break;
-            case R.id.nav_satellite:
-                if (map.getMapType() != GoogleMap.MAP_TYPE_SATELLITE)
-                    map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                else
-                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                break;
-            case R.id.nav_terrain:
-                if (map.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
-                    map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                else
-                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                break;
-        }
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+    };
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         if(state.isGpsAccessAllowed()) {
-            checkPermissions(REQUEST_PERMISSION_LOCATION,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+            onMapReadyPermitted();
+//            checkPermissions(REQUEST_PERMISSION_LOCATION,
+//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
         }
     }
 
@@ -332,33 +307,10 @@ public class MainActivity extends AppCompatActivity
                     res += i;
                 }
                 if (res == 0) {
-                    fab.setPlus();
                     state.setGpsAccessAllowed(true);
                     onMapReadyPermitted();
-//                    if(enableLocationManager()) {
-//                    if(SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) {
-//                        state.getUsers().forAllUsers(new MyUsers.Callback() {
-//                            @Override
-//                            public void call(Integer number, MyUser myUser) {
-//                                myUser.createViews();
-//                            }
-//                        });
-//                        if(state.tracking()){
-//                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//                        }
-//                    }
                 } else {
                     state.setGpsAccessAllowed(false);
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            fab.hideMenu(true);
-                            checkPermissions(REQUEST_PERMISSION_LOCATION,
-                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
-                        }
-                    });
-                    fab.setGpsOff();
-                    fab.showMenu(true);
                     Toast.makeText(getApplicationContext(), "GPS access is not granted.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -369,28 +321,30 @@ public class MainActivity extends AppCompatActivity
     public void onMapReadyPermitted() {
         if(map == null) return;
         System.out.println("onMapReadyPermitted");
+
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) return;
 
-        new MapButtonsViewHolder(mapFragment);
-        state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
-        state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
+        new MapButtonsViewHolder(mapFragment,findViewById(R.id.sv_users));
+        state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
         state.registerEntityHolder(new MenuViewHolder(this));
         state.registerEntityHolder(new TrackViewHolder().setMap(map));
+        state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
+        state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
         state.registerEntityHolder(new AddressViewHolder().setCallback(new SimpleCallback<String>() {
             @Override
             public void call(String text) {
-                getSupportActionBar().setSubtitle(text);
+                if(getSupportActionBar() != null) {
+                    getSupportActionBar().setSubtitle(text);
+                }
             }
         }));
-        state.registerEntityHolder(camera = CameraViewHolder.getInstance(this,0)
-                .setMap(map).setScaleView((MapScaleView) findViewById(R.id.scaleView)));
+        state.registerEntityHolder(CameraViewHolder.getInstance(this,0)
+                .setMap(map).setScaleView((MapScaleView) findViewById(R.id.scale_view)));
         state.registerEntityHolder(new MessagesViewHolder(MainActivity.this));
         state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
-        state.registerEntityHolder(new FabViewHolder().setFab(fab).setOnFabClick(onFabClick));
+        state.registerEntityHolder(new SensorsViewHolder(this).setMap(map));
 
         state.getUsers().setMe();
-
-        SmartLocation.with(MainActivity.this).location().oneFix().start(locationUpdateListener);
 
         map.setBuildingsEnabled(true);
         map.setIndoorEnabled(true);
@@ -408,8 +362,8 @@ public class MainActivity extends AppCompatActivity
                     loc.setBearing(location.getBearing());
                     loc.setSpeed(location.getSpeed());
                     loc.setTime(location.getTime());
-                    locationUpdateListener.onLocationUpdated(loc);
-                    state.myTracking.locationUpdatedListener.onLocationUpdated(loc);
+                    state.getMe().addLocation(loc);
+//                    state.myTracking.locationUpdatedListener.onLocationUpdated(loc);
                 }catch(Exception e){
                     System.out.println("Error setOnMapClickListener: "+e.getMessage());
                 }
@@ -421,40 +375,52 @@ public class MainActivity extends AppCompatActivity
         map.getUiSettings().setIndoorLevelPickerEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
+
         state.getUsers().forAllUsers(new MyUsers.Callback() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 myUser.createViews();
             }
         });
+        ((CameraViewHolder) state.getEntityHolder(CameraViewHolder.TYPE)).move();
 
-        if(state.tracking() || state.getUsers().getCountActive() > 1) {
-            camera.move();
-        }
-        if(!state.tracking()) {
-            enableLocationManager();
-        }
+        state.fire(REQUEST_LOCATION_SINGLE);
+        state.fire(ACTIVITY_RESUME, this);
 
         onNewIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent newIntent) {
-        super.onNewIntent(intent);
+        super.onNewIntent(newIntent);
 
         Uri data = newIntent.getData();
+        newIntent.setData(null);
         if(data != null){
             String tokenId = data.getEncodedPath().replaceFirst("/track/","");
 
-            if(state.tracking() && tokenId.equals(state.getToken())) {
-            } else {
-                intent.putExtra("mode", "join");
-                intent.putExtra("token", tokenId);
-                intent.putExtra("host", data.getHost());
-                startService(intent);
-                state.fire(JOIN_TRACKING);
+            if (!state.tracking() || !tokenId.equals(state.getToken())) {
+                intentService.putExtra("mode", "join");
+                intentService.putExtra("token", tokenId);
+                intentService.putExtra("host", data.getHost());
+                startService(intentService);
+                state.fire(TRACKING_JOIN);
+            }
+        } else if(!state.tracking()) {
+            String trackingUri = state.getStringPreference(TRACKING_URI, null);
+            String tokenId = state.getStringPreference(RESPONSE_TOKEN, null);
+            if(trackingUri != null && tokenId != null){
+                intentService.putExtra("mode", "join");
+                intentService.putExtra("token", tokenId);
+
+                Uri uri = Uri.parse(trackingUri);
+                intentService.putExtra("host", uri.getHost());
+                startService(intentService);
+                state.fire(TRACKING_JOIN);
             }
         }
+        System.out.println("TRACKINGI:"+state.getStringPreference(TRACKING_URI, null)+":"+state.getStringPreference(RESPONSE_TOKEN, null));
+
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -476,12 +442,8 @@ public class MainActivity extends AppCompatActivity
                         });
                         break;
                     case RESPONSE_STATUS_ACCEPTED:
-                        SmartLocation.with(MainActivity.this).location().stop();
-                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-                        if (o.has(RESPONSE_TOKEN)) {
-                            onFabClick.call(SEND_LINK);
-                        }
+                        SmartLocation.with(MainActivity.this).location().stop();
                         if (o.has(RESPONSE_NUMBER)) {
                             state.getUsers().forMe(new MyUsers.Callback() {
                                 @Override
@@ -500,7 +462,6 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                     case RESPONSE_STATUS_ERROR:
-                        enableLocationManager();
                         break;
                     case RESPONSE_STATUS_UPDATED:
                         if(o.has(USER_DISMISSED)) {
@@ -525,8 +486,6 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                     case RESPONSE_STATUS_STOPPED:
-                        enableLocationManager();
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         break;
                 }
             } catch (JSONException e) {
@@ -535,60 +494,6 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    private void enableLocationManager() {
-        LocationParams.Builder builder = new LocationParams.Builder()
-                .setAccuracy(LocationAccuracy.HIGH).setDistance(1).setInterval(1000);
-        SmartLocation.with(this).location().continuous().config(builder.build()).start(locationUpdateListener);
-
-/*
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-            return false;
-        } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_UPDATES_DELAY, 1, locationListener);
-//            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_UPDATES_DELAY, 1, locationListener);
-            return true;
-        }
-*/
-    }
-
-    private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
-        @Override
-        public void onLocationUpdated(final Location location) {
-            if(!state.tracking()) {
-                state.getMe().addLocation(Utils.normalizeLocation(state.getGpsFilter(), location));
-            }
-        }
-    };
-
-    private SimpleCallback<String> onFabClick = new SimpleCallback<String>() {
-        @Override
-        public void call(String id) {
-            switch (id) {
-                case NEW_TRACKING:
-                    intent.putExtra("mode", "start");
-                    startService(intent);
-                    break;
-                case SEND_LINK:
-                    new InviteSender(MainActivity.this).send("https://" + state.myTracking.getHost() + ":8080/track/" + state.getToken());
-                    break;
-                case NEW_MESSAGE:
-                    state.fire(NEW_MESSAGE);
-                    break;
-                case STOP_TRACKING:
-                    state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-                        @Override
-                        public void call(Integer number, MyUser myUser) {
-                            myUser.removeViews();
-                        }
-                    });
-                    intent.putExtra("mode", "stop");
-                    startService(intent);
-                    break;
-            }
-        }
-    };
 
 /*    GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
         @Override

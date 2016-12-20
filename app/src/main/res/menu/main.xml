@@ -1,29 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_save_location"
-        android:orderInCategory="100"
-        android:title="Save location"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_set_my_name"
-        android:orderInCategory="100"
-        android:title="Set my name"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_show_tracks"
-        android:orderInCategory="100"
-        android:title="Show tracks"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_hide_tracks"
-        android:orderInCategory="100"
-        android:title="Hide tracks"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_show_messages"
-        android:orderInCategory="100"
-        android:title="Chat"
-        app:showAsAction="never" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<item android:id="@+id/switch_day_night" android:title="Switch day/night"></item>-->
 </menu>

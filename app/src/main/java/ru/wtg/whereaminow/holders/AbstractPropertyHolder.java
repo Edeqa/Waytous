@@ -6,7 +6,7 @@ import ru.wtg.whereaminow.interfaces.EntityHolder;
 /**
  * Created 11/18/16.
  */
-abstract class AbstractPropertyHolder<B extends AbstractProperty> implements EntityHolder<AbstractProperty> {
+abstract public class AbstractPropertyHolder<B extends AbstractProperty> implements EntityHolder<AbstractProperty> {
 
     AbstractPropertyHolder(){}
 

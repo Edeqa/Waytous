@@ -1,7 +1,6 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import org.java_websocket.WebSocket;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.Color;
@@ -14,12 +13,13 @@ import java.util.Random;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
- * Created by tujger on 10/8/16.
+ * Created 10/8/16.
  */
 
 public class MyToken {
@@ -28,6 +28,7 @@ public class MyToken {
     private Long changed;
     private String id;
     private String owner;
+    private String welcomeMessage;
     private int count;
 
     public MyToken(){
@@ -190,11 +191,22 @@ public class MyToken {
                 }
                 initialUsers.add(o);
             }
-
         }
         if(initialUsers.size()>0){
             initial.put(RESPONSE_INITIAL,initialUsers);
         }
+        if(getWelcomeMessage() != null && getWelcomeMessage().length() > 0) {
+            initial.put(RESPONSE_WELCOME_MESSAGE, getWelcomeMessage());
+        }
+
         user.send(initial.toString());
+    }
+
+    public String getWelcomeMessage() {
+        return welcomeMessage;
+    }
+
+    public void setWelcomeMessage(String welcomeMessage) {
+        this.welcomeMessage = welcomeMessage;
     }
 }

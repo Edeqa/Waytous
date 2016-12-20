@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="DayTheme">
         <attr name="buttonPerson" format="reference"/>
+        <attr name="buttonLocation" format="reference"/>
         <attr name="buttonTextColor" format="reference"/>
     </declare-styleable>
 </resources>

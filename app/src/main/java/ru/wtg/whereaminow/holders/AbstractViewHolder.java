@@ -24,4 +24,5 @@ abstract public class AbstractViewHolder<B extends AbstractView> implements Enti
     public boolean onEvent(String event, Object object) {
         return true;
     }
+
 }

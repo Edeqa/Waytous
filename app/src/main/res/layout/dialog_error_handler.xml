@@ -11,7 +11,7 @@
         android:inputType="text|textMultiLine"
         tools:text="Error message"
         android:ems="10"
-        android:id="@+id/etErrorMessage"
+        android:id="@+id/et_error_message"
         android:selectAllOnFocus="true"
         android:gravity="top|left" />
 </LinearLayout>

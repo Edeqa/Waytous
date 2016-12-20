@@ -15,9 +15,7 @@ public class ContinueDialog {
     private SimpleCallback callback;
 
     public ContinueDialog(Context context) {
-
         this.context = context;
-
     }
 
     public ContinueDialog setMessage(String message) {

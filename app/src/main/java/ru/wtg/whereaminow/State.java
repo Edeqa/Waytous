@@ -7,25 +7,26 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import ru.wtg.whereaminow.helpers.GeoTrackFilter;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.holders.AbstractProperty;
+import ru.wtg.whereaminow.holders.AbstractPropertyHolder;
+import ru.wtg.whereaminow.holders.AbstractView;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
-import ru.wtg.whereaminow.holders.LoggerHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
@@ -40,56 +41,60 @@ import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_GPS_REJECTED;
 
 public class State extends MultiDexApplication {
 
+    public static final int API = 1;
+
     public static final String SELECT_USER = "select";
     public static final String UNSELECT_USER = "unselect";
+    public static final String MAKE_ACTIVE = "make_active";
+    public static final String MAKE_INACTIVE = "make_inactive";
     public static final String CHANGE_NAME = "change_name";
     public static final String CHANGE_NUMBER = "change_number";
     public static final String CHANGE_COLOR = "change_color";
+    public static final String CHANGE_TYPE = "change_type";
     public static final String CREATE_CONTEXT_MENU = "create_context_menu";
     public static final String CREATE_OPTIONS_MENU = "create_options_menu";
-    public static final String CREATE_FAB_MENU = "create_fab_menu";
-    public static final String CREATE_DRAWER_MENU = "create_drawer_menu";
+    public static final String PREPARE_OPTIONS_MENU = "prepare_options_menu";
+    public static final String PREPARE_FAB = "prepare_fab";
+    public static final String CREATE_DRAWER = "create_drawer";
+    public static final String PREPARE_DRAWER = "prepare_drawer";
 
-    public static final String ADJUST_ZOOM = "adjust_zoom";
-    public static final String MAKE_ACTIVE = "make_active";
-    public static final String MAKE_INACTIVE = "make_inactive";
+    public static final String ACTIVITY_CREATE = "activity_create";
+    public static final String ACTIVITY_PAUSE = "activity_pause";
+    public static final String ACTIVITY_RESUME = "activity_resume";
+    public static final String ACTIVITY_DESTROY = "activity_destroy";
+    public static final String ACTIVITY_RESULT = "activity_result";
 
-    public static final String NEW_TRACKING = "new_tracking";
-    public static final String JOIN_TRACKING = "join_tracking";
-    public static final String DISCONNECTED = "disconnected";
-    public static final String STOP_TRACKING = "stop_tracking";
-    public static final String ACCEPTED = "accepted";
-    public static final String ERROR = "error";
-    public static final String STARTED = "started";
-    public static final String STOPPED = "stopped";
-    public static final String SEND_LINK = "send_link";
-    public static final String NEW_MESSAGE = "new_message";
-    public static final String SEND_MESSAGE = "send_message";
-    public static final String PRIVATE_MESSAGE = "private_message";
-    public static final String USER_MESSAGE = "user_message";
-    public static final String SHOW_MESSAGES = "show_messages";
+    public static final String TRACKING_NEW = "tracking_new";
+    public static final String TRACKING_JOIN = "tracking_join";
+    public static final String TRACKING_STOP = "tracking_stop";
+    public static final String TRACKING_STARTED = "tracking_started";
+    public static final String TRACKING_ACCEPTED = "tracking_accepted";
+    public static final String TRACKING_STOPPED = "tracking_stopped";
+    public static final String CONNECTION_DISCONNECTED = "disconnected";
+    public static final String CONNECTION_ERROR = "error";
+    public static final String TOKEN_CREATED = "token_created";
+    public static final String TOKEN_CHANGED = "token_changed";
+
+    private MyTracking tracking;
 
     private static State instance = null;
     private static WhereAmINowService service;
-    private static MainActivity activity;
+
+    private HashMap<String, AbstractProperty> userEntityEvents = new HashMap<>();
+    private HashMap<String, AbstractPropertyHolder> entityEvents = new HashMap<>();
+    private HashMap<String, AbstractView> userViewEvents = new HashMap<>();
+    private HashMap<String, AbstractViewHolder> viewEvents = new HashMap<>();
+
     private SharedPreferences sharedPreferences;
-
-    private ArrayList<String> userEntityActions = new ArrayList<>();
-    private ArrayList<String> entityActions = new ArrayList<>();
-    private ArrayList<String> userViewActions = new ArrayList<>();
-    private ArrayList<String> viewActions = new ArrayList<>();
-
-
-    private String deviceId;
-    private String token;
     private MyUsers users;
     private MyUser me;
-    public MyTracking myTracking;
+    private GeoTrackFilter gpsFilter;
     private Notification notification;
+    private String deviceId;
+    private String token;
     private boolean gpsAccessAllowed;
     private boolean gpsAccessRequested;
     private boolean serviceBound;
-    private GeoTrackFilter gpsFilter;
 
     @Override
     public void onCreate() {
@@ -98,9 +103,9 @@ public class State extends MultiDexApplication {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        registerEntityHolder(new PropertiesHolder());
+        registerEntityHolder(new PropertiesHolder(this));
 //        registerEntityHolder(new LoggerHolder(this));
-        registerEntityHolder(new MessagesHolder());
+        registerEntityHolder(new MessagesHolder(this));
         registerEntityHolder(new NotificationHolder(this));
 
         gpsFilter = new GeoTrackFilter(1.);
@@ -143,6 +148,21 @@ public class State extends MultiDexApplication {
         return instance ;
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        users.forAllUsers(new MyUsers.Callback() {
+            @Override
+            public void call(Integer number, MyUser myUser) {
+                myUser.removeViews();
+//                Location lastLocation = myUser.getLocation();
+//                myUser.getLocations().clear();
+//                myUser.addLocation(lastLocation);
+                myUser.createViews();
+            }
+        });
+    }
+
     public WhereAmINowService getService() {
         return service;
     }
@@ -151,42 +171,34 @@ public class State extends MultiDexApplication {
         State.service = service;
     }
 
-    public void setActivity(MainActivity activity) {
-        State.activity = activity;
-    }
-
-
     public Context getApplication(){
         return this;
     }
 
     public boolean disconnected() {
-        return myTracking == null || myTracking.getStatus() == TRACKING_DISABLED;
+        return tracking == null || tracking.getStatus() == TRACKING_DISABLED;
     }
 
     public boolean rejected() {
-        return myTracking != null && myTracking.getStatus() == TRACKING_GPS_REJECTED;
+        return tracking != null && tracking.getStatus() == TRACKING_GPS_REJECTED;
     }
 
     public boolean tracking() {
-        return myTracking != null && myTracking.getStatus() == TRACKING_ACTIVE;
+        return tracking != null && tracking.getStatus() == TRACKING_ACTIVE;
     }
 
     public boolean connecting() {
-        return myTracking != null && myTracking.getStatus() == TRACKING_CONNECTING;
-    }
-
-    public void checkDeviceId() {
-        deviceId = sharedPreferences.getString("device_id",null);
-        if(deviceId == null){
-
-//            InstanceID.getInstance(application).getId()
-            deviceId = Settings.Secure.getString(activity.getContentResolver(),Settings.Secure.ANDROID_ID);
-            sharedPreferences.edit().putString("device_id",deviceId).apply();
-        }
+        return tracking != null && tracking.getStatus() == TRACKING_CONNECTING;
     }
 
     public String getDeviceId() {
+        if(deviceId == null) {
+            deviceId = getStringPreference("device_id", null);
+            if(deviceId == null) {
+                deviceId = UUID.randomUUID().toString();
+                setPreference("device_id", deviceId);
+            }
+        }
         return deviceId;
     }
 
@@ -232,9 +244,21 @@ public class State extends MultiDexApplication {
         return sharedPreferences.getString(key,defaultValue);
     }
 
+    public boolean getBooleanPreference(String key, boolean defaultValue){
+        return sharedPreferences.getBoolean(key,defaultValue);
+    }
+
     public void setPreference(String key, String value){
         if(value != null && value.length()>0){
             sharedPreferences.edit().putString(key,value).apply();
+        } else {
+            sharedPreferences.edit().remove(key).apply();
+        }
+    }
+
+    public void setPreference(String key, boolean value){
+        if(value){
+            sharedPreferences.edit().putBoolean(key,value).apply();
         } else {
             sharedPreferences.edit().remove(key).apply();
         }
@@ -270,7 +294,7 @@ public class State extends MultiDexApplication {
                 userEntityHolders.put(holder.getType(), holder);
             }
         }
-//        updateActions();
+//        updateEvents();
     }
 
     public HashMap<String,EntityHolder> getEntityHolders(){
@@ -308,9 +332,9 @@ public class State extends MultiDexApplication {
 
     public void clearViewHolders(){
         viewHolders.clear();
-        viewActions.clear();
+        viewEvents.clear();
         userViewHolders.clear();
-        userViewActions.clear();
+        userViewEvents.clear();
     }
 
     public EntityHolder getEntityHolder(String type){
@@ -333,33 +357,33 @@ public class State extends MultiDexApplication {
         }
     };
 
-    private void updateActions(){
-        entityActions.clear();
-        userEntityActions.clear();
-        viewActions.clear();
-        userViewActions.clear();
+    private void updateEvents(){
+        entityEvents.clear();
+        userEntityEvents.clear();
+        viewEvents.clear();
+        userViewEvents.clear();
 
-        userViewActions.addAll(Arrays.asList(SELECT_USER, UNSELECT_USER,
+/*        userViewEvents.addAll(Arrays.asList(SELECT_USER, UNSELECT_USER,
                 CHANGE_NUMBER,CHANGE_COLOR,
-                CREATE_CONTEXT_MENU,CREATE_OPTIONS_MENU,
-                ADJUST_ZOOM,MAKE_ACTIVE,MAKE_INACTIVE));
+                CREATE_CONTEXT_MENU, PREPARE_OPTIONS_MENU,
+                MAKE_ACTIVE,MAKE_INACTIVE));
 
         for(Map.Entry<String, EntityHolder> entry: getEntityHolders().entrySet()){
-            entityActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+            entityEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
         }
         for(Map.Entry<String, EntityHolder> entry: getUserEntityHolders().entrySet()){
-            userEntityActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+            userEntityEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
         }
         for(Map.Entry<String, AbstractViewHolder> entry: getViewHolders().entrySet()){
-            viewActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
+            viewEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
         }
         for(Map.Entry<String, AbstractViewHolder> entry: getUserViewHolders().entrySet()){
-            userViewActions.addAll(Arrays.asList(entry.getValue().getOwnEvents()));
-        }
-        System.out.println("ENTITYACTIONS:"+ entityActions);
-        System.out.println("USERENTITYACTIONS:"+ userEntityActions);
-        System.out.println("VIEWACTIONS:"+ viewActions);
-        System.out.println("USERVIEWACTIONS:"+ userViewActions);
+            userViewEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
+        }*/
+        System.out.println("ENTITYACTIONS:"+ entityEvents);
+        System.out.println("USERENTITYACTIONS:"+ userEntityEvents);
+        System.out.println("VIEWACTIONS:"+ viewEvents);
+        System.out.println("USERVIEWACTIONS:"+ userViewEvents);
     }
 
     public void fire(final String EVENT, final Object object){
@@ -388,9 +412,25 @@ public class State extends MultiDexApplication {
     }
 
     public void fire(final String EVENT){
+        switch(EVENT){
+            case ACTIVITY_DESTROY:
+                if(disconnected()) {
+                    clearViewHolders();
+                    entityHolders.clear();
+                    entityEvents.clear();
+                    userEntityHolders.clear();
+                    userEntityEvents.clear();
+
+                    Intent intent = new Intent(State.this, WhereAmINowService.class);
+                    stopService(intent);
+                    System.exit(0);
+                }
+                break;
+            default:
+                break;
+        }
         fire(EVENT, null);
     }
-
 
     public GeoTrackFilter getGpsFilter() {
         return gpsFilter;
@@ -403,4 +443,13 @@ public class State extends MultiDexApplication {
     public void setGpsAccessAllowed(boolean gpsAccessAllowed) {
         this.gpsAccessAllowed = gpsAccessAllowed;
     }
+
+    public MyTracking getTracking() {
+        return tracking;
+    }
+
+    public void setTracking(MyTracking tracking) {
+        this.tracking = tracking;
+    }
+
 }

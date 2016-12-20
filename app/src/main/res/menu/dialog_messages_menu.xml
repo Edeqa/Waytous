@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Hide system messages"
+        android:id="@+id/hide_system_messages" />
+    <item android:title="Show system messages"
+        android:id="@+id/show_system_messages" />
+    <item android:title="Clear messages"
+        android:id="@+id/clear_messages" />
+</menu>

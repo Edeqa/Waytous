@@ -1,22 +1,11 @@
 package ru.wtg.whereaminowserver.helpers;
 
-import org.json.JSONObject;
-
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_LONGITUDE;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
-
 /**
- * Created by tujger on 10/8/16.
+ * Created 10/8/16.
  */
 
 public class Utils {
@@ -71,8 +60,7 @@ public class Utils {
 
     public static String getUnique() {
         SecureRandom random = new SecureRandom();
-        String token = new BigInteger(48, random).toString(32).toUpperCase();
-        return token;
+        return new BigInteger(48, random).toString(32).toUpperCase();
     }
 
     public static void pause(int i) {

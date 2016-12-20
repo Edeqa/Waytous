@@ -27,6 +27,16 @@ public class WhereAmINowService extends Service {
 
         state = State.getInstance();
         state.setService(this);
+
+//        if(state.getToken() != null) {
+//            Intent intentService = new Intent(state,WhereAmINowService.class);
+//            intentService.putExtra("mode", "join");
+//            intentService.putExtra("token", state.getToken());
+//            intentService.putExtra("host", data.getHost());
+//            startService(intentService);
+//            state.fire(TRACKING_JOIN);
+//            onStartCommand()
+//        }
     }
 
     @Override
@@ -37,29 +47,29 @@ public class WhereAmINowService extends Service {
 
         if("start".equals(mode)){
             try {
-                state.myTracking = new MyTracking(this);
+                state.setTracking(new MyTracking(this));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
                 return super.onStartCommand(intent, flags, startId);
             }
-            state.myTracking.start();
+            state.getTracking().start();
         } else if("join".equals(mode)){
             if(state.tracking()) {
-                state.myTracking.stop();
+                state.getTracking().stop();
             }
             try {
                 assert intent != null;
-                state.myTracking = new MyTracking(this,intent.getStringExtra("host"));
+                state.setTracking(new MyTracking(this,intent.getStringExtra("host")));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
                 return super.onStartCommand(intent, flags, startId);
             }
             String token = intent.getStringExtra("token");
-            state.myTracking.join(token);
+            state.getTracking().join(token);
         } else if("stop".equals(mode) && state.tracking()){
-            state.myTracking.stop();
+            state.getTracking().stop();
         }
         return super.onStartCommand(intent, flags, startId);
     }
