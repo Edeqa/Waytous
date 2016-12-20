@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -24,14 +23,11 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.helpers.AbstractSavedItem;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 import ru.wtg.whereaminow.helpers.UserMessage;
-import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
-import ru.wtg.whereaminow.interfaces.TypedCallback;
 
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_DRAWER;
@@ -43,7 +39,6 @@ import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
-import static ru.wtg.whereaminow.holders.MessagesHolder.TYPE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.USER_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
@@ -215,15 +210,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         final boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
         if(hideSystemMessages) {
-            UserMessage.setRestrictions(context, new TypedCallback<Boolean, Integer, UserMessage>() {
-                @Override
-                public Boolean call(Integer i, UserMessage msg) {
-//                            UserMessage msg = (UserMessage) Utils.deserializeFromString(arg);
-                            if(msg.getType() == UserMessage.TYPE_PRIVATE || msg.getType() == UserMessage.TYPE_MESSAGE) return true;
-                            return false;
-//                    return true;
-                }
-            });
         }
 
         ibMenu.setOnClickListener(new View.OnClickListener() {
@@ -231,6 +217,8 @@ public class MessagesViewHolder extends AbstractViewHolder {
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(context, view);
                 context.getMenuInflater().inflate(R.menu.dialog_messages_menu, popup.getMenu());
+
+                final boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
 
                 popup.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
                 popup.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
@@ -471,21 +459,11 @@ public class MessagesViewHolder extends AbstractViewHolder {
             switch(menuItem.getItemId()) {
                 case R.id.hide_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
-                    UserMessage.setRestrictions(context, new TypedCallback<Boolean,Integer,UserMessage>() {
-                        @Override
-                        public Boolean call(Integer i,UserMessage msg) {
-//                            UserMessage msg = (UserMessage) Utils.deserializeFromString(arg);
-                            if(msg.getType() == UserMessage.TYPE_PRIVATE || msg.getType() == UserMessage.TYPE_MESSAGE) return true;
-                            return false;
-//                            return true;
-                        }
-                    });
                     adapter.notifyDataSetChanged();
                     updateDialogTitle();
                     break;
                 case R.id.show_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-                    UserMessage.setRestrictions(context, null);
                     adapter.notifyDataSetChanged();
                     updateDialogTitle();
                     break;

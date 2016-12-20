@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,12 +19,9 @@ import android.view.ViewGroup;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
-import ru.wtg.whereaminow.interfaces.TypedCallback;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -44,7 +40,6 @@ abstract public class AbstractSavedItem implements Serializable {
 
     transient private int number;
     static transient private Map<String,Integer> count = new HashMap<String, Integer>();
-    static transient private Map<String,TypedCallback<Boolean,Integer, AbstractSavedItem>> restrs = new HashMap<>();
 
     protected AbstractSavedItem(Context context, String itemType){
         this.context = context;
@@ -68,9 +63,6 @@ abstract public class AbstractSavedItem implements Serializable {
         return number;
     }*/
 
-    public class Restrictions {
-
-    }
 
     public void save(SimpleCallback<AbstractSavedItem> onSaveCallback) {
         sharedPreferences.edit().putString("item_" + number, Utils.serializeToString(this)).apply();
@@ -100,61 +92,24 @@ abstract public class AbstractSavedItem implements Serializable {
 
     }
 
-    public static void setRestrictions(Context context, String itemType, TypedCallback restrictions) {
-        if(restrictions == null && restrs.containsKey(itemType)) {
-            restrs.remove(itemType);
-            reCount(context, itemType);
-        } else {
-            restrs.put(itemType, restrictions);
-            reCount(context, itemType);
-        }
-    }
-
     private static int reCount(Context context, String itemType){
-        final AtomicInteger counter = new AtomicInteger();
-
-        filter(context, itemType, new TypedCallback<Boolean, Integer, AbstractSavedItem>() {
-            @Override
-            public Boolean call(Integer number, AbstractSavedItem arg) {
-                counter.getAndIncrement();
-                return true;
-            }
-        });
-        int cnt = counter.get();
-
-        count.put(itemType, counter.get());
+        int cnt = 0;
+        int last = getSharedPreferences(context, itemType).getInt(LAST, 0);
+        for(int i = 1; i<=last; i++){
+            if(getSharedPreferences(context, itemType).getString("item_" + i, null) != null) cnt ++;
+        }
+        count.put(itemType, cnt);
         System.out.println("COUBNTFOR:"+itemType+":"+cnt);
         return cnt;
-    }
-
-    private static void filter(Context context, String itemType, TypedCallback<Boolean,Integer,AbstractSavedItem> callback) {
-        int last = getSharedPreferences(context, itemType).getInt(LAST, 0);
-        TypedCallback<Boolean, Integer, AbstractSavedItem> restr = null;
-        if(restrs.containsKey(itemType)) {
-            restr = restrs.get(itemType);
-        }
-        for(int i = 1; i<=last; i++){
-            String saved = getSharedPreferences(context, itemType).getString("item_" + i, null);
-            if(saved != null) {
-                AbstractSavedItem item = (AbstractSavedItem) Utils.deserializeFromString(saved);
-                if(restr != null) {
-                    if(restr.call(i, item)) {
-                        if(!callback.call(i, item)) break;
-                    }
-                } else {
-                    if(!callback.call(i, item)) break;
-                }
-            }
-        }
     }
 
     private static SharedPreferences getSharedPreferences(Context context, String itemType){
         return context.getSharedPreferences(itemType, MODE_PRIVATE);
     }
 
-    public static AbstractSavedItem getItemByPosition(final Context context, final String itemType, final int position) {
-        final AbstractSavedItem[] item = new AbstractSavedItem[1];
-        /*int count = 0;
+    public static AbstractSavedItem getItemByPosition(Context context, String itemType, int position) {
+        AbstractSavedItem item = null;
+        int count = 0;
         int last = getSharedPreferences(context, itemType).getInt(LAST, 0);
         for(int i = 1; i<=last; i++){
             String saved = getSharedPreferences(context, itemType).getString("item_" + i, null);
@@ -168,35 +123,7 @@ abstract public class AbstractSavedItem implements Serializable {
             }
             if(saved != null) count ++;
         }
-        return item;*/
-
-
-
-
-
-        final AtomicInteger counter = new AtomicInteger();
-//        final AtomicReference<AbstractSavedItem> saved = new AtomicReference<>();
-
-        filter(context, itemType, new TypedCallback<Boolean,Integer,AbstractSavedItem>() {
-            @Override
-            public Boolean call(Integer number, AbstractSavedItem arg) {
-                if(counter.get() == position) {
-                    item[0] = arg;
-                    item[0].number = number;
-                    item[0].itemType = itemType;
-                    item[0].setProperties(context, getSharedPreferences(context, itemType), number);
-                    return false;
-                }
-                counter.getAndIncrement();
-                return true;
-            }
-        });
-
-//        int cnt = counter.get();
-
-//        count.put(itemType, counter.get());
-//        System.out.println("COUBNTFOR:"+itemType+":"+cnt);
-        return item[0];
+        return item;
     }
 
     public static AbstractSavedItem getItemByNumber(Context context, String itemType, int number) {

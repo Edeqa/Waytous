@@ -14,7 +14,6 @@ import java.util.Date;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.interfaces.TypedCallback;
 
 /**
  * Created 12/9/16.
@@ -75,10 +74,6 @@ public class UserMessage extends AbstractSavedItem {
 
     public static int getCount(Context context){
         return getCount(context, MESSAGE);
-    }
-
-    public static void setRestrictions(Context context, TypedCallback<Boolean,Integer,UserMessage> restrictions){
-        setRestrictions(context, MESSAGE, restrictions);
     }
 
     public static UserMessage getItemByPosition(Context context, int position) {
