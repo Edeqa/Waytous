@@ -126,6 +126,17 @@ public class MessagesViewHolder extends AbstractViewHolder {
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.set_welcome_message, Menu.NONE, R.string.set_welcome_message).setVisible(false).setOnMenuItemClickListener(onMenuItemSetWelcomeMessageClickListener);
+
+                optionsMenu.add(Menu.NONE, 19191919, Menu.NONE, "Test message").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+//                        newMessage(State.getInstance().getMe(), false);
+                            State.getInstance().fire(SEND_MESSAGE, "Test message");
+
+                        return false;
+                    }
+                });
+
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
@@ -158,15 +169,19 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         if (privateMessage && toUser != null) {
                             JSONObject o = new JSONObject();
                             try {
-                                o.put(RESPONSE_PRIVATE, toUser.getProperties().getNumber());
-                                o.put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
-                                State.getInstance().getTracking().sendMessage(o);
+                                if(State.getInstance().tracking()) {
+                                    o.put(RESPONSE_PRIVATE, toUser.getProperties().getNumber());
+                                    o.put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
+                                    State.getInstance().getTracking().sendMessage(o);
+                                }
                                 toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            State.getInstance().getTracking().sendMessage(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
+                            if(State.getInstance().tracking()) {
+                                State.getInstance().getTracking().sendMessage(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
+                            }
                             State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
                         }
                     }

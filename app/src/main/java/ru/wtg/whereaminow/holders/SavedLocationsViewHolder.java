@@ -48,6 +48,7 @@ import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminow.holders.MarkerViewHolder.MARKER_CLICK;
+import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
@@ -80,6 +81,8 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
     public SavedLocationsViewHolder(Activity context) {
         this.context = context;
+        SavedLocation.init(context);
+
     }
 
     @Override
@@ -105,6 +108,25 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.menu_save_location, Menu.NONE, R.string.menu_save_location).setVisible(false).setOnMenuItemClickListener(onMenuItemClickListener);
+
+                optionsMenu.add(Menu.NONE, 1919191919, Menu.NONE, "Test location").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+//                        newMessage(State.getInstance().getMe(), false);
+//                        State.getInstance().fire(SEND_MESSAGE, "Test message");
+
+                        final SavedLocation loc = new SavedLocation(context);
+                        loc.setLatitude(74.0);
+                        loc.setLongitude(35.0);
+                        loc.setTimestamp(new Date().getTime());
+                        loc.setUsername(State.getInstance().getMe().getProperties().getDisplayName());
+                        loc.save(context);
+
+                        return false;
+                    }
+                });
+
+
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
@@ -373,7 +395,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         adapter.notifyItemRemoved(position);
 
                         dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
-                        State.getInstance().getUsers().forUser(10000 + arg.getNumber(), new MyUsers.Callback() {
+                        State.getInstance().getUsers().forUser((int)(10000 + arg.getNumber()), new MyUsers.Callback() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(DELETE_SAVED_LOCATION);
@@ -458,7 +480,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                     if (adapter != null) {
                         adapter.notifyDataSetChanged();
                     }
-                    State.getInstance().getUsers().forUser(savedLocation.getNumber() + 10000, new MyUsers.Callback() {
+                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             myUser.fire(CHANGE_NAME, savedLocation.getUsername());

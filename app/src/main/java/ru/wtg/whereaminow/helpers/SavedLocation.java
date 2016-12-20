@@ -16,10 +16,8 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 
@@ -46,6 +44,10 @@ public class SavedLocation extends AbstractSavedItem {
 
     public SavedLocation(Context context) {
         super(context, LOCATION);
+    }
+
+    public static void init(Context context) {
+        init(context, SavedLocation.class, LOCATION);
     }
 
     public double getLatitude() {
@@ -121,7 +123,7 @@ public class SavedLocation extends AbstractSavedItem {
                                 item.setAddress(o.getString("display_name"));
                                 item.save(context);
                             } catch (JSONException | IOException | NullPointerException e) {
-                                e.printStackTrace();
+                                //e.printStackTrace();
                             }
                         }
                     }).start();
@@ -197,7 +199,7 @@ public class SavedLocation extends AbstractSavedItem {
                     @Override
                     public void run() {
                         if(savedLocation.getBitmap() != null) {
-                            holder.ibImage.setImageBitmap(savedLocation.getBitmap().currentImage);
+                            holder.ibImage.setImageBitmap(savedLocation.getBitmap().getCurrentImage());
                             holder.ibImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         } else {
                             new Thread(new LoadRunnable(context, savedLocation, new SimpleCallback<Bitmap>() {
@@ -258,40 +260,6 @@ public class SavedLocation extends AbstractSavedItem {
                 + " }";
     }
 
-    private static class BitmapDataObject implements Serializable {
-
-        static final long serialVersionUID =-6395904747332820044L;
-
-        private Bitmap currentImage;
-
-        public BitmapDataObject(Bitmap bitmap) {
-            currentImage = bitmap;
-        }
-
-        private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            currentImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-            out.writeInt(byteArray.length);
-            out.write(byteArray);
-            currentImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        }
-
-        private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-            int bufferLength = in.readInt();
-            byte[] byteArray = new byte[bufferLength];
-            int pos = 0;
-            do {
-                int read = in.read(byteArray, pos, bufferLength - pos);
-                if (read != -1) {
-                    pos += read;
-                } else {
-                    break;
-                }
-            } while (pos < bufferLength);
-            currentImage = BitmapFactory.decodeByteArray(byteArray, 0, bufferLength);
-        }
-    }
 
     private static class LoadRunnable implements Runnable {
         private SavedLocation savedLocation;
