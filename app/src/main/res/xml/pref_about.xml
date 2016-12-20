@@ -1,0 +1,63 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+    <PreferenceCategory
+        android:key="category_general"
+        android:title="General"
+        >
+        <Preference
+            android:defaultValue="true"
+            android:key="about"
+            android:title="@string/app_name">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://play.google.com/store/apps/details?id=ru.wtg.whereaminow"/>
+        </Preference>
+
+        <PreferenceScreen
+            android:defaultValue="true"
+            android:key="copyright"
+            android:summary="http://www.google.com"
+            android:title="Copyright"
+            >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.google.com"/>
+        </PreferenceScreen>
+
+
+        <PreferenceScreen
+            android:key="legal_information"
+            android:title="Legal information"
+            >
+            <!--<Preference
+                android:key="info"
+                android:layout="@layout/preference_info"
+                android:summary="@string/odyssey_legal_information_summary"
+                >
+            </Preference>-->
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="third_parties_information"
+        android:title="Other information">
+
+        <PreferenceScreen
+            android:title="Third party components"
+            >
+
+            <PreferenceScreen
+                android:summary="Fingerprint authentication library"
+                android:title="Digitus">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/afollestad/digitus"/>
+            </PreferenceScreen>
+
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

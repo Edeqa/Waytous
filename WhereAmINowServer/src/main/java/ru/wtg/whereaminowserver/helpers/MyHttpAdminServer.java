@@ -149,7 +149,7 @@ public class MyHttpAdminServer implements HttpHandler {
                 tr.add("td").with(new Date(y.getValue().getCreated()).toString());
                 tr.add("td").with(new Date(y.getValue().getChanged()).toString());
                 tr.add("td").with(y.getValue().getControl());
-                tr.add("td").with(y.getValue().getPositions().size());
+                tr.add("td");//.with(y.getValue().getPositions().size());
                 tr.add("td").add("a").with("Del").with("href","/?action=del&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
 
                 indent ++;
@@ -209,11 +209,12 @@ public class MyHttpAdminServer implements HttpHandler {
         tr.add("th").with("Bearing");
         tr.add("th").with("Speed");
 
-        int count = 1;
-        for(MyUser.MyPosition x: user.getPositions()){
+//        int count = 1;
+//        for(MyUser.MyPosition x: user.getPositions()){
+        MyUser.MyPosition x = user.getPosition();
             tr = table.add("tr");
 
-            tr.add("td").add("a").with(count).with("target","_blank").with("href","http://maps.google.com/?q="+x.latitude+"+"+x.longitude+"&z=13");
+            tr.add("td").add("a").with(1/*count*/).with("target","_blank").with("href","http://maps.google.com/?q="+x.latitude+"+"+x.longitude+"&z=13");
             tr.add("td").with(new Date(x.timestamp).toString());
             tr.add("td").with(x.latitude);
             tr.add("td").with(x.longitude);
@@ -222,8 +223,8 @@ public class MyHttpAdminServer implements HttpHandler {
             tr.add("td").with(x.bearing);
             tr.add("td").with(x.speed);
 
-            count++;
-        }
+//            count++;
+//        }
     }
 
     private void tableIpToUser(HtmlGenerator.Tag out) {

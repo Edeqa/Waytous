@@ -3,8 +3,6 @@ package ru.wtg.whereaminowserver.helpers;
 import org.java_websocket.WebSocket;
 import org.json.JSONObject;
 
-import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Date;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
@@ -17,12 +15,13 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
- * Created by tujger on 10/9/16.
+ * Created 10/9/16.
  */
 
 public class MyUser {
     private WebSocket webSocket;
-    private ArrayList<MyPosition> positions;
+//    private ArrayList<MyPosition> positions;
+    private MyPosition position;
     private String deviceId;
     private String control;
     private String model;
@@ -39,7 +38,7 @@ public class MyUser {
         this.webSocket = webSocket;
         this.deviceId = deviceId;
         created = new Date().getTime();
-        positions = new ArrayList<MyPosition>();
+//        positions = new ArrayList<MyPosition>();
 
         newControl();
         System.out.println("USER CONTROL:" + control);
@@ -109,7 +108,7 @@ public class MyUser {
         if (model != null) res += ", model:" + model;
         if (manufacturer != null) res += ", manufacturer:" + manufacturer;
         if (os != null) res += ", os:" + os;
-        res += ", positions:" + positions.size();
+//        res += ", positions:" + positions.size();
 
         return res;
     }
@@ -153,7 +152,8 @@ public class MyUser {
             if (message.has(USER_PROVIDER)) pos.provider = message.getString(USER_PROVIDER);
             pos.timestamp = timestamp;
 
-            positions.add(pos);
+//            positions.add(pos);
+            setPosition(pos);
             setChanged();
         }
     }
@@ -163,10 +163,13 @@ public class MyUser {
     }
 
     public MyPosition getPosition() {
+        return position;
+/*
         if (positions.size() > 0) {
             return positions.get(positions.size() - 1);
         }
         return new MyPosition();
+*/
     }
 
     public int getNumber() {
@@ -183,6 +186,10 @@ public class MyUser {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public void setPosition(MyPosition position) {
+        this.position = position;
     }
 
     class MyPosition {
@@ -228,8 +235,10 @@ public class MyUser {
         changed = new Date().getTime();
     }
 
+/*
     public ArrayList<MyPosition> getPositions() {
         return positions;
     }
+*/
 
 }

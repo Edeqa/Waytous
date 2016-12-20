@@ -47,6 +47,14 @@ public class MyUsers {
         forAllUsersExceptMe(callback);
     }
 
+    public void forSelectedUsers(Callback callback) {
+        for (Map.Entry<Integer, MyUser> entry : users.entrySet()) {
+            MyUser user = entry.getValue();
+            if (user == null || user.getProperties() == null || !user.getProperties().isSelected()) continue;
+            forUser(entry.getKey(), callback);
+        }
+    }
+
     public void forUser(int number,Callback callback) {
         if(users.containsKey(number) && users.get(number) != null){
             callback.call(number,users.get(number));
@@ -124,7 +132,7 @@ public class MyUsers {
         forAllUsers(new Callback() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                if(myUser.getProperties().isSelected())
+                if(myUser.getProperties().isSelected() && myUser.isUser())
                     count[0]++;
             }
         });
@@ -136,7 +144,7 @@ public class MyUsers {
         forAllUsers(new Callback() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                if(myUser.getProperties().isActive())
+                if(myUser.getProperties().isActive() && myUser.isUser())
                     count[0]++;
             }
         });

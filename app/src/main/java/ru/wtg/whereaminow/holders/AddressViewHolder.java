@@ -30,11 +30,6 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     }
 
     @Override
-    public String[] getOwnEvents() {
-        return new String[0];
-    }
-
-    @Override
     public AddressView create(MyUser myUser) {
         if (myUser == null) return null;
         return new AddressView(myUser);
@@ -73,7 +68,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             switch(event){
                 case SELECT_USER:
                 case UNSELECT_USER:
-                    if(State.getInstance().getUsers().getCountSelected() != 1){
+                    if(State.getInstance().getUsers().getCountSelected() > 1){
                         callback.call(null);
                         return true;
                     } else {
@@ -86,7 +81,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         }
 
         private void resolveAddress(final Location location) {
-            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountSelected() != 1){
+            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountSelected() > 1){
                 return;
             }
             new Thread(new Runnable() {

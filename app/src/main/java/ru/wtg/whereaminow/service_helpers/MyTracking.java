@@ -1,11 +1,8 @@
 package ru.wtg.whereaminow.service_helpers;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.support.v7.app.NotificationCompat;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,23 +16,24 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
-import ru.wtg.whereaminow.MainActivity;
-import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.WhereAmINowService;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
+import ru.wtg.whereaminow.holders.MessagesHolder;
 
-import static ru.wtg.whereaminow.State.ACCEPTED;
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.DISCONNECTED;
-import static ru.wtg.whereaminow.State.ERROR;
+import static ru.wtg.whereaminow.State.CONNECTION_DISCONNECTED;
+import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
 import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.STARTED;
-import static ru.wtg.whereaminow.State.STOPPED;
+import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
+import static ru.wtg.whereaminow.State.TOKEN_CREATED;
+import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
+import static ru.wtg.whereaminow.State.TRACKING_STARTED;
+import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
+import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
@@ -49,6 +47,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_STOPPED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_ACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_CONNECTING;
 import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_DISABLED;
@@ -73,10 +72,13 @@ import static ru.wtg.whereaminowserver.helpers.Constants.WSS_SERVER_HOST;
 
 public class MyTracking {
 
+    public static final String TRACKING_URI = "uri";
+
     private final Context context;
     private State state;
     private MyWebSocketClient webClient;
     private URI serverUri;
+    private String welcomeMessage;
     private int status = TRACKING_DISABLED;
 
     public MyTracking(Context context) throws URISyntaxException {
@@ -90,7 +92,7 @@ public class MyTracking {
     private MyTracking(Context context, URI serverUri) {
         this.context = context;
         this.serverUri = serverUri;
-        System.out.println("CONNECTTO:"+serverUri.toString());
+        System.out.println("NEWTRACKINGTO:"+serverUri.toString());
         state = State.getInstance();
         try {
             webClient = new MyWebSocketClient(this.serverUri);
@@ -106,17 +108,7 @@ public class MyTracking {
             System.out.println("Service:onLocationChanged");
 
             if(status == TRACKING_ACTIVE) {
-
                 location = Utils.normalizeLocation(state.getGpsFilter(), location);
-
-                try {
-                    JSONObject o = Utils.locationToJson(location);
-                    o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
-                    o.put(RESPONSE_NUMBER,state.getUsers().getMyNumber());
-                    fromServer(o);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
                 webClient.put(USER_LATITUDE, location.getLatitude());
                 webClient.put(USER_LONGITUDE, location.getLongitude());
@@ -128,6 +120,17 @@ public class MyTracking {
                 webClient.put(USER_TIMESTAMP, location.getTime());
 
                 webClient.sendUpdate();
+
+                try {
+                    JSONObject o = Utils.locationToJson(location);
+                    o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
+                    o.put(RESPONSE_NUMBER,state.getUsers().getMyNumber());
+                    fromServer(o);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
     };
@@ -137,14 +140,15 @@ public class MyTracking {
 //            System.err.println("Service:NOT locationManager.isProviderEnabled");
 //            return;
 //        }
+        System.out.println("TRACKING_LOCATION");
         LocationParams.Builder builder = new LocationParams.Builder()
                 .setAccuracy(LocationAccuracy.HIGH).setDistance(1).setInterval(1000);
 
-        SmartLocation.with(context).location().continuous().config(builder.build()).start(locationUpdatedListener);
+        SmartLocation.with(state).location().continuous().config(builder.build()).start(locationUpdatedListener);
     }
 
     public void start() {
-        webClient.setToken(null);
+        webClient.removeToken();
         doTrack();
     }
 
@@ -156,7 +160,7 @@ public class MyTracking {
     private void doTrack(){
         setStatus(TRACKING_CONNECTING);
 
-        state.fire(STARTED);
+        state.fire(TRACKING_STARTED);
 
         state.getService().startForeground(1976, state.getNotification());
 
@@ -182,19 +186,28 @@ public class MyTracking {
             switch (o.getString(RESPONSE_STATUS)) {
                 case RESPONSE_STATUS_DISCONNECTED:
                     if(!state.disconnected()) {
-                        state.fire(DISCONNECTED);
+                        state.fire(CONNECTION_DISCONNECTED, o.has(RESPONSE_MESSAGE) ? o.getString(RESPONSE_MESSAGE) : null);
                     }
                     state.getMe().fire(SELECT_USER, 0);
                     break;
                 case RESPONSE_STATUS_ACCEPTED:
                     setStatus(TRACKING_ACTIVE);
+
+                    state.setPreference(RESPONSE_TOKEN, webClient.getToken());
+                    state.setPreference(TRACKING_URI, serverUri.toString());
+
+                    String oldToken = state.getToken();
+                    if(!webClient.getToken().equals(oldToken)) {
+                        state.fire(TOKEN_CHANGED, webClient.getToken());
+                    }
+                    state.setToken(webClient.getToken());
                     if (o.has(RESPONSE_TOKEN)) {
                         state.setToken(o.getString(RESPONSE_TOKEN));
+                        state.fire(TOKEN_CREATED, o.getString(RESPONSE_TOKEN));
                     }
                     if (o.has(RESPONSE_NUMBER)) {
                         state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
                     }
-                    enableLocationManager();
 
                     if (o.has(RESPONSE_INITIAL)) {
                         JSONArray initialUsers = o.getJSONArray(RESPONSE_INITIAL);
@@ -203,16 +216,22 @@ public class MyTracking {
                             state.getUsers().addUser(u);
                         }
                     }
-                    state.fire(ACCEPTED);
+                    state.fire(TRACKING_ACCEPTED);
+                    if (o.has(RESPONSE_WELCOME_MESSAGE)) {
+                        final String text = o.getString(RESPONSE_WELCOME_MESSAGE);
+                        setWelcomeMessage(text);
+                        state.fire(WELCOME_MESSAGE, text);
+                    }
+                    enableLocationManager();
                     break;
                 case RESPONSE_STATUS_ERROR:
-                    SmartLocation.with(context).location().stop();
-                    stop();
-                    setStatus(TRACKING_DISABLED);
-
                     String message = o.getString(RESPONSE_MESSAGE);
                     if(message == null) message = "Failed join to tracking.";
-                    state.fire(ERROR, message);
+                    state.fire(CONNECTION_ERROR, message);
+
+                    SmartLocation.with(state).location().stop();
+                    stop();
+                    setStatus(TRACKING_DISABLED);
                     break;
                 case RESPONSE_STATUS_UPDATED:
                     if (o.has(USER_DISMISSED)) {
@@ -251,7 +270,7 @@ public class MyTracking {
                         state.getUsers().forUser(number,new MyUsers.Callback() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
-                                myUser.fire(CHANGE_NAME,name);
+                                myUser.fire(CHANGE_NAME,(name != null && name.length()>0) ? name : null);
                             }
                         });
                     }
@@ -263,24 +282,28 @@ public class MyTracking {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 if(o.has(RESPONSE_PRIVATE)){
-                                    myUser.fire(State.PRIVATE_MESSAGE, text);
+                                    myUser.fire(MessagesHolder.PRIVATE_MESSAGE, text);
                                 } else {
-                                    myUser.fire(State.USER_MESSAGE, text);
+                                    myUser.fire(MessagesHolder.USER_MESSAGE, text);
                                 }
                             }
                         });
                     }
                     break;
                 case RESPONSE_STATUS_STOPPED:
-                    SmartLocation.with(context).location().stop();
+                    state.setPreference(RESPONSE_TOKEN, null);
+                    state.setPreference(TRACKING_URI, null);
+
+                    state.fire(TRACKING_STOPPED);
+                    SmartLocation.with(state).location().stop();
                     state.getUsers().removeAllUsersExceptMe();
                     setStatus(TRACKING_DISABLED);
                     state.getMe().fire(SELECT_USER, 0);
                     state.getService().stopForeground(true);
 
+                    state.setToken(null);
                     webClient.removeToken();
                     webClient.stop();
-                    state.fire(STOPPED);
                     break;
             }
         }catch(JSONException e){
@@ -328,4 +351,11 @@ public class MyTracking {
         webClient.sendUpdate();
     }
 
+    public String getWelcomeMessage() {
+        return welcomeMessage;
+    }
+
+    public void setWelcomeMessage(String welcomeMessage) {
+        this.welcomeMessage = welcomeMessage;
+    }
 }

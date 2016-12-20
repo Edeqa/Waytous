@@ -1,38 +1,34 @@
 package ru.wtg.whereaminowserver.helpers;
 
 /**
- * Created by tujger on 10/14/16.
+ * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 6;
+    public final static int SERVER_BUILD = 8;
 
 // device debug local version
     public final static String WSS_SERVER_HOST = "10.0.0.96";
     public final static boolean DEBUGGING = true;
-    public final static boolean SHARE_ERROR = false;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
 
 // emulator local version
 /*
     public final static String WSS_SERVER_HOST = "192.168.56.1";
     public final static boolean DEBUGGING = false;
-    public final static boolean SHARE_ERROR = false;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
 */
 
 // emulator internet version
 /*
-    public final static String WSS_SERVER_HOST = "wss://inchem.kstu.ru:8081";
+    public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
     public final static boolean DEBUGGING = false;
-    public final static boolean SHARE_ERROR = false;
-    public final static String HTTP_SERVER_HOST = "https://inchem.kstu.ru:8080";
+    public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 */
 
 // device debug internet version
 /*
     public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
     public final static boolean DEBUGGING = true;
-    public final static boolean SHARE_ERROR = true;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 */
 
@@ -94,6 +90,7 @@ public class Constants {
     public static final String USER_COLOR = "color";
     public static final String USER_NAME = "name";
     public static final String USER_MESSAGE = "user_message";
+    public static final String RESPONSE_WELCOME_MESSAGE = "welcome_message";
 
     public static final int LIFETIME_INACTIVE_TOKEN = 600;
 

@@ -1,5 +1,7 @@
 package ru.wtg.whereaminow.interfaces;
 
+import android.os.Parcelable;
+
 /**
  * Created 11/20/16.
  */

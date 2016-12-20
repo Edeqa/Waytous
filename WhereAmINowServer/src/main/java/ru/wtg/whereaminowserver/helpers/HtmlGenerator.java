@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by tujger on 10/18/16.
+ * Created 10/18/16.
  */
 
 public class HtmlGenerator {
@@ -72,8 +72,8 @@ public class HtmlGenerator {
                 for(Map.Entry<String,String> x:properties.entrySet()){
                     String key = x.getKey();
                     String value = x.getValue();
-                    key.replaceAll("\\\"","&quot;");
-                    value.replaceAll("\\\"","&quot;");
+                    key = key.replaceAll("\\\"","&quot;");
+                    value = value.replaceAll("\\\"","&quot;");
                     res += " "+key+"=\""+ value +"\"";
                 }
             }

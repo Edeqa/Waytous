@@ -7,15 +7,22 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
@@ -154,7 +161,7 @@ public class Utils {
         Location loc = new Location(json.getString(USER_PROVIDER));
         loc.setLatitude(json.getDouble(USER_LATITUDE));
         loc.setLongitude(json.getDouble(USER_LONGITUDE));
-        loc.setAltitude(json.getDouble(USER_ALTITUDE));
+        loc.setAltitude(json.has(USER_ALTITUDE) ? json.getDouble(USER_ALTITUDE) : 0);
         loc.setAccuracy((float) json.getDouble(USER_ACCURACY));
         loc.setBearing((float) json.getDouble(USER_BEARING));
         loc.setSpeed((float) json.getDouble(USER_SPEED));
@@ -276,5 +283,34 @@ public class Utils {
         return location;
 
     }
+
+    /** Read the object from Base64 string. */
+    public static Object deserializeFromString( String s ) {
+        byte [] data = Base64.decode( s, android.util.Base64.DEFAULT);
+        Object o = null;
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+            o  = ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
+
+    /** Write the object to a Base64 string. */
+    public static String serializeToString( Serializable o ) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream( baos );
+            oos.writeObject( o );
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+    }
+
+
 
 }

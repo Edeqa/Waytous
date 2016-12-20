@@ -10,8 +10,6 @@ public interface EntityHolder<T extends Entity> {
 
     String getType();
 
-    String[] getOwnEvents();
-
     boolean dependsOnUser();
 
     boolean dependsOnEvent();

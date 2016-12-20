@@ -11,6 +11,9 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -26,15 +29,41 @@
         <item name="android:radius">20sp</item>
     </style>
 
-    <style name="MenuButtonsStyle">
-        <item name="fab_size">mini</item>
-        <item name="fab_showAnimation">@anim/jump_from_down</item>
-        <item name="fab_hideAnimation">@anim/jump_to_down</item>
-        <item name="fab_shadowColor">#888</item>
-        <item name="fab_colorNormal">@android:color/holo_green_dark</item>
-        <item name="fab_colorPressed">@color/colorPrimary</item>
-        <item name="fab_colorRipple">@color/colorPrimaryDark</item>
+    <style name="FabLayoutStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
+
+    <style name="FabButtonStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="fabSize">normal</item>
+        <item name="android:tint">@android:color/white</item>
+        <item name="rippleColor">@color/colorPrimaryDark</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:paddingBottom">8dp</item>
+
+
+    </style>
+
+    <style name="FabTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:background">@drawable/semi_transparent_background</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:padding">5dip</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:paddingBottom">16dp</item>
+
+    </style>
+
 
     <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="windowActionBar">false</item>
@@ -46,9 +75,11 @@
     <style name="DayTheme" parent="AppTheme.NoActionBar">
         <item name="attr/buttonTextColor">@android:color/black</item>
         <item name="attr/buttonPerson">@drawable/ic_person_black_24dp</item>
+        <item name="attr/buttonLocation">@drawable/ic_pin_drop_black_24dp</item>
     </style>
 
     <style name="NightTheme" parent="AppTheme.NoActionBar">
+        <item name="attr/buttonLocation">@drawable/ic_pin_drop_black_24dp</item>
         <item name="attr/buttonTextColor">@android:color/white</item>
         <item name="attr/buttonPerson">@drawable/ic_person_white_24dp</item>
     </style>

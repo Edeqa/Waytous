@@ -3,11 +3,8 @@ package ru.wtg.whereaminow.holders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.text.style.TtsSpan;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Interpolator;
+import android.location.LocationManager;
+import android.os.Bundle;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -16,17 +13,27 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import ru.wtg.whereaminow.R;
+import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.Utils;
+import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
-import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
+import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
+import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 
 /**
  * Created 11/18/16.
  */
 public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
-    private static final String TYPE = "marker";
+
+    public static final String MARKER_CLICK = "marker_click";
+
+    public static final String TYPE = "marker";
+
     private final Context context;
 
     private GoogleMap map;
@@ -41,53 +48,68 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
     }
 
     @Override
-    public String[] getOwnEvents() {
-        return new String[0];
-    }
-
-    @Override
     public MarkerView create(MyUser myUser) {
-        if(myUser == null || myUser.getLocation() == null || map == null) return null;
-        int number = myUser.getProperties().getNumber();
-        MarkerView markerView = this.new MarkerView(myUser);
-        Bitmap bitmap;
-        int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
-//        if(isDraft()) {
-//            bitmap = Utils.renderBitmap(context, R.drawable.navigation_marker,Color.GRAY,size,size);
-//        } else {
-            bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getProperties().getColor(),size,size);
-//        }
-        Marker marker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()))
-                .rotation(myUser.getLocation().getBearing())
-                .anchor(0.5f, 0.5f)
-                .flat(true)
-//                .title("Melbourne")
-//                .snippet("Population: 4,137,400")
-                .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-//        marker.showInfoWindow();
-//        }
-        markerView.setMarker(marker);
-        markerView.setNumber(number);
-        return markerView;
+        if(myUser == null || map == null || myUser.getLocation() == null || myUser.getLocation().getProvider() == null || !myUser.isUser()) return null;
+        return new MarkerView(myUser);
     }
 
     public MarkerViewHolder setMap(GoogleMap map) {
         this.map = map;
+
+        map.setOnMarkerClickListener(onMarkerClickListener);
+
         return this;
+    }
+
+    @Override
+    public boolean dependsOnEvent() {
+        return true;
+    }
+
+    @Override
+    public boolean onEvent(String event, Object object) {
+        switch(event){
+            case MARKER_CLICK:
+                Marker marker = (Marker) object;
+                Bundle b = (Bundle) marker.getTag();
+                if(b.getString(TYPE, null).equals(TYPE)){
+                    if(marker.getTag() != null) {
+                        int number = b.getInt(RESPONSE_NUMBER);
+                        State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                            @Override
+                            public void call(Integer number, MyUser myUser) {
+                                myUser.fire(CameraViewHolder.CAMERA_NEXT_ORIENTATION);
+                            }
+                        });
+                    }
+                }
+                break;
+        }
+        return true;
     }
 
     class MarkerView extends AbstractView {
         private Marker marker;
-//        private int number;
         private MyUser myUser;
 
         MarkerView(MyUser myUser){
             this.myUser = myUser;
-        }
 
-        void setMarker(Marker marker){
-            this.marker = marker;
+            int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
+            Bitmap bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getProperties().getColor(),size,size);
+
+            marker = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()))
+                    .rotation(myUser.getLocation().getBearing())
+                    .anchor(0.5f, 0.5f)
+                    .flat(true)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+
+            Bundle b = new Bundle();
+            b.putString(TYPE, TYPE);
+            b.putInt(RESPONSE_NUMBER, myUser.getProperties().getNumber());
+            marker.setTag(b);
+
         }
 
         @Override
@@ -103,66 +125,52 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
         @Override
         public void onChangeLocation(Location location) {
+
             final LatLng startPosition = marker.getPosition();
             final LatLng finalPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
             final float startRotation = marker.getRotation();
             final float finalRotation = location.getBearing();
 
-            final Handler handler = new Handler();
-            final long start = SystemClock.uptimeMillis();
-            final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-            final float durationInMs = LOCATION_UPDATES_DELAY;
-            handler.post(new Runnable() {
-                long elapsed;
-                float t, v;
+            new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                        @Override
+                        public void call(Float[] value) {
+                            LatLng currentPosition = new LatLng(
+                                    startPosition.latitude*(1-value[TIME_ELAPSED])+finalPosition.latitude*value[TIME_ELAPSED],
+                                    startPosition.longitude*(1-value[TIME_ELAPSED])+finalPosition.longitude*value[TIME_ELAPSED]);
 
-                @Override
-                public void run() {
-//                if(marker == null) return;
-                    elapsed = SystemClock.uptimeMillis() - start;
-                    t = elapsed / durationInMs;
-                    v = interpolator.getInterpolation(t);
+                            float rot = value[CURRENT_VALUE] * finalRotation + (1 - value[CURRENT_VALUE]) * startRotation;
 
-                    LatLng currentPosition = new LatLng(
-                            startPosition.latitude*(1-t)+finalPosition.latitude*t,
-                            startPosition.longitude*(1-t)+finalPosition.longitude*t);
-
-                    float rot = v * finalRotation + (1 - v) * startRotation;
-
-                    if(marker != null) {
-                        marker.setRotation(-rot > 180 ? rot / 2 : rot);
-                        marker.setPosition(currentPosition);
-                    }
-
-                    if (t < 1) {
-                        handler.postDelayed(this, 16);
-                    }
-
-                }
-            });
+                            if(marker != null) {
+                                marker.setRotation(-rot > 180 ? rot / 2 : rot);
+                                marker.setPosition(currentPosition);
+                            }
+                        }
+                    }).execute();
 
         }
-
-        public void setNumber(int number) {
-//            this.number = number;
-            marker.setTag(number);
-        }
-
-//        public int getNumber() {
-//            return number;
-//        }
 
         @Override
         public boolean onEvent(String event, Object object) {
             switch (event){
                 case CHANGE_NUMBER:
                     int number = (int) object;
-                    setNumber(number);
+                    Bundle b = new Bundle();
+                    b.putString(TYPE, TYPE);
+                    b.putInt(RESPONSE_NUMBER, number);
+                    marker.setTag(b);
                     break;
             }
             return true;
         }
     }
+
+    private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(final Marker marker) {
+            State.getInstance().fire(MARKER_CLICK, marker);
+            return true;
+        }
+    };
 
 }

@@ -6,10 +6,10 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
@@ -17,14 +17,14 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 
-import static ru.wtg.whereaminow.State.ACCEPTED;
-import static ru.wtg.whereaminow.State.ADJUST_ZOOM;
+import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.ERROR;
+import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
 import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.STOPPED;
-import static ru.wtg.whereaminow.State.STOP_TRACKING;
+import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
+import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
+import static ru.wtg.whereaminow.holders.CameraViewHolder.ADJUST_ZOOM;
 
 /**
  * Created 11/18/16.
@@ -42,11 +42,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     @Override
     public String getType(){
         return TYPE;
-    }
-
-    @Override
-    public String[] getOwnEvents() {
-        return new String[0];
     }
 
     @Override
@@ -73,12 +68,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
-            case ACCEPTED:
+            case TRACKING_ACCEPTED:
                 show();
                 break;
-            case STOP_TRACKING:
-            case STOPPED:
-            case ERROR:
+            case TRACKING_STOP:
+            case TRACKING_STOPPED:
+            case CONNECTION_ERROR:
                 hide();
                 break;
         }
@@ -94,7 +89,8 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     }
 
     class ButtonView extends AbstractView {
-        private Button button;
+        private LinearLayout button;
+        private TextView title;
         private MyUser myUser;
         private volatile boolean clicked;
 
@@ -102,7 +98,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             this.myUser = myUser;
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            button = (Button) inflater.inflate(R.layout.view_user_button, null);
+            int buttonView = myUser.getProperties().getImageResource();
+            if(buttonView <1) {
+                buttonView = R.layout.view_user_button;
+            }
+
+            button = (LinearLayout) inflater.inflate(buttonView, null);
 
             int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
 //            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
@@ -129,8 +130,9 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 //            button.setTextColor(Color.LTGRAY);
 //            button.getBackground().setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(Color.CYAN)));
 
-            if(myUser.getProperties().isSelected()) button.setTypeface(Typeface.DEFAULT_BOLD);
-            button.setText(getDisplayName(myUser));
+            title = ((TextView) button.findViewById(R.id.tv_button_username));
+            if(myUser.getProperties().isSelected()) title.setTypeface(Typeface.DEFAULT_BOLD);
+            title.setText(myUser.getProperties().getDisplayName());
 
 //            int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Drawable drawable = Utils.renderDrawable(context, R.drawable.semi_transparent_background, myUser.getProperties().getColor(), size, size);
@@ -155,14 +157,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         public boolean onEvent(String event, Object object) {
             switch(event){
                 case SELECT_USER:
-                    button.setTypeface(Typeface.DEFAULT_BOLD);
+                    title.setTypeface(Typeface.DEFAULT_BOLD);
                     break;
                 case UNSELECT_USER:
-                    button.setTypeface(Typeface.DEFAULT);
+                    title.setTypeface(Typeface.DEFAULT);
                     break;
                 case CHANGE_NAME:
-                    button.setText(getDisplayName(myUser));
-
+                    title.setText(myUser.getProperties().getDisplayName());
+                    break;
             }
             return true;
         }
@@ -202,19 +204,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             }
         };
 
-        private String getDisplayName(MyUser myUser){
-            String name = myUser.getProperties().getName();
-            if(name == null){
-                if(myUser == State.getInstance().getMe()){
-                    name = "Me";
-                } else if (myUser.getProperties().getNumber() == 0) {
-                    name = "Leader";
-                } else {
-                    name = "Friend "+myUser.getProperties().getNumber();
-                }
-            }
-            return (myUser.getProperties().getNumber()==0 ? "*" : "") + name;
-        }
-    }
+     }
 
 }

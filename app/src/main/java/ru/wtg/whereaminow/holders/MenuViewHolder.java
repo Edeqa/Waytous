@@ -1,21 +1,18 @@
 package ru.wtg.whereaminow.holders;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.NavigationStarter;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
@@ -25,8 +22,11 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
  * Created 11/18/16.
  */
 public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> {
-    private static final String TYPE = "contextMenu";
+    private static final String TYPE = "menu";
+
     private final Activity context;
+    private MenuItem menuItemSetMyName;
+
 
     public MenuViewHolder(Activity context) {
         this.context = context;
@@ -38,14 +38,65 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     }
 
     @Override
-    public String[] getOwnEvents() {
-        return new String[0];
-    }
-
-    @Override
     public MenuView create(MyUser myUser) {
         if (myUser == null) return null;
         return this.new MenuView(myUser);
+    }
+
+    @Override
+    public boolean dependsOnEvent() {
+        return true;
+    }
+
+    @Override
+    public boolean onEvent(String event, Object object) {
+        switch(event){
+            case CREATE_OPTIONS_MENU:
+                Menu optionsMenu = (Menu) object;
+                menuItemSetMyName = optionsMenu.add("Set my name").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("Set my name");
+
+                        View layoutDialogSetMyName = context.getLayoutInflater().inflate(R.layout.dialog_set_my_name, null);
+
+                        builder.setView(layoutDialogSetMyName);
+                        final EditText etMyName = (EditText) layoutDialogSetMyName.findViewById(R.id.et_my_name);
+                        String name = State.getInstance().getStringPreference("my_name","");
+
+                        if(name != null && name.length()>0){
+                            etMyName.setText(name);
+                            builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    State.getInstance().getMe().fire(CHANGE_NAME, null);
+                                }
+                            });
+                        }
+                        builder.setPositiveButton(context.getString(android.R.string.ok),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        State.getInstance().getMe().fire(CHANGE_NAME,etMyName.getText().toString());
+                                    }
+                                });
+
+                        builder.setNegativeButton(context.getString(android.R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        System.out.println("CANCEL");
+                                    }
+                                });
+
+                        builder.create().show();
+                        return false;
+                    }
+                });
+                break;
+        }
+        return true;
     }
 
     public class MenuView extends AbstractView {
@@ -59,80 +110,17 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         public boolean onEvent(String event, Object object) {
             if(object == null) return true;
             switch (event){
-                case CREATE_OPTIONS_MENU:
-                    Menu optionsMenu = (Menu) object;
-
-                    MenuItem item = optionsMenu.findItem(R.id.action_set_my_name);
-                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setTitle("Set my name");
-
-                            View layoutDialogSetMyName = context.getLayoutInflater().inflate(R.layout.dialog_set_my_name, null);
-
-                            builder.setView(layoutDialogSetMyName);
-                            final EditText etMyName = (EditText) layoutDialogSetMyName.findViewById(R.id.etMyName);
-                            String name = State.getInstance().getStringPreference("my_name","");
-
-                            if(name != null && name.length()>0){
-                                etMyName.setText(name);
-                                builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        myUser.fire(CHANGE_NAME, null);
-                                    }
-                                });
-                            }
-                            builder.setPositiveButton(context.getString(android.R.string.ok),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            myUser.fire(CHANGE_NAME,etMyName.getText().toString());
-                                        }
-                                    });
-
-                            builder.setNegativeButton(context.getString(android.R.string.cancel),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            System.out.println("CANCEL");
-                                        }
-                                    });
-
-                            builder.create().show();
-                            return false;
-                        }
-                    });
-                    break;
-
                 case CREATE_CONTEXT_MENU:
                     ContextMenu contextMenu = (ContextMenu) object;
-
-                    item = contextMenu.findItem(R.id.action_navigate);
+                    MenuItem item = contextMenu.findItem(R.id.action_navigate);
+                    item.setVisible(myUser != State.getInstance().getMe());
                     item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem) {
-                            Uri uri = Uri.parse("google.navigation:q="
-                                    + String.valueOf(myUser.getLocation().getLatitude())
-                                    + "," + String.valueOf(myUser.getLocation().getLongitude()));
-                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            try {
-                                context.startActivity(intent);
-                            } catch(ActivityNotFoundException ex) {
-                                try {
-                                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, uri);
-                                    unrestrictedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                    context.startActivity(unrestrictedIntent);
-                                } catch(ActivityNotFoundException innerEx) {
-                                    Toast.makeText(context.getApplicationContext(), "Please install a navigation application.", Toast.LENGTH_LONG).show();
-                                }
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                new NavigationStarter(context, myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()).start();
+                                return false;
                             }
-                            return false;
-                        }
-                    });
+                        });
                     break;
             }
             return true;

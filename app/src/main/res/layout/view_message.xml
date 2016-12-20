@@ -6,45 +6,94 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <ImageButton
+        android:layout_width="@dimen/material_list_avatar_size"
+        android:layout_height="@dimen/material_list_avatar_size"
+        app:srcCompat="@drawable/ic_person_black_24dp"
+        android:id="@+id/ib_message"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
+
+
     <TextView
         tools:text="Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="10sp"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/imageButton3"
-        android:id="@+id/tvUsername"
+        android:layout_toRightOf="@+id/ib_message"
+        android:id="@+id/tv_username"
+        android:paddingBottom="@dimen/material_list_normal_padding_vertical"
         android:textStyle="normal|bold" />
-
-    <TextView
-            tools:text="10/12/2016 10:00 AM"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvTimestamp"
-        android:textSize="10sp"
-            android:textAlignment="center"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true" />
 
     <TextView
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec magna nisi. Donec quis tellus id augue scelerisque cursus. Phasellus tincidunt orci ut neque lacinia tempor. Phasellus laoreet mauris in felis blandit, id iaculis neque tempus. Vestibulum tristique sem et urna sodales, vitae consectetur massa facilisis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed porta varius ultrices. Morbi lorem nulla, blandit ut elementum sed, rutrum ac felis. Nulla vitae venenatis neque. Donec in turpis mi. Praesent non purus lobortis, suscipit ante sit amet, dignissim sapien. Mauris turpis risus, lacinia eu felis sit amet, elementum fringilla magna. Aliquam erat volutpat."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvMessageBody"
+        android:id="@+id/tv_message_body"
         android:layout_weight="0"
-        android:layout_toRightOf="@+id/imageButton3"
-        android:layout_toLeftOf="@+id/imageButton"
-        android:layout_below="@+id/tvTimestamp"
+        android:layout_toRightOf="@+id/ib_message"
+        android:layout_below="@+id/tv_username"
         android:textSize="12sp" />
+
+    <TextView
+        tools:text="10/12/2016 10:00 AM"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvTimestamp"
+        android:textSize="10sp"
+        android:textAlignment="center"
+        android:layout_below="@id/tv_message_body"
+        android:paddingTop="@dimen/material_list_normal_padding_vertical"
+        android:layout_alignParentRight="true" />
+
+
 
     <ImageButton
         android:layout_width="@dimen/material_list_avatar_size"
         android:layout_height="@dimen/material_list_avatar_size"
-        app:srcCompat="@drawable/ic_person_black_24dp"
-        android:id="@+id/imageButton3"
+        app:srcCompat="@drawable/ic_person_add_black_24dp"
+        android:id="@+id/ib_user_joined"
         android:background="@android:color/transparent"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:layout_width="@dimen/material_list_avatar_size"
+        android:layout_height="@dimen/material_list_avatar_size"
+        app:srcCompat="@drawable/ic_person_outline_black_24dp"
+        android:id="@+id/ib_user_dismissed"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:layout_width="@dimen/material_list_avatar_size"
+        android:layout_height="@dimen/material_list_avatar_size"
+        app:srcCompat="@drawable/ic_input_black_24dp"
+        android:id="@+id/ib_joined"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:layout_width="@dimen/material_list_avatar_size"
+        android:layout_height="@dimen/material_list_avatar_size"
+        app:srcCompat="@drawable/ic_people_black_24dp"
+        android:id="@+id/ib_private"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

@@ -15,6 +15,7 @@ import java.util.Date;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.Utils;
 
+import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -27,6 +28,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
@@ -43,36 +45,19 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 public class MyWebSocketClient {
 
     private URI uri;
-    private static volatile MyWebSocketClient instance = null;
     private WebSocketClient webSocketClient;
     private State state;
     private JSONObject builder;
     private MyTracking tracking;
     private String token;
     private boolean wasConnected = false;
+    private JSONObject posted;
 
     MyWebSocketClient(URI uri) throws URISyntaxException {
         this.uri = uri;
         webSocketClient = new MWebSocketClient(uri);
         state = State.getInstance();
     }
-
-    /*public static MyWebSocketClient getInstance(String host) {
-        if (instance == null) {
-            synchronized (MyWebSocketClient.class) {
-                if (instance == null) {
-                    try {
-                        uri = new URI("wss://"+host+":8081");
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-
-                    instance = new MyWebSocketClient(uri);
-                }
-            }
-        }
-        return instance;
-    }*/
 
     public void setTracking(MyTracking tracking) {
         this.tracking = tracking;
@@ -105,9 +90,12 @@ public class MyWebSocketClient {
 
         @Override
         public void onOpen(ServerHandshake serverHandshake) {
+            if(posted != null) {
+                webSocketClient.send(posted.toString());
+                posted = null;
+            }
 //            System.out.println("WEBSOCKET:OPENED:" + post);
             /*if (post != null) {
-                webSocketClient.send(post.toString());
                 post = null;
             }*/
         }
@@ -132,7 +120,6 @@ public class MyWebSocketClient {
                     case RESPONSE_STATUS_ACCEPTED:
                         tokenAccepted(o);
                         break;
-                    case RESPONSE_STATUS_DISCONNECTED:
                     case RESPONSE_STATUS_UPDATED:
                         tracking.fromServer(o);
                         break;
@@ -151,20 +138,20 @@ public class MyWebSocketClient {
 
         @Override
         public void onClose(int i, String s, boolean b) {
-//            System.out.println("WEBSOCKET:CLOSED:" + s);
+            System.out.println("WEBSOCKET:CLOSED:" + s);
             JSONObject o = new JSONObject();
             try {
                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_DISCONNECTED);
+                o.put(RESPONSE_MESSAGE, s);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             tracking.fromServer(o);
-//            tracking.stop();
         }
 
         @Override
         public void onError(Exception e) {
-//            System.out.println("WEBSOCKET:ERROR:" + e.getMessage());
+            System.out.println("WEBSOCKET:CONNECTION_ERROR:" + e.getMessage());
         }
 
     }
@@ -216,18 +203,21 @@ public class MyWebSocketClient {
     }
 
     private void tokenAccepted(JSONObject o) {
-//        System.out.println("RESPONSE_STATUS_ACCEPTED:" + o);
         wasConnected = true;
+        System.out.println("====================================");
         try {
             if (o.has(RESPONSE_TOKEN)) {
                 setToken(o.getString(RESPONSE_TOKEN));
-
                 PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit()
                         .putString(RESPONSE_TOKEN, getToken()).apply();
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit()
+                .putString(TRACKING_URI, uri.toString()).apply();
+        System.out.println("PUTURI:"+uri.toString());
+        System.out.println("PUTTOKEN:"+getToken());
         tracking.fromServer(o);
     }
 
@@ -306,21 +296,31 @@ public class MyWebSocketClient {
                     break;
                 case CLOSED:
                     o.put("timestamp", new Date().getTime());
+                    posted = o;
                     webSocketClient = new MWebSocketClient(uri);
                     webSocketClient.connect();
                     break;
                 case NOT_YET_CONNECTED:
                     o.put("timestamp", new Date().getTime());
+                    posted = o;
                     webSocketClient.connect();
                     break;
                 case CONNECTING:
                     break;
                 case CLOSING:
                     break;
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            try {
+                o.put("timestamp", new Date().getTime());
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            posted = o;
+            webSocketClient = new MWebSocketClient(uri);
+            webSocketClient.connect();
         }
     }
 
