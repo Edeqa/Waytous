@@ -14,6 +14,9 @@ import java.util.Date;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.interfaces.SimpleCallback;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * Created 12/9/16.
@@ -42,6 +45,10 @@ public class UserMessage extends AbstractSavedItem {
         super(context, MESSAGE);
         timestamp = new Date().getTime();
         type = TYPE_MESSAGE;
+    }
+
+    public static void init(Context context) {
+        init(context, UserMessage.class, MESSAGE);
     }
 
     public String getBody() {

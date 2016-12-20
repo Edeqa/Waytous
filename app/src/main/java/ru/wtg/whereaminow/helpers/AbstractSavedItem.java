@@ -1,7 +1,11 @@
 package ru.wtg.whereaminow.helpers;
 
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -17,68 +21,65 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created 12/9/16.
  */
 
-abstract public class AbstractSavedItem implements Serializable {
+abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820032L;
+
+    static transient private Map<String,Integer> count = new HashMap<String, Integer>();
+    static transient private Map<String,Fields> dbOptions = new HashMap<String, Fields>();
 
     private transient static String LAST = "last";
     transient private String itemType;
     transient private Context context;
-    transient private SharedPreferences sharedPreferences;
 
-    transient private int number;
-    static transient private Map<String,Integer> count = new HashMap<String, Integer>();
+    transient private long number;
 
     protected AbstractSavedItem(Context context, String itemType){
         this.context = context;
-        sharedPreferences = context.getSharedPreferences(itemType, MODE_PRIVATE);
+//        sharedPreferences = context.getSharedPreferences(itemType, MODE_PRIVATE);
         this.itemType = itemType;
 
-        number = sharedPreferences.getInt(LAST, 0) + 1;
+        number = 0;//sharedPreferences.getInt(LAST, 0) + 1;
 
-        SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putInt(LAST, number).apply();
+//        SharedPreferences.Editor edit = sharedPreferences.edit();
+//        edit.putLong(LAST, number).apply();
 
     }
 
-    private void setProperties(Context context, SharedPreferences sharedPreferences, int number){
-        this.context = context;
-        this.sharedPreferences = sharedPreferences;
-        this.number = number;
+    protected static void init(Context context, Class<?> item, String itemType) {
+        Fields fields = new Fields(itemType, item);
+        fields.db = new DBHelper(context, fields);
+        System.out.println("========================================== "+fields.getCreateString());
+
+        dbOptions.put(itemType,fields);
+        fields.db.open();
     }
 
-    /*public int getNumber(){
-        return number;
-    }*/
+    public void save(SimpleCallback<T> onSaveCallback) {
 
-
-    public void save(SimpleCallback<AbstractSavedItem> onSaveCallback) {
-        sharedPreferences.edit().putString("item_" + number, Utils.serializeToString(this)).apply();
-
-        reCount(context, itemType);
+        dbOptions.get(itemType).db.saveRec((T) this);
 
 //        System.out.println("SAVED:"+number+":"+this);
         if(onSaveCallback != null) {
-            onSaveCallback.call(this);
+            onSaveCallback.call((T) this);
         }
     }
 
     public void delete(SimpleCallback<AbstractSavedItem> onDeleteCallback){
-        sharedPreferences.edit().remove("item_" + number).apply();
 
-        reCount(context, itemType);
 
         if(onDeleteCallback != null) {
             onDeleteCallback.call(this);
@@ -87,65 +88,30 @@ abstract public class AbstractSavedItem implements Serializable {
 
     public static int getCount(Context context, String itemType) {
 
-        if(count.containsKey(itemType)) return count.get(itemType);
-        return reCount(context, itemType);
+        return 1;
 
     }
 
-    private static int reCount(Context context, String itemType){
-        int cnt = 0;
-        int last = getSharedPreferences(context, itemType).getInt(LAST, 0);
-        for(int i = 1; i<=last; i++){
-            if(getSharedPreferences(context, itemType).getString("item_" + i, null) != null) cnt ++;
-        }
-        count.put(itemType, cnt);
-        System.out.println("COUBNTFOR:"+itemType+":"+cnt);
-        return cnt;
-    }
-
-    private static SharedPreferences getSharedPreferences(Context context, String itemType){
-        return context.getSharedPreferences(itemType, MODE_PRIVATE);
-    }
 
     public static AbstractSavedItem getItemByPosition(Context context, String itemType, int position) {
         AbstractSavedItem item = null;
-        int count = 0;
-        int last = getSharedPreferences(context, itemType).getInt(LAST, 0);
-        for(int i = 1; i<=last; i++){
-            String saved = getSharedPreferences(context, itemType).getString("item_" + i, null);
-            if(count == position && saved != null) {
-                item = (AbstractSavedItem) Utils.deserializeFromString(saved);
-                if(item != null) {
-                    item.number = i;
-                    item.itemType = itemType;
-                    item.setProperties(context, getSharedPreferences(context, itemType), i);
-                }
-            }
-            if(saved != null) count ++;
-        }
         return item;
     }
 
-    public static AbstractSavedItem getItemByNumber(Context context, String itemType, int number) {
+    public static AbstractSavedItem getItemByNumber(Context context, String itemType, long number) {
         AbstractSavedItem item = null;
-        String saved = getSharedPreferences(context, itemType).getString("item_" + number, null);
-        if(saved != null) {
-            item = (AbstractSavedItem) Utils.deserializeFromString(saved);
-            if(item != null) {
-                item.number = number;
-                item.itemType = itemType;
-                item.setProperties(context, getSharedPreferences(context, itemType), number);
-            }
-        }
         return item;
     }
 
     public static void clear(Context context, String itemType){
-        getSharedPreferences(context, itemType).edit().clear().apply();
     }
 
-    public int getNumber(){
+    public long getNumber(){
         return number;
+    }
+
+    public void setNumber(long number){
+        this.number = number;
     }
 
 
@@ -299,6 +265,92 @@ abstract public class AbstractSavedItem implements Serializable {
         public void setOnItemTouchListener(SimpleCallback<T> onItemTouchListener) {
             this.onItemTouchListener = onItemTouchListener;
         }
+    }
+
+    protected static class Fields {
+        final String itemType;
+        TreeMap<String,FieldOptions> fields = new TreeMap<>();
+        DBHelper db;
+
+        class FieldOptions {
+            String name;
+            String type;
+            String sourceType;
+            boolean serialize;
+            public String toString(){
+                return "{"+name+", "+type+", "+sourceType+", "+ serialize +"}";
+            }
+        }
+
+        public Fields(String itemType, Class item) {
+            this.itemType = itemType;
+//            for (Field field : item.getSuperclass().getDeclaredFields()) {
+//                processField(field);
+//            }
+            for (Field field : item.getDeclaredFields()) {
+                processField(field);
+            }
+            System.out.println("FIELDS::::"+fields);
+        }
+
+        private void processField(Field field) {
+            if(!Modifier.isStatic(field.getModifiers())
+                    && !Modifier.isFinal(field.getModifiers())
+                    && !Modifier.isTransient(field.getModifiers()))
+            {
+                FieldOptions o = new FieldOptions();
+                o.name = field.getName();
+
+                if(field.getType().isAssignableFrom(String.class)){
+                    o.type = "text";
+                    o.serialize = false;
+                } else if(field.getType().isAssignableFrom(Boolean.class) || field.getType().isAssignableFrom(Boolean.TYPE)){
+                    o.type = "integer";
+                    o.serialize = false;
+                } else if(field.getType().isAssignableFrom(Integer.class) || field.getType().isAssignableFrom(Integer.TYPE)){
+                    o.type = "integer";
+                    o.serialize = false;
+                } else if(field.getType().isAssignableFrom(Long.class) || field.getType().isAssignableFrom(Long.TYPE)){
+                    o.type = "integer";
+                    o.serialize = false;
+                } else if(field.getType().isAssignableFrom(Float.class) || field.getType().isAssignableFrom(Float.TYPE)){
+                    o.type = "real";
+                    o.serialize = false;
+                } else if(field.getType().isAssignableFrom(Double.class) || field.getType().isAssignableFrom(Double.TYPE)){
+                    o.type = "real";
+                    o.serialize = false;
+                } else {
+                    o.type = "blob";
+                    o.serialize = Serializable.class.isAssignableFrom(field.getType());
+                    if(!Serializable.class.isAssignableFrom(field.getType())){
+                        try {
+                            throw new Exception("Not serialize value: "+field.getName()+", type: "+field.getType().getCanonicalName());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                o.sourceType = field.getType().getCanonicalName();
+                fields.put(field.getName(),o);
+            }
+
+            /*System.out.println(":::"+field.getName()+":transient-"+ Modifier.isTransient(field.getModifiers())
+                    +":static-"+ Modifier.isStatic(field.getModifiers())
+                    +":final-"+ Modifier.isFinal(field.getModifiers())
+                    +":serialize-"+ (Serializable.class.isAssignableFrom(field.getType()))
+                    +":"+field.getType().getSimpleName());*/
+        }
+        public String getCreateString() {
+            String res = "create table " + itemType + "(_id integer primary key autoincrement, ";
+            for(Map.Entry<String,FieldOptions> x: fields.entrySet()){
+                res += x.getValue().name + "_ " + x.getValue().type;
+                if(!x.getKey().equals(fields.lastKey())) res += ", ";
+            }
+            res += ")";
+            return res;
+        }
+
     }
 
 }

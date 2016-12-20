@@ -39,6 +39,7 @@ public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messag
 
     public MessagesHolder(Context context) {
         this.context = context;
+        UserMessage.init(context);
     }
 
     @Override
