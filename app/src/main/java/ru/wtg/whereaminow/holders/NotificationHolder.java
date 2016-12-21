@@ -131,6 +131,7 @@ public class NotificationHolder extends AbstractPropertyHolder<NotificationHolde
         }
         notification.setWhen(new Date().getTime());
         notification.setSound(null);
+        notification.setVibrate(null);
 
         NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1976, notification.build());

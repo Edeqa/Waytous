@@ -67,7 +67,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 /**
  * Created 11/27/16.
  */
-public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsViewHolder.SavedLocationView> {
+public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocationsViewHolder.SavedLocationView> {
 
     public static final String TYPE = "saved_locations";
 
@@ -448,12 +448,12 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 //                dialog = null;
             }
         });
-        dialog.setOnCancelListener(null/*new DialogInterface.OnCancelListener() {
+        dialog.setOnCancelListener(null*//*new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
 //                dialog = null;
             }
-        }*/);
+        }*//*);
         dialog.setView(content);
         dialog.show();
 
@@ -519,3 +519,4 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
 
 }
+*/

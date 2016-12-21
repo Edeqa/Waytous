@@ -28,7 +28,7 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
  * Created 12/4/16.
  */
 
-public class SavedLocation extends AbstractSavedItem {
+public class SavedLocation {}/*extends AbstractSavedItem {
 
     static final long serialVersionUID =-6395904747332820022L;
 
@@ -296,4 +296,4 @@ public class SavedLocation extends AbstractSavedItem {
         }
     };
 
-}
+}*/
