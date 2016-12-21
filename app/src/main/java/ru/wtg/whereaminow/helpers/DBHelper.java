@@ -3,6 +3,7 @@ package ru.wtg.whereaminow.helpers;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -53,8 +54,17 @@ public class DBHelper<T extends AbstractSavedItem> {
         return mDB.query(fields.itemType, null, null, null, null, null, null);
     }
 
+    public int getCount() {
+        return getAllData().getCount();
+//        return DatabaseUtils.queryNumEntries(mDB, fields.itemType);
+    }
+
+    public void clear() {
+        mDB.delete(fields.itemType, null, null);
+    }
+
     // добавить запись в DB_TABLE
-    public void saveRec(T item) {
+    public void save(T item) {
         ContentValues cv = new ContentValues();
 
         System.out.println("SAVEVALUE:"+item);
@@ -90,21 +100,8 @@ public class DBHelper<T extends AbstractSavedItem> {
         }
 
         System.out.println("CONTENTVALUE:"+cv);
-            /*for(Map.Entry<String,Fields.FieldOptions> x: fields.fields.entrySet()){
-                if(x.getValue().serialize) {
-                    Object a = item.getClass().getField(x.getKey()).get(item);
-                }
-
-
-                cv.put(x.getKey())
-            }
-            create table message(_id integer primary key autoincrement, body_ text, from_ text, timestamp_ integer, to_ text, type_ integer)
-
-            cv.put(COLUMN_TXT, txt);
-            cv.put(COLUMN_IMG, img);
-            mDB.insert(DB_TABLE, null, cv);*/
         if(item.getNumber() > 0){
-
+            mDB.update(fields.itemType, cv, COLUMN_ID + " = ?", new String[]{String.valueOf(item.getNumber())});
         } else {
             long a = mDB.insert(fields.itemType, null, cv);
             item.setNumber(a);
@@ -114,8 +111,18 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     // удалить запись из DB_TABLE
-    public void delRec(long id) {
+    public void delete(long id) {
         mDB.delete(fields.itemType, COLUMN_ID + " = " + id, null);
+    }
+
+    public void deleteByPosition(int position) {
+        Cursor cursor = getAllData();
+        cursor.move(position+1);
+        delete(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+    }
+
+    public void delete(T item) {
+        delete(item.getNumber());
     }
 
     // класс по созданию и управлению БД

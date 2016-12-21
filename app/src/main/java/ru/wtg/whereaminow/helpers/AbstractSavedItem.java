@@ -1,17 +1,17 @@
 package ru.wtg.whereaminow.helpers;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +20,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -43,7 +45,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     private transient static String LAST = "last";
     transient private String itemType;
-    transient private Context context;
+    protected transient Context context;
 
     transient private long number;
 
@@ -68,30 +70,29 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         fields.db.open();
     }
 
+    protected static DBHelper getDb(String itemType) {
+        return dbOptions.get(itemType).db;
+    }
+
     public void save(SimpleCallback<T> onSaveCallback) {
-
-        dbOptions.get(itemType).db.saveRec((T) this);
-
-//        System.out.println("SAVED:"+number+":"+this);
+        dbOptions.get(itemType).db.save((T) this);
         if(onSaveCallback != null) {
             onSaveCallback.call((T) this);
         }
     }
 
     public void delete(SimpleCallback<AbstractSavedItem> onDeleteCallback){
-
-
+        dbOptions.get(itemType).db.delete((T) this);
         if(onDeleteCallback != null) {
             onDeleteCallback.call(this);
         }
     }
 
-    public static int getCount(Context context, String itemType) {
-
-        return 1;
-
+    public static int getCount(String itemType) {
+        return dbOptions.get(itemType).db.getCount();
     }
 
+/*
 
     public static AbstractSavedItem getItemByPosition(Context context, String itemType, int position) {
         AbstractSavedItem item = null;
@@ -102,8 +103,10 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         AbstractSavedItem item = null;
         return item;
     }
+*/
 
-    public static void clear(Context context, String itemType){
+    public static void clear(String itemType){
+        dbOptions.get(itemType).db.clear();
     }
 
     public long getNumber(){
@@ -114,20 +117,19 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         this.number = number;
     }
 
-
-
-    abstract static public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> extends RecyclerView.Adapter{
+    abstract static public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> extends RecyclerView.Adapter implements LoaderManager.LoaderCallbacks<Cursor> {
 
         protected final Context context;
-        protected final String itemType;
+        protected Cursor cursor;
         private final LinearLayoutManager layoutManager;
         private final RecyclerView list;
         protected SimpleCallback<T> onItemClickListener;
         protected SimpleCallback<T> onItemTouchListener;
+        protected SimpleCallback<Cursor> onCursorReloadListener;
 
-        public AbstractSavedItemsAdapter(final Context context, final String itemType, final RecyclerView list){
+        public AbstractSavedItemsAdapter(final Context context, final RecyclerView list){
+            super();
             this.context = context;
-            this.itemType = itemType;
             this.list = list;
 
             list.setAdapter(this);
@@ -146,6 +148,36 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             list.setItemAnimator(new DefaultItemAnimator());
         }
 
+        abstract public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
+
+        @Override
+        public int getItemCount() {
+            return this.cursor != null ? this.cursor.getCount() : 0;
+        }
+
+        public Cursor getItem(final int position) {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.moveToPosition(position);
+            }
+            return cursor;
+        }
+        public void swapCursor(final Cursor cursor) {
+            this.cursor = cursor;
+            this.notifyDataSetChanged();
+        }
+
+        public Cursor getCursor() {
+            return cursor;
+        }
+
+        @Override
+        public final void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+            final Cursor cursor = this.getItem(position);
+            this.onBindViewHolder(holder, cursor);
+        }
+
+        public abstract void onBindViewHolder(final RecyclerView.ViewHolder holder, final Cursor cursor);
+
         public void setOnRightSwipeListener(SimpleCallback<Integer> callback) {
             enableSwipe(ItemTouchHelper.RIGHT, callback);
         }
@@ -154,6 +186,9 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             enableSwipe(ItemTouchHelper.LEFT, callback);
         }
 
+        public void setOnCursorReloadListener(SimpleCallback<Cursor> callback) {
+            this.onCursorReloadListener = callback;
+        }
 
         private void enableSwipe(final int direction, final SimpleCallback<Integer> callback){
             ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, direction) {
@@ -170,12 +205,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
                 public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                     int position = list.getChildLayoutPosition(viewHolder.itemView);
                     callback.call(position);
-                    /*new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyDataSetChanged();
-                        }
-                    }, 500);*/
                 }
 
                 @Override
@@ -250,21 +279,29 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             itemTouchHelper.attachToRecyclerView(list);
         }
 
-        abstract public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
-
-        abstract public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position);
-
-        @Override
-        public int getItemCount() {
-            return getCount(context, itemType);
-        }
-
         public void setOnItemClickListener(SimpleCallback<T> onItemClickListener) {
             this.onItemClickListener = onItemClickListener;
         }
         public void setOnItemTouchListener(SimpleCallback<T> onItemTouchListener) {
             this.onItemTouchListener = onItemTouchListener;
         }
+
+        abstract public Loader<Cursor> onCreateLoader(int id, Bundle args);
+
+        @Override
+        public void onLoadFinished(Loader loader, Cursor cursor) {
+            swapCursor(cursor);
+            if(onCursorReloadListener != null) {
+                onCursorReloadListener.call(cursor);
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader loader) {
+            swapCursor(null);
+        }
+
+
     }
 
     protected static class Fields {
@@ -284,9 +321,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
         public Fields(String itemType, Class item) {
             this.itemType = itemType;
-//            for (Field field : item.getSuperclass().getDeclaredFields()) {
-//                processField(field);
-//            }
             for (Field field : item.getDeclaredFields()) {
                 processField(field);
             }
@@ -352,5 +386,23 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         }
 
     }
+
+    static class SavedItemCursorLoader extends CursorLoader {
+
+        private final String itemType;
+
+        public SavedItemCursorLoader(Context context, String itemType) {
+            super(context);
+            this.itemType = itemType;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Cursor cursor = dbOptions.get(itemType).db.getAllData();
+            return cursor;
+        }
+
+    }
+
 
 }

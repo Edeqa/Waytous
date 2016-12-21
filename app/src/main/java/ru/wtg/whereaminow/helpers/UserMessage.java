@@ -1,7 +1,11 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -10,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import ru.wtg.whereaminow.R;
@@ -26,7 +32,6 @@ public class UserMessage extends AbstractSavedItem {
 
     static final long serialVersionUID =-6395904747332820028L;
 
-    private static final String LAST = "last";
     private static final String MESSAGE = "message";
 
     public static final int TYPE_MESSAGE = 0;
@@ -49,6 +54,10 @@ public class UserMessage extends AbstractSavedItem {
 
     public static void init(Context context) {
         init(context, UserMessage.class, MESSAGE);
+    }
+
+    public static DBHelper getDb(){
+        return getDb(MESSAGE);
     }
 
     public String getBody() {
@@ -79,16 +88,12 @@ public class UserMessage extends AbstractSavedItem {
         this.to = to.getProperties().getDisplayName();
     }
 
-    public static int getCount(Context context){
-        return getCount(context, MESSAGE);
+    public static int getCount(){
+        return getCount(MESSAGE);
     }
 
-    public static UserMessage getItemByPosition(Context context, int position) {
-        return (UserMessage) getItemByPosition(context, MESSAGE, position);
-    }
-
-    public static void clear(Context context){
-        clear(context, MESSAGE);
+    public static void clear(){
+        clear(MESSAGE);
     }
 
     public int getType() {
@@ -103,7 +108,7 @@ public class UserMessage extends AbstractSavedItem {
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
 
         public UserMessagesAdapter(Context context, RecyclerView list) {
-            super(context, MESSAGE, list);
+            super(context, list);
         }
 
         @Override
@@ -114,24 +119,26 @@ public class UserMessage extends AbstractSavedItem {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
+//            cursor.moveToPosition(position);
             try {
-                final UserMessage message = UserMessage.getItemByPosition(context, position);
-                if(message == null) return;
+//                final UserMessage message = UserMessage.getItemByPosition(context, position);
+//                if(message == null) return;
                 UserMessage.UserMessagesAdapter.UserMessageViewHolder holder = (UserMessage.UserMessagesAdapter.UserMessageViewHolder) viewHolder;
+
                 String title = "";
-                boolean privateMessage = false;
-                if(message.getFrom() != null && message.getTo() != null) {
-                    title = message.getFrom() + " → " + message.getTo();
-                } else if(message.getFrom() != null) {
-                    title = message.getFrom();
+                String from = cursor.getString(cursor.getColumnIndex("from_"));
+                if(from != null && cursor.getString(cursor.getColumnIndex("to_")) != null) {
+                    title = from + " → " + cursor.getString(cursor.getColumnIndex("to_"));
+                } else if(from != null) {
+                    title = from;
                 }
 
                 holder.tvUsername.setText(title);
-                holder.tvTimestamp.setText(message.getTimestamp().toString());
-                holder.tvMessageBody.setText(message.getBody());
+                holder.tvTimestamp.setText(new Date(cursor.getLong(cursor.getColumnIndex("timestamp_"))).toString());
+                holder.tvMessageBody.setText(cursor.getString(cursor.getColumnIndex("body_")));
 
-                switch(message.getType()){
+                switch(cursor.getInt(cursor.getColumnIndex("type_"))){
                     case TYPE_MESSAGE:
                         holder.ibMessage.setVisibility(View.VISIBLE);
                         holder.ibPrivateMessage.setVisibility(View.INVISIBLE);
@@ -172,7 +179,7 @@ public class UserMessage extends AbstractSavedItem {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        onItemClickListener.call(message);
+//                        onItemClickListener.call(message);
                     }
                 });
                 holder.itemView.setOnTouchListener(new View.OnTouchListener() {
@@ -183,7 +190,7 @@ public class UserMessage extends AbstractSavedItem {
                     }
                 });
 
-                if(message.getFrom() != null && message.getFrom().equals(State.getInstance().getMe().getProperties().getDisplayName())){
+                if(from != null && from.equals(State.getInstance().getMe().getProperties().getDisplayName())){
                     holder.itemView.setBackgroundColor(Color.argb(32,0,0,255));
                 } else {
                     holder.itemView.setBackgroundColor(android.R.color.background_light);
@@ -217,6 +224,11 @@ public class UserMessage extends AbstractSavedItem {
             }
         }
 
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new SavedItemCursorLoader(context, MESSAGE);
+        }
+
     }
 
     public String toString() {
@@ -227,5 +239,6 @@ public class UserMessage extends AbstractSavedItem {
                 + (body != null ? ", body: ["+body + "]" : "")
                 + " }";
     }
+
 
 }

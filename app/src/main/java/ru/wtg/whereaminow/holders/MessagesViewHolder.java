@@ -1,11 +1,14 @@
 package ru.wtg.whereaminow.holders;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -47,25 +50,26 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAG
 /**
  * Created 11/27/16.
  */
-public class MessagesViewHolder extends AbstractViewHolder {
+public class MessagesViewHolder extends AbstractViewHolder  {
 
     public static final String SHOW_MESSAGES = "show_messages";
     public static final String SETUP_WELCOME_MESSAGE = "setup_welcome_message";
 
     private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messagesView_hide_system_messages";
 
-    private final Activity context;
-    private final MessagesHolder messagesHolder;
+    private final AppCompatActivity context;
+//    private final MessagesHolder messagesHolder;
     private UserMessage.UserMessagesAdapter adapter;
     private AlertDialog dialog;
     private View toolbar;
     private ColorDrawable drawable;
 //    private LinearLayoutManager layoutManager;
     private RecyclerView list;
+    private boolean donotscroll;
 
-    public MessagesViewHolder(Activity context) {
+    public MessagesViewHolder(AppCompatActivity context) {
         this.context = context;
-        messagesHolder = ((MessagesHolder)State.getInstance().getEntityHolder(MessagesHolder.TYPE));
+//        messagesHolder = ((MessagesHolder)State.getInstance().getEntityHolder(MessagesHolder.TYPE));
     }
 
     @Override
@@ -117,7 +121,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             case PREPARE_DRAWER:
                 menuItem = (MenuItem) object;
                 generalMenu = menuItem.getSubMenu();
-                int count = UserMessage.getCount(context);
+                int count = UserMessage.getCount();
                 generalMenu.findItem(R.string.chat).setVisible(count > 0);
                 if(count>0) {
                     menuItem.setVisible(true);
@@ -130,9 +134,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 optionsMenu.add(Menu.NONE, 19191919, Menu.NONE, "Test message").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-//                        newMessage(State.getInstance().getMe(), false);
-                            State.getInstance().fire(SEND_MESSAGE, "Test message");
-
+                        State.getInstance().fire(SEND_MESSAGE, "Test message");
                         return false;
                     }
                 });
@@ -214,11 +216,12 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         dialog = new AlertDialog.Builder(context).create();
 
-        @SuppressLint("InflateParams") View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
+        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new UserMessage.UserMessagesAdapter(context, list);
+        context.getSupportLoaderManager().initLoader(1, null, adapter);
 
         toolbar = context.getLayoutInflater().inflate(R.layout.dialog_items_toolbar, null);
         final ImageButton ibMenu = (ImageButton) toolbar.findViewById(R.id.ib_dialog_items_menu);
@@ -244,12 +247,40 @@ public class MessagesViewHolder extends AbstractViewHolder {
         });
 
 
+        adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage.getDb().deleteByPosition(position);
+                adapter.notifyItemRemoved(position);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        donotscroll = true;
+                        updateDialog();
+                    }
+                }, 500);
+                /*UserMessage.getItemByPosition(context, position).delete(new SimpleCallback<AbstractSavedItem>() {
+                    @Override
+                    public void call(AbstractSavedItem arg) {
+
+                        dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
+                        State.getInstance().getUsers().forUser((int)(10000 + arg.getNumber()), new MyUsers.Callback() {
+                            @Override
+                            public void call(Integer number, MyUser myUser) {
+                                myUser.fire(DELETE_SAVED_LOCATION);
+                            }
+                        });
+                    }
+                });*/
+            }
+        });
+
         dialog.setCustomTitle(toolbar);
 
 
+//        adapter.notifyDataSetChanged();
+//        context.getSupportLoaderManager().getLoader(1).forceLoad();
 
-
-        adapter.notifyDataSetChanged();
         adapter.setOnItemClickListener(new SimpleCallback<UserMessage>() {
             @Override
             public void call(UserMessage message) {
@@ -262,7 +293,16 @@ public class MessagesViewHolder extends AbstractViewHolder {
         });
         adapter.setOnItemTouchListener(onTouchListener);
 
-        updateDialogTitle();
+        adapter.setOnCursorReloadListener(new SimpleCallback<Cursor>() {
+            @Override
+            public void call(Cursor cursor) {
+                if(toolbar != null) {
+                    ((TextView) toolbar.findViewById(R.id.tv_dialog_items_title)).setText("Chat (" + cursor.getCount() + ")");
+                    if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
+                    donotscroll = false;
+                }
+            }
+        });
 
         if(State.getInstance().tracking()) {
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, "New message", new DialogInterface.OnClickListener() {
@@ -311,19 +351,17 @@ public class MessagesViewHolder extends AbstractViewHolder {
             }
         });
 //        list.setOnTouchListener(onTouchListener);
-
+        updateDialog();
         System.out.println("MESSCOUNTL:"+adapter.getItemCount());
-        list.scrollToPosition(adapter.getItemCount()-1);
 
     }
 
-    private void updateDialogTitle(){
-        if(toolbar != null) {
-            ((TextView) toolbar.findViewById(R.id.tv_dialog_items_title)).setText("Chat (" + adapter.getItemCount() + ")");
-        }
+    private void updateDialog(){
+        context.getSupportLoaderManager().getLoader(1).forceLoad();
     }
 
     private SmoothInterpolated action;
+
     private SimpleCallback<MotionEvent> onTouchListener = new SimpleCallback<MotionEvent>() {
         @Override
         public void call(MotionEvent motionEvent) {
@@ -363,9 +401,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
             switch (event) {
                 case USER_MESSAGE:
                     if(dialog != null) {
-                        adapter.notifyDataSetChanged();
-                        list.scrollToPosition(adapter.getItemCount()-1);
-                        updateDialogTitle();
+//                        adapter.notifyDataSetChanged();
+//                        list.scrollToPosition(adapter.getItemCount()-1);
+                        updateDialog();
                     } else {
                         String text = (String) object;
 
@@ -386,9 +424,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
                     break;
                 case PRIVATE_MESSAGE:
                     if(dialog != null) {
-                        adapter.notifyDataSetChanged();
-                        list.scrollToPosition(adapter.getItemCount()-1);
-                        updateDialogTitle();
+//                        adapter.notifyDataSetChanged();
+//                        list.scrollToPosition(adapter.getItemCount()-1);
+                        updateDialog();
                         return false;
                     } else {
                         String text = (String) object;
@@ -474,13 +512,13 @@ public class MessagesViewHolder extends AbstractViewHolder {
             switch(menuItem.getItemId()) {
                 case R.id.hide_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
-                    adapter.notifyDataSetChanged();
-                    updateDialogTitle();
+//                    adapter.notifyDataSetChanged();
+                    updateDialog();
                     break;
                 case R.id.show_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-                    adapter.notifyDataSetChanged();
-                    updateDialogTitle();
+//                    adapter.notifyDataSetChanged();
+                    updateDialog();
                     break;
                 case R.id.clear_messages:
                     AlertDialog dialog = new AlertDialog.Builder(context).create();
@@ -488,9 +526,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
                     dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            UserMessage.clear(context);
-                            if(adapter != null) adapter.notifyDataSetChanged();
-                            updateDialogTitle();
+                            UserMessage.clear();
+//                            if(adapter != null) adapter.notifyDataSetChanged();
+                            updateDialog();
                         }
                     });
                     dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
@@ -509,5 +547,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
             return false;
         }
     };
+
 
 }
