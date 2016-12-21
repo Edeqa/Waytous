@@ -105,6 +105,18 @@ public class UserMessage extends AbstractSavedItem {
     }
 
 
+    public static UserMessage getItemByPosition(int position) {
+        return (UserMessage) getItemByPosition(MESSAGE, position);
+    }
+
+    public static UserMessage getItemByNumber(long number) {
+        return (UserMessage) getItemByNumber(MESSAGE, number);
+    }
+
+    public static UserMessage getItemByCursor(Cursor cursor) {
+        return (UserMessage) getItemByCursor(MESSAGE, cursor);
+    }
+
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
 
         public UserMessagesAdapter(Context context, RecyclerView list) {
@@ -120,25 +132,23 @@ public class UserMessage extends AbstractSavedItem {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
-//            cursor.moveToPosition(position);
             try {
-//                final UserMessage message = UserMessage.getItemByPosition(context, position);
-//                if(message == null) return;
                 UserMessage.UserMessagesAdapter.UserMessageViewHolder holder = (UserMessage.UserMessagesAdapter.UserMessageViewHolder) viewHolder;
 
+                UserMessage item = UserMessage.getItemByCursor(cursor);
                 String title = "";
-                String from = cursor.getString(cursor.getColumnIndex("from_"));
-                if(from != null && cursor.getString(cursor.getColumnIndex("to_")) != null) {
-                    title = from + " → " + cursor.getString(cursor.getColumnIndex("to_"));
+                String from = item.getFrom();
+                if(from != null && item.getTo() != null) {
+                    title = from + " → " + item.getTo();
                 } else if(from != null) {
                     title = from;
                 }
 
                 holder.tvUsername.setText(title);
-                holder.tvTimestamp.setText(new Date(cursor.getLong(cursor.getColumnIndex("timestamp_"))).toString());
-                holder.tvMessageBody.setText(cursor.getString(cursor.getColumnIndex("body_")));
+                holder.tvTimestamp.setText(item.getTimestamp().toString());
+                holder.tvMessageBody.setText(item.getBody());
 
-                switch(cursor.getInt(cursor.getColumnIndex("type_"))){
+                switch(item.getType()){
                     case TYPE_MESSAGE:
                         holder.ibMessage.setVisibility(View.VISIBLE);
                         holder.ibPrivateMessage.setVisibility(View.INVISIBLE);

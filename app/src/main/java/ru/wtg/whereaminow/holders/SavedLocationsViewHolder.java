@@ -3,10 +3,14 @@ package ru.wtg.whereaminow.holders;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -29,12 +33,12 @@ import java.util.Date;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.helpers.AbstractSavedItem;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.SavedLocation;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
+import ru.wtg.whereaminow.helpers.UserMessage;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
@@ -48,7 +52,6 @@ import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminow.holders.MarkerViewHolder.MARKER_CLICK;
-import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
@@ -67,7 +70,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 /**
  * Created 11/27/16.
  */
-public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocationsViewHolder.SavedLocationView> {
+public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsViewHolder.SavedLocationView> {
 
     public static final String TYPE = "saved_locations";
 
@@ -75,11 +78,12 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
     private static final String HIDE_SAVED_LOCATION = "hide_saved_locations";
     private static final String DELETE_SAVED_LOCATION = "delete_saved_locations";
 
-    private final Activity context;
+    private final AppCompatActivity context;
     private GoogleMap map;
     private SavedLocation.SavedLocationsAdapter adapter;
+    private boolean donotscroll = false;
 
-    public SavedLocationsViewHolder(Activity context) {
+    public SavedLocationsViewHolder(AppCompatActivity context) {
         this.context = context;
         SavedLocation.init(context);
 
@@ -151,7 +155,7 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
             case PREPARE_DRAWER:
                 menuItem = (MenuItem) object;
                 navigationMenu = menuItem.getSubMenu();
-                int count = SavedLocation.getCount(context);
+                int count = SavedLocation.getCount();
                 navigationMenu.findItem(R.string.saved_locations).setVisible(count > 0);
                 if(count>0) {
                     menuItem.setVisible(true);
@@ -322,9 +326,9 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
                         menu.add("Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                int number = myUser.getProperties().getNumber() - 10000;
-                                SavedLocation saved = SavedLocation.getItemByNumber(context, number);
-                                editLocation(saved);
+//                                int number = myUser.getProperties().getNumber() - 10000;
+//                                SavedLocation saved = SavedLocation.getItemByNumber(context, number);
+//                                editLocation(saved);
                                 return false;
                             }
                         });
@@ -363,8 +367,8 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
                             myUser.fire(HIDE_SAVED_LOCATION);
                         }
                     });
-                    SavedLocation saved = SavedLocation.getItemByNumber(context, myUser.getProperties().getNumber() - 10000);
-                    if(saved != null) saved.delete(null);
+//                    SavedLocation saved = SavedLocation.getItemByNumber(context, myUser.getProperties().getNumber() - 10000);
+//                    if(saved != null) saved.deleteByItem(null);
                     break;
             }
             return true;
@@ -378,31 +382,46 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
-        RecyclerView list = (RecyclerView) content.findViewById(R.id.list_items);
+        final RecyclerView list = (RecyclerView) content.findViewById(R.id.list_items);
+
         adapter = new SavedLocation.SavedLocationsAdapter(context, list);
+        context.getSupportLoaderManager().initLoader(1, null, adapter);
+
         adapter.setOnLeftSwipeListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
-                editLocation(SavedLocation.getItemByPosition(context, position));
+                editLocation(SavedLocation.getItemByPosition(position));
             }
         });
         adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
-                SavedLocation.getItemByPosition(context, position).delete(new SimpleCallback<AbstractSavedItem>() {
+//                SavedLocation.getDb().
+                SavedLocation.getDb().deleteByPosition(position);
+                adapter.notifyItemRemoved(position);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
-                    public void call(AbstractSavedItem arg) {
-                        adapter.notifyItemRemoved(position);
-
-                        dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
-                        State.getInstance().getUsers().forUser((int)(10000 + arg.getNumber()), new MyUsers.Callback() {
-                            @Override
-                            public void call(Integer number, MyUser myUser) {
-                                myUser.fire(DELETE_SAVED_LOCATION);
-                            }
-                        });
+                    public void run() {
+                        donotscroll = true;
+//                        updateDialog();
                     }
-                });
+                }, 500);
+                /*State.getInstance().getUsers().forUser((int)(10000 + arg.getNumber()), new MyUsers.Callback() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        myUser.fire(DELETE_SAVED_LOCATION);
+                    }
+                });*/
+
+            }
+        });
+
+        adapter.setOnCursorReloadListener(new SimpleCallback<Cursor>() {
+            @Override
+            public void call(Cursor cursor) {
+                dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
+                if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
+                donotscroll = false;
             }
         });
 
@@ -425,8 +444,8 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Show all", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                for(int j=0; j < SavedLocation.getCount(context); j++){
-                    SavedLocation s = SavedLocation.getItemByPosition(context, j);
+                for(int j=0; j < SavedLocation.getCount(); j++){
+                    SavedLocation s = SavedLocation.getItemByPosition(j);
                     State.getInstance().fire(SHOW_SAVED_LOCATION, s);
                 }
             }
@@ -448,15 +467,20 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
 //                dialog = null;
             }
         });
-        dialog.setOnCancelListener(null*//*new DialogInterface.OnCancelListener() {
+        dialog.setOnCancelListener(null/*new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
 //                dialog = null;
             }
-        }*//*);
+        }*/);
         dialog.setView(content);
         dialog.show();
 
+    }
+
+
+    private void updateDialog(){
+        context.getSupportLoaderManager().getLoader(1).forceLoad();
     }
 
     private void editLocation(final SavedLocation savedLocation) {
@@ -519,4 +543,3 @@ public class SavedLocationsViewHolder {}/*extends AbstractViewHolder<SavedLocati
 
 
 }
-*/

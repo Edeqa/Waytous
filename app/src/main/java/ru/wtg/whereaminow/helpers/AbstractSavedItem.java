@@ -20,14 +20,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
@@ -36,12 +31,13 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
  * Created 12/9/16.
  */
 
+@SuppressWarnings("unchecked")
 abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820032L;
 
-    static transient private Map<String,Integer> count = new HashMap<String, Integer>();
-    static transient private Map<String,Fields> dbOptions = new HashMap<String, Fields>();
+    static transient private Map<String,Integer> count = new HashMap<>();
+    static transient private Map<String,DBHelper> dbHelpers = new HashMap<>();
 
     private transient static String LAST = "last";
     transient private String itemType;
@@ -49,64 +45,64 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     transient private long number;
 
+    @SuppressWarnings("WeakerAccess")
     protected AbstractSavedItem(Context context, String itemType){
         this.context = context;
-//        sharedPreferences = context.getSharedPreferences(itemType, MODE_PRIVATE);
         this.itemType = itemType;
 
         number = 0;//sharedPreferences.getInt(LAST, 0) + 1;
 
-//        SharedPreferences.Editor edit = sharedPreferences.edit();
-//        edit.putLong(LAST, number).apply();
-
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected static void init(Context context, Class<?> item, String itemType) {
-        Fields fields = new Fields(itemType, item);
-        fields.db = new DBHelper(context, fields);
-        System.out.println("========================================== "+fields.getCreateString());
+//        Fields fields = new Fields(itemType, item);
+        DBHelper<? extends AbstractSavedItem> dbHelper = new DBHelper<>(context, itemType, item);
+        System.out.println("========================================== "+dbHelper.fields.getCreateString());
 
-        dbOptions.put(itemType,fields);
-        fields.db.open();
+        dbHelpers.put(itemType,new DBHelper(context, itemType, item));
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected static DBHelper getDb(String itemType) {
-        return dbOptions.get(itemType).db;
+        return dbHelpers.get(itemType);
     }
 
     public void save(SimpleCallback<T> onSaveCallback) {
-        dbOptions.get(itemType).db.save((T) this);
+        dbHelpers.get(itemType).save(this);
         if(onSaveCallback != null) {
             onSaveCallback.call((T) this);
         }
     }
 
-    public void delete(SimpleCallback<AbstractSavedItem> onDeleteCallback){
-        dbOptions.get(itemType).db.delete((T) this);
+    public void delete(SimpleCallback<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
+        dbHelpers.get(itemType).deleteByItem(this);
         if(onDeleteCallback != null) {
             onDeleteCallback.call(this);
         }
     }
 
     public static int getCount(String itemType) {
-        return dbOptions.get(itemType).db.getCount();
+        return dbHelpers.get(itemType).getCount();
     }
 
-/*
 
-    public static AbstractSavedItem getItemByPosition(Context context, String itemType, int position) {
-        AbstractSavedItem item = null;
-        return item;
+    public static AbstractSavedItem getItemByPosition(String itemType, int position) {
+        Cursor cursor = dbHelpers.get(itemType).getByPosition(position);
+        return dbHelpers.get(itemType).load(cursor);
     }
 
-    public static AbstractSavedItem getItemByNumber(Context context, String itemType, long number) {
-        AbstractSavedItem item = null;
-        return item;
+    public static AbstractSavedItem getItemByNumber(String itemType, long number) {
+        Cursor cursor = dbHelpers.get(itemType).getById(number);
+        return dbHelpers.get(itemType).load(cursor);
     }
-*/
+
+    public static AbstractSavedItem getItemByCursor(String itemType, Cursor cursor) {
+        return dbHelpers.get(itemType).load(cursor);
+    }
 
     public static void clear(String itemType){
-        dbOptions.get(itemType).db.clear();
+        dbHelpers.get(itemType).clear();
     }
 
     public long getNumber(){
@@ -123,8 +119,8 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         protected Cursor cursor;
         private final LinearLayoutManager layoutManager;
         private final RecyclerView list;
-        protected SimpleCallback<T> onItemClickListener;
-        protected SimpleCallback<T> onItemTouchListener;
+        SimpleCallback<T> onItemClickListener;
+        protected SimpleCallback<?> onItemTouchListener;
         protected SimpleCallback<Cursor> onCursorReloadListener;
 
         public AbstractSavedItemsAdapter(final Context context, final RecyclerView list){
@@ -152,7 +148,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
         @Override
         public int getItemCount() {
-            return this.cursor != null ? this.cursor.getCount() : 0;
+            return cursor != null ? cursor.getCount() : 0;
         }
 
         public Cursor getItem(final int position) {
@@ -161,6 +157,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             }
             return cursor;
         }
+
         public void swapCursor(final Cursor cursor) {
             this.cursor = cursor;
             this.notifyDataSetChanged();
@@ -190,12 +187,20 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             this.onCursorReloadListener = callback;
         }
 
+        public String getString(String fieldName){
+            return cursor.getString(cursor.getColumnIndex(fieldName + "_"));
+        }
+
+        public Integer getInt(String fieldName){
+            return cursor.getInt(cursor.getColumnIndex(fieldName + "_"));
+        }
+
+        public Long getLong(String fieldName){
+            return cursor.getLong(cursor.getColumnIndex(fieldName + "_"));
+        }
+
         private void enableSwipe(final int direction, final SimpleCallback<Integer> callback){
             ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, direction) {
-                Drawable background;
-                Drawable xMark;
-                boolean initiated;
-
                 @Override
                 public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                     return false;
@@ -215,62 +220,10 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
                     if (viewHolder.getAdapterPosition() == -1) {
                         return;
                     }
-
                     if(direction == ItemTouchHelper.RIGHT && dX > 0) {
-                        if (!initiated) {
-                            background = new ColorDrawable(Color.TRANSPARENT);
-                            xMark = ContextCompat.getDrawable(context, R.drawable.ic_clear_black);
-                            initiated = true;
-                        }
-                        background.setBounds(itemView.getLeft() - (int) dX, itemView.getTop(), itemView.getLeft(), itemView.getBottom());
-                        background.draw(c);
-
-                        int itemHeight = itemView.getBottom() - itemView.getTop();
-                        int intrinsicWidth = xMark.getIntrinsicWidth();
-                        int intrinsicHeight = xMark.getIntrinsicWidth();
-                        int leftMargin = context.getResources().getDimensionPixelOffset(R.dimen.material_button_width_minimum) / 2;
-
-                        if (dX < itemView.getWidth() / 2) {
-                            xMark.setColorFilter(Color.argb(Math.round(255 - 255 * (dX / (itemView.getWidth() / 2))), 255, 255, 255),
-                                    PorterDuff.Mode.SRC_ATOP);
-                        }
-
-                        int right = itemView.getLeft() + intrinsicWidth + leftMargin - intrinsicWidth/2;
-                        int left = itemView.getLeft() + leftMargin - intrinsicWidth/2;
-                        int top = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
-                        int bottom = top + intrinsicHeight;
-                        xMark.setBounds(left, top, right, bottom);
-
-                        xMark.draw(c);
+                        itemView.setAlpha(1-dX / (itemView.getWidth()));
                     } else if(direction == ItemTouchHelper.LEFT && dX < 0) {
-//                        dX = Math.abs(dX);
-                        if (!initiated) {
-                            background = new ColorDrawable(Color.TRANSPARENT);
-                            xMark = ContextCompat.getDrawable(context, R.drawable.ic_clear_black);
-                            initiated = true;
-                        }
-                        background.setBounds(itemView.getRight() - (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                        background.draw(c);
-
-/*
-                        int itemHeight = itemView.getBottom() - itemView.getTop();
-                        int intrinsicWidth = xMark.getIntrinsicWidth();
-                        int intrinsicHeight = xMark.getIntrinsicWidth();
-                        int rightMargin = context.getResources().getDimensionPixelOffset(R.dimen.material_button_width_minimum) / 2;
-*/
-
-                        /*if (dX < itemView.getWidth() / 2) {
-                            xMark.setColorFilter(Color.argb(Math.round(255 - 255 * (dX / (itemView.getWidth() / 2))), 255, 255, 255),
-                                    PorterDuff.Mode.SRC_ATOP);
-                        }
-
-                        int right = itemView.getRight() + intrinsicWidth - rightMargin - intrinsicWidth/2;
-                        int left = itemView.getRight() - rightMargin - intrinsicWidth/2;
-                        int top = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
-                        int bottom = top + intrinsicHeight;
-                        xMark.setBounds(left, top, right, bottom);
-
-                        xMark.draw(c);*/
+                        itemView.setAlpha(1+dX / (itemView.getWidth()));
                     }
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 }
@@ -282,7 +235,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public void setOnItemClickListener(SimpleCallback<T> onItemClickListener) {
             this.onItemClickListener = onItemClickListener;
         }
-        public void setOnItemTouchListener(SimpleCallback<T> onItemTouchListener) {
+        public void setOnItemTouchListener(SimpleCallback<?> onItemTouchListener) {
             this.onItemTouchListener = onItemTouchListener;
         }
 
@@ -304,89 +257,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     }
 
-    protected static class Fields {
-        final String itemType;
-        TreeMap<String,FieldOptions> fields = new TreeMap<>();
-        DBHelper db;
-
-        class FieldOptions {
-            String name;
-            String type;
-            String sourceType;
-            boolean serialize;
-            public String toString(){
-                return "{"+name+", "+type+", "+sourceType+", "+ serialize +"}";
-            }
-        }
-
-        public Fields(String itemType, Class item) {
-            this.itemType = itemType;
-            for (Field field : item.getDeclaredFields()) {
-                processField(field);
-            }
-            System.out.println("FIELDS::::"+fields);
-        }
-
-        private void processField(Field field) {
-            if(!Modifier.isStatic(field.getModifiers())
-                    && !Modifier.isFinal(field.getModifiers())
-                    && !Modifier.isTransient(field.getModifiers()))
-            {
-                FieldOptions o = new FieldOptions();
-                o.name = field.getName();
-
-                if(field.getType().isAssignableFrom(String.class)){
-                    o.type = "text";
-                    o.serialize = false;
-                } else if(field.getType().isAssignableFrom(Boolean.class) || field.getType().isAssignableFrom(Boolean.TYPE)){
-                    o.type = "integer";
-                    o.serialize = false;
-                } else if(field.getType().isAssignableFrom(Integer.class) || field.getType().isAssignableFrom(Integer.TYPE)){
-                    o.type = "integer";
-                    o.serialize = false;
-                } else if(field.getType().isAssignableFrom(Long.class) || field.getType().isAssignableFrom(Long.TYPE)){
-                    o.type = "integer";
-                    o.serialize = false;
-                } else if(field.getType().isAssignableFrom(Float.class) || field.getType().isAssignableFrom(Float.TYPE)){
-                    o.type = "real";
-                    o.serialize = false;
-                } else if(field.getType().isAssignableFrom(Double.class) || field.getType().isAssignableFrom(Double.TYPE)){
-                    o.type = "real";
-                    o.serialize = false;
-                } else {
-                    o.type = "blob";
-                    o.serialize = Serializable.class.isAssignableFrom(field.getType());
-                    if(!Serializable.class.isAssignableFrom(field.getType())){
-                        try {
-                            throw new Exception("Not serialize value: "+field.getName()+", type: "+field.getType().getCanonicalName());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                o.sourceType = field.getType().getCanonicalName();
-                fields.put(field.getName(),o);
-            }
-
-            /*System.out.println(":::"+field.getName()+":transient-"+ Modifier.isTransient(field.getModifiers())
-                    +":static-"+ Modifier.isStatic(field.getModifiers())
-                    +":final-"+ Modifier.isFinal(field.getModifiers())
-                    +":serialize-"+ (Serializable.class.isAssignableFrom(field.getType()))
-                    +":"+field.getType().getSimpleName());*/
-        }
-        public String getCreateString() {
-            String res = "create table " + itemType + "(_id integer primary key autoincrement, ";
-            for(Map.Entry<String,FieldOptions> x: fields.entrySet()){
-                res += x.getValue().name + "_ " + x.getValue().type;
-                if(!x.getKey().equals(fields.lastKey())) res += ", ";
-            }
-            res += ")";
-            return res;
-        }
-
-    }
-
     static class SavedItemCursorLoader extends CursorLoader {
 
         private final String itemType;
@@ -398,10 +268,8 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = dbOptions.get(itemType).db.getAllData();
-            return cursor;
+            return dbHelpers.get(itemType).getAll();
         }
-
     }
 
 
