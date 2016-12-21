@@ -55,15 +55,15 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public static final String SHOW_MESSAGES = "show_messages";
     public static final String SETUP_WELCOME_MESSAGE = "setup_welcome_message";
 
-    private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messagesView_hide_system_messages";
+    private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messages_hide_system_messages";
 
     private final AppCompatActivity context;
-//    private final MessagesHolder messagesHolder;
+    //    private final MessagesHolder messagesHolder;
     private UserMessage.UserMessagesAdapter adapter;
     private AlertDialog dialog;
     private View toolbar;
     private ColorDrawable drawable;
-//    private LinearLayoutManager layoutManager;
+    //    private LinearLayoutManager layoutManager;
     private RecyclerView list;
     private boolean donotscroll;
 
@@ -164,40 +164,37 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
         final EditText etMessage = (EditText) content.findViewById(R.id.et_message);
 
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    if (etMessage.getText().toString().length() > 0) {
-                        if (privateMessage && toUser != null) {
-                            JSONObject o = new JSONObject();
-                            try {
-                                if(State.getInstance().tracking()) {
-                                    o.put(RESPONSE_PRIVATE, toUser.getProperties().getNumber());
-                                    o.put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
-                                    State.getInstance().getTracking().sendMessage(o);
-                                }
-                                toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (etMessage.getText().toString().length() > 0) {
+                    if (privateMessage && toUser != null) {
+                        JSONObject o = new JSONObject();
+                        try {
                             if(State.getInstance().tracking()) {
-                                State.getInstance().getTracking().sendMessage(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
+                                o.put(RESPONSE_PRIVATE, toUser.getProperties().getNumber());
+                                o.put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
+                                State.getInstance().getTracking().sendMessage(o);
                             }
-                            State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
+                            toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+                    } else {
+                        if(State.getInstance().tracking()) {
+                            State.getInstance().getTracking().sendMessage(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
+                        }
+                        State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
                     }
                 }
-            });
-
-
+            }
+        });
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 System.out.println("cancel");
             }
         });
-
         if(toUser != null && !privateMessage) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Private", new DialogInterface.OnClickListener() {
                 @Override
@@ -206,9 +203,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 }
             });
         }
-
         dialog.setView(content);
-
         dialog.show();
     }
 
@@ -221,7 +216,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new UserMessage.UserMessagesAdapter(context, list);
-        context.getSupportLoaderManager().initLoader(1, null, adapter);
+        context.getSupportLoaderManager().initLoader(2, null, adapter);
 
         toolbar = context.getLayoutInflater().inflate(R.layout.dialog_items_toolbar, null);
         final ImageButton ibMenu = (ImageButton) toolbar.findViewById(R.id.ib_dialog_items_menu);
@@ -259,36 +254,15 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         updateDialog();
                     }
                 }, 500);
-                /*UserMessage.getItemByPosition(context, position).delete(new SimpleCallback<AbstractSavedItem>() {
-                    @Override
-                    public void call(AbstractSavedItem arg) {
-
-                        dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
-                        State.getInstance().getUsers().forUser((int)(10000 + arg.getNumber()), new MyUsers.Callback() {
-                            @Override
-                            public void call(Integer number, MyUser myUser) {
-                                myUser.fire(DELETE_SAVED_LOCATION);
-                            }
-                        });
-                    }
-                });*/
             }
         });
 
         dialog.setCustomTitle(toolbar);
 
-
-//        adapter.notifyDataSetChanged();
-//        context.getSupportLoaderManager().getLoader(1).forceLoad();
-
         adapter.setOnItemClickListener(new SimpleCallback<UserMessage>() {
             @Override
             public void call(UserMessage message) {
                 System.out.println(message);
-
-
-//                dialog.dismiss();
-//                dialog = null;
             }
         });
         adapter.setOnItemTouchListener(onTouchListener);
@@ -352,12 +326,11 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         });
 //        list.setOnTouchListener(onTouchListener);
         updateDialog();
-        System.out.println("MESSCOUNTL:"+adapter.getItemCount());
 
     }
 
     private void updateDialog(){
-        context.getSupportLoaderManager().getLoader(1).forceLoad();
+        context.getSupportLoaderManager().getLoader(2).forceLoad();
     }
 
     private SmoothInterpolated action;
@@ -401,8 +374,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             switch (event) {
                 case USER_MESSAGE:
                     if(dialog != null) {
-//                        adapter.notifyDataSetChanged();
-//                        list.scrollToPosition(adapter.getItemCount()-1);
                         updateDialog();
                     } else {
                         String text = (String) object;
@@ -424,8 +395,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     break;
                 case PRIVATE_MESSAGE:
                     if(dialog != null) {
-//                        adapter.notifyDataSetChanged();
-//                        list.scrollToPosition(adapter.getItemCount()-1);
                         updateDialog();
                         return false;
                     } else {
@@ -463,7 +432,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             }
             return true;
         }
-
     }
 
     MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
@@ -547,6 +515,5 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             return false;
         }
     };
-
 
 }

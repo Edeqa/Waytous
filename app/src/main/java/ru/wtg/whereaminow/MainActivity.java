@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) return;
 
         new MapButtonsViewHolder(mapFragment,findViewById(R.id.sv_users));
-//        state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
+        state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
         state.registerEntityHolder(new MenuViewHolder(this));
         state.registerEntityHolder(new TrackViewHolder().setMap(map));
         state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
