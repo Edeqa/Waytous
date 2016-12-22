@@ -51,7 +51,8 @@
             android:layout_below="@+id/tv_saved_location_address"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:textStyle="normal|bold" />
 
         <TextView
             tools:text="10/12/2016 10:00 AM"

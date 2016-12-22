@@ -7,7 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 
 import ru.wtg.whereaminow.MainActivity;
@@ -96,14 +95,13 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    public DrawerViewHolder setCallback(final SimpleCallback callback) {
+    public DrawerViewHolder setCallback(final SimpleCallback<Integer> callback) {
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 callback.call(item.getItemId());
                 drawer.closeDrawer(GravityCompat.START);
-
                 return false;
             }
         });
@@ -111,8 +109,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
     }
 
     public boolean isDrawerOpen() {
-        if(drawer == null) return false;
-        return drawer.isDrawerOpen(GravityCompat.START);
+        return drawer != null && drawer.isDrawerOpen(GravityCompat.START);
     }
 
     public void closeDrawer() {

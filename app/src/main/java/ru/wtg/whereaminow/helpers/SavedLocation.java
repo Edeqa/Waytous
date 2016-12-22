@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.Date;
 
 import ru.wtg.whereaminow.R;
-import ru.wtg.whereaminow.holders.SavedLocationsViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 /**
@@ -120,6 +119,7 @@ public class SavedLocation extends AbstractSavedItem {
     }
 
     public static SavedLocation getItemByNumber(long number) {
+        System.out.println("NUMBER:"+number);
         return (SavedLocation) getItemByNumber(LOCATION, number);
     }
 
@@ -134,23 +134,10 @@ public class SavedLocation extends AbstractSavedItem {
             public void call(AbstractSavedItem listItem) {
                 final SavedLocation item = (SavedLocation) listItem;
                 if(item.getAddress() == null) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                String req = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + item.getLatitude() + "&lon=" + item.getLongitude() + "&zoom=18&addressdetails=1";
-                                final String res = Utils.getUrl(req);
-                                JSONObject o = new JSONObject(res);
-                                item.setAddress(o.getString("display_name"));
-                                item.save(context);
-                            } catch (JSONException | IOException | NullPointerException e) {
-                                //e.printStackTrace();
-                            }
-                        }
-                    }).start();
+                    new Thread(new LoadAddress(context, item, null)).start();
                 }
                 if(item.getBitmap() == null) {
-                    new Thread(new LoadRunnable(context, item, null)).start();
+                    new Thread(new LoadBitmap(context, item, null)).start();
                 }
             }
         } );
@@ -196,7 +183,7 @@ public class SavedLocation extends AbstractSavedItem {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        onItemClickListener.call(savedLocation);
+                        onItemClickListener.call(item);
                     }
                 });
 
@@ -204,7 +191,7 @@ public class SavedLocation extends AbstractSavedItem {
                 holder.ibImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        onLocationClickListener.call(savedLocation);
+                        onLocationClickListener.call(item);
                     }
                 });
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -214,7 +201,7 @@ public class SavedLocation extends AbstractSavedItem {
                             holder.ibImage.setImageBitmap(item.getBitmap().getCurrentImage());
                             holder.ibImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         } else {
-                            new Thread(new LoadRunnable(context, item, new SimpleCallback<Bitmap>() {
+                            new Thread(new LoadBitmap(context, item, new SimpleCallback<Bitmap>() {
                                 @Override
                                 public void call(final Bitmap bmp) {
                                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -279,11 +266,12 @@ public class SavedLocation extends AbstractSavedItem {
     }
 
 
-    private static class LoadRunnable implements Runnable {
+    private static class LoadBitmap implements Runnable {
         private SavedLocation savedLocation;
         private Context context;
         private SimpleCallback<Bitmap> callback;
-        LoadRunnable(Context context, SavedLocation savedLocation, SimpleCallback<Bitmap> callback){
+
+        LoadBitmap(Context context, SavedLocation savedLocation, SimpleCallback<Bitmap> callback){
             this.context = context;
             this.savedLocation = savedLocation;
             this.callback = callback;
@@ -312,6 +300,34 @@ public class SavedLocation extends AbstractSavedItem {
                 e.printStackTrace();
             }
         }
-    };
+    }
 
+    private static class LoadAddress implements Runnable {
+        private SavedLocation savedLocation;
+        private Context context;
+        private SimpleCallback<String> callback;
+
+        LoadAddress(Context context, SavedLocation savedLocation, SimpleCallback<String> callback){
+            this.context = context;
+            this.savedLocation = savedLocation;
+            this.callback = callback;
+        }
+        @Override
+        public void run() {
+            try {
+                String req = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + savedLocation.getLatitude() + "&lon=" + savedLocation.getLongitude() + "&zoom=18&addressdetails=1";
+                final String res = Utils.getUrl(req);
+                JSONObject o = new JSONObject(res);
+
+                savedLocation.setAddress(o.getString("display_name"));
+                savedLocation.save(context);
+
+                if(callback != null) {
+                    callback.call(o.getString("display_name"));
+                }
+            } catch (JSONException | IOException | NullPointerException e) {
+                //e.printStackTrace();
+            }
+        }
+    }
 }

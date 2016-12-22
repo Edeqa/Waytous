@@ -15,7 +15,6 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.WhereAmINowService;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.UserMessage;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
@@ -30,7 +29,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 /**
  * Created 11/29/16.
  */
-public class NotificationHolder extends AbstractPropertyHolder<NotificationHolder.NotificationUpdate> {
+public class NotificationHolder extends AbstractPropertyHolder {
     public static final String TYPE = "notification";
     private final State state;
     private boolean showNotifications = true;
@@ -118,10 +117,11 @@ public class NotificationHolder extends AbstractPropertyHolder<NotificationHolde
 
     private void update(String text) {
         if(notification == null) return;
-        notification.setDefaults(Notification.DEFAULT_ALL);
         if(showNotifications) {
+            notification.setDefaults(Notification.DEFAULT_ALL);
             notification.setPriority(Notification.PRIORITY_HIGH);
         } else {
+            notification.setDefaults(Notification.DEFAULT_LIGHTS);
             notification.setPriority(Notification.PRIORITY_DEFAULT);
         }
         notification.setContentTitle(state.getUsers().getCountActive() + " user(s) active.");
@@ -131,7 +131,7 @@ public class NotificationHolder extends AbstractPropertyHolder<NotificationHolde
         }
         notification.setWhen(new Date().getTime());
         notification.setSound(null);
-        notification.setVibrate(null);
+        notification.setVibrate(new long[]{0L, 0L});
 
         NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1976, notification.build());

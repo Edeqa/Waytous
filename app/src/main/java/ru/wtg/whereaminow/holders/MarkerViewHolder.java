@@ -3,7 +3,6 @@ package ru.wtg.whereaminow.holders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -30,7 +29,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
  */
 public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
 
-    public static final String MARKER_CLICK = "marker_click";
+    static final String MARKER_CLICK = "marker_click";
 
     public static final String TYPE = "marker";
 
@@ -90,10 +89,10 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
     class MarkerView extends AbstractView {
         private Marker marker;
-        private MyUser myUser;
+//        private MyUser myUser;
 
         MarkerView(MyUser myUser){
-            this.myUser = myUser;
+//            this.myUser = myUser;
 
             int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Bitmap bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getProperties().getColor(),size,size);

@@ -31,9 +31,9 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
 
     public static final String TYPE = "snackbar";
     public static final String CUSTOM_SNACK = "custom_snack";
-    public static final String CUSTOM_SNACK_MESSAGE = "custom_snack_message";
-    public static final String CUSTOM_SNACK_BUTTON_TITLE = "custom_snack_button_text";
-    public static final String CUSTOM_SNACK_BUTTON_CALLBACK = "custom_snack_button_callback";
+//    public static final String CUSTOM_SNACK_MESSAGE = "custom_snack_message";
+//    public static final String CUSTOM_SNACK_BUTTON_TITLE = "custom_snack_button_text";
+//    public static final String CUSTOM_SNACK_BUTTON_CALLBACK = "custom_snack_button_callback";
 
     private final Context context;
     private Snackbar snackbar;

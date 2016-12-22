@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,15 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.Date;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.interfaces.SimpleCallback;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * Created 12/9/16.
@@ -30,7 +24,7 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class UserMessage extends AbstractSavedItem {
 
-    static final long serialVersionUID =-6395904747332820028L;
+    static final long serialVersionUID = -6395904747332820028L;
 
     private static final String MESSAGE = "message";
 

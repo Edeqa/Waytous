@@ -25,8 +25,6 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     private static final String TYPE = "menu";
 
     private final Activity context;
-    private MenuItem menuItemSetMyName;
-
 
     public MenuViewHolder(Activity context) {
         this.context = context;
@@ -53,7 +51,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         switch(event){
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
-                menuItemSetMyName = optionsMenu.add("Set my name").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                optionsMenu.add("Set my name").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);

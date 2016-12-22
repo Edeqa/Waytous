@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,12 +16,12 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
 import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
+import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.ADJUST_ZOOM;
 
@@ -132,7 +131,9 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
             title = ((TextView) button.findViewById(R.id.tv_button_username));
             if(myUser.getProperties().isSelected()) title.setTypeface(Typeface.DEFAULT_BOLD);
-            title.setText(myUser.getProperties().getDisplayName());
+            String titleText = (myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName();
+
+            title.setText(titleText);
 
 //            int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Drawable drawable = Utils.renderDrawable(context, R.drawable.semi_transparent_background, myUser.getProperties().getColor(), size, size);

@@ -21,6 +21,7 @@ import static ru.wtg.whereaminow.State.UNSELECT_USER;
  * Created 11/18/16.
  */
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
+    
     private static final String TYPE = "address";
     private SimpleCallback<String> callback;
 

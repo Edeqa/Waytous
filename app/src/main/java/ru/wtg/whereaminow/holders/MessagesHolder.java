@@ -3,12 +3,10 @@ package ru.wtg.whereaminow.holders;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.UserMessage;
-import ru.wtg.whereaminowserver.helpers.Constants;
 
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
@@ -16,7 +14,6 @@ import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_JOINED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_PRIVATE;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_JOINED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
@@ -24,7 +21,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 /**
  * Created 11/27/16.
  */
-public class MessagesHolder extends AbstractPropertyHolder<MessagesHolder.Messages> {
+public class MessagesHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = "messages";
 

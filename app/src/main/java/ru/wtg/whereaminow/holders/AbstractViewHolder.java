@@ -6,9 +6,9 @@ import ru.wtg.whereaminow.interfaces.EntityHolder;
 /**
  * Created 11/18/16.
  */
-abstract public class AbstractViewHolder<B extends AbstractView> implements EntityHolder<AbstractView> {
+abstract public class AbstractViewHolder<T extends AbstractView> implements EntityHolder<AbstractView> {
 
-    abstract public B create(MyUser myUser);
+    abstract public T create(MyUser myUser);
 
     @Override
     public boolean dependsOnUser(){

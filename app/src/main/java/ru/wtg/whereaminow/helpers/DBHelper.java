@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -18,6 +16,7 @@ import java.util.TreeMap;
  * Created 12/20/2016.
  */
 
+@SuppressWarnings("TryWithIdenticalCatches")
 public class DBHelper<T extends AbstractSavedItem> {
 
     private static final int DB_VERSION = 1;
@@ -28,6 +27,8 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     private DBOpenHelper mDBHelper;
     private SQLiteDatabase mDB;
+    private String selection = null;
+    private String[] selectionArgs = null;
 
     DBHelper(Context context, String itemType, Class<?> item){
         this.context = context;
@@ -48,7 +49,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     public Cursor getAll() {
-        return mDB.query(fields.itemType, null, null, null, null, null, null);
+        return mDB.query(fields.itemType, null, selection, selectionArgs, null, null, null);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -65,24 +66,23 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     @SuppressWarnings("WeakerAccess")
     public Cursor getById(long id){
-        Cursor cursor = getAll();
-        cursor.moveToFirst();
-        while(cursor.isAfterLast()) {
-            if(cursor.getLong(cursor.getColumnIndex(COLUMN_ID)) == id) return cursor;
-            cursor.moveToNext();
-        }
-        return null;
+        return mDB.query(fields.itemType, null, COLUMN_ID + " = ?", new String[]{String.valueOf(id)},null,null,null);
     }
 
     public void clear() {
         mDB.delete(fields.itemType, null, null);
     }
 
+    public void setRestrictions(String selection, String[] selectionArgs) {
+        this.selection = selection;
+        this.selectionArgs = selectionArgs;
+
+    }
+
     @SuppressWarnings("WeakerAccess")
     public void save(T item) {
         ContentValues cv = new ContentValues();
 
-        System.out.println("SAVEVALUE:"+item);
         for(Map.Entry<String,Fields.FieldOptions> x: fields.fields.entrySet()){
             try {
                 Field field = item.getClass().getDeclaredField(x.getValue().name);
@@ -116,11 +116,9 @@ public class DBHelper<T extends AbstractSavedItem> {
 
         if(item.getNumber() > 0){
             mDB.update(fields.itemType, cv, COLUMN_ID + " = ?", new String[]{String.valueOf(item.getNumber())});
-            System.out.println("UPDATED:"+item.getNumber());
         } else {
             long a = mDB.insert(fields.itemType, null, cv);
             item.setNumber(a);
-            System.out.println("INSERTED:"+a);
         }
     }
 
@@ -143,31 +141,28 @@ public class DBHelper<T extends AbstractSavedItem> {
             try {
                 Field field = fields.classType.getDeclaredField(x.getValue().name);
                 field.setAccessible(true);
-//                Object value = field.get(item);
-//                if(value != null) {
-                    if(x.getValue().serialize) {
-                        String value = cursor.getString(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, Utils.deserializeFromString(value));
-                    } else if (x.getValue().sourceType.equals("boolean")) {
-                        int value = cursor.getInt(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, value == 1);
-                    } else if (x.getValue().sourceType.equals("int")) {
-                        int value = cursor.getInt(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, value);
-                    } else if (x.getValue().sourceType.equals("long")) {
-                        long value = cursor.getLong(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, value);
-                    } else if (x.getValue().sourceType.equals("float")) {
-                        float value = cursor.getFloat(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, value);
-                    } else if (x.getValue().sourceType.equals("double")) {
-                        double value = cursor.getDouble(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, value);
-                    } else if (x.getValue().sourceType.equals("java.lang.String")) {
-                        String value = cursor.getString(cursor.getColumnIndex(x.getValue().name+"_"));
-                        field.set(item, value);
-                    }
-//                }
+                if (x.getValue().serialize) {
+                    String value = cursor.getString(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, Utils.deserializeFromString(value));
+                } else if (x.getValue().sourceType.equals("boolean")) {
+                    int value = cursor.getInt(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, value == 1);
+                } else if (x.getValue().sourceType.equals("int")) {
+                    int value = cursor.getInt(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, value);
+                } else if (x.getValue().sourceType.equals("long")) {
+                    long value = cursor.getLong(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, value);
+                } else if (x.getValue().sourceType.equals("float")) {
+                    float value = cursor.getFloat(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, value);
+                } else if (x.getValue().sourceType.equals("double")) {
+                    double value = cursor.getDouble(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, value);
+                } else if (x.getValue().sourceType.equals("java.lang.String")) {
+                    String value = cursor.getString(cursor.getColumnIndex(x.getValue().name + "_"));
+                    field.set(item, value);
+                }
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -240,7 +235,6 @@ public class DBHelper<T extends AbstractSavedItem> {
             for (Field field : item.getDeclaredFields()) {
                 processField(field);
             }
-            System.out.println("FIELDS::::"+fields);
         }
 
         private void processField(Field field) {
@@ -284,12 +278,6 @@ public class DBHelper<T extends AbstractSavedItem> {
                 o.sourceType = field.getType().getCanonicalName();
                 fields.put(field.getName(),o);
             }
-
-            /*System.out.println(":::"+field.getName()+":transient-"+ Modifier.isTransient(field.getModifiers())
-                    +":static-"+ Modifier.isStatic(field.getModifiers())
-                    +":final-"+ Modifier.isFinal(field.getModifiers())
-                    +":serialize-"+ (Serializable.class.isAssignableFrom(field.getType()))
-                    +":"+field.getType().getSimpleName());*/
         }
 
         @SuppressWarnings("WeakerAccess")

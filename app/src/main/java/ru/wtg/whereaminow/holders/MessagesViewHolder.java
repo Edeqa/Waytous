@@ -56,6 +56,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public static final String SETUP_WELCOME_MESSAGE = "setup_welcome_message";
 
     private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messages_hide_system_messages";
+    private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
 
     private final AppCompatActivity context;
     //    private final MessagesHolder messagesHolder;
@@ -66,6 +67,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     //    private LinearLayoutManager layoutManager;
     private RecyclerView list;
     private boolean donotscroll;
+    private boolean notTransparentWindow;
 
     public MessagesViewHolder(AppCompatActivity context) {
         this.context = context;
@@ -131,13 +133,13 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.set_welcome_message, Menu.NONE, R.string.set_welcome_message).setVisible(false).setOnMenuItemClickListener(onMenuItemSetWelcomeMessageClickListener);
 
-                optionsMenu.add(Menu.NONE, 19191919, Menu.NONE, "Test message").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                /*optionsMenu.add(Menu.NONE, 19191919, Menu.NONE, "Test message").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         State.getInstance().fire(SEND_MESSAGE, "Test message");
                         return false;
                     }
-                });
+                });*/
 
                 break;
             case PREPARE_OPTIONS_MENU:
@@ -216,14 +218,16 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new UserMessage.UserMessagesAdapter(context, list);
-        context.getSupportLoaderManager().initLoader(2, null, adapter);
 
         toolbar = context.getLayoutInflater().inflate(R.layout.dialog_items_toolbar, null);
         final ImageButton ibMenu = (ImageButton) toolbar.findViewById(R.id.ib_dialog_items_menu);
 
         final boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
         if(hideSystemMessages) {
+            UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
         }
+        context.getSupportLoaderManager().initLoader(2, null, adapter);
+        notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
 
         ibMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,16 +235,19 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 PopupMenu popup = new PopupMenu(context, view);
                 context.getMenuInflater().inflate(R.menu.dialog_messages_menu, popup.getMenu());
 
-                final boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-
+                 boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
                 popup.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
                 popup.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
 
+                notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
+                popup.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);
+                popup.getMenu().findItem(R.id.not_transparent).setVisible(!notTransparentWindow);
+
                 popup.show();
                 popup.setOnMenuItemClickListener(onDialogMenuItemClickListener);
+
             }
         });
-
 
         adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
             @Override
@@ -251,7 +258,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     @Override
                     public void run() {
                         donotscroll = true;
-                        updateDialog();
+                        reloadCursor();
                     }
                 }, 500);
             }
@@ -310,13 +317,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
         dialog.show();
 
-        new SmoothInterpolated(new SimpleCallback<Float[]>() {
-            @Override
-            public void call(Float[] value) {
-                drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
-            }
-        }).execute();
-
         dialog.getWindow().getDecorView().setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -324,12 +324,28 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 return false;
             }
         });
+
+        makeDialogTransparent();
+
 //        list.setOnTouchListener(onTouchListener);
-        updateDialog();
+        reloadCursor();
 
     }
 
-    private void updateDialog(){
+    private void makeDialogTransparent() {
+        if(notTransparentWindow) {
+            drawable.setAlpha(255);
+        } else {
+            new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                @Override
+                public void call(Float[] value) {
+                    drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                }
+            }).execute();
+         }
+    }
+
+    private void reloadCursor(){
         context.getSupportLoaderManager().getLoader(2).forceLoad();
     }
 
@@ -339,19 +355,21 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         @Override
         public void call(MotionEvent motionEvent) {
             if(action != null) action.cancel();
-            switch(motionEvent.getAction()){
-                case 0:
-                    drawable.setAlpha(255);
-                    break;
-                case 1:
-                    action = new SmoothInterpolated(new SimpleCallback<Float[]>() {
-                        @Override
-                        public void call(Float[] value) {
-                            drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
-                        }
-                    }).setDuration(320);
-                    action.execute();
-                    break;
+            if(!notTransparentWindow) {
+                switch (motionEvent.getAction()) {
+                    case 0:
+                        drawable.setAlpha(255);
+                        break;
+                    case 1:
+                        action = new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                            @Override
+                            public void call(Float[] value) {
+                                drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                            }
+                        }).setDuration(320);
+                        action.execute();
+                        break;
+                }
             }
         }
     };
@@ -374,7 +392,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             switch (event) {
                 case USER_MESSAGE:
                     if(dialog != null) {
-                        updateDialog();
+                        reloadCursor();
                     } else {
                         String text = (String) object;
 
@@ -395,7 +413,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     break;
                 case PRIVATE_MESSAGE:
                     if(dialog != null) {
-                        updateDialog();
+                        reloadCursor();
                         return false;
                     } else {
                         String text = (String) object;
@@ -434,7 +452,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         }
     }
 
-    MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
+    private MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             final AlertDialog dialog = new AlertDialog.Builder(context).create();
@@ -474,19 +492,31 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         }
     };
 
-    PopupMenu.OnMenuItemClickListener onDialogMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
+    private PopupMenu.OnMenuItemClickListener onDialogMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()) {
                 case R.id.hide_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
+                    UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
 //                    adapter.notifyDataSetChanged();
-                    updateDialog();
+                    reloadCursor();
                     break;
                 case R.id.show_system_messages:
+                    UserMessage.getDb().setRestrictions(null,null);
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
 //                    adapter.notifyDataSetChanged();
-                    updateDialog();
+                    reloadCursor();
+                    break;
+                case R.id.transparent:
+                    State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, false);
+                    notTransparentWindow = false;
+                    makeDialogTransparent();
+                    break;
+                case R.id.not_transparent:
+                    State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, true);
+                    notTransparentWindow = true;
+                    makeDialogTransparent();
                     break;
                 case R.id.clear_messages:
                     AlertDialog dialog = new AlertDialog.Builder(context).create();
@@ -496,7 +526,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             UserMessage.clear();
 //                            if(adapter != null) adapter.notifyDataSetChanged();
-                            updateDialog();
+                            reloadCursor();
                         }
                     });
                     dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {

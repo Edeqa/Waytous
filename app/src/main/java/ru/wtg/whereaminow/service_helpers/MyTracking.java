@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow.service_helpers;
 
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 
@@ -74,23 +73,21 @@ public class MyTracking {
 
     public static final String TRACKING_URI = "uri";
 
-    private final Context context;
     private State state;
     private MyWebSocketClient webClient;
     private URI serverUri;
     private String welcomeMessage;
     private int status = TRACKING_DISABLED;
 
-    public MyTracking(Context context) throws URISyntaxException {
-        this(context, WSS_SERVER_HOST);
+    public MyTracking() throws URISyntaxException {
+        this(WSS_SERVER_HOST);
     }
 
-    public MyTracking(Context context, String host) throws URISyntaxException {
-        this(context, new URI("wss://"+host+":8081"));
+    public MyTracking(String host) throws URISyntaxException {
+        this(new URI("wss://"+host+":8081"));
     }
 
-    private MyTracking(Context context, URI serverUri) {
-        this.context = context;
+    private MyTracking(URI serverUri) {
         this.serverUri = serverUri;
         System.out.println("NEWTRACKINGTO:"+serverUri.toString());
         state = State.getInstance();
@@ -216,12 +213,12 @@ public class MyTracking {
                             state.getUsers().addUser(u);
                         }
                     }
-                    state.fire(TRACKING_ACCEPTED);
                     if (o.has(RESPONSE_WELCOME_MESSAGE)) {
                         final String text = o.getString(RESPONSE_WELCOME_MESSAGE);
                         setWelcomeMessage(text);
                         state.fire(WELCOME_MESSAGE, text);
                     }
+                    state.fire(TRACKING_ACCEPTED);
                     enableLocationManager();
                     break;
                 case RESPONSE_STATUS_ERROR:

@@ -28,18 +28,14 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 /**
  * Created 11/18/16.
  */
-public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Properties> {
+@SuppressWarnings("unchecked")
+public class PropertiesHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = "properties";
 
     private static final String SELECTED = "selected";
     private static final String IMAGE_RESOURCE = "image_resource";
-    private static final String ACTIVE = "active";
-    private static final String NUMBER = "number";
-    private static final String COLOR = "color";
-    private static final String NAME = "name";
 
-    private final Context context;
     private final SharedPreferences sharedPreferences;
 
     @Override
@@ -48,8 +44,6 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
     }
 
     public PropertiesHolder(Context context){
-        this.context = context;
-
         sharedPreferences = context.getSharedPreferences("tracking", MODE_PRIVATE);
     }
 
@@ -62,13 +56,10 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
     public boolean onEvent(String event, Object object) {
         switch(event){
             case TRACKING_ACCEPTED:
-                System.out.println("PH:loadvalues");
-
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> value = (HashMap<String, Serializable>) myUser.getProperties().loadFor(TYPE);
-                        System.out.println("VALUE:"+myUser.getProperties().getName()+":"+value+":");
                         if(value != null) {
                             if(value.containsKey(SELECTED)) {
                                 if(value.get(SELECTED) != null && (boolean)value.get(SELECTED)) {
@@ -99,7 +90,6 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
 
                 break;
             case ACTIVITY_PAUSE:
-                System.out.println("PH:savevalues");
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
@@ -111,7 +101,6 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
                 });
                 break;
             case TRACKING_STOP:
-                System.out.println("PH:clearvalues");
                 sharedPreferences.edit().clear().apply();
                 break;
         }
@@ -165,12 +154,6 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
                     break;
                 case CHANGE_NUMBER:
                     number = (int) object;
-                    /*if(State.getInstance().tracking()) {
-                        Object object1 = loadFor(TYPE);
-                        if(object1 != null) {
-                            selected = (boolean) object1;
-                        }
-                    }*/
                     break;
                 case CHANGE_COLOR:
                     color = (int) object;
@@ -179,7 +162,6 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
                     name = (String) object;
                     if(myUser == State.getInstance().getMe()){
                         State.getInstance().setPreference("my_name", name);
-                        System.out.println("CHANGENAME:"+name);
                         if(State.getInstance().getTracking() != null){
                             if(name == null) name = "";
                             State.getInstance().getTracking().sendMessage(USER_NAME,name);
@@ -208,7 +190,7 @@ public class PropertiesHolder extends AbstractPropertyHolder<PropertiesHolder.Pr
                     res = "Friend "+getNumber();
                 }
             }
-            return (getNumber()==0 ? "*" : "") + res;
+            return res;
         }
 
         public int getNumber() {

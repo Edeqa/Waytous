@@ -2,18 +2,15 @@ package ru.wtg.whereaminow.holders;
 
 import android.location.Location;
 
-import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 
 /**
  * Created 11/30/16.
  */
-public class LoggerHolder extends AbstractPropertyHolder<LoggerHolder.Logger> {
+public class LoggerHolder extends AbstractPropertyHolder {
     private static final String TYPE = "logger";
-    private final State state;
 
-    public LoggerHolder(State state) {
-        this.state = state;
+    public LoggerHolder() {
         System.out.println("LOGGER:SYSTEMCONSTRUCT");
     }
 
@@ -46,8 +43,6 @@ public class LoggerHolder extends AbstractPropertyHolder<LoggerHolder.Logger> {
         System.out.println("LOGGER:DEPENDSONUSER");
         return true;
     }
-
-
 
     public class Logger extends AbstractProperty {
         Logger(MyUser myUser) {

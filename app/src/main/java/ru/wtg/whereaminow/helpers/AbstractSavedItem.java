@@ -94,6 +94,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     public static AbstractSavedItem getItemByNumber(String itemType, long number) {
         Cursor cursor = dbHelpers.get(itemType).getById(number);
+        cursor.moveToFirst();
         return dbHelpers.get(itemType).load(cursor);
     }
 
@@ -119,8 +120,8 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         protected Cursor cursor;
         private final LinearLayoutManager layoutManager;
         private final RecyclerView list;
-        SimpleCallback<T> onItemClickListener;
-        protected SimpleCallback<?> onItemTouchListener;
+        protected SimpleCallback<T> onItemClickListener;
+        protected SimpleCallback<T> onItemTouchListener;
         protected SimpleCallback<Cursor> onCursorReloadListener;
 
         public AbstractSavedItemsAdapter(final Context context, final RecyclerView list){
@@ -161,10 +162,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public void swapCursor(final Cursor cursor) {
             this.cursor = cursor;
             this.notifyDataSetChanged();
-        }
-
-        public Cursor getCursor() {
-            return cursor;
         }
 
         @Override
@@ -223,7 +220,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
                     if(direction == ItemTouchHelper.RIGHT && dX > 0) {
                         itemView.setAlpha(1-dX / (itemView.getWidth()));
                     } else if(direction == ItemTouchHelper.LEFT && dX < 0) {
-                        itemView.setAlpha(1+dX / (itemView.getWidth()));
+//                        itemView.setAlpha(1+dX / (itemView.getWidth()));
                     }
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 }
@@ -235,7 +232,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public void setOnItemClickListener(SimpleCallback<T> onItemClickListener) {
             this.onItemClickListener = onItemClickListener;
         }
-        public void setOnItemTouchListener(SimpleCallback<?> onItemTouchListener) {
+        public void setOnItemTouchListener(SimpleCallback<T> onItemTouchListener) {
             this.onItemTouchListener = onItemTouchListener;
         }
 
@@ -253,7 +250,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public void onLoaderReset(Loader loader) {
             swapCursor(null);
         }
-
 
     }
 

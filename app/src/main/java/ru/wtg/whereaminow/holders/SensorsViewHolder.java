@@ -19,10 +19,10 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
-import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
+import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.helpers.LightSensorManager.DAY;
 import static ru.wtg.whereaminow.helpers.LightSensorManager.NIGHT;
@@ -151,16 +151,19 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 break;
             case REQUEST_MODE_NORMAL:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                lightSensor.enable();
                 onEvent(REQUEST_MODE_DAY, null);
                 break;
             case REQUEST_MODE_SATELLITE:
                 if(map != null){
+                    lightSensor.disable();
                     onEvent(REQUEST_MODE_NIGHT, null);
                     map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 }
                 break;
             case REQUEST_MODE_TERRAIN:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                lightSensor.disable();
                 onEvent(REQUEST_MODE_DAY, null);
                 break;
         }
