@@ -190,6 +190,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     class CameraUpdateView extends AbstractView implements Serializable{
 
         static final long serialVersionUID =-6395904747332820026L;

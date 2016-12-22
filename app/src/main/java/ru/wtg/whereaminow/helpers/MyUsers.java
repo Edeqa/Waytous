@@ -127,28 +127,24 @@ public class MyUsers {
     }
 
 
-    public int getCountSelected(){
-        final int[] count = {0};
-        forAllUsers(new Callback() {
-            @Override
-            public void call(Integer number, MyUser myUser) {
-                if(myUser.getProperties().isSelected() && myUser.isUser())
-                    count[0]++;
+    public int getCountActive(){
+        int count = 0;
+        for(Map.Entry<Integer,MyUser> x: users.entrySet()){
+            if(x.getValue().getProperties().isActive() && x.getValue().isUser()){
+                count ++;
             }
-        });
-        return count[0];
+        }
+        return count;
     }
 
-    public int getCountActive(){
-        final int[] count = {0};
-        forAllUsers(new Callback() {
-            @Override
-            public void call(Integer number, MyUser myUser) {
-                if(myUser.getProperties().isActive() && myUser.isUser())
-                    count[0]++;
+    public int getCountSelected(){
+        int count = 0;
+        for(Map.Entry<Integer,MyUser> x: users.entrySet()){
+            if(x.getValue().getProperties().isSelected() && x.getValue().isUser()){
+                count ++;
             }
-        });
-        return count[0];
+        }
+        return count;
     }
 
 }

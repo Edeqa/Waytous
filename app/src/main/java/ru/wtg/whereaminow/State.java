@@ -104,7 +104,7 @@ public class State extends MultiDexApplication {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         registerEntityHolder(new PropertiesHolder(this));
-//        registerEntityHolder(new LoggerHolder(this));
+//        registerEntityHolder(new LoggerHolder());
         registerEntityHolder(new MessagesHolder(this));
         registerEntityHolder(new NotificationHolder(this));
 

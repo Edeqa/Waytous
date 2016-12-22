@@ -1,8 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.SupportMapFragment;
@@ -15,10 +13,9 @@ import ru.wtg.whereaminow.helpers.MyUser;
  */
 public class MapButtonsViewHolder extends AbstractViewHolder {
 
-    public MapButtonsViewHolder(SupportMapFragment mapFragment, View svUsers) {
+    public MapButtonsViewHolder(SupportMapFragment mapFragment) {
 
         View myLocationButton  = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
-//        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(myLocationButton.getLayoutParams().width, myLocationButton.getLayoutParams().height);
 
         myLocationButton.setVisibility(View.VISIBLE);
         myLocationButton.setEnabled(true);
@@ -33,7 +30,6 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
         });
 
         View zoomButtons = (View) mapFragment.getView().findViewWithTag("GoogleMapZoomInButton").getParent();
-        View compass = (View) mapFragment.getView().findViewWithTag("GoogleMapCompass");
 
         int positionWidth = zoomButtons.getLayoutParams().width;
         int positionHeight = zoomButtons.getLayoutParams().height;
@@ -44,15 +40,6 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
         params.addRule(RelativeLayout.BELOW, myLocationButton.getId());
         params.addRule(RelativeLayout.ALIGN_LEFT, myLocationButton.getId());
         zoomButtons.setLayoutParams(params);
-
-
-/*
-
-        params = ((RelativeLayout.LayoutParams)svUsers.getLayoutParams());
-        params.addRule(RelativeLayout.ALIGN_RIGHT, compass.getId());
-        params.addRule(RelativeLayout.ALIGN_LEFT, zoomButtons.getId());
-        svUsers.setLayoutParams(params);
-*/
 
     }
 

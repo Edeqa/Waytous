@@ -98,7 +98,6 @@
     <string name="hide_tracks">Hide tracks</string>
     <string name="chat">Chat</string>
     <string name="set_welcome_message">Set welcome message</string>
-    <string name="hide_system_messages">Hide system messages</string>
 
 
 </resources>

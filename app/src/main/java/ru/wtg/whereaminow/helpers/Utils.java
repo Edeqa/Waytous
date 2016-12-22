@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 
@@ -102,59 +101,12 @@ public class Utils {
         int b = Color.blue(color);
         int a = Color.alpha(color);
 
-        if(true)
         return new float[] {
                 1, 0, 0, 0, r,
                 0, 1, 0, 0, g,
                 0, 0, 1, 0, b,
                 0, 0, 0, 1, 0
         };
-
-        switch (color) {
-            case Color.RED:
-                return new float[]{
-                        1, 0, 0, 0, 255, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.GREEN:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 255, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.BLUE:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 255, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.MAGENTA:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 255, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-            case Color.GRAY:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, .5f, 0 //alpha
-                };
-            default:
-                return new float[]{
-                        1, 0, 0, 0, 0, //red
-                        0, 1, 0, 0, 0, //green
-                        0, 0, 1, 0, 0, //blue
-                        0, 0, 0, 1, 0 //alpha
-                };
-
-        }
     }
 
     public static Location jsonToLocation(JSONObject json) throws JSONException {

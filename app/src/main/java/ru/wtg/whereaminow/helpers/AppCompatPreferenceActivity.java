@@ -1,4 +1,4 @@
-package ru.wtg.whereaminow;
+package ru.wtg.whereaminow.helpers;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

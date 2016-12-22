@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -38,7 +37,6 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.SavedLocation;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
-import ru.wtg.whereaminow.helpers.UserMessage;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
@@ -81,7 +79,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     private final AppCompatActivity context;
     private GoogleMap map;
     private SavedLocation.SavedLocationsAdapter adapter;
-    private boolean donotscroll = false;
 
     public SavedLocationsViewHolder(AppCompatActivity context) {
         this.context = context;
@@ -113,7 +110,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.menu_save_location, Menu.NONE, R.string.menu_save_location).setVisible(false).setOnMenuItemClickListener(onMenuItemClickListener);
 
-                optionsMenu.add(Menu.NONE, 1919191919, Menu.NONE, "Test location").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                /*optionsMenu.add(Menu.NONE, 1919191919, Menu.NONE, "Test location").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 //                        newMessage(State.getInstance().getMe(), false);
@@ -128,7 +125,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
                         return false;
                     }
-                });
+                });*/
 
 
                 break;
@@ -221,7 +218,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     }
 
 
-    OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
+    private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             if(State.getInstance().getUsers().getCountSelected() == 1) {
@@ -300,7 +297,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
         @Override
         public void onChangeLocation(Location location) {
-
         }
 
         @Override
@@ -326,9 +322,12 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         menu.add("Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-//                                int number = myUser.getProperties().getNumber() - 10000;
-//                                SavedLocation saved = SavedLocation.getItemByNumber(context, number);
-//                                editLocation(saved);
+                                int number = myUser.getProperties().getNumber() - 10000;
+
+//                                SavedLocation.getItemByPosition(position)
+                                System.out.println("NUMBER:"+number);
+                                SavedLocation saved = SavedLocation.getItemByNumber(number);
+                                editLocation(saved);
                                 return false;
                             }
                         });
@@ -367,8 +366,8 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                             myUser.fire(HIDE_SAVED_LOCATION);
                         }
                     });
-//                    SavedLocation saved = SavedLocation.getItemByNumber(context, myUser.getProperties().getNumber() - 10000);
-//                    if(saved != null) saved.deleteByItem(null);
+                    SavedLocation saved = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
+                    if(saved != null) SavedLocation.getDb().deleteById(saved.getNumber());
                     break;
             }
             return true;
@@ -390,29 +389,28 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         adapter.setOnLeftSwipeListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
+                reloadCursor();
                 editLocation(SavedLocation.getItemByPosition(position));
             }
         });
         adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
-//                SavedLocation.getDb().
+                SavedLocation savedLocation = SavedLocation.getItemByPosition(position);
                 SavedLocation.getDb().deleteByPosition(position);
-                adapter.notifyItemRemoved(position);
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        donotscroll = true;
-//                        updateDialog();
-                    }
-                }, 500);
-                /*State.getInstance().getUsers().forUser((int)(10000 + arg.getNumber()), new MyUsers.Callback() {
+                State.getInstance().getUsers().forUser((int)(10000 + savedLocation.getNumber()), new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.fire(DELETE_SAVED_LOCATION);
                     }
-                });*/
-
+                });
+                adapter.notifyItemRemoved(position);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        reloadCursor();
+                    }
+                }, 500);
             }
         });
 
@@ -420,8 +418,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             @Override
             public void call(Cursor cursor) {
                 dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
-                if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
-                donotscroll = false;
             }
         });
 
@@ -464,22 +460,16 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Close", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-//                dialog = null;
             }
         });
-        dialog.setOnCancelListener(null/*new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-//                dialog = null;
-            }
-        }*/);
+        dialog.setOnCancelListener(null);
         dialog.setView(content);
         dialog.show();
 
+        reloadCursor();
     }
 
-
-    private void updateDialog(){
+    private void reloadCursor(){
         context.getSupportLoaderManager().getLoader(1).forceLoad();
     }
 
@@ -500,10 +490,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(etTitle.getText().toString().length() > 0) {
                     savedLocation.setUsername(etTitle.getText().toString());
-                    savedLocation.save(context);
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
-                    }
                     State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
@@ -513,27 +499,21 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 }
                 if(etComment.getText().toString().length() > 0) {
                     savedLocation.setTitle(etComment.getText().toString());
-                    savedLocation.save(context);
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
-                    }
                 }
+                savedLocation.save(context);
+                reloadCursor();
             }
         });
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if(adapter != null) {
-                    adapter.notifyDataSetChanged();
-                }
+                reloadCursor();
             }
         });
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                if(adapter != null) {
-                    adapter.notifyDataSetChanged();
-                }
+                reloadCursor();
             }
         });
         dialog.setView(content);

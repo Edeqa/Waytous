@@ -7,4 +7,8 @@
         android:id="@+id/show_system_messages" />
     <item android:title="Clear messages"
         android:id="@+id/clear_messages" />
+    <item android:title="Transparent"
+        android:id="@+id/transparent" />
+    <item android:title="Opaque"
+        android:id="@+id/not_transparent" />
 </menu>

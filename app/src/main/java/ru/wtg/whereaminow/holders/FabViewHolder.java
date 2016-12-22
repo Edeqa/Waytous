@@ -53,7 +53,6 @@ public class FabViewHolder extends AbstractViewHolder {
         hide(false);
         close(false);
 
-//        fab_layout.findViewById(R.id.fab_main_button).getMenuIconView().setButtonView(R.drawable.ic_gps_off_white_24dp);
         fab = (FloatingActionButton) fab_layout.findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_gps_off_white_24dp);
         fab.setOnClickListener(onInitialClickListener);
@@ -67,9 +66,6 @@ public class FabViewHolder extends AbstractViewHolder {
         fab_buttons.removeAllViews();
 
         show(true);
-
-//        fab_layout.setClosedOnTouchOutside(true);
-//        fab_layout.setOnMenuButtonClickListener(onInitialClickListener);
 
         return this;
     }
@@ -104,7 +100,7 @@ public class FabViewHolder extends AbstractViewHolder {
                 context.startService(intentService);
                 break;
             case TRACKING_STOP:
-//                fab_layout.close(true);
+                close(true);
                 break;
             case ACTIVITY_RESUME:
                 hide(true);
@@ -180,7 +176,6 @@ public class FabViewHolder extends AbstractViewHolder {
     private OnClickListener onMainClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
-            System.out.println("FABMENUOPEN:"+isFabMenuOpen);
             if(isFabMenuOpen){
                 close(true);
             } else {
@@ -237,25 +232,6 @@ public class FabViewHolder extends AbstractViewHolder {
                     });
                     break;
             }
-
-            /*if (fab_layout.isOpened()) {
-                fab_layout.toggle(true);
-            } else {
-                if(State.getInstance().tracking()){
-                    fab_layout.removeAllMenuButtons();
-                    fab_layout.addMenuButton((FloatingActionButton) buttons.get(R.id.fab_send_link));
-                    if(State.getInstance().getUsers().getCountActive() > 1 && State.getInstance().getUsers().getCountSelected() < State.getInstance().getUsers().getCountActive()) {
-                        fab_layout.addMenuButton((FloatingActionButton) buttons.get(R.id.fab_fit_to_screen));
-                    }
-                    fab_layout.addMenuButton((FloatingActionButton) buttons.get(R.id.fab_new_message));
-                    fab_layout.addMenuButton((FloatingActionButton) buttons.get(R.id.fab_stop_tracking));
-                    State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
-                    fab_layout.toggle(true);
-                } else {
-                    State.getInstance().fire(TRACKING_NEW);
-                }
-            }*/
-
         }
     };
 

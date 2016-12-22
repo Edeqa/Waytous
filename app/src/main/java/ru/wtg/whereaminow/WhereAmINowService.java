@@ -47,7 +47,7 @@ public class WhereAmINowService extends Service {
 
         if("start".equals(mode)){
             try {
-                state.setTracking(new MyTracking(this));
+                state.setTracking(new MyTracking());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
@@ -60,7 +60,7 @@ public class WhereAmINowService extends Service {
             }
             try {
                 assert intent != null;
-                state.setTracking(new MyTracking(this,intent.getStringExtra("host")));
+                state.setTracking(new MyTracking(intent.getStringExtra("host")));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
