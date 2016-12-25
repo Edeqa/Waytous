@@ -1,6 +1,8 @@
 package ru.wtg.whereaminow.holders;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -56,6 +58,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public static final String SETUP_WELCOME_MESSAGE = "setup_welcome_message";
 
     private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messages_hide_system_messages";
+    private static final String PREFERENCE_FONT_SIZE = "messages_font_size";
     private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
 
     private final AppCompatActivity context;
@@ -68,6 +71,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private RecyclerView list;
     private boolean donotscroll;
     private boolean notTransparentWindow;
+    private Integer fontSize;
 
     public MessagesViewHolder(AppCompatActivity context) {
         this.context = context;
@@ -94,10 +98,20 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public boolean onEvent(String event, Object object) {
         switch (event) {
             case NEW_MESSAGE:
-                newMessage(null,false);
+                MyUser to = null;
+                if(object instanceof Integer) {
+                    to = State.getInstance().getUsers().getUsers().get((int) object);
+                } else if (object instanceof MyUser) {
+                    to = (MyUser) object;
+                }
+                newMessage(to,false);
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(1977);
                 break;
             case SHOW_MESSAGES:
                 showMessages();
+                notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(1977);
                 break;
             case TOKEN_CHANGED:
                 if(adapter != null){
@@ -209,7 +223,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         dialog.show();
     }
 
-    private void showMessages() {
+    public void showMessages() {
 
         dialog = new AlertDialog.Builder(context).create();
 
@@ -228,6 +242,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         }
         context.getSupportLoaderManager().initLoader(2, null, adapter);
         notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
+        fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
 
         ibMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,7 +250,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 PopupMenu popup = new PopupMenu(context, view);
                 context.getMenuInflater().inflate(R.menu.dialog_messages_menu, popup.getMenu());
 
-                 boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
+                boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
                 popup.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
                 popup.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
 
@@ -243,12 +258,22 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 popup.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);
                 popup.getMenu().findItem(R.id.not_transparent).setVisible(!notTransparentWindow);
 
+                fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
+                popup.getMenu().findItem(R.id.smaller_font).setVisible(true);
+                popup.getMenu().findItem(R.id.bigger_font).setVisible(true);
+                if(fontSize < 12) {
+                    popup.getMenu().findItem(R.id.smaller_font).setVisible(false);
+                } else if(fontSize > 24) {
+                    popup.getMenu().findItem(R.id.bigger_font).setVisible(false);
+                }
+
                 popup.show();
                 popup.setOnMenuItemClickListener(onDialogMenuItemClickListener);
 
             }
         });
 
+        adapter.setFontSize(fontSize);
         adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
@@ -517,6 +542,20 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, true);
                     notTransparentWindow = true;
                     makeDialogTransparent();
+                    break;
+                case R.id.smaller_font:
+                    fontSize -= 2;
+                    State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
+                    adapter.setFontSize(fontSize);
+                    adapter.notifyDataSetChanged();
+                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
+                    break;
+                case R.id.bigger_font:
+                    fontSize += 2;
+                    State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
+                    adapter.setFontSize(fontSize);
+                    adapter.notifyDataSetChanged();
+                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
                     break;
                 case R.id.clear_messages:
                     AlertDialog dialog = new AlertDialog.Builder(context).create();

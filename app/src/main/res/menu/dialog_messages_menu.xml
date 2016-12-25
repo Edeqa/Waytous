@@ -7,6 +7,10 @@
         android:id="@+id/show_system_messages" />
     <item android:title="Clear messages"
         android:id="@+id/clear_messages" />
+    <item android:title="Smaller font"
+        android:id="@+id/smaller_font" />
+    <item android:title="Bigger font"
+        android:id="@+id/bigger_font" />
     <item android:title="Transparent"
         android:id="@+id/transparent" />
     <item android:title="Opaque"

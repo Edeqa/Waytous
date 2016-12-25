@@ -19,6 +19,7 @@ import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.CHANGE_TYPE;
 import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
+import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
@@ -33,6 +34,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = "properties";
 
+    private HashMap<String, Serializable> external = new HashMap<>();
     private static final String SELECTED = "selected";
     private static final String IMAGE_RESOURCE = "image_resource";
 
@@ -63,18 +65,20 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                         if(value != null) {
                             if(value.containsKey(SELECTED)) {
                                 if(value.get(SELECTED) != null && (boolean)value.get(SELECTED)) {
-                                    myUser.fire(SELECT_USER, 0);
+                                    myUser.getProperties().selected = true;
+//                                    myUser.fire(SELECT_USER, 0);
                                 }
                             }
                             if(value.containsKey(IMAGE_RESOURCE)) {
                                 if(value.get(IMAGE_RESOURCE) != null) {
-                                    myUser.getProperties().setButtonView((int) value.get(IMAGE_RESOURCE));
+                                    myUser.getProperties().imageResource = (int) value.get(IMAGE_RESOURCE);
+//                                    myUser.getProperties().setButtonView((int) value.get(IMAGE_RESOURCE));
                                 }
                             }
                         }
                     }
                 });
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                /*State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> value = (HashMap<String, Serializable>) myUser.getProperties().loadFor(TYPE);
@@ -86,7 +90,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                             }
                         }
                     }
-                });
+                });*/
 
                 break;
             case ACTIVITY_PAUSE:
@@ -106,6 +110,29 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         }
         return true;
     }
+
+    public void saveFor(String type, Serializable props) {
+        if (props == null) {
+            external.remove(type);
+            sharedPreferences.edit().remove(type).apply();
+        } else {
+            external.put(type, props);
+            sharedPreferences.edit().putString(type, Utils.serializeToString(props)).apply();
+        }
+    }
+
+    public Serializable loadFor(String type){
+        if(external.containsKey(type)){
+            return external.get(type);
+        } else {
+            String saved = sharedPreferences.getString(type, null);
+            if(saved != null){
+                return (Serializable) Utils.deserializeFromString(saved);
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public Properties create(MyUser myUser) {
@@ -138,19 +165,30 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                 case SELECT_USER:
                     selected = true;
                     break;
+                case SELECT_SINGLE_USER:
+                    State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                        @Override
+                        public void call(Integer number, MyUser myUser) {
+                            myUser.getProperties().selected = false;
+                        }
+                    });
+                    myUser.fire(SELECT_USER);
+                    State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                        @Override
+                        public void call(Integer number, MyUser user) {
+                            if(user != myUser) user.fire(UNSELECT_USER);
+                        }
+                    });
+                    break;
                 case UNSELECT_USER:
                     selected = false;
                     break;
                 case MAKE_ACTIVE:
                     active = true;
-                    if(selected){
-                        myUser.fire(SELECT_USER, 0);
-                    }
                     break;
                 case MAKE_INACTIVE:
                     active = false;
                     selected = false;
-                    myUser.fire(UNSELECT_USER, 0);
                     break;
                 case CHANGE_NUMBER:
                     number = (int) object;
@@ -210,8 +248,13 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         }
 
         public void saveFor(String type, Serializable props) {
-            external.put(type, props);
-            sharedPreferences.edit().putString(type + "_" + myUser.getProperties().getNumber(), Utils.serializeToString(props)).apply();
+            if(props == null) {
+                external.remove(type);
+                sharedPreferences.edit().remove(type + "_" + myUser.getProperties().getNumber()).apply();
+            } else {
+                external.put(type, props);
+                sharedPreferences.edit().putString(type + "_" + myUser.getProperties().getNumber(), Utils.serializeToString(props)).apply();
+            }
         }
 
         public Serializable loadFor(String type){

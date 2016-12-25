@@ -19,11 +19,13 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TOKEN_CREATED;
 import static ru.wtg.whereaminow.State.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 
 /**
@@ -99,9 +101,6 @@ public class FabViewHolder extends AbstractViewHolder {
                 intentService.putExtra("mode", "start");
                 context.startService(intentService);
                 break;
-            case TRACKING_STOP:
-                close(true);
-                break;
             case ACTIVITY_RESUME:
                 hide(true);
                 fab.setImageResource(R.drawable.ic_add_white_24dp);
@@ -111,6 +110,12 @@ public class FabViewHolder extends AbstractViewHolder {
             case TOKEN_CREATED:
                 new InviteSender(context).send("https://" + State.getInstance().getTracking().getHost() + ":8080/track/" + State.getInstance().getToken());
                 break;
+        }
+        switch(event){
+            case PREPARE_FAB:
+                break;
+            default:
+                close(true);
         }
         return true;
     }
@@ -226,7 +231,7 @@ public class FabViewHolder extends AbstractViewHolder {
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             if(myUser.getProperties().isActive()) {
-                                myUser.fire(SELECT_USER, 0);
+                                myUser.fire(SELECT_USER);
                             }
                         }
                     });

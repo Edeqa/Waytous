@@ -1,5 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -150,10 +151,10 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                         points = getTrail();
                     }
 
+                    final Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
                     new SmoothInterpolated(new SimpleCallback<Float[]>() {
                         @Override
                         public void call(Float[] value) {
-                            Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
                             LatLng current = new LatLng(
                                     startPosition.getLatitude()*(1-value[TIME_ELAPSED])+location.getLatitude()*value[TIME_ELAPSED],
                                     startPosition.getLongitude()*(1-value[TIME_ELAPSED])+location.getLongitude()*value[TIME_ELAPSED]);
@@ -206,7 +207,13 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                     myUser.getProperties().saveFor(TYPE, showtrack);
 
                     if(track != null) break;
-                    track = map.addPolyline(new PolylineOptions().width(10).color(myUser.getProperties().getColor()).geodesic(true).zIndex(100f));
+
+                    float density = State.getInstance().getResources().getDisplayMetrics().density;
+                    float width = (int) (10 * density);
+
+                    int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0x77000000;
+
+                    track = map.addPolyline(new PolylineOptions().width(width).color(color).geodesic(true).zIndex(100f));
                     points = getTrail();
                     track.setPoints(points);
 

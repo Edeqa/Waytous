@@ -199,7 +199,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.createViews();
-                                myUser.fire(SELECT_USER, 0);
+                                myUser.fire(SELECT_USER);
                             }
                         });
 

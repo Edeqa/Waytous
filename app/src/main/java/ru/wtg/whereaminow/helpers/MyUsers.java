@@ -130,7 +130,7 @@ public class MyUsers {
     public int getCountActive(){
         int count = 0;
         for(Map.Entry<Integer,MyUser> x: users.entrySet()){
-            if(x.getValue().getProperties().isActive() && x.getValue().isUser()){
+            if(x.getValue().getProperties().isActive() && (x.getValue().isUser() || x.getValue().getProperties().getNumber() == myNumber)){
                 count ++;
             }
         }
@@ -140,7 +140,17 @@ public class MyUsers {
     public int getCountSelected(){
         int count = 0;
         for(Map.Entry<Integer,MyUser> x: users.entrySet()){
-            if(x.getValue().getProperties().isSelected() && x.getValue().isUser()){
+            if(x.getValue().getProperties().isSelected() && (x.getValue().isUser() || x.getValue().getProperties().getNumber() == myNumber)){
+                count ++;
+            }
+        }
+        return count;
+    }
+
+    public int getCountAllSelected(){
+        int count = 0;
+        for(Map.Entry<Integer,MyUser> x: users.entrySet()){
+            if(x.getValue().getProperties().isSelected()){
                 count ++;
             }
         }

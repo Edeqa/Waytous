@@ -98,6 +98,10 @@
     <string name="hide_tracks">Hide tracks</string>
     <string name="chat">Chat</string>
     <string name="set_welcome_message">Set welcome message</string>
+    <string name="show_distantions">Show distantions</string>
+    <string name="hide_distantions">Hide distantions</string>
+    <string name="show_street_view">Show street view</string>
+    <string name="hide_street_view">Hide street view</string>
 
 
 </resources>

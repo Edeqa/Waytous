@@ -3,6 +3,7 @@ package ru.wtg.whereaminow.service_helpers;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
@@ -15,6 +16,8 @@ import java.util.Date;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.Utils;
 
+import static org.java_websocket.WebSocket.READYSTATE.CLOSED;
+import static org.java_websocket.WebSocket.READYSTATE.OPEN;
 import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -43,6 +46,8 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
  * Created 10/2/16.
  */
 public class MyWebSocketClient {
+
+    private final static int PING_DELAY = 600;
 
     private URI uri;
     private WebSocketClient webSocketClient;
@@ -218,6 +223,7 @@ public class MyWebSocketClient {
                 .putString(TRACKING_URI, uri.toString()).apply();
         System.out.println("PUTURI:"+uri.toString());
         System.out.println("PUTTOKEN:"+getToken());
+        new Thread(new PingTask(this)).start();
         tracking.fromServer(o);
     }
 
@@ -331,6 +337,33 @@ public class MyWebSocketClient {
     public void start() {
         webSocketClient = new MWebSocketClient(uri);
         webSocketClient.connect();
+    }
+
+    private class PingTask implements Runnable {
+        private final MyWebSocketClient client;
+
+        PingTask(MyWebSocketClient client) {
+            this.client = client;
+        }
+        @Override
+        public void run() {
+            System.out.println("PING STARTED");
+            while(true) {
+                if (client.webSocketClient.getReadyState() == CLOSED) {
+                    return;
+                }
+
+                if (client.webSocketClient.getReadyState() == OPEN) {
+                    client.sendUpdate();
+                }
+
+                try {
+                    Thread.sleep(PING_DELAY * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

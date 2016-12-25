@@ -69,7 +69,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             switch(event){
                 case SELECT_USER:
                 case UNSELECT_USER:
-                    if(State.getInstance().getUsers().getCountSelected() > 1){
+                    if(State.getInstance().getUsers().getCountAllSelected() > 1){
                         callback.call(null);
                         return true;
                     } else {
@@ -82,7 +82,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         }
 
         private void resolveAddress(final Location location) {
-            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountSelected() > 1){
+            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountAllSelected() > 1){
                 return;
             }
             new Thread(new Runnable() {
