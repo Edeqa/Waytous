@@ -17,6 +17,9 @@ import ru.wtg.whereaminow.helpers.NavigationStarter;
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 
 /**
  * Created 11/18/16.
@@ -25,6 +28,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     private static final String TYPE = "menu";
 
     private final Activity context;
+    private boolean day = true;
 
     public MenuViewHolder(Activity context) {
         this.context = context;
@@ -51,6 +55,15 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         switch(event){
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
+                if(DEBUGGING) {
+                    optionsMenu.add("Switch day/night mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            State.getInstance().fire((day = !day) ? REQUEST_MODE_DAY : REQUEST_MODE_NIGHT);
+                            return true;
+                        }
+                    });
+                }
                 optionsMenu.add("Set my name").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {

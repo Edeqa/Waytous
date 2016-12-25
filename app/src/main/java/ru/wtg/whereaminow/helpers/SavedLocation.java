@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 
 import ru.wtg.whereaminow.R;
@@ -102,6 +104,13 @@ public class SavedLocation extends AbstractSavedItem {
         return address;
     }
 
+    public String getShortAddress() {
+        String[] parts = address.split(", ");
+        int max = 3;
+        if(parts.length<max) max = parts.length;
+        return TextUtils.join(", ", Arrays.copyOfRange(parts, 0, max));
+    }
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -177,8 +186,24 @@ public class SavedLocation extends AbstractSavedItem {
 //                final ViewHolder holder = (ViewHolder) viewHolder;
                 holder.tvUsername.setText(item.getUsername());
                 holder.tvTimestamp.setText(new Date(item.getTimestamp()).toString());
-                holder.tvAddress.setText(item.getAddress());
-                holder.tvComment.setText(item.getTitle());
+
+                if(item.getAddress() != null && item.getAddress().length() > 0) {
+                    holder.tvAddressShort.setText(item.getShortAddress());
+                    holder.tvAddress.setText(item.getAddress());
+                    holder.tvAddressShort.setVisibility(View.VISIBLE);
+                    holder.tvAddress.setVisibility(View.GONE);
+                } else {
+                    holder.tvAddressShort.setVisibility(View.GONE);
+                    holder.tvAddress.setVisibility(View.GONE);
+                }
+
+                if(item.getTitle() != null && item.getTitle().length() > 0) {
+                    holder.tvComment.setText(item.getTitle());
+                    holder.tvComment.setVisibility(View.VISIBLE);
+                    holder.tvComment.setMaxLines(3);
+                } else {
+                    holder.tvComment.setVisibility(View.GONE);
+                }
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -221,6 +246,27 @@ public class SavedLocation extends AbstractSavedItem {
                     }
                 });
 
+                holder.ibExpand.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder.ibExpand.setVisibility(View.INVISIBLE);
+                        holder.ibCollapse.setVisibility(View.VISIBLE);
+                        holder.tvAddressShort.setVisibility(View.GONE);
+                        holder.tvAddress.setVisibility(View.VISIBLE);
+                        holder.tvComment.setMaxLines(1000);
+                    }
+                });
+                holder.ibCollapse.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder.ibExpand.setVisibility(View.VISIBLE);
+                        holder.ibCollapse.setVisibility(View.INVISIBLE);
+                        holder.tvAddressShort.setVisibility(View.VISIBLE);
+                        holder.tvAddress.setVisibility(View.GONE);
+                        holder.tvComment.setMaxLines(3);
+                    }
+                });
+
             } catch(Exception e){e.printStackTrace();}
         }
 
@@ -233,17 +279,23 @@ public class SavedLocation extends AbstractSavedItem {
 
             private final TextView tvTimestamp;
             private final TextView tvAddress;
+            private final TextView tvAddressShort;
             private final TextView tvUsername;
             private final TextView tvComment;
             private final ImageButton ibImage;
+            private final ImageButton ibExpand;
+            private final ImageButton ibCollapse;
 
             private ViewHolder(View view) {
                 super(view);
                 tvUsername = (TextView) view.findViewById(R.id.tv_saved_location_username);
                 tvTimestamp = (TextView) view.findViewById(R.id.tv_saved_location_timestamp);
+                tvAddressShort = (TextView) view.findViewById(R.id.tv_saved_location_address_short);
                 tvAddress = (TextView) view.findViewById(R.id.tv_saved_location_address);
                 tvComment = (TextView) view.findViewById(R.id.tv_saved_location_comment);
                 ibImage = (ImageButton) view.findViewById(R.id.ib_saved_location_image);
+                ibExpand = (ImageButton) view.findViewById(R.id.ib_expand_address);
+                ibCollapse = (ImageButton) view.findViewById(R.id.ib_collapse_address);
             }
         }
 

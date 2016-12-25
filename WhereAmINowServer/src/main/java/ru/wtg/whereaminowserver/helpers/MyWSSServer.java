@@ -75,7 +75,7 @@ public class MyWssServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
 //        this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
-        System.out.println("WSS:ONOPEN:" + conn.getRemoteSocketAddress() + " connected");
+        System.out.println("WSS:on open:" + conn.getRemoteSocketAddress() + " connected");
 
         conn.send("{\""+ RESPONSE_STATUS +"\":\""+ RESPONSE_STATUS_CONNECTED +"\"}");
 
@@ -84,6 +84,7 @@ public class MyWssServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected");
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
         if(ipToToken.containsKey(ip)){
@@ -114,12 +115,11 @@ public class MyWssServer extends WebSocketServer {
         if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
         if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
 
-        System.out.println("WSS:ONCLOSE:" + conn.getRemoteSocketAddress() + " disconnected");
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("WSS:FROM:" + conn.getRemoteSocketAddress() + ": " + message);
+        System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);
 
         String ip = conn.getRemoteSocketAddress().toString();
         JSONObject request, response = new JSONObject();
@@ -155,16 +155,16 @@ public class MyWssServer extends WebSocketServer {
 
                 ipToToken.put(ip, token);
                 ipToUser.put(ip, user);
-                System.out.println("WSS:TOKEN:" + token);
+                System.out.println("NEW:token created and accepted:" + token);
 
             } else {
                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                 response.put(RESPONSE_MESSAGE, "Your device id is not defined");
             }
 
-            System.out.println("WSS:NEW_TOKEN:TO:" + response);
+            System.out.println("NEW:response:" + response);
 
-            Utils.pause(2);//FIXME remove pause
+//            Utils.pause(2);//FIXME remove pause
 
             conn.send(response.toString());
         } else if(REQUEST_JOIN_TOKEN.equals(req)){
@@ -239,24 +239,24 @@ public class MyWssServer extends WebSocketServer {
                 response.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
             }
             conn.send(response.toString());
-            System.out.println("WSS:JOIN_TOKEN:TO:" + response);
+            System.out.println("JOIN:response:" + response);
         } else if(REQUEST_CHECK_USER.equals(req)){
             if(request.has(REQUEST_HASH)) {
                 String hash = request.getString((REQUEST_HASH));
-                System.out.println(("HASH:"+hash+":"+ipToCheck));
+                System.out.println(("CHECK:hash:"+hash+":"+ipToCheck));
                 if(ipToCheck.containsKey(ip)){
                     CheckReq check = ipToCheck.get(ip);
 
                     MyUser user = null;
                     for(Map.Entry<String,MyUser> x:check.token.users.entrySet()){
-                        System.out.println("CHECK:"+check.control+":"+x.getValue().getDeviceId()+":"+x.getValue().calculateHash(check.control));
+                        System.out.println("CHECK:looking for:"+check.control+":"+x.getValue().getDeviceId()+":"+x.getValue().calculateHash(check.control));
                         if(hash.equals(x.getValue().calculateHash(check.control))){
                             user = x.getValue();
                             break;
                         }
                     }
                     if(user != null) {
-                        System.out.println("USER ACCEPTED:"+user);
+                        System.out.println("CHECK:user accepted:"+user);
                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
                         response.put(RESPONSE_NUMBER, user.getNumber());
                         user.setConnection(conn);
@@ -282,7 +282,7 @@ public class MyWssServer extends WebSocketServer {
 //                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
 //                            response.put(RESPONSE_MESSAGE, "User not granted.");
                     } else {
-                        System.out.println("USER NOT ACCEPTED:"+hash);
+                        System.out.println("CHECK:user not accepted for hash:"+hash);
                         if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
                         if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
 
@@ -300,7 +300,7 @@ public class MyWssServer extends WebSocketServer {
                 response.put(RESPONSE_MESSAGE, "Cannot join to tracking (hash not defined).");
             }
 
-            System.out.println("WSS:CHECK_USER:TO:" + response);
+            System.out.println("CHECK:response:" + response);
             Utils.pause(2);//FIXME remove pause
             conn.send(response.toString());
         } else if(REQUEST_UPDATE.equals(req)) {
@@ -308,42 +308,50 @@ public class MyWssServer extends WebSocketServer {
                 MyToken token = ipToToken.get(ip);
                 MyUser user = ipToUser.get(ip);
 
+                System.out.println("UPDATE:token and user found:" + token.getId() + ":" + user);
+
                 JSONObject o = new JSONObject();
                 if(request.has(USER_NAME)){
                     o.put(USER_NAME,request.getString(USER_NAME));
                     user.setName(request.getString(USER_NAME));
                     token.setChanged();
+                    System.out.println("UPDATE:name changed to:"+request.getString(USER_NAME));
                 }
                 if(request.has(USER_PROVIDER)){
                     user.addPosition(request);
                     token.setChanged();
                     o = user.getPosition().toJSON();
+                    System.out.println("UPDATE:location changed:"+o);
                 }
                 if(request.has(USER_MESSAGE)){
                     o.put(USER_MESSAGE,request.getString(USER_MESSAGE));
+                    System.out.println("UPDATE:user message:"+request.getString(USER_MESSAGE));
                 }
                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
                 if(request.has(RESPONSE_PRIVATE)) {
                     o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
                     token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                    System.out.println("UPDATE:private message to user:"+request.getInt(RESPONSE_PRIVATE));
                 } else if(request.has(RESPONSE_WELCOME_MESSAGE)) {
                     String text = request.getString(RESPONSE_WELCOME_MESSAGE);
                     if(user.getNumber() == 0 && text != null) {
                         token.setWelcomeMessage(text);
                     }
+                    System.out.println("UPDATE:welcome message:"+request.getString(RESPONSE_WELCOME_MESSAGE));
+                } else if (o.length() <= 2) {
+                    System.out.println("UPDATE:ping");
                 } else {
                     token.sendToAllFrom(o, user);
+//                    System.out.println("UPDATE:send update:"+o);
                 }
 
-                System.out.println("REQUEST_UPDATE:TOKEN AND USER FOUND:" + token.getId() + ":" + user);
             } else {
-                System.out.println("REQUEST_UPDATE:TOKEN NOT FOUND");
+                System.out.println("UPDATE:token not found");
                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                 response.put(RESPONSE_MESSAGE, "Tracking not exists.");
                 conn.send(response.toString());
                 conn.close();
             }
-//        this.sendToAll(message, conn);
         }
     }
 
@@ -351,7 +359,7 @@ public class MyWssServer extends WebSocketServer {
     public void onError(WebSocket conn, Exception ex) {
         ex.printStackTrace();
         if (conn != null) {
-            System.out.println("WSS:ONERROR:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
+            System.out.println("WSS:on error:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
 
             String ip = conn.getRemoteSocketAddress().toString();
             if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
@@ -371,7 +379,7 @@ public class MyWssServer extends WebSocketServer {
         synchronized (con) {
             for (WebSocket c : con) {
                 if (insteadConnection != null && c == insteadConnection) continue;
-                System.out.println("WSS:TO:" + c.getRemoteSocketAddress() + ":" + text);
+                System.out.println("WSS:to:" + c.getRemoteSocketAddress() + ":" + text);
                 c.send(text);
             }
         }

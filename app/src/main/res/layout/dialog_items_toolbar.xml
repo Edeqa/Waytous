@@ -26,5 +26,5 @@
         android:id="@+id/ib_dialog_items_menu"
         android:background="@android:color/transparent"
         android:layout_gravity="right|center_vertical|end"
-        />
+        android:paddingLeft="40dp" />
 </LinearLayout>

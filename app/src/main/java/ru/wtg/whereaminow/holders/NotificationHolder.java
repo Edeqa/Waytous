@@ -64,15 +64,15 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
+                PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0);
 
                 notification = new NotificationCompat.Builder(state)
                         .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
                         .setSmallIcon(R.drawable.ic_navigation_twinks_white)
                         .setAutoCancel(true)
-                        .addAction(R.drawable.ic_navigation_twinks_white, "View", pendingIntent)
                         .setContentTitle("Creating group...")
-                        .addAction(R.drawable.ic_clear_white, "Stop",
-                                PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0))
+                        .addAction(R.drawable.ic_navigation_twinks_white, "View", pendingIntent)
+                        .addAction(R.drawable.ic_clear_white, "Stop", pendingStopIntent)
                         .setContentIntent(pendingIntent)
                         .setPriority(Notification.PRIORITY_HIGH);
 
@@ -124,6 +124,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             notification.setDefaults(Notification.DEFAULT_LIGHTS);
             notification.setPriority(Notification.PRIORITY_DEFAULT);
         }
+
         notification.setContentTitle(state.getUsers().getCountActive() + " user(s) active.");
         if(text != null) {
             notification.setContentText(text);
@@ -145,12 +146,12 @@ public class NotificationHolder extends AbstractPropertyHolder {
         @Override
         public boolean onEvent(String event, Object object) {
             switch (event) {
-                case USER_MESSAGE:
-                case PRIVATE_MESSAGE:
-                    String text = (String) object;
+//                case USER_MESSAGE:
+//                case PRIVATE_MESSAGE:
+ /*                   String text = (String) object;
                     update(myUser.getProperties().getDisplayName() + ": "+ text);
                     break;
-
+*/
 
             }
             return true;

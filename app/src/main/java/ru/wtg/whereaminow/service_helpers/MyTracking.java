@@ -185,7 +185,7 @@ public class MyTracking {
                     if(!state.disconnected()) {
                         state.fire(CONNECTION_DISCONNECTED, o.has(RESPONSE_MESSAGE) ? o.getString(RESPONSE_MESSAGE) : null);
                     }
-                    state.getMe().fire(SELECT_USER, 0);
+                    state.getMe().fire(SELECT_USER);
                     break;
                 case RESPONSE_STATUS_ACCEPTED:
                     setStatus(TRACKING_ACTIVE);
@@ -295,7 +295,7 @@ public class MyTracking {
                     SmartLocation.with(state).location().stop();
                     state.getUsers().removeAllUsersExceptMe();
                     setStatus(TRACKING_DISABLED);
-                    state.getMe().fire(SELECT_USER, 0);
+                    state.getMe().fire(SELECT_USER);
                     state.getService().stopForeground(true);
 
                     state.setToken(null);

@@ -44,6 +44,7 @@ public class State extends MultiDexApplication {
     public static final int API = 1;
 
     public static final String SELECT_USER = "select";
+    public static final String SELECT_SINGLE_USER = "select_single";
     public static final String UNSELECT_USER = "unselect";
     public static final String MAKE_ACTIVE = "make_active";
     public static final String MAKE_INACTIVE = "make_inactive";
@@ -248,6 +249,10 @@ public class State extends MultiDexApplication {
         return sharedPreferences.getBoolean(key,defaultValue);
     }
 
+    public Integer getIntegerPreference(String key, int defaultValue){
+        return sharedPreferences.getInt(key,defaultValue);
+    }
+
     public void setPreference(String key, String value){
         if(value != null && value.length()>0){
             sharedPreferences.edit().putString(key,value).apply();
@@ -259,6 +264,14 @@ public class State extends MultiDexApplication {
     public void setPreference(String key, boolean value){
         if(value){
             sharedPreferences.edit().putBoolean(key,value).apply();
+        } else {
+            sharedPreferences.edit().remove(key).apply();
+        }
+    }
+
+    public void setPreference(String key, int value){
+        if(value > 0){
+            sharedPreferences.edit().putInt(key,value).apply();
         } else {
             sharedPreferences.edit().remove(key).apply();
         }

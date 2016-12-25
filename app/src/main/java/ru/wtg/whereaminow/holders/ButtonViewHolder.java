@@ -18,6 +18,7 @@ import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
+import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
@@ -177,15 +178,17 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     myUser.fire(ADJUST_ZOOM);
                     clicked = false;
                 } else {
-                    myUser.fire(SELECT_USER, 0);
+                    myUser.fire(SELECT_SINGLE_USER);
+/*
                     State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser user) {
                             if(user != myUser) {
-                                user.fire(UNSELECT_USER);
+                                user.fire(UNSELECT_USER, 0);
                             }
                         }
                     });
+*/
                     clicked = true;
                     new Handler().postDelayed(new Runnable() {
                         @Override

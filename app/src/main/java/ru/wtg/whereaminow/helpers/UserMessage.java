@@ -113,6 +113,8 @@ public class UserMessage extends AbstractSavedItem {
 
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
 
+        private Integer fontSize;
+
         public UserMessagesAdapter(Context context, RecyclerView list) {
             super(context, list);
         }
@@ -139,8 +141,10 @@ public class UserMessage extends AbstractSavedItem {
                 }
 
                 holder.tvUsername.setText(title);
+                holder.tvUsername.setTextSize(fontSize);
                 holder.tvTimestamp.setText(item.getTimestamp().toString());
                 holder.tvMessageBody.setText(item.getBody());
+                holder.tvMessageBody.setTextSize(fontSize);
 
                 switch(item.getType()){
                     case TYPE_MESSAGE:
@@ -201,6 +205,10 @@ public class UserMessage extends AbstractSavedItem {
                 }
 
             }catch(Exception e){e.printStackTrace();}
+        }
+
+        public void setFontSize(Integer fontSize) {
+            this.fontSize = fontSize;
         }
 
         class UserMessageViewHolder extends RecyclerView.ViewHolder {

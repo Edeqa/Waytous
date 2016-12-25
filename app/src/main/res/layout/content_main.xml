@@ -5,6 +5,7 @@
     android:id="@+id/layout_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:paddingBottom="0dp"
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
@@ -13,35 +14,65 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <RelativeLayout
+        android:id="@+id/street_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/black"
+        android:visibility="gone">
+
+        <fragment
+            android:id="@+id/streetView"
+            android:name="com.google.android.gms.maps.SupportStreetViewPanoramaFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/ib_street_view_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            app:srcCompat="@drawable/ic_clear_black_24dp" />
+    </RelativeLayout>
+
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@android:layout/simple_gallery_item"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/street_view_layout"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        tools:layout="@android:layout/simple_gallery_item" />
 
     <HorizontalScrollView
+        android:id="@+id/sv_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
         android:layout_marginLeft="@dimen/material_button_fab_size"
         android:layout_marginRight="@dimen/material_button_fab_size"
-        android:id="@+id/sv_users"
-        android:requiresFadingEdge="horizontal"
-        android:fadingEdgeLength="@dimen/material_list_icon_size">
+        android:layout_marginTop="5dp"
+        android:fadingEdgeLength="@dimen/material_list_icon_size"
+        android:requiresFadingEdge="horizontal">
 
         <LinearLayout
             android:id="@+id/layout_users"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
 
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
     </HorizontalScrollView>
 
@@ -49,11 +80,11 @@
         android:id="@+id/scale_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/map"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="24dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"/>
+        android:layout_marginStart="4dp" />
 
 </RelativeLayout>

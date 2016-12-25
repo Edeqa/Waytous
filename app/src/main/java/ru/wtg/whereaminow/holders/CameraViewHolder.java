@@ -3,7 +3,11 @@ package ru.wtg.whereaminow.holders;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdate;
@@ -14,20 +18,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.Serializable;
+import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
@@ -60,31 +69,17 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private final static String ORIENTATION = "orientation";
     private final static String PREVIOUS_ORIENTATION = "previous_orientation";
 
-    private static ArrayList<CameraViewHolder> instance = new ArrayList<>();
-
     private final AppCompatActivity context;
     private CameraUpdateView cameraUpdate;
     private MapScaleView scaleView;
     private GoogleMap map;
-    private int cameraNumber;
     private int padding;
     private boolean moveFromHardware = false;
     private boolean canceled = false;
 
-    private CameraViewHolder(AppCompatActivity context) {
+    public CameraViewHolder(AppCompatActivity context) {
         this.context = context;
         padding = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
-    }
-
-    public static CameraViewHolder getInstance(AppCompatActivity context, int number) {
-        if (instance.size() > number) {
-            return instance.get(number);
-        } else {
-            CameraViewHolder holder = new CameraViewHolder(context);
-            holder.setCameraNumber(number);
-            instance.add(number, holder);
-            return holder;
-        }
     }
 
     @Override
@@ -98,10 +93,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         return new CameraUpdateView(myUser);
     }
 
-    private void setCameraNumber(int cameraNumber) {
-        this.cameraNumber = cameraNumber;
-    }
-
     @Override
     public boolean dependsOnEvent() {
         return true;
@@ -111,10 +102,23 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     public boolean onEvent(String event, Object object) {
         switch(event){
             case REQUEST_MODE_DAY:
-//                scaleView.
+//                scaleView.getForegroundTintMode()
+                break;
+            case REQUEST_MODE_NIGHT:
                 break;
             case UPDATE_CAMERA:
-                update(false);
+                if(State.getInstance().getUsers().getCountAllSelected()==0){
+                    State.getInstance().getMe().fire(SELECT_USER);
+                }
+                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
+                            setCameraUpdate((CameraUpdateView) myUser.getEntity(CameraViewHolder.TYPE));
+                            update(false);
+                        }
+                    }
+                });
                 break;
         }
         return true;
@@ -124,7 +128,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         if(cameraUpdate == null) return;
         CameraUpdate camera;
         MyUser user;
-        if(State.getInstance().getUsers().getCountSelected()>1){
+        if(State.getInstance().getUsers().getCountAllSelected()>1){
             double lat1=0f,lat2=0f,lng1=0f,lng2=0f;
             //noinspection LoopStatementThatDoesntLoop
             for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
@@ -190,7 +194,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         return this;
     }
 
-    @SuppressWarnings("unchecked")
+     @SuppressWarnings("unchecked")
     class CameraUpdateView extends AbstractView implements Serializable{
 
         static final long serialVersionUID =-6395904747332820026L;
@@ -239,7 +243,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             position.target(new LatLng(latitude, longitude));
 
             if(myUser.getProperties().isSelected()) {
-                myUser.fire(SELECT_USER, cameraNumber);
+                myUser.fire(SELECT_USER);
             }
         }
 
@@ -270,11 +274,17 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             this.location = location;
             switch (orientation){
                 case CAMERA_ORIENTATION_NORTH:
+                    if(orientationChanged) {
+                        scaleView.setVisibility(View.VISIBLE);
+                    }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(0);
                     position.tilt(0);
                     break;
                 case CAMERA_ORIENTATION_DIRECTION:
+                    if(orientationChanged) {
+                        scaleView.setVisibility(View.VISIBLE);
+                    }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(location.getBearing());
                     position.tilt(0);
@@ -282,6 +292,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 case CAMERA_ORIENTATION_PERSPECTIVE:
                     if(orientationChanged) {
                         position.tilt(60);
+                        scaleView.setVisibility(View.INVISIBLE);
                     }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(location.getBearing());
@@ -311,19 +322,21 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         public boolean onEvent(String event, Object object) {
             switch (event) {
                 case SELECT_USER:
-                    if(object != null && (int) object == cameraNumber) {
                         orientation = previousOrientation;
                         orientationChanged = true;
                         onChangeLocation(myUser.getLocation());
-                    }
                     break;
                 case UNSELECT_USER:
+                    if(State.getInstance().getUsers().getCountAllSelected()==0){
+                        State.getInstance().getMe().fire(SELECT_USER);
+                    }
+
                     if(State.getInstance().getUsers().getCountSelected()==1){
                         State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                             @Override
                             public void call(Integer number, MyUser user) {
                                 if(user.getProperties().isSelected()) {
-                                    user.fire(SELECT_USER, cameraNumber);
+                                    user.fire(SELECT_USER);
                                 }
                             }
                         });
@@ -354,7 +367,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         menu.add("Pin").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                myUser.fire(SELECT_USER, cameraNumber);
+                                myUser.fire(SELECT_USER);
                                 return false;
                             }
                         });
@@ -362,7 +375,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         menu.add("Unpin").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                myUser.fire(UNSELECT_USER);
+                                myUser.fire(UNSELECT_USER, 0);
                                 return false;
                             }
                         });
@@ -473,7 +486,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //            System.out.println("onMyLocationButtonClick");
             if(cameraUpdate == null) return false;
             State.getInstance().fire(REQUEST_LOCATION_SINGLE);
-            cameraUpdate.myUser.fire(SELECT_USER,cameraNumber);
+            cameraUpdate.myUser.fire(SELECT_USER);
             return false;
         }
     };

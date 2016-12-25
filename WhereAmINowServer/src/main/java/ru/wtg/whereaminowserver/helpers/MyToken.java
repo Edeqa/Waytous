@@ -140,7 +140,7 @@ public class MyToken {
                 dest.add(x.getValue());
             }
         }
-        System.out.println("SENDTOALL:"+o);
+        System.out.println("SEND:to all:"+o);
         sendToUsers(o,dest);
 
     }
@@ -154,7 +154,7 @@ public class MyToken {
             }
         }
         o.put(USER_NUMBER,fromUser.getNumber());
-        System.out.println("SENDTOUSER:"+toUserNumber+":"+o);
+        System.out.println("SEND:to user:"+toUserNumber+":"+o);
         sendToUsers(o,dest);
     }
 
@@ -162,7 +162,7 @@ public class MyToken {
         ArrayList<MyUser> dest = new ArrayList<MyUser>();
         dest.add(toUser);
         o.put(USER_NUMBER,fromUser.getNumber());
-        System.out.println("SENDTOUSER:"+toUser.getName()+":"+o);
+        System.out.println("SEND:to user:"+toUser.getName()+":"+o);
         sendToUsers(o,dest);
 
     }

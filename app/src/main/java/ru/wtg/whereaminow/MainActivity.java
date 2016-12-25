@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -38,6 +37,7 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AddressViewHolder;
 import ru.wtg.whereaminow.holders.ButtonViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
+import ru.wtg.whereaminow.holders.DistantionViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
 import ru.wtg.whereaminow.holders.FacebookViewHolder;
@@ -48,6 +48,7 @@ import ru.wtg.whereaminow.holders.MessagesViewHolder;
 import ru.wtg.whereaminow.holders.SavedLocationsViewHolder;
 import ru.wtg.whereaminow.holders.SensorsViewHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
+import ru.wtg.whereaminow.holders.StreetsViewHolder;
 import ru.wtg.whereaminow.holders.TrackViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
@@ -61,8 +62,6 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
@@ -177,15 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         getMenuInflater().inflate(R.menu.main, menu);
         state.getMe().fire(CREATE_OPTIONS_MENU, menu);
         state.fire(CREATE_OPTIONS_MENU, menu);
-
-        /*menu.findItem(R.id.switch_day_night).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                state.fire((day = !day) ? REQUEST_MODE_DAY : REQUEST_MODE_NIGHT);
-
-                return true;
-            }
-        });*/
 
         return true;
     }
@@ -328,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
         state.registerEntityHolder(new MenuViewHolder(this));
         state.registerEntityHolder(new TrackViewHolder().setMap(map));
+        state.registerEntityHolder(new DistantionViewHolder().setMap(map));
         state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
         state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
         state.registerEntityHolder(new AddressViewHolder().setCallback(new SimpleCallback<String>() {
@@ -338,13 +329,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         }));
-        state.registerEntityHolder(CameraViewHolder.getInstance(this,0)
+        state.registerEntityHolder(new CameraViewHolder(this)
                 .setMap(map).setScaleView((MapScaleView) findViewById(R.id.scale_view)));
         state.registerEntityHolder(new MessagesViewHolder(MainActivity.this));
         state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
         state.registerEntityHolder(new SensorsViewHolder(this).setMap(map));
+        state.registerEntityHolder(new StreetsViewHolder(this).setMap(map).setStreetViewLayout(findViewById(R.id.street_view_layout)));
 
         state.getUsers().setMe();
+        state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());
 
         map.setBuildingsEnabled(true);
         map.setIndoorEnabled(true);
@@ -394,9 +387,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onNewIntent(Intent newIntent) {
         super.onNewIntent(newIntent);
 
+        String action = newIntent.getStringExtra("action");
+        if(action != null) {
+            switch(action) {
+                case "fire":
+                    String fire = newIntent.getStringExtra("fire");
+                    Integer number = newIntent.getIntExtra("number", 0);
+                    state.fire(fire, number);
+            }
+
+            return;
+        }
+
         Uri data = newIntent.getData();
         newIntent.setData(null);
         if(data != null){
+
             String tokenId = data.getEncodedPath().replaceFirst("/track/","");
 
             if (!state.tracking() || !tokenId.equals(state.getToken())) {
