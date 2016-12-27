@@ -6,10 +6,12 @@ package ru.wtg.whereaminowserver.helpers;
 public class Constants {
     public final static int SERVER_BUILD = 9;
 
-// device debug local version
+// emulator debug local version
+/*
     public final static String WSS_SERVER_HOST = "10.0.0.96";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
+*/
 // emulator local version
 /*
     public final static String WSS_SERVER_HOST = "192.168.56.1";
@@ -17,12 +19,10 @@ public class Constants {
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
 */
 
-// emulator internet version
-/*
+// device internet version
     public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
     public final static boolean DEBUGGING = false;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
-*/
 
 // device debug internet version
  /*   public final static String WSS_SERVER_HOST = "inchem.kstu.ru";

@@ -39,6 +39,7 @@ import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
+import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 
@@ -131,6 +132,7 @@ public class DistantionViewHolder extends AbstractViewHolder<DistantionViewHolde
                     }
                 });
                 break;
+            case TRACKING_STOPPED:
             case HIDE_DISTANTIONS:
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
