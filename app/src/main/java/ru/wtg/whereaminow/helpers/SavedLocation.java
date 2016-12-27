@@ -10,11 +10,14 @@ import android.os.Looper;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -187,7 +190,7 @@ public class SavedLocation extends AbstractSavedItem {
                 holder.tvUsername.setText(item.getUsername());
                 holder.tvTimestamp.setText(new Date(item.getTimestamp()).toString());
 
-                if(item.getAddress() != null && item.getAddress().length() > 0) {
+                if (item.getAddress() != null && item.getAddress().length() > 0) {
                     holder.tvAddressShort.setText(item.getShortAddress());
                     holder.tvAddress.setText(item.getAddress());
                     holder.tvAddressShort.setVisibility(View.VISIBLE);
@@ -197,7 +200,7 @@ public class SavedLocation extends AbstractSavedItem {
                     holder.tvAddress.setVisibility(View.GONE);
                 }
 
-                if(item.getTitle() != null && item.getTitle().length() > 0) {
+                if (item.getTitle() != null && item.getTitle().length() > 0) {
                     holder.tvComment.setText(item.getTitle());
                     holder.tvComment.setVisibility(View.VISIBLE);
                     holder.tvComment.setMaxLines(3);
@@ -222,7 +225,7 @@ public class SavedLocation extends AbstractSavedItem {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        if(item.getBitmap() != null) {
+                        if (item.getBitmap() != null) {
                             holder.ibImage.setImageBitmap(item.getBitmap().getCurrentImage());
                             holder.ibImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         } else {
@@ -267,7 +270,9 @@ public class SavedLocation extends AbstractSavedItem {
                     }
                 });
 
-            } catch(Exception e){e.printStackTrace();}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -296,7 +301,31 @@ public class SavedLocation extends AbstractSavedItem {
                 ibImage = (ImageButton) view.findViewById(R.id.ib_saved_location_image);
                 ibExpand = (ImageButton) view.findViewById(R.id.ib_expand_address);
                 ibCollapse = (ImageButton) view.findViewById(R.id.ib_collapse_address);
+
+                tvUsername.setOnTouchListener(onTouchListener);
+                view.findViewById(R.id.layout_address).setOnTouchListener(onTouchListener);
             }
+
+            View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+                float prevY = -1;
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                        if (prevY != -1) {
+                            if (event.getY() > prevY) {
+                                ibExpand.performClick();
+                            } else if (prevY > event.getY()) {
+                                ibCollapse.performClick();
+                            }
+                        }
+                        prevY = event.getY();
+                    } else {
+                        prevY = -1;
+                    }
+                    return false;
+                }
+            };
         }
 
         @Override

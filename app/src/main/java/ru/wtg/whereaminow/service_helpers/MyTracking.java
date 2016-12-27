@@ -132,18 +132,6 @@ public class MyTracking {
         }
     };
 
-    private void enableLocationManager() {
-//        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-//            System.err.println("Service:NOT locationManager.isProviderEnabled");
-//            return;
-//        }
-        System.out.println("TRACKING_LOCATION");
-        LocationParams.Builder builder = new LocationParams.Builder()
-                .setAccuracy(LocationAccuracy.HIGH).setDistance(1).setInterval(1000);
-
-        SmartLocation.with(state).location().continuous().config(builder.build()).start(locationUpdatedListener);
-    }
-
     public void start() {
         webClient.removeToken();
         doTrack();
@@ -177,6 +165,7 @@ public class MyTracking {
 
     void fromServer(final JSONObject o) {
         System.out.println("FROMSERVER:" + o);
+        System.out.println("DISABLED:" + (status == TRACKING_DISABLED));
 
         if(status == TRACKING_DISABLED) return;
         try {
@@ -191,7 +180,6 @@ public class MyTracking {
                     setStatus(TRACKING_ACTIVE);
 
                     state.setPreference(RESPONSE_TOKEN, webClient.getToken());
-                    state.setPreference(TRACKING_URI, serverUri.toString());
 
                     String oldToken = state.getToken();
                     if(!webClient.getToken().equals(oldToken)) {
@@ -219,7 +207,12 @@ public class MyTracking {
                         state.fire(WELCOME_MESSAGE, text);
                     }
                     state.fire(TRACKING_ACCEPTED);
-                    enableLocationManager();
+
+                    System.out.println("TRACKING_LOCATION");
+                    LocationParams.Builder builder = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(1).setInterval(1000);
+
+                    SmartLocation.with(state).location().continuous().config(builder.build()).start(locationUpdatedListener);
+
                     break;
                 case RESPONSE_STATUS_ERROR:
                     String message = o.getString(RESPONSE_MESSAGE);
@@ -289,7 +282,6 @@ public class MyTracking {
                     break;
                 case RESPONSE_STATUS_STOPPED:
                     state.setPreference(RESPONSE_TOKEN, null);
-                    state.setPreference(TRACKING_URI, null);
 
                     state.fire(TRACKING_STOPPED);
                     SmartLocation.with(state).location().stop();

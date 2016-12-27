@@ -111,16 +111,8 @@ public class DistantionViewHolder extends AbstractViewHolder<DistantionViewHolde
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
-                if(State.getInstance().getUsers().getCountAllSelected()>1) {
-                    optionsMenu.findItem(R.string.show_distantions).setVisible(true);
-                } else {
-                    optionsMenu.findItem(R.string.show_distantions).setVisible(false);
-                }
-                if(marks.size() > 0) {
-                    optionsMenu.findItem(R.string.hide_distantions).setVisible(true);
-                } else {
-                    optionsMenu.findItem(R.string.hide_distantions).setVisible(false);
-                }
+                optionsMenu.findItem(R.string.show_distantions).setVisible(State.getInstance().getUsers().getCountAllSelected()>1);
+                optionsMenu.findItem(R.string.hide_distantions).setVisible(marks.size() > 0);
                 break;
             case SHOW_DISTANTIONS:
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
@@ -148,15 +140,6 @@ public class DistantionViewHolder extends AbstractViewHolder<DistantionViewHolde
                     }
                 });
                 break;
-            /*case ACTIVITY_PAUSE:
-                ArrayList<int[]> save = new ArrayList<int[]>();
-                for(DistantionMark entry:marks) {
-                    save.add(new int[]{entry.firstUser.getProperties().getNumber(),entry.secondUser.getProperties().getNumber()});
-                }
-                if(save.size() > 0) {
-                    ((PropertiesHolder) State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE, save);
-                }
-                break;*/
         }
         return true;
     }
@@ -176,8 +159,8 @@ public class DistantionViewHolder extends AbstractViewHolder<DistantionViewHolde
                         fetchDistantionMark(myUser, user);
                     }
                 }
-            }
             System.out.println("DISTANTIONS:"+saved);
+            }
         }
 
         @Override

@@ -47,9 +47,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
                         MenuItem menuItem = navigationView.getMenu().findItem(R.id.nav_custom);
                         menuItem.setVisible(false);
                         State.getInstance().fire(PREPARE_DRAWER, menuItem);
-
-                    } else {
-                        System.out.println("CLOSING");
                     }
                     drawer.invalidate();
                 }

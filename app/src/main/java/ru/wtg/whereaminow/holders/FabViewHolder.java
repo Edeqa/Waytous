@@ -23,8 +23,11 @@ import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TOKEN_CREATED;
+import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
+import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 
@@ -95,20 +98,27 @@ public class FabViewHolder extends AbstractViewHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
-            case TRACKING_NEW:
-                State.getInstance().setToken(null);
-                Intent intentService = new Intent(context, WhereAmINowService.class);
-                intentService.putExtra("mode", "start");
-                context.startService(intentService);
-                break;
             case ACTIVITY_RESUME:
                 hide(true);
-                fab.setImageResource(R.drawable.ic_add_white_24dp);
+                if(State.getInstance().tracking()) {
+                    fab.setImageResource(R.drawable.ic_add_white_24dp);
+                } else if(State.getInstance().connecting()) {
+                    fab.setImageResource(R.drawable.ic_clear_white_24dp);
+                } else {
+                    fab.setImageResource(R.drawable.ic_navigation_white_24dp);
+                }
                 show(true);
                 fab.setOnClickListener(onMainClickListener);
                 break;
-            case TOKEN_CREATED:
-                new InviteSender(context).send("https://" + State.getInstance().getTracking().getHost() + ":8080/track/" + State.getInstance().getToken());
+            case TRACKING_NEW:
+            case TRACKING_JOIN:
+                fab.setImageResource(R.drawable.ic_clear_white_24dp);
+                break;
+            case TRACKING_ACCEPTED:
+                fab.setImageResource(R.drawable.ic_add_white_24dp);
+                break;
+            case TRACKING_STOPPED:
+                fab.setImageResource(R.drawable.ic_navigation_white_24dp);
                 break;
         }
         switch(event){
@@ -194,6 +204,8 @@ public class FabViewHolder extends AbstractViewHolder {
                     addMenuButton(R.id.fab_send_link);
                     State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
                     open(true);
+                } else if(State.getInstance().connecting()) {
+                    State.getInstance().fire(TRACKING_STOP);
                 } else {
                     State.getInstance().fire(TRACKING_NEW);
                 }
@@ -209,16 +221,7 @@ public class FabViewHolder extends AbstractViewHolder {
             switch (view.getId()) {
                 case R.id.fab_stop_tracking:
                 case R.id.fab_cancel_tracking:
-                    State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-                        @Override
-                        public void call(Integer number, MyUser myUser) {
-                            myUser.removeViews();
-                        }
-                    });
                     State.getInstance().fire(TRACKING_STOP);
-                    Intent intentService = new Intent(context, WhereAmINowService.class);
-                    intentService.putExtra("mode", "stop");
-                    context.startService(intentService);
                     break;
                 case R.id.fab_send_link:
                     new InviteSender(context).send("https://" + State.getInstance().getTracking().getHost() + ":8080/track/" + State.getInstance().getToken());
