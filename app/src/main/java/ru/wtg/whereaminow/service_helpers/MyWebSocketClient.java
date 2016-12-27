@@ -3,8 +3,8 @@ package ru.wtg.whereaminow.service_helpers;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
-import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_10;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +18,6 @@ import ru.wtg.whereaminow.helpers.Utils;
 
 import static org.java_websocket.WebSocket.READYSTATE.CLOSED;
 import static org.java_websocket.WebSocket.READYSTATE.OPEN;
-import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -90,7 +89,7 @@ public class MyWebSocketClient {
 
     private class MWebSocketClient extends WebSocketClient {
         public MWebSocketClient(URI serverURI) {
-            super(serverURI);
+            super(serverURI, new Draft_10(), null, 15);
         }
 
         @Override
@@ -219,9 +218,6 @@ public class MyWebSocketClient {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit()
-                .putString(TRACKING_URI, uri.toString()).apply();
-        System.out.println("PUTURI:"+uri.toString());
         System.out.println("PUTTOKEN:"+getToken());
         new Thread(new PingTask(this)).start();
         tracking.fromServer(o);

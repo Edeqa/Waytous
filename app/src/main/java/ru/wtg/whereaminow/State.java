@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -30,6 +29,7 @@ import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
+import ru.wtg.whereaminow.holders.TrackingHolder;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
 
@@ -79,7 +79,7 @@ public class State extends MultiDexApplication {
     private MyTracking tracking;
 
     private static State instance = null;
-    private static WhereAmINowService service;
+    private WhereAmINowService service;
 
     private HashMap<String, AbstractProperty> userEntityEvents = new HashMap<>();
     private HashMap<String, AbstractPropertyHolder> entityEvents = new HashMap<>();
@@ -105,6 +105,7 @@ public class State extends MultiDexApplication {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         registerEntityHolder(new PropertiesHolder(this));
+        registerEntityHolder(new TrackingHolder(this));
 //        registerEntityHolder(new LoggerHolder());
         registerEntityHolder(new MessagesHolder(this));
         registerEntityHolder(new NotificationHolder(this));
@@ -169,7 +170,7 @@ public class State extends MultiDexApplication {
     }
 
     public void setService(WhereAmINowService service) {
-        State.service = service;
+        this.service = service;
     }
 
     public Context getApplication(){
@@ -210,14 +211,6 @@ public class State extends MultiDexApplication {
     public String getToken() {
         return token;
     }
-
-//    public int getNumber() {
-//        return number;
-//    }
-//
-//    public void setNumber(int number) {
-//        this.number = number;
-//    }
 
     public MyUsers getUsers() {
         return users;
@@ -263,7 +256,7 @@ public class State extends MultiDexApplication {
 
     public void setPreference(String key, boolean value){
         if(value){
-            sharedPreferences.edit().putBoolean(key,value).apply();
+            sharedPreferences.edit().putBoolean(key,true).apply();
         } else {
             sharedPreferences.edit().remove(key).apply();
         }
@@ -307,7 +300,6 @@ public class State extends MultiDexApplication {
                 userEntityHolders.put(holder.getType(), holder);
             }
         }
-//        updateEvents();
     }
 
     public HashMap<String,EntityHolder> getEntityHolders(){
@@ -370,13 +362,13 @@ public class State extends MultiDexApplication {
         }
     };
 
-    private void updateEvents(){
+ /*   private void updateEvents(){
         entityEvents.clear();
         userEntityEvents.clear();
         viewEvents.clear();
         userViewEvents.clear();
 
-/*        userViewEvents.addAll(Arrays.asList(SELECT_USER, UNSELECT_USER,
+        userViewEvents.addAll(Arrays.asList(SELECT_USER, UNSELECT_USER,
                 CHANGE_NUMBER,CHANGE_COLOR,
                 CREATE_CONTEXT_MENU, PREPARE_OPTIONS_MENU,
                 MAKE_ACTIVE,MAKE_INACTIVE));
@@ -392,12 +384,12 @@ public class State extends MultiDexApplication {
         }
         for(Map.Entry<String, AbstractViewHolder> entry: getUserViewHolders().entrySet()){
             userViewEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
-        }*/
+        }
         System.out.println("ENTITYACTIONS:"+ entityEvents);
         System.out.println("USERENTITYACTIONS:"+ userEntityEvents);
         System.out.println("VIEWACTIONS:"+ viewEvents);
         System.out.println("USERVIEWACTIONS:"+ userViewEvents);
-    }
+    }*/
 
     public void fire(final String EVENT, final Object object){
         for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){

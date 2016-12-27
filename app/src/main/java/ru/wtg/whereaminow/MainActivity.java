@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap map;
     private SupportMapFragment mapFragment;
-    private Intent intentService;
     private State state;
 
     @Override
@@ -108,8 +107,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new FabViewHolder(this).setView(findViewById(R.id.fab_layout)));
         state.registerEntityHolder(new FacebookViewHolder());
         state.registerEntityHolder(new DrawerViewHolder(this).setViewAndToolbar(findViewById(R.id.drawer_layout),toolbar).setCallback(onNavigationDrawerCallback));
-
-        intentService = new Intent(MainActivity.this, WhereAmINowService.class);
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -155,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 myUser.removeViews();
             }
         });
+        state.fire(ACTIVITY_DESTROY);
         state.clearViewHolders();
     }
 
@@ -165,16 +163,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             holder.closeDrawer();
         } else {
             super.onBackPressed();
-            state.fire(ACTIVITY_DESTROY);
         }
     }
 
-
-    private boolean day = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        state.getMe().fire(CREATE_OPTIONS_MENU, menu);
+//        state.getMe().fire(CREATE_OPTIONS_MENU, menu);
         state.fire(CREATE_OPTIONS_MENU, menu);
 
         return true;
@@ -182,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
-        state.getMe().fire(PREPARE_OPTIONS_MENU, menu);
+//        state.getMe().fire(PREPARE_OPTIONS_MENU, menu);
         state.fire(PREPARE_OPTIONS_MENU, menu);
         return true;
     }
@@ -395,38 +390,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Integer number = newIntent.getIntExtra("number", 0);
                     state.fire(fire, number);
             }
-
             return;
         }
 
         Uri data = newIntent.getData();
         newIntent.setData(null);
         if(data != null){
-
-            String tokenId = data.getEncodedPath().replaceFirst("/track/","");
-
-            if (!state.tracking() || !tokenId.equals(state.getToken())) {
-                intentService.putExtra("mode", "join");
-                intentService.putExtra("token", tokenId);
-                intentService.putExtra("host", data.getHost());
-                startService(intentService);
-                state.fire(TRACKING_JOIN);
+            if (!state.tracking()) {
+                state.fire(TRACKING_JOIN, data);
             }
         } else if(!state.tracking()) {
             String trackingUri = state.getStringPreference(TRACKING_URI, null);
-            String tokenId = state.getStringPreference(RESPONSE_TOKEN, null);
-            if(trackingUri != null && tokenId != null){
-                intentService.putExtra("mode", "join");
-                intentService.putExtra("token", tokenId);
-
-                Uri uri = Uri.parse(trackingUri);
-                intentService.putExtra("host", uri.getHost());
-                startService(intentService);
-                state.fire(TRACKING_JOIN);
+            if(trackingUri != null){
+                state.fire(TRACKING_JOIN, Uri.parse(trackingUri));
             }
         }
-        System.out.println("TRACKINGI:"+state.getStringPreference(TRACKING_URI, null)+":"+state.getStringPreference(RESPONSE_TOKEN, null));
-
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -499,14 +477,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
-
-/*    GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
-        @Override
-        public void onMapClick(LatLng latLng) {
-            System.out.println("ONMAPCLICK");
-        }
-    };*/
-
 
 }

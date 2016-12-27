@@ -23,6 +23,29 @@
         android:layout_weight="1"
         android:minHeight="100dp">
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="10sp"
+            app:srcCompat="@drawable/ic_expand_more_black_24dp"
+            android:id="@+id/ib_expand_address"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:tint="@android:color/darker_gray" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="10sp"
+            app:srcCompat="@drawable/ic_expand_less_black_24dp"
+            android:id="@+id/ib_collapse_address"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:tint="@android:color/darker_gray"
+            android:visibility="invisible"/>
+
         <TextView
             tools:text="Username"
             android:layout_width="wrap_content"
@@ -32,7 +55,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:id="@+id/tv_saved_location_username"
-            android:textStyle="normal|bold" />
+            android:textStyle="normal|bold"
+            android:layout_toLeftOf="@+id/ib_expand_address"
+            android:clickable="true" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -45,7 +70,8 @@
             android:layout_alignParentEnd="true"
 
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clickable="true">
 
             <TextView
                 android:id="@+id/tv_saved_location_address_short"
@@ -92,29 +118,6 @@
             android:paddingTop="@dimen/material_list_normal_padding_vertical"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="10sp"
-            app:srcCompat="@drawable/ic_expand_more_black_24dp"
-            android:id="@+id/ib_expand_address"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:tint="@android:color/darker_gray" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="10sp"
-            app:srcCompat="@drawable/ic_expand_less_black_24dp"
-            android:id="@+id/ib_collapse_address"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:tint="@android:color/darker_gray"
-            android:visibility="invisible"/>
 
     </RelativeLayout>
 

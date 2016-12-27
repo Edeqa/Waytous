@@ -66,7 +66,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
 
     public StreetsViewHolder setStreetViewLayout(final View streetViewLayout) {
         this.streetViewLayout = streetViewLayout;
-        streetView = (SupportStreetViewPanoramaFragment) context.getSupportFragmentManager().findFragmentById(R.id.streetView);
+        streetView = (SupportStreetViewPanoramaFragment) context.getSupportFragmentManager().findFragmentById(R.id.street_view);
         streetViewLayout.findViewById(R.id.ib_street_view_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

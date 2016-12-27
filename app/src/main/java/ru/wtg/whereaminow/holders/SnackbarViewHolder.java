@@ -1,12 +1,10 @@
 package ru.wtg.whereaminow.holders;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.WhereAmINowService;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 
@@ -17,6 +15,7 @@ import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesViewHolder.SETUP_WELCOME_MESSAGE;
@@ -27,13 +26,10 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 /**
  * Created 11/27/16.
  */
-public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.SnackbarView> {
+public class SnackbarViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "snackbar";
     public static final String CUSTOM_SNACK = "custom_snack";
-//    public static final String CUSTOM_SNACK_MESSAGE = "custom_snack_message";
-//    public static final String CUSTOM_SNACK_BUTTON_TITLE = "custom_snack_button_text";
-//    public static final String CUSTOM_SNACK_BUTTON_CALLBACK = "custom_snack_button_callback";
 
     private final Context context;
     private Snackbar snackbar;
@@ -51,7 +47,7 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
 
     @Override
     public boolean dependsOnUser() {
-        return true;
+        return false;
     }
 
     @Override
@@ -60,9 +56,8 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
     }
 
     @Override
-    public SnackbarView create(MyUser myUser) {
-        if (myUser == null) return null;
-        return new SnackbarView(myUser);
+    public AbstractView create(MyUser myUser) {
+        return null;
     }
 
     public SnackbarViewHolder setLayout(final View layout) {
@@ -76,7 +71,7 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
                 System.out.println("SNACKBAR ACTION");
             }
         });
-        snackbar.setCallback(new Snackbar.Callback() {
+        snackbar.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
@@ -94,10 +89,6 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
                 snackbar.setText("Starting tracking...").setAction("Cancel", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        System.out.println("snackbar.onClick");
-                        Intent intent = new Intent(context, WhereAmINowService.class);
-                        intent.putExtra("mode", "stop");
-                        context.startService(intent);
                         State.getInstance().fire(TRACKING_STOP);
                     }
                 }).show();
@@ -106,16 +97,13 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
                 snackbar.setText("Joining tracking...").setAction("Cancel", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(context, WhereAmINowService.class);
-                        intent.putExtra("mode", "stop");
-                        context.startService(intent);
                         State.getInstance().fire(TRACKING_STOP);
                     }
                 }).show();
                 break;
             case TOKEN_CREATED:
                 tokenCreatedShown = true;
-                snackbar.setText("You have created the group").setDuration(Snackbar.LENGTH_LONG).setDuration(10000).setAction("Set welcome message", new View.OnClickListener() {
+                snackbar.setText("You have created the group").setDuration(10000).setAction("Set welcome message", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(SETUP_WELCOME_MESSAGE);
@@ -134,6 +122,9 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
                     }).show();
                 }
                 break;
+            case TRACKING_STOPPED:
+                snackbar.dismiss();
+                break;
             case WELCOME_MESSAGE:
                 String message = (String) object;
                 snackbar.setText(message).setDuration(Snackbar.LENGTH_LONG).setAction("Show", new View.OnClickListener() {
@@ -145,7 +136,7 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
                 break;
             case CONNECTION_DISCONNECTED:
                 message = (String) object;
-                snackbar.setText(message != null ? message : "Disconnected. Trying to reconnect").setAction("Cancel", new View.OnClickListener() {
+                snackbar.setText((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect").setAction("Cancel", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(TRACKING_STOP);
@@ -206,41 +197,6 @@ public class SnackbarViewHolder extends AbstractViewHolder<SnackbarViewHolder.Sn
                 break;
         }
         return true;
-    }
-
-    public class SnackbarView extends AbstractView {
-
-        SnackbarView(MyUser myUser) {
-            super(myUser);
-        }
-
-        @Override
-        public boolean dependsOnLocation() {
-            return false;
-        }
-
-        @Override
-        public boolean onEvent(String event, Object object) {
-            switch (event) {
-                /*case USER_MESSAGE:
-                    String text = (String) object;
-                    snackbar.setText(myUser.getProperties().getName() + ": " + text).setDuration(10000).setAction("Reply", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            myUser.fire(NEW_MESSAGE);
-                        }
-                    }).show();
-                    snackbar.getView().setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            snackbar.dismiss();
-                            State.getInstance().fire(SHOW_MESSAGES);
-                        }
-                    });
-                    break;*/
-            }
-            return true;
-        }
     }
 
 }

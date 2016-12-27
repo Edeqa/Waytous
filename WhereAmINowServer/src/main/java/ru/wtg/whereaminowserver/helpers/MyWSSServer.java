@@ -338,7 +338,7 @@ public class MyWssServer extends WebSocketServer {
                         token.setWelcomeMessage(text);
                     }
                     System.out.println("UPDATE:welcome message:"+request.getString(RESPONSE_WELCOME_MESSAGE));
-                } else if (o.length() <= 2) {
+                } else if (o.length() <= 1) {
                     System.out.println("UPDATE:ping");
                 } else {
                     token.sendToAllFrom(o, user);

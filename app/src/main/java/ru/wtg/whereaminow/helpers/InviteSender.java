@@ -1,6 +1,7 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 /**
@@ -9,9 +10,9 @@ import android.content.Intent;
 
 public class InviteSender {
 
-    private final Activity context;
+    private final Context context;
 
-    public InviteSender(Activity context) {
+    public InviteSender(Context context) {
         this.context = context;
     }
 

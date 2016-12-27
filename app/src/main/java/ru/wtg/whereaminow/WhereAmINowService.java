@@ -28,15 +28,6 @@ public class WhereAmINowService extends Service {
         state = State.getInstance();
         state.setService(this);
 
-//        if(state.getToken() != null) {
-//            Intent intentService = new Intent(state,WhereAmINowService.class);
-//            intentService.putExtra("mode", "join");
-//            intentService.putExtra("token", state.getToken());
-//            intentService.putExtra("host", data.getHost());
-//            startService(intentService);
-//            state.fire(TRACKING_JOIN);
-//            onStartCommand()
-//        }
     }
 
     @Override
@@ -68,7 +59,7 @@ public class WhereAmINowService extends Service {
             }
             String token = intent.getStringExtra("token");
             state.getTracking().join(token);
-        } else if("stop".equals(mode) && state.tracking()){
+        } else if("stop".equals(mode)){
             state.getTracking().stop();
         }
         return super.onStartCommand(intent, flags, startId);
