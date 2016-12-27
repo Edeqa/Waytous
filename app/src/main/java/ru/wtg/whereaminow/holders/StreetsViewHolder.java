@@ -137,8 +137,10 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
         panorama.setOnStreetViewPanoramaChangeListener(new StreetViewPanorama.OnStreetViewPanoramaChangeListener() {
             @Override
             public void onStreetViewPanoramaChange(StreetViewPanoramaLocation streetViewPanoramaLocation) {
-                if (streetViewPanoramaLocation != null) {
+                if (streetViewPanoramaLocation != null && streetViewPanoramaLocation.links != null) {
                     panorama.animateTo(camera, LOCATION_UPDATES_DELAY);
+                } else {
+                    System.out.println("STREETVIEW NOT AVAILABLE");
                 }
             }
         });

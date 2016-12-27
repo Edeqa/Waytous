@@ -2,6 +2,7 @@ package ru.wtg.whereaminow.service_helpers;
 
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -208,9 +209,7 @@ public class MyTracking {
                     }
                     state.fire(TRACKING_ACCEPTED);
 
-                    System.out.println("TRACKING_LOCATION");
                     LocationParams.Builder builder = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(1).setInterval(1000);
-
                     SmartLocation.with(state).location().continuous().config(builder.build()).start(locationUpdatedListener);
 
                     break;

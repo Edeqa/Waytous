@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-//        state.getMe().fire(CREATE_OPTIONS_MENU, menu);
         state.fire(CREATE_OPTIONS_MENU, menu);
 
         return true;
@@ -177,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
-//        state.getMe().fire(PREPARE_OPTIONS_MENU, menu);
         state.fire(PREPARE_OPTIONS_MENU, menu);
         return true;
     }
@@ -216,7 +214,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             switch(id) {
                 case R.id.nav_settings:
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                    System.out.println("nav_settings");
                     break;
                 case R.id.nav_traffic:
                     map.setTrafficEnabled(!map.isTrafficEnabled());
@@ -243,13 +240,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map = googleMap;
         if(state.isGpsAccessAllowed()) {
             onMapReadyPermitted();
-//            checkPermissions(REQUEST_PERMISSION_LOCATION,
-//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
         }
     }
 
-    // permissionsForCheck = android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION
-    // requestCode = MainActivity.REQUEST_PERMISSION_LOCATION
     public boolean checkPermissions(final int requestCode, String[] permissionsForCheck) {
         final ArrayList<String> permissions = new ArrayList<>();
         int[] grants = new int[permissionsForCheck.length];
@@ -262,7 +255,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        System.out.println("CHECK:"+permissions.size());
         if (permissions.size() > 0) {
             Thread.dumpStack();
             new ContinueDialog(this).setMessage("Request for permissions").setCallback(new SimpleCallback<Void>() {
@@ -271,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     ActivityCompat.requestPermissions(MainActivity.this,
                             permissions.toArray(new String[permissions.size()]),
                             requestCode);
-                    System.out.println("checkPermission:" + requestCode);
                 }
             }).show();
             return false;
@@ -282,8 +273,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        System.out.println("onRequestPermissionsResult=" + requestCode + ":");
-
         switch (requestCode) {
             case REQUEST_PERMISSION_LOCATION:
                 state.setGpsAccessRequested(true);
@@ -305,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void onMapReadyPermitted() {
         if(map == null) return;
-        System.out.println("onMapReadyPermitted");
+//        System.out.println("onMapReadyPermitted");
 
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) return;
 
@@ -351,7 +340,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     loc.setSpeed(location.getSpeed());
                     loc.setTime(location.getTime());
                     state.getMe().addLocation(loc);
-//                    state.myTracking.locationUpdatedListener.onLocationUpdated(loc);
                 }catch(Exception e){
                     System.out.println("Error setOnMapClickListener: "+e.getMessage());
                 }
@@ -477,5 +465,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
 }

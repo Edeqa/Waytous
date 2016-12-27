@@ -48,13 +48,11 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
     @Override
     public AbstractProperty create(MyUser myUser) {
-//        System.out.println("LOGGER:CREATEUSER:"+myUser);
         return null;
     }
 
     @Override
     public boolean dependsOnEvent() {
-//        System.out.println("LOGGER:DEPENDSONEVENT");
         return true;
     }
 
@@ -70,7 +68,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
             case TRACKING_JOIN:
                 Uri uri = (Uri) object;
                 if(uri != null) {
-                    System.out.println("TH:TRACK:"+uri);
                     State.getInstance().setPreference(TRACKING_URI, uri.toString());
                     String tokenId = uri.getEncodedPath().replaceFirst("/track/", "");
                     if(!tokenId.equals(State.getInstance().getToken())) {

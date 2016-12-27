@@ -71,7 +71,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                         .setSmallIcon(R.drawable.ic_navigation_twinks_white)
                         .setAutoCancel(true)
                         .setContentTitle("Creating group...")
-                        .addAction(R.drawable.ic_navigation_twinks_white, "View", pendingIntent)
+                        .addAction(R.drawable.ic_navigation_twinks_white_24dp, "View", pendingIntent)
                         .addAction(R.drawable.ic_clear_white, "Stop", pendingStopIntent)
                         .setContentIntent(pendingIntent)
                         .setPriority(Notification.PRIORITY_HIGH);
