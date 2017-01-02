@@ -1,14 +1,37 @@
 package ru.wtg.whereaminow;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 
+import io.nlopez.smartlocation.SmartLocation;
+import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
+
+import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_STOPPED;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
 public class WhereAmINowService extends Service {
 
@@ -46,9 +69,6 @@ public class WhereAmINowService extends Service {
             }
             state.getTracking().start();
         } else if("join".equals(mode)){
-            if(state.tracking()) {
-                state.getTracking().stop();
-            }
             try {
                 assert intent != null;
                 state.setTracking(new MyTracking(intent.getStringExtra("host")));
@@ -60,7 +80,9 @@ public class WhereAmINowService extends Service {
             String token = intent.getStringExtra("token");
             state.getTracking().join(token);
         } else if("stop".equals(mode)){
-            state.getTracking().stop();
+            if(state.getTracking() != null) {
+                state.getTracking().stop();
+            }
         }
         return super.onStartCommand(intent, flags, startId);
     }

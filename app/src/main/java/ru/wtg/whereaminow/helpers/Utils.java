@@ -9,6 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.view.SoundEffectConstants;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +32,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
@@ -230,7 +239,7 @@ public class Utils {
         double[] latlng = filter.get_lat_long();
         location.setLatitude(latlng[0]);
         location.setLongitude(latlng[1]);
-        location.setBearing((float) filter.get_bearing());
+        if(DEBUGGING) location.setBearing((float) filter.get_bearing());
         location.setSpeed((float) filter.get_speed(location.getAltitude()));
         return location;
 
@@ -264,5 +273,54 @@ public class Utils {
     }
 
 
+    public static LatLng findPoint(List<LatLng> points, double fraction) {
+
+        double length = 0;
+        for(int i=1; i<points.size();i++) {
+            length += SphericalUtil.computeDistanceBetween(points.get(i-1),points.get(i));
+        }
+
+        length = length * fraction;
+
+        for(int i=1; i<points.size();i++) {
+            double current = SphericalUtil.computeDistanceBetween(points.get(i-1),points.get(i));
+            if(length - current < 0) {
+                return SphericalUtil.interpolate(points.get(i-1),points.get(i), length / current);
+            } else {
+                length -= current;
+            }
+        }
+        return SphericalUtil.interpolate(points.get(0),points.get(points.size()-1), fraction);
+    }
+
+    public static String formatLengthToLocale(double meters) {
+        if(Locale.US.equals(Locale.getDefault())) {
+            meters = meters * 3.2808399;
+            if(meters < 530) {
+                return String.format("%4.0f %s", meters, "ft");
+            } else {
+                meters = meters / 5280;
+                return String.format("%4.1f %s", meters, "mi");
+            }
+        } else {
+            String unit = "m";
+            if (meters < 1) {
+                meters *= 1000;
+                unit = "mm";
+            } else if (meters > 1000) {
+                meters /= 1000;
+                unit = "km";
+            }
+            return String.format("%4.1f %s", meters, unit);
+        }
+    }
+
+    public static LatLngBounds reduce(LatLngBounds bounds, double fraction) {
+
+        LatLng newNortheast = SphericalUtil.interpolate(bounds.northeast, bounds.southwest, (1+fraction)/2);
+        LatLng newSouthwest = SphericalUtil.interpolate(bounds.southwest, bounds.northeast, (1+fraction)/2);
+
+        return new LatLngBounds(newNortheast,newSouthwest);
+    }
 
 }

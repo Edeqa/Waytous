@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.NotificationCompat;
+import android.view.View;
 
 import java.util.Date;
 
@@ -18,13 +19,14 @@ import ru.wtg.whereaminow.helpers.MyUser;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
-import static ru.wtg.whereaminow.State.TRACKING_STARTED;
-import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
-import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 
 /**
  * Created 11/29/16.
@@ -37,6 +39,24 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     public NotificationHolder(State state) {
         this.state = state;
+
+        Intent notificationIntent = new Intent(state, MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
+        PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0);
+
+        notification = new NotificationCompat.Builder(state)
+                .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.ic_notification_twinks)
+//                .setAutoCancel(true)
+                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
+                .addAction(R.drawable.ic_notification_clear, "Stop", pendingStopIntent)
+                .setContentIntent(pendingIntent)
+                .setPriority(Notification.PRIORITY_HIGH);
+
+        state.setNotification(notification.build());
+
     }
 
     @Override
@@ -59,31 +79,17 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public boolean onEvent(String event, Object object) {
 
         switch (event){
-            case TRACKING_STARTED:
-                Intent notificationIntent = new Intent(state, MainActivity.class);
-                notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-                PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
-                PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0);
-
-                notification = new NotificationCompat.Builder(state)
-                        .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
-                        .setSmallIcon(R.drawable.ic_navigation_twinks_white)
-                        .setAutoCancel(true)
-                        .setContentTitle("Creating group...")
-                        .addAction(R.drawable.ic_navigation_twinks_white_24dp, "View", pendingIntent)
-                        .addAction(R.drawable.ic_clear_white, "Stop", pendingStopIntent)
-                        .setContentIntent(pendingIntent)
-                        .setPriority(Notification.PRIORITY_HIGH);
-
-                state.setNotification(notification.build());
-
+            case TRACKING_NEW:
+                update("Creating group...");
                 break;
-            case TRACKING_STOPPED:
-                state.setNotification(null);
-                notification = null;
+            case TRACKING_JOIN:
+                update("Joining group...");
                 break;
-            case TRACKING_ACCEPTED:
+            case TRACKING_DISABLED:
+//                state.setNotification(null);
+//                notification = null;
+                break;
+            case TRACKING_ACTIVE:
                 update("You have joined to the group.");
                 break;
             case USER_JOINED:
@@ -104,6 +110,10 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 break;
             case ACTIVITY_PAUSE:
                 showNotifications = true;
+                break;
+            case TRACKING_RECONNECTING:
+                String message = (String) object;
+                update((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect");
                 break;
         }
 

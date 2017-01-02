@@ -2,6 +2,8 @@ package ru.wtg.whereaminow.holders;
 
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,9 +163,12 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                                     startPosition.getLongitude()*(1-value[TIME_ELAPSED])+location.getLongitude()*value[TIME_ELAPSED]);
 
                             points.add(current);
-                            if(track != null) {
-                                track.setPoints(points);
-                            }
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                public void run() {
+                                    if(track != null)
+                                        track.setPoints(points);
+                                }
+                            });
                         }
                     }).execute();
                 }
@@ -233,6 +239,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
             List<LatLng> points = new ArrayList<>();
             for(Location location: myUser.getLocations()){
                 points.add(new LatLng(location.getLatitude(),location.getLongitude()));
+                points = PolyUtil.simplify(points,5);
             }
             return points;
         }

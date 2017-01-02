@@ -4,33 +4,30 @@
          when checked/unchecked. -->
     <PreferenceCategory
         android:key="category_general"
-        android:title="General"
-        >
+        android:title="General">
         <Preference
             android:defaultValue="true"
             android:key="about"
             android:title="@string/app_name">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://play.google.com/store/apps/details?id=ru.wtg.whereaminow"/>
+                android:data="https://play.google.com/store/apps/details?id=ru.wtg.whereaminow" />
         </Preference>
 
         <PreferenceScreen
             android:defaultValue="true"
             android:key="copyright"
-            android:summary="http://www.google.com"
-            android:title="Copyright"
-            >
+            android:summary="http://www.wtg.ru"
+            android:title="Copyright">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.google.com"/>
+                android:data="http://www.wtg.ru" />
         </PreferenceScreen>
 
 
         <PreferenceScreen
             android:key="legal_information"
-            android:title="Legal information"
-            >
+            android:title="Legal information">
             <!--<Preference
                 android:key="info"
                 android:layout="@layout/preference_info"
@@ -44,16 +41,36 @@
         android:key="third_parties_information"
         android:title="Other information">
 
-        <PreferenceScreen
-            android:title="Third party components"
-            >
+        <PreferenceScreen android:title="Third party components">
 
-            <PreferenceScreen
-                android:summary="Fingerprint authentication library"
-                android:title="Digitus">
+            <PreferenceScreen android:title="Smart Location Library">
                 <intent
                     android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/afollestad/digitus"/>
+                    android:data="https://github.com/mrmans0n/smart-location-lib" />
+            </PreferenceScreen>
+
+            <PreferenceScreen android:title="Java WebSockets">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/TooTallNate/Java-WebSocket" />
+            </PreferenceScreen>
+
+            <PreferenceScreen android:title="Map Scale View">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/pengrad/MapScaleView" />
+            </PreferenceScreen>
+
+            <PreferenceScreen android:title="TapTargetView">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/KeepSafe/TapTargetView" />
+            </PreferenceScreen>
+
+            <PreferenceScreen android:title="Android Material Intro Screen">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/TangoAgency/material-intro-screen" />
             </PreferenceScreen>
 
         </PreferenceScreen>

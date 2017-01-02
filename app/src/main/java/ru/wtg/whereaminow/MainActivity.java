@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -37,14 +39,16 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AddressViewHolder;
 import ru.wtg.whereaminow.holders.ButtonViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
-import ru.wtg.whereaminow.holders.DistantionViewHolder;
+import ru.wtg.whereaminow.holders.DistanceViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
 import ru.wtg.whereaminow.holders.FacebookViewHolder;
+import ru.wtg.whereaminow.holders.IntroViewHolder;
 import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
 import ru.wtg.whereaminow.holders.MarkerViewHolder;
 import ru.wtg.whereaminow.holders.MenuViewHolder;
 import ru.wtg.whereaminow.holders.MessagesViewHolder;
+import ru.wtg.whereaminow.holders.NavigationViewHolder;
 import ru.wtg.whereaminow.holders.SavedLocationsViewHolder;
 import ru.wtg.whereaminow.holders.SensorsViewHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
@@ -61,6 +65,7 @@ import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
@@ -78,7 +83,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONN
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_STOPPED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -101,12 +106,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         state = State.getInstance();
 
+        if(DEBUGGING){
+//            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
+//            state.setPreference("intro",false);
+        }
+
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         state.registerEntityHolder(new FabViewHolder(this).setView(findViewById(R.id.fab_layout)));
-        state.registerEntityHolder(new FacebookViewHolder());
         state.registerEntityHolder(new DrawerViewHolder(this).setViewAndToolbar(findViewById(R.id.drawer_layout),toolbar).setCallback(onNavigationDrawerCallback));
+        state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
+
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -121,6 +132,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onResume();
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         registerReceiver(receiver, intentFilter);
+
+        if(!state.getBooleanPreference("intro",false)){
+            state.setPreference("intro",true);
+            startActivityForResult(new Intent(MainActivity.this, IntroActivity.class), 1);
+            return;
+        }
+
 
         if(!state.isGpsAccessRequested()) {
             state.setGpsAccessRequested(true);
@@ -299,11 +317,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) return;
 
         new MapButtonsViewHolder(mapFragment);
-        state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
-        state.registerEntityHolder(new MenuViewHolder(this));
-        state.registerEntityHolder(new TrackViewHolder().setMap(map));
-        state.registerEntityHolder(new DistantionViewHolder().setMap(map));
         state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
+        state.registerEntityHolder(new MenuViewHolder(this));
         state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
         state.registerEntityHolder(new AddressViewHolder().setCallback(new SimpleCallback<String>() {
             @Override
@@ -313,12 +328,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         }));
-        state.registerEntityHolder(new CameraViewHolder(this)
-                .setMap(map).setScaleView((MapScaleView) findViewById(R.id.scale_view)));
+        state.registerEntityHolder(new CameraViewHolder(this).setMap(map).setScaleView((MapScaleView) findViewById(R.id.scale_view)));
+        state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
+        state.registerEntityHolder(new TrackViewHolder().setMap(map));
+        state.registerEntityHolder(new NavigationViewHolder(this).setMap(map).setButtonsView(findViewById(R.id.layout_navigation_mode)));
+        state.registerEntityHolder(new DistanceViewHolder().setMap(map));
         state.registerEntityHolder(new MessagesViewHolder(MainActivity.this));
-        state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
         state.registerEntityHolder(new SensorsViewHolder(this).setMap(map));
-        state.registerEntityHolder(new StreetsViewHolder(this).setMap(map).setStreetViewLayout(findViewById(R.id.street_view_layout)));
+        state.registerEntityHolder(new StreetsViewHolder(this).setStreetViewLayout(findViewById(R.id.street_view_layout)));
+        state.registerEntityHolder(new FacebookViewHolder(this));
+
+        // IntroViewHolder must be registered last
+        state.registerEntityHolder(new IntroViewHolder(this));
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());
@@ -350,7 +371,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.getUiSettings().setAllGesturesEnabled(true);
         map.getUiSettings().setIndoorLevelPickerEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
-
 
         state.getUsers().forAllUsers(new MyUsers.Callback() {
             @Override
@@ -384,10 +404,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Uri data = newIntent.getData();
         newIntent.setData(null);
         if(data != null){
-            if (!state.tracking()) {
+            String tokenId = data.getEncodedPath().replaceFirst("/track/", "");
+            if(!tokenId.equals(State.getInstance().getToken())) {
+                if(State.getInstance().getTracking() != null) state.fire(TRACKING_STOP);
                 state.fire(TRACKING_JOIN, data);
             }
-        } else if(!state.tracking()) {
+        } else if(!state.tracking_active()) {
             String trackingUri = state.getStringPreference(TRACKING_URI, null);
             if(trackingUri != null){
                 state.fire(TRACKING_JOIN, Uri.parse(trackingUri));
@@ -398,71 +420,74 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String r = intent.getStringExtra(BROADCAST_MESSAGE);
-            JSONObject o;
             try {
-                o = new JSONObject(r);
-                if (!o.has(RESPONSE_STATUS)) return;
+                String r = intent.getStringExtra(BROADCAST_MESSAGE);
+                if(r != null && r.length() > 0) {
+                    JSONObject o = new JSONObject(r);
+                    if (!o.has(RESPONSE_STATUS)) return;
 
-                switch (o.getString(RESPONSE_STATUS)) {
-                    case RESPONSE_STATUS_DISCONNECTED:
-                        state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-                            @Override
-                            public void call(Integer number, MyUser myUser) {
-                                myUser.removeViews();
-                            }
-                        });
-                        break;
-                    case RESPONSE_STATUS_ACCEPTED:
-
-                        SmartLocation.with(MainActivity.this).location().stop();
-                        if (o.has(RESPONSE_NUMBER)) {
-                            state.getUsers().forMe(new MyUsers.Callback() {
-                                @Override
-                                public void call(Integer number, MyUser myUser) {
-                                    myUser.createViews();
-                                }
-                            });
-                        }
-                        if (o.has(RESPONSE_INITIAL)) {
+                    switch (o.getString(RESPONSE_STATUS)) {
+                        case RESPONSE_STATUS_DISCONNECTED:
                             state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
-                                    myUser.createViews();
-                                }
-                            });
-                        }
-                        break;
-                    case RESPONSE_STATUS_ERROR:
-                        break;
-                    case RESPONSE_STATUS_UPDATED:
-                        if(o.has(USER_DISMISSED)) {
-                            int number = o.getInt(USER_DISMISSED);
-                            state.getUsers().forUser(number,new MyUsers.Callback() {
-                                @Override
-                                public void call(Integer number, final MyUser myUser) {
-                                    myUser.fire(USER_DISMISSED);
                                     myUser.removeViews();
                                 }
                             });
-                        }
-                        if(o.has(USER_JOINED)) {
-                            int number = o.getInt(USER_JOINED);
-                            state.getUsers().forUser(number,new MyUsers.Callback() {
-                                @Override
-                                public void call(Integer number, MyUser myUser) {
-                                    myUser.createViews();
-                                    myUser.fire(USER_JOINED);
-                                }
-                            });
-                        }
-                        break;
-                    case RESPONSE_STATUS_STOPPED:
-                        break;
+                            break;
+                        case RESPONSE_STATUS_ACCEPTED:
+
+                            SmartLocation.with(MainActivity.this).location().stop();
+                            if (o.has(RESPONSE_NUMBER)) {
+                                state.getUsers().forMe(new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, MyUser myUser) {
+                                        myUser.createViews();
+                                    }
+                                });
+                            }
+                            if (o.has(RESPONSE_INITIAL)) {
+                                state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, MyUser myUser) {
+                                        myUser.createViews();
+                                    }
+                                });
+                            }
+                            break;
+                        case RESPONSE_STATUS_ERROR:
+                            break;
+                        case RESPONSE_STATUS_UPDATED:
+                            if (o.has(USER_DISMISSED)) {
+                                int number = o.getInt(USER_DISMISSED);
+                                state.getUsers().forUser(number, new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, final MyUser myUser) {
+                                        myUser.fire(USER_DISMISSED);
+                                        myUser.removeViews();
+                                    }
+                                });
+                            }
+                            if (o.has(USER_JOINED)) {
+                                int number = o.getInt(USER_JOINED);
+                                state.getUsers().forUser(number, new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, MyUser myUser) {
+                                        myUser.createViews();
+                                        myUser.fire(USER_JOINED);
+                                    }
+                                });
+                            }
+                            break;
+                        case RESPONSE_STATUS_STOPPED:
+                            break;
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     };
+
+
 }

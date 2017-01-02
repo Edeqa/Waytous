@@ -16,5 +16,4 @@ public interface Entity {
 
     void onChangeLocation(Location location);
 
-    boolean isView();
 }

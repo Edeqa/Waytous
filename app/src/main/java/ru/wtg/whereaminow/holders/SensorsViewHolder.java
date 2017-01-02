@@ -21,9 +21,8 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
-import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.helpers.LightSensorManager.DAY;
 import static ru.wtg.whereaminow.helpers.LightSensorManager.NIGHT;
 
@@ -76,13 +75,12 @@ public class SensorsViewHolder extends AbstractViewHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
-            case TRACKING_ACCEPTED:
+            case TRACKING_ACTIVE:
                 SmartLocation.with(context).location().stop();
                 context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 lightSensor.enable();
                 break;
-            case TRACKING_STOPPED:
-            case CONNECTION_ERROR:
+            case TRACKING_DISABLED:
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 lightSensor.disable();
                 enableLocationUpdates();
@@ -94,7 +92,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 lightSensor.disable();
                 break;
             case ACTIVITY_RESUME:
-                if(State.getInstance().tracking()) {
+                if(State.getInstance().tracking_active()) {
                     context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lightSensor.enable();
                 } else {
@@ -198,7 +196,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
     private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
         @Override
         public void onLocationUpdated(final Location location) {
-            if(!State.getInstance().tracking()) {
+            if(!State.getInstance().tracking_active()) {
                 State.getInstance().getMe().addLocation(Utils.normalizeLocation(State.getInstance().getGpsFilter(), location));
             }
         }

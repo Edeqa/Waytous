@@ -30,17 +30,30 @@
             android:id="@+id/street_view"
             android:name="com.google.android.gms.maps.SupportStreetViewPanoramaFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            />
+
+        <TextView
+            android:text="Street view not available for this place"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tv_street_view_placeholder"
+            android:gravity="center"
+            android:textColor="@color/material_color_white"
+            android:visibility="invisible"/>
 
         <ImageButton
             android:id="@+id/ib_street_view_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:padding="10dp"
-            app:srcCompat="@drawable/ic_clear_black_24dp"
-            android:background="@drawable/semi_transparent_background" />
+            app:srcCompat="@drawable/ic_clear_white_24dp"
+            android:background="@drawable/semi_transparent_background"
+            tools:ignore="ContentDescription" />
+
     </RelativeLayout>
 
     <fragment
@@ -85,5 +98,40 @@
         android:layout_marginBottom="24dp"
         android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_navigation_mode"
+        android:paddingBottom="8sp"
+        android:layout_alignBottom="@id/map"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_directions_car_black_24dp"
+            android:id="@+id/ib_navigation_driving"
+            android:layout_weight="1"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_directions_walk_black_24dp"
+            android:id="@+id/ib_navigation_walking"
+            android:layout_weight="1"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_directions_bike_black_24dp"
+            android:id="@+id/ib_navigation_bicycling"
+            android:layout_weight="1"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
 
 </RelativeLayout>

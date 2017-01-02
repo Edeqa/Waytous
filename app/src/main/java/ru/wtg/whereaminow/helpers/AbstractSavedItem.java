@@ -58,7 +58,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     protected static void init(Context context, Class<?> item, String itemType) {
 //        Fields fields = new Fields(itemType, item);
         DBHelper<? extends AbstractSavedItem> dbHelper = new DBHelper<>(context, itemType, item);
-        System.out.println("========================================== "+dbHelper.fields.getCreateString());
+//        System.out.println("========================================== "+dbHelper.fields.getCreateString());
 
         dbHelpers.put(itemType,new DBHelper(context, itemType, item));
     }

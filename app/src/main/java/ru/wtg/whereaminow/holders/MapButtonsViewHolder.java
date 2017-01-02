@@ -5,8 +5,13 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.util.ArrayList;
+
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
+
+import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 
 /**
  * Created 11/29/16.
@@ -61,6 +66,21 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
     @Override
     public boolean dependsOnEvent() {
         return false;
+    }
+
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+//        MarkerView markerView = (MarkerView) State.getInstance().getMe().getEntity(TYPE);
+//        LatLng latLng = new LatLng(markerView.myUser.getLocation().getLatitude(), markerView.myUser.getLocation().getLongitude());
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+//        rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("map_button_my_location").setViewTag("GoogleMapMyLocationButton").setTitle("My location").setDescription("Click here to center active member."));
+//        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_intro_menu").setView(fab_buttons).setTitle("Click any item to perform some action"));
+//        rules.add(new IntroRule().setId("menu_set_name").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Click menu"));
+
+        return rules;
     }
 
 }

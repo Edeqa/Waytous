@@ -123,7 +123,7 @@ public class MyHttpAdminServer implements HttpHandler {
 
         thr = table.add("tr");
         thr.add("th").with("#");
-        thr.add("th").with("DeviceId");
+        thr.add("th").with("Device");
         thr.add("th").with("Address");
         thr.add("th").with("Created");
         thr.add("th").with("Changed");
@@ -144,7 +144,7 @@ public class MyHttpAdminServer implements HttpHandler {
             for(Map.Entry<String,MyUser> y:x.getValue().users.entrySet()){
                 if(indent>0) tr = table.add("tr");
                 tr.add("td").with(y.getValue().getNumber());
-                tr.add("td").add("a").with(y.getValue().getDeviceId()).with("href","/?list=user&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
+                tr.add("td").add("a").with(y.getValue().getModel()).with("href","/?list=user&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
                 tr.add("td").with(y.getValue().getAddress());
                 tr.add("td").with(new Date(y.getValue().getCreated()).toString());
                 tr.add("td").with(new Date(y.getValue().getChanged()).toString());

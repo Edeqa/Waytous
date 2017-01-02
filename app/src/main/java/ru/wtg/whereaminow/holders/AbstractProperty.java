@@ -24,9 +24,4 @@ abstract public class AbstractProperty implements Entity {
     public void onChangeLocation(Location location){
     }
 
-    @Override
-    public boolean isView(){
-        return false;
-    }
-
 }

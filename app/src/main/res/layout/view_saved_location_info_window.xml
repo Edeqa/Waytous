@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_saved_location_title"
+        android:textStyle="normal|bold"
+        tools:text="Username" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_saved_location_address"
+        tools:text="11833 Shire Ct" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_saved_location_description"
+        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec magna nisi. Donec quis tellus id augue scelerisque cursus. Phasellus tincidunt orci ut neque lacinia tempor. Phasellus laoreet mauris in felis blandit, id iaculis neque tempus. Vestibulum tristique sem et urna sodales, vitae consectetur massa facilisis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed porta varius ultrices. Morbi lorem nulla, blandit ut elementum sed, rutrum ac felis. Nulla vitae venenatis neque. Donec in turpis mi. Praesent non purus lobortis, suscipit ante sit amet, dignissim sapien. Mauris turpis risus, lacinia eu felis sit amet, elementum fringilla magna. Aliquam erat volutpat."
+        android:textStyle="normal|bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_saved_location_timestamp"
+        tools:text="12/30/2016 02:41:50 AM"
+        android:layout_gravity="end"
+        android:textAlignment="textEnd" />
+
+    <Button
+        android:text="Navigate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_navigate" />
+
+    <Button
+        android:text="Edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_edit" />
+
+    <Button
+        android:text="Hide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_hide" />
+
+</LinearLayout>

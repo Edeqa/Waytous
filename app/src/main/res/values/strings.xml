@@ -89,7 +89,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
-
     <string name="facebook_app_id">1226806074062997</string>
 
     <string name="menu_save_location">Save location</string>
@@ -98,10 +97,19 @@
     <string name="hide_tracks">Hide tracks</string>
     <string name="chat">Chat</string>
     <string name="set_welcome_message">Set welcome message</string>
-    <string name="show_distantions">Show distantions</string>
-    <string name="hide_distantions">Hide distantions</string>
+    <string name="show_distance">Show distance</string>
+    <string name="hide_distance">Hide distance</string>
+    <string name="show_distances">Show distances</string>
+    <string name="hide_distances">Hide distances</string>
     <string name="show_street_view">Show street view</string>
     <string name="hide_street_view">Hide street view</string>
+    <string name="show_navigation">Show navigation</string>
+    <string name="hide_navigation">Hide navigation</string>
+    <string name="hide_navigations">Hide navigation paths</string>
+    <string name="menu_set_my_name">Set my name</string>
+    <string name="title_activity_intro">IntroActivity</string>
+    <string name="pin">Pin</string>
+    <string name="unpin">Unpin</string>
 
 
 </resources>

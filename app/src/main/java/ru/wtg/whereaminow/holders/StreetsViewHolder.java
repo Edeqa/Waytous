@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.SupportStreetViewPanoramaFragment;
@@ -23,7 +22,7 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
+import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
@@ -34,11 +33,8 @@ import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.StreetsView> implements OnStreetViewPanoramaReadyCallback {
     private static final String TYPE = "streets";
 
-    private static final String SHOW_STREETS = "show_streets";
-    private static final String HIDE_STREETS = "hide_streets";
     private final AppCompatActivity context;
 
-    private GoogleMap map;
     private View streetViewLayout;
     private SupportStreetViewPanoramaFragment streetView;
     private StreetViewPanorama panorama;
@@ -57,11 +53,6 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
 
     public StreetsViewHolder(AppCompatActivity context) {
         this.context = context;
-    }
-
-    public StreetsViewHolder setMap(GoogleMap map) {
-        this.map = map;
-        return this;
     }
 
     public StreetsViewHolder setStreetViewLayout(final View streetViewLayout) {
@@ -123,7 +114,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                     optionsMenu.findItem(R.string.hide_street_view).setVisible(true);
                 }
                 break;
-            case TRACKING_STOPPED:
+            case TRACKING_DISABLED:
                 streetViewLayout.setVisibility(View.GONE);
                 break;
         }
@@ -133,14 +124,14 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
     @Override
     public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
         panorama = streetViewPanorama;
-
         panorama.setOnStreetViewPanoramaChangeListener(new StreetViewPanorama.OnStreetViewPanoramaChangeListener() {
             @Override
             public void onStreetViewPanoramaChange(StreetViewPanoramaLocation streetViewPanoramaLocation) {
-                if (streetViewPanoramaLocation != null && streetViewPanoramaLocation.links != null) {
+                if (panorama != null && streetViewPanoramaLocation != null && streetViewPanoramaLocation.links != null) {
                     panorama.animateTo(camera, LOCATION_UPDATES_DELAY);
+                    streetViewLayout.findViewById(R.id.tv_street_view_placeholder).setVisibility(View.INVISIBLE);
                 } else {
-                    System.out.println("STREETVIEW NOT AVAILABLE");
+                    streetViewLayout.findViewById(R.id.tv_street_view_placeholder).setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -180,9 +171,12 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                 streetViewLayout.setVisibility(View.GONE);
                 return;
             }
+            if(streetViewLayout.getVisibility() == View.GONE) return;
             if(!myUser.getProperties().isSelected()) return;
-            if(panorama == null || streetViewLayout.getVisibility() != View.VISIBLE) return;
-
+            if(panorama == null) {
+                streetView.getStreetViewPanoramaAsync(StreetsViewHolder.this);
+                return;
+            }
             camera = new StreetViewPanoramaCamera.Builder().bearing(location.getBearing()).build();
             panorama.setPosition(new LatLng(location.getLatitude(),location.getLongitude()));
         }

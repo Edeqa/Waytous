@@ -31,7 +31,7 @@ public class SmoothInterpolated {
         final long start = SystemClock.uptimeMillis();
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 
-        handler.post(new Runnable(){
+        new Thread(new Runnable(){
             float t,v,elapsed;
 
             @Override
@@ -52,7 +52,7 @@ public class SmoothInterpolated {
                 }
             }
 
-        });
+        }).start();
 
     }
 

@@ -1,6 +1,7 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import org.java_websocket.WebSocket;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_SERVER_HOST;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_REQUEST_TIMEOUT;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -27,6 +29,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_NEW_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
@@ -47,6 +50,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
  * Created 10/5/16.
@@ -77,7 +81,11 @@ public class MyWssServer extends WebSocketServer {
 //        this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
         System.out.println("WSS:on open:" + conn.getRemoteSocketAddress() + " connected");
 
-        conn.send("{\""+ RESPONSE_STATUS +"\":\""+ RESPONSE_STATUS_CONNECTED +"\"}");
+        try {
+            conn.send("{\"" + RESPONSE_STATUS + "\":\"" + RESPONSE_STATUS_CONNECTED + "\"}");
+        } catch(Exception e){
+            e.printStackTrace();
+        }
 
 
     }
@@ -125,6 +133,14 @@ public class MyWssServer extends WebSocketServer {
         JSONObject request, response = new JSONObject();
 
         request = new JSONObject(message);
+        if(!request.has(REQUEST_TIMESTAMP)) return;
+        long timestamp = request.getLong(REQUEST_TIMESTAMP);
+        if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
+            System.out.println("WSS:ignore request because of timeout");
+//            conn.close(CloseFrame.GOING_AWAY, "Request timeout");
+            return;
+        }
+
         if(!request.has(REQUEST)) return;
 
         String req = request.getString(REQUEST);
@@ -164,7 +180,7 @@ public class MyWssServer extends WebSocketServer {
 
             System.out.println("NEW:response:" + response);
 
-//            Utils.pause(2);//FIXME remove pause
+            Utils.pause(2);//FIXME remove pause
 
             conn.send(response.toString());
         } else if(REQUEST_JOIN_TOKEN.equals(req)){
@@ -238,6 +254,7 @@ public class MyWssServer extends WebSocketServer {
                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                 response.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
             }
+            Utils.pause(2);//FIXME remove pause
             conn.send(response.toString());
             System.out.println("JOIN:response:" + response);
         } else if(REQUEST_CHECK_USER.equals(req)){
@@ -308,7 +325,7 @@ public class MyWssServer extends WebSocketServer {
                 MyToken token = ipToToken.get(ip);
                 MyUser user = ipToUser.get(ip);
 
-                System.out.println("UPDATE:token and user found:" + token.getId() + ":" + user);
+//                System.out.println("UPDATE:token and user found:" + token.getId() + ":" + user);
 
                 JSONObject o = new JSONObject();
                 if(request.has(USER_NAME)){
@@ -358,7 +375,7 @@ public class MyWssServer extends WebSocketServer {
     @Override
     public void onError(WebSocket conn, Exception ex) {
         ex.printStackTrace();
-        if (conn != null) {
+        if (conn != null && conn.getRemoteSocketAddress() != null) {
             System.out.println("WSS:on error:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
 
             String ip = conn.getRemoteSocketAddress().toString();

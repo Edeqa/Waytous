@@ -4,14 +4,12 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 9;
+    public final static int SERVER_BUILD = 10;
 
-// emulator debug local version
-/*
+// device debug local version
     public final static String WSS_SERVER_HOST = "10.0.0.96";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
-*/
 // emulator local version
 /*
     public final static String WSS_SERVER_HOST = "192.168.56.1";
@@ -20,12 +18,15 @@ public class Constants {
 */
 
 // device internet version
+/*
     public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
     public final static boolean DEBUGGING = false;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
+*/
 
-// device debug internet version
- /*   public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
+// emulator debug internet version
+/*
+    public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 */
@@ -37,13 +38,9 @@ public class Constants {
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
 
-    public static final int TRACKING_DISABLED = 0;
-    public static final int TRACKING_CONNECTING = 1;
-    public static final int TRACKING_ACTIVE = 2;
-    public static final int TRACKING_GPS_REJECTED = 3;
-
 // client constants
     public static final String REQUEST = "client";
+    public static final String REQUEST_TIMESTAMP = "timestamp";
     public static final String REQUEST_UPDATE = "update";
     public static final String REQUEST_JOIN_TOKEN = "join";
     public static final String REQUEST_NEW_TOKEN = "create";
@@ -90,5 +87,6 @@ public class Constants {
     public static final String RESPONSE_WELCOME_MESSAGE = "welcome_message";
 
     public static final int LIFETIME_INACTIVE_TOKEN = 600;
+    public static final int LIFETIME_REQUEST_TIMEOUT = 10;
 
 }

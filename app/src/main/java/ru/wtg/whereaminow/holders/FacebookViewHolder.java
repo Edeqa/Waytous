@@ -15,18 +15,21 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
+import java.util.ArrayList;
+
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 
-import static ru.wtg.whereaminow.State.ACTIVITY_CREATE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 
 /**
  * Created 12/03/16.
  */
-public class FacebookViewHolder extends AbstractPropertyHolder {
+public class FacebookViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "facebook";
 
@@ -34,7 +37,10 @@ public class FacebookViewHolder extends AbstractPropertyHolder {
     private CallbackManager callbackManager;
     private FabViewHolder fab;
 
-    public FacebookViewHolder() {
+    public FacebookViewHolder(Activity context) {
+        this.context = context;
+        FacebookSdk.sdkInitialize(context.getApplicationContext());
+        AppEventsLogger.activateApp(context);
     }
 
     @Override
@@ -53,23 +59,16 @@ public class FacebookViewHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public AbstractProperty create(MyUser myUser) {
+    public AbstractView create(MyUser myUser) {
         return null;
     }
 
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
-            case ACTIVITY_CREATE:
-                context = (Activity) object;
-                if(context != null) {
-                    FacebookSdk.sdkInitialize(context.getApplicationContext());
-                    AppEventsLogger.activateApp(context);
-                }
-                break;
             case PREPARE_FAB:
                 fab = (FabViewHolder) object;
-                if(State.getInstance().tracking()) {
+                if(State.getInstance().tracking_active()) {
                     fab.addMenuButtonAt(R.id.fab_share_to_facebook, 0).setOnClickListener(onClickListener);
                 }
                 break;
@@ -128,4 +127,14 @@ public class FacebookViewHolder extends AbstractPropertyHolder {
             }
         }
     };
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("facebook_intro").setViewId(R.id.iv_fab_share_to_facebook).setTitle("Here you can").setDescription("Share this group to Facebook."));
+
+        return rules;
+    }
+
 }
