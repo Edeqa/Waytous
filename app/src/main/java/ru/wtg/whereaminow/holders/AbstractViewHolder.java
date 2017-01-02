@@ -1,5 +1,11 @@
 package ru.wtg.whereaminow.holders;
 
+import android.support.v7.app.AlertDialog;
+import android.view.View;
+
+import java.util.ArrayList;
+
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 
@@ -24,5 +30,10 @@ abstract public class AbstractViewHolder<T extends AbstractView> implements Enti
     public boolean onEvent(String event, Object object) {
         return true;
     }
+
+    public ArrayList<IntroRule> getIntro(){
+        return null;
+    }
+
 
 }

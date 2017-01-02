@@ -10,21 +10,22 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
 import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
-import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
-import static ru.wtg.whereaminow.holders.CameraViewHolder.ADJUST_ZOOM;
+import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_ZOOM;
 
 /**
  * Created 11/18/16.
@@ -52,7 +53,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
     public ButtonViewHolder setLayout(LinearLayout layout) {
         this.layout = layout;
-        if(State.getInstance().tracking()){
+        if(State.getInstance().tracking_active()){
             show();
         } else {
             hide();
@@ -68,12 +69,11 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
-            case TRACKING_ACCEPTED:
+            case TRACKING_ACTIVE:
                 show();
                 break;
             case TRACKING_STOP:
-            case TRACKING_STOPPED:
-            case CONNECTION_ERROR:
+            case TRACKING_DISABLED:
                 hide();
                 break;
         }
@@ -175,7 +175,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             @Override
             public void onClick(View view) {
                 if(clicked) {
-                    myUser.fire(ADJUST_ZOOM);
+                    myUser.fire(CAMERA_ZOOM);
                     clicked = false;
                 } else {
                     myUser.fire(SELECT_SINGLE_USER);
@@ -209,5 +209,15 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         };
 
      }
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(TRACKING_ACTIVE).setId("button_intro").setView(layout).setTitle("Top buttons").setDescription("Here are the buttons of group members. Touch any button to switch to this member or long touch for context menu."));
+
+        return rules;
+    }
+
 
 }

@@ -9,15 +9,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
+import static ru.wtg.whereaminow.State.PREPARE_FAB;
 
 /**
  * Created 11/27/16.
@@ -111,6 +115,15 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     public void closeDrawer() {
         drawer.closeDrawer(GravityCompat.START);
+    }
+
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("drawer_intro").setLinkTo(IntroRule.LINK_TO_DRAWER_BUTTON).setTitle("Drawer").setDescription("Open left drawer to access main preferences."));
+        return rules;
     }
 
 }

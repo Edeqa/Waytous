@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_navigation_options_driving"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:minWidth="@dimen/material_dialog_width_minimum"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/material_dialog_content_area_padding_vertical"
+    android:paddingLeft="@dimen/material_dialog_content_area_padding_horizontal"
+    android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal"
+    android:paddingTop="@dimen/material_dialog_content_area_padding_vertical">
+
+    <CheckBox
+        android:text="Avoid highways"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/material_dialog_actions_stacked_button_height"
+        android:id="@+id/cb_navigation_avoid_highways" />
+
+    <CheckBox
+        android:text="Avoid tolls"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/material_dialog_actions_stacked_button_height"
+        android:id="@+id/cb_navigation_avoid_tolls" />
+
+    <CheckBox
+        android:text="Avoid ferries"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/material_dialog_actions_stacked_button_height"
+        android:id="@+id/cb_navigation_avoid_ferries" />
+
+</LinearLayout>

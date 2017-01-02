@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -11,15 +14,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
+import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.PREPARE_FAB;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
@@ -56,6 +66,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
         this.map = map;
 
         map.setOnMarkerClickListener(onMarkerClickListener);
+//        map.setInfoWindowAdapter(infoWindowAdapter);
 
         return this;
     }
@@ -132,20 +143,24 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             final float finalRotation = location.getBearing();
 
             new SmoothInterpolated(new SimpleCallback<Float[]>() {
-                        @Override
-                        public void call(Float[] value) {
-                            LatLng currentPosition = new LatLng(
-                                    startPosition.latitude*(1-value[TIME_ELAPSED])+finalPosition.latitude*value[TIME_ELAPSED],
-                                    startPosition.longitude*(1-value[TIME_ELAPSED])+finalPosition.longitude*value[TIME_ELAPSED]);
+                @Override
+                public void call(Float[] value) {
+                    final LatLng currentPosition = new LatLng(
+                            startPosition.latitude*(1-value[TIME_ELAPSED])+finalPosition.latitude*value[TIME_ELAPSED],
+                            startPosition.longitude*(1-value[TIME_ELAPSED])+finalPosition.longitude*value[TIME_ELAPSED]);
 
-                            float rot = value[CURRENT_VALUE] * finalRotation + (1 - value[CURRENT_VALUE]) * startRotation;
+                    final float rot = value[CURRENT_VALUE] * finalRotation + (1 - value[CURRENT_VALUE]) * startRotation;
 
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        public void run() {
                             if(marker != null) {
                                 marker.setRotation(-rot > 180 ? rot / 2 : rot);
                                 marker.setPosition(currentPosition);
                             }
                         }
-                    }).execute();
+                    });
+                }
+            }).execute();
 
         }
 
@@ -171,5 +186,45 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             return true;
         }
     };
+
+/*
+    private GoogleMap.InfoWindowAdapter infoWindowAdapter = new GoogleMap.InfoWindowAdapter() {
+        @Override
+        public View getInfoWindow(Marker marker) {
+            Bundle m = (Bundle) marker.getTag();
+            if(m != null) {
+                MyUser user = State.getInstance().getUsers().getUsers().get(m.getInt("number"));
+                return ((MarkerView)user.getEntity(TYPE)).infoWindow();
+//                System.out.println("WINFOW:"+user.getProperties().getDisplayName());
+
+            }
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            System.out.println("CONTENTS:"+marker.getTag());
+            return null;
+        }
+    };
+*/
+
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+//        MarkerView markerView = (MarkerView) State.getInstance().getMe().getEntity(TYPE);
+//        LatLng latLng = new LatLng(markerView.myUser.getLocation().getLatitude(), markerView.myUser.getLocation().getLongitude());
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+
+        rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("marker_intro").setViewId(R.id.map).setLinkTo(IntroRule.LINK_TO_CENTER_OF_VIEW).setTitle("Marker").setDescription("This one shows your position or positions of your friends on the map. Each marker has a different color but your color is always blue. Try to click on the marker a couple of times."));
+//        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_intro_menu").setView(fab_buttons).setTitle("Click any item to perform some action"));
+//        rules.add(new IntroRule().setId("menu_set_name").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Click menu"));
+
+        return rules;
+    }
+
+
 
 }

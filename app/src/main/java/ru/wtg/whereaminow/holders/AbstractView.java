@@ -1,6 +1,7 @@
 package ru.wtg.whereaminow.holders;
 
 import android.location.Location;
+import android.view.View;
 
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.Entity;
@@ -29,10 +30,9 @@ abstract public class AbstractView implements Entity {
         System.out.println("onChangeLocation:"+(this.getClass().getSimpleName()));
     }
 
-    @Override
-    public boolean isView(){
-        return true;
+/*
+    public View infoWindow() {
+        return null;
     }
-
-
+*/
 }

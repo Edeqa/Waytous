@@ -9,14 +9,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.NavigationStarter;
 
+import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
@@ -29,6 +34,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
 
     private final Activity context;
     private boolean day = true;
+    private Menu optionsMenu;
 
     public MenuViewHolder(Activity context) {
         this.context = context;
@@ -54,7 +60,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     public boolean onEvent(String event, Object object) {
         switch(event){
             case CREATE_OPTIONS_MENU:
-                Menu optionsMenu = (Menu) object;
+                optionsMenu = (Menu) object;
                 if(DEBUGGING) {
                     optionsMenu.add("Switch day/night mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
@@ -64,11 +70,11 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
                         }
                     });
                 }
-                optionsMenu.add("Set my name").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                optionsMenu.add(R.string.menu_set_my_name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setTitle("Set my name");
+                        builder.setTitle(R.string.menu_set_my_name);
 
                         View layoutDialogSetMyName = context.getLayoutInflater().inflate(R.layout.dialog_set_my_name, null);
 
@@ -121,7 +127,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         public boolean onEvent(String event, Object object) {
             if(object == null) return true;
             switch (event){
-                case CREATE_CONTEXT_MENU:
+                /*case CREATE_CONTEXT_MENU:
                     ContextMenu contextMenu = (ContextMenu) object;
                     MenuItem item = contextMenu.findItem(R.id.action_navigate);
                     item.setVisible(myUser != State.getInstance().getMe());
@@ -132,7 +138,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
                                 return false;
                             }
                         });
-                    break;
+                    break;*/
             }
             return true;
         }
@@ -143,4 +149,14 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         }
 
     }
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+        ArrayList<IntroRule> rules = new ArrayList<>();
+//        rules.add(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_show_context").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.menu_set_my_name).setTitle("Here you can").setDescription("Change your name in group."));
+        rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("menu_intro_option").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Main menu").setDescription("Here you can access general actions to this group. And something else..."));
+
+        return rules;
+    }
+
 }

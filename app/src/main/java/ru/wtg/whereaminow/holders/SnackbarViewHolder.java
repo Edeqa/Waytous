@@ -8,14 +8,13 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 
-import static ru.wtg.whereaminow.State.CONNECTION_DISCONNECTED;
-import static ru.wtg.whereaminow.State.CONNECTION_ERROR;
 import static ru.wtg.whereaminow.State.TOKEN_CREATED;
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.TRACKING_ERROR;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
-import static ru.wtg.whereaminow.State.TRACKING_STOPPED;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesViewHolder.SETUP_WELCOME_MESSAGE;
@@ -86,7 +85,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
         final MyUser user;
         switch(event){
             case TRACKING_NEW:
-                snackbar.setText("Starting tracking...").setAction("Cancel", new View.OnClickListener() {
+                snackbar.setText("Creating group...").setAction("Cancel", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(TRACKING_STOP);
@@ -94,7 +93,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 }).show();
                 break;
             case TRACKING_JOIN:
-                snackbar.setText("Joining tracking...").setAction("Cancel", new View.OnClickListener() {
+                snackbar.setText("Joining group...").setAction("Cancel", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(TRACKING_STOP);
@@ -110,7 +109,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                     }
                 }).show();
                 break;
-            case TRACKING_ACCEPTED:
+            case TRACKING_ACTIVE:
                 if(tokenCreatedShown && State.getInstance().getMe().getProperties().getNumber() == 0) {
                     tokenCreatedShown = false;
                 } else {
@@ -122,7 +121,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                     }).show();
                 }
                 break;
-            case TRACKING_STOPPED:
+            case TRACKING_STOP:
                 snackbar.dismiss();
                 break;
             case WELCOME_MESSAGE:
@@ -134,7 +133,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                     }
                 }).show();
                 break;
-            case CONNECTION_DISCONNECTED:
+            case TRACKING_RECONNECTING:
                 message = (String) object;
                 snackbar.setText((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect").setAction("Cancel", new View.OnClickListener() {
                     @Override
@@ -143,11 +142,12 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                     }
                 }).show();
                 break;
-            case CONNECTION_ERROR:
+            case TRACKING_ERROR:
                 message = (String) object;
-                snackbar.setText(message).setAction("New tracking", new View.OnClickListener() {
+                snackbar.setText(message).setAction("New group", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        snackbar.dismiss();
                         State.getInstance().fire(TRACKING_NEW);
                     }
                 }).show();

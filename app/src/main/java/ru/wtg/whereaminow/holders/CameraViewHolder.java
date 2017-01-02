@@ -1,5 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
@@ -21,6 +22,7 @@ import java.io.Serializable;
 import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import ru.wtg.whereaminow.R;
@@ -45,14 +47,17 @@ import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraUpdateView> {
     public static final String TYPE = "camera";
 
-    public static final String ADJUST_ZOOM = "adjust_zoom";
     public static final String UPDATE_CAMERA = "update_camera";
+    public static final String CAMERA_UPDATED = "camera_updated";
+    public static final String CAMERA_ZOOM_IN = "camera_zoom_in";
+    public static final String CAMERA_ZOOM_OUT = "camera_zoom_out";
+    public static final String CAMERA_ZOOM = "camera_zoom";
 
     public static final String CAMERA_NEXT_ORIENTATION = "change_next_orientation";
 
     private final static int CAMERA_ORIENTATION_NORTH = 0;
     private final static int CAMERA_ORIENTATION_DIRECTION = 1;
-    private final static int CAMERA_ORIENTATION_PERSPECTIVE = 2;
+    public final static int CAMERA_ORIENTATION_PERSPECTIVE = 2;
     private final static int CAMERA_ORIENTATION_STAY = 3;
     private final static int CAMERA_ORIENTATION_USER = 4;
     private static final float CAMERA_DEFAULT_ZOOM = 15.f;
@@ -102,9 +107,10 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     public boolean onEvent(String event, Object object) {
         switch(event){
             case REQUEST_MODE_DAY:
-//                scaleView.getForegroundTintMode()
+                scaleView.setColor(Color.BLACK);
                 break;
             case REQUEST_MODE_NIGHT:
+                scaleView.setColor(Color.WHITE);
                 break;
             case UPDATE_CAMERA:
                 if(State.getInstance().getUsers().getCountAllSelected()==0){
@@ -120,6 +126,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
                 });
                 break;
+
         }
         return true;
     }
@@ -191,6 +198,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     public CameraViewHolder setScaleView(MapScaleView scaleView) {
         this.scaleView = scaleView;
+        if(Locale.US.equals(Locale.getDefault())) {
+            scaleView.setIsMiles(true);
+        }
         return this;
     }
 
@@ -275,7 +285,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             switch (orientation){
                 case CAMERA_ORIENTATION_NORTH:
                     if(orientationChanged) {
-                        scaleView.setVisibility(View.VISIBLE);
+//                        scaleView.setVisibility(View.VISIBLE);
                     }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(0);
@@ -283,16 +293,16 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     break;
                 case CAMERA_ORIENTATION_DIRECTION:
                     if(orientationChanged) {
-                        scaleView.setVisibility(View.VISIBLE);
+//                        scaleView.setVisibility(View.VISIBLE);
                     }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(location.getBearing());
                     position.tilt(0);
                     break;
                 case CAMERA_ORIENTATION_PERSPECTIVE:
+//                    scaleView.setVisibility(View.INVISIBLE);
                     if(orientationChanged) {
                         position.tilt(60);
-                        scaleView.setVisibility(View.INVISIBLE);
                     }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(location.getBearing());
@@ -357,21 +367,20 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     setOrientation(orientation);
                     onChangeLocation(myUser.getLocation());
                     break;
-                case ADJUST_ZOOM:
-                    zoom = CAMERA_DEFAULT_ZOOM;
-                    onChangeLocation(myUser.getLocation());
-                    break;
+//                case ADJUST_ZOOM:
+//                    zoom = CAMERA_DEFAULT_ZOOM;
+//                    onChangeLocation(myUser.getLocation());
+//                    break;
                 case CREATE_CONTEXT_MENU:
                     ContextMenu menu = (ContextMenu) object;
-                    if(!myUser.getProperties().isSelected()) {
-                        menu.add("Pin").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                myUser.fire(SELECT_USER);
-                                return false;
-                            }
-                        });
-                    } else if(State.getInstance().getUsers().getCountSelected()!=1) {
+                    menu.findItem(R.id.action_pin).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            myUser.fire(SELECT_USER);
+                            return false;
+                        }
+                    }).setVisible(!myUser.getProperties().isSelected());
+                    if(State.getInstance().getUsers().getCountSelected()!=1 && myUser.getProperties().isSelected()) {
                         menu.add("Unpin").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -386,6 +395,33 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     if(newNumber == number) break;
                     number = newNumber;
                     break;
+                case CAMERA_ZOOM:
+                    float z = CAMERA_DEFAULT_ZOOM;
+                    if(object != null) {
+                        z = (float) object;
+                    }
+                    zoom = z;
+                    onChangeLocation(myUser.getLocation());
+//                    State.getInstance().fire(UPDATE_CAMERA);
+                    break;
+                case CAMERA_ZOOM_IN:
+                    z = 1;
+                    if(object != null) {
+                        z = (float) object;
+                    }
+                    zoom = zoom + z;
+                    onChangeLocation(myUser.getLocation());
+//                    State.getInstance().fire(UPDATE_CAMERA);
+                    break;
+                case CAMERA_ZOOM_OUT:
+                    z = -1;
+                    if(object != null) {
+                        z = (float) object;
+                    }
+                    zoom = zoom + z;
+                    onChangeLocation(myUser.getLocation());
+//                    State.getInstance().fire(UPDATE_CAMERA);
+                    break;
             }
             return true;
         }
@@ -399,6 +435,10 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
 //            myUser.getProperties().saveFor(TYPE, this);
         }
+
+         public int getOrientation() {
+             return orientation;
+         }
 
         CameraPosition.Builder getCameraPosition(){
             return position;
@@ -449,6 +489,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
             moveFromHardware = false;
             canceled = false;
+            State.getInstance().fire(CAMERA_UPDATED, cameraUpdate.myUser);
 //            System.out.println("onCameraIdle");
         }
     };

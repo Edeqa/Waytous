@@ -26,8 +26,11 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
@@ -38,6 +41,7 @@ import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
+import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
@@ -64,7 +68,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private final AppCompatActivity context;
     //    private final MessagesHolder messagesHolder;
     private UserMessage.UserMessagesAdapter adapter;
-    private AlertDialog dialog;
     private View toolbar;
     private ColorDrawable drawable;
     //    private LinearLayoutManager layoutManager;
@@ -72,9 +75,11 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private boolean donotscroll;
     private boolean notTransparentWindow;
     private Integer fontSize;
+    private AlertDialog dialog;
 
     public MessagesViewHolder(AppCompatActivity context) {
         this.context = context;
+        this.dialog = new AlertDialog.Builder(context).create();
 //        messagesHolder = ((MessagesHolder)State.getInstance().getEntityHolder(MessagesHolder.TYPE));
     }
 
@@ -158,7 +163,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
-                optionsMenu.findItem(R.string.set_welcome_message).setVisible(State.getInstance().tracking() && State.getInstance().getMe().getProperties().getNumber() == 0);
+                optionsMenu.findItem(R.string.set_welcome_message).setVisible(State.getInstance().tracking_active() && State.getInstance().getMe().getProperties().getNumber() == 0);
                 break;
             case SETUP_WELCOME_MESSAGE:
                 onMenuItemSetWelcomeMessageClickListener.onMenuItemClick(null);
@@ -187,7 +192,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     if (privateMessage && toUser != null) {
                         JSONObject o = new JSONObject();
                         try {
-                            if(State.getInstance().tracking()) {
+                            if(State.getInstance().tracking_active()) {
                                 o.put(RESPONSE_PRIVATE, toUser.getProperties().getNumber());
                                 o.put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
                                 State.getInstance().getTracking().sendMessage(o);
@@ -197,7 +202,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                             e.printStackTrace();
                         }
                     } else {
-                        if(State.getInstance().tracking()) {
+                        if(State.getInstance().tracking_active()) {
                             State.getInstance().getTracking().sendMessage(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
                         }
                         State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
@@ -310,7 +315,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             }
         });
 
-        if(State.getInstance().tracking()) {
+        if(State.getInstance().tracking_active()) {
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, "New message", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -363,11 +368,16 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         } else {
             new SmoothInterpolated(new SimpleCallback<Float[]>() {
                 @Override
-                public void call(Float[] value) {
-                    drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                public void call(final Float[] value) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        public void run() {
+                            if(drawable != null)
+                                drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                        }
+                    });
                 }
             }).execute();
-         }
+        }
     }
 
     private void reloadCursor(){
@@ -388,8 +398,13 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     case 1:
                         action = new SmoothInterpolated(new SimpleCallback<Float[]>() {
                             @Override
-                            public void call(Float[] value) {
-                                drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                            public void call(final Float[] value) {
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    public void run() {
+                                        if(drawable != null)
+                                            drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                                    }
+                                });
                             }
                         }).setDuration(320);
                         action.execute();
@@ -483,17 +498,17 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             final AlertDialog dialog = new AlertDialog.Builder(context).create();
             dialog.setTitle("Set welcome message");
 
-            @SuppressLint("InflateParams") View content = context.getLayoutInflater().inflate(R.layout.dialog_welcome_message, null);
+            View view = context.getLayoutInflater().inflate(R.layout.dialog_welcome_message, null);
 
-            final EditText etMessage = (EditText) content.findViewById(R.id.et_welcome_message);
-            final CheckBox cbSaveAsDefault = (CheckBox) content.findViewById(R.id.cb_save_as_default);
+            final EditText etMessage = (EditText) view.findViewById(R.id.et_welcome_message);
+            final CheckBox cbSaveAsDefault = (CheckBox) view.findViewById(R.id.cb_save_as_default);
 
             etMessage.setText(State.getInstance().getStringPreference(WELCOME_MESSAGE, ""));
 
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    if(State.getInstance().tracking() && etMessage.getText().toString().length()>0) {
+                    if(State.getInstance().tracking_active() && etMessage.getText().toString().length()>0) {
                         State.getInstance().getTracking().sendMessage(RESPONSE_WELCOME_MESSAGE, etMessage.getText().toString());
                         if(cbSaveAsDefault.isChecked()) {
                             State.getInstance().setPreference(WELCOME_MESSAGE, etMessage.getText().toString());
@@ -509,7 +524,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 }
             });
 
-            dialog.setView(content);
+            dialog.setView(view);
 
             dialog.show();
 
@@ -584,5 +599,15 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             return false;
         }
     };
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.id.iv_fab_new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
+//        rules.add(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
+
+        return rules;
+    }
 
 }

@@ -99,7 +99,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                             setTitle(null);
                         }
                     } catch (IOException | NullPointerException e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
 
                     }
                 }

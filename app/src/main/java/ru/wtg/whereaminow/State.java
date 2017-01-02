@@ -34,10 +34,6 @@ import ru.wtg.whereaminow.interfaces.EntityHolder;
 import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 import static ru.wtg.whereaminow.ExceptionActivity.EXCEPTION;
-import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_ACTIVE;
-import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_CONNECTING;
-import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_DISABLED;
-import static ru.wtg.whereaminowserver.helpers.Constants.TRACKING_GPS_REJECTED;
 
 public class State extends MultiDexApplication {
 
@@ -68,11 +64,20 @@ public class State extends MultiDexApplication {
     public static final String TRACKING_NEW = "tracking_new";
     public static final String TRACKING_JOIN = "tracking_join";
     public static final String TRACKING_STOP = "tracking_stop";
-    public static final String TRACKING_STARTED = "tracking_started";
-    public static final String TRACKING_ACCEPTED = "tracking_accepted";
-    public static final String TRACKING_STOPPED = "tracking_stopped";
-    public static final String CONNECTION_DISCONNECTED = "disconnected";
-    public static final String CONNECTION_ERROR = "error";
+
+    public static final String TRACKING_DISABLED = "tracking_disabled";
+    public static final String TRACKING_CONNECTING = "tracking_connecting";
+    public static final String TRACKING_ACTIVE = "tracking_active";
+    public static final String TRACKING_RECONNECTING = "tracking_reconnecting";
+    public static final String TRACKING_EXPIRED = "tracking_expired";
+    public static final String TRACKING_ERROR = "tracking_error";
+
+    public static final int TRACKING_GPS_REJECTED = 6;
+
+
+
+//    public static final String CONNECTION_DISCONNECTED = "disconnected";
+//    public static final String CONNECTION_ERROR = "error";
     public static final String TOKEN_CREATED = "token_created";
     public static final String TOKEN_CHANGED = "token_changed";
 
@@ -177,21 +182,31 @@ public class State extends MultiDexApplication {
         return this;
     }
 
-    public boolean disconnected() {
-        return tracking == null || tracking.getStatus() == TRACKING_DISABLED;
+
+    public boolean tracking_disabled() {
+        return tracking == null || TRACKING_DISABLED.equals(tracking.getStatus());
     }
 
-    public boolean rejected() {
-        return tracking != null && tracking.getStatus() == TRACKING_GPS_REJECTED;
+    public boolean tracking_connecting() {
+        return tracking != null && TRACKING_CONNECTING.equals(tracking.getStatus());
     }
 
-    public boolean tracking() {
-        return tracking != null && tracking.getStatus() == TRACKING_ACTIVE;
+    public boolean tracking_reconnecting() {
+        return tracking != null && TRACKING_RECONNECTING.equals(tracking.getStatus());
     }
 
-    public boolean connecting() {
-        return tracking != null && tracking.getStatus() == TRACKING_CONNECTING;
+    public boolean tracking_error() {
+        return tracking != null && TRACKING_ERROR.equals(tracking.getStatus());
     }
+
+    public boolean tracking_expired() {
+        return tracking != null && TRACKING_EXPIRED.equals(tracking.getStatus());
+    }
+
+    public boolean tracking_active() {
+        return tracking != null &&  TRACKING_ACTIVE.equals(tracking.getStatus());
+    }
+
 
     public String getDeviceId() {
         if(deviceId == null) {
@@ -419,7 +434,7 @@ public class State extends MultiDexApplication {
     public void fire(final String EVENT){
         switch(EVENT){
             case ACTIVITY_DESTROY:
-                if(disconnected()) {
+                if(tracking_disabled() || tracking_error() || tracking_expired()) {
                     clearViewHolders();
                     entityHolders.clear();
                     entityEvents.clear();

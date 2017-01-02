@@ -21,7 +21,7 @@ import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_ACCEPTED;
+import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
@@ -46,7 +46,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     }
 
     public PropertiesHolder(Context context){
-        sharedPreferences = context.getSharedPreferences("tracking", MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
-            case TRACKING_ACCEPTED:
+            case TRACKING_ACTIVE:
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {

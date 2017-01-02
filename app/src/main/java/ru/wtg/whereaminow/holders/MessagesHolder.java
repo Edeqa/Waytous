@@ -9,13 +9,11 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.NotificationCompat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.WhereAmINowService;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.UserMessage;
 
@@ -63,7 +61,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
 
         notification = new NotificationCompat.Builder(context)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.drawable.ic_message_black_24dp)
+                .setSmallIcon(R.drawable.ic_notification_message)
                 .setAutoCancel(true)
                 .setContentTitle("...")
                 .setContentIntent(pendingIntent)
@@ -199,8 +197,8 @@ public class MessagesHolder extends AbstractPropertyHolder {
                         PendingIntent pendingReplyIntent = PendingIntent.getActivity(context, 1979, replyIntent, 0);
 
                         notification.mActions.clear();
-                        notification.addAction(R.drawable.ic_message_black_24dp, "View", pendingViewIntent);
-                        notification.addAction(R.drawable.ic_reply_black_24dp, "Reply", pendingReplyIntent);
+                        notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
+                        notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
 
                         notification
                                 .setContentTitle(myUser.getProperties().getDisplayName())
@@ -224,7 +222,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                     messages.add(m);
                     break;
                 case CHANGE_NUMBER:
-                    if(State.getInstance().tracking() && myUser.getProperties().getNumber() == 0) {
+                    if(State.getInstance().tracking_active() && myUser.getProperties().getNumber() == 0) {
                         text = State.getInstance().getStringPreference(WELCOME_MESSAGE, "");
                         if(text.length()>0) {
                             State.getInstance().getTracking().sendMessage(RESPONSE_WELCOME_MESSAGE, text);
