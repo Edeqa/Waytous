@@ -34,7 +34,7 @@
             />
 
         <TextView
-            android:text="Street view not available for this place"
+            android:text="Street view is still not available for this place"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/tv_street_view_placeholder"
@@ -88,6 +88,21 @@
 
     </HorizontalScrollView>
 
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/layout_context_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sv_users"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="@dimen/material_button_fab_size"
+        android:layout_marginRight="@dimen/material_button_fab_size"
+        android:layout_centerHorizontal="true"
+        app:flexWrap="wrap"
+        app:alignItems="stretch"
+        app:alignContent="stretch"
+        android:visibility="gone">
+    </com.google.android.flexbox.FlexboxLayout>
+
     <com.github.pengrad.mapscaleview.MapScaleView
         android:id="@+id/scale_view"
         android:layout_width="wrap_content"
@@ -106,7 +121,8 @@
         android:id="@+id/layout_navigation_mode"
         android:paddingBottom="8sp"
         android:layout_alignBottom="@id/map"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:visibility="gone">
 
         <ImageButton
             android:layout_width="wrap_content"

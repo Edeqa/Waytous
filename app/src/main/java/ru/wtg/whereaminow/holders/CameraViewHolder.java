@@ -372,22 +372,22 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //                    onChangeLocation(myUser.getLocation());
 //                    break;
                 case CREATE_CONTEXT_MENU:
-                    ContextMenu menu = (ContextMenu) object;
+                    Menu menu = (Menu) object;
                     menu.findItem(R.id.action_pin).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             myUser.fire(SELECT_USER);
                             return false;
                         }
-                    }).setVisible(!myUser.getProperties().isSelected());
+                    }).setIcon(R.drawable.ic_select_all_black_24dp).setVisible(!myUser.getProperties().isSelected());
                     if(State.getInstance().getUsers().getCountSelected()!=1 && myUser.getProperties().isSelected()) {
-                        menu.add("Unpin").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.unpin, Menu.NONE, R.string.unpin).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(UNSELECT_USER, 0);
                                 return false;
                             }
-                        });
+                        }).setIcon(R.drawable.ic_unselect_black_24dp);
                     }
                     break;
                 case CHANGE_NUMBER:

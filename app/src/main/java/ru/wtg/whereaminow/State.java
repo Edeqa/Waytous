@@ -72,6 +72,9 @@ public class State extends MultiDexApplication {
     public static final String TRACKING_EXPIRED = "tracking_expired";
     public static final String TRACKING_ERROR = "tracking_error";
 
+    public static final String MOVING_CLOSE_TO = "moving_close_to";
+    public static final String MOVING_AWAY_FROM = "moving_away_from";
+
     public static final int TRACKING_GPS_REJECTED = 6;
 
 

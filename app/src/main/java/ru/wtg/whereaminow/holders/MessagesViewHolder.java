@@ -109,7 +109,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 } else if (object instanceof MyUser) {
                     to = (MyUser) object;
                 }
-                newMessage(to,false);
+                newMessage(to,false,"");
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancel(1977);
                 break;
@@ -172,7 +172,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         return true;
     }
 
-    private void newMessage(final MyUser toUser, final boolean privateMessage) {
+    private void newMessage(final MyUser toUser, final boolean privateMessage, String text) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
         if (toUser == null) {
@@ -184,6 +184,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         @SuppressLint("InflateParams") View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null);
 
         final EditText etMessage = (EditText) content.findViewById(R.id.et_message);
+        etMessage.setText(text);
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
             @Override
@@ -220,7 +221,15 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Private", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    newMessage(toUser, true);
+                    newMessage(toUser, true, etMessage.getText().toString());
+                }
+            });
+        }
+        if(privateMessage) {
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Not private", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    newMessage(toUser, false, etMessage.getText().toString());
                 }
             });
         }
@@ -320,7 +329,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialog = null;
-                    newMessage(null, false);
+                    newMessage(null, false,"");
                 }
             });
         }
@@ -431,7 +440,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             if(myUser.getLocation() != null && !myUser.isUser()) return true;
             switch (event) {
                 case USER_MESSAGE:
-                    if(dialog != null) {
+                    if(dialog != null && dialog.isShowing()) {
                         reloadCursor();
                     } else {
                         String text = (String) object;
@@ -440,7 +449,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         new SnackbarMessage().setText(myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
-                                newMessage(myUser, false);
+                                newMessage(myUser, false,"");
                             }
                         }).setOnClickListener(new SimpleCallback() {
                             @Override
@@ -452,7 +461,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     }
                     break;
                 case PRIVATE_MESSAGE:
-                    if(dialog != null) {
+                    if(dialog != null && dialog.isShowing()) {
                         reloadCursor();
                         return false;
                     } else {
@@ -462,7 +471,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         new SnackbarMessage().setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
-                                newMessage(myUser, true);
+                                newMessage(myUser, true, "");
                             }
                         }).setOnClickListener(new SimpleCallback() {
                             @Override
@@ -473,18 +482,18 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     }
                     break;
                 case NEW_MESSAGE:
-                    newMessage(myUser, false);
+                    newMessage(myUser, false, "");
                     break;
                 case CREATE_CONTEXT_MENU:
-                    ContextMenu menu = (ContextMenu) object;
+                    Menu menu = (Menu) object;
                     if(myUser != State.getInstance().getMe()) {
-                        menu.add("Private message").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.private_message, Menu.NONE, R.string.private_message).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                newMessage(myUser, true);
+                                newMessage(myUser, true, "");
                                 return false;
                             }
-                        });
+                        }).setIcon(R.drawable.ic_people_black_24dp);
                     }
                     break;
             }

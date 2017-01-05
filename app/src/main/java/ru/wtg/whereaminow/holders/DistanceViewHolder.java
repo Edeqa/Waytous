@@ -199,22 +199,22 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             switch(event) {
                 case CREATE_CONTEXT_MENU:
                     if(myUser == State.getInstance().getMe()) break;
-                    ContextMenu contextMenu = (ContextMenu) object;
+                    Menu contextMenu = (Menu) object;
 
-                    contextMenu.add(R.string.show_distance).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    contextMenu.add(0, R.string.show_distance, Menu.NONE, R.string.show_distance).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             myUser.fire(SHOW_DISTANCE);
                             return false;
                         }
-                    }).setVisible(!show);
-                    contextMenu.add(R.string.hide_distance).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    }).setIcon(R.drawable.ic_settings_ethernet_black_24dp).setVisible(!show);
+                    contextMenu.add(0, R.string.hide_distance, Menu.NONE, R.string.hide_distance).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             myUser.fire(HIDE_DISTANCE);
                             return false;
                         }
-                    }).setVisible(show);
+                    }).setIcon(R.drawable.ic_code_black_24dp).setVisible(show);
                     break;
                 case SHOW_DISTANCE:
                     show = true;

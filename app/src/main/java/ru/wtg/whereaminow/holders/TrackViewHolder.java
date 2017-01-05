@@ -148,30 +148,38 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
         public void onChangeLocation(final Location location) {
             if(!showtrack) return;
             if(track != null && points != null && location != null){
-                if(myUser.getLocations().size()>1) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    if(points.size() > 1000) {
-                        points = getTrail();
-                    }
+                        if(myUser.getLocations().size()>1) {
+                            if(points.size() > 1000) {
+                                points = getTrail();
+                            }
 
-                    final Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
-                    new SmoothInterpolated(new SimpleCallback<Float[]>() {
-                        @Override
-                        public void call(Float[] value) {
-                            LatLng current = new LatLng(
-                                    startPosition.getLatitude()*(1-value[TIME_ELAPSED])+location.getLatitude()*value[TIME_ELAPSED],
-                                    startPosition.getLongitude()*(1-value[TIME_ELAPSED])+location.getLongitude()*value[TIME_ELAPSED]);
+                            final Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
+                            new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                                @Override
+                                public void call(Float[] value) {
+                                    LatLng current = new LatLng(
+                                            startPosition.getLatitude()*(1-value[TIME_ELAPSED])+location.getLatitude()*value[TIME_ELAPSED],
+                                            startPosition.getLongitude()*(1-value[TIME_ELAPSED])+location.getLongitude()*value[TIME_ELAPSED]);
 
-                            points.add(current);
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                public void run() {
-                                    if(track != null)
-                                        track.setPoints(points);
+                                    points.add(current);
+                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                        public void run() {
+                                            try {
+                                                if (track != null)
+                                                    track.setPoints(points);
+                                            } catch(NullPointerException e){}
+                                        }
+                                    });
                                 }
-                            });
+                            }).execute();
                         }
-                    }).execute();
-                }
+                    }
+                }).start();
+
             }
         }
 
@@ -188,24 +196,24 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
             if(myUser.getLocation() != null && !myUser.isUser()) return true;
             switch(event) {
                 case CREATE_CONTEXT_MENU:
-                    ContextMenu contextMenu = (ContextMenu) object;
+                    Menu contextMenu = (Menu) object;
 
                     if(!showtrack) {
-                        contextMenu.add("Show track").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        contextMenu.add(0, R.string.show_track, Menu.NONE, R.string.show_track).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(SHOW_TRACK);
                                 return false;
                             }
-                        });
+                        }).setIcon(R.drawable.ic_title_black_24px);
                     } else {
-                        contextMenu.add("Hide track").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        contextMenu.add(0, R.string.hide_track, Menu.NONE, R.string.hide_track).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(HIDE_TRACK);
                                 return false;
                             }
-                        });
+                        }).setIcon(R.drawable.ic_format_strikethrough_black_24dp);
                     }
                     break;
                 case SHOW_TRACK:

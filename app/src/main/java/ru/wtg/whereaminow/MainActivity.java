@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -139,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-
         if(!state.isGpsAccessRequested()) {
             state.setGpsAccessRequested(true);
             checkPermissions(REQUEST_PERMISSION_LOCATION,
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    @Override
+    /*@Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             state.fire(CREATE_CONTEXT_MENU, menu);
         }
 
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -314,10 +315,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(map == null) return;
 //        System.out.println("onMapReadyPermitted");
 
-        if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()) return;
+        if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()){
+            new ContinueDialog(this).setMessage("Application needs the enabled location services. Please enable it on the next screen.").setCallback(new SimpleCallback() {
+                @Override
+                public void call(Object arg) {
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                }
+            }).show();
+            return;
+        }
 
         new MapButtonsViewHolder(mapFragment);
-        state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)));
+        state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)).setMenuLayout((FlexboxLayout)findViewById(R.id.layout_context_menu)));
         state.registerEntityHolder(new MenuViewHolder(this));
         state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
         state.registerEntityHolder(new AddressViewHolder().setCallback(new SimpleCallback<String>() {
@@ -488,6 +498,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
 
 }
