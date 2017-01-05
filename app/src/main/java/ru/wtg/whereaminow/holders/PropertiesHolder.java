@@ -1,7 +1,15 @@
 package ru.wtg.whereaminow.holders;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -19,11 +27,16 @@ import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.CHANGE_TYPE;
 import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
+import static ru.wtg.whereaminow.State.MOVING_AWAY_FROM;
+import static ru.wtg.whereaminow.State.MOVING_CLOSE_TO;
 import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
+import static ru.wtg.whereaminow.holders.NotificationHolder.CUSTOM_NOTIFICATION;
+import static ru.wtg.whereaminow.holders.NotificationHolder.CUSTOM_NOTIFICATION_DEFAULTS;
+import static ru.wtg.whereaminow.holders.NotificationHolder.CUSTOM_NOTIFICATION_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**
@@ -37,6 +50,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     private HashMap<String, Serializable> external = new HashMap<>();
     private static final String SELECTED = "selected";
     private static final String IMAGE_RESOURCE = "image_resource";
+
+    private static final int DISTANCE_MOVING_CLOSE = 10;
+    private static final int DISTANCE_MOVING_AWAY = 30;
 
     private final SharedPreferences sharedPreferences;
 
@@ -143,12 +159,14 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     public class Properties extends AbstractProperty {
         private HashMap<String, Serializable> external = new HashMap<>();
         private String name;
-        private String type;
+//        private String type;
         private int number;
         private int color;
         private int imageResource;
         private boolean selected;
         private boolean active;
+        private Location previousLocation;
+        private double previousDistance;
 
         Properties(MyUser myUser) {
             super(myUser);
@@ -156,7 +174,30 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
         @Override
         public boolean dependsOnLocation(){
-            return false;
+            return true;
+        }
+
+        @Override
+        public void onChangeLocation(final Location location) {
+            if(location != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(myUser == State.getInstance().getMe()) {
+                            State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                                @Override
+                                public void call(Integer number, MyUser user) {
+                                    checkDistance(myUser, user);
+                                }
+                            });
+
+                        } else {
+                            checkDistance(State.getInstance().getMe(), myUser);
+                            previousLocation = location;
+                        }
+                    }
+                }).start();
+            }
         }
 
         @Override
@@ -206,9 +247,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                         }
                     }
                     break;
-                case CHANGE_TYPE:
-                    type = (String) object;
-                    break;
+//                case CHANGE_TYPE:
+//                    type = (String) object;
+//                    break;
             }
             return true;
         }
@@ -275,6 +316,16 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
         public int getImageResource() {
             return imageResource;
+        }
+
+        private void checkDistance(MyUser me, MyUser user) {
+            double distance = SphericalUtil.computeDistanceBetween(Utils.latLng(me.getLocation()), Utils.latLng(user.getLocation()));
+            if (distance <= DISTANCE_MOVING_CLOSE && user.getProperties().previousDistance > DISTANCE_MOVING_CLOSE) {
+                user.fire(MOVING_CLOSE_TO);
+            } else if (distance > DISTANCE_MOVING_AWAY && user.getProperties().previousDistance > 0 && user.getProperties().previousDistance < DISTANCE_MOVING_AWAY) {
+                user.fire(MOVING_AWAY_FROM);
+            }
+            user.getProperties().previousDistance = distance;
         }
     }
 

@@ -5,10 +5,15 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 
@@ -19,6 +24,7 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
@@ -33,8 +39,11 @@ import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_ZOOM;
 public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.ButtonView> {
     private static final String TYPE = "button";
     private final Activity context;
+    private Handler handlerHideMenu;
+    private Runnable runnableHideMenu;
 
     private LinearLayout layout;
+    private FlexboxLayout menuLayout;
 
     public ButtonViewHolder(Activity context) {
         this.context = context;
@@ -58,6 +67,19 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         } else {
             hide();
         }
+        return this;
+    }
+
+    public ButtonViewHolder setMenuLayout(final FlexboxLayout menuLayout) {
+        this.menuLayout = menuLayout;
+        handlerHideMenu = new Handler();
+        runnableHideMenu = new Runnable() {
+            @Override
+            public void run() {
+                menuLayout.setVisibility(View.GONE);
+            }
+        };
+
         return this;
     }
 
@@ -196,14 +218,74 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                             clicked = false;
                         }
                     }, 500);
+
+                    openContextMenu(view);
                 }
             }
         };
 
+        private void openContextMenu(View view) {
+
+            final PopupMenu popup = new PopupMenu(context, view);
+            context.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
+            myUser.fire(CREATE_CONTEXT_MENU, popup.getMenu());
+            handlerHideMenu.removeCallbacks(runnableHideMenu);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    menuLayout.removeAllViews();
+
+                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    for(int i=0; i<popup.getMenu().size(); i++) {
+                        final MenuItem item = popup.getMenu().getItem(i);
+                        if(!item.isVisible()) continue;
+
+                        LinearLayout button = (LinearLayout) inflater.inflate(R.layout.view_user_button, null);
+
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(1, 1, 1, 1);
+                        button.setLayoutParams(params);
+
+//                                button.setOnClickListener(onClickListener);
+//                                button.setOnLongClickListener(onLongClickListener);
+//                                context.registerForContextMenu(button);
+                        ((ImageView)button.findViewById(R.id.iv_button_person)).setImageDrawable(item.getIcon());
+                        button.findViewById(R.id.tv_button_username).setVisibility(View.GONE);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                System.out.println("PERFORM:"+item.getItemId()+":"+item.getGroupId()+":"+item.getTitle()+":"+myUser.getProperties().getDisplayName());
+                                popup.getMenu().performIdentifierAction(item.getItemId(),item.getGroupId());
+                                handlerHideMenu.removeCallbacks(runnableHideMenu);
+                                menuLayout.setVisibility(View.GONE);
+                            }
+                        });
+                        menuLayout.addView(button);
+                    }
+                    menuLayout.setVisibility(View.VISIBLE);
+
+                    handlerHideMenu.postDelayed(runnableHideMenu, 3000);
+                }
+            }, 0);
+
+        }
+
         View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                context.openContextMenu(view);
+//                context.openContextMenu(view);
+
+                openContextMenu(view);
+
+//                PopupMenu popup = new PopupMenu(context, view);
+//                context.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
+//
+//                myUser.fire(CREATE_CONTEXT_MENU, popup.getMenu());
+//                popup.show();
+
+
                 return true;
             }
         };

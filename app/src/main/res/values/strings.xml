@@ -110,6 +110,11 @@
     <string name="title_activity_intro">IntroActivity</string>
     <string name="pin">Pin</string>
     <string name="unpin">Unpin</string>
+    <string name="private_message">Private message</string>
+    <string name="edit">Edit</string>
+    <string name="hide">Hide</string>
+    <string name="show_track">Show track</string>
+    <string name="hide_track">Hide track</string>
 
 
 </resources>

@@ -336,7 +336,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 case CREATE_CONTEXT_MENU:
                     ContextMenu menu = (ContextMenu) object;
                     if(myUser.getLocation() != null && myUser.getLocation().getProvider() != null && myUser.getLocation().getProvider().equals(TYPE)) {
-                        menu.add("Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.edit, Menu.NONE, R.string.edit).setOnMenuItemClickListener(new OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 int number = myUser.getProperties().getNumber() - 10000;
@@ -347,14 +347,14 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                                 editLocation(saved);
                                 return false;
                             }
-                        });
-                        menu.add("Hide").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        }).setIcon(R.drawable.ic_mode_edit_black_24dp);
+                        menu.add(0, R.string.hide, Menu.NONE, R.string.hide).setOnMenuItemClickListener(new OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(HIDE_SAVED_LOCATION, myUser);
                                 return false;
                             }
-                        });
+                        }).setIcon(R.drawable.ic_location_off_black_24dp);
                         /*menu.add("Remove").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {

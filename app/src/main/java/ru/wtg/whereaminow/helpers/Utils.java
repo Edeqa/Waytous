@@ -293,6 +293,10 @@ public class Utils {
         return SphericalUtil.interpolate(points.get(0),points.get(points.size()-1), fraction);
     }
 
+    public static LatLng latLng(Location location){
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
     public static String formatLengthToLocale(double meters) {
         if(Locale.US.equals(Locale.getDefault())) {
             meters = meters * 3.2808399;
