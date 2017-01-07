@@ -104,7 +104,10 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
                     @Override
                     public void onLocationUpdated(final Location location) {
-                        State.getInstance().getMe().addLocation(Utils.normalizeLocation(State.getInstance().getGpsFilter(), location));
+                        Location lastLocation  = State.getInstance().getMe().getLocation();
+                        if (lastLocation == null || lastLocation.getLatitude() != location.getLatitude() || lastLocation.getLongitude() != location.getLongitude()) {
+                            State.getInstance().getMe().addLocation(Utils.normalizeLocation(State.getInstance().getGpsFilter(), location));
+                        }
                         enableLocationUpdates();
                     }
                 });

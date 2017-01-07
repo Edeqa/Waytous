@@ -4,10 +4,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import ru.wtg.whereaminow.State;
@@ -23,13 +28,17 @@ import ru.wtg.whereaminow.interfaces.EntityHolder;
  */
 public class MyUser {
 
+    private static final int SIMPLIFY_AFTER_EACH = 100;
+
     private LinkedHashMap<String,Entity> entities;
     private ArrayList<Location> locations;
     private Location location;
+    private long counter;
 
     public MyUser(){
         locations = new ArrayList<>();
         entities = new LinkedHashMap<>();
+        counter = 0;
         createProperties();
     }
 
@@ -41,7 +50,49 @@ public class MyUser {
     public MyUser addLocation(Location location) {
         locations.add(location);
         setLocation(location);
-        onChangeLocation();
+        if((++counter) % SIMPLIFY_AFTER_EACH == 0 && counter > 1) { // simplifying locations
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<LatLng> positions = new ArrayList<>();
+
+                    long previous = locations.size() - SIMPLIFY_AFTER_EACH - 1;
+                    if(previous < 0) previous = 0;
+
+                    for(long i = previous; i<locations.size()-1;i++) {
+                        positions.add(Utils.latLng(locations.get((int)i)));
+                    }
+                    positions = PolyUtil.simplify(positions, 10);
+
+                    Iterator<Location> iterLocs = locations.iterator();
+                    Iterator<LatLng> iterPozs = positions.iterator();
+
+                    int sizeBefore = locations.size();
+                    LatLng pos = iterPozs.next();
+                    int i = 0;
+                    while(i++ < previous) {
+                        iterLocs.next();
+                    }
+                    while(iterLocs.hasNext()) {
+                        Location loc = iterLocs.next();
+                        if(loc.getLatitude() == pos.latitude && loc.getLongitude() == pos.longitude) {
+                            if(iterPozs.hasNext()) {
+                                pos = iterPozs.next();
+                            } else {
+                                break;
+                            }
+                        } else {
+                            iterLocs.remove();
+                        }
+                    }
+                    Log.i("MyUser","Simplified locations {user:"+getProperties().getDisplayName()+", counter:"+counter+", size before:"+sizeBefore+", size after:"+locations.size()+"}");
+                    onChangeLocation();
+                }
+            }).start();
+        } else {
+            onChangeLocation();
+        }
+
         return this;
     }
 

@@ -69,6 +69,6 @@ dependencies {
 
 // intros
     compile 'com.getkeepsafe.taptargetview:taptargetview:1.6.1'
-//    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     compile 'agency.tango.android:material-intro-screen:0.0.5'
 }

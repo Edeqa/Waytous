@@ -98,7 +98,7 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
+            android:label="@string/settings"
             android:theme="@style/AppTheme" />
 
         <meta-data

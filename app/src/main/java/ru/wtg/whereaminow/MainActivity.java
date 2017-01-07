@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state = State.getInstance();
 
         if(DEBUGGING){
-//            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
+            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
 //            state.setPreference("intro",false);
         }
 
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (permissions.size() > 0) {
             Thread.dumpStack();
-            new ContinueDialog(this).setMessage("Request for permissions").setCallback(new SimpleCallback<Void>() {
+            new ContinueDialog(this).setMessage("Application must continuously get the locations. It seems using the GPS-sensor. Please grant application to access your location.").setCallback(new SimpleCallback<Void>() {
                 @Override
                 public void call(Void arg) {
                     ActivityCompat.requestPermissions(MainActivity.this,
@@ -327,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         new MapButtonsViewHolder(mapFragment);
+        state.registerEntityHolder(new FacebookViewHolder(this));
         state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)).setMenuLayout((FlexboxLayout)findViewById(R.id.layout_context_menu)));
         state.registerEntityHolder(new MenuViewHolder(this));
         state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
@@ -346,10 +347,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new MessagesViewHolder(MainActivity.this));
         state.registerEntityHolder(new SensorsViewHolder(this).setMap(map));
         state.registerEntityHolder(new StreetsViewHolder(this).setStreetViewLayout(findViewById(R.id.street_view_layout)));
-        state.registerEntityHolder(new FacebookViewHolder(this));
 
         // IntroViewHolder must be registered last
-        state.registerEntityHolder(new IntroViewHolder(this));
+//        state.registerEntityHolder(new IntroViewHolder(this));
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());

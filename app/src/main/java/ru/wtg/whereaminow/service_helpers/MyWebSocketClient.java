@@ -88,7 +88,7 @@ public class MyWebSocketClient {
     }
 
     public void removeToken() {
-        PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit().remove(RESPONSE_TOKEN).apply();
+        state.setPreference(RESPONSE_TOKEN, null);
         setToken(null);
     }
 
@@ -175,8 +175,7 @@ public class MyWebSocketClient {
         try {
             if (o.has(RESPONSE_TOKEN)) {
                 setToken(o.getString(RESPONSE_TOKEN));
-                PreferenceManager.getDefaultSharedPreferences(state.getApplication()).edit()
-                        .putString(RESPONSE_TOKEN, getToken()).apply();
+                state.setPreference(RESPONSE_TOKEN, getToken());
             }
         } catch (JSONException e) {
             e.printStackTrace();

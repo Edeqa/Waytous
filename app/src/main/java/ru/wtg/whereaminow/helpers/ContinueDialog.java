@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 /**
@@ -31,7 +32,9 @@ public class ContinueDialog {
     public void show(){
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
-        dialog.setTitle(message);
+        dialog.setTitle("Alert");
+        dialog.setIcon(R.drawable.ic_warning_black_24dp);
+        dialog.setMessage(message);
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", new DialogInterface.OnClickListener() {
             @Override

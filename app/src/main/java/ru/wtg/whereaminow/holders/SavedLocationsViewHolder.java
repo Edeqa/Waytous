@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -11,16 +10,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -40,7 +36,6 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.SavedLocation;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
@@ -52,7 +47,6 @@ import static ru.wtg.whereaminow.State.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
-import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
@@ -117,7 +111,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         switch (event) {
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
-                optionsMenu.add(Menu.NONE, R.string.menu_save_location, Menu.NONE, R.string.menu_save_location).setVisible(false).setOnMenuItemClickListener(onMenuItemClickListener);
+                optionsMenu.add(Menu.NONE, R.string.save_location, Menu.NONE, R.string.save_location).setVisible(false).setOnMenuItemClickListener(onMenuItemClickListener);
 
                 /*optionsMenu.add(Menu.NONE, 1919191919, Menu.NONE, "Test location").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
@@ -140,7 +134,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
-                optionsMenu.findItem(R.string.menu_save_location).setVisible(State.getInstance().getUsers().getCountSelected() == 1);
+                optionsMenu.findItem(R.string.save_location).setVisible(State.getInstance().getUsers().getCountSelected() == 1);
                 break;
             case CREATE_DRAWER:
                 MenuItem menuItem = (MenuItem) object;
@@ -334,7 +328,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                     }
                     break;
                 case CREATE_CONTEXT_MENU:
-                    ContextMenu menu = (ContextMenu) object;
+                    Menu menu = (Menu) object;
                     if(myUser.getLocation() != null && myUser.getLocation().getProvider() != null && myUser.getLocation().getProvider().equals(TYPE)) {
                         menu.add(0, R.string.edit, Menu.NONE, R.string.edit).setOnMenuItemClickListener(new OnMenuItemClickListener() {
                             @Override

@@ -150,7 +150,6 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     private void update(String text, int defaults, int priority) {
         if(notification == null) return;
-        System.out.println(showNotifications+":"+defaults);
         if(showNotifications) {
             notification.setDefaults(defaults);
 //            notification.setDefaults(defaults != 0 ? defaults : Notification.DEFAULT_LIGHTS);
