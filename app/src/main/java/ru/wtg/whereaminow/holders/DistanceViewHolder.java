@@ -4,11 +4,11 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -126,15 +126,14 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        myUser.getEntity(TYPE).remove();
-                        myUser.getProperties().saveFor(TYPE, null);
+                        myUser.fire(HIDE_DISTANCE);
                     }
                 });
                 break;
             case CAMERA_UPDATED:
                 for(DistanceMark entry: marks) {
                     if(entry != null) {
-                        entry.update();
+                        entry.update(false);
                     }
                 }
                 break;
@@ -173,7 +172,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         public void onChangeLocation(final Location location) {
             for(DistanceMark entry: marks){
                 if(entry.firstUser == myUser || entry.secondUser == myUser) {
-                    entry.update();
+                    entry.update(true);
                 }
             }
         }
@@ -297,60 +296,68 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         private LatLng secondPosition(){
             return new LatLng(secondUser.getLocation().getLatitude(), secondUser.getLocation().getLongitude());
         }
-        public void update(){
+        public void update(boolean animate){
 
             final LatLng firstUserInitial = line.getPoints().get(0);
             final LatLng secondUserInitial = line.getPoints().get(1);
-            final LatLngBounds boundsForName = map.getProjection().getVisibleRegion().latLngBounds;
-            final LatLngBounds bounds = Utils.reduce(boundsForName, .9);
 
-            new SmoothInterpolated(new SimpleCallback<Float[]>() {
-                @Override
-                public void call(Float[] value) {
-                    if(line != null && marker != null) {
-                        final LatLng firstCurrent = new LatLng(
-                                firstUserInitial.latitude * (1 - value[TIME_ELAPSED]) + firstPosition().latitude * value[TIME_ELAPSED],
-                                firstUserInitial.longitude * (1 - value[TIME_ELAPSED]) + firstPosition().longitude * value[TIME_ELAPSED]);
+            if(animate) {
+                new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                    @Override
+                    public void call(Float[] value) {
+                        if (line != null && marker != null) {
+                             LatLng firstCurrent = new LatLng(
+                                    firstUserInitial.latitude * (1 - value[TIME_ELAPSED]) + firstPosition().latitude * value[TIME_ELAPSED],
+                                    firstUserInitial.longitude * (1 - value[TIME_ELAPSED]) + firstPosition().longitude * value[TIME_ELAPSED]);
 
-                        final LatLng secondCurrent = new LatLng(
-                                secondUserInitial.latitude * (1 - value[TIME_ELAPSED]) + secondPosition().latitude * value[TIME_ELAPSED],
-                                secondUserInitial.longitude * (1 - value[TIME_ELAPSED]) + secondPosition().longitude * value[TIME_ELAPSED]);
+                             LatLng secondCurrent = new LatLng(
+                                    secondUserInitial.latitude * (1 - value[TIME_ELAPSED]) + secondPosition().latitude * value[TIME_ELAPSED],
+                                    secondUserInitial.longitude * (1 - value[TIME_ELAPSED]) + secondPosition().longitude * value[TIME_ELAPSED]);
 
-                        String title = Utils.formatLengthToLocale(SphericalUtil.computeDistanceBetween(firstCurrent, secondCurrent));
+                            updateLineAndMarker(firstCurrent, secondCurrent);
 
-                        LatLng markerPosition = SphericalUtil.interpolate(firstCurrent, secondCurrent, .5);
-                        if(!bounds.contains(markerPosition) && (bounds.contains(firstCurrent) || bounds.contains(secondCurrent))) {
-                            double fract = 0.5;
-                            while (!bounds.contains(markerPosition)) {
-                                fract = fract + (bounds.contains(firstCurrent) ? -1 : +1) * .05;
-                                if(fract < 0 || fract > 1) break;
-                                markerPosition = SphericalUtil.interpolate(firstCurrent, secondCurrent, fract);
-                            }
                         }
-                        if(!boundsForName.contains(firstCurrent) || !boundsForName.contains(secondCurrent)) {
-                            title += "\n" + (boundsForName.contains(firstCurrent) ? secondUser : firstUser).getProperties().getDisplayName();
-                        }
-                        final String text = title;
-                        final LatLng finalMarkerPosition = markerPosition;
-//                        System.out.println("POSITION:"+secondUser.getProperties().getDisplayName()+":"+markerPosition);
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            public void run() {
-                                if(line != null)
-                                    line.setPoints(Arrays.asList(firstCurrent, secondCurrent));
-                                if(marker != null) {
-                                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
-                                    marker.setPosition(finalMarkerPosition);
-                                }
-                            }
-                        });
-
-
                     }
-                }
-            }).execute();
+                }).execute();
+            } else {
+                updateLineAndMarker(firstPosition(), secondPosition());
+            }
         }
 
+        BitmapDescriptor icon;
+        LatLng markerPosition;
+        LatLngBounds boundsForName;
+        LatLngBounds bounds;
+        String title;
+        private void updateLineAndMarker(final LatLng firstPosition, final LatLng secondPosition) {
+            title = Utils.formatLengthToLocale(SphericalUtil.computeDistanceBetween(firstPosition, secondPosition));
 
+            boundsForName = map.getProjection().getVisibleRegion().latLngBounds;
+            bounds = Utils.reduce(boundsForName, .9);
+            markerPosition = SphericalUtil.interpolate(firstPosition, secondPosition, .5);
+            if(!bounds.contains(markerPosition) && (bounds.contains(firstPosition) || bounds.contains(secondPosition))) {
+                double fract = 0.5;
+                while (!bounds.contains(markerPosition)) {
+                    fract = fract + (bounds.contains(firstPosition) ? -1 : +1) * .05;
+                    if(fract < 0 || fract > 1) break;
+                    markerPosition = SphericalUtil.interpolate(firstPosition, secondPosition, fract);
+                }
+            }
+            if(!boundsForName.contains(firstPosition) || !boundsForName.contains(secondPosition)) {
+                title += "\n" + (boundsForName.contains(firstPosition) ? secondUser : firstUser).getProperties().getDisplayName();
+            }
+            icon = BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(title));
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                public void run() {
+                    if (line != null)
+                        line.setPoints(Arrays.asList(firstPosition, secondPosition));
+                    if (marker != null) {
+                        marker.setIcon(icon);
+                        marker.setPosition(markerPosition);
+                    }
+                }
+            });
+        }
 
     }
     private DistanceMark fetchDistanceMark(MyUser user1, MyUser user2) {

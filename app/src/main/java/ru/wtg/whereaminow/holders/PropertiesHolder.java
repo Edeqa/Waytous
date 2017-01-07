@@ -187,7 +187,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                             State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
                                 @Override
                                 public void call(Integer number, MyUser user) {
-                                    checkDistance(myUser, user);
+                                    if(myUser.getProperties().isActive()) {
+                                        checkDistance(myUser, user);
+                                    }
                                 }
                             });
 

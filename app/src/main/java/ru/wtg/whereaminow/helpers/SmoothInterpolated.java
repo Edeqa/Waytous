@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -28,10 +27,11 @@ public class SmoothInterpolated {
     }
 
     public void execute(){
+        final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 
-        new Thread(new Runnable(){
+        handler.post(new Runnable(){
             float t,v,elapsed;
 
             @Override
@@ -45,22 +45,14 @@ public class SmoothInterpolated {
                 t = elapsed / duration;
                 v = interpolator.getInterpolation(t);
 
-                try {
-                    callback.call(new Float[]{t, v});
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
+                callback.call(new Float[]{t,v});
 
                 if (t<1) {
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    this.run();
+                    handler.postDelayed(this, 16);
                 }
             }
-        }).start();
+
+        });
 
     }
 

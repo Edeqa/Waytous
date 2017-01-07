@@ -3,12 +3,9 @@ package ru.wtg.whereaminow.holders;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdate;
@@ -19,8 +16,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.Serializable;
-import java.security.cert.TrustAnchor;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -32,8 +27,7 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
@@ -125,6 +119,25 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         }
                     }
                 });
+                break;
+            case PREPARE_FAB:
+                final FabViewHolder fab = (FabViewHolder) object;
+                if(State.getInstance().getUsers().getCountActive() > 1 && State.getInstance().getUsers().getCountSelected() < State.getInstance().getUsers().getCountActive()) {
+                    fab.add(R.string.fit_to_screen, R.drawable.ic_fullscreen_black_24dp).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            fab.close(true);
+                            State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                                @Override
+                                public void call(Integer number, MyUser myUser) {
+                                    if(myUser.getProperties().isActive()) {
+                                        myUser.fire(SELECT_USER);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
                 break;
 
         }
@@ -284,17 +297,17 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             this.location = location;
             switch (orientation){
                 case CAMERA_ORIENTATION_NORTH:
-                    if(orientationChanged) {
-//                        scaleView.setVisibility(View.VISIBLE);
-                    }
+//                    if(orientationChanged) {
+////                        scaleView.setVisibility(View.VISIBLE);
+//                    }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(0);
                     position.tilt(0);
                     break;
                 case CAMERA_ORIENTATION_DIRECTION:
-                    if(orientationChanged) {
-//                        scaleView.setVisibility(View.VISIBLE);
-                    }
+//                    if(orientationChanged) {
+////                        scaleView.setVisibility(View.VISIBLE);
+//                    }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(location.getBearing());
                     position.tilt(0);
@@ -470,7 +483,10 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 scaleView.update(map.getProjection(), map.getCameraPosition());
             }
 
-            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
+            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1){
+                State.getInstance().fire(CAMERA_UPDATED);
+                return;
+            }
             if(canceled && cameraUpdate.zoom != map.getCameraPosition().zoom){
                 cameraUpdate.setOrientation(cameraUpdate.previousOrientation);
                 moveFromHardware = true;
@@ -521,7 +537,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         }
     };
 
-    public GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
+    GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
         @Override
         public boolean onMyLocationButtonClick() {
 //            System.out.println("onMyLocationButtonClick");

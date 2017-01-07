@@ -3,7 +3,9 @@ package ru.wtg.whereaminow.holders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import ru.wtg.whereaminow.R;
@@ -13,6 +15,7 @@ import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
@@ -90,6 +93,35 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 State.getInstance().setPreference(TRACKING_URI, null);
                 intentService.putExtra("mode", "stop");
                 context.startService(intentService);
+
+/*
+                if("start".equals(mode)){
+                    try {
+                        state.setTracking(new MyTracking());
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
+                        return super.onStartCommand(intent, flags, startId);
+                    }
+                    state.getTracking().start();
+                } else if("join".equals(mode)){
+                    try {
+                        assert intent != null;
+                        state.setTracking(new MyTracking(intent.getStringExtra("host")));
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
+                        return super.onStartCommand(intent, flags, startId);
+                    }
+                    String token = intent.getStringExtra("token");
+                    state.getTracking().join(token);
+                } else if("stop".equals(mode)){
+                    if(state.getTracking() != null) {
+                        state.getTracking().stop();
+                    }
+                }
+
+                */
                 break;
             case TRACKING_DISABLED:
 //                State.getInstance().setPreference(TRACKING_URI, null);

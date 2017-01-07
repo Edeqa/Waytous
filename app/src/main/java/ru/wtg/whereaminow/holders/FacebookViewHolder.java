@@ -69,7 +69,7 @@ public class FacebookViewHolder extends AbstractViewHolder {
             case PREPARE_FAB:
                 fab = (FabViewHolder) object;
                 if(State.getInstance().tracking_active()) {
-                    fab.addMenuButtonAt(R.id.fab_share_to_facebook, 0).setOnClickListener(onClickListener);
+                    fab.add(R.string.share_to_facebook, R.drawable.ic_facebook_white).setOnClickListener(onClickListener);
                 }
                 break;
             case ACTIVITY_RESULT:
@@ -132,7 +132,7 @@ public class FacebookViewHolder extends AbstractViewHolder {
     public ArrayList<IntroRule> getIntro() {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
-        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("facebook_intro").setViewId(R.id.iv_fab_share_to_facebook).setTitle("Here you can").setDescription("Share this group to Facebook."));
+        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("facebook_intro").setViewId(R.string.share_to_facebook).setTitle("Here you can").setDescription("Share this group to Facebook."));
 
         return rules;
     }

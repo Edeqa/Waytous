@@ -100,8 +100,11 @@
         app:flexWrap="wrap"
         app:alignItems="stretch"
         app:alignContent="stretch"
+        app:justifyContent="center"
+        android:forceHasOverlappingRendering="true"
         android:visibility="gone">
-    </com.google.android.flexbox.FlexboxLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
 
     <com.github.pengrad.mapscaleview.MapScaleView
         android:id="@+id/scale_view"

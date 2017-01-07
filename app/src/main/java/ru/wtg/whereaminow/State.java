@@ -2,7 +2,6 @@ package ru.wtg.whereaminow;
 
 import android.app.Notification;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -22,9 +21,6 @@ import java.util.UUID;
 import ru.wtg.whereaminow.helpers.GeoTrackFilter;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.holders.AbstractProperty;
-import ru.wtg.whereaminow.holders.AbstractPropertyHolder;
-import ru.wtg.whereaminow.holders.AbstractView;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
@@ -89,10 +85,15 @@ public class State extends MultiDexApplication {
     private static State instance = null;
     private WhereAmINowService service;
 
-    private HashMap<String, AbstractProperty> userEntityEvents = new HashMap<>();
-    private HashMap<String, AbstractPropertyHolder> entityEvents = new HashMap<>();
-    private HashMap<String, AbstractView> userViewEvents = new HashMap<>();
-    private HashMap<String, AbstractViewHolder> viewEvents = new HashMap<>();
+//    private HashMap<String, AbstractProperty> userEntityEvents = new HashMap<>();
+//    private HashMap<String, AbstractPropertyHolder> entityEvents = new HashMap<>();
+//    private HashMap<String, AbstractView> userViewEvents = new HashMap<>();
+//    private HashMap<String, AbstractViewHolder> viewEvents = new HashMap<>();
+
+    private HashMap<String, EntityHolder> entityHolders = new LinkedHashMap<>();
+    private HashMap<String, EntityHolder> userEntityHolders = new LinkedHashMap<>();
+    private HashMap<String, AbstractViewHolder> viewHolders = new LinkedHashMap<>();
+    private HashMap<String, AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
 
     private SharedPreferences sharedPreferences;
     private MyUsers users;
@@ -181,10 +182,9 @@ public class State extends MultiDexApplication {
         this.service = service;
     }
 
-    public Context getApplication(){
-        return this;
-    }
-
+//    public Context getApplication(){
+//        return this;
+//    }
 
     public boolean tracking_disabled() {
         return tracking == null || TRACKING_DISABLED.equals(tracking.getStatus());
@@ -296,11 +296,6 @@ public class State extends MultiDexApplication {
         this.me = me;
     }
 
-    private HashMap<String,EntityHolder> entityHolders = new LinkedHashMap<>();
-    private HashMap<String,EntityHolder> userEntityHolders = new LinkedHashMap<>();
-    private HashMap<String,AbstractViewHolder> viewHolders = new LinkedHashMap<>();
-    private HashMap<String,AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
-
     public void registerEntityHolder(EntityHolder holder) {
         if(holder.getType() == null) return;
         if(holder instanceof AbstractViewHolder){
@@ -355,9 +350,9 @@ public class State extends MultiDexApplication {
 
     public void clearViewHolders(){
         viewHolders.clear();
-        viewEvents.clear();
+//        viewEvents.clear();
         userViewHolders.clear();
-        userViewEvents.clear();
+//        userViewEvents.clear();
     }
 
     public EntityHolder getEntityHolder(String type){
@@ -371,12 +366,10 @@ public class State extends MultiDexApplication {
     private ServiceConnection serviceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder binder) {
             serviceBound = true;
-            System.out.println("onServiceConnected");
         }
 
         public void onServiceDisconnected(ComponentName name) {
             serviceBound = false;
-            System.out.println("onServiceDisconnected");
         }
     };
 
@@ -440,9 +433,9 @@ public class State extends MultiDexApplication {
                 if(tracking_disabled() || tracking_error() || tracking_expired()) {
                     clearViewHolders();
                     entityHolders.clear();
-                    entityEvents.clear();
+//                    entityEvents.clear();
                     userEntityHolders.clear();
-                    userEntityEvents.clear();
+//                    userEntityEvents.clear();
 
                     Intent intent = new Intent(State.this, WhereAmINowService.class);
                     stopService(intent);

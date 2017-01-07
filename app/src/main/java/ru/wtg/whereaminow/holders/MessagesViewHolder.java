@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
+import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 import ru.wtg.whereaminow.helpers.UserMessage;
@@ -43,7 +45,9 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
+import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
@@ -148,18 +152,21 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     menuItem.setVisible(true);
                 }
                 break;
+            case PREPARE_FAB:
+                final FabViewHolder fab = (FabViewHolder) object;
+                if(State.getInstance().tracking_active()) {
+                    fab.add(R.string.new_message,R.drawable.ic_chat_black_24dp).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            fab.close(true);
+                            State.getInstance().fire(NEW_MESSAGE);
+                        }
+                    });
+                }
+                break;
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.set_welcome_message, Menu.NONE, R.string.set_welcome_message).setVisible(false).setOnMenuItemClickListener(onMenuItemSetWelcomeMessageClickListener);
-
-                /*optionsMenu.add(Menu.NONE, 19191919, Menu.NONE, "Test message").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().fire(SEND_MESSAGE, "Test message");
-                        return false;
-                    }
-                });*/
-
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
@@ -493,7 +500,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                                 newMessage(myUser, true, "");
                                 return false;
                             }
-                        }).setIcon(R.drawable.ic_people_black_24dp);
+                        }).setIcon(R.drawable.ic_chat_black_24dp);
                     }
                     break;
             }
@@ -613,7 +620,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public ArrayList<IntroRule> getIntro() {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
-        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.id.iv_fab_new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
+        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.string.new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
 //        rules.add(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
 
         return rules;

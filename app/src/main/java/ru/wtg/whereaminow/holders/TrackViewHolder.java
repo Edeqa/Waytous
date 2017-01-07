@@ -1,10 +1,8 @@
 package ru.wtg.whereaminow.holders;
 
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -128,6 +126,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
         private Polyline track;
         private List<LatLng> points;
         boolean showtrack;
+        private int counter;
 
         TrackView(MyUser myUser){
             this.myUser = myUser;
@@ -148,14 +147,15 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
         public void onChangeLocation(final Location location) {
             if(!showtrack) return;
             if(track != null && points != null && location != null){
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
 
                         if(myUser.getLocations().size()>1) {
-                            if(points.size() > 1000) {
+                            if(myUser.getLocations().size() < counter) {
                                 points = getTrail();
                             }
+                            counter = myUser.getLocations().size();
 
                             final Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
                             new SmoothInterpolated(new SimpleCallback<Float[]>() {
@@ -177,8 +177,8 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                                 }
                             }).execute();
                         }
-                    }
-                }).start();
+//                    }
+//                }).start();
 
             }
         }
@@ -247,8 +247,8 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
             List<LatLng> points = new ArrayList<>();
             for(Location location: myUser.getLocations()){
                 points.add(new LatLng(location.getLatitude(),location.getLongitude()));
-                points = PolyUtil.simplify(points,5);
             }
+            points.remove(points.size()-1);
             return points;
         }
     }

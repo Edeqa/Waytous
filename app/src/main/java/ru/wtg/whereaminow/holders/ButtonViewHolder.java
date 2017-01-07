@@ -128,7 +128,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             button = (LinearLayout) inflater.inflate(buttonView, null);
 
             int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
-//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 0, 1, 0);
             button.setLayoutParams(params);
@@ -201,16 +200,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     clicked = false;
                 } else {
                     myUser.fire(SELECT_SINGLE_USER);
-/*
-                    State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
-                        @Override
-                        public void call(Integer number, MyUser user) {
-                            if(user != myUser) {
-                                user.fire(UNSELECT_USER, 0);
-                            }
-                        }
-                    });
-*/
                     clicked = true;
                     new Handler().postDelayed(new Runnable() {
                         @Override
