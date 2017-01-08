@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import com.google.android.gms.maps.model.StreetViewPanoramaLocation;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
@@ -51,8 +52,10 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
         return new StreetsView(myUser);
     }
 
-    public StreetsViewHolder(AppCompatActivity context) {
+    public StreetsViewHolder(MainActivity context) {
         this.context = context;
+
+        setStreetViewLayout(context.findViewById(R.id.street_view_layout));
     }
 
     public StreetsViewHolder setStreetViewLayout(final View streetViewLayout) {
@@ -81,9 +84,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
-                        int height = (int) (State.getInstance().getResources().getDisplayMetrics().heightPixels / 2.5);
-
-                        streetViewLayout.getLayoutParams().height = height;
+                        streetViewLayout.getLayoutParams().height = (int) (State.getInstance().getResources().getDisplayMetrics().heightPixels / 2.5);
                         streetView.getStreetViewPanoramaAsync(StreetsViewHolder.this);
                         streetViewLayout.setVisibility(View.VISIBLE);
                         State.getInstance().fire(UPDATE_CAMERA);

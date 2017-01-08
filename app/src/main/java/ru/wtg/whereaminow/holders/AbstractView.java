@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.location.Location;
-import android.view.View;
 
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.Entity;

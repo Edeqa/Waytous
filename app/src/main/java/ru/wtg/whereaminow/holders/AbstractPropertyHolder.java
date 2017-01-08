@@ -1,16 +1,21 @@
 package ru.wtg.whereaminow.holders;
 
+import java.net.URISyntaxException;
+
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 
 /**
  * Created 11/18/16.
  */
-abstract public class AbstractPropertyHolder implements EntityHolder<AbstractProperty> {
+abstract class AbstractPropertyHolder implements EntityHolder<AbstractProperty> {
 
     AbstractPropertyHolder(){}
 
+    public void init() {
+    }
+
     @Override
-    public boolean onEvent(String event, Object object) {
+    public boolean onEvent(String event, Object object) throws URISyntaxException {
         return true;
     }
 

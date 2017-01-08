@@ -1,10 +1,7 @@
 package ru.wtg.whereaminow.helpers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * Created 10/12/16.

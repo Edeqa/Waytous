@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
@@ -53,6 +54,10 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
 
     private GoogleMap map;
     private ArrayList<DistanceMark> marks;
+
+    public DistanceViewHolder(MainActivity context) {
+        setMap(context.getMap());
+    }
 
     @Override
     public String getType() {
@@ -265,7 +270,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         MyUser secondUser;
         private IconGenerator iconFactory;
 
-        public DistanceMark(MyUser user1, MyUser user2) {
+        DistanceMark(MyUser user1, MyUser user2) {
             firstUser = user1;
             secondUser = user2;
 
@@ -332,20 +337,33 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         private void updateLineAndMarker(final LatLng firstPosition, final LatLng secondPosition) {
             title = Utils.formatLengthToLocale(SphericalUtil.computeDistanceBetween(firstPosition, secondPosition));
 
-            boundsForName = map.getProjection().getVisibleRegion().latLngBounds;
-            bounds = Utils.reduce(boundsForName, .9);
+            bounds = map.getProjection().getVisibleRegion().latLngBounds;
+            boundsForName = Utils.reduce(bounds, 0.9);
             markerPosition = SphericalUtil.interpolate(firstPosition, secondPosition, .5);
-            if(!bounds.contains(markerPosition) && (bounds.contains(firstPosition) || bounds.contains(secondPosition))) {
-                double fract = 0.5;
-                while (!bounds.contains(markerPosition)) {
-                    fract = fract + (bounds.contains(firstPosition) ? -1 : +1) * .05;
-                    if(fract < 0 || fract > 1) break;
-                    markerPosition = SphericalUtil.interpolate(firstPosition, secondPosition, fract);
+
+            if(!boundsForName.contains(markerPosition) && (bounds.contains(firstPosition) || bounds.contains(secondPosition))) {
+                if(bounds.contains(firstPosition)) {
+                    LatLng position = secondPosition;
+                    int counter = 0;
+                    while(!boundsForName.contains(markerPosition)) {
+                        markerPosition = SphericalUtil.interpolate(firstPosition, position, .5);
+                        position = markerPosition;
+                        if(counter++ > 10) break;
+                    }
+                } else if (bounds.contains(secondPosition)) {
+                    LatLng position = firstPosition;
+                    int counter = 0;
+                    while(!boundsForName.contains(markerPosition)) {
+                        markerPosition = SphericalUtil.interpolate(position, secondPosition, .5);
+                        position = markerPosition;
+                        if(counter++ > 10) break;
+                    }
                 }
             }
             if(!boundsForName.contains(firstPosition) || !boundsForName.contains(secondPosition)) {
                 title += "\n" + (boundsForName.contains(firstPosition) ? secondUser : firstUser).getProperties().getDisplayName();
             }
+
             icon = BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(title));
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 public void run() {
@@ -368,7 +386,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         if(user1 != null && user1.getLocation() != null && user2 != null && user2.getLocation() != null) {
             DistanceMark mark = new DistanceMark(user1, user2);
             marks.add(mark);
-//        mark.update();
+        mark.update(false);
             return mark;
         }
         return null;

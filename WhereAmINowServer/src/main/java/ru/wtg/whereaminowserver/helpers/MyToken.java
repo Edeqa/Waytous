@@ -56,8 +56,6 @@ public class MyToken {
         }
 
         setChanged();
-
-        return;
     }
 
     private ArrayList<Color> colors = new ArrayList<Color>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,

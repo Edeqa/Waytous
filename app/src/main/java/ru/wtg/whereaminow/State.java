@@ -22,6 +22,7 @@ import ru.wtg.whereaminow.helpers.GeoTrackFilter;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
+import ru.wtg.whereaminow.holders.LoggerHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
@@ -115,7 +116,7 @@ public class State extends MultiDexApplication {
 
         registerEntityHolder(new PropertiesHolder(this));
         registerEntityHolder(new TrackingHolder(this));
-//        registerEntityHolder(new LoggerHolder());
+        registerEntityHolder(new LoggerHolder());
         registerEntityHolder(new MessagesHolder(this));
         registerEntityHolder(new NotificationHolder(this));
 
@@ -298,6 +299,7 @@ public class State extends MultiDexApplication {
 
     public void registerEntityHolder(EntityHolder holder) {
         if(holder.getType() == null) return;
+//        holder.init();
         if(holder instanceof AbstractViewHolder){
             if(holder.dependsOnEvent()) {
                 viewHolders.put(holder.getType(), (AbstractViewHolder) holder);

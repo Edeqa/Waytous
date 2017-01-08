@@ -17,7 +17,7 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.UserMessage;
 
-import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
@@ -60,6 +60,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
         notification = new NotificationCompat.Builder(context)
+                .setVisibility(VISIBILITY_PUBLIC)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.ic_notification_message)
                 .setAutoCancel(true)
@@ -67,9 +68,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setSound(null)
-                .setVisibility(VISIBILITY_SECRET)
                 .setVibrate(new long[]{0L, 0L});
-
     }
 
     @Override
@@ -149,16 +148,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
         return true;
     }
 
-    public int getCount() {
-        return messages.size();
-    }
-
-    public ArrayList<UserMessage> getMessages(){
-        return messages;
-    }
-
-
-    public class Messages extends AbstractProperty {
+    private class Messages extends AbstractProperty {
 
         Messages(MyUser myUser) {
             super(myUser);

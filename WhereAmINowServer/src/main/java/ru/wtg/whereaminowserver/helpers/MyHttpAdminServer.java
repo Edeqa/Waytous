@@ -22,7 +22,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 
 
 /**
- * Created by tujger on 10/5/16.
+ * Created 10/5/16.
  */
 public class MyHttpAdminServer implements HttpHandler {
 
@@ -57,9 +57,11 @@ public class MyHttpAdminServer implements HttpHandler {
 //        System.out.println("QUERY:"+query);
 
         Headers headers = exchange.getRequestHeaders();
+/*
         for (String header : headers.keySet()) {
-//            System.out.println(header+":"+headers.getFirst(header));
+            System.out.println(header+":"+headers.getFirst(header));
         }
+*/
 
         header();
         tableTokens();

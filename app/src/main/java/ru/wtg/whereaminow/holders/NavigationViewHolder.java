@@ -1,16 +1,13 @@
 package ru.wtg.whereaminow.holders;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,20 +34,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATED;
-import static ru.wtg.whereaminow.holders.NotificationHolder.CUSTOM_NOTIFICATION;
-import static ru.wtg.whereaminow.holders.NotificationHolder.CUSTOM_NOTIFICATION_DEFAULTS;
-import static ru.wtg.whereaminow.holders.NotificationHolder.CUSTOM_NOTIFICATION_MESSAGE;
 
 /**
  * Created 12/29/16.
@@ -63,8 +59,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
     private static final String TYPE = "navigation";
 
-    public static final String SHOW_NAVIGATION = "show_navigation";
-    public static final String HIDE_NAVIGATION = "hide_navigation";
+    static final String SHOW_NAVIGATION = "show_navigation";
+    private static final String HIDE_NAVIGATION = "hide_navigation";
 
     private static final String NAVIGATION_MODE_DRIVING = "navigation_mode_driving";
     private static final String NAVIGATION_MODE_WALKING = "navigation_mode_walking";
@@ -75,14 +71,19 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private static final String PREFERENCE_AVOID_FERRIES = "navigation_avoid_ferries";
 
     private static final int REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
+    private static final int HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
+    private static final int SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
 
     transient private GoogleMap map;
     private final AppCompatActivity context;
     private String mode = NAVIGATION_MODE_DRIVING;
     private View buttonsView;
 
-    public NavigationViewHolder(AppCompatActivity context) {
+    public NavigationViewHolder(MainActivity context) {
         this.context = context;
+
+        setMap(context.getMap());
+        setButtonsView(context.findViewById(R.id.layout_navigation_mode));
     }
 
     @Override
@@ -106,7 +107,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         if(m != null) {
             mode = m.mode;
         }
-
         return this;
     }
 
@@ -157,7 +157,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         return true;
     }
 
-    public NavigationViewHolder setButtonsView(View buttonsView) {
+    private NavigationViewHolder setButtonsView(View buttonsView) {
         this.buttonsView = buttonsView;
 
         buttonsView.findViewById(R.id.ib_navigation_driving).setOnClickListener(onClickListener);
@@ -285,7 +285,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     }
 
     class NavigationView extends AbstractView {
-        private Polyline track;
+        volatile private Polyline track;
         private Polyline trackCenter;
         private boolean showNavigation = false;
         private Location previousLocation;
@@ -298,10 +298,10 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             this.myUser = myUser;
 
             Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
-
             showNavigation = !(props == null || !props);
             if(showNavigation){
-                myUser.fire(SHOW_NAVIGATION);
+                update();//onChangeLocation(myUser.getLocation());
+//                myUser.fire(SHOW_NAVIGATION);
             }
         }
 
@@ -329,13 +329,12 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         @Override
         public void remove() {
+//            System.out.println("REMOVENAVVIEW:"+myUser.getProperties().getDisplayName()+":"+track);
             if(track != null){
                 track.remove();
                 track = null;
                 trackCenter.remove();
                 trackCenter = null;
-            }
-            if(marker != null) {
                 marker.remove();
                 marker = null;
             }
@@ -353,19 +352,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             if(myUser.getLocation() == null) return true;
             switch(event) {
                 case CREATE_CONTEXT_MENU:
-                    Menu contextMenu = (Menu) object;
-                    /*MenuItem item = contextMenu.findItem(R.id.action_navigate);
-                    item.setVisible(myUser != State.getInstance().getMe());
-                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem) {
-                            new NavigationStarter(context, myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()).start();
-                            return false;
-                        }
-                    });*/
-
+                    Menu menu = (Menu) object;
                     if(!showNavigation && myUser != State.getInstance().getMe()){
-                        contextMenu.add(0, R.string.show_navigation, Menu.NONE, R.string.show_navigation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.show_navigation, Menu.NONE, R.string.show_navigation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(SHOW_NAVIGATION);
@@ -374,13 +363,22 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         }).setIcon(R.drawable.ic_navigation_black_24dp_xml);
                     }
                     if(showNavigation) {
-                        contextMenu.add(0, R.string.hide_navigation, Menu.NONE, R.string.hide_navigation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.hide_navigation, Menu.NONE, R.string.hide_navigation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(HIDE_NAVIGATION);
                                 return false;
                             }
                         }).setIcon(R.drawable.ic_navigation_black_outline_24dp_xml);
+                    }
+                    if(myUser != State.getInstance().getMe()) {
+                        menu.add(0, R.string.navigate_on_maps, Menu.NONE, R.string.navigate_on_maps).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                new NavigationStarter(context, myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()).start();
+                                return false;
+                            }
+                        }).setIcon(R.drawable.ic_directions_black_24dp);
                     }
                     break;
                 case SHOW_NAVIGATION:
@@ -416,9 +414,30 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         }
 
         private void update() {
+            if(track == null) {
+                final int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0xAA000000;
+                iconFactory = new IconGenerator(State.getInstance());
+                iconFactory.setColor(color);
+                iconFactory.setTextAppearance(R.style.iconNavigationMarkerText);
+
+                final float density = State.getInstance().getResources().getDisplayMetrics().density;
+                track = map.addPolyline(new PolylineOptions().width((int) (8 * density)).color(color).geodesic(true).zIndex(100f));
+                trackCenter = map.addPolyline(new PolylineOptions().width((int) (2 * density)).color(Color.WHITE).geodesic(true).zIndex(100f));
+
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("")))
+                        .position(SphericalUtil.interpolate(Utils.latLng(State.getInstance().getMe().getLocation()), Utils.latLng(myUser.getLocation()), .5))
+                        .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV())
+                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Setting up...")));
+
+                marker = map.addMarker(markerOptions);
+                marker.setVisible(false);
+                buttonsView.setVisibility(View.VISIBLE);
+            }
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+
                     final MyUser me = State.getInstance().getMe();
                     final LatLng mePosition = Utils.latLng(me.getLocation());
                     final LatLng userPosition = Utils.latLng(myUser.getLocation());
@@ -481,72 +500,57 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
                         int distance = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getInt("value");
 
-                        if (distance <= 10) {
-                            if(track != null) {
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        remove();
-                                    }
+                        if (distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    remove();
+                                }
                                 });
-                            }
                             previousDistance = distance;
                             return;
-                        } else if (distance > 20 && previousDistance>0 && previousDistance < 20 && track == null) {
+                        } else if (distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && previousDistance>0 && previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
                             previousDistance = distance;
-                        } else if (distance > 10 && distance <= 20 && track == null) {
+                        } else if (distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN && distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
                             previousDistance = distance;
                             return;
                         }
                         previousDistance = distance;
 
-                        final float density = State.getInstance().getResources().getDisplayMetrics().density;
-                        final int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0xAA000000;
-                        iconFactory = new IconGenerator(State.getInstance());
-                        iconFactory.setColor(color);
-                        iconFactory.setTextAppearance(R.style.iconNavigationMarkerText);
+//                        iconFactory = new IconGenerator(State.getInstance());
+//                        iconFactory.setColor(color);
+//                        iconFactory.setTextAppearance(R.style.iconNavigationMarkerText);
 
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                if(track == null) {
-                                    track = map.addPolyline(new PolylineOptions().width((int) (8 * density)).color(color).geodesic(true).zIndex(100f));
-                                    trackCenter = map.addPolyline(new PolylineOptions().width((int) (2 * density)).color(Color.WHITE).geodesic(true).zIndex(100f));
-
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("")))
-                                            .position(SphericalUtil.interpolate(Utils.latLng(State.getInstance().getMe().getLocation()), Utils.latLng(myUser.getLocation()), .5))
-                                            .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV())
-                                            .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Setting up...")));
-
-                                    marker = map.addMarker(markerOptions);
-                                    buttonsView.setVisibility(View.VISIBLE);
-                                }
-
-                                if(points != null) {
-                                    track.setPoints(points);
-                                    trackCenter.setPoints(points);
-                                }
-
-                                String text = title;
-                                LatLng markerPosition = Utils.findPoint(points, .5);
-                                LatLngBounds bounds = Utils.reduce(map.getProjection().getVisibleRegion().latLngBounds, .8);
-                                if(!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
-                                    if(!bounds.contains(markerPosition)) {
-                                        double fract = 0.5;
-                                        while (!bounds.contains(markerPosition)) {
-                                            fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
-                                            if(fract < 0 || fract > 1) break;
-                                            markerPosition = Utils.findPoint(points, fract);
+                                if(track != null) {
+                                    String text = title;
+                                    LatLng markerPosition = Utils.findPoint(points, .5);
+                                    LatLngBounds bounds = Utils.reduce(map.getProjection().getVisibleRegion().latLngBounds, .8);
+                                    if (!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
+                                        if (!bounds.contains(markerPosition)) {
+                                            double fract = 0.5;
+                                            while (!bounds.contains(markerPosition)) {
+                                                fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
+                                                if (fract < 0 || fract > 1) break;
+                                                markerPosition = Utils.findPoint(points, fract);
+                                            }
                                         }
                                     }
+
+                                    if (points != null) {
+                                        track.setPoints(points);
+                                        trackCenter.setPoints(points);
+                                    }
+                                    bounds = map.getProjection().getVisibleRegion().latLngBounds;
+                                    if (!bounds.contains(mePosition) || !bounds.contains(userPosition)) {
+                                        text += "\n" + myUser.getProperties().getDisplayName();
+                                    }
+                                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
+                                    marker.setPosition(markerPosition);
+                                    marker.setVisible(true);
                                 }
-                                bounds = map.getProjection().getVisibleRegion().latLngBounds;
-                                if(!bounds.contains(mePosition) || !bounds.contains(userPosition)) {
-                                    text += "\n" + myUser.getProperties().getDisplayName();
-                                }
-                                marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
-                                marker.setPosition(markerPosition);
                             }
                         });
                     } catch (IOException | JSONException e) {

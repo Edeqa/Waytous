@@ -228,6 +228,7 @@ public class MyUser {
             && (location.getProvider().equals(LocationManager.GPS_PROVIDER)
                 || location.getProvider().equals(LocationManager.NETWORK_PROVIDER)
                 || location.getProvider().equals(LocationManager.PASSIVE_PROVIDER)
+                || location.getProvider().equals("LocationStore")
                 || location.getProvider().equals("fused")
                 || location.getProvider().equals("touch"));
     }

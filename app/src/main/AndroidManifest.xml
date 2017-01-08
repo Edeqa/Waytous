@@ -40,7 +40,7 @@
         <service
             android:name=".WhereAmINowService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
 
         <activity
             android:name=".MainActivity"
@@ -82,7 +82,7 @@
 
                 <category android:name="android.intent.category.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
 
                 <data android:host="*" />
                 <data android:pathPrefix="/track/" />

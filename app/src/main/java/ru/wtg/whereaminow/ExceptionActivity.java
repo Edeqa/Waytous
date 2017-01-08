@@ -81,7 +81,7 @@ public class ExceptionActivity extends AppCompatActivity {
                         intent.setData(Uri.parse("mailto:"));
                         intent.setType("text/plain");
                         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.email)});
-                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.uncaught_exception_in_wain));
+                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.uncaught_exception_in_wain, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
                         intent.putExtra(Intent.EXTRA_TEXT, textException.toString());
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);

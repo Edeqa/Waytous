@@ -24,7 +24,6 @@ import ru.wtg.whereaminow.helpers.MyUser;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 
 /**
  * Created 12/03/16.

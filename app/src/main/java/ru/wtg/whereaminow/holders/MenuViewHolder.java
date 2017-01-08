@@ -25,12 +25,11 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 /**
  * Created 11/18/16.
  */
-public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> {
+public class MenuViewHolder extends AbstractViewHolder {
     private static final String TYPE = "menu";
 
     private final Activity context;
     private boolean day = true;
-    private Menu optionsMenu;
 
     public MenuViewHolder(Activity context) {
         this.context = context;
@@ -42,9 +41,8 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     }
 
     @Override
-    public MenuView create(MyUser myUser) {
-        if (myUser == null) return null;
-        return this.new MenuView(myUser);
+    public AbstractView create(MyUser myUser) {
+        return null;
     }
 
     @Override
@@ -56,7 +54,7 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
     public boolean onEvent(String event, Object object) {
         switch(event){
             case CREATE_OPTIONS_MENU:
-                optionsMenu = (Menu) object;
+                Menu optionsMenu = (Menu) object;
                 if(DEBUGGING) {
                     optionsMenu.add("Switch day/night mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
@@ -112,38 +110,9 @@ public class MenuViewHolder extends AbstractViewHolder<MenuViewHolder.MenuView> 
         return true;
     }
 
-    public class MenuView extends AbstractView {
-        private final MyUser myUser;
-
-        public MenuView(MyUser myUser){
-            this.myUser = myUser;
-        }
-
-        @Override
-        public boolean onEvent(String event, Object object) {
-            if(object == null) return true;
-            switch (event){
-                /*case CREATE_CONTEXT_MENU:
-                    ContextMenu contextMenu = (ContextMenu) object;
-                    MenuItem item = contextMenu.findItem(R.id.action_navigate);
-                    item.setVisible(myUser != State.getInstance().getMe());
-                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                new NavigationStarter(context, myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()).start();
-                                return false;
-                            }
-                        });
-                    break;*/
-            }
-            return true;
-        }
-
-        @Override
-        public boolean dependsOnLocation() {
-            return false;
-        }
-
+    @Override
+    public boolean dependsOnUser() {
+        return false;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_SERVER_HOST;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_REQUEST_TIMEOUT;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
@@ -50,7 +48,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
  * Created 10/5/16.
@@ -393,13 +390,13 @@ public class MyWssServer extends WebSocketServer {
      */
     public void sendToAll(String text, WebSocket insteadConnection) {
         Collection<WebSocket> con = connections();
-        synchronized (con) {
+//        synchronized (con) {
             for (WebSocket c : con) {
                 if (insteadConnection != null && c == insteadConnection) continue;
                 System.out.println("WSS:to:" + c.getRemoteSocketAddress() + ":" + text);
                 c.send(text);
             }
-        }
+//        }
     }
 
     public boolean parse(BufferedReader sysin) throws IOException, InterruptedException {

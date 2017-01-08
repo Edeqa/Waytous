@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 /**
- * Created by tujger on 12/11/16.
+ * Created 12/11/16.
  */
 
 public class NavigationStarter {

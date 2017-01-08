@@ -5,13 +5,8 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
-import java.util.ArrayList;
-
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
-
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 
 /**
  * Created 11/29/16.
@@ -19,33 +14,35 @@ import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 public class MapButtonsViewHolder extends AbstractViewHolder {
 
     public MapButtonsViewHolder(SupportMapFragment mapFragment) {
+        try {
+            View myLocationButton = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
 
-        View myLocationButton  = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
-
-        myLocationButton.setVisibility(View.VISIBLE);
-        myLocationButton.setEnabled(true);
-        myLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CameraViewHolder camera = (CameraViewHolder) State.getInstance().getEntityHolder(CameraViewHolder.TYPE);
-                if(camera != null){
-                    camera.onMyLocationButtonClickListener.onMyLocationButtonClick();
+            myLocationButton.setVisibility(View.VISIBLE);
+            myLocationButton.setEnabled(true);
+            myLocationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CameraViewHolder camera = (CameraViewHolder) State.getInstance().getEntityHolder(CameraViewHolder.TYPE);
+                    if (camera != null) {
+                        camera.onMyLocationButtonClickListener.onMyLocationButtonClick();
+                    }
                 }
-            }
-        });
+            });
 
-        View zoomButtons = (View) mapFragment.getView().findViewWithTag("GoogleMapZoomInButton").getParent();
+            View zoomButtons = (View) mapFragment.getView().findViewWithTag("GoogleMapZoomInButton").getParent();
 
-        int positionWidth = zoomButtons.getLayoutParams().width;
-        int positionHeight = zoomButtons.getLayoutParams().height;
+            int positionWidth = zoomButtons.getLayoutParams().width;
+            int positionHeight = zoomButtons.getLayoutParams().height;
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(positionWidth, positionHeight);
-        int margin = positionWidth / 5;
-        params.setMargins(margin, 0, 0, margin);
-        params.addRule(RelativeLayout.BELOW, myLocationButton.getId());
-        params.addRule(RelativeLayout.ALIGN_LEFT, myLocationButton.getId());
-        zoomButtons.setLayoutParams(params);
-
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(positionWidth, positionHeight);
+            int margin = positionWidth / 5;
+            params.setMargins(margin, 0, 0, margin);
+            params.addRule(RelativeLayout.BELOW, myLocationButton.getId());
+            params.addRule(RelativeLayout.ALIGN_LEFT, myLocationButton.getId());
+            zoomButtons.setLayoutParams(params);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -69,7 +66,7 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
     }
 
 
-    @Override
+ /*   @Override
     public ArrayList<IntroRule> getIntro() {
 
 //        MarkerView markerView = (MarkerView) State.getInstance().getMe().getEntity(TYPE);
@@ -82,5 +79,5 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
 
         return rules;
     }
-
+*/
 }

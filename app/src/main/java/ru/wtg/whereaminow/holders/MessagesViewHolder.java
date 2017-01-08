@@ -13,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -31,9 +30,7 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
-import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 import ru.wtg.whereaminow.helpers.UserMessage;
@@ -45,9 +42,7 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
@@ -70,11 +65,9 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
 
     private final AppCompatActivity context;
-    //    private final MessagesHolder messagesHolder;
     private UserMessage.UserMessagesAdapter adapter;
     private View toolbar;
     private ColorDrawable drawable;
-    //    private LinearLayoutManager layoutManager;
     private RecyclerView list;
     private boolean donotscroll;
     private boolean notTransparentWindow;
@@ -84,7 +77,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public MessagesViewHolder(AppCompatActivity context) {
         this.context = context;
         this.dialog = new AlertDialog.Builder(context).create();
-//        messagesHolder = ((MessagesHolder)State.getInstance().getEntityHolder(MessagesHolder.TYPE));
     }
 
     @Override

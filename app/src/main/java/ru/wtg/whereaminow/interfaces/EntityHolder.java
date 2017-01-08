@@ -1,5 +1,7 @@
 package ru.wtg.whereaminow.interfaces;
 
+import java.net.URISyntaxException;
+
 import ru.wtg.whereaminow.helpers.MyUser;
 
 /**
@@ -16,6 +18,6 @@ public interface EntityHolder<T extends Entity> {
 
     T create(MyUser myUser);
 
-    boolean onEvent(String event, Object object);
+    boolean onEvent(String event, Object object) throws URISyntaxException;
 
 }

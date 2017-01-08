@@ -6,7 +6,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -15,8 +14,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -28,8 +27,6 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.State.PREPARE_FAB;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
@@ -47,9 +44,13 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
     private GoogleMap map;
 
-    public MarkerViewHolder(Context context) {
+    public MarkerViewHolder(MainActivity context) {
         this.context = context;
+
+        setMap(context.getMap());
     }
+
+
 
     @Override
     public String getType(){

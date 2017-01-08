@@ -11,6 +11,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.LightSensorManager;
@@ -44,12 +45,14 @@ public class SensorsViewHolder extends AbstractViewHolder {
     private final LightSensorManager lightSensor;
     private GoogleMap map;
 
-    public SensorsViewHolder(final Activity context) {
+    public SensorsViewHolder(final MainActivity context) {
         this.context = context;
 
         onEnvironmentChangeListener.call(DAY);
         lightSensor = new LightSensorManager(context);
         lightSensor.setOnEnvironmentChangeListener(onEnvironmentChangeListener);
+
+        setMap(context.getMap());
     }
 
     @Override

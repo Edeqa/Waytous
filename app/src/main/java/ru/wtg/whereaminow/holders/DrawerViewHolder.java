@@ -21,7 +21,6 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
-import static ru.wtg.whereaminow.State.PREPARE_FAB;
 
 /**
  * Created 11/27/16.
