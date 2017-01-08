@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.Base64;
-import android.view.SoundEffectConstants;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -32,7 +31,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 

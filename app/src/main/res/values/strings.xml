@@ -10,7 +10,7 @@
     <string name="app_information">Information</string>
     <string name="caught_an_exception_s">Caught an exception <b>\"%1$s\"</b></string>
     <string name="email" translatable="false"><![CDATA[ORW support <support@wtg.ru>]]></string>
-    <string name="uncaught_exception_in_wain">Uncaught exception in WAIN</string>
+    <string name="uncaught_exception_in_wain" formatted="false">Uncaught exception in @string/app_name %s.%d</string>
     <string name="send_report_about_an_error">Send report about an error</string>
     <string name="restart">Restart</string>
     <string name="report">Report</string>
@@ -116,6 +116,8 @@
     <string name="fit_to_screen">Fit to screen</string>
     <string name="share_link">Share link</string>
     <string name="share_to_facebook">Share to Facebook</string>
+    <string name="navigate_on_maps">Navigate on maps</string>
+    <string name="change_orientation">Change orientation</string>
 
 
 </resources>

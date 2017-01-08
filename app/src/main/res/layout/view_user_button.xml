@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ic_person_black_24dp"
-        android:id="@+id/iv_button_person"
+        android:id="@+id/iv_button_image"
         android:tint="?attr/buttonTextColor"
         android:layout_weight="1" />
 
@@ -23,7 +23,7 @@
         tools:text="Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_button_username"
+        android:id="@+id/tv_button_title"
         android:textColor="?attr/buttonTextColor"
         android:maxLines="1"
         android:fontFamily="sans-serif-condensed"

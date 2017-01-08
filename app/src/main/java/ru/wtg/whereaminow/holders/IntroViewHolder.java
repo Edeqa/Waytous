@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,7 +12,6 @@ import android.widget.RelativeLayout;
 
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
-import com.github.amlcurran.showcaseview.ShowcaseDrawer;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 

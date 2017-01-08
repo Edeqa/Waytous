@@ -3,7 +3,6 @@ package ru.wtg.whereaminow.service_helpers;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;

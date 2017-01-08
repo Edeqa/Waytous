@@ -20,10 +20,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
@@ -33,11 +35,13 @@ import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
  * Created 11/20/16.
  */
+@SuppressWarnings("deprecation")
 public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraUpdateView> {
     public static final String TYPE = "camera";
 
@@ -47,11 +51,11 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     public static final String CAMERA_ZOOM_OUT = "camera_zoom_out";
     public static final String CAMERA_ZOOM = "camera_zoom";
 
-    public static final String CAMERA_NEXT_ORIENTATION = "change_next_orientation";
+    static final String CAMERA_NEXT_ORIENTATION = "change_next_orientation";
 
     private final static int CAMERA_ORIENTATION_NORTH = 0;
     private final static int CAMERA_ORIENTATION_DIRECTION = 1;
-    public final static int CAMERA_ORIENTATION_PERSPECTIVE = 2;
+    private final static int CAMERA_ORIENTATION_PERSPECTIVE = 2;
     private final static int CAMERA_ORIENTATION_STAY = 3;
     private final static int CAMERA_ORIENTATION_USER = 4;
     private static final float CAMERA_DEFAULT_ZOOM = 15.f;
@@ -75,10 +79,15 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private int padding;
     private boolean moveFromHardware = false;
     private boolean canceled = false;
+    private boolean initialStart = true;
 
-    public CameraViewHolder(AppCompatActivity context) {
+    public CameraViewHolder(MainActivity context) {
         this.context = context;
         padding = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
+
+        setMap(context.getMap());
+        setScaleView((MapScaleView) context.findViewById(R.id.scale_view));
+
     }
 
     @Override
@@ -115,7 +124,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     public void call(Integer number, MyUser myUser) {
                         if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
                             setCameraUpdate((CameraUpdateView) myUser.getEntity(CameraViewHolder.TYPE));
-                            update(false);
+                            update();
                         }
                     }
                 });
@@ -139,12 +148,11 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     });
                 }
                 break;
-
         }
         return true;
     }
 
-    private void update(boolean move) {
+    private void update() {
         if(cameraUpdate == null) return;
         CameraUpdate camera;
         MyUser user;
@@ -173,25 +181,31 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             LatLng latLngLB = new LatLng(lat1, lng1);
             LatLng latLngRT = new LatLng(lat2, lng2);
 
-            camera = CameraUpdateFactory.newLatLngBounds(new LatLngBounds(latLngLB, latLngRT), padding);
+            camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
         } else {
             camera = CameraUpdateFactory.newCameraPosition(cameraUpdate.getCameraPosition().build());
         }
         moveFromHardware = true;
 
         try {
-            if(move){
-                map.moveCamera(camera);
+            if(initialStart) {
+                if(!State.getInstance().tracking_disabled() || State.getInstance().getStringPreference(TRACKING_URI, null) != null) {
+                    map.moveCamera(camera);
+                } else {
+                    map.animateCamera(camera, LOCATION_UPDATES_DELAY, null);
+                }
             } else {
                 map.animateCamera(camera, LOCATION_UPDATES_DELAY, null);
             }
-        } catch(IllegalStateException e){
+        } catch(IllegalStateException e) {
             e.printStackTrace();
         }
+        initialStart = false;
+
     }
 
     public void move(){
-        update(true);
+        update();
     }
 
     public CameraViewHolder setMap(GoogleMap map) {
@@ -209,7 +223,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         this.cameraUpdate = cameraUpdate;
     }
 
-    public CameraViewHolder setScaleView(MapScaleView scaleView) {
+    private CameraViewHolder setScaleView(MapScaleView scaleView) {
         this.scaleView = scaleView;
         if(Locale.US.equals(Locale.getDefault())) {
             scaleView.setIsMiles(true);
@@ -338,7 +352,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             }*/
             orientationChanged = false;
             CameraViewHolder.this.setCameraUpdate(this);
-            CameraViewHolder.this.update(false);
+            CameraViewHolder.this.update();
         }
 
         @Override
@@ -364,7 +378,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                             }
                         });
                     } else {
-                        CameraViewHolder.this.update(false);
+                        CameraViewHolder.this.update();
                     }
                     break;
                 case CAMERA_NEXT_ORIENTATION:
@@ -373,6 +387,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     } else if(orientation == CAMERA_ORIENTATION_LAST){
                         orientation = CAMERA_ORIENTATION_NORTH;
                     } else {
+                        orientation++;
+                    }
+                    if(orientation == CAMERA_ORIENTATION_DIRECTION && myUser.getLocation().getBearing() == 0) {
                         orientation++;
                     }
                     orientationChanged = true;
@@ -401,6 +418,15 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                                 return false;
                             }
                         }).setIcon(R.drawable.ic_unselect_black_24dp);
+                    }
+                    if(myUser.isUser()) {
+                        menu.add(0, R.string.change_orientation, Menu.NONE, R.string.change_orientation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                myUser.fire(CAMERA_NEXT_ORIENTATION);
+                                return false;
+                            }
+                        }).setIcon(R.drawable.ic_compass_black_24dp);
                     }
                     break;
                 case CHANGE_NUMBER:

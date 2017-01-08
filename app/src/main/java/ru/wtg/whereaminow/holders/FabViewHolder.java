@@ -2,23 +2,18 @@ package ru.wtg.whereaminow.holders;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
@@ -26,11 +21,9 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.InviteSender;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.MyUsers;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
-import static ru.wtg.whereaminow.State.SELECT_USER;
 import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
@@ -40,7 +33,6 @@ import static ru.wtg.whereaminow.State.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATED;
-import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 
 /**
  * Created 11/27/16.
@@ -50,7 +42,6 @@ public class FabViewHolder extends AbstractViewHolder {
     public static final String TYPE = "fab_layout";
 
     private final MainActivity context;
-    private LinearLayoutCompat fab_layout;
     private LinearLayoutCompat fab_buttons;
     private FloatingActionButton fab;
 
@@ -62,20 +53,16 @@ public class FabViewHolder extends AbstractViewHolder {
     }
 
     public FabViewHolder setView(View view) {
-        fab_layout = (LinearLayoutCompat) view;
         fab_buttons = (LinearLayoutCompat) view.findViewById(R.id.fab_buttons);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        hide(false);
         close(false);
 
-        fab = (FloatingActionButton) fab_layout.findViewById(R.id.fab);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_gps_off_white_24dp);
         fab.setOnClickListener(onInitialClickListener);
 
         fab_buttons.removeAllViews();
-
-        show(true);
 
         return this;
     }
@@ -104,7 +91,6 @@ public class FabViewHolder extends AbstractViewHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case ACTIVITY_RESUME:
-                hide(true);
                 if(State.getInstance().tracking_active()) {
                     fab.setImageResource(R.drawable.ic_add_white_24dp);
                 } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
@@ -112,7 +98,6 @@ public class FabViewHolder extends AbstractViewHolder {
                 } else {
                     fab.setImageResource(R.drawable.ic_navigation_white_24dp);
                 }
-                show(true);
                 fab.setOnClickListener(onMainClickListener);
                 break;
             case TRACKING_CONNECTING:
@@ -136,14 +121,6 @@ public class FabViewHolder extends AbstractViewHolder {
                 close(true);
         }
         return true;
-    }
-
-    private void hide(boolean animation){
-        fab_layout.setVisibility(View.GONE);
-    }
-
-    private void show(boolean animation){
-        fab_layout.setVisibility(View.VISIBLE);
     }
 
     private void open(boolean animation){

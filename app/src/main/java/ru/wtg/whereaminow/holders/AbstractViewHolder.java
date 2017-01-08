@@ -1,8 +1,5 @@
 package ru.wtg.whereaminow.holders;
 
-import android.support.v7.app.AlertDialog;
-import android.view.View;
-
 import java.util.ArrayList;
 
 import ru.wtg.whereaminow.helpers.IntroRule;

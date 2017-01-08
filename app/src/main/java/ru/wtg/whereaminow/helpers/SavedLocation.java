@@ -10,14 +10,12 @@ import android.os.Looper;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -131,7 +129,7 @@ public class SavedLocation extends AbstractSavedItem {
     }
 
     public static SavedLocation getItemByNumber(long number) {
-        System.out.println("NUMBER:"+number);
+//        System.out.println("NUMBER:"+number);
         return (SavedLocation) getItemByNumber(LOCATION, number);
     }
 
@@ -140,10 +138,9 @@ public class SavedLocation extends AbstractSavedItem {
     }
 
     public void save(final Context context) {
-
-        super.save(new SimpleCallback<AbstractSavedItem>() {
+        super.save(new SimpleCallback<SavedLocation>() {
             @Override
-            public void call(AbstractSavedItem listItem) {
+            public void call(SavedLocation listItem) {
                 final SavedLocation item = (SavedLocation) listItem;
                 if(item.getAddress() == null) {
                     new Thread(new LoadAddress(context, item, null)).start();
@@ -155,10 +152,10 @@ public class SavedLocation extends AbstractSavedItem {
         } );
     }
 
-
     public static void clear(){
         clear(LOCATION);
     }
+
     public static int getCount(){
         return getCount(LOCATION);
     }

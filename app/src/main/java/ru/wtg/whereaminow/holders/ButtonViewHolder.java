@@ -12,11 +12,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -45,8 +47,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     private LinearLayout layout;
     private FlexboxLayout menuLayout;
 
-    public ButtonViewHolder(Activity context) {
+    public ButtonViewHolder(MainActivity context) {
         this.context = context;
+
+        setLayout((LinearLayout) context.findViewById(R.id.layout_users));
+        setMenuLayout((FlexboxLayout) context.findViewById(R.id.layout_context_menu));
+
     }
 
     @Override
@@ -70,7 +76,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         return this;
     }
 
-    public ButtonViewHolder setMenuLayout(final FlexboxLayout menuLayout) {
+    private ButtonViewHolder setMenuLayout(final FlexboxLayout menuLayout) {
         this.menuLayout = menuLayout;
         handlerHideMenu = new Handler();
         runnableHideMenu = new Runnable() {
@@ -151,7 +157,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 //            button.setTextColor(Color.LTGRAY);
 //            button.getBackground().setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(Color.CYAN)));
 
-            title = ((TextView) button.findViewById(R.id.tv_button_username));
+            title = ((TextView) button.findViewById(R.id.tv_button_title));
             if(myUser.getProperties().isSelected()) title.setTypeface(Typeface.DEFAULT_BOLD);
             String titleText = (myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName();
 
@@ -233,15 +239,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         LinearLayout button = (LinearLayout) inflater.inflate(R.layout.view_user_button, null);
 
 //            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        params.setMargins(1, 1, 1, 1);
-                        button.setLayoutParams(params);
+//                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//                        params.setMargins(5, 5, 5, 5);
+//                        button.setLayoutParams(params);
 
-//                                button.setOnClickListener(onClickListener);
-//                                button.setOnLongClickListener(onLongClickListener);
-//                                context.registerForContextMenu(button);
-                        ((ImageView)button.findViewById(R.id.iv_button_person)).setImageDrawable(item.getIcon());
-                        button.findViewById(R.id.tv_button_username).setVisibility(View.GONE);
+                        ((ImageView)button.findViewById(R.id.iv_button_image)).setImageDrawable(item.getIcon());
+                        button.findViewById(R.id.tv_button_title).setVisibility(View.GONE);
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -249,6 +252,13 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                                 popup.getMenu().performIdentifierAction(item.getItemId(),item.getGroupId());
                                 handlerHideMenu.removeCallbacks(runnableHideMenu);
                                 menuLayout.setVisibility(View.GONE);
+                            }
+                        });
+                        button.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+                                return true;
                             }
                         });
                         menuLayout.addView(button);

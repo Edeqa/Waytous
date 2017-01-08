@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -15,10 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -45,7 +41,6 @@ import ru.wtg.whereaminow.holders.DistanceViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
 import ru.wtg.whereaminow.holders.FacebookViewHolder;
-import ru.wtg.whereaminow.holders.IntroViewHolder;
 import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
 import ru.wtg.whereaminow.holders.MarkerViewHolder;
 import ru.wtg.whereaminow.holders.MenuViewHolder;
@@ -63,7 +58,6 @@ import static ru.wtg.whereaminow.State.ACTIVITY_DESTROY;
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
@@ -328,25 +322,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         new MapButtonsViewHolder(mapFragment);
         state.registerEntityHolder(new FacebookViewHolder(this));
-        state.registerEntityHolder(new ButtonViewHolder(this).setLayout((LinearLayout) findViewById(R.id.layout_users)).setMenuLayout((FlexboxLayout)findViewById(R.id.layout_context_menu)));
+        state.registerEntityHolder(new ButtonViewHolder(this));
         state.registerEntityHolder(new MenuViewHolder(this));
-        state.registerEntityHolder(new MarkerViewHolder(this).setMap(map));
-        state.registerEntityHolder(new AddressViewHolder().setCallback(new SimpleCallback<String>() {
-            @Override
-            public void call(String text) {
-                if(getSupportActionBar() != null) {
-                    getSupportActionBar().setSubtitle(text);
-                }
-            }
-        }));
-        state.registerEntityHolder(new CameraViewHolder(this).setMap(map).setScaleView((MapScaleView) findViewById(R.id.scale_view)));
-        state.registerEntityHolder(new SavedLocationsViewHolder(this).setMap(map));
-        state.registerEntityHolder(new TrackViewHolder().setMap(map));
-        state.registerEntityHolder(new NavigationViewHolder(this).setMap(map).setButtonsView(findViewById(R.id.layout_navigation_mode)));
-        state.registerEntityHolder(new DistanceViewHolder().setMap(map));
-        state.registerEntityHolder(new MessagesViewHolder(MainActivity.this));
-        state.registerEntityHolder(new SensorsViewHolder(this).setMap(map));
-        state.registerEntityHolder(new StreetsViewHolder(this).setStreetViewLayout(findViewById(R.id.street_view_layout)));
+        state.registerEntityHolder(new MarkerViewHolder(this));
+        state.registerEntityHolder(new AddressViewHolder(this));
+        state.registerEntityHolder(new CameraViewHolder(this));
+        state.registerEntityHolder(new SavedLocationsViewHolder(this));
+        state.registerEntityHolder(new TrackViewHolder(this));
+        state.registerEntityHolder(new NavigationViewHolder(this));
+        state.registerEntityHolder(new DistanceViewHolder(this));
+        state.registerEntityHolder(new MessagesViewHolder(this));
+        state.registerEntityHolder(new SensorsViewHolder(this));
+        state.registerEntityHolder(new StreetsViewHolder(this));
 
         // IntroViewHolder must be registered last
 //        state.registerEntityHolder(new IntroViewHolder(this));
@@ -499,4 +486,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
+    public GoogleMap getMap() {
+        return map;
+    }
 }

@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
@@ -24,6 +25,17 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     
     private static final String TYPE = "address";
     private SimpleCallback<String> callback;
+
+    public AddressViewHolder(final MainActivity context) {
+        setCallback(new SimpleCallback<String>() {
+            @Override
+            public void call(String text) {
+                if(context.getSupportActionBar() != null) {
+                    context.getSupportActionBar().setSubtitle(text);
+                }
+            }
+        });
+    }
 
     @Override
     public String getType(){

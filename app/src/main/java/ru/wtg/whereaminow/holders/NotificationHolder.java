@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
-import android.view.View;
 
 import java.util.Date;
 
@@ -17,7 +16,6 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.WhereAmINowService;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.SnackbarMessage;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
@@ -32,7 +30,6 @@ import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
@@ -61,6 +58,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0);
 
         notification = new NotificationCompat.Builder(state)
+                .setVisibility(Notification.VISIBILITY_PRIVATE)
                 .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.ic_notification_twinks)
 //                .setAutoCancel(true)
@@ -163,7 +161,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         notification.setContentTitle(state.getUsers().getCountActive() + " user(s) active.");
         if(text != null) {
             notification.setContentText(text);
-            notification.setTicker(text);
+//            notification.setTicker(text);
         }
         notification.setWhen(new Date().getTime());
         notification.setSound(null);
@@ -183,7 +181,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             switch (event) {
                 case MOVING_CLOSE_TO:
 //                    System.out.println("CLOSE TO:"+myUser.getProperties().getDisplayName());
-                    update("You are close from " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                    update("You are close to " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
                     break;
                 case MOVING_AWAY_FROM:
 //                    System.out.println("AWAY FROM:"+myUser.getProperties().getDisplayName());

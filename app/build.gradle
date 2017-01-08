@@ -16,6 +16,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+//            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -27,6 +28,9 @@ android {
     }
     /*aaptOptions {
         additionalParameters "--no-version-vectors"
+    }*/
+    /*aaptOptions {
+        cruncherEnabled = false
     }*/
 }
 

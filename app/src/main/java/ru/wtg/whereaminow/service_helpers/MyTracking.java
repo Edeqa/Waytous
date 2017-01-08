@@ -151,7 +151,6 @@ public class MyTracking {
 
     private void doTrack(){
         state.getService().startForeground(1976, state.getNotification());
-
         webClient.start();
     }
 
@@ -159,7 +158,6 @@ public class MyTracking {
         try {
             setStatus(TRACKING_DISABLED);
             receiver.unregister();
-//            state.unregisterReceiver(receiver);
             JSONObject o = new JSONObject();
             o.put(RESPONSE_STATUS,RESPONSE_STATUS_STOPPED);
             fromServer(o);
@@ -171,7 +169,6 @@ public class MyTracking {
     void fromServer(final JSONObject o) {
         System.out.println("FROMSERVER:" + o);
 
-//        if(status == TRACKING_DISABLED) return;
         try {
             switch (o.getString(RESPONSE_STATUS)) {
                 case RESPONSE_STATUS_DISCONNECTED:
@@ -231,10 +228,10 @@ public class MyTracking {
                 case RESPONSE_STATUS_ERROR:
                     String message = o.getString(RESPONSE_MESSAGE);
                     if(message == null) message = "Failed join to tracking_active.";
-                    state.fire(TRACKING_ERROR, message);
 
                     SmartLocation.with(state).location().stop();
                     stop();
+                    state.fire(TRACKING_ERROR, message);
                     break;
                 case RESPONSE_STATUS_UPDATED:
                     if (o.has(USER_DISMISSED)) {

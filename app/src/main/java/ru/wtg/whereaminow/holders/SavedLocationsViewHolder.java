@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -28,14 +27,14 @@ import com.google.maps.android.ui.IconGenerator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.SavedLocation;
 import ru.wtg.whereaminow.helpers.SnackbarMessage;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
@@ -74,6 +73,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
     public static final String TYPE = "saved_locations";
 
+    private static final String SAVE_LOCATION = "save_location";
     private static final String SHOW_SAVED_LOCATION = "show_saved_location";
     private static final String HIDE_SAVED_LOCATION = "hide_saved_location";
     private static final String DELETE_SAVED_LOCATION = "delete_saved_location";
@@ -83,10 +83,10 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     private GoogleMap map;
     private SavedLocation.SavedLocationsAdapter adapter;
 
-    public SavedLocationsViewHolder(AppCompatActivity context) {
+    public SavedLocationsViewHolder(MainActivity context) {
         this.context = context;
         SavedLocation.init(context);
-
+        setMap(context.getMap());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     @Override
     public SavedLocationView create(MyUser myUser) {
         if(myUser == null || myUser.getLocation() == null) return null;
-        if(!myUser.getLocation().getProvider().equals(TYPE)) return null;
+//        if(!myUser.getLocation().getProvider().equals(TYPE)) return null;
         return new SavedLocationView(myUser);
     }
 
@@ -233,29 +233,10 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             if(State.getInstance().getUsers().getCountSelected() == 1) {
-
                 State.getInstance().getUsers().forSelectedUsers(new MyUsers.Callback() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        final SavedLocation loc = new SavedLocation(context);
-                        loc.setLatitude(myUser.getLocation().getLatitude());
-                        loc.setLongitude(myUser.getLocation().getLongitude());
-                        loc.setTimestamp(new Date().getTime());
-                        loc.setUsername(myUser.getProperties().getDisplayName());
-                        loc.save(context);
-
-                        //noinspection unchecked
-                        new SnackbarMessage().setText("Location saved").setAction("Show",new SimpleCallback() {
-                            @Override
-                            public void call(Object arg) {
-                                State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
-                            }
-                        }).setOnClickListener(new SimpleCallback() {
-                            @Override
-                            public void call(Object arg) {
-                                State.getInstance().fire(SHOW_SAVED_LOCATIONS);
-                            }
-                        }).show();
+                        myUser.fire(SAVE_LOCATION);
 
                     }
                 });
@@ -264,6 +245,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         }
     };
 
+    private boolean isSavedLocation(MyUser user) {
+        return user != null && user.getLocation() != null && user.getLocation().getProvider().equals(TYPE);
+    }
 
     class SavedLocationView extends AbstractView {
         private Marker marker;
@@ -271,8 +255,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
         SavedLocationView(MyUser myUser){
             this.myUser = myUser;
-
-            createMarker();
+            if(isSavedLocation(myUser)) {
+                createMarker();
+            }
         }
 
         private void createMarker() {
@@ -314,22 +299,35 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         public boolean onEvent(String event, Object object) {
             switch (event){
                 case CHANGE_NUMBER:
-                    int number = (int) object;
-                    Bundle b = new Bundle();
-                    b.putString(TYPE, TYPE);
-                    b.putInt(RESPONSE_NUMBER, number);
-                    marker.setTag(b);
+                    if(isSavedLocation(myUser)) {
+                        int number = (int) object;
+                        Bundle b = new Bundle();
+                        b.putString(TYPE, TYPE);
+                        b.putInt(RESPONSE_NUMBER, number);
+                        marker.setTag(b);
+                    }
                     break;
                 case CHANGE_NAME:
-                    String name = (String) object;
-                    if(name != null && name.length() > 0){
-                        marker.remove();
-                        createMarker();
+                    if(isSavedLocation(myUser)) {
+                        String name = (String) object;
+                        if (name != null && name.length() > 0) {
+                            marker.remove();
+                            createMarker();
+                        }
                     }
                     break;
                 case CREATE_CONTEXT_MENU:
                     Menu menu = (Menu) object;
-                    if(myUser.getLocation() != null && myUser.getLocation().getProvider() != null && myUser.getLocation().getProvider().equals(TYPE)) {
+                    if(myUser.isUser()) {
+                        menu.add(0, R.string.save_location, Menu.NONE, R.string.save_location).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                myUser.fire(SAVE_LOCATION);
+                                return false;
+                            }
+                        }).setIcon(R.drawable.ic_pin_drop_black_24dp);
+                    }
+                    if(isSavedLocation(myUser)) {
                         menu.add(0, R.string.edit, Menu.NONE, R.string.edit).setOnMenuItemClickListener(new OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -359,32 +357,72 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                     }
                     break;
                 case HIDE_SAVED_LOCATION:
+                    if(isSavedLocation(myUser)) {
+                        myUser.removeViews();
+                        myUser.fire(MAKE_INACTIVE);
+                        State.getInstance().fire(USER_DISMISSED, myUser);
+                        myUser.fire(USER_DISMISSED);
+                        State.getInstance().fire(UPDATE_CAMERA);
+                    }
+/*
+
+
+
                     State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
-                            myUser.removeViews();
-                            myUser.fire(MAKE_INACTIVE);
-                            State.getInstance().fire(USER_DISMISSED, myUser);
-                            myUser.fire(USER_DISMISSED);
-                            State.getInstance().fire(UPDATE_CAMERA);
+                            if(isSavedLocation(myUser)) {
+                                myUser.removeViews();
+                                myUser.fire(MAKE_INACTIVE);
+                                State.getInstance().fire(USER_DISMISSED, myUser);
+                                myUser.fire(USER_DISMISSED);
+                                State.getInstance().fire(UPDATE_CAMERA);
+                            }
                         }
                     });
+*/
                     break;
                 case DELETE_SAVED_LOCATION:
-                    State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
-                        @Override
-                        public void call(Integer number, MyUser myUser) {
-                            myUser.fire(HIDE_SAVED_LOCATION);
-                        }
-                    });
-                    SavedLocation saved = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
-                    if(saved != null) SavedLocation.getDb().deleteById(saved.getNumber());
+                    if(isSavedLocation(myUser)) {
+                        myUser.fire(HIDE_SAVED_LOCATION);
+                        State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
+                            @Override
+                            public void call(Integer number, MyUser myUser) {
+                            }
+                        });
+                        SavedLocation saved = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
+                        if (saved != null) SavedLocation.getDb().deleteById(saved.getNumber());
+                    }
                     break;
                 case MARKER_CLICK:
-                    Marker marker = (Marker) object;
-                    System.out.println("CLICKTO:"+myUser.getProperties().getDisplayName());
-                    marker.showInfoWindow();
+                    if(isSavedLocation(myUser)) {
+                        Marker marker = (Marker) object;
+                        System.out.println("CLICKTO:" + myUser.getProperties().getDisplayName());
+                        marker.showInfoWindow();
+                    }
+                    break;
+                case SAVE_LOCATION:
+                    if(myUser.isUser()) {
+                        final SavedLocation loc = new SavedLocation(context);
+                        loc.setLatitude(myUser.getLocation().getLatitude());
+                        loc.setLongitude(myUser.getLocation().getLongitude());
+                        loc.setTimestamp(new Date().getTime());
+                        loc.setUsername(myUser.getProperties().getDisplayName());
+                        loc.save(context);
 
+                        //noinspection unchecked
+                        new SnackbarMessage().setText("Location saved").setAction("Show", new SimpleCallback() {
+                            @Override
+                            public void call(Object arg) {
+                                State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
+                            }
+                        }).setOnClickListener(new SimpleCallback() {
+                            @Override
+                            public void call(Object arg) {
+                                State.getInstance().fire(SHOW_SAVED_LOCATIONS);
+                            }
+                        }).show();
+                    }
                     break;
             }
             return true;
@@ -510,7 +548,11 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     }
 
     private void reloadCursor(){
-        context.getSupportLoaderManager().getLoader(1).forceLoad();
+        try {
+            context.getSupportLoaderManager().getLoader(1).forceLoad();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void editLocation(final SavedLocation savedLocation) {
@@ -562,6 +604,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     }
 
 
+/*
     @Override
     public ArrayList<IntroRule> getIntro() {
 
@@ -570,6 +613,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
         return rules;
     }
+*/
 
 
 }

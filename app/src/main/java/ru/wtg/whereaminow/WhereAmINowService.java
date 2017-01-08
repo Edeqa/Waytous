@@ -1,37 +1,13 @@
 package ru.wtg.whereaminow;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
-import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URISyntaxException;
-
-import io.nlopez.smartlocation.SmartLocation;
-import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.service_helpers.MyTracking;
-
-import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_STOPPED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
+import static ru.wtg.whereaminow.State.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.TRACKING_STOP;
 
 public class WhereAmINowService extends Service {
 
@@ -60,6 +36,14 @@ public class WhereAmINowService extends Service {
         if(intent != null && intent.hasExtra("mode")) mode = intent.getStringExtra("mode");
 
         if("start".equals(mode)){
+            state.fire(TRACKING_NEW);
+        } else if("join".equals(mode)){
+            state.fire(TRACKING_JOIN, intent.getStringExtra("host"));
+        } else if("stop".equals(mode)){
+            state.fire(TRACKING_STOP);
+        }
+/*
+        if("start".equals(mode)){
             try {
                 state.setTracking(new MyTracking());
             } catch (URISyntaxException e) {
@@ -84,6 +68,7 @@ public class WhereAmINowService extends Service {
                 state.getTracking().stop();
             }
         }
+*/
         return super.onStartCommand(intent, flags, startId);
     }
 

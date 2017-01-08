@@ -10,11 +10,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
@@ -38,6 +38,10 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
     private static final String HIDE_TRACK = "hide_track";
 
     private GoogleMap map;
+
+    public TrackViewHolder(MainActivity context) {
+        setMap(context.getMap());
+    }
 
     @Override
     public String getType() {
@@ -130,11 +134,10 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
 
         TrackView(MyUser myUser){
             this.myUser = myUser;
-
             Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
             showtrack = !(props == null || !props);
             if(showtrack){
-                myUser.fire(SHOW_TRACK);
+                onEvent(SHOW_TRACK, null);
             }
         }
 
@@ -193,13 +196,12 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
 
         @Override
         public boolean onEvent(String event, Object object) {
-            if(myUser.getLocation() != null && !myUser.isUser()) return true;
+            if(myUser.getLocation() == null || !myUser.isUser()) return true;
             switch(event) {
                 case CREATE_CONTEXT_MENU:
-                    Menu contextMenu = (Menu) object;
-
+                    Menu menu = (Menu) object;
                     if(!showtrack) {
-                        contextMenu.add(0, R.string.show_track, Menu.NONE, R.string.show_track).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.show_track, Menu.NONE, R.string.show_track).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(SHOW_TRACK);
@@ -207,7 +209,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                             }
                         }).setIcon(R.drawable.ic_title_black_24px);
                     } else {
-                        contextMenu.add(0, R.string.hide_track, Menu.NONE, R.string.hide_track).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        menu.add(0, R.string.hide_track, Menu.NONE, R.string.hide_track).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(HIDE_TRACK);
@@ -221,17 +223,20 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                     myUser.getProperties().saveFor(TYPE, showtrack);
 
                     if(track != null) break;
+                    try {
+                        float density = State.getInstance().getResources().getDisplayMetrics().density;
+                        float width = (int) (10 * density);
 
-                    float density = State.getInstance().getResources().getDisplayMetrics().density;
-                    float width = (int) (10 * density);
+                        int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0x77000000;
 
-                    int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0x77000000;
+                        track = map.addPolyline(new PolylineOptions().width(width).color(color).geodesic(true).zIndex(100f));
+                        points = getTrail();
+                        track.setPoints(points);
 
-                    track = map.addPolyline(new PolylineOptions().width(width).color(color).geodesic(true).zIndex(100f));
-                    points = getTrail();
-                    track.setPoints(points);
-
-                    onChangeLocation(myUser.getLocation());
+                        onChangeLocation(myUser.getLocation());
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
                     break;
                 case HIDE_TRACK:
                     showtrack = false;
@@ -246,7 +251,11 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
         List<LatLng> getTrail(){
             List<LatLng> points = new ArrayList<>();
             for(Location location: myUser.getLocations()){
-                points.add(new LatLng(location.getLatitude(),location.getLongitude()));
+                try {
+                    points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
             }
             points.remove(points.size()-1);
             return points;
