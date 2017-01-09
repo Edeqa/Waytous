@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,8 +57,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
     static final long serialVersionUID = -6395904747332820058L;
 
-
-    private static final String TYPE = "navigation";
+    private static final String TYPE = "Navigation";
 
     static final String SHOW_NAVIGATION = "show_navigation";
     private static final String HIDE_NAVIGATION = "hide_navigation";
@@ -491,6 +491,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false)) req += "&avoid=ferries";
 
                     try {
+                        Log.i(TYPE,req);
                         final String res = Utils.getUrl(req);
                         JSONObject o = new JSONObject(res);
 

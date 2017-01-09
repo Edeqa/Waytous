@@ -17,6 +17,8 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.UserMessage;
 
+import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
+import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
@@ -27,6 +29,7 @@ import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_PRIVATE;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_JOINED;
 import static ru.wtg.whereaminow.holders.MessagesViewHolder.SHOW_MESSAGES;
+import static ru.wtg.whereaminow.holders.NotificationHolder.SHOW_CUSTOM_NOTIFICATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
@@ -173,32 +176,32 @@ public class MessagesHolder extends AbstractPropertyHolder {
                     m.save(null);
                     messages.add(m);
 
+                    Intent viewIntent = new Intent(context, MainActivity.class);
+                    viewIntent.putExtra("action", "fire");
+                    viewIntent.putExtra("fire", SHOW_MESSAGES);
+
+                    Intent replyIntent = new Intent(context, MainActivity.class);
+                    replyIntent.putExtra("action", "fire");
+                    replyIntent.putExtra("fire", NEW_MESSAGE);
+                    replyIntent.putExtra("number", myUser.getProperties().getNumber());
+
+                    PendingIntent pendingViewIntent = PendingIntent.getActivity(context, 1978, viewIntent, 0);
+                    PendingIntent pendingReplyIntent = PendingIntent.getActivity(context, 1979, replyIntent, 0);
+
+                    notification.mActions.clear();
+                    notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
+                    notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
+
+                    notification
+                            .setContentTitle(myUser.getProperties().getDisplayName())
+                            .setContentText(text)
+                            .setWhen(new Date().getTime());
+
                     if(showNotifications) {
-                        Intent viewIntent = new Intent(context, MainActivity.class);
-                        viewIntent.putExtra("action", "fire");
-                        viewIntent.putExtra("fire", SHOW_MESSAGES);
-
-                        Intent replyIntent = new Intent(context, MainActivity.class);
-                        replyIntent.putExtra("action", "fire");
-                        replyIntent.putExtra("fire", NEW_MESSAGE);
-                        replyIntent.putExtra("number", myUser.getProperties().getNumber());
-
-                        PendingIntent pendingViewIntent = PendingIntent.getActivity(context, 1978, viewIntent, 0);
-                        PendingIntent pendingReplyIntent = PendingIntent.getActivity(context, 1979, replyIntent, 0);
-
-                        notification.mActions.clear();
-                        notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
-                        notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
-
-                        notification
-                                .setContentTitle(myUser.getProperties().getDisplayName())
-                                .setContentText(text)
-                                .setWhen(new Date().getTime());
-
-                        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-                        notificationManager.notify(1977, notification.build());
+                        notification.setDefaults(DEFAULT_ALL);
                     }
+
+                    State.getInstance().fire(SHOW_CUSTOM_NOTIFICATION, notification.build());
 
                     break;
                 case SEND_MESSAGE:

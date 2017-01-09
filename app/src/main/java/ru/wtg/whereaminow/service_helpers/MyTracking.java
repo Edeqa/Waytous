@@ -21,6 +21,7 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.NetworkStateChangeReceiver;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.holders.MessagesHolder;
+import ru.wtg.whereaminow.holders.TrackingHolder;
 
 import static ru.wtg.whereaminow.State.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
@@ -77,6 +78,7 @@ public class MyTracking {
     private URI serverUri;
     private String welcomeMessage;
     private String status = TRACKING_DISABLED;
+    private TrackingHolder.TrackingListenerInterface onTrackingListener;
 
     public MyTracking() throws URISyntaxException {
         this(WSS_SERVER_HOST);
@@ -100,6 +102,11 @@ public class MyTracking {
             e.printStackTrace();
         }
         webClient.setTracking(this);
+    }
+
+    public MyTracking(TrackingHolder.TrackingListenerInterface onTrackingListener) throws URISyntaxException {
+        this(WSS_SERVER_HOST);
+        this.onTrackingListener = onTrackingListener;
     }
 
     public OnLocationUpdatedListener locationUpdatedListener = new OnLocationUpdatedListener() {

@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -28,10 +29,10 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 public class MenuViewHolder extends AbstractViewHolder {
     private static final String TYPE = "menu";
 
-    private final Activity context;
+    private final MainActivity context;
     private boolean day = true;
 
-    public MenuViewHolder(Activity context) {
+    public MenuViewHolder(MainActivity context) {
         this.context = context;
     }
 

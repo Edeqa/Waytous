@@ -1,5 +1,6 @@
 package ru.wtg.whereaminowserver.helpers;
 
+import com.sun.javafx.geom.AreaOp;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -68,8 +69,12 @@ public class MyHttpAdminServer implements HttpHandler {
 
         HtmlGenerator.Tag div = html.getBody().add("div").with("style","display:flex; justify-content:space-between");
         tableIpToUser(div);
-        tableIpToToken(div);
-        tableChecks();
+        try {
+            tableIpToToken(div);
+        } catch(Exception e){e.printStackTrace();}
+        try {
+            tableChecks();
+        } catch(Exception e){e.printStackTrace();}
 
         if(query.containsKey("list")) {
             try {
@@ -138,7 +143,7 @@ public class MyHttpAdminServer implements HttpHandler {
             tr = table.add("tr");
 
             td1 = tr.add("td").with(x.getKey());
-            td2 = tr.add("td").with(x.getValue().getOwner());
+            td2 = tr.add("td").with(x.getValue().getOwner().substring(0, 30) + "...");
             td3 = tr.add("td").with(new Date(x.getValue().getCreated()).toString());
             td4 = tr.add("td").with(new Date(x.getValue().getChanged()).toString());
 
@@ -242,7 +247,7 @@ public class MyHttpAdminServer implements HttpHandler {
             tr = table.add("tr");
 
             tr.add("td").with(x.getKey());
-            tr.add("td").with(x.getValue().getDeviceId());
+            tr.add("td").with(x.getValue().getDeviceId().substring(0,30)+"...");
         }
     }
 
@@ -262,8 +267,6 @@ public class MyHttpAdminServer implements HttpHandler {
             tr.add("td").with(x.getValue().getId());
         }
     }
-
-
 
     private boolean processQuery(Map<String, List<String>> query) {
         boolean processed = false;

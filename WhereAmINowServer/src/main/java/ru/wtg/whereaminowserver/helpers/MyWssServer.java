@@ -73,6 +73,13 @@ public class MyWssServer extends WebSocketServer {
         super(address);
     }
 
+ /*   @Override
+    public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
+        System.out.println("HANDSHAKE:"+conn+":"+draft+":"+request);
+
+        return super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
+    }
+*/
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
 //        this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
@@ -132,11 +139,11 @@ public class MyWssServer extends WebSocketServer {
         request = new JSONObject(message);
         if(!request.has(REQUEST_TIMESTAMP)) return;
         long timestamp = request.getLong(REQUEST_TIMESTAMP);
-        if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
+        /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
             System.out.println("WSS:ignore request because of timeout");
 //            conn.close(CloseFrame.GOING_AWAY, "Request timeout");
             return;
-        }
+        }*/
 
         if(!request.has(REQUEST)) return;
 
