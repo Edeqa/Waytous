@@ -22,6 +22,7 @@ dependencies {
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.34'
     compile 'javax.servlet:servlet-api:2.5'
     compile 'org.java-websocket:Java-WebSocket:1.3.0'
+//    compile 'javax.websocket:javax.websocket-api:1.1'
     compile 'org.json:json:20131018'
     targetCompatibility = '1.6'
     sourceCompatibility = '1.6'

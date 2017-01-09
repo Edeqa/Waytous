@@ -307,13 +307,17 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         }
 
         private void checkDistance(MyUser me, MyUser user) {
-            double distance = SphericalUtil.computeDistanceBetween(Utils.latLng(me.getLocation()), Utils.latLng(user.getLocation()));
-            if (distance <= DISTANCE_MOVING_CLOSE && user.getProperties().previousDistance > DISTANCE_MOVING_CLOSE) {
-                user.fire(MOVING_CLOSE_TO);
-            } else if (distance > DISTANCE_MOVING_AWAY && user.getProperties().previousDistance > 0 && user.getProperties().previousDistance < DISTANCE_MOVING_AWAY) {
-                user.fire(MOVING_AWAY_FROM);
+            try {
+                double distance = SphericalUtil.computeDistanceBetween(Utils.latLng(me.getLocation()), Utils.latLng(user.getLocation()));
+                if (distance <= DISTANCE_MOVING_CLOSE && user.getProperties().previousDistance > DISTANCE_MOVING_CLOSE) {
+                    user.fire(MOVING_CLOSE_TO);
+                } else if (distance > DISTANCE_MOVING_AWAY && user.getProperties().previousDistance > 0 && user.getProperties().previousDistance < DISTANCE_MOVING_AWAY) {
+                    user.fire(MOVING_AWAY_FROM);
+                }
+                user.getProperties().previousDistance = distance;
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            user.getProperties().previousDistance = distance;
         }
     }
 

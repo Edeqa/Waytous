@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -49,6 +52,7 @@ import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.USER_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
+import static ru.wtg.whereaminow.holders.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 
@@ -64,7 +68,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private static final String PREFERENCE_FONT_SIZE = "messages_font_size";
     private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
 
-    private final AppCompatActivity context;
+    private final MainActivity context;
     private UserMessage.UserMessagesAdapter adapter;
     private View toolbar;
     private ColorDrawable drawable;
@@ -74,7 +78,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private Integer fontSize;
     private AlertDialog dialog;
 
-    public MessagesViewHolder(AppCompatActivity context) {
+    public MessagesViewHolder(MainActivity context) {
         this.context = context;
         this.dialog = new AlertDialog.Builder(context).create();
     }
@@ -110,9 +114,8 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 notificationManager.cancel(1977);
                 break;
             case SHOW_MESSAGES:
+                State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
                 showMessages();
-                notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.cancel(1977);
                 break;
             case TOKEN_CHANGED:
                 if(adapter != null){
@@ -241,6 +244,16 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         dialog = new AlertDialog.Builder(context).create();
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
+/*
+        final View viewMessageSend = context.getLayoutInflater().inflate(R.layout.view_message_send, null);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, 0, 0);
+
+        content.findViewById(R.id.layout_footer).setVisibility(View.VISIBLE);
+        content.findViewById(R.id.layout_footer).setMinimumHeight(viewMessageSend.getMinimumHeight());
+        ((RelativeLayout) content.findViewById(R.id.layout_footer)).addView(viewMessageSend, params);
+*/
 
         list = (RecyclerView) content.findViewById(R.id.list_items);
 

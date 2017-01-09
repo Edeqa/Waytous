@@ -24,6 +24,7 @@ public class WAINServer {
 
     private final static int PORT_HTTP = 8080;
     private final static int PORT_WSS = 8081;
+//    private final static int PORT_WSS = 443;
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
 

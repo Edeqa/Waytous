@@ -16,9 +16,11 @@ import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 import static ru.wtg.whereaminow.State.TOKEN_CREATED;
 import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.TRACKING_ERROR;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 
@@ -64,7 +66,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         switch (event) {
             case TRACKING_NEW:
                 State.getInstance().setToken(null);
-                tracking = new MyTracking();
+                tracking = new MyTracking(onTrackingListener);
 
                 State.getInstance().setTracking(tracking);
                 tracking.start();
@@ -79,7 +81,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         if(State.getInstance().getTracking() == null || State.getInstance().getToken() != null) {
                             tracking = new MyTracking(uri.getHost());
                             tracking.join(tokenId);
-
                         } else {
                             if(tracking == null) {
                                 tracking = new MyTracking(uri.getHost());
@@ -125,5 +126,71 @@ public class TrackingHolder extends AbstractPropertyHolder {
         }
         return true;
     }
+
+    public interface TrackingListenerInterface {
+        void onNew();
+        void onJoin(String tokenId);
+        void onAccept();
+        void onExpire();
+        void onReject();
+        void onStop();
+
+        void onClose();
+
+//        void onOpen();
+        void onMessage();
+//        void onError();
+    }
+
+    private TrackingListenerInterface onTrackingListener = new TrackingListenerInterface() {
+
+        @Override
+        public void onNew() {
+            State.getInstance().setToken(null);
+            tracking.setStatus(TRACKING_CONNECTING);
+            State.getInstance().fire(TRACKING_CONNECTING);
+
+//            doTrack();
+        }
+
+        @Override
+        public void onJoin(String tokenId) {
+            State.getInstance().setToken(null);
+            tracking.setStatus(TRACKING_RECONNECTING);
+            State.getInstance().fire(TRACKING_RECONNECTING, "Joining group...");
+
+        }
+
+        @Override
+        public void onClose() {
+
+        }
+
+        @Override
+        public void onAccept() {
+
+        }
+
+        @Override
+        public void onExpire() {
+
+        }
+
+        @Override
+        public void onReject() {
+
+        }
+
+        @Override
+        public void onStop() {
+
+        }
+
+        @Override
+        public void onMessage() {
+
+        }
+
+    };
 
 }

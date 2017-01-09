@@ -17,6 +17,7 @@ import com.facebook.share.widget.ShareDialog;
 
 import java.util.ArrayList;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -32,11 +33,11 @@ public class FacebookViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "facebook";
 
-    private Activity context;
+    private MainActivity context;
     private CallbackManager callbackManager;
     private FabViewHolder fab;
 
-    public FacebookViewHolder(Activity context) {
+    public FacebookViewHolder(MainActivity context) {
         this.context = context;
         FacebookSdk.sdkInitialize(context.getApplicationContext());
         AppEventsLogger.activateApp(context);

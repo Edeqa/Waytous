@@ -212,7 +212,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
                         return;
                     }
                     if(direction == ItemTouchHelper.RIGHT && dX > 0) {
-                        itemView.setAlpha(1-dX / (itemView.getWidth()));
+                        itemView.setAlpha(1-dX / (itemView.getWidth()/2));
                     } else if(direction == ItemTouchHelper.LEFT && dX < 0) {
 //                        itemView.setAlpha(1+dX / (itemView.getWidth()));
                     }
@@ -226,6 +226,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public void setOnItemClickListener(SimpleCallback<T> onItemClickListener) {
             this.onItemClickListener = onItemClickListener;
         }
+
         public void setOnItemTouchListener(SimpleCallback<T> onItemTouchListener) {
             this.onItemTouchListener = onItemTouchListener;
         }

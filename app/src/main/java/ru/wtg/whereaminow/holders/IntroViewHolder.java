@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -32,13 +33,13 @@ import static android.content.Context.MODE_PRIVATE;
 public class IntroViewHolder extends AbstractViewHolder {
     private static final String TYPE = "intro";
 
-    private final AppCompatActivity context;
+    private final MainActivity context;
     private final SharedPreferences preferences;
     private HashMap<String, ArrayList<IntroRule>> queue;
     private ShowcaseView sv;
 
 
-    public IntroViewHolder(AppCompatActivity context) {
+    public IntroViewHolder(MainActivity context) {
         System.out.println("INTRO:SYSTEMCONSTRUCT");
         this.context = context;
 

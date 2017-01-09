@@ -4,9 +4,9 @@
     android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/material_dialog_content_area_padding_horizontal"
+    android:paddingLeft="@dimen/material_list_text_first_position_margin_start"
     android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal"
-    android:paddingTop="@dimen/material_dialog_content_area_padding_vertical"
+    android:paddingTop="@dimen/material_list_text_last_position_margin_end"
     android:paddingBottom="0dp"
     android:layout_margin="0dp">
 

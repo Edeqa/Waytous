@@ -1,5 +1,6 @@
 package ru.wtg.whereaminow;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,16 +25,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
 import ru.wtg.whereaminow.helpers.ContinueDialog;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.AddressViewHolder;
 import ru.wtg.whereaminow.holders.ButtonViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
@@ -106,6 +111,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
 //            state.setPreference("intro",false);
         }
+
+        System.out.println("APP_ID:"+state.getStringPreference("device_id", null));
+
+        System.out.println("TOKENFIRE:"+FirebaseInstanceId.getInstance().getToken());
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -321,22 +330,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         new MapButtonsViewHolder(mapFragment);
-        state.registerEntityHolder(new FacebookViewHolder(this));
-        state.registerEntityHolder(new ButtonViewHolder(this));
-        state.registerEntityHolder(new MenuViewHolder(this));
-        state.registerEntityHolder(new MarkerViewHolder(this));
-        state.registerEntityHolder(new AddressViewHolder(this));
-        state.registerEntityHolder(new CameraViewHolder(this));
-        state.registerEntityHolder(new SavedLocationsViewHolder(this));
-        state.registerEntityHolder(new TrackViewHolder(this));
-        state.registerEntityHolder(new NavigationViewHolder(this));
-        state.registerEntityHolder(new DistanceViewHolder(this));
-        state.registerEntityHolder(new MessagesViewHolder(this));
-        state.registerEntityHolder(new SensorsViewHolder(this));
-        state.registerEntityHolder(new StreetsViewHolder(this));
+
+        LinkedList<String> classes = new LinkedList<>();
+        classes.add("FacebookViewHolder");
+        classes.add("ButtonViewHolder");
+        classes.add("MenuViewHolder");
+        classes.add("MarkerViewHolder");
+        classes.add("AddressViewHolder");
+        classes.add("CameraViewHolder");
+        classes.add("SavedLocationsViewHolder");
+        classes.add("TrackViewHolder");
+        classes.add("NavigationViewHolder");
+        classes.add("DistanceViewHolder");
+        classes.add("MessagesViewHolder");
+        classes.add("SensorsViewHolder");
+        classes.add("StreetsViewHolder");
 
         // IntroViewHolder must be registered last
-//        state.registerEntityHolder(new IntroViewHolder(this));
+//        classes.add("IntroViewHolder");
+
+        for(String s:classes){
+            try {
+                Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("ru.wtg.whereaminow.holders."+s);
+                System.out.println("A:"+_tempClass);
+                Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
+                System.out.println("B:"+ctor);
+                state.registerEntityHolder(ctor.newInstance(this));
+                System.out.println("C");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());

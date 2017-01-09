@@ -13,6 +13,8 @@ import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -116,7 +118,7 @@ public class State extends MultiDexApplication {
 
         registerEntityHolder(new PropertiesHolder(this));
         registerEntityHolder(new TrackingHolder(this));
-        registerEntityHolder(new LoggerHolder());
+//        registerEntityHolder(new LoggerHolder());
         registerEntityHolder(new MessagesHolder(this));
         registerEntityHolder(new NotificationHolder(this));
 
@@ -214,10 +216,11 @@ public class State extends MultiDexApplication {
 
     public String getDeviceId() {
         if(deviceId == null) {
-            deviceId = getStringPreference("device_id", null);
+            deviceId = FirebaseInstanceId.getInstance().getToken();//getStringPreference("device_id", null);
             if(deviceId == null) {
+//                deviceId = FirebaseInstanceId.getInstance().getToken();
                 deviceId = UUID.randomUUID().toString();
-                setPreference("device_id", deviceId);
+//                setPreference("device_id", deviceId);
             }
         }
         return deviceId;

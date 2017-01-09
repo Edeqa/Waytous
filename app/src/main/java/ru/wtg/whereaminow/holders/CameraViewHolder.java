@@ -286,6 +286,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
         @Override
         public void remove() {
+            if(myUser.getLocation() == null) return;
             HashMap<String, Double> props = new HashMap<>();
             props.put(TILT, tilt * 1.);
             props.put(BEARING, bearing * 1.);

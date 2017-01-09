@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -122,7 +121,12 @@ public class UserMessage extends AbstractSavedItem {
         @Override
         public UserMessage.UserMessagesAdapter.UserMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_message, parent, false);
-//            v.setOnClickListener(onItemClickListener);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemClickListener.call(view);
+                }
+            });
             return new UserMessageViewHolder(v);
         }
 
@@ -146,7 +150,7 @@ public class UserMessage extends AbstractSavedItem {
                 holder.tvMessageBody.setText(item.getBody());
                 holder.tvMessageBody.setTextSize(fontSize);
 
-                switch(item.getType()){
+                /*switch(item.getType()){
                     case TYPE_MESSAGE:
                         holder.ibMessage.setVisibility(View.VISIBLE);
                         holder.ibPrivateMessage.setVisibility(View.INVISIBLE);
@@ -182,7 +186,7 @@ public class UserMessage extends AbstractSavedItem {
                         holder.ibUserJoined.setVisibility(View.INVISIBLE);
                         holder.ibUserDismissed.setVisibility(View.VISIBLE);
                         break;
-                }
+                }*/
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -216,23 +220,23 @@ public class UserMessage extends AbstractSavedItem {
             private final TextView tvTimestamp;
             private final TextView tvMessageBody;
             private final TextView tvUsername;
-            private final ImageButton ibMessage;
+            /*private final ImageButton ibMessage;
             private final ImageButton ibUserJoined;
             private final ImageButton ibUserDismissed;
             private final ImageButton ibJoined;
             private final ImageButton ibPrivateMessage;
-
+*/
             private UserMessageViewHolder(View view) {
                 super(view);
                 tvUsername = (TextView) view.findViewById(R.id.tv_username);
                 tvTimestamp = (TextView) view.findViewById(R.id.tvTimestamp);
                 tvMessageBody = (TextView) view.findViewById(R.id.tv_message_body);
 
-                ibMessage = (ImageButton) view.findViewById(R.id.ib_message);
+                /*ibMessage = (ImageButton) view.findViewById(R.id.ib_message);
                 ibPrivateMessage = (ImageButton) view.findViewById(R.id.ib_private);
                 ibUserJoined = (ImageButton) view.findViewById(R.id.ib_user_joined);
                 ibUserDismissed = (ImageButton) view.findViewById(R.id.ib_user_dismissed);
-                ibJoined = (ImageButton) view.findViewById(R.id.ib_joined);
+                ibJoined = (ImageButton) view.findViewById(R.id.ib_joined);*/
             }
         }
 

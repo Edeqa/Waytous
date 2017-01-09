@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
 import java.util.Date;
@@ -39,14 +38,17 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 public class NotificationHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = "notification";
-    public static final String CUSTOM_NOTIFICATION = "custom_notification";
-    public static final String CUSTOM_NOTIFICATION_MESSAGE = "custom_notification_message";
-    public static final String CUSTOM_NOTIFICATION_DEFAULTS = "custom_notification_defaults";
-    public static final String CUSTOM_NOTIFICATION_PRIORITY = "custom_notification_priority";
+    public static final String SHOW_CUSTOM_NOTIFICATION = "show_custom_notification";
+    public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
+
+    private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 60;
 
     private final State state;
-    private boolean showNotifications = true;
     private android.support.v4.app.NotificationCompat.Builder notification;
+    private boolean showNotifications = true;
+    private long lastCloseNotifyTime = 0;
+    private long lastAwayNotifyTime = 0;
+
 
     public NotificationHolder(State state) {
         this.state = state;
@@ -127,15 +129,17 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 String message = (String) object;
                 update((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
-            case CUSTOM_NOTIFICATION:
-                final Bundle m = (Bundle) object;
-                if(m != null){
-                    String text = m.getString(CUSTOM_NOTIFICATION_MESSAGE, null);
-                    int defaults = m.getInt(CUSTOM_NOTIFICATION_DEFAULTS, 0);
-                    int priority = m.getInt(CUSTOM_NOTIFICATION_PRIORITY, PRIORITY_DEFAULT);
-                    update(text, defaults, priority);
+            case SHOW_CUSTOM_NOTIFICATION:
+                final Notification notification = (Notification) object;
+                if(notification != null){
+                    NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(1976, notification);
                 }
                 break;
+            case HIDE_CUSTOM_NOTIFICATION:
+                NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(1977);
+
         }
 
         return true;
@@ -181,11 +185,19 @@ public class NotificationHolder extends AbstractPropertyHolder {
             switch (event) {
                 case MOVING_CLOSE_TO:
 //                    System.out.println("CLOSE TO:"+myUser.getProperties().getDisplayName());
-                    update("You are close to " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                    long currentTime = new Date().getTime();
+                    if(currentTime - lastCloseNotifyTime > MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS * 1000) {
+                        update("You are close to " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                    }
+                    lastCloseNotifyTime = currentTime;
                     break;
                 case MOVING_AWAY_FROM:
 //                    System.out.println("AWAY FROM:"+myUser.getProperties().getDisplayName());
-                    update("You are moved away from " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                    currentTime = new Date().getTime();
+                    if(currentTime - lastAwayNotifyTime > MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS * 1000) {
+                        update("You are moved away from " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                    }
+                    lastAwayNotifyTime = currentTime;
                     break;
             }
             return true;
