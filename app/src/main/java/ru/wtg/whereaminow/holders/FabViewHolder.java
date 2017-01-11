@@ -206,7 +206,7 @@ public class FabViewHolder extends AbstractViewHolder {
                     State.getInstance().fire(TRACKING_STOP);
                     break;
                 case R.string.share_link:
-                    new InviteSender(context).send("https://" + State.getInstance().getTracking().getHost() + ":8080/track/" + State.getInstance().getToken());
+                    new InviteSender(context).send(State.getInstance().getTracking().getTrackingUri());
                     break;
             }
         }

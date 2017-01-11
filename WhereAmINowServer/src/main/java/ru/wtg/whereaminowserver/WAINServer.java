@@ -12,6 +12,9 @@ import java.net.InetSocketAddress;
 import ru.wtg.whereaminowserver.helpers.MyHttpAdminServer;
 import ru.wtg.whereaminowserver.helpers.MyWssServer;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
+
 
 /**
  * Created 10/2/16.
@@ -22,19 +25,15 @@ public class WAINServer {
     private static MyWssServer wssProcessor;
     private static MyHttpAdminServer httpServer;
 
-    private final static int PORT_HTTP = 8080;
-    private final static int PORT_WSS = 8081;
-//    private final static int PORT_WSS = 443;
-
     public static void main(final String[] args ) throws InterruptedException , IOException {
 
-        wssProcessor = new MyWssServer(PORT_WSS);
+        wssProcessor = new MyWssServer(WSS_PORT);
         new Thread() {
             public void run() {
                 try {
                     WebSocketImpl.DEBUG = false;
                     wssProcessor.start();
-                    System.out.println("WSS server started on port: " + PORT_WSS);
+                    System.out.println("WSS server started on port: " + WSS_PORT);
 
                     BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
                     while (true) {
@@ -65,10 +64,10 @@ public class WAINServer {
             public void run() {
                 try {
                     HttpServer server = HttpServer.create();
-                    server.bind(new InetSocketAddress(PORT_HTTP), 0);
+                    server.bind(new InetSocketAddress(HTTP_PORT), 0);
                     server.createContext("/", httpServer);
                     server.start();
-                    System.out.println("HTTP server started on port: " + PORT_HTTP);
+                    System.out.println("HTTP server started on port: " + HTTP_PORT);
 
 
                 } catch (Throwable throwable) {

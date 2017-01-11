@@ -10,7 +10,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -20,8 +19,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -45,7 +42,6 @@ import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
@@ -117,11 +113,11 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
                 showMessages();
                 break;
-            case TOKEN_CHANGED:
-                if(adapter != null){
-                    adapter.notifyDataSetChanged();
-                }
-                break;
+//            case TOKEN_CHANGED:
+//                if(adapter != null){
+//                    adapter.notifyDataSetChanged();
+//                }
+//                break;
             case CREATE_DRAWER:
                 MenuItem menuItem = (MenuItem) object;
                 Menu generalMenu = menuItem.getSubMenu();

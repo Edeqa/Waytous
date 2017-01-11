@@ -18,19 +18,18 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.wtg.whereaminow.helpers.GeoTrackFilter;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
-import ru.wtg.whereaminow.holders.LoggerHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
 import ru.wtg.whereaminow.holders.TrackingHolder;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
-import ru.wtg.whereaminow.service_helpers.MyTracking;
+import ru.wtg.whereaminow.helpers.MyTracking;
 
 import static ru.wtg.whereaminow.ExceptionActivity.EXCEPTION;
 
@@ -46,7 +45,6 @@ public class State extends MultiDexApplication {
     public static final String CHANGE_NAME = "change_name";
     public static final String CHANGE_NUMBER = "change_number";
     public static final String CHANGE_COLOR = "change_color";
-    public static final String CHANGE_TYPE = "change_type";
     public static final String CREATE_CONTEXT_MENU = "create_context_menu";
     public static final String CREATE_OPTIONS_MENU = "create_options_menu";
     public static final String PREPARE_OPTIONS_MENU = "prepare_options_menu";
@@ -70,6 +68,7 @@ public class State extends MultiDexApplication {
     public static final String TRACKING_RECONNECTING = "tracking_reconnecting";
     public static final String TRACKING_EXPIRED = "tracking_expired";
     public static final String TRACKING_ERROR = "tracking_error";
+    public static final String TOKEN_CREATED = "token_created";
 
     public static final String MOVING_CLOSE_TO = "moving_close_to";
     public static final String MOVING_AWAY_FROM = "moving_away_from";
@@ -77,21 +76,10 @@ public class State extends MultiDexApplication {
     public static final int TRACKING_GPS_REJECTED = 6;
 
 
-
-//    public static final String CONNECTION_DISCONNECTED = "disconnected";
-//    public static final String CONNECTION_ERROR = "error";
-    public static final String TOKEN_CREATED = "token_created";
-    public static final String TOKEN_CHANGED = "token_changed";
-
     private MyTracking tracking;
 
     private static State instance = null;
     private WhereAmINowService service;
-
-//    private HashMap<String, AbstractProperty> userEntityEvents = new HashMap<>();
-//    private HashMap<String, AbstractPropertyHolder> entityEvents = new HashMap<>();
-//    private HashMap<String, AbstractView> userViewEvents = new HashMap<>();
-//    private HashMap<String, AbstractViewHolder> viewEvents = new HashMap<>();
 
     private HashMap<String, EntityHolder> entityHolders = new LinkedHashMap<>();
     private HashMap<String, EntityHolder> userEntityHolders = new LinkedHashMap<>();
@@ -103,6 +91,7 @@ public class State extends MultiDexApplication {
     private MyUser me;
     private GeoTrackFilter gpsFilter;
     private Notification notification;
+    private AtomicBoolean continueFiring = new AtomicBoolean();
     private String deviceId;
     private String token;
     private boolean gpsAccessAllowed;
@@ -116,11 +105,11 @@ public class State extends MultiDexApplication {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        registerEntityHolder(new PropertiesHolder(this));
-        registerEntityHolder(new TrackingHolder(this));
+        registerEntityHolder(new PropertiesHolder(this)); // ---> need to be first!
+        registerEntityHolder(new TrackingHolder(this)); // ---> need to be second!
 //        registerEntityHolder(new LoggerHolder());
-        registerEntityHolder(new MessagesHolder(this));
-        registerEntityHolder(new NotificationHolder(this));
+        registerEntityHolder(new MessagesHolder(this)); // ---> need to be before NotificationHolder
+        registerEntityHolder(new NotificationHolder(this)); // ---> need to be after MessagesHolder
 
         gpsFilter = new GeoTrackFilter(1.);
 
@@ -213,15 +202,14 @@ public class State extends MultiDexApplication {
         return tracking != null &&  TRACKING_ACTIVE.equals(tracking.getStatus());
     }
 
-
     public String getDeviceId() {
         if(deviceId == null) {
             deviceId = FirebaseInstanceId.getInstance().getToken();//getStringPreference("device_id", null);
-            if(deviceId == null) {
+//            if(deviceId == null) {
 //                deviceId = FirebaseInstanceId.getInstance().getToken();
-                deviceId = UUID.randomUUID().toString();
+//                deviceId = UUID.randomUUID().toString();
 //                setPreference("device_id", deviceId);
-            }
+//            }
         }
         return deviceId;
     }
@@ -269,6 +257,7 @@ public class State extends MultiDexApplication {
     }
 
     public void setPreference(String key, String value){
+        System.out.println("PREFERE:"+key+":"+value);
         if(value != null && value.length()>0){
             sharedPreferences.edit().putString(key,value).apply();
         } else {
@@ -408,10 +397,12 @@ public class State extends MultiDexApplication {
     }*/
 
     public void fire(final String EVENT, final Object object){
+        continueFiring.set(true);
         for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
             if(entry.getValue() != null){
                 try {
-                    if(!entry.getValue().onEvent(EVENT, object)) break;
+                    if(!continueFiring.get()) break;
+                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -422,7 +413,8 @@ public class State extends MultiDexApplication {
                 for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
                     if(entry.getValue() != null){
                         try {
-                            if(!entry.getValue().onEvent(EVENT, object)) break;
+                            if(!continueFiring.get()) break;
+                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
