@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,16 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.github.pengrad.mapscaleview.MapScaleView;
-import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,23 +34,11 @@ import ru.wtg.whereaminow.helpers.ContinueDialog;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
-import ru.wtg.whereaminow.holders.AddressViewHolder;
-import ru.wtg.whereaminow.holders.ButtonViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
-import ru.wtg.whereaminow.holders.DistanceViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
-import ru.wtg.whereaminow.holders.FacebookViewHolder;
 import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
-import ru.wtg.whereaminow.holders.MarkerViewHolder;
-import ru.wtg.whereaminow.holders.MenuViewHolder;
-import ru.wtg.whereaminow.holders.MessagesViewHolder;
-import ru.wtg.whereaminow.holders.NavigationViewHolder;
-import ru.wtg.whereaminow.holders.SavedLocationsViewHolder;
-import ru.wtg.whereaminow.holders.SensorsViewHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
-import ru.wtg.whereaminow.holders.StreetsViewHolder;
-import ru.wtg.whereaminow.holders.TrackViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_CREATE;
@@ -66,12 +49,11 @@ import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.TRACKING_JOIN;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
-import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
+import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
@@ -82,7 +64,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_STOPPED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
@@ -112,9 +93,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            state.setPreference("intro",false);
         }
 
-        System.out.println("APP_ID:"+state.getStringPreference("device_id", null));
-
-        System.out.println("TOKENFIRE:"+FirebaseInstanceId.getInstance().getToken());
+//        System.out.println("APP_ID:"+state.getStringPreference("device_id", null));
+//
+//        System.out.println("TOKENFIRE:"+FirebaseInstanceId.getInstance().getToken());
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -352,11 +333,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         for(String s:classes){
             try {
                 Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("ru.wtg.whereaminow.holders."+s);
-                System.out.println("A:"+_tempClass);
                 Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
-                System.out.println("B:"+ctor);
                 state.registerEntityHolder(ctor.newInstance(this));
-                System.out.println("C");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -425,17 +403,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Uri data = newIntent.getData();
         newIntent.setData(null);
-        if(data != null){
-            String tokenId = data.getEncodedPath().replaceFirst("/track/", "");
-            if(!tokenId.equals(State.getInstance().getToken())) {
-                if(State.getInstance().getTracking() != null) state.fire(TRACKING_STOP);
-                state.fire(TRACKING_JOIN, data);
-            }
+        String link = null;
+        if(data != null) {
+            link = data.toString();
         } else if(!state.tracking_active()) {
-            String trackingUri = state.getStringPreference(TRACKING_URI, null);
-            if(trackingUri != null){
-                state.fire(TRACKING_JOIN, Uri.parse(trackingUri));
-            }
+            link = state.getStringPreference(TRACKING_URI, null);
+        }
+        System.out.println("TRACKJOIN:"+link);
+        if(link != null) {
+            state.fire(TRACKING_JOIN, link);
         }
     }
 
@@ -458,7 +434,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             });
                             break;
                         case RESPONSE_STATUS_ACCEPTED:
-
                             SmartLocation.with(MainActivity.this).location().stop();
                             if (o.has(RESPONSE_NUMBER)) {
                                 state.getUsers().forMe(new MyUsers.Callback() {
@@ -501,8 +476,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 });
                             }
                             break;
-                        case RESPONSE_STATUS_STOPPED:
-                            break;
+//                        case RESPONSE_STATUS_STOPPED:
+//                            break;
                     }
                 }
             } catch (JSONException e) {

@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +17,10 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.UserMessage;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
-import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.State.TOKEN_CHANGED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_JOINED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_PRIVATE;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
@@ -136,10 +133,6 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 m.setType(TYPE_JOINED);
                 m.save(null);
                 messages.add(m);
-                break;
-            case TOKEN_CHANGED:
-                messages.clear();
-//                UserMessage.clear(context);
                 break;
             case ACTIVITY_RESUME:
                 showNotifications = false;

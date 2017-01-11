@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.facebook.CallbackManager;
@@ -25,6 +26,8 @@ import ru.wtg.whereaminow.helpers.MyUser;
 
 import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
 import static ru.wtg.whereaminow.State.PREPARE_FAB;
+import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
+import static ru.wtg.whereaminow.holders.MessagesViewHolder.SHOW_MESSAGES;
 
 /**
  * Created 12/03/16.
@@ -36,6 +39,7 @@ public class FacebookViewHolder extends AbstractViewHolder {
     private MainActivity context;
     private CallbackManager callbackManager;
     private FabViewHolder fab;
+    private String welcomeMessage;
 
     public FacebookViewHolder(MainActivity context) {
         this.context = context;
@@ -80,6 +84,13 @@ public class FacebookViewHolder extends AbstractViewHolder {
                     Intent data = m.getParcelable("data");
                     callbackManager.onActivityResult(requestCode, resultCode, data);
                 }
+                break;
+            case WELCOME_MESSAGE:
+                if(object != null) {
+                    welcomeMessage = (String) object;
+                }
+                break;
+
         }
         return true;
     }
@@ -89,16 +100,15 @@ public class FacebookViewHolder extends AbstractViewHolder {
         public void onClick(View view) {
             fab.close(true);
             if (ShareDialog.canShow(ShareLinkContent.class)) {
-                String welcomeMessage = "Click here to follow me\nusing the Where Am I Now service";
-                if(State.getInstance().getTracking() != null  && State.getInstance().getTracking().getWelcomeMessage() != null
-                        && State.getInstance().getTracking().getWelcomeMessage().length() > 0){
-                    welcomeMessage = State.getInstance().getTracking().getWelcomeMessage();
+                String message = "Click here to follow me\nusing " + context.getString(R.string.app_name) +".";
+                if(welcomeMessage != null && welcomeMessage.length() > 0){
+                    message = welcomeMessage;
                 }
 
                 ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                        .setContentTitle("Follow me at Where Am I Now")
-                        .setContentDescription(welcomeMessage)
-                        .setContentUrl(Uri.parse("https://" + State.getInstance().getTracking().getHost() + ":8080/track/" + State.getInstance().getToken()))
+                        .setContentTitle("Follow me with " + context.getString(R.string.app_name))
+                        .setContentDescription(message)
+                        .setContentUrl(Uri.parse(State.getInstance().getTracking().getTrackingUri()))
                         .setImageUrl(Uri.parse("https://github.com/tujger/WhereAmINow/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true"))
                         .build();
 

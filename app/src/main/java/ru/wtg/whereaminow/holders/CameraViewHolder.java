@@ -35,7 +35,7 @@ import static ru.wtg.whereaminow.State.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
-import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
+import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**

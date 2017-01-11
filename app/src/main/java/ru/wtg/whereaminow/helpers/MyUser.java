@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.holders.AbstractProperty;
@@ -33,6 +34,7 @@ public class MyUser {
     private LinkedHashMap<String,Entity> entities;
     private ArrayList<Location> locations;
     private Location location;
+    private AtomicBoolean continueFiring = new AtomicBoolean();
     private long counter;
 
     public MyUser(){
@@ -138,10 +140,12 @@ public class MyUser {
     }
 
     public void fire(final String EVENT, final Object object){
+        continueFiring.set(true);
         for(Map.Entry<String,Entity> entry: entities.entrySet()){
             if(entry.getValue() instanceof AbstractProperty){
                 try {
-                    if(!entry.getValue().onEvent(EVENT, object)) break;
+                    if(!continueFiring.get()) break;
+                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -152,7 +156,8 @@ public class MyUser {
                 for(Map.Entry<String,Entity> entry: entities.entrySet()){
                     if(entry.getValue() instanceof AbstractView){
                         try {
-                            if(!entry.getValue().onEvent(EVENT, object)) break;
+                            if(!continueFiring.get()) break;
+                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

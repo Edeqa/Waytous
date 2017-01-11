@@ -6,18 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.service_helpers.MyTracking;
 
 import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.TRACKING_ERROR;
-import static ru.wtg.whereaminow.State.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
-import static ru.wtg.whereaminow.service_helpers.MyTracking.TRACKING_URI;
 
 /**
  * Created 12/30/16.
@@ -58,15 +54,18 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
                 if(!connected) {
                     switch (tracking.getStatus()) {
                         case TRACKING_RECONNECTING:
-                            String trackingUri = State.getInstance().getStringPreference(TRACKING_URI, null);
-                            State.getInstance().setToken(null);
+                                System.out.println("RECONNECT");
+                            tracking.reconnect();
+//                            String trackingUri = State.getInstance().getStringPreference(TRACKING_URI, null);
+//                            State.getInstance().setToken(null);
 //                                state.setPreference(TRACKING_URI, null);
-                            if (trackingUri != null) {
-                                State.getInstance().fire(TRACKING_JOIN, Uri.parse(trackingUri));
-                            }
+//                            if (trackingUri != null) {
+//                                State.getInstance().fire(TRACKING_JOIN, Uri.parse(trackingUri));
+//                            }
 //                                System.out.println("DO RECONNECT");
                             break;
                         case TRACKING_ERROR:
+                                System.out.println("TRACKING_ERROR");
                             tracking.setStatus(TRACKING_ERROR);
                             State.getInstance().fire(TRACKING_ERROR);
                             break;
@@ -77,12 +76,12 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
                 if(connected) {
                     switch (tracking.getStatus()) {
                         case TRACKING_ACTIVE:
-//                                System.out.println("DISCONNECTED TO RECONNECT");
+                                System.out.println("DISCONNECTED TO RECONNECT");
                             tracking.setStatus(TRACKING_RECONNECTING);
                             State.getInstance().fire(TRACKING_RECONNECTING);
                             break;
                         case TRACKING_CONNECTING:
-//                                System.out.println("DISCONNECTED");
+                                System.out.println("DISCONNECTED");
                             tracking.setStatus(TRACKING_ERROR);
                             State.getInstance().fire(TRACKING_ERROR);
                             break;

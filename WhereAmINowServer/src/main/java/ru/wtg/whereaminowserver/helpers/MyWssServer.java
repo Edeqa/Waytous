@@ -42,6 +42,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
@@ -86,7 +87,7 @@ public class MyWssServer extends WebSocketServer {
         System.out.println("WSS:on open:" + conn.getRemoteSocketAddress() + " connected");
 
         try {
-            conn.send("{\"" + RESPONSE_STATUS + "\":\"" + RESPONSE_STATUS_CONNECTED + "\"}");
+//            conn.send("{\"" + RESPONSE_STATUS + "\":\""+RESPONSE_STATUS_CONNECTED+"\",\"version\":" + SERVER_BUILD + "}");
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -96,7 +97,7 @@ public class MyWssServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected");
+        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
         if(ipToToken.containsKey(ip)){
@@ -131,34 +132,36 @@ public class MyWssServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);
+        boolean disconnect = false;
+        try {
+            System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);
 
-        String ip = conn.getRemoteSocketAddress().toString();
-        JSONObject request, response = new JSONObject();
+            String ip = conn.getRemoteSocketAddress().toString();
+            JSONObject request, response = new JSONObject();
 
-        request = new JSONObject(message);
-        if(!request.has(REQUEST_TIMESTAMP)) return;
-        long timestamp = request.getLong(REQUEST_TIMESTAMP);
+            request = new JSONObject(message);
+            if (!request.has(REQUEST_TIMESTAMP)) return;
+            long timestamp = request.getLong(REQUEST_TIMESTAMP);
         /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
             System.out.println("WSS:ignore request because of timeout");
 //            conn.close(CloseFrame.GOING_AWAY, "Request timeout");
             return;
         }*/
 
-        if(!request.has(REQUEST)) return;
+            if (!request.has(REQUEST)) return;
 
-        String req = request.getString(REQUEST);
-        if(REQUEST_NEW_TOKEN.equals(req)) {
-            if (request.has(REQUEST_DEVICE_ID)) {
-                MyToken token = new MyToken();
-                MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-                user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
-                user.setModel(request.getString(REQUEST_MODEL));
-                user.setOs(request.getString(REQUEST_OS));
-                if(request.has(USER_NAME)) user.setName(request.getString(USER_NAME));
+            String req = request.getString(REQUEST);
+            if (REQUEST_NEW_TOKEN.equals(req)) {
+                if (request.has(REQUEST_DEVICE_ID)) {
+                    MyToken token = new MyToken();
+                    MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                    user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
+                    user.setModel(request.getString(REQUEST_MODEL));
+                    user.setOs(request.getString(REQUEST_OS));
+                    if (request.has(USER_NAME)) user.setName(request.getString(USER_NAME));
 
-                token.addUser(user);
-                tokens.put(token.getId(), token);
+                    token.addUser(user);
+                    tokens.put(token.getId(), token);
 
 //                    if(request.has(REQUEST_MODEL)){
 //                        user.setModel(request.getString(REQUEST_MODEL));
@@ -169,210 +172,225 @@ public class MyWssServer extends WebSocketServer {
 //                    if(request.has(REQUEST_OS)){
 //                        user.setOs(request.getString(REQUEST_OS));
 //                    }
-                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                response.put(RESPONSE_TOKEN, token.getId());
-                response.put(RESPONSE_NUMBER, user.getNumber());
+                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                    response.put(RESPONSE_TOKEN, token.getId());
+                    response.put(RESPONSE_NUMBER, user.getNumber());
 
-                ipToToken.put(ip, token);
-                ipToUser.put(ip, user);
-                System.out.println("NEW:token created and accepted:" + token);
+                    ipToToken.put(ip, token);
+                    ipToUser.put(ip, user);
+                    System.out.println("NEW:token created and accepted:" + token);
 
-            } else {
-                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                response.put(RESPONSE_MESSAGE, "Your device id is not defined");
-            }
+                } else {
+                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                    response.put(RESPONSE_MESSAGE, "Your device id is not defined");
+                    disconnect = true;
+                }
 
-            System.out.println("NEW:response:" + response);
+                System.out.println("NEW:response:" + response);
 
-            Utils.pause(2);//FIXME remove pause
+                Utils.pause(2);//FIXME remove pause
 
-            conn.send(response.toString());
-        } else if(REQUEST_JOIN_TOKEN.equals(req)){
-            if (request.has(REQUEST_TOKEN)) {
-                String tokenId = request.getString(REQUEST_TOKEN);
-                if (tokens.containsKey(tokenId)) {
-                    MyToken token = tokens.get(tokenId);
+                conn.send(response.toString());
+            } else if (REQUEST_JOIN_TOKEN.equals(req)) {
+                if (request.has(REQUEST_TOKEN)) {
+                    String tokenId = request.getString(REQUEST_TOKEN);
+                    if (tokens.containsKey(tokenId)) {
+                        MyToken token = tokens.get(tokenId);
 
-                    if(request.has(REQUEST_DEVICE_ID)){
-                        String deviceId1 = request.getString(REQUEST_DEVICE_ID);
+                        if (request.has(REQUEST_DEVICE_ID)) {
+                            String deviceId1 = request.getString(REQUEST_DEVICE_ID);
+                            MyUser user = null;
+                            for (Map.Entry<String, MyUser> x : token.users.entrySet()) {
+                                if (deviceId1.equals(x.getValue().getDeviceId())) {
+                                    user = x.getValue();
+                                    break;
+                                }
+                            }
+                            if (user != null) {
+                                CheckReq check = new CheckReq();
+                                check.control = Utils.getUnique();
+                                check.token = token;
+                                if (request.has(USER_NAME))
+                                    check.name = request.getString(USER_NAME);
+
+                                response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
+                                response.put(RESPONSE_CONTROL, check.control);
+                                ipToCheck.put(ip, check);
+                            } else {
+
+                                user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                                user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
+                                user.setModel(request.getString(REQUEST_MODEL));
+                                user.setOs(request.getString(REQUEST_OS));
+                                if (request.has(USER_NAME) && request.getString(USER_NAME) != null && request.getString(USER_NAME).length() > 0) {
+                                    user.setName(request.getString(USER_NAME));
+                                }
+                                token.addUser(user);
+
+                                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                                response.put(RESPONSE_NUMBER, user.getNumber());
+
+                                ipToToken.put(ip, token);
+                                ipToUser.put(ip, user);
+
+                                token.sendInitialTo(response, user);
+
+                                JSONObject o = new JSONObject();
+                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                                o.put(USER_COLOR, user.getColor());
+                                o.put(USER_JOINED, user.getNumber());
+                                if (user.getName() != null && user.getName().length() > 0) {
+                                    o.put(USER_NAME, user.getName());
+                                }
+                                token.sendToAllFrom(o, user);
+                                return;
+                            }
+
+                        } else {
+                            CheckReq check = new CheckReq();
+                            check.control = Utils.getUnique();
+                            check.token = token;
+
+                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
+                            response.put(RESPONSE_CONTROL, check.control);
+                            ipToCheck.put(ip, check);
+                        }
+                    } else {
+                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                        response.put(RESPONSE_MESSAGE, "This group is expired.");
+                        disconnect = true;
+                    }
+                } else {
+                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                    response.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
+                    disconnect = true;
+                }
+                Utils.pause(2);//FIXME remove pause
+                conn.send(response.toString());
+                System.out.println("JOIN:response:" + response);
+            } else if (REQUEST_CHECK_USER.equals(req)) {
+                if (request.has(REQUEST_HASH)) {
+                    String hash = request.getString((REQUEST_HASH));
+                    System.out.println(("CHECK:requested device: [hash=" + hash + "]"));
+                    if (ipToCheck.containsKey(ip)) {
+                        CheckReq check = ipToCheck.get(ip);
+
+                        System.out.println("CHECK:found token: [name=" + check.name + ", token=" + check.token.getId() + ", control=" + check.control +"]");
+
                         MyUser user = null;
-                        for(Map.Entry<String,MyUser> x:token.users.entrySet()){
-                            if(deviceId1.equals(x.getValue().getDeviceId())){
+                        for (Map.Entry<String, MyUser> x : check.token.users.entrySet()) {
+                            System.out.println("CHECK:looking for device: [control=" + check.control + ", deviceId=" + x.getValue().getDeviceId().substring(0,20) + "..., calculatedHash=" + x.getValue().calculateHash(check.control)+"]");
+                            if (hash.equals(x.getValue().calculateHash(check.control))) {
                                 user = x.getValue();
                                 break;
                             }
                         }
-                        if(user != null) {
-                            CheckReq check = new CheckReq();
-                            check.control = Utils.getUnique();
-                            check.token = token;
-                            if(request.has(USER_NAME)) check.name = request.getString(USER_NAME);
-
-                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
-                            response.put(RESPONSE_CONTROL,check.control);
-                            ipToCheck.put(ip,check);
-                        } else {
-
-                            user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-                            user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
-                            user.setModel(request.getString(REQUEST_MODEL));
-                            user.setOs(request.getString(REQUEST_OS));
-                            if(request.has(USER_NAME) && request.getString(USER_NAME) != null && request.getString(USER_NAME).length()>0){
-                                user.setName(request.getString(USER_NAME));
-                            }
-                            token.addUser(user);
-
+                        if (user != null) {
+                            System.out.println("CHECK:user accepted:" + user);
                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
                             response.put(RESPONSE_NUMBER, user.getNumber());
+                            user.setConnection(conn);
+                            user.setChanged();
+                            if (check.name != null && check.name.length() > 0) {
+                                user.setName(check.name);
+                            }
 
-                            ipToToken.put(ip, token);
+                            ipToToken.put(ip, check.token);
                             ipToUser.put(ip, user);
 
-                            token.sendInitialTo(response,user);
+                            check.token.sendInitialTo(response, user);
 
-                            JSONObject o = new JSONObject();
-                            o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
-                            o.put(USER_COLOR,user.getColor());
-                            o.put(USER_JOINED,user.getNumber());
-                            if(user.getName() != null && user.getName().length()>0){
-                                o.put(USER_NAME,user.getName());
+                            JSONObject o = new JSONObject();//user.getPosition().toJSON();
+                            o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                            o.put(USER_COLOR, user.getColor());
+                            o.put(USER_JOINED, user.getNumber());
+                            if (check.name != null && check.name.length() > 0) {
+                                o.put(USER_NAME, check.name);
                             }
-                            token.sendToAllFrom(o,user);
+                            check.token.sendToAllFrom(o, user);
                             return;
-                        }
-
-                    } else {
-                        CheckReq check = new CheckReq();
-                        check.control = Utils.getUnique();
-                        check.token = token;
-
-                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
-                        response.put(RESPONSE_CONTROL,check.control);
-                        ipToCheck.put(ip,check);
-                    }
-                } else {
-                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    response.put(RESPONSE_MESSAGE, "This tracking is expired.");
-                }
-            } else {
-                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                response.put(RESPONSE_MESSAGE, "Wrong request (token not defined).");
-            }
-            Utils.pause(2);//FIXME remove pause
-            conn.send(response.toString());
-            System.out.println("JOIN:response:" + response);
-        } else if(REQUEST_CHECK_USER.equals(req)){
-            if(request.has(REQUEST_HASH)) {
-                String hash = request.getString((REQUEST_HASH));
-                System.out.println(("CHECK:hash:"+hash+":"+ipToCheck));
-                if(ipToCheck.containsKey(ip)){
-                    CheckReq check = ipToCheck.get(ip);
-
-                    MyUser user = null;
-                    for(Map.Entry<String,MyUser> x:check.token.users.entrySet()){
-                        System.out.println("CHECK:looking for:"+check.control+":"+x.getValue().getDeviceId()+":"+x.getValue().calculateHash(check.control));
-                        if(hash.equals(x.getValue().calculateHash(check.control))){
-                            user = x.getValue();
-                            break;
-                        }
-                    }
-                    if(user != null) {
-                        System.out.println("CHECK:user accepted:"+user);
-                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                        response.put(RESPONSE_NUMBER, user.getNumber());
-                        user.setConnection(conn);
-                        user.setChanged();
-                        if(check.name != null && check.name.length()>0){
-                            user.setName(check.name);
-                        }
-
-                        ipToToken.put(ip,check.token);
-                        ipToUser.put(ip,user);
-
-                        check.token.sendInitialTo(response,user);
-
-                        JSONObject o = new JSONObject();//user.getPosition().toJSON();
-                        o.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
-                        o.put(USER_COLOR,user.getColor());
-                        o.put(USER_JOINED,user.getNumber());
-                        if(check.name != null && check.name.length()>0){
-                            o.put(USER_NAME,check.name);
-                        }
-                        check.token.sendToAllFrom(o,user);
-                        return;
 //                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
 //                            response.put(RESPONSE_MESSAGE, "User not granted.");
+                        } else {
+                            System.out.println("CHECK:user not accepted for hash:" + hash);
+                            if (ipToToken.containsKey(ip)) ipToToken.remove(ip);
+                            if (ipToUser.containsKey(ip)) ipToUser.remove(ip);
+
+                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                            response.put(RESPONSE_MESSAGE, "Cannot join to group (user not accepted).");
+                            disconnect = true;
+                        }
+
+                        ipToCheck.remove(ip);
                     } else {
-                        System.out.println("CHECK:user not accepted for hash:"+hash);
-                        if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
-                        if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
-
                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                        response.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not accepted).");
+                        response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authorized).");
+                        disconnect = true;
                     }
-
-                    ipToCheck.remove(ip);
                 } else {
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    response.put(RESPONSE_MESSAGE, "Cannot join to tracking (user not authorized).");
+                    response.put(RESPONSE_MESSAGE, "Cannot join to group (hash not defined).");
+                    disconnect = true;
                 }
-            } else {
-                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                response.put(RESPONSE_MESSAGE, "Cannot join to tracking (hash not defined).");
-            }
 
-            System.out.println("CHECK:response:" + response);
-            Utils.pause(2);//FIXME remove pause
-            conn.send(response.toString());
-        } else if(REQUEST_UPDATE.equals(req)) {
-            if (ipToToken.containsKey(ip)) {
-                MyToken token = ipToToken.get(ip);
-                MyUser user = ipToUser.get(ip);
+                System.out.println("CHECK:response:" + response);
+                Utils.pause(2);//FIXME remove pause
+                conn.send(response.toString());
+            } else if (REQUEST_UPDATE.equals(req)) {
+                if (ipToToken.containsKey(ip)) {
+                    MyToken token = ipToToken.get(ip);
+                    MyUser user = ipToUser.get(ip);
 
 //                System.out.println("UPDATE:token and user found:" + token.getId() + ":" + user);
 
-                JSONObject o = new JSONObject();
-                if(request.has(USER_NAME)){
-                    o.put(USER_NAME,request.getString(USER_NAME));
-                    user.setName(request.getString(USER_NAME));
-                    token.setChanged();
-                    System.out.println("UPDATE:name changed to:"+request.getString(USER_NAME));
-                }
-                if(request.has(USER_PROVIDER)){
-                    user.addPosition(request);
-                    token.setChanged();
-                    o = user.getPosition().toJSON();
-                    System.out.println("UPDATE:location changed:"+o);
-                }
-                if(request.has(USER_MESSAGE)){
-                    o.put(USER_MESSAGE,request.getString(USER_MESSAGE));
-                    System.out.println("UPDATE:user message:"+request.getString(USER_MESSAGE));
-                }
-                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                if(request.has(RESPONSE_PRIVATE)) {
-                    o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
-                    token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
-                    System.out.println("UPDATE:private message to user:"+request.getInt(RESPONSE_PRIVATE));
-                } else if(request.has(RESPONSE_WELCOME_MESSAGE)) {
-                    String text = request.getString(RESPONSE_WELCOME_MESSAGE);
-                    if(user.getNumber() == 0 && text != null) {
-                        token.setWelcomeMessage(text);
+                    JSONObject o = new JSONObject();
+                    if (request.has(USER_NAME)) {
+                        o.put(USER_NAME, request.getString(USER_NAME));
+                        user.setName(request.getString(USER_NAME));
+                        token.setChanged();
+                        System.out.println("UPDATE:name changed to:" + request.getString(USER_NAME));
                     }
-                    System.out.println("UPDATE:welcome message:"+request.getString(RESPONSE_WELCOME_MESSAGE));
-                } else if (o.length() <= 1) {
-                    System.out.println("UPDATE:ping");
-                } else {
-                    token.sendToAllFrom(o, user);
+                    if (request.has(USER_PROVIDER)) {
+                        user.addPosition(request);
+                        token.setChanged();
+                        o = user.getPosition().toJSON();
+                        System.out.println("UPDATE:location changed:" + o);
+                    }
+                    if (request.has(USER_MESSAGE)) {
+                        o.put(USER_MESSAGE, request.getString(USER_MESSAGE));
+                        System.out.println("UPDATE:user message:" + request.getString(USER_MESSAGE));
+                    }
+                    o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                    if (request.has(RESPONSE_PRIVATE)) {
+                        o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
+                        token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                        System.out.println("UPDATE:private message to user:" + request.getInt(RESPONSE_PRIVATE));
+                    } else if (request.has(RESPONSE_WELCOME_MESSAGE)) {
+                        String text = request.getString(RESPONSE_WELCOME_MESSAGE);
+                        if (user.getNumber() == 0 && text != null) {
+                            token.setWelcomeMessage(text);
+                        }
+                        System.out.println("UPDATE:welcome message:" + request.getString(RESPONSE_WELCOME_MESSAGE));
+                    } else if (o.length() <= 1) {
+                        System.out.println("UPDATE:ping");
+                    } else {
+                        token.sendToAllFrom(o, user);
 //                    System.out.println("UPDATE:send update:"+o);
-                }
+                    }
 
-            } else {
-                System.out.println("UPDATE:token not found");
-                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                response.put(RESPONSE_MESSAGE, "Tracking not exists.");
-                conn.send(response.toString());
-                conn.close();
+                } else {
+                    System.out.println("UPDATE:token not found");
+                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                    response.put(RESPONSE_MESSAGE, "Group not exists.");
+                    conn.send(response.toString());
+                    conn.close();
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(disconnect) {
+            conn.close();
         }
     }
 

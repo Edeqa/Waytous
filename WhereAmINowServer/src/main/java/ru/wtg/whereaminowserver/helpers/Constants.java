@@ -4,29 +4,23 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 10;
+    public final static int SERVER_BUILD = 11;
 
 // device debug local version
-    public final static String WSS_SERVER_HOST = "10.0.0.96";
+    public final static String WSS_SERVER_HOST = "https://10.0.0.96";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
-// emulator local version
-/*
-    public final static String WSS_SERVER_HOST = "192.168.56.1";
-    public final static boolean DEBUGGING = false;
-    public final static String HTTP_SERVER_HOST = "10.0.0.96";
-*/
 
 // device internet version
 /*
-    public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
+    public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
     public final static boolean DEBUGGING = false;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 */
 
 // emulator debug internet version
 /*
-    public final static String WSS_SERVER_HOST = "inchem.kstu.ru";
+    public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 */
@@ -38,13 +32,18 @@ public class Constants {
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
 
-// client constants
+    public final static int HTTP_PORT = 8080;
+    public final static int WSS_PORT = 8081;
+//    public final static int WSS_PORT = 443;
+
+    // client constants
     public static final String REQUEST = "client";
     public static final String REQUEST_TIMESTAMP = "timestamp";
     public static final String REQUEST_UPDATE = "update";
     public static final String REQUEST_JOIN_TOKEN = "join";
     public static final String REQUEST_NEW_TOKEN = "create";
     public static final String REQUEST_CHECK_USER = "check";
+    public static final String REQUEST_LEAVE_TOKEN = "leave";
     public static final String REQUEST_TOKEN = "token";
     public static final String REQUEST_HASH = "hash";
     public static final String REQUEST_DEVICE_ID = "device_id";
@@ -56,6 +55,7 @@ public class Constants {
     public static final String RESPONSE_STATUS = "server";
     public static final String RESPONSE_STATUS_CONNECTED = "connected";
     public static final String RESPONSE_STATUS_ACCEPTED = "accepted";
+    public static final String RESPONSE_STATUS_REJECTED = "rejected";
     public static final String RESPONSE_STATUS_UPDATED = "updated";
     public static final String RESPONSE_STATUS_CHECK = "check";
     public static final String RESPONSE_STATUS_DISCONNECTED = "disconnected";
