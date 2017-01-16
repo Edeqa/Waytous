@@ -8,4 +8,11 @@
 /captures
 /app/src/release/
 libs/
-/WhereAmINowServer/src/main/java/ru/wtg/whereaminowserver/helpers/SensitiveDataImpl.java
+/WhereAmINowServer/build/
+/app/build/
+/app/app-release.apk
+/app/google-services.json
+/WhereAmINowServer1/
+/WhereAmINowServer/src/main/java/ru/wtg/whereaminowserver/helpers/SensitiveData.java
+/captures/
+/projectFilesBackup/
