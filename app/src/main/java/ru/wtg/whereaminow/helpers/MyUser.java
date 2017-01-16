@@ -62,7 +62,11 @@ public class MyUser {
                     if(previous < 0) previous = 0;
 
                     for(long i = previous; i<locations.size()-1;i++) {
-                        positions.add(Utils.latLng(locations.get((int)i)));
+                        try {
+                            positions.add(Utils.latLng(locations.get((int) i)));
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     positions = PolyUtil.simplify(positions, 10);
 
@@ -98,12 +102,12 @@ public class MyUser {
         return this;
     }
 
-    private void setLocation(Location location) {
-        this.location = location;
-    }
-
     public Location getLocation(){
         return location;
+    }
+
+    private void setLocation(Location location) {
+        this.location = location;
     }
 
     public ArrayList<Location> getLocations(){
