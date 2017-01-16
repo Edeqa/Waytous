@@ -96,6 +96,10 @@ public class MyUser {
         this.os = os;
     }
 
+    public String getOs() {
+        return os;
+    }
+
     public String toString() {
         String res = "";
         res += "number:" + number;

@@ -257,7 +257,7 @@ public class IntroViewHolder extends AbstractViewHolder {
                         eventRules = new ArrayList<>();
                         queue.put(event, eventRules);
                     }
-                    eventRules.add(x);
+                    eventRules.put(x);
                 }
             }
         }

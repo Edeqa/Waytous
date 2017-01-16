@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,17 +13,17 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -31,17 +32,21 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.ShareSender;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
-import ru.wtg.whereaminow.helpers.SnackbarMessage;
+import ru.wtg.whereaminow.helpers.SystemMessage;
 import ru.wtg.whereaminow.helpers.UserMessage;
+import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.CREATE_DRAWER;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
-import static ru.wtg.whereaminow.State.PREPARE_FAB;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_FAB;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
@@ -49,6 +54,8 @@ import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.USER_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 
@@ -81,7 +88,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
     @Override
     public String getType() {
-        return "messagesView";
+        return "MessagesView";
     }
 
     @Override
@@ -188,23 +195,20 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (etMessage.getText().toString().length() > 0) {
-                    if (privateMessage && toUser != null) {
-                        JSONObject o = new JSONObject();
-                        try {
-                            if(State.getInstance().tracking_active()) {
-                                o.put(RESPONSE_PRIVATE, toUser.getProperties().getNumber());
-                                o.put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
-                                State.getInstance().getTracking().sendMessage(o);
-                            }
+                    if(State.getInstance().tracking_active()) {
+                        if (privateMessage && toUser != null) {
+                            State.getInstance().getTracking()
+                                    .put(RESPONSE_PRIVATE, toUser.getProperties().getNumber())
+                                    .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString())
+                                    .put(REQUEST, REQUEST_PUSH)
+                                    .send();
                             toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } else {
+                            State.getInstance().getTracking().put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString()).put(REQUEST, REQUEST_PUSH).send();
+                            State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
                         }
                     } else {
-                        if(State.getInstance().tracking_active()) {
-                            State.getInstance().getTracking().sendMessage(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString());
-                        }
-                        State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
+                        new SystemMessage<>().setText("Cannot send message because of network not available.").show();
                     }
                 }
             }
@@ -236,20 +240,13 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     }
 
     public void showMessages() {
+        if(dialog != null && dialog.isShowing()) {
+            return;
+        }
 
         dialog = new AlertDialog.Builder(context).create();
 
-        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
-/*
-        final View viewMessageSend = context.getLayoutInflater().inflate(R.layout.view_message_send, null);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 0);
-
-        content.findViewById(R.id.layout_footer).setVisibility(View.VISIBLE);
-        content.findViewById(R.id.layout_footer).setMinimumHeight(viewMessageSend.getMinimumHeight());
-        ((RelativeLayout) content.findViewById(R.id.layout_footer)).addView(viewMessageSend, params);
-*/
+        final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
@@ -316,9 +313,46 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         adapter.setOnItemClickListener(new SimpleCallback<UserMessage>() {
             @Override
             public void call(UserMessage message) {
-                System.out.println(message);
+                reloadCursor();
             }
         });
+        adapter.setOnItemShareListener(new SimpleCallback<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
+                System.out.println("SHARE "+item);
+
+                new ShareSender(context).send("Share the message", item.getFrom(), item.getFrom() + ":\n" + item.getBody());
+            }
+        });
+        adapter.setOnItemReplyListener(new SimpleCallback<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
+
+                MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
+                if(to != null) {
+                    newMessage(to, false, "> " + item.getBody());
+                } else {
+                    newMessage(null, false, "> " + item.getFrom() + ":\n> " + item.getBody());
+                }
+            }
+        });
+        adapter.setOnItemDeleteListener(new SimpleCallback<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage.getDb().deleteByPosition(position);
+                adapter.notifyItemRemoved(position);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        donotscroll = true;
+                        reloadCursor();
+                    }
+                }, 500);
+            }
+        });
+
         adapter.setOnItemTouchListener(onTouchListener);
 
         adapter.setOnCursorReloadListener(new SimpleCallback<Cursor>() {
@@ -362,7 +396,10 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             dialog.getWindow().setBackgroundDrawable(drawable);
         }
 
+
         dialog.show();
+
+        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         dialog.getWindow().getDecorView().setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -454,7 +491,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SnackbarMessage().setText(myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
+                        new SystemMessage().setText(myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, false,"");
@@ -476,7 +513,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SnackbarMessage().setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
+                        new SystemMessage().setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, true, "");
@@ -622,7 +659,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
         rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.string.new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
-//        rules.add(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
+//        rules.put(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
 
         return rules;
     }

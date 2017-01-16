@@ -10,10 +10,10 @@ import android.os.Bundle;
 
 import ru.wtg.whereaminow.State;
 
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_ERROR;
-import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ERROR;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 
 /**
  * Created 12/30/16.
@@ -52,7 +52,7 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
 
             if (info.getState() == NetworkInfo.State.CONNECTED) {
                 if(!connected) {
-                    switch (tracking.getStatus()) {
+                    /*switch (tracking.getStatus()) {
                         case TRACKING_RECONNECTING:
                                 System.out.println("RECONNECT");
                             tracking.reconnect();
@@ -69,7 +69,7 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
                             tracking.setStatus(TRACKING_ERROR);
                             State.getInstance().fire(TRACKING_ERROR);
                             break;
-                    }
+                    }*/
                 }
                 connected = true;
             } else {

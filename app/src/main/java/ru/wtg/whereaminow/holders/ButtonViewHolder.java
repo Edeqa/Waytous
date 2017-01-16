@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,21 +26,21 @@ import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 
-import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
-import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
-import static ru.wtg.whereaminow.State.UNSELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_SINGLE_USER;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_ZOOM;
 
 /**
  * Created 11/18/16.
  */
 public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.ButtonView> {
-    private static final String TYPE = "button";
+    private static final String TYPE = "Button";
     private final Activity context;
     private Handler handlerHideMenu;
     private Runnable runnableHideMenu;
@@ -154,16 +155,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 layout.addView(button, index);
             }
 
-//            button.setTextColor(Color.LTGRAY);
-//            button.getBackground().setColorFilter(new ColorMatrixColorFilter(Utils.getColorMatrix(Color.CYAN)));
-
             title = ((TextView) button.findViewById(R.id.tv_button_title));
             if(myUser.getProperties().isSelected()) title.setTypeface(Typeface.DEFAULT_BOLD);
             String titleText = (myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName();
 
             title.setText(titleText);
 
-//            int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Drawable drawable = Utils.renderDrawable(context, R.drawable.semi_transparent_background, myUser.getProperties().getColor(), size, size);
 
             button.setBackground(drawable);
@@ -238,17 +235,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
                         LinearLayout button = (LinearLayout) inflater.inflate(R.layout.view_user_button, null);
 
-//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-//                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//                        params.setMargins(5, 5, 5, 5);
-//                        button.setLayoutParams(params);
-
                         ((ImageView)button.findViewById(R.id.iv_button_image)).setImageDrawable(item.getIcon());
                         button.findViewById(R.id.tv_button_title).setVisibility(View.GONE);
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                System.out.println("PERFORM:"+item.getItemId()+":"+item.getGroupId()+":"+item.getTitle()+":"+myUser.getProperties().getDisplayName());
+                                Log.i(TYPE,"Perform menu item { id=" + item.getItemId() +", title="+item.getTitle() + ", username=" + myUser.getProperties().getDisplayName() + "}");
                                 popup.getMenu().performIdentifierAction(item.getItemId(),item.getGroupId());
                                 handlerHideMenu.removeCallbacks(runnableHideMenu);
                                 menuLayout.setVisibility(View.GONE);

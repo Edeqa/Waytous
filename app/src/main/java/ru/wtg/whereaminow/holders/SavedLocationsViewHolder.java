@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,8 +15,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -34,24 +37,28 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.SavedLocation;
-import ru.wtg.whereaminow.helpers.SnackbarMessage;
+import ru.wtg.whereaminow.helpers.ShareSender;
+import ru.wtg.whereaminow.helpers.SystemMessage;
+import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.CREATE_DRAWER;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
-import static ru.wtg.whereaminow.State.PREPARE_DRAWER;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.SELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminow.holders.MarkerViewHolder.MARKER_CLICK;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.SHOW_NAVIGATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
@@ -78,6 +85,8 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     private static final String HIDE_SAVED_LOCATION = "hide_saved_location";
     private static final String DELETE_SAVED_LOCATION = "delete_saved_location";
     private static final String SHOW_SAVED_LOCATIONS = "show_saved_locations";
+    private static final String SHARE_SAVED_LOCATION = "share_saved_locations";
+    private static final String SEND_SAVED_LOCATION = "send_saved_locations";
 
     private final AppCompatActivity context;
     private GoogleMap map;
@@ -113,7 +122,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.save_location, Menu.NONE, R.string.save_location).setVisible(false).setOnMenuItemClickListener(onMenuItemClickListener);
 
-                /*optionsMenu.add(Menu.NONE, 1919191919, Menu.NONE, "Test location").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                /*optionsMenu.put(Menu.NONE, 1919191919, Menu.NONE, "Test location").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 //                        newMessage(State.getInstance().getMe(), false);
@@ -139,9 +148,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             case CREATE_DRAWER:
                 MenuItem menuItem = (MenuItem) object;
                 Menu navigationMenu = menuItem.getSubMenu();
-                MenuItem item = navigationMenu.findItem(R.string.saved_locations);
+                MenuItem item = navigationMenu.findItem(R.string.locations);
                 if(item == null) {
-                    item = navigationMenu.add(Menu.NONE, R.string.saved_locations, Menu.NONE, context.getString(R.string.saved_locations));
+                    item = navigationMenu.add(Menu.NONE, R.string.locations, Menu.NONE, context.getString(R.string.locations));
                 }
                 item.setIcon(R.drawable.ic_pin_drop_black_24dp)
                         .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -156,7 +165,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 menuItem = (MenuItem) object;
                 navigationMenu = menuItem.getSubMenu();
                 int count = SavedLocation.getCount();
-                navigationMenu.findItem(R.string.saved_locations).setVisible(count > 0);
+                navigationMenu.findItem(R.string.locations).setVisible(count > 0);
                 if(count>0) {
                     menuItem.setVisible(true);
                 }
@@ -347,13 +356,27 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                                 return false;
                             }
                         }).setIcon(R.drawable.ic_location_off_black_24dp);
-                        /*menu.add("Remove").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        /*menu.put("Remove").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(DELETE_SAVED_LOCATION);
                                 return false;
                             }
                         });*/
+                        /*menu.add(0, R.string.share, Menu.NONE, R.string.share).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                myUser.fire(SHARE_SAVED_LOCATION, myUser);
+                                return false;
+                            }
+                        }).setIcon(R.drawable.ic_share_black_24dp);
+                        menu.add(0, R.string.send, Menu.NONE, R.string.send).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                myUser.fire(SEND_SAVED_LOCATION);
+                                return false;
+                            }
+                        }).setIcon(R.drawable.ic_chat_black_24dp);*/
                     }
                     break;
                 case HIDE_SAVED_LOCATION:
@@ -365,9 +388,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         State.getInstance().fire(UPDATE_CAMERA);
                     }
 /*
-
-
-
                     State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
@@ -394,6 +414,34 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         if (saved != null) SavedLocation.getDb().deleteById(saved.getNumber());
                     }
                     break;
+                case SHARE_SAVED_LOCATION:
+                    System.out.println("SHARE_SAVED_LOCATION");
+                    break;
+                case SEND_SAVED_LOCATION:
+                    System.out.println("SEND_SAVED_LOCATION");
+                    if(isSavedLocation(myUser)){
+                        MyUser user = (MyUser) object;
+                        if(user != null && !isSavedLocation(user)){
+
+                        } else {
+                            SavedLocation savedLocation = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
+
+                            State.getInstance().getTracking()
+                                    .put(USER_LATITUDE, savedLocation.getLatitude())
+                                    .put(USER_LONGITUDE, savedLocation.getLongitude())
+                                    .put("address", savedLocation.getAddress())
+                                    .put(USER_NAME, savedLocation.getUsername())
+                                    .put("title", savedLocation.getTitle())
+//                                    .put("saved_location", Utils.serializeToString(savedLocation))
+                                    .put(REQUEST, REQUEST_PUSH)
+                                    .send();
+
+                                    System.out.println("ITS:"+savedLocation);
+
+                        }
+
+                    }
+                    break;
                 case MARKER_CLICK:
                     if(isSavedLocation(myUser)) {
                         Marker marker = (Marker) object;
@@ -411,7 +459,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         loc.save(context);
 
                         //noinspection unchecked
-                        new SnackbarMessage().setText("Location saved").setAction("Show", new SimpleCallback() {
+                        new SystemMessage().setText("Location saved").setAction("Show", new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
@@ -542,7 +590,14 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         });
         dialog.setOnCancelListener(null);
         dialog.setView(content);
+
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        }
+
         dialog.show();
+
+        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         reloadCursor();
     }
@@ -609,7 +664,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     public ArrayList<IntroRule> getIntro() {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
-//        rules.add(new IntroRule().setEvent(SHOW_SAVED_LOCATION).setId("saved_location_show_location").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU_ITEM).setViewId(R.string.menu_save_location).setTitle("Here you can").setDescription("Save current location of you or another member of group and show it later on the map."));
+//        rules.put(new IntroRule().setEvent(SHOW_SAVED_LOCATION).setId("saved_location_show_location").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU_ITEM).setViewId(R.string.menu_save_location).setTitle("Here you can").setDescription("Save current location of you or another member of group and show it later on the map."));
 
         return rules;
     }

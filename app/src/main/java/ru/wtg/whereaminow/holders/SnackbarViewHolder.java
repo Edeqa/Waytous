@@ -6,15 +6,15 @@ import android.view.View;
 
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.SnackbarMessage;
+import ru.wtg.whereaminow.helpers.SystemMessage;
 
-import static ru.wtg.whereaminow.State.TOKEN_CREATED;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_ERROR;
-import static ru.wtg.whereaminow.State.TRACKING_JOIN;
-import static ru.wtg.whereaminow.State.TRACKING_NEW;
-import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.EVENTS.TOKEN_CREATED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ERROR;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesViewHolder.SETUP_WELCOME_MESSAGE;
@@ -134,6 +134,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 }).show();
                 break;
             case TRACKING_RECONNECTING:
+//                tokenCreatedShown = true;
                 message = (String) object;
                 snackbar.setText((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect").setAction("Cancel", new View.OnClickListener() {
                     @Override
@@ -174,7 +175,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 }
                 break;
             case CUSTOM_SNACK:
-                final SnackbarMessage m = (SnackbarMessage) object;
+                final SystemMessage m = (SystemMessage) object;
                 if(m != null){
                     snackbar.setText(m.getText()).setDuration(m.getDuration()).setAction(m.getTitle(), new View.OnClickListener() {
                         @Override

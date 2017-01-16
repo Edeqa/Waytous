@@ -5,16 +5,17 @@ import android.location.Location;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import ru.wtg.whereaminow.State;
 
-import static ru.wtg.whereaminow.State.CHANGE_COLOR;
-import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_COLOR;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
@@ -126,6 +127,14 @@ public class MyUsers {
         return users;
     }
 
+    public MyUser findUserByName(String name) {
+        for(Map.Entry<Integer, MyUser> entry:users.entrySet()) {
+            if(name.equals(entry.getValue().getProperties().getDisplayName())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
 
     public int getCountActive(){
         int count = 0;

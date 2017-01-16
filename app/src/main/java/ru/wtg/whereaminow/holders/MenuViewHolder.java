@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow.holders;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
@@ -16,9 +15,9 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
@@ -119,7 +118,7 @@ public class MenuViewHolder extends AbstractViewHolder {
     @Override
     public ArrayList<IntroRule> getIntro() {
         ArrayList<IntroRule> rules = new ArrayList<>();
-//        rules.add(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_show_context").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.menu_set_my_name).setTitle("Here you can").setDescription("Change your name in group."));
+//        rules.put(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_show_context").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.menu_set_my_name).setTitle("Here you can").setDescription("Change your name in group."));
         rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("menu_intro_option").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Main menu").setDescription("Here you can access general actions to this group. And something else..."));
 
         return rules;

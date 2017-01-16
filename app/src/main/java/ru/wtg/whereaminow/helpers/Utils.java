@@ -1,5 +1,7 @@
 package ru.wtg.whereaminow.helpers;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -9,6 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.util.DisplayMetrics;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -33,6 +37,8 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
+
+import ru.wtg.whereaminow.State;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
@@ -323,6 +329,23 @@ public class Utils {
         LatLng newSouthwest = SphericalUtil.interpolate(bounds.southwest, bounds.northeast, (1+fraction)/2);
 
         return new LatLngBounds(newNortheast,newSouthwest);
+    }
+
+
+    public static final int MATCH_SCREEN = -100;
+
+    public static void resizeDialog(Activity activity, Dialog dialog, int width, int height) {
+        if(width == MATCH_SCREEN || height == MATCH_SCREEN) {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            if(width == MATCH_SCREEN) {
+                width = displaymetrics.widthPixels;
+            }
+            if(height == MATCH_SCREEN) {
+                height = displaymetrics.heightPixels;
+            }
+        }
+        dialog.getWindow().setLayout(width, height);
     }
 
 }

@@ -15,19 +15,19 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
-import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
-import static ru.wtg.whereaminow.State.CHANGE_COLOR;
-import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
-import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
-import static ru.wtg.whereaminow.State.MOVING_AWAY_FROM;
-import static ru.wtg.whereaminow.State.MOVING_CLOSE_TO;
-import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
-import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
-import static ru.wtg.whereaminow.State.UNSELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_COLOR;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.MOVING_AWAY_FROM;
+import static ru.wtg.whereaminow.State.EVENTS.MOVING_CLOSE_TO;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_SINGLE_USER;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**

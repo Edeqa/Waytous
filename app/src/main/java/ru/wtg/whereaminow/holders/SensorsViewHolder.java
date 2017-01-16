@@ -1,29 +1,23 @@
 package ru.wtg.whereaminow.holders;
 
 import android.app.Activity;
-import android.location.Location;
 import android.view.WindowManager;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
-import io.nlopez.smartlocation.location.config.LocationAccuracy;
-import io.nlopez.smartlocation.location.config.LocationParams;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.LightSensorManager;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.helpers.LightSensorManager.DAY;
 import static ru.wtg.whereaminow.helpers.LightSensorManager.NIGHT;
 
@@ -32,8 +26,6 @@ import static ru.wtg.whereaminow.helpers.LightSensorManager.NIGHT;
  */
 public class SensorsViewHolder extends AbstractViewHolder {
 
-    public static final String REQUEST_LOCATION_SINGLE = "request_location_single";
-    public static final String REQUEST_LOCATION_UPDATES = "request_location_updates";
 
     public static final String REQUEST_MODE_DAY = "request_mode_day";
     public static final String REQUEST_MODE_NIGHT = "request_mode_night";
@@ -79,18 +71,15 @@ public class SensorsViewHolder extends AbstractViewHolder {
     public boolean onEvent(String event, Object object) {
         switch (event) {
             case TRACKING_ACTIVE:
-                SmartLocation.with(context).location().stop();
                 context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 lightSensor.enable();
                 break;
             case TRACKING_DISABLED:
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 lightSensor.disable();
-                enableLocationUpdates();
                 onEnvironmentChangeListener.call(DAY);
                 break;
             case ACTIVITY_PAUSE:
-                SmartLocation.with(context).location().stop();
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 lightSensor.disable();
                 break;
@@ -99,21 +88,8 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lightSensor.enable();
                 } else {
-                    enableLocationUpdates();
                     onEnvironmentChangeListener.call(DAY);
                 }
-                break;
-            case REQUEST_LOCATION_SINGLE:
-                SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-                    @Override
-                    public void onLocationUpdated(final Location location) {
-                        Location lastLocation  = State.getInstance().getMe().getLocation();
-                        if (lastLocation == null || lastLocation.getLatitude() != location.getLatitude() || lastLocation.getLongitude() != location.getLongitude()) {
-                            State.getInstance().getMe().addLocation(Utils.normalizeLocation(State.getInstance().getGpsFilter(), location));
-                        }
-                        enableLocationUpdates();
-                    }
-                });
                 break;
             case REQUEST_MODE_DAY:
                 if(map != null && map.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
@@ -174,11 +150,6 @@ public class SensorsViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    private void enableLocationUpdates(){
-        LocationParams.Builder builder = new LocationParams.Builder()
-                .setAccuracy(LocationAccuracy.HIGH).setDistance(3).setInterval(1000);
-        SmartLocation.with(context).location().continuous().config(builder.build()).start(locationUpdateListener);
-    }
 
     public SensorsViewHolder setMap(GoogleMap map) {
         this.map = map;
@@ -199,12 +170,4 @@ public class SensorsViewHolder extends AbstractViewHolder {
         }
     };
 
-    private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
-        @Override
-        public void onLocationUpdated(final Location location) {
-            if(!State.getInstance().tracking_active()) {
-                State.getInstance().getMe().addLocation(Utils.normalizeLocation(State.getInstance().getGpsFilter(), location));
-            }
-        }
-    };
-}
+ }

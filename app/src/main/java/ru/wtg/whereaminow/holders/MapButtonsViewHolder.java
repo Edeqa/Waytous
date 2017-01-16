@@ -73,9 +73,9 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
 //        LatLng latLng = new LatLng(markerView.myUser.getLocation().getLatitude(), markerView.myUser.getLocation().getLongitude());
 
         ArrayList<IntroRule> rules = new ArrayList<>();
-//        rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("map_button_my_location").setViewTag("GoogleMapMyLocationButton").setTitle("My location").setDescription("Click here to center active member."));
-//        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_intro_menu").setView(fab_buttons).setTitle("Click any item to perform some action"));
-//        rules.add(new IntroRule().setId("menu_set_name").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Click menu"));
+//        rules.put(new IntroRule().setEvent(ACTIVITY_RESUME).setId("map_button_my_location").setViewTag("GoogleMapMyLocationButton").setTitle("My location").setDescription("Click here to center active member."));
+//        rules.put(new IntroRule().setEvent(PREPARE_FAB).setId("fab_intro_menu").setView(fab_buttons).setTitle("Click any item to perform some action"));
+//        rules.put(new IntroRule().setId("menu_set_name").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Click menu"));
 
         return rules;
     }

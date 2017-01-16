@@ -19,11 +19,11 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.SELECT_SINGLE_USER;
-import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_SINGLE_USER;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 

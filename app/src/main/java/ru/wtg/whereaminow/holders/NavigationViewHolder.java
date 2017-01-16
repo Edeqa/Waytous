@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -44,10 +46,12 @@ import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.Utils;
 
-import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATED;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 
 /**
  * Created 12/29/16.
@@ -78,9 +82,12 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private final AppCompatActivity context;
     private String mode = NAVIGATION_MODE_DRIVING;
     private View buttonsView;
+    private int iconNavigationStyle;
 
     public NavigationViewHolder(MainActivity context) {
         this.context = context;
+
+        iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
 
         setMap(context.getMap());
         setButtonsView(context.findViewById(R.id.layout_navigation_mode));
@@ -152,6 +159,12 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 break;
             case SHOW_NAVIGATION:
                 buttonsView.setVisibility(View.VISIBLE);
+                break;
+            case REQUEST_MODE_NIGHT:
+                iconNavigationStyle = R.style.iconNavigationMarkerTextNight;
+                break;
+            case REQUEST_MODE_DAY:
+                iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
                 break;
         }
         return true;
@@ -418,7 +431,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 final int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0xAA000000;
                 iconFactory = new IconGenerator(State.getInstance());
                 iconFactory.setColor(color);
-                iconFactory.setTextAppearance(R.style.iconNavigationMarkerText);
+
+                iconFactory.setTextAppearance(iconNavigationStyle);
 
                 final float density = State.getInstance().getResources().getDisplayMetrics().density;
                 track = map.addPolyline(new PolylineOptions().width((int) (8 * density)).color(color).geodesic(true).zIndex(100f));
@@ -432,7 +446,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
                 marker = map.addMarker(markerOptions);
                 marker.setVisible(false);
-                buttonsView.setVisibility(View.VISIBLE);
+                buttonsView.setVisibility(View.INVISIBLE);
             }
             new Thread(new Runnable() {
                 @Override

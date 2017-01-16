@@ -10,7 +10,6 @@ public class Constants {
     public final static String WSS_SERVER_HOST = "https://10.0.0.96";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
-
 // device internet version
 /*
     public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
@@ -49,6 +48,7 @@ public class Constants {
     public static final String REQUEST_DEVICE_ID = "device_id";
     public static final String REQUEST_MODEL = "model";
     public static final String REQUEST_MANUFACTURER = "manufacturer";
+    public static final String REQUEST_PUSH = "push";
     public static final String REQUEST_OS = "os";
 
 // server constants
