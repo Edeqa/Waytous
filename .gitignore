@@ -8,7 +8,7 @@
 /captures
 /app/src/release/
 libs/
-/WhereAmINowServer/build/
+/WhereAmINowServer/build
 /app/build/
 /app/app-release.apk
 /app/google-services.json
