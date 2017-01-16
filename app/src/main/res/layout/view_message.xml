@@ -48,52 +48,94 @@
         android:textSize="10sp"
         android:gravity="right"/>
 
-<!--
+    <LinearLayout
+        android:id="@+id/layout_message_buttons"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_share_black_24dp"
+            android:id="@+id/ib_message_share"
+            android:layout_weight="1"
+            android:minHeight="@android:dimen/app_icon_size"
+            android:minWidth="@android:dimen/app_icon_size" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_reply_black_24dp"
+            android:id="@+id/ib_message_reply"
+            android:layout_weight="1"
+            android:minHeight="@android:dimen/app_icon_size"
+            android:minWidth="@android:dimen/app_icon_size" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            android:id="@+id/ib_message_delete"
+            android:layout_weight="1"
+            android:minHeight="@android:dimen/app_icon_size"
+            android:minWidth="@android:dimen/app_icon_size"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2"
+            android:layout_weight="10" />
+    </LinearLayout>
+
+    <!--
 
 
-    <ImageButton
-        android:layout_width="@dimen/material_list_avatar_size"
-        android:layout_height="@dimen/material_list_avatar_size"
-        app:srcCompat="@drawable/ic_person_add_black_24dp"
-        android:id="@+id/ib_user_joined"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:visibility="invisible"/>
+        <ImageButton
+            android:layout_width="@dimen/material_list_avatar_size"
+            android:layout_height="@dimen/material_list_avatar_size"
+            app:srcCompat="@drawable/ic_person_add_black_24dp"
+            android:id="@+id/ib_user_joined"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="invisible"/>
 
-    <ImageButton
-        android:layout_width="@dimen/material_list_avatar_size"
-        android:layout_height="@dimen/material_list_avatar_size"
-        app:srcCompat="@drawable/ic_person_outline_black_24dp"
-        android:id="@+id/ib_user_dismissed"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:visibility="invisible"/>
+        <ImageButton
+            android:layout_width="@dimen/material_list_avatar_size"
+            android:layout_height="@dimen/material_list_avatar_size"
+            app:srcCompat="@drawable/ic_person_outline_black_24dp"
+            android:id="@+id/ib_user_dismissed"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="invisible"/>
 
-    <ImageButton
-        android:layout_width="@dimen/material_list_avatar_size"
-        android:layout_height="@dimen/material_list_avatar_size"
-        app:srcCompat="@drawable/ic_input_black_24dp"
-        android:id="@+id/ib_joined"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:visibility="invisible"/>
+        <ImageButton
+            android:layout_width="@dimen/material_list_avatar_size"
+            android:layout_height="@dimen/material_list_avatar_size"
+            app:srcCompat="@drawable/ic_input_black_24dp"
+            android:id="@+id/ib_joined"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="invisible"/>
 
-    <ImageButton
-        android:layout_width="@dimen/material_list_avatar_size"
-        android:layout_height="@dimen/material_list_avatar_size"
-        app:srcCompat="@drawable/ic_people_black_24dp"
-        android:id="@+id/ib_private"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:visibility="invisible"/>
--->
+        <ImageButton
+            android:layout_width="@dimen/material_list_avatar_size"
+            android:layout_height="@dimen/material_list_avatar_size"
+            app:srcCompat="@drawable/ic_people_black_24dp"
+            android:id="@+id/ib_private"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="invisible"/>
+    -->
 
 </LinearLayout>

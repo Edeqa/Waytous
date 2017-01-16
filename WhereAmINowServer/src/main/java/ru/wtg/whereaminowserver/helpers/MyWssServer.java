@@ -1,6 +1,7 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import org.java_websocket.WebSocket;
+import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
@@ -17,7 +18,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_REQUEST_TIMEOUT;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -27,6 +27,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_NEW_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
@@ -37,12 +38,10 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
@@ -336,7 +335,7 @@ public class MyWssServer extends WebSocketServer {
                 System.out.println("CHECK:response:" + response);
                 Utils.pause(2);//FIXME remove pause
                 conn.send(response.toString());
-            } else if (REQUEST_UPDATE.equals(req)) {
+            } else if (REQUEST_UPDATE.equals(req) || REQUEST_PUSH.equals(req)) {
                 if (ipToToken.containsKey(ip)) {
                     MyToken token = ipToToken.get(ip);
                     MyUser user = ipToUser.get(ip);
@@ -363,7 +362,11 @@ public class MyWssServer extends WebSocketServer {
                     o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
                     if (request.has(RESPONSE_PRIVATE)) {
                         o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
-                        token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                        if(REQUEST_UPDATE.equals(req)) {
+                            token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                        } else if(REQUEST_PUSH.equals(req)) {
+                            token.pushToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                        }
                         System.out.println("UPDATE:private message to user:" + request.getInt(RESPONSE_PRIVATE));
                     } else if (request.has(RESPONSE_WELCOME_MESSAGE)) {
                         String text = request.getString(RESPONSE_WELCOME_MESSAGE);
@@ -374,7 +377,12 @@ public class MyWssServer extends WebSocketServer {
                     } else if (o.length() <= 1) {
                         System.out.println("UPDATE:ping");
                     } else {
-                        token.sendToAllFrom(o, user);
+                        if(REQUEST_UPDATE.equals(req)) {
+                            token.sendToAllFrom(o, user);
+                        } else if(REQUEST_PUSH.equals(req)) {
+                            token.pushToAllFrom(o, user);
+                        }
+
 //                    System.out.println("UPDATE:send update:"+o);
                     }
 
@@ -406,6 +414,18 @@ public class MyWssServer extends WebSocketServer {
             if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
             // some errors like port binding failed may not be assignable to a specific websocket
         }
+    }
+
+    @Override
+    public void onWebsocketPing(WebSocket conn, Framedata f) {
+        super.onWebsocketPing(conn, f);
+        System.out.println("PING:"+conn.getRemoteSocketAddress()+":"+f);
+    }
+
+    @Override
+    public void onWebsocketPong(WebSocket conn, Framedata f) {
+        super.onWebsocketPong(conn, f);
+        System.out.println("PONG:"+conn.getRemoteSocketAddress()+":"+f);
     }
 
     /**

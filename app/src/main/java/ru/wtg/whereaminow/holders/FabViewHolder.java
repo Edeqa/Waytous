@@ -19,19 +19,19 @@ import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
-import ru.wtg.whereaminow.helpers.InviteSender;
+import ru.wtg.whereaminow.helpers.ShareSender;
 import ru.wtg.whereaminow.helpers.MyUser;
 
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.PREPARE_FAB;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
-import static ru.wtg.whereaminow.State.TRACKING_ERROR;
-import static ru.wtg.whereaminow.State.TRACKING_EXPIRED;
-import static ru.wtg.whereaminow.State.TRACKING_NEW;
-import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_FAB;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ERROR;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_EXPIRED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATED;
 
 /**
@@ -96,7 +96,7 @@ public class FabViewHolder extends AbstractViewHolder {
                 } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
                     fab.setImageResource(R.drawable.ic_clear_white_24dp);
                 } else {
-                    fab.setImageResource(R.drawable.ic_navigation_white_24dp);
+                    fab.setImageResource(R.drawable.ic_navigation_twinks_white_24dp);
                 }
                 fab.setOnClickListener(onMainClickListener);
                 break;
@@ -110,7 +110,7 @@ public class FabViewHolder extends AbstractViewHolder {
             case TRACKING_DISABLED:
             case TRACKING_ERROR:
             case TRACKING_EXPIRED:
-                fab.setImageResource(R.drawable.ic_navigation_white_24dp);
+                fab.setImageResource(R.drawable.ic_navigation_twinks_white_24dp);
                 break;
         }
         switch(event){
@@ -178,6 +178,7 @@ public class FabViewHolder extends AbstractViewHolder {
                 close(true);
             } else {
                 if(State.getInstance().tracking_active()){
+                    System.out.println("A");
                     fab_buttons.removeAllViews();
                     add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
                     State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
@@ -189,8 +190,10 @@ public class FabViewHolder extends AbstractViewHolder {
                         }
                     });
                 } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
+                    System.out.println("B");
                     State.getInstance().fire(TRACKING_STOP);
                 } else {
+                    System.out.println("C");
                     State.getInstance().fire(TRACKING_NEW);
                 }
             }
@@ -206,7 +209,7 @@ public class FabViewHolder extends AbstractViewHolder {
                     State.getInstance().fire(TRACKING_STOP);
                     break;
                 case R.string.share_link:
-                    new InviteSender(context).send(State.getInstance().getTracking().getTrackingUri());
+                    new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
                     break;
             }
         }

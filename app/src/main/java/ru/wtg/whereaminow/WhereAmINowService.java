@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import static ru.wtg.whereaminow.State.TRACKING_JOIN;
-import static ru.wtg.whereaminow.State.TRACKING_NEW;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 
 public class WhereAmINowService extends Service {
 

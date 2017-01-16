@@ -135,7 +135,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             DividerItemDecoration divider = new DividerItemDecoration(list.getContext(), ((LinearLayoutManager) list.getLayoutManager()).getOrientation());
             list.addItemDecoration(divider);
 
-
             list.setItemAnimator(new DefaultItemAnimator());
         }
 

@@ -85,6 +85,7 @@ public class LightSensorManager implements SensorEventListener {
             currentEnvironment = Environment.DAY;
         }
         if (oldEnvironment != currentEnvironment && environmentChangeCallback != null){
+            Log.i(TAG, "switch on luxLevel=" + luxLevel);
             switch (currentEnvironment) {
                 case DAY:
                     environmentChangeCallback.call(DAY);

@@ -20,15 +20,15 @@ import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
-import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.MOVING_AWAY_FROM;
-import static ru.wtg.whereaminow.State.MOVING_CLOSE_TO;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
-import static ru.wtg.whereaminow.State.TRACKING_JOIN;
-import static ru.wtg.whereaminow.State.TRACKING_NEW;
-import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.MOVING_AWAY_FROM;
+import static ru.wtg.whereaminow.State.EVENTS.MOVING_CLOSE_TO;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
@@ -64,7 +64,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.ic_notification_twinks)
 //                .setAutoCancel(true)
-                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
+//                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
                 .addAction(R.drawable.ic_notification_clear, "Stop", pendingStopIntent)
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_HIGH);
@@ -104,19 +104,18 @@ public class NotificationHolder extends AbstractPropertyHolder {
 //                notification = null;
                 break;
             case TRACKING_ACTIVE:
-                update("You have joined to the group.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update("You have joined.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case USER_JOINED:
                 MyUser user = (MyUser) object;
                 if(user != null && user.isUser()) {
-                    update(user.getProperties().getDisplayName() + " has joined the group.", DEFAULT_LIGHTS, PRIORITY_HIGH);
-                    System.out.println("NOTIFICATION:JOINED:" + user.getProperties().getDisplayName());
+                    update(user.getProperties().getDisplayName() + " has joined.", DEFAULT_LIGHTS, PRIORITY_HIGH);
                 }
                 break;
             case USER_DISMISSED:
                 user = (MyUser) object;
                 if(user != null && user.isUser()) {
-                    update(user.getProperties().getDisplayName() + " has left the group.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                    update(user.getProperties().getDisplayName() + " has left.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 }
                 break;
             case ACTIVITY_RESUME:
@@ -127,13 +126,13 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 break;
             case TRACKING_RECONNECTING:
                 String message = (String) object;
-                update((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update((message != null && message.length() > 0) ? message : "Reconnect...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case SHOW_CUSTOM_NOTIFICATION:
                 final Notification notification = (Notification) object;
                 if(notification != null){
                     NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
-                    notificationManager.notify(1976, notification);
+                    notificationManager.notify(1977, notification);
                 }
                 break;
             case HIDE_CUSTOM_NOTIFICATION:
@@ -162,10 +161,12 @@ public class NotificationHolder extends AbstractPropertyHolder {
             notification.setPriority(priority);
         }
 
-        notification.setContentTitle(state.getUsers().getCountActive() + " user(s) active.");
         if(text != null) {
-            notification.setContentText(text);
-//            notification.setTicker(text);
+            notification.setContentTitle(text);
+            notification.setContentText(state.getUsers().getCountActive() + " user(s) active.");
+        } else {
+            notification.setContentTitle(state.getUsers().getCountActive() + " user(s) active.");
+            notification.setContentText(null);
         }
         notification.setWhen(new Date().getTime());
         notification.setSound(null);
@@ -184,18 +185,16 @@ public class NotificationHolder extends AbstractPropertyHolder {
         public boolean onEvent(String event, Object object) {
             switch (event) {
                 case MOVING_CLOSE_TO:
-//                    System.out.println("CLOSE TO:"+myUser.getProperties().getDisplayName());
                     long currentTime = new Date().getTime();
                     if(currentTime - lastCloseNotifyTime > MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS * 1000) {
-                        update("You are close to " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                        update("Close to " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
                     }
                     lastCloseNotifyTime = currentTime;
                     break;
                 case MOVING_AWAY_FROM:
-//                    System.out.println("AWAY FROM:"+myUser.getProperties().getDisplayName());
                     currentTime = new Date().getTime();
                     if(currentTime - lastAwayNotifyTime > MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS * 1000) {
-                        update("You are moved away from " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                        update("Away from " + myUser.getProperties().getDisplayName(), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                     }
                     lastAwayNotifyTime = currentTime;
                     break;

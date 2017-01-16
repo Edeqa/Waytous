@@ -41,15 +41,15 @@ import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.ACTIVITY_CREATE;
-import static ru.wtg.whereaminow.State.ACTIVITY_DESTROY;
-import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
-import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.TRACKING_JOIN;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_LOCATION_SINGLE;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_CREATE;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_DESTROY;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESULT;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
+import static ru.wtg.whereaminow.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
@@ -89,9 +89,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state = State.getInstance();
 
         if(DEBUGGING){
-            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
+//            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
 //            state.setPreference("intro",false);
         }
+
+        System.out.println("BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE
+        + ", flavor=" + BuildConfig.FLAVOR);
 
 //        System.out.println("APP_ID:"+state.getStringPreference("device_id", null));
 //
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onResume() {
         super.onResume();
+        System.out.println("RESUME");
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         registerReceiver(receiver, intentFilter);
 
@@ -328,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         classes.add("StreetsViewHolder");
 
         // IntroViewHolder must be registered last
-//        classes.add("IntroViewHolder");
+//        classes.put("IntroViewHolder");
 
         for(String s:classes){
             try {
@@ -339,7 +343,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 e.printStackTrace();
             }
         }
-
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());

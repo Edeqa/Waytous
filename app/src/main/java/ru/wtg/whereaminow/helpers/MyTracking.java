@@ -1,6 +1,8 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.neovisionaries.ws.client.WebSocket;
@@ -25,12 +27,12 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.holders.TrackingHolder;
+import ru.wtg.whereaminow.interfaces.TrackingCallback;
 
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
-import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -64,18 +66,21 @@ public class MyTracking {
 
     public static final String TRACKING_URI = "uri";
 
-    private final static int PING_INTERVAL = 600;
+    private final static int CONNECTION_TIMEOUT = 5;
+    private final static int RECONNECTION_DELAY = 5;
+//    private final static int PING_INTERVAL = 60;
 
     private NetworkStateChangeReceiver receiver;
     private State state;
     private URI serverUri;
     private String status = TRACKING_DISABLED;
-    private TrackingHolder.TrackingListenerInterface trackingListener;
+    private TrackingCallback trackingListener;
     private WebSocket webSocket;
     private JSONObject builder;
     private JSONObject posted;
     private String token;
     private boolean newTracking;
+    private Handler handler = new Handler(Looper.myLooper());
 
     public MyTracking() {
         this(WSS_SERVER_HOST, true);
@@ -103,13 +108,14 @@ public class MyTracking {
 
     public void createWebSocket() {
         try {
-            Log.i("MyTracking","createWebSocket:" + serverUri.toString());
 
-            WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(5000);
+            WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
             SSLContext context = SSLContext.getDefault();//NaiveSSLContext.getInstance("TLS");
             factory.setSSLContext(context);
             webSocket = factory.createSocket(serverUri.toString());
-            webSocket.setPingInterval(/*PING_INTERVAL*/ 60 * 1000);
+//            webSocket.setPingInterval(PING_INTERVAL*1000);
+
+            Log.i("MyTracking","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
 
             webSocket.addListener(webSocketListener);
         } catch (NoSuchAlgorithmException | IOException e1) {
@@ -167,7 +173,6 @@ public class MyTracking {
                             put(REQUEST_HASH,hash);
                             send();
                         }
-
                         break;
                     case RESPONSE_STATUS_ACCEPTED:
                         newTracking = false;
@@ -202,42 +207,42 @@ public class MyTracking {
         public void onError(WebSocket websocket, WebSocketException cause) {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             Log.i("MyTracking","onError:" + websocket.getState() + ":" + cause.getMessage());
+
             if(websocket.getState() == WebSocketState.CLOSED) {
-                Log.i("MyTracking","onError:reconnectTask");
-                reconnectTask.start();
+                if(newTracking) {
+                    setStatus(TRACKING_DISABLED);
+                    trackingListener.onReject(cause.getLocalizedMessage());
+                } else {
+                    reconnect();
+                }
             }
         }
 
         @Override
         public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
                 WebSocketFrame clientCloseFrame, boolean closedByServer) {
-            if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTracking","onDisconnected:closeByServer=" + closedByServer);
+       //     if(TRACKING_DISABLED.equals(getStatus())) return;
+            Log.i("MyTracking","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking);
+            System.out.println("SERVERFRAME:"+serverCloseFrame +", \nCLIENTFRAME:"+clientCloseFrame);
+
             if (closedByServer) {
-            } else {
+            } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
+                if(newTracking) {
+                    trackingListener.onStop();
+                } else {
+                    trackingListener.onClose();
+                    reconnect();
+                }
             }
-            if(newTracking) {
-                trackingListener.onStop();
-            } else {
-                trackingListener.onClose();
-                reconnectTask.start();
-            }
-
-
-//                    MyWebSocketClient3.this.onDisconnected(0,"Discon",closedByServer);
         }
 
         @Override
         public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
-            System.out.println("WSSSS2:Error -->" + cause.getMessage());
-            if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTracking","onUnexpectedError:" + cause.getMessage());
-            if(websocket.getState() == WebSocketState.CLOSED) {
-                Log.i("MyTracking","onUnexpectedError:reconnectTask");
-                reconnectTask.start();
-            }
+            Log.i("MyTracking","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage());
+            reconnect();
         }
 
+/*
         @Override
         public void onPingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
             super.onPingFrame(websocket, frame);
@@ -250,11 +255,12 @@ public class MyTracking {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             websocket.sendPing("Are you there?");
         }
+*/
     };
 
     public void start() {
         state.getService().startForeground(1976, state.getNotification());
-        receiver = new NetworkStateChangeReceiver(this);
+//        receiver = new NetworkStateChangeReceiver(this);
         if(newTracking) {
             setStatus(TRACKING_CONNECTING);
             trackingListener.onCreating();
@@ -265,14 +271,27 @@ public class MyTracking {
         webSocket.connectAsynchronously();
     }
 
-    public void reconnect() {
+    private void reconnect() {
+        if(TRACKING_DISABLED.equals(getStatus())) return;
+        Log.i("MyTracking","reconnect");
         setStatus(TRACKING_RECONNECTING);
-        webSocket.disconnect();
+        trackingListener.onReconnecting();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new Thread(new ReconnectRunnable()).start();
+            }
+        },RECONNECTION_DELAY*1000);
     }
 
     public void stop() {
         setStatus(TRACKING_DISABLED);
-        receiver.unregister();
+        /*try {
+            receiver.unregister();
+        } catch(Exception e){
+            e.printStackTrace();
+        }*/
         trackingListener.onStop();
         put(REQUEST, REQUEST_LEAVE_TOKEN);
         send();
@@ -280,46 +299,50 @@ public class MyTracking {
         state.getService().stopForeground(true);
     }
 
-    private Thread reconnectTask = new Thread(new Runnable() {
+    private class ReconnectRunnable implements Runnable {
         @Override
         public void run() {
+            if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
-                System.out.println("WAITING...");
-                trackingListener.onReconnecting();
-                Thread.sleep(5000);
-                createWebSocket();
-                webSocket.connectAsynchronously();
-            } catch (InterruptedException e) {
+                Log.i("MyTracking","reconnectRunnable");
+                webSocket = webSocket.recreate().connect();
+            } catch (WebSocketException e) {
+                Log.e("MyTracking","reconnectRunnable:error:" + e.getMessage());
+                reconnect();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    });
-
-    private void put(String key, String value) {
-        if (builder == null) builder = new JSONObject();
-        try {
-            builder.put(key, value);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void put(String key, Boolean value) {
+    public MyTracking put(String key, String value) {
         if (builder == null) builder = new JSONObject();
         try {
             builder.put(key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    private void put(String key, Number value) {
+    public MyTracking put(String key, Boolean value) {
         if (builder == null) builder = new JSONObject();
         try {
             builder.put(key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return this;
+    }
+
+    public MyTracking put(String key, Number value) {
+        if (builder == null) builder = new JSONObject();
+        try {
+            builder.put(key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
     public void send() {
@@ -345,7 +368,7 @@ public class MyTracking {
             switch (webSocket.getState()) {
                 case CREATED:
                     System.out.println("WEBSOCKETSTATE:CONNECT");
-                    webSocket.connectAsynchronously();
+                    //webSocket.connectAsynchronously();
                     break;
                 case CONNECTING:
                     System.out.println("WEBSOCKETSTATE:CONNECTING");
@@ -362,9 +385,7 @@ public class MyTracking {
                     System.out.println("WEBSOCKETSTATE:CLOSED");
 //                    posted = o;
                     reconnect();
-//                    webSocket.recreate().connectAsynchronously();
                     break;
-//                    o.put(REQUEST_TIMESTAMP, new Date().getTime());
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -378,7 +399,7 @@ public class MyTracking {
         }
     }
 
-    public void sendUpdate(JSONObject o) {
+ /*   public void sendUpdate(JSONObject o) {
         try {
             o.put(REQUEST, REQUEST_UPDATE);
         } catch (JSONException e) {
@@ -386,11 +407,13 @@ public class MyTracking {
         }
         send(o);
     }
-
+*/
     public void sendUpdate() {
         if (builder == null) builder = new JSONObject();
         try {
-            builder.put(REQUEST, REQUEST_UPDATE);
+            if(!builder.has(REQUEST)) {
+                builder.put(REQUEST, REQUEST_UPDATE);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -433,10 +456,13 @@ public class MyTracking {
         this.status = status;
     }
 
-    public void setTrackingListener(TrackingHolder.TrackingListenerInterface trackingListener) {
+    public void setTrackingListener(TrackingCallback trackingListener) {
         this.trackingListener = trackingListener;
     }
 
+    public void postMessage(JSONObject json) {
+        trackingListener.onMessage(json);
+    }
 
     public String getToken() {
         return token;

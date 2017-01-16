@@ -33,10 +33,10 @@ import ru.wtg.whereaminow.helpers.SmoothInterpolated;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATED;
 
@@ -233,7 +233,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                                 ArrayList<Integer> save = new ArrayList<>();
                                 for(DistanceMark entry:marks) {
                                     if(entry.firstUser == myUser || entry.secondUser == myUser) {
-                                        save.add(entry.firstUser == myUser ? entry.secondUser.getProperties().getNumber() : entry.firstUser.getProperties().getNumber());
+                                        save.put(entry.firstUser == myUser ? entry.secondUser.getProperties().getNumber() : entry.firstUser.getProperties().getNumber());
                                     }
                                 }
                                 if(save.size() > 0) {

@@ -18,9 +18,9 @@ import ru.wtg.whereaminow.helpers.UserMessage;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
-import static ru.wtg.whereaminow.State.ACTIVITY_PAUSE;
-import static ru.wtg.whereaminow.State.ACTIVITY_RESUME;
-import static ru.wtg.whereaminow.State.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_JOINED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_PRIVATE;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
@@ -36,7 +36,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
  */
 public class MessagesHolder extends AbstractPropertyHolder {
 
-    public static final String TYPE = "messages";
+    public static final String TYPE = "Messages";
 
     public static final String NEW_MESSAGE = "new_message";
     public static final String SEND_MESSAGE = "send_message";

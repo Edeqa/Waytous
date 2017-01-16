@@ -15,8 +15,8 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.UNSELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 
 /**
  * Created 11/18/16.

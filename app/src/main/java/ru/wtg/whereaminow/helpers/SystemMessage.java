@@ -10,7 +10,7 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
  * Created 12/4/16.
  */
 
-public class SnackbarMessage<T> {
+public class SystemMessage<T> {
     private String text;
     private String title;
     private int duration = Snackbar.LENGTH_LONG;
@@ -21,7 +21,7 @@ public class SnackbarMessage<T> {
         return text;
     }
 
-    public SnackbarMessage setText(String message) {
+    public SystemMessage setText(String message) {
         this.text = message;
         return this;
     }
@@ -30,7 +30,7 @@ public class SnackbarMessage<T> {
         return title;
     }
 
-    public SnackbarMessage setAction(String title, SimpleCallback<T> action) {
+    public SystemMessage setAction(String title, SimpleCallback<T> action) {
         this.title = title;
         this.action = action;
         return this;
@@ -40,7 +40,7 @@ public class SnackbarMessage<T> {
         return duration;
     }
 
-    public SnackbarMessage setDuration(int duration) {
+    public SystemMessage setDuration(int duration) {
         this.duration = duration;
         return this;
     }
@@ -49,7 +49,7 @@ public class SnackbarMessage<T> {
         return onClickListener;
     }
 
-    public SnackbarMessage setOnClickListener(SimpleCallback<T> callback) {
+    public SystemMessage setOnClickListener(SimpleCallback<T> callback) {
         this.onClickListener = callback;
         return this;
     }

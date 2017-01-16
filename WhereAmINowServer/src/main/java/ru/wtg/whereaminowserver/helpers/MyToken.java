@@ -1,18 +1,30 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import org.java_websocket.WebSocket;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static com.oracle.jrockit.jfr.Transition.To;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
@@ -131,6 +143,12 @@ public class MyToken {
     }
 
     public void sendToAllFrom(JSONObject o, MyUser fromUser) {
+        ArrayList<MyUser> dest = ooooooo(o, fromUser);
+        System.out.println("SEND:to all:"+o);
+        sendToUsers(o,dest);
+    }
+
+    public ArrayList<MyUser> ooooooo(JSONObject o, MyUser fromUser){
         ArrayList<MyUser> dest = new ArrayList<MyUser>();
         o.put(USER_NUMBER,fromUser.getNumber());
         for(Map.Entry<String,MyUser> x:users.entrySet()){
@@ -138,12 +156,22 @@ public class MyToken {
                 dest.add(x.getValue());
             }
         }
-        System.out.println("SEND:to all:"+o);
-        sendToUsers(o,dest);
+        return dest;
+    }
 
+    public void pushToAllFrom(JSONObject o, MyUser fromUser) {
+        ArrayList<MyUser> dest = ooooooo(o, fromUser);
+        System.out.println("PUSH:to all:"+o);
+        pushToUsers(o,dest);
     }
 
     public void sendToFrom(JSONObject o, int toUserNumber, MyUser fromUser) {
+        ArrayList<MyUser> dest = ooo(o,toUserNumber,fromUser);
+        System.out.println("SEND:to user:"+toUserNumber+":"+o);
+        sendToUsers(o,dest);
+    }
+
+    private ArrayList<MyUser> ooo(JSONObject o, int toUserNumber, MyUser fromUser) {
         ArrayList<MyUser> dest = new ArrayList<MyUser>();
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue().getNumber() == toUserNumber){
@@ -152,8 +180,13 @@ public class MyToken {
             }
         }
         o.put(USER_NUMBER,fromUser.getNumber());
-        System.out.println("SEND:to user:"+toUserNumber+":"+o);
-        sendToUsers(o,dest);
+        return dest;
+    }
+
+    public void pushToFrom(JSONObject o, int toUserNumber, MyUser fromUser) {
+        ArrayList<MyUser> dest = ooo(o,toUserNumber,fromUser);
+        System.out.println("PUSH:to user:"+toUserNumber+":"+o);
+        pushToUsers(o,dest);
     }
 
     public void sendToFrom(JSONObject o, MyUser toUser, MyUser fromUser) {
@@ -171,6 +204,104 @@ public class MyToken {
             if(conn != null && conn.isOpen()){
                 conn.send(o.toString());
             }
+        }
+    }
+
+    public void pushToUsers(JSONObject o, ArrayList<MyUser> users) {
+        JSONObject push = new JSONObject();
+        try {
+            o.put(RESPONSE_TOKEN, id);
+            push.put("data", o);
+//            push.put("to")
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        for(MyUser x:users){
+            sendToFirebase(x, push, "");
+        }
+    }
+
+
+    private void sendToFirebase(MyUser to, JSONObject json, String category) {
+        try {
+//            URL url = new URL("http://fcm.googleapis.com/fcm/send");
+
+            JSONObject o = new JSONObject();
+
+            JSONObject dataSection = new JSONObject(json.toString());
+
+            if("ios".equals(to.getOs())) {
+                JSONObject notificationSection = new JSONObject();
+                notificationSection.put("title", json.getString("title"));
+
+                String body = "";
+                if(json.has("body")) {
+                    try{
+                        LinkedHashMap<String,String> map = (LinkedHashMap<String, String>) json.get("body");
+                        if(map != null && map.size()>0) {
+                            for(Map.Entry<String,String> entry: map.entrySet()){
+                                String value = entry.getValue().replace("[\\r\\n]+", "\\n");
+                                body += entry.getKey() +": "+ value;
+                            }
+                        }
+                    } catch(Exception e){
+                        e.printStackTrace();
+                        body = json.get("body").toString();
+                    }
+                }
+                notificationSection.put("body", body + " ");
+                notificationSection.put("badge", 1);
+                notificationSection.put("click_action", category);
+                dataSection.remove("title");
+                dataSection.remove("body");
+                o.put("notification", notificationSection);
+                o.put("content_available",true);
+            }
+
+            o.put("to", to.getDeviceId());
+            o.put("data", dataSection);
+
+            URL url = new URL("https://android.googleapis.com/gcm/send");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "key=" + new SensitiveData().getFCMServerKey());
+            conn.setRequestMethod("POST");
+
+            conn.setDoOutput(true);
+
+            OutputStream outputStream = conn.getOutputStream();
+            outputStream.write(o.toString().getBytes());
+            outputStream.flush();
+
+            /*DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+            wr.writeBytes(o.toString());
+            wr.flush();*/
+
+
+
+//            InputStream inputStream = conn.getInputStream();
+//            String resp = IOUtils.toString(inputStream);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder resp = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                resp.append(inputLine);
+            }
+            in.close();
+
+            System.out.println("\nSending push FCM to device");
+            System.out.println("--- device name: "+to.getName()+", platform: "+to.getOs());
+            System.out.println("--- token: "+to.getDeviceId().substring(0,30)+"...");
+            System.out.println("--- body: "+o.toString(3));
+            System.out.println("--- response: "+resp.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

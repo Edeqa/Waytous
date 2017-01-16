@@ -1,10 +1,8 @@
 package ru.wtg.whereaminow.holders;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.facebook.CallbackManager;
@@ -24,10 +22,9 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 
-import static ru.wtg.whereaminow.State.ACTIVITY_RESULT;
-import static ru.wtg.whereaminow.State.PREPARE_FAB;
+import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESULT;
+import static ru.wtg.whereaminow.State.EVENTS.PREPARE_FAB;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
-import static ru.wtg.whereaminow.holders.MessagesViewHolder.SHOW_MESSAGES;
 
 /**
  * Created 12/03/16.

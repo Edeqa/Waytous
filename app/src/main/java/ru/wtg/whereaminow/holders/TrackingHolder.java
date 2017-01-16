@@ -3,7 +3,7 @@ package ru.wtg.whereaminow.holders;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.util.Log;
+import android.os.Handler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,30 +11,27 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
-import io.nlopez.smartlocation.location.config.LocationAccuracy;
-import io.nlopez.smartlocation.location.config.LocationParams;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.helpers.InviteSender;
+import ru.wtg.whereaminow.helpers.ShareSender;
 import ru.wtg.whereaminow.helpers.MyTracking;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
+import ru.wtg.whereaminow.interfaces.TrackingCallback;
 
-import static ru.wtg.whereaminow.State.CHANGE_NAME;
-import static ru.wtg.whereaminow.State.MAKE_ACTIVE;
-import static ru.wtg.whereaminow.State.MAKE_INACTIVE;
-import static ru.wtg.whereaminow.State.SELECT_USER;
-import static ru.wtg.whereaminow.State.TOKEN_CREATED;
-import static ru.wtg.whereaminow.State.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.State.TRACKING_CONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_DISABLED;
-import static ru.wtg.whereaminow.State.TRACKING_ERROR;
-import static ru.wtg.whereaminow.State.TRACKING_JOIN;
-import static ru.wtg.whereaminow.State.TRACKING_NEW;
-import static ru.wtg.whereaminow.State.TRACKING_RECONNECTING;
-import static ru.wtg.whereaminow.State.TRACKING_STOP;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
+import static ru.wtg.whereaminow.State.EVENTS.TOKEN_CREATED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ERROR;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
@@ -92,7 +89,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
     @Override
     public boolean onEvent(String event, Object object) throws URISyntaxException {
-        Log.i(TYPE,event+":"+object);
         switch (event) {
             case TRACKING_NEW:
                 tracking = new MyTracking();
@@ -103,10 +99,10 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 break;
             case TRACKING_JOIN:
                 String link  = (String) object;
+
                 if(link != null) {
-                    State.getInstance().setPreference(TRACKING_URI, link);
-                    System.out.println("LINKS:"+State.getInstance().getStringPreference(TRACKING_URI, null)+":"+link);
                     if(!link.equals(State.getInstance().getStringPreference(TRACKING_URI, null)) || State.getInstance().tracking_disabled()) {
+                        State.getInstance().setPreference(TRACKING_URI, link);
                         if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
                             State.getInstance().fire(TRACKING_STOP);
                         }
@@ -115,8 +111,16 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         tracking.setTrackingListener(onTrackingListener);
                         tracking.start();
                     } else if(State.getInstance().tracking_active()){
-                        State.getInstance().fire(TRACKING_ACTIVE);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                State.getInstance().fire(TRACKING_ACTIVE);
+                            }
+                        },0);
+                        return false;
                     }
+                } else {
+//                    State.getInstance().fire(TRACKING_ACTIVE);
                 }
                 break;
             case TRACKING_STOP:
@@ -137,19 +141,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
 //            case TRACKING_DISABLED:
 //                State.getInstance().setPreference(TRACKING_URI, null);
 //                break;
-            case TRACKING_ACTIVE:
-
-                LocationParams.Builder builder = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(1).setInterval(1000);
-                SmartLocation.with(State.getInstance()).location().continuous().config(builder.build()).start(locationUpdatedListener);
-
-                break;
             case TRACKING_DISABLED:
-                try {
-                    SmartLocation.with(State.getInstance()).location().stop();
-
-                } catch (RuntimeException e) {
-                    e.printStackTrace();
-                }
                 State.getInstance().getUsers().removeAllUsersExceptMe();
                 State.getInstance().getMe().fire(SELECT_USER);
 
@@ -158,29 +150,13 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 System.out.println("TRACKING_ERROR");
                 break;
             case TOKEN_CREATED:
-                new InviteSender(context).send(tracking.getTrackingUri());
+                new ShareSender(context).sendLink(tracking.getTrackingUri());
                 break;
         }
         return true;
     }
 
-    public interface TrackingListenerInterface {
-        void onCreating();
-        void onJoining(String tokenId);
-        void onReconnecting();
-        void onAccept();
-//        void onExpire();
-        void onReject(String reason);
-        void onStop();
-
-        void onClose();
-
-//        void onOpen();
-        void onMessage(JSONObject message);
-//        void onError();
-    }
-
-    private TrackingListenerInterface onTrackingListener = new TrackingListenerInterface() {
+    private TrackingCallback onTrackingListener = new TrackingCallback() {
 
         @Override
         public void onCreating() {
@@ -218,6 +194,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         public void onReject(String reason) {
             State.getInstance().setPreference(TRACKING_URI, null);
             State.getInstance().getService().stopForeground(true);
+            State.getInstance().fire(TRACKING_DISABLED);
             State.getInstance().fire(TRACKING_ERROR, reason);
         }
 
@@ -231,23 +208,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
         public void onMessage(final JSONObject o) {
             try {
                 switch (o.getString(RESPONSE_STATUS)) {
-//                    case RESPONSE_STATUS_DISCONNECTED:
-//                        if (TRACKING_CONNECTING.equals(getStatus())) {
-//                            setStatus(TRACKING_ERROR);
-//                            state.fire(TRACKING_ERROR, o.has(RESPONSE_MESSAGE) ? o.getString(RESPONSE_MESSAGE) : null);
-//                        } else if (TRACKING_RECONNECTING.equals(getStatus())) {
-//                            state.fire(TRACKING_RECONNECTING, o.has(RESPONSE_MESSAGE) ? o.getString(RESPONSE_MESSAGE) : null);
-//                        } else if(TRACKING_ACTIVE.equals(getStatus())) {
-//                            setStatus(TRACKING_RECONNECTING);
-//                            state.fire(TRACKING_RECONNECTING, o.has(RESPONSE_MESSAGE) ? o.getString(RESPONSE_MESSAGE) : null);
-//
-//                            webClient.reconnect();
-//
-//
-//                        }
-//
-//                        state.getMe().fire(SELECT_USER);
-//                        break;
                     case RESPONSE_STATUS_ACCEPTED:
                         if (o.has(RESPONSE_TOKEN)) {
                             State.getInstance().fire(TOKEN_CREATED, o.getString(RESPONSE_TOKEN));
@@ -341,27 +301,4 @@ public class TrackingHolder extends AbstractPropertyHolder {
         }
 
     };
-
-    private OnLocationUpdatedListener locationUpdatedListener = new OnLocationUpdatedListener() {
-        @Override
-        public void onLocationUpdated(Location location) {
-            System.out.println("Service:onLocationChanged");
-
-            if(TRACKING_ACTIVE.equals(tracking.getStatus())) {
-                location = Utils.normalizeLocation(State.getInstance().getGpsFilter(), location);
-
-                try {
-                    JSONObject message = Utils.locationToJson(location);
-                    tracking.sendMessage(message);
-
-                    message.put(RESPONSE_STATUS,RESPONSE_STATUS_UPDATED);
-                    message.put(RESPONSE_NUMBER, State.getInstance().getUsers().getMyNumber());
-                    onTrackingListener.onMessage(message);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
-
 }

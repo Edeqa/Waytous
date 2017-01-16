@@ -88,7 +88,7 @@
     <string name="facebook_app_id">1226806074062997</string>
 
     <string name="save_location">Save location</string>
-    <string name="saved_locations">Saved locations</string>
+    <string name="locations">Locations</string>
     <string name="show_track">Show track</string>
     <string name="hide_track">Hide track</string>
     <string name="show_tracks">Show tracks</string>
@@ -118,6 +118,8 @@
     <string name="share_to_facebook">Share to Facebook</string>
     <string name="navigate_on_maps">Navigate on maps</string>
     <string name="change_orientation">Change orientation</string>
+    <string name="share">Share</string>
+    <string name="send">Send</string>
 
 
 </resources>
