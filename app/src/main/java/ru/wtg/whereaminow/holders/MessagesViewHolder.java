@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,12 +12,10 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -39,8 +36,6 @@ import ru.wtg.whereaminow.helpers.UserMessage;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
@@ -54,10 +49,10 @@ import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.USER_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 
 /**
  * Created 11/27/16.
@@ -80,6 +75,140 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private boolean notTransparentWindow;
     private Integer fontSize;
     private AlertDialog dialog;
+    private SmoothInterpolated action;
+    private SimpleCallback<MotionEvent> onTouchListener = new SimpleCallback<MotionEvent>() {
+        @Override
+        public void call(MotionEvent motionEvent) {
+            if(action != null) action.cancel();
+            if(!notTransparentWindow) {
+                switch (motionEvent.getAction()) {
+                    case 0:
+                        drawable.setAlpha(255);
+                        break;
+                    case 1:
+                        action = new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                            @Override
+                            public void call(final Float[] value) {
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    public void run() {
+                                        if(drawable != null)
+                                            drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                                    }
+                                });
+                            }
+                        }).setDuration(320);
+                        action.execute();
+                        break;
+                }
+            }
+        }
+    };
+    private MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            final AlertDialog dialog = new AlertDialog.Builder(context).create();
+            dialog.setTitle("Set welcome message");
+
+            View view = context.getLayoutInflater().inflate(R.layout.dialog_welcome_message, null);
+
+            final EditText etMessage = (EditText) view.findViewById(R.id.et_welcome_message);
+            final CheckBox cbSaveAsDefault = (CheckBox) view.findViewById(R.id.cb_save_as_default);
+
+            etMessage.setText(State.getInstance().getStringPreference(WELCOME_MESSAGE, ""));
+
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if(State.getInstance().tracking_active() && etMessage.getText().toString().length()>0) {
+                        State.getInstance().getTracking().put(REQUEST_WELCOME_MESSAGE, etMessage.getText().toString()).send(REQUEST_WELCOME_MESSAGE);
+                        if(cbSaveAsDefault.isChecked()) {
+                            State.getInstance().setPreference(WELCOME_MESSAGE, etMessage.getText().toString());
+                        }
+                    }
+                }
+            });
+
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    System.out.println("cancel");
+                }
+            });
+
+            dialog.setView(view);
+
+            dialog.show();
+
+            return false;
+        }
+    };
+    private PopupMenu.OnMenuItemClickListener onDialogMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch(menuItem.getItemId()) {
+                case R.id.hide_system_messages:
+                    State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
+                    UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
+//                    adapter.notifyDataSetChanged();
+                    reloadCursor();
+                    break;
+                case R.id.show_system_messages:
+                    UserMessage.getDb().setRestrictions(null,null);
+                    State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
+//                    adapter.notifyDataSetChanged();
+                    reloadCursor();
+                    break;
+                case R.id.transparent:
+                    State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, false);
+                    notTransparentWindow = false;
+                    makeDialogTransparent();
+                    break;
+                case R.id.not_transparent:
+                    State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, true);
+                    notTransparentWindow = true;
+                    makeDialogTransparent();
+                    break;
+                case R.id.smaller_font:
+                    fontSize -= 2;
+                    State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
+                    adapter.setFontSize(fontSize);
+                    adapter.notifyDataSetChanged();
+                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
+                    break;
+                case R.id.bigger_font:
+                    fontSize += 2;
+                    State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
+                    adapter.setFontSize(fontSize);
+                    adapter.notifyDataSetChanged();
+                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
+                    break;
+                case R.id.clear_messages:
+                    AlertDialog dialog = new AlertDialog.Builder(context).create();
+                    dialog.setTitle("Clear all messages?");
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            UserMessage.clear();
+//                            if(adapter != null) adapter.notifyDataSetChanged();
+                            reloadCursor();
+                        }
+                    });
+                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                        }
+                    });
+                    dialog.show();
+                    break;
+            }
+            return false;
+        }
+    };
 
     public MessagesViewHolder(MainActivity context) {
         this.context = context;
@@ -108,7 +237,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             case NEW_MESSAGE:
                 MyUser to = null;
                 if(object instanceof Integer) {
-                    to = State.getInstance().getUsers().getUsers().get((int) object);
+                    to = State.getInstance().getUsers().getUsers().get(object);
                 } else if (object instanceof MyUser) {
                     to = (MyUser) object;
                 }
@@ -200,13 +329,14 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                             State.getInstance().getTracking()
                                     .put(RESPONSE_PRIVATE, toUser.getProperties().getNumber())
                                     .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString())
-                                    .put(REQUEST, REQUEST_PUSH)
-                                    .send();
+                                    .put(REQUEST_PUSH, true)
+                                    .send(REQUEST_MESSAGE);
                             toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
                         } else {
-                            State.getInstance().getTracking().put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString()).put(REQUEST, REQUEST_PUSH).send();
+                            State.getInstance().getTracking().put(USER_MESSAGE, etMessage.getText().toString()).put(REQUEST_PUSH, true).send(REQUEST_MESSAGE);
                             State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
                         }
+                        reloadCursor();
                     } else {
                         new SystemMessage<>().setText("Cannot send message because of network not available.").show();
                     }
@@ -240,10 +370,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     }
 
     public void showMessages() {
-        if(dialog != null && dialog.isShowing()) {
-            return;
-        }
-
         dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
@@ -396,7 +522,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             dialog.getWindow().setBackgroundDrawable(drawable);
         }
 
-
         dialog.show();
 
         Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -435,39 +560,20 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     }
 
     private void reloadCursor(){
-        context.getSupportLoaderManager().getLoader(2).forceLoad();
+        if(context.getSupportLoaderManager().getLoader(2) != null) {
+            context.getSupportLoaderManager().getLoader(2).forceLoad();
+        }
     }
 
-    private SmoothInterpolated action;
+    @Override
+    public ArrayList<IntroRule> getIntro() {
 
-    private SimpleCallback<MotionEvent> onTouchListener = new SimpleCallback<MotionEvent>() {
-        @Override
-        public void call(MotionEvent motionEvent) {
-            if(action != null) action.cancel();
-            if(!notTransparentWindow) {
-                switch (motionEvent.getAction()) {
-                    case 0:
-                        drawable.setAlpha(255);
-                        break;
-                    case 1:
-                        action = new SmoothInterpolated(new SimpleCallback<Float[]>() {
-                            @Override
-                            public void call(final Float[] value) {
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    public void run() {
-                                        if(drawable != null)
-                                            drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
-                                    }
-                                });
-                            }
-                        }).setDuration(320);
-                        action.execute();
-                        break;
-                }
-            }
-        }
-    };
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.string.new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
+//        rules.put(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
 
+        return rules;
+    }
 
     private class MessagesView extends AbstractView {
 
@@ -544,124 +650,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             }
             return true;
         }
-    }
-
-    private MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            final AlertDialog dialog = new AlertDialog.Builder(context).create();
-            dialog.setTitle("Set welcome message");
-
-            View view = context.getLayoutInflater().inflate(R.layout.dialog_welcome_message, null);
-
-            final EditText etMessage = (EditText) view.findViewById(R.id.et_welcome_message);
-            final CheckBox cbSaveAsDefault = (CheckBox) view.findViewById(R.id.cb_save_as_default);
-
-            etMessage.setText(State.getInstance().getStringPreference(WELCOME_MESSAGE, ""));
-
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    if(State.getInstance().tracking_active() && etMessage.getText().toString().length()>0) {
-                        State.getInstance().getTracking().sendMessage(RESPONSE_WELCOME_MESSAGE, etMessage.getText().toString());
-                        if(cbSaveAsDefault.isChecked()) {
-                            State.getInstance().setPreference(WELCOME_MESSAGE, etMessage.getText().toString());
-                        }
-                    }
-                }
-            });
-
-            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    System.out.println("cancel");
-                }
-            });
-
-            dialog.setView(view);
-
-            dialog.show();
-
-            return false;
-        }
-    };
-
-    private PopupMenu.OnMenuItemClickListener onDialogMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            switch(menuItem.getItemId()) {
-                case R.id.hide_system_messages:
-                    State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
-                    UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
-//                    adapter.notifyDataSetChanged();
-                    reloadCursor();
-                    break;
-                case R.id.show_system_messages:
-                    UserMessage.getDb().setRestrictions(null,null);
-                    State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-//                    adapter.notifyDataSetChanged();
-                    reloadCursor();
-                    break;
-                case R.id.transparent:
-                    State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, false);
-                    notTransparentWindow = false;
-                    makeDialogTransparent();
-                    break;
-                case R.id.not_transparent:
-                    State.getInstance().setPreference(PREFERENCE_NOT_TRANSPARENT, true);
-                    notTransparentWindow = true;
-                    makeDialogTransparent();
-                    break;
-                case R.id.smaller_font:
-                    fontSize -= 2;
-                    State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
-                    adapter.setFontSize(fontSize);
-                    adapter.notifyDataSetChanged();
-                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
-                    break;
-                case R.id.bigger_font:
-                    fontSize += 2;
-                    State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
-                    adapter.setFontSize(fontSize);
-                    adapter.notifyDataSetChanged();
-                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
-                    break;
-                case R.id.clear_messages:
-                    AlertDialog dialog = new AlertDialog.Builder(context).create();
-                    dialog.setTitle("Clear all messages?");
-                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            UserMessage.clear();
-//                            if(adapter != null) adapter.notifyDataSetChanged();
-                            reloadCursor();
-                        }
-                    });
-                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                        }
-                    });
-                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                        }
-                    });
-                    dialog.show();
-                    break;
-            }
-            return false;
-        }
-    };
-
-    @Override
-    public ArrayList<IntroRule> getIntro() {
-
-        ArrayList<IntroRule> rules = new ArrayList<>();
-        rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.string.new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
-//        rules.put(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
-
-        return rules;
     }
 
 }

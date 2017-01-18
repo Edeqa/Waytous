@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.v7.app.NotificationCompat;
 
 import java.util.Date;
@@ -41,14 +42,21 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public static final String SHOW_CUSTOM_NOTIFICATION = "show_custom_notification";
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
 
-    private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 60;
+    private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
+    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 10;
 
     private final State state;
     private android.support.v4.app.NotificationCompat.Builder notification;
+    private Handler notificationClearHandler;
     private boolean showNotifications = true;
     private long lastCloseNotifyTime = 0;
     private long lastAwayNotifyTime = 0;
-
+    private Runnable notificationClearRunnable = new Runnable() {
+        @Override
+        public void run() {
+            update(null, DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+        }
+    };
 
     public NotificationHolder(State state) {
         this.state = state;
@@ -71,6 +79,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
         state.setNotification(notification.build());
 
+        notificationClearHandler = new Handler();
     }
 
     @Override
@@ -174,6 +183,9 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
         NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1976, notification.build());
+
+        notificationClearHandler.removeCallbacks(notificationClearRunnable);
+        notificationClearHandler.postDelayed(notificationClearRunnable, DELAY_BEFORE_CLEAR_NOTIFICATION * 1000);
     }
 
     public class NotificationUpdate extends AbstractProperty {

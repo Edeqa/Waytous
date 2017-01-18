@@ -25,6 +25,7 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.GpsHolder;
+import ru.wtg.whereaminow.holders.LoggerHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
@@ -37,60 +38,14 @@ import static ru.wtg.whereaminow.ExceptionActivity.EXCEPTION;
 public class State extends MultiDexApplication {
 
     public static final int API = 1;
-
-    public static class EVENTS {
-        public static final String SELECT_USER = "select";
-        public static final String SELECT_SINGLE_USER = "select_single";
-        public static final String UNSELECT_USER = "unselect";
-        public static final String MAKE_ACTIVE = "make_active";
-        public static final String MAKE_INACTIVE = "make_inactive";
-        public static final String CHANGE_NAME = "change_name";
-        public static final String CHANGE_NUMBER = "change_number";
-        public static final String CHANGE_COLOR = "change_color";
-        public static final String PUSH_MESSAGE = "push_message";
-        public static final String SYSTEM_MESSAGE = "system_message";
-
-        public static final String CREATE_CONTEXT_MENU = "create_context_menu";
-        public static final String CREATE_OPTIONS_MENU = "create_options_menu";
-        public static final String PREPARE_OPTIONS_MENU = "prepare_options_menu";
-        public static final String PREPARE_FAB = "prepare_fab";
-        public static final String CREATE_DRAWER = "create_drawer";
-        public static final String PREPARE_DRAWER = "prepare_drawer";
-
-        public static final String ACTIVITY_CREATE = "activity_create";
-        public static final String ACTIVITY_PAUSE = "activity_pause";
-        public static final String ACTIVITY_RESUME = "activity_resume";
-        public static final String ACTIVITY_DESTROY = "activity_destroy";
-        public static final String ACTIVITY_RESULT = "activity_result";
-
-        public static final String TRACKING_NEW = "tracking_new";
-        public static final String TRACKING_JOIN = "tracking_join";
-        public static final String TRACKING_STOP = "tracking_stop";
-        public static final String TRACKING_DISABLED = "tracking_disabled";
-        public static final String TRACKING_CONNECTING = "tracking_connecting";
-        public static final String TRACKING_ACTIVE = "tracking_active";
-        public static final String TRACKING_RECONNECTING = "tracking_reconnecting";
-        public static final String TRACKING_EXPIRED = "tracking_expired";
-        public static final String TRACKING_ERROR = "tracking_error";
-        public static final String TOKEN_CREATED = "token_created";
-
-        public static final String MOVING_CLOSE_TO = "moving_close_to";
-        public static final String MOVING_AWAY_FROM = "moving_away_from";
-    }
-
     public static final int TRACKING_GPS_REJECTED = 6;
-
-
-    private MyTracking tracking;
-
     private static State instance = null;
+    private MyTracking tracking;
     private WhereAmINowService service;
-
     private HashMap<String, EntityHolder> entityHolders = new LinkedHashMap<>();
     private HashMap<String, EntityHolder> userEntityHolders = new LinkedHashMap<>();
     private HashMap<String, AbstractViewHolder> viewHolders = new LinkedHashMap<>();
     private HashMap<String, AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
-
     private SharedPreferences sharedPreferences;
     private MyUsers users;
     private MyUser me;
@@ -102,6 +57,19 @@ public class State extends MultiDexApplication {
     private boolean gpsAccessAllowed;
     private boolean gpsAccessRequested;
     private boolean serviceBound;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name, final IBinder binder) {
+            serviceBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            serviceBound = false;
+        }
+    };
+
+    public static State getInstance() {
+        return instance ;
+    }
 
     @Override
     public void onCreate() {
@@ -112,7 +80,7 @@ public class State extends MultiDexApplication {
 
         registerEntityHolder(new PropertiesHolder(this)); // ---> need to be first!
         registerEntityHolder(new TrackingHolder(this)); // ---> need to be second!
-//        registerEntityHolder(new LoggerHolder());
+        registerEntityHolder(new LoggerHolder());
         registerEntityHolder(new MessagesHolder(this)); // ---> need to be before NotificationHolder
         registerEntityHolder(new NotificationHolder(this)); // ---> need to be after MessagesHolder
         registerEntityHolder(new GpsHolder(this));
@@ -151,10 +119,6 @@ public class State extends MultiDexApplication {
         Intent intent = new Intent(State.this, WhereAmINowService.class);
         if (!serviceBound) bindService(intent, serviceConnection, BIND_AUTO_CREATE);
 
-    }
-
-    public static State getInstance() {
-        return instance ;
     }
 
     @Override
@@ -220,35 +184,33 @@ public class State extends MultiDexApplication {
         return deviceId;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public String getToken() {
         return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public MyUsers getUsers() {
         return users;
     }
 
-    public void setNotification(Notification notification) {
-        this.notification = notification;
-    }
-
     public Notification getNotification() {
         return notification;
     }
 
-
-    public void setGpsAccessRequested(boolean gpsAccessRequested) {
-        this.gpsAccessRequested = gpsAccessRequested;
+    public void setNotification(Notification notification) {
+        this.notification = notification;
     }
 
     public boolean isGpsAccessRequested() {
         return gpsAccessRequested;
     }
 
+    public void setGpsAccessRequested(boolean gpsAccessRequested) {
+        this.gpsAccessRequested = gpsAccessRequested;
+    }
 
     public String getStringPreference(String key, String defaultValue){
         return sharedPreferences.getString(key,defaultValue);
@@ -363,15 +325,33 @@ public class State extends MultiDexApplication {
         return null;
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName name, final IBinder binder) {
-            serviceBound = true;
+    public void fire(final String EVENT, final Object object){
+        continueFiring.set(true);
+        for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
+            if(entry.getValue() != null){
+                try {
+                    if(!continueFiring.get()) break;
+                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
-        public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
-        }
-    };
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
+                    if(entry.getValue() != null){
+                        try {
+                            if(!continueFiring.get()) break;
+                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+    }
 
  /*   private void updateEvents(){
         entityEvents.clear();
@@ -401,34 +381,6 @@ public class State extends MultiDexApplication {
         System.out.println("VIEWACTIONS:"+ viewEvents);
         System.out.println("USERVIEWACTIONS:"+ userViewEvents);
     }*/
-
-    public void fire(final String EVENT, final Object object){
-        continueFiring.set(true);
-        for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
-            if(entry.getValue() != null){
-                try {
-                    if(!continueFiring.get()) break;
-                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
-                    if(entry.getValue() != null){
-                        try {
-                            if(!continueFiring.get()) break;
-                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     public void fire(final String EVENT){
         switch(EVENT){
@@ -469,6 +421,47 @@ public class State extends MultiDexApplication {
 
     public void setTracking(MyTracking tracking) {
         this.tracking = tracking;
+    }
+
+    public static class EVENTS {
+        public static final String SELECT_USER = "select";
+        public static final String SELECT_SINGLE_USER = "select_single";
+        public static final String UNSELECT_USER = "unselect";
+        public static final String MAKE_ACTIVE = "make_active";
+        public static final String MAKE_INACTIVE = "make_inactive";
+        public static final String CHANGE_NAME = "change_name";
+        public static final String CHANGE_NUMBER = "change_number";
+        public static final String CHANGE_COLOR = "change_color";
+        public static final String PUSH_MESSAGE = "push_message";
+        public static final String SYSTEM_MESSAGE = "system_message";
+
+        public static final String CREATE_CONTEXT_MENU = "create_context_menu";
+        public static final String CREATE_OPTIONS_MENU = "create_options_menu";
+        public static final String PREPARE_OPTIONS_MENU = "prepare_options_menu";
+        public static final String PREPARE_FAB = "prepare_fab";
+        public static final String CREATE_DRAWER = "create_drawer";
+        public static final String PREPARE_DRAWER = "prepare_drawer";
+        public static final String DROPPED_TO_USER = "dropped_to_user";
+
+        public static final String ACTIVITY_CREATE = "activity_create";
+        public static final String ACTIVITY_PAUSE = "activity_pause";
+        public static final String ACTIVITY_RESUME = "activity_resume";
+        public static final String ACTIVITY_DESTROY = "activity_destroy";
+        public static final String ACTIVITY_RESULT = "activity_result";
+
+        public static final String TRACKING_NEW = "tracking_new";
+        public static final String TRACKING_JOIN = "tracking_join";
+        public static final String TRACKING_STOP = "tracking_stop";
+        public static final String TRACKING_DISABLED = "tracking_disabled";
+        public static final String TRACKING_CONNECTING = "tracking_connecting";
+        public static final String TRACKING_ACTIVE = "tracking_active";
+        public static final String TRACKING_RECONNECTING = "tracking_reconnecting";
+        public static final String TRACKING_EXPIRED = "tracking_expired";
+        public static final String TRACKING_ERROR = "tracking_error";
+        public static final String TOKEN_CREATED = "token_created";
+
+        public static final String MOVING_CLOSE_TO = "moving_close_to";
+        public static final String MOVING_AWAY_FROM = "moving_away_from";
     }
 
 }

@@ -10,9 +10,12 @@ import java.util.Map;
 
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.interfaces.EntityHolder;
 
 import static ru.wtg.whereaminow.State.EVENTS.PUSH_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 
@@ -33,14 +36,14 @@ public class NotificationService extends FirebaseMessagingService {
 
 //        State.getInstance().fire(PUSH_MESSAGE, new PushMessage(remoteMessage));
 
-        System.out.println("PUSH:senttime:"+remoteMessage.getSentTime());
-        System.out.println("PUSH:collapsekey:"+remoteMessage.getCollapseKey());
-        System.out.println("PUSH:from:"+remoteMessage.getFrom());
-        System.out.println("PUSH:messageid:"+remoteMessage.getMessageId());
-        System.out.println("PUSH:messagetype:"+remoteMessage.getMessageType());
-        System.out.println("PUSH:to:"+remoteMessage.getTo());
-        System.out.println("PUSH:ttl:"+remoteMessage.getTtl());
-        System.out.println("PUSH:data:"+remoteMessage.getData());
+//        System.out.println("PUSH:senttime:"+remoteMessage.getSentTime());
+//        System.out.println("PUSH:collapsekey:"+remoteMessage.getCollapseKey());
+//        System.out.println("PUSH:from:"+remoteMessage.getFrom());
+//        System.out.println("PUSH:messageid:"+remoteMessage.getMessageId());
+//        System.out.println("PUSH:messagetype:"+remoteMessage.getMessageType());
+//        System.out.println("PUSH:to:"+remoteMessage.getTo());
+//        System.out.println("PUSH:ttl:"+remoteMessage.getTtl());
+//        System.out.println("PUSH:data:"+remoteMessage.getData());
 
         Map<String, String> data = remoteMessage.getData();
         if(State.getInstance().tracking_disabled()) return;
@@ -55,7 +58,14 @@ public class NotificationService extends FirebaseMessagingService {
                         return;
                     }
                     json.remove(RESPONSE_TOKEN);
-                    State.getInstance().getTracking().postMessage(json);
+//                    State.getInstance().getTracking().postMessage(json);
+
+                    String responseStatus = json.getString(RESPONSE_STATUS);
+                    json.put(REQUEST_PUSH, true);
+                    EntityHolder holder = State.getInstance().getEntityHolder(responseStatus);
+                    if(holder != null) {
+                        holder.perform(json);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -28,6 +28,7 @@ import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHANGE_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**
@@ -37,23 +38,20 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 public class PropertiesHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = "properties";
-
-    private HashMap<String, Serializable> external = new HashMap<>();
     private static final String SELECTED = "selected";
     private static final String IMAGE_RESOURCE = "image_resource";
-
     private static final int DISTANCE_MOVING_CLOSE = 50;
     private static final int DISTANCE_MOVING_AWAY = 100;
-
     private final SharedPreferences sharedPreferences;
+    private HashMap<String, Serializable> external = new HashMap<>();
+
+    public PropertiesHolder(Context context){
+        sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE);
+    }
 
     @Override
     public String getType(){
         return TYPE;
-    }
-
-    public PropertiesHolder(Context context){
-        sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE);
     }
 
     @Override
@@ -231,7 +229,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                         State.getInstance().setPreference("my_name", name);
                         if(State.getInstance().getTracking() != null){
                             if(name == null) name = "";
-                            State.getInstance().getTracking().sendMessage(USER_NAME,name);
+                            State.getInstance().getTracking().put(USER_NAME,name).send(REQUEST_CHANGE_NAME);
                         }
                     }
                     break;
@@ -307,6 +305,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         }
 
         private void checkDistance(MyUser me, MyUser user) {
+            if(me.getLocation() == null || user.getLocation() == null) return;
             try {
                 double distance = SphericalUtil.computeDistanceBetween(Utils.latLng(me.getLocation()), Utils.latLng(user.getLocation()));
                 if (distance <= DISTANCE_MOVING_CLOSE && user.getProperties().previousDistance > DISTANCE_MOVING_CLOSE) {

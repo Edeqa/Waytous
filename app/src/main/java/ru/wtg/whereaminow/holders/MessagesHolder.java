@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.NotificationCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -14,6 +17,7 @@ import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.UserMessage;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
@@ -27,16 +31,20 @@ import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_JOINED;
 import static ru.wtg.whereaminow.holders.MessagesViewHolder.SHOW_MESSAGES;
 import static ru.wtg.whereaminow.holders.NotificationHolder.SHOW_CUSTOM_NOTIFICATION;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
  * Created 11/27/16.
  */
 public class MessagesHolder extends AbstractPropertyHolder {
 
-    public static final String TYPE = "Messages";
+    public static final String TYPE = REQUEST_MESSAGE;
 
     public static final String NEW_MESSAGE = "new_message";
     public static final String SEND_MESSAGE = "send_message";
@@ -92,6 +100,23 @@ public class MessagesHolder extends AbstractPropertyHolder {
         return new Messages(myUser);
     }
 
+    @Override
+    public void perform(final JSONObject o) throws JSONException {
+        if (o.has(USER_MESSAGE)) {
+            int number = o.getInt(USER_NUMBER);
+            final String text = o.getString(USER_MESSAGE);
+            State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+                @Override
+                public void call(Integer number, MyUser myUser) {
+                    if(o.has(RESPONSE_PRIVATE)){
+                        myUser.fire(MessagesHolder.PRIVATE_MESSAGE, text);
+                    } else {
+                        myUser.fire(MessagesHolder.USER_MESSAGE, text);
+                    }
+                }
+            });
+        }
+    }
 
     @Override
     public boolean onEvent(String event, Object object) {
@@ -211,7 +236,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                     if(State.getInstance().tracking_active() && myUser.getProperties().getNumber() == 0) {
                         text = State.getInstance().getStringPreference(WELCOME_MESSAGE, "");
                         if(text.length()>0) {
-                            State.getInstance().getTracking().sendMessage(RESPONSE_WELCOME_MESSAGE, text);
+                            State.getInstance().getTracking().put(REQUEST_WELCOME_MESSAGE, text).send(REQUEST_WELCOME_MESSAGE);
                         }
                     }
                     break;

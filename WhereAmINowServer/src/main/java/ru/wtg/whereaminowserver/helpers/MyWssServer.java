@@ -8,14 +8,19 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
@@ -30,7 +35,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
@@ -41,13 +45,10 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 
 /**
  * Created 10/5/16.
@@ -59,9 +60,10 @@ public class MyWssServer extends WebSocketServer {
     public HashMap<String, MyToken> ipToToken;
     public HashMap<String, MyUser> ipToUser;
     public HashMap<String, CheckReq> ipToCheck;
+    private HashMap<String,RequestHolder> requestHolders;
 
     public MyWssServer(int port) throws UnknownHostException {
-        super(new InetSocketAddress(port));
+        this(new InetSocketAddress(port));
         tokens = new HashMap<String, MyToken>();
         ipToToken = new HashMap<String, MyToken>();
         ipToUser = new HashMap<String, MyUser>();
@@ -71,9 +73,38 @@ public class MyWssServer extends WebSocketServer {
 
     public MyWssServer(InetSocketAddress address) {
         super(address);
+
+        requestHolders = new LinkedHashMap<String, RequestHolder>();
+
+        LinkedList<String> classes = new LinkedList<String>();
+        classes.add("TrackingRequestHolder");
+        classes.add("MessageRequestHolder");
+        classes.add("ChangeNameRequestHolder");
+        classes.add("WelcomeMessageRequestHolder");
+        classes.add("LeaveRequestHolder");
+        classes.add("SavedLocationRequestHolder");
+
+
+        for(String s:classes){
+            try {
+                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders."+s);
+                Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
+                registerRequestHolder(ctor.newInstance(this));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
- /*   @Override
+    public void registerRequestHolder(RequestHolder holder) {
+        if(holder.getType() == null) return;
+//        holder.init();
+        requestHolders.put(holder.getType(), holder);
+    }
+
+
+    /*   @Override
     public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
         System.out.println("HANDSHAKE:"+conn+":"+draft+":"+request);
 
@@ -274,11 +305,11 @@ public class MyWssServer extends WebSocketServer {
                     if (ipToCheck.containsKey(ip)) {
                         CheckReq check = ipToCheck.get(ip);
 
-                        System.out.println("CHECK:found token: [name=" + check.name + ", token=" + check.token.getId() + ", control=" + check.control +"]");
+                        System.out.println("CHECK:found token: [name=" + check.name + ", token=" + check.token.getId() + ", control=" + check.control + "]");
 
                         MyUser user = null;
                         for (Map.Entry<String, MyUser> x : check.token.users.entrySet()) {
-                            System.out.println("CHECK:looking for device: [control=" + check.control + ", deviceId=" + x.getValue().getDeviceId().substring(0,20) + "..., calculatedHash=" + x.getValue().calculateHash(check.control)+"]");
+                            System.out.println("CHECK:looking for device: [control=" + check.control + ", deviceId=" + x.getValue().getDeviceId().substring(0, 20) + "..., calculatedHash=" + x.getValue().calculateHash(check.control) + "]");
                             if (hash.equals(x.getValue().calculateHash(check.control))) {
                                 user = x.getValue();
                                 break;
@@ -335,55 +366,37 @@ public class MyWssServer extends WebSocketServer {
                 System.out.println("CHECK:response:" + response);
                 Utils.pause(2);//FIXME remove pause
                 conn.send(response.toString());
-            } else if (REQUEST_UPDATE.equals(req) || REQUEST_PUSH.equals(req)) {
+            } else {
                 if (ipToToken.containsKey(ip)) {
                     MyToken token = ipToToken.get(ip);
                     MyUser user = ipToUser.get(ip);
 
-//                System.out.println("UPDATE:token and user found:" + token.getId() + ":" + user);
+                    if (requestHolders.containsKey(req)) {
+                        JSONObject o = new JSONObject();
+                        o.put(RESPONSE_STATUS, req);
 
-                    JSONObject o = new JSONObject();
-                    if (request.has(USER_NAME)) {
-                        o.put(USER_NAME, request.getString(USER_NAME));
-                        user.setName(request.getString(USER_NAME));
-                        token.setChanged();
-                        System.out.println("UPDATE:name changed to:" + request.getString(USER_NAME));
-                    }
-                    if (request.has(USER_PROVIDER)) {
-                        user.addPosition(request);
-                        token.setChanged();
-                        o = user.getPosition().toJSON();
-                        System.out.println("UPDATE:location changed:" + o);
-                    }
-                    if (request.has(USER_MESSAGE)) {
-                        o.put(USER_MESSAGE, request.getString(USER_MESSAGE));
-                        System.out.println("UPDATE:user message:" + request.getString(USER_MESSAGE));
-                    }
-                    o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                    if (request.has(RESPONSE_PRIVATE)) {
-                        o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
-                        if(REQUEST_UPDATE.equals(req)) {
-                            token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
-                        } else if(REQUEST_PUSH.equals(req)) {
-                            token.pushToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
-                        }
-                        System.out.println("UPDATE:private message to user:" + request.getInt(RESPONSE_PRIVATE));
-                    } else if (request.has(RESPONSE_WELCOME_MESSAGE)) {
-                        String text = request.getString(RESPONSE_WELCOME_MESSAGE);
-                        if (user.getNumber() == 0 && text != null) {
-                            token.setWelcomeMessage(text);
-                        }
-                        System.out.println("UPDATE:welcome message:" + request.getString(RESPONSE_WELCOME_MESSAGE));
-                    } else if (o.length() <= 1) {
-                        System.out.println("UPDATE:ping");
-                    } else {
-                        if(REQUEST_UPDATE.equals(req)) {
-                            token.sendToAllFrom(o, user);
-                        } else if(REQUEST_PUSH.equals(req)) {
-                            token.pushToAllFrom(o, user);
-                        }
+                        if(requestHolders.get(req).perform(token, user, request, o)) {
+                            token.setChanged();
 
-//                    System.out.println("UPDATE:send update:"+o);
+                            boolean push = false;
+                            if (request.has(REQUEST_PUSH)){
+                                push = request.getBoolean(REQUEST_PUSH);
+                            }
+                            if (request.has(RESPONSE_PRIVATE)) {
+                                o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
+                                if(push){
+                                    token.pushToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                                } else {
+                                    token.sendToFrom(o, request.getInt(RESPONSE_PRIVATE), user);
+                                }
+                            } else {
+                                if(push) {
+                                    token.pushToAllFrom(o, user);
+                                } else {
+                                    token.sendToAllFrom(o, user);
+                                }
+                            }
+                        }
                     }
 
                 } else {
@@ -476,10 +489,10 @@ public class MyWssServer extends WebSocketServer {
 
     public class CheckReq {
 
+        public long timestamp;
         MyToken token;
         String control;
         String name;
-        public long timestamp;
 
         public CheckReq() {
             timestamp = new Date().getTime();

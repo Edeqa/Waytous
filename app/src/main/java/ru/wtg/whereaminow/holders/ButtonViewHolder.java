@@ -1,12 +1,14 @@
 package ru.wtg.whereaminow.holders;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,10 +26,12 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
+import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
+import static ru.wtg.whereaminow.State.EVENTS.DROPPED_TO_USER;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
@@ -35,6 +39,7 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_ZOOM;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
  * Created 11/18/16.
@@ -117,11 +122,91 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         layout.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(TRACKING_ACTIVE).setId("button_intro").setView(layout).setTitle("Top buttons").setDescription("Here are the buttons of group members. Touch any button to switch to this member or long touch for context menu."));
+
+        return rules;
+    }
+
     class ButtonView extends AbstractView {
         private LinearLayout button;
         private TextView title;
         private MyUser myUser;
+        View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+//                context.openContextMenu(view);
+
+                openContextMenu(view);
+
+                ClipData data = ClipData.newPlainText(USER_NUMBER, ""+myUser.getProperties().getNumber());
+                View.DragShadowBuilder shadow = new View.DragShadowBuilder(view);
+                view.startDrag(data, shadow, null, 0);
+//                PopupMenu popup = new PopupMenu(context, view);
+//                context.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
+//
+//                myUser.fire(CREATE_CONTEXT_MENU, popup.getMenu());
+//                popup.show();
+
+
+                return true;
+            }
+        };
+        View.OnDragListener onDropListener = new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+
+                final int action = dragEvent.getAction();
+                switch(action) {
+
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        ClipData data = dragEvent.getClipData();
+                        int number = Integer.valueOf(String.valueOf(data.getItemAt(0).getText()));
+                        State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                            @Override
+                            public void call(Integer number, MyUser user) {
+                                user.fire(DROPPED_TO_USER, myUser);
+                            }
+                        });
+                        return true;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        return true;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        };
         private volatile boolean clicked;
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(clicked) {
+                    myUser.fire(CAMERA_ZOOM);
+                    clicked = false;
+                } else {
+                    myUser.fire(SELECT_SINGLE_USER);
+                    clicked = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            clicked = false;
+                        }
+                    }, 500);
+
+                    openContextMenu(view);
+                }
+            }
+        };
 
         ButtonView(MyUser myUser){
             this.myUser = myUser;
@@ -141,6 +226,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
             button.setOnClickListener(onClickListener);
             button.setOnLongClickListener(onLongClickListener);
+            button.setOnDragListener(onDropListener);
             context.registerForContextMenu(button);
 
             int index = myUser.getProperties().getNumber();
@@ -195,27 +281,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             return true;
         }
 
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(clicked) {
-                    myUser.fire(CAMERA_ZOOM);
-                    clicked = false;
-                } else {
-                    myUser.fire(SELECT_SINGLE_USER);
-                    clicked = true;
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            clicked = false;
-                        }
-                    }, 500);
-
-                    openContextMenu(view);
-                }
-            }
-        };
-
         private void openContextMenu(View view) {
 
             final PopupMenu popup = new PopupMenu(context, view);
@@ -263,33 +328,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         }
 
-        View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-//                context.openContextMenu(view);
-
-                openContextMenu(view);
-
-//                PopupMenu popup = new PopupMenu(context, view);
-//                context.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
-//
-//                myUser.fire(CREATE_CONTEXT_MENU, popup.getMenu());
-//                popup.show();
-
-
-                return true;
-            }
-        };
-
-     }
-
-    @Override
-    public ArrayList<IntroRule> getIntro() {
-
-        ArrayList<IntroRule> rules = new ArrayList<>();
-        rules.add(new IntroRule().setEvent(TRACKING_ACTIVE).setId("button_intro").setView(layout).setTitle("Top buttons").setDescription("Here are the buttons of group members. Touch any button to switch to this member or long touch for context menu."));
-
-        return rules;
     }
 
 

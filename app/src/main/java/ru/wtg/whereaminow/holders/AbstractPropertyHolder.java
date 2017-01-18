@@ -1,5 +1,8 @@
 package ru.wtg.whereaminow.holders;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 
 import ru.wtg.whereaminow.interfaces.EntityHolder;
@@ -27,5 +30,10 @@ abstract class AbstractPropertyHolder implements EntityHolder<AbstractProperty> 
     @Override
     public boolean dependsOnEvent() {
         return false;
+    }
+
+    @Override
+    public void perform(JSONObject o) throws JSONException {
+
     }
 }
