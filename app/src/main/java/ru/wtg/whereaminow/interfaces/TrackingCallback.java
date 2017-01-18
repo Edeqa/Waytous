@@ -12,7 +12,7 @@ public interface TrackingCallback {
 
     void onReconnecting();
 
-    void onAccept();
+    void onAccept(JSONObject o);
 
     //        void onExpire();
     void onReject(String reason);

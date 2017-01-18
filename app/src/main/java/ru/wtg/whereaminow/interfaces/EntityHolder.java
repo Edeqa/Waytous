@@ -1,5 +1,8 @@
 package ru.wtg.whereaminow.interfaces;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 
 import ru.wtg.whereaminow.helpers.MyUser;
@@ -20,4 +23,5 @@ public interface EntityHolder<T extends Entity> {
 
     boolean onEvent(String event, Object object) throws URISyntaxException;
 
+    void perform(JSONObject o) throws JSONException;
 }

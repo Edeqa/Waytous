@@ -39,7 +39,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_HASH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_JOIN_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_LEAVE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_LEAVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_NEW_TOKEN;
@@ -70,59 +70,17 @@ public class MyTracking {
     private final static int RECONNECTION_DELAY = 5;
 //    private final static int PING_INTERVAL = 60;
 
-    private NetworkStateChangeReceiver receiver;
+//    private NetworkStateChangeReceiver receiver;
     private State state;
     private URI serverUri;
     private String status = TRACKING_DISABLED;
     private TrackingCallback trackingListener;
     private WebSocket webSocket;
     private JSONObject builder;
-    private JSONObject posted;
+//    private JSONObject posted;
     private String token;
     private boolean newTracking;
     private Handler handler = new Handler(Looper.myLooper());
-
-    public MyTracking() {
-        this(WSS_SERVER_HOST, true);
-    }
-
-    public MyTracking(String host) {
-        this(host, false);
-    }
-
-    private MyTracking(String stringUri, final boolean isNewTracking) {
-        Log.i("MyTracking","create:" + stringUri);
-
-        try {
-            URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + WSS_PORT + uri.getPath());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        this.newTracking = isNewTracking;
-        state = State.getInstance();
-
-        createWebSocket();
-    }
-
-    public void createWebSocket() {
-        try {
-
-            WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
-            SSLContext context = SSLContext.getDefault();//NaiveSSLContext.getInstance("TLS");
-            factory.setSSLContext(context);
-            webSocket = factory.createSocket(serverUri.toString());
-//            webSocket.setPingInterval(PING_INTERVAL*1000);
-
-            Log.i("MyTracking","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
-
-            webSocket.addListener(webSocketListener);
-        } catch (NoSuchAlgorithmException | IOException e1) {
-            e1.printStackTrace();
-        }
-    }
-
     private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
         @Override
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
@@ -178,12 +136,9 @@ public class MyTracking {
                         newTracking = false;
                         setStatus(TRACKING_ACTIVE);
                         if (o.has(RESPONSE_TOKEN)) {
-                        System.out.println("NEWTOKENACCEPTED:"+o.getString(RESPONSE_TOKEN));
                             setToken(o.getString(RESPONSE_TOKEN));
                         }
-                        trackingListener.onAccept();
-                        trackingListener.onMessage(o);
-
+                        trackingListener.onAccept(o);
                         break;
                     case RESPONSE_STATUS_ERROR:
                         setStatus(TRACKING_DISABLED);
@@ -258,6 +213,43 @@ public class MyTracking {
 */
     };
 
+    public MyTracking() {
+        this(WSS_SERVER_HOST, true);
+    }
+
+    public MyTracking(String host) {
+        this(host, false);
+    }
+
+    private MyTracking(String stringUri, final boolean isNewTracking) {
+        Log.i("MyTracking","create:" + stringUri);
+
+        try {
+            URI uri = new URI(stringUri);
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + WSS_PORT + uri.getPath());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        this.newTracking = isNewTracking;
+        state = State.getInstance();
+
+        try {
+
+            WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
+            SSLContext context = SSLContext.getDefault();//NaiveSSLContext.getInstance("TLS");
+            factory.setSSLContext(context);
+            webSocket = factory.createSocket(serverUri.toString());
+//            webSocket.setPingInterval(PING_INTERVAL*1000);
+
+            Log.i("MyTracking","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
+
+            webSocket.addListener(webSocketListener);
+        } catch (NoSuchAlgorithmException | IOException e1) {
+            e1.printStackTrace();
+        }
+    }
+
     public void start() {
         state.getService().startForeground(1976, state.getNotification());
 //        receiver = new NetworkStateChangeReceiver(this);
@@ -293,26 +285,9 @@ public class MyTracking {
             e.printStackTrace();
         }*/
         trackingListener.onStop();
-        put(REQUEST, REQUEST_LEAVE_TOKEN);
-        send();
+        send(REQUEST_LEAVE);
         webSocket.sendClose();
         state.getService().stopForeground(true);
-    }
-
-    private class ReconnectRunnable implements Runnable {
-        @Override
-        public void run() {
-            if(TRACKING_DISABLED.equals(getStatus())) return;
-            try {
-                Log.i("MyTracking","reconnectRunnable");
-                webSocket = webSocket.recreate().connect();
-            } catch (WebSocketException e) {
-                Log.e("MyTracking","reconnectRunnable:error:" + e.getMessage());
-                reconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public MyTracking put(String key, String value) {
@@ -352,13 +327,8 @@ public class MyTracking {
     }
 
     public void send(String text) {
-        JSONObject o = new JSONObject();
-        try {
-            o.put(REQUEST, text);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        send(o);
+        put(REQUEST, text);
+        send();
     }
 
     public void send(JSONObject o) {
@@ -425,7 +395,7 @@ public class MyTracking {
         sendUpdate();
     }
 
-    public void sendMessage(JSONObject json){
+    public void sendMessage(String type, JSONObject json){
         Iterator<String> iter = json.keys();
         while(iter.hasNext()){
             String entry = iter.next();
@@ -445,6 +415,7 @@ public class MyTracking {
                 e.printStackTrace();
             }
         }
+        put(REQUEST, type);
         sendUpdate();
     }
 
@@ -474,5 +445,21 @@ public class MyTracking {
 
     public String getTrackingUri() {
         return "https://" + serverUri.getHost() + ":" + HTTP_PORT + "/track/" + getToken();
+    }
+
+    private class ReconnectRunnable implements Runnable {
+        @Override
+        public void run() {
+            if(TRACKING_DISABLED.equals(getStatus())) return;
+            try {
+                Log.i("MyTracking","reconnectRunnable");
+                webSocket = webSocket.recreate().connect();
+            } catch (WebSocketException e) {
+                Log.e("MyTracking","reconnectRunnable:error:" + e.getMessage());
+                reconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

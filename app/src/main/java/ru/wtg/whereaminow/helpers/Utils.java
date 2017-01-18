@@ -57,15 +57,16 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 public class Utils {
 
 
-    public static String getEncryptedHash(String str) {
-        return getEncryptedHash(str, 5);
-    }
-
     public static final int DIGEST_METHOD_MD2 = 2;
     public static final int DIGEST_METHOD_MD5 = 5;
     public static final int DIGEST_METHOD_SHA1 = 1;
     public static final int DIGEST_METHOD_SHA256 = 256;
     public static final int DIGEST_METHOD_SHA512 = 512;
+    public static final int MATCH_SCREEN = -100;
+
+    public static String getEncryptedHash(String str) {
+        return getEncryptedHash(str, 5);
+    }
 
     @SuppressWarnings("WeakerAccess")
     @Nullable
@@ -251,13 +252,13 @@ public class Utils {
 
     /** Read the object from Base64 string. */
     public static Object deserializeFromString( String s ) {
-        byte [] data = Base64.decode( s, android.util.Base64.DEFAULT);
         Object o = null;
         try {
+            byte [] data = Base64.decode( s, android.util.Base64.DEFAULT);
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
             o  = ois.readObject();
             ois.close();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | NullPointerException e) {
             e.printStackTrace();
         }
         return o;
@@ -275,7 +276,6 @@ public class Utils {
         }
         return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
     }
-
 
     public static LatLng findPoint(List<LatLng> points, double fraction) {
 
@@ -330,9 +330,6 @@ public class Utils {
 
         return new LatLngBounds(newNortheast,newSouthwest);
     }
-
-
-    public static final int MATCH_SCREEN = -100;
 
     public static void resizeDialog(Activity activity, Dialog dialog, int width, int height) {
         if(width == MATCH_SCREEN || height == MATCH_SCREEN) {

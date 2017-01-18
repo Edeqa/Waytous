@@ -1,5 +1,8 @@
 package ru.wtg.whereaminow.holders;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import ru.wtg.whereaminow.helpers.IntroRule;
@@ -32,5 +35,8 @@ abstract public class AbstractViewHolder<T extends AbstractView> implements Enti
         return null;
     }
 
+    @Override
+    public void perform(JSONObject o) throws JSONException {
 
+    }
 }

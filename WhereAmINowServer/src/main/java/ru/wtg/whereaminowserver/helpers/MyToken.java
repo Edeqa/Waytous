@@ -6,9 +6,7 @@ import org.json.JSONObject;
 
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -21,11 +19,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static com.oracle.jrockit.jfr.Transition.To;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
@@ -42,7 +39,9 @@ public class MyToken {
     private String owner;
     private String welcomeMessage;
     private int count;
-
+    private ArrayList<Color> colors = new ArrayList<Color>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
+            Color.CYAN, Color.YELLOW
+    ));
     public MyToken(){
 
         String token = Utils.getUnique();
@@ -52,6 +51,7 @@ public class MyToken {
         this.id = token;
         created = new Date().getTime();
     }
+
     public String getId(){
         return id;
     }
@@ -69,10 +69,6 @@ public class MyToken {
 
         setChanged();
     }
-
-    private ArrayList<Color> colors = new ArrayList<Color>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
-            Color.CYAN, Color.YELLOW
-    ));
 
     private int selectColor(int number) {
         Random randomGenerator = new Random();
@@ -121,12 +117,12 @@ public class MyToken {
         return changed;
     }
 
-    public Long getCreated() {
-        return changed;
-    }
-
     public void setChanged(Long changed) {
         this.changed = changed;
+    }
+
+    public Long getCreated() {
+        return changed;
     }
 
     public void setChanged(){
@@ -310,22 +306,29 @@ public class MyToken {
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue() == user) continue;
             MyUser.MyPosition p = x.getValue().getPosition();
-            if(p.timestamp > 0 && x.getValue().getConnection().getRemoteSocketAddress() != null){
-                JSONObject o = p.toJSON();
 
-                o.put(RESPONSE_NUMBER,x.getValue().getNumber());
-                o.put(USER_COLOR,x.getValue().getColor());
-                if(x.getValue().getName() != null && x.getValue().getName().length()>0){
-                    o.put(USER_NAME,x.getValue().getName());
+            System.out.println("AAA:"+x.getValue());
+
+            try {
+                if (p.timestamp > 0 && x.getValue().getConnection().getRemoteSocketAddress() != null) {
+                    JSONObject o = p.toJSON();
+
+                    o.put(RESPONSE_NUMBER, x.getValue().getNumber());
+                    o.put(USER_COLOR, x.getValue().getColor());
+                    if (x.getValue().getName() != null && x.getValue().getName().length() > 0) {
+                        o.put(USER_NAME, x.getValue().getName());
+                    }
+                    initialUsers.add(o);
                 }
-                initialUsers.add(o);
+            } catch(Exception e){
+                e.printStackTrace();
             }
         }
         if(initialUsers.size()>0){
             initial.put(RESPONSE_INITIAL,initialUsers);
         }
         if(getWelcomeMessage() != null && getWelcomeMessage().length() > 0) {
-            initial.put(RESPONSE_WELCOME_MESSAGE, getWelcomeMessage());
+            initial.put(REQUEST_WELCOME_MESSAGE, getWelcomeMessage());
         }
 
         user.send(initial.toString());

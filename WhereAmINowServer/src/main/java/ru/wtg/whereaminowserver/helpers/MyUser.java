@@ -62,12 +62,12 @@ public class MyUser {
         return control;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public String getModel() {
         return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public String getDeviceId() {
@@ -80,24 +80,24 @@ public class MyUser {
         return webSocket.getRemoteSocketAddress().toString();
     }
 
-    public void setConnection(WebSocket connection) {
-        this.webSocket = connection;
-    }
-
     public WebSocket getConnection() {
         return webSocket;
+    }
+
+    public void setConnection(WebSocket connection) {
+        this.webSocket = connection;
     }
 
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
     }
 
-    public void setOs(String os) {
-        this.os = os;
-    }
-
     public String getOs() {
         return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
     }
 
     public String toString() {
@@ -176,6 +176,10 @@ public class MyUser {
 */
     }
 
+    public void setPosition(MyPosition position) {
+        this.position = position;
+    }
+
     public int getNumber() {
         return number;
     }
@@ -192,11 +196,19 @@ public class MyUser {
         this.color = color;
     }
 
-    public void setPosition(MyPosition position) {
-        this.position = position;
+    public Long getChanged() {
+        return changed;
     }
 
-    class MyPosition {
+    public void setChanged(Long changed) {
+        this.changed = changed;
+    }
+
+    public void setChanged() {
+        changed = new Date().getTime();
+    }
+
+    public class MyPosition {
         public double latitude;
         public double longitude;
         public double altitude;
@@ -225,18 +237,6 @@ public class MyUser {
             return o;
         }
 
-    }
-
-    public Long getChanged() {
-        return changed;
-    }
-
-    public void setChanged(Long changed) {
-        this.changed = changed;
-    }
-
-    public void setChanged() {
-        changed = new Date().getTime();
     }
 
 /*
