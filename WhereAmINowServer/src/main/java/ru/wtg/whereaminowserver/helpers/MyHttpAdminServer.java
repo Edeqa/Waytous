@@ -1,10 +1,8 @@
 package ru.wtg.whereaminowserver.helpers;
 
-import com.sun.javafx.geom.AreaOp;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
 
 import org.json.JSONException;
 
@@ -20,6 +18,25 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.A;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.COLSPAN;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.DIV;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.H1;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ID;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ROWSPAN;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SMALL;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.STYLESHEET;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TABLE;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TARGET;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TD;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TH;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TITLE;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TR;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TYPE;
 
 
 /**
@@ -34,40 +51,27 @@ public class MyHttpAdminServer implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
+        System.out.println("\nAdmin server processing");
+
         StringBuilder builder = new StringBuilder();
 
         URI uri = exchange.getRequestURI();
         Map<String, List<String>> query = splitQuery(uri.toString());
 
         if(query.containsKey("text")){
-//            synchronized (MyHttpAdminServer.class){
-                wssProcessor.sendToAll(query.get("text").toString(), null);
-//            }
-
+            wssProcessor.sendToAll(query.get("text").toString(), null);
         }
 
         if(processQuery(query)){
             exchange.getResponseHeaders().set("Location", "/");
             exchange.sendResponseHeaders(302, -1);
             return;
-//            OutputStream os = exchange.getResponseBody();
-//            os.write(bytes);
-//            os.close();
         }
-
-//        System.out.println("QUERY:"+query);
-
-        Headers headers = exchange.getRequestHeaders();
-/*
-        for (String header : headers.keySet()) {
-            System.out.println(header+":"+headers.getFirst(header));
-        }
-*/
 
         header();
         tableTokens();
 
-        HtmlGenerator.Tag div = html.getBody().add("div").with("style","display:flex; justify-content:space-between");
+        HtmlGenerator.Tag div = html.getBody().add(DIV).with(CLASS,"two_tables");
         tableIpToUser(div);
         try {
             tableIpToToken(div);
@@ -95,6 +99,8 @@ public class MyHttpAdminServer implements HttpHandler {
         builder.append(html.build());
 
         byte[] bytes = builder.toString().getBytes();
+
+        exchange.getResponseHeaders().set("Content-Type", "text/html");
         exchange.sendResponseHeaders(200, bytes.length);
 
         OutputStream os = exchange.getResponseBody();
@@ -105,86 +111,86 @@ public class MyHttpAdminServer implements HttpHandler {
 
     private void header() {
 
-        html.addHead().add("title").with("Admin");
-        html.getHead().add("style").with("table {width: 100%; border-style: solid;border-width: 1px; border-spacing:0px; font-family: sans-serif; font-size:13px }");
-        html.getHead().add("style").with("td {vertical-align:top; }");
-        html.getHead().add("meta").with("http-equiv","refresh").with("content",2);
+        html.addHead().add(TITLE).with("Admin");
+        html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
 
-        html.addBody();
+//        html.getHead().add(META).with(HTTP_EQUIV,"refresh").with(CONTENT,2);
 
-        html.getBody().add("div").with("Build: "+SERVER_BUILD).with("style","float: right; font-family: sans-serif; font-size: 10px;");
+        html.addBody().with(CLASS,"body");
+
+        html.getBody().add(DIV).with(CLASS, "version").with("Build: "+SERVER_BUILD);
 
     }
 
     private void tableTokens() {
 
-        html.getBody().add("h1").with("Tokens");
-        HtmlGenerator.Tag table = html.getBody().add("table").with("border",1);
-        HtmlGenerator.Tag thr = table.add("tr");
-        HtmlGenerator.Tag td1 = thr.add("th").with("Token").with("rowspan",2);
-        HtmlGenerator.Tag td2 = thr.add("th").with("Owner").with("rowspan",2);
-        HtmlGenerator.Tag td3 = thr.add("th").with("Created").with("rowspan",2);
-        HtmlGenerator.Tag td4 = thr.add("th").with("Changed").with("rowspan",2);
+        html.getBody().add(H1).with("Tokens");
+        HtmlGenerator.Tag table = html.getBody().add(TABLE).with(ID, "tokens");
+        HtmlGenerator.Tag thr = table.add(TR);
+        HtmlGenerator.Tag td1 = thr.add(TH).with("Token").with(ROWSPAN,2);
+        HtmlGenerator.Tag td2 = thr.add(TH).with("Owner").with(ROWSPAN,2);
+        HtmlGenerator.Tag td3 = thr.add(TH).with("Created").with(ROWSPAN,2);
+        HtmlGenerator.Tag td4 = thr.add(TH).with("Changed").with(ROWSPAN,2);
 
-        thr.add("th").with("Users").with("colspan",8);
+        thr.add(TH).with("Users").with(COLSPAN,8);
 
-        thr = table.add("tr");
-        thr.add("th").with("#");
-        thr.add("th").with("Device");
-        thr.add("th").with("Address");
-        thr.add("th").with("Created");
-        thr.add("th").with("Changed");
-        thr.add("th").with("Control");
-        thr.add("th").with("Pos");
-        thr.add("th").with("X");
+        thr = table.add(TR);
+        thr.add(TH).with("#");
+        thr.add(TH).with("Device");
+        thr.add(TH).with("Address");
+        thr.add(TH).with("Created");
+        thr.add(TH).with("Changed");
+        thr.add(TH).with("Control");
+        thr.add(TH).with("Pos");
+        thr.add(TH).with("X");
         HtmlGenerator.Tag tr;
 
         for(Map.Entry<String,MyToken> x: wssProcessor.tokens.entrySet()){
-            tr = table.add("tr");
+            tr = table.add(TR);
 
-            td1 = tr.add("td").with(x.getKey());
-            td2 = tr.add("td").with(x.getValue().getOwner().substring(0, 30) + "...");
-            td3 = tr.add("td").with(new Date(x.getValue().getCreated()).toString());
-            td4 = tr.add("td").with(new Date(x.getValue().getChanged()).toString());
+            td1 = tr.add(TD).with(x.getKey());
+            td2 = tr.add(TD).with(x.getValue().getOwner().substring(0, 30) + "...");
+            td3 = tr.add(TD).with(new Date(x.getValue().getCreated()).toString());
+            td4 = tr.add(TD).with(new Date(x.getValue().getChanged()).toString());
 
             int indent = 0;
             for(Map.Entry<String,MyUser> y:x.getValue().users.entrySet()){
                 if(indent>0) tr = table.add("tr");
-                tr.add("td").with(y.getValue().getNumber());
-                tr.add("td").add("a").with(y.getValue().getModel()).with("href","/?list=user&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
-                tr.add("td").with(y.getValue().getAddress());
-                tr.add("td").with(new Date(y.getValue().getCreated()).toString());
-                tr.add("td").with(new Date(y.getValue().getChanged()).toString());
-                tr.add("td").with(y.getValue().getControl());
-                tr.add("td");//.with(y.getValue().getPositions().size());
-                tr.add("td").add("a").with("Del").with("href","/?action=del&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
+                tr.add(TD).with(y.getValue().getNumber());
+                tr.add(TD).add("a").with(y.getValue().getModel()).with(HREF,"/?list=user&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
+                tr.add(TD).with(y.getValue().getAddress());
+                tr.add(TD).with(new Date(y.getValue().getCreated()).toString());
+                tr.add(TD).with(new Date(y.getValue().getChanged()).toString());
+                tr.add(TD).with(y.getValue().getControl());
+                tr.add(TD);//.with(y.getValue().getPositions().size());
+                tr.add(TD).add(A).with("Del").with(HREF,"/?action=del&token="+x.getKey()+"&id="+y.getValue().getDeviceId());
 
                 indent ++;
             }
-            td1.with("rowspan",indent);
-            td2.with("rowspan",indent);
-            td3.with("rowspan",indent);
-            td4.with("rowspan",indent);
+            td1.with(ROWSPAN,indent);
+            td2.with(ROWSPAN,indent);
+            td3.with(ROWSPAN,indent);
+            td4.with(ROWSPAN,indent);
         }
     }
 
     private void tableChecks() {
 
-        html.getBody().add("h1").with("Checks");
-        HtmlGenerator.Tag table = html.getBody().add("table").with("border",1);
-        HtmlGenerator.Tag tr = table.add("tr");
-        tr.add("th").with("Address");
-        tr.add("th").with("Token");
-        tr.add("th").with("Control");
-        tr.add("th").with("Timestamp");
+        html.getBody().add(H1).with("Checks");
+        HtmlGenerator.Tag table = html.getBody().add(TABLE);
+        HtmlGenerator.Tag tr = table.add(TR);
+        tr.add(TH).with("Address");
+        tr.add(TH).with("Token");
+        tr.add(TH).with("Control");
+        tr.add(TH).with("Timestamp");
 
         for(Map.Entry<String,MyWssServer.CheckReq> x: wssProcessor.ipToCheck.entrySet()){
-            tr = table.add("tr");
+            tr = table.add(TR);
 
-            tr.add("td").with(x.getKey());
-            tr.add("td").with(x.getValue().token.getId());
-            tr.add("td").with(x.getValue().control);
-            tr.add("td").with(new Date(x.getValue().timestamp).toString());
+            tr.add(TD).with(x.getKey());
+            tr.add(TD).with(x.getValue().token.getId());
+            tr.add(TD).with(x.getValue().control);
+            tr.add(TD).with(new Date(x.getValue().timestamp).toString());
 
         }
     }
@@ -194,41 +200,41 @@ public class MyHttpAdminServer implements HttpHandler {
         MyToken token = wssProcessor.tokens.get(tokenId);
         MyUser user = token.users.get(userId);
 
-        html.getBody().add("h1").with("User").add("small").add("small").add("a").with("[Del]").with("href","/?action=del&token="+tokenId+"&id="+userId);
-        html.getBody().add("div").with("Token: "+tokenId);
-        html.getBody().add("div").with("Address: "+user.getConnection().getRemoteSocketAddress());
-        html.getBody().add("div").with("Number in token: "+user.getNumber());
-        html.getBody().add("div").with("DeviceID: "+userId);
-        html.getBody().add("div").with("Color: "+user.getColor());
-        if(user.hasName()) html.getBody().add("div").with("Name: "+user.getName());
-        html.getBody().add("div").with("Model: "+user.getModel());
-        html.getBody().add("div").with("Created: "+new Date(user.getCreated()).toString());
-        html.getBody().add("div").with("Changed: "+new Date(user.getChanged()).toString());
+        html.getBody().add(H1).with("User").add(SMALL).add(SMALL).add(A).with("[Del]").with(HREF,"/?action=del&token="+tokenId+"&id="+userId);
+        html.getBody().add(DIV).with("Token: "+tokenId);
+        html.getBody().add(DIV).with("Address: "+user.getConnection().getRemoteSocketAddress());
+        html.getBody().add(DIV).with("Number in token: "+user.getNumber());
+        html.getBody().add(DIV).with("DeviceID: "+userId);
+        html.getBody().add(DIV).with("Color: "+user.getColor());
+        if(user.hasName()) html.getBody().add(DIV).with("Name: "+user.getName());
+        html.getBody().add(DIV).with("Model: "+user.getModel());
+        html.getBody().add(DIV).with("Created: "+new Date(user.getCreated()).toString());
+        html.getBody().add(DIV).with("Changed: "+new Date(user.getChanged()).toString());
 
-        HtmlGenerator.Tag table = html.getBody().add("table").with("border",1);
-        HtmlGenerator.Tag tr = table.add("tr");
-        tr.add("th").with("#");
-        tr.add("th").with("Time");
-        tr.add("th").with("Latitude");
-        tr.add("th").with("Longitude");
-        tr.add("th").with("Altitude");
-        tr.add("th").with("Accuracy");
-        tr.add("th").with("Bearing");
-        tr.add("th").with("Speed");
+        HtmlGenerator.Tag table = html.getBody().add(TABLE);
+        HtmlGenerator.Tag tr = table.add(TR);
+        tr.add(TH).with("#");
+        tr.add(TH).with("Time");
+        tr.add(TH).with("Latitude");
+        tr.add(TH).with("Longitude");
+        tr.add(TH).with("Altitude");
+        tr.add(TH).with("Accuracy");
+        tr.add(TH).with("Bearing");
+        tr.add(TH).with("Speed");
 
 //        int count = 1;
 //        for(MyUser.MyPosition x: user.getPositions()){
         MyUser.MyPosition x = user.getPosition();
-            tr = table.add("tr");
+        tr = table.add("tr");
 
-            tr.add("td").add("a").with(1/*count*/).with("target","_blank").with("href","http://maps.google.com/?q="+x.latitude+"+"+x.longitude+"&z=13");
-            tr.add("td").with(new Date(x.timestamp).toString());
-            tr.add("td").with(x.latitude);
-            tr.add("td").with(x.longitude);
-            tr.add("td").with(x.altitude);
-            tr.add("td").with(x.accuracy);
-            tr.add("td").with(x.bearing);
-            tr.add("td").with(x.speed);
+        tr.add(TD).add(A).with(1/*count*/).with(TARGET,"_blank").with(HREF,"http://maps.google.com/?q="+x.latitude+"+"+x.longitude+"&z=13");
+        tr.add(TD).with(new Date(x.timestamp).toString());
+        tr.add(TD).with(x.latitude);
+        tr.add(TD).with(x.longitude);
+        tr.add(TD).with(x.altitude);
+        tr.add(TD).with(x.accuracy);
+        tr.add(TD).with(x.bearing);
+        tr.add(TD).with(x.speed);
 
 //            count++;
 //        }
@@ -236,35 +242,35 @@ public class MyHttpAdminServer implements HttpHandler {
 
     private void tableIpToUser(HtmlGenerator.Tag out) {
 
-        HtmlGenerator.Tag div = out.add("div").with("style","width:48%");
-        div.add("h1").with("IP to User corresponds");
-        HtmlGenerator.Tag table = div.add("table").with("border",1);
-        HtmlGenerator.Tag tr = table.add("tr");
-        tr.add("th").with("IP");
-        tr.add("th").with("Device ID");
+        HtmlGenerator.Tag div = out.add(DIV).with(CLASS,"table_ip_to_user");
+        div.add(H1).with("IP to User corresponds");
+        HtmlGenerator.Tag table = div.add(TABLE);
+        HtmlGenerator.Tag tr = table.add(TR);
+        tr.add(TH).with("IP");
+        tr.add(TH).with("Device ID");
 
         for(Map.Entry<String,MyUser> x: wssProcessor.ipToUser.entrySet()){
-            tr = table.add("tr");
+            tr = table.add(TR);
 
-            tr.add("td").with(x.getKey());
-            tr.add("td").with(x.getValue().getDeviceId().substring(0,30)+"...");
+            tr.add(TD).with(x.getKey());
+            tr.add(TD).with(x.getValue().getDeviceId().substring(0,30)+"...");
         }
     }
 
     private void tableIpToToken(HtmlGenerator.Tag out) {
 
-        HtmlGenerator.Tag div = out.add("div").with("style","width:48%");
-        div.add("h1").with("IP to Token corresponds");
-        HtmlGenerator.Tag table = div.add("table").with("border",1);
+        HtmlGenerator.Tag div = out.add(DIV).with(CLASS, "table_ip_to_token");
+        div.add(H1).with("IP to Token corresponds");
+        HtmlGenerator.Tag table = div.add(TABLE);
         HtmlGenerator.Tag tr = table.add("tr");
-        tr.add("th").with("IP");
-        tr.add("th").with("Token ID");
+        tr.add(TH).with("IP");
+        tr.add(TH).with("Token ID");
 
         for(Map.Entry<String,MyToken> x: wssProcessor.ipToToken.entrySet()){
             tr = table.add("tr");
 
-            tr.add("td").with(x.getKey());
-            tr.add("td").with(x.getValue().getId());
+            tr.add(TD).with(x.getKey());
+            tr.add(TD).with(x.getValue().getId());
         }
     }
 

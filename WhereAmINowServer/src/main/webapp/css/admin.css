@@ -1,0 +1,75 @@
+/**
+ * Created 1/19/17.
+ */
+
+/* TAGS */
+body {
+    font-family: sans-serif;
+    font-size: 12px;
+}
+h1 {
+    font-size: 14px;
+}
+table {
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-spacing:0px;
+    border-collapse: collapse;
+    font-family: sans-serif;
+}
+th {
+    text-align: center;
+    background: #ffffdd;
+    padding: 2px;
+    border: 1px solid black;
+    font-size: 12px
+}
+td {
+    padding: 2px;
+    border: 1px solid black;
+    vertical-align:top;
+}
+
+/* CLASSES */
+.version {
+    float: right;
+    font-size: 10px;
+}
+.two_tables {
+    display:flex;
+    justify-content:space-between
+}
+.table_ip_to_token {
+    width:48%
+}
+
+.table_ip_to_user {
+    width:48%
+}
+
+@media screen and (max-width: 1000px) {
+    .two_tables {
+        display:inline;
+        justify-content:space-between
+    }
+    .table_ip_to_token {
+        width:auto
+    }
+
+    .table_ip_to_user {
+        width:auto
+    }
+
+
+    /*#tokens tr td:nth-child(3),
+    #tokens tr th:nth-child(3) {
+        display: none;
+    }
+    #tokens tr td:nth-child(8) {
+        display: none;
+    }
+    #tokens tr td:nth-child(10) {
+        display: none;
+    }*/
+}
