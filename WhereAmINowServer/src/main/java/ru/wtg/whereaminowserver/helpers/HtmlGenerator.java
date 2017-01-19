@@ -1,6 +1,7 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,9 +10,46 @@ import java.util.Map;
  */
 
 public class HtmlGenerator {
+
+    public static final String META = "meta";
+    public static final String STYLE = "style";
+    public static final String CLASS = "class";
+    public static final String DIV = "div";
+    public static final String SCRIPT = "script";
+    public static final String TITLE = "title";
+    public static final String ID = "id";
+    public static final String SRC = "src";
+    public static final String HTTP_EQUIV = "http-equiv";
+    public static final String CONTENT = "content";
+    public static final String TABLE = "table";
+    public static final String TR = "tr";
+    public static final String TH = "th";
+    public static final String TD = "td";
+    public static final String H1 = "h1";
+    public static final String H2 = "h2";
+    public static final String H3 = "h3";
+    public static final String H4 = "h4";
+    public static final String H5 = "h5";
+    public static final String H6 = "h6";
+    public static final String H7 = "h7";
+    public static final String BORDER = "border";
+    public static final String COLSPAN = "colspan";
+    public static final String ROWSPAN = "rowspan";
+    public static final String A = "a";
+    public static final String HREF = "href";
+    public static final String TARGET = "target";
+    public static final String SMALL = "small";
+    public static final String LINK = "link";
+    public static final String REL = "rel";
+    public static final String STYLESHEET = "stylesheet";
+    public static final String TYPE = "type";
+
+
     private Tag body;
     private Tag head;
     private int level = 0;
+
+    ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{"br","meta"}));
 
     public HtmlGenerator() {
 
@@ -95,7 +133,7 @@ public class HtmlGenerator {
                 res += "\n";
                 for (int i = 0; i < level; i++) res += "   ";
             }
-            if(!"br".equals(tag)) {
+            if(!notClosableTags.contains(tag)) {
                 res += "</" + tag + ">";
             }
             return res;
