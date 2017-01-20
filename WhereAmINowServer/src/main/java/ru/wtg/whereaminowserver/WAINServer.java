@@ -4,16 +4,14 @@ import com.sun.net.httpserver.HttpServer;
 
 import org.java_websocket.WebSocketImpl;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 
-import ru.wtg.whereaminowserver.helpers.MyHttpAdminServer;
-import ru.wtg.whereaminowserver.helpers.MyHttpMainServer;
-import ru.wtg.whereaminowserver.helpers.MyHttpTrackingServer;
-import ru.wtg.whereaminowserver.helpers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
+import ru.wtg.whereaminowserver.servers.MyHttpMainServer;
+import ru.wtg.whereaminowserver.servers.MyHttpTrackingServer;
+import ru.wtg.whereaminowserver.servers.MyWssServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;

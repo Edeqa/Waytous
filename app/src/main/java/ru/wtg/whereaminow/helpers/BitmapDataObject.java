@@ -11,6 +11,7 @@ import java.io.Serializable;
  * Created 12/20/2016.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class BitmapDataObject implements Serializable {
 
     static final long serialVersionUID =-6395904747332820044L;

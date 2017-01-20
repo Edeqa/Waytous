@@ -8,15 +8,10 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 
-import static ru.wtg.whereaminow.State.EVENTS.PUSH_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 
 /**

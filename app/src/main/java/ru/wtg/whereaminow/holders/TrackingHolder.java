@@ -38,6 +38,7 @@ import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHANGE_NAME;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_LEAVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
@@ -47,6 +48,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_LEFT;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
@@ -57,7 +59,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
     private static final String TYPE = REQUEST_TRACKING;
 
     private final Context context;
-//    private final Intent intentService;
+    //    private final Intent intentService;
     private MyTracking tracking;
     private TrackingCallback onTrackingListener = new TrackingCallback() {
 
@@ -101,6 +103,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         JSONObject u = initialUsers.getJSONObject(i);
                         State.getInstance().getUsers().addUser(u);
                     }
+                    State.getInstance().fire(TRACKING_ACTIVE);
                 }
                 if (o.has(REQUEST_WELCOME_MESSAGE)) {
 //                            setWelcomeMessage(text);
@@ -156,6 +159,18 @@ public class TrackingHolder extends AbstractPropertyHolder {
                                 public void call(Integer number, MyUser myUser) {
                                     myUser.fire(MAKE_ACTIVE);
                                     State.getInstance().fire(USER_JOINED,myUser);
+                                }
+                            });
+                        }
+                        break;
+                    case REQUEST_LEAVE:
+                        if (o.has(USER_NUMBER)) {
+                            int number = o.getInt(USER_NUMBER);
+                            State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                                @Override
+                                public void call(Integer number, final MyUser myUser) {
+                                    myUser.fire(MAKE_INACTIVE);
+                                    State.getInstance().fire(USER_LEFT,myUser);
                                 }
                             });
                         }
@@ -216,18 +231,14 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
     @Override
     public void perform(JSONObject o) throws JSONException {
-
-//        if (o.has(USER_PROVIDER)) {
-            final Location location = Utils.jsonToLocation(o);
-            int number = o.getInt(USER_NUMBER);
-            State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
-                @Override
-                public void call(Integer number, MyUser myUser) {
-                    myUser.addLocation(location);
-                }
-            });
-//        }
-
+        final Location location = Utils.jsonToLocation(o);
+        int number = o.getInt(USER_NUMBER);
+        State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+            @Override
+            public void call(Integer number, MyUser myUser) {
+                myUser.addLocation(location);
+            }
+        });
     }
 
     @Override

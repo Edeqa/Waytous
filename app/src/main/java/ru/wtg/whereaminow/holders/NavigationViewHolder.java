@@ -60,10 +60,8 @@ import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolder.NavigationView> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820058L;
-
-    private static final String TYPE = "Navigation";
-
     static final String SHOW_NAVIGATION = "show_navigation";
+    private static final String TYPE = "Navigation";
     private static final String HIDE_NAVIGATION = "hide_navigation";
 
     private static final String NAVIGATION_MODE_DRIVING = "navigation_mode_driving";
@@ -77,12 +75,58 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private static final int REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
     private static final int HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
     private static final int SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
-
-    transient private GoogleMap map;
     private final AppCompatActivity context;
+    transient private GoogleMap map;
     private String mode = NAVIGATION_MODE_DRIVING;
     private View buttonsView;
     private int iconNavigationStyle;
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            buttonsView.findViewById(R.id.ib_navigation_driving).getBackground().setAlpha(150);
+            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).setColorFilter(Color.argb(120, 255, 255, 255));
+
+            buttonsView.findViewById(R.id.ib_navigation_walking).getBackground().setAlpha(150);
+            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).setColorFilter(Color.argb(120, 255, 255, 255));
+
+            buttonsView.findViewById(R.id.ib_navigation_bicycling).getBackground().setAlpha(150);
+            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).setColorFilter(Color.argb(120, 255, 255, 255));
+
+            switch (view.getId()) {
+                case R.id.ib_navigation_driving:
+                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).clearColorFilter();
+                    mode = NAVIGATION_MODE_DRIVING;
+                    break;
+                case R.id.ib_navigation_walking:
+                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).clearColorFilter();
+                    mode = NAVIGATION_MODE_WALKING;
+                    break;
+                case R.id.ib_navigation_bicycling:
+                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).clearColorFilter();
+                    mode = NAVIGATION_MODE_BICYCLING;
+                    break;
+            }
+            updateAll();
+        }
+    };
+    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            switch (view.getId()) {
+                case R.id.ib_navigation_driving:
+                    options(R.id.ib_navigation_driving);
+                    break;
+                case R.id.ib_navigation_walking:
+                    options(R.id.ib_navigation_walking);
+                    break;
+                case R.id.ib_navigation_bicycling:
+                    options(R.id.ib_navigation_bicycling);
+                    break;
+            }
+            return false;
+        }
+    };
+
 
     public NavigationViewHolder(MainActivity context) {
         this.context = context;
@@ -97,7 +141,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     public String getType() {
         return TYPE;
     }
-
 
     @Override
     public NavigationView create(MyUser myUser) {
@@ -193,54 +236,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         return this;
     }
 
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            buttonsView.findViewById(R.id.ib_navigation_driving).getBackground().setAlpha(150);
-            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).setColorFilter(Color.argb(120, 255, 255, 255));
-
-            buttonsView.findViewById(R.id.ib_navigation_walking).getBackground().setAlpha(150);
-            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).setColorFilter(Color.argb(120, 255, 255, 255));
-
-            buttonsView.findViewById(R.id.ib_navigation_bicycling).getBackground().setAlpha(150);
-            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).setColorFilter(Color.argb(120, 255, 255, 255));
-
-            switch (view.getId()) {
-                case R.id.ib_navigation_driving:
-                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).clearColorFilter();
-                    mode = NAVIGATION_MODE_DRIVING;
-                    break;
-                case R.id.ib_navigation_walking:
-                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).clearColorFilter();
-                    mode = NAVIGATION_MODE_WALKING;
-                    break;
-                case R.id.ib_navigation_bicycling:
-                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).clearColorFilter();
-                    mode = NAVIGATION_MODE_BICYCLING;
-                    break;
-            }
-            updateAll();
-        }
-    };
-
-    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View view) {
-            switch (view.getId()) {
-                case R.id.ib_navigation_driving:
-                    options(R.id.ib_navigation_driving);
-                    break;
-                case R.id.ib_navigation_walking:
-                    options(R.id.ib_navigation_walking);
-                    break;
-                case R.id.ib_navigation_bicycling:
-                    options(R.id.ib_navigation_bicycling);
-                    break;
-            }
-            return false;
-        }
-    };
-
     private void updateAll() {
         State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
             @Override
@@ -295,6 +290,15 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         });
         dialog.setView(content);
         dialog.show();
+    }
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(SHOW_NAVIGATION).setId("navigation_intro").setView(context.findViewById(R.id.layout_navigation_mode)).setTitle("Navigation").setDescription("You can switch between different modes of navigation using these buttons. Also, long touch calls additional options."));
+
+        return rules;
     }
 
     class NavigationView extends AbstractView {
@@ -427,7 +431,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         }
 
         private void update() {
-            if(track == null) {
+            if(track == null && State.getInstance().getMe().getLocation() != null && myUser.getLocation() != null) {
                 final int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0xAA000000;
                 iconFactory = new IconGenerator(State.getInstance());
                 iconFactory.setColor(color);
@@ -452,59 +456,59 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 @Override
                 public void run() {
 
-                    final MyUser me = State.getInstance().getMe();
-                    final LatLng mePosition = Utils.latLng(me.getLocation());
-                    final LatLng userPosition = Utils.latLng(myUser.getLocation());
-
-                    boolean changed = false;
-                    if(previousMeLocation == null || previousLocation == null) {
-                        changed = true;
-                    }
-                    if(!changed) {
-                        double distanceToMe = SphericalUtil.computeDistanceBetween(mePosition, userPosition);
-                        if(distanceToMe < 30) {
-                            changed = true;
-                        }
-                    }
-                    if(!changed && previousMeLocation != null) {
-                        if(locationChanged(me.getLocation(),previousMeLocation)) {
-                            changed = true;
-                        }
-                    }
-                    if(!changed && previousLocation != null) {
-                        if(locationChanged(myUser.getLocation(),previousLocation)) {
-                            changed = true;
-                        }
-                    }
-                    previousLocation = myUser.getLocation();
-                    previousMeLocation = me.getLocation();
-
-                    if(!changed) {
-                        return;
-                    }
-
-                    String req = "https://maps.googleapis.com/maps/api/directions/json?"
-                            + "origin=" + me.getLocation().getLatitude() + "," + me.getLocation().getLongitude() + "&"
-                            + "destination=" + myUser.getLocation().getLatitude() + "," + myUser.getLocation().getLongitude() +"&"
-                            + "mode=";
-
-                    switch (mode) {
-                        case NAVIGATION_MODE_DRIVING:
-                            req += "driving";
-                            break;
-                        case NAVIGATION_MODE_WALKING:
-                            req += "walking";
-                            break;
-                        case NAVIGATION_MODE_BICYCLING:
-                            req += "bicycling";
-                            break;
-                    }
-
-                    if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_HIGHWAYS, false)) req += "&avoid=highways";
-                    if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false)) req += "&avoid=tolls";
-                    if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false)) req += "&avoid=ferries";
-
                     try {
+                        final MyUser me = State.getInstance().getMe();
+                        final LatLng mePosition = Utils.latLng(me.getLocation());
+                        final LatLng userPosition = Utils.latLng(myUser.getLocation());
+
+                        boolean changed = false;
+                        if(previousMeLocation == null || previousLocation == null) {
+                            changed = true;
+                        }
+                        if(!changed) {
+                            double distanceToMe = SphericalUtil.computeDistanceBetween(mePosition, userPosition);
+                            if(distanceToMe < 30) {
+                                changed = true;
+                            }
+                        }
+                        if(!changed && previousMeLocation != null) {
+                            if(locationChanged(me.getLocation(),previousMeLocation)) {
+                                changed = true;
+                            }
+                        }
+                        if(!changed && previousLocation != null) {
+                            if(locationChanged(myUser.getLocation(),previousLocation)) {
+                                changed = true;
+                            }
+                        }
+                        previousLocation = myUser.getLocation();
+                        previousMeLocation = me.getLocation();
+
+                        if(!changed) {
+                            return;
+                        }
+
+                        String req = "https://maps.googleapis.com/maps/api/directions/json?"
+                                + "origin=" + me.getLocation().getLatitude() + "," + me.getLocation().getLongitude() + "&"
+                                + "destination=" + myUser.getLocation().getLatitude() + "," + myUser.getLocation().getLongitude() +"&"
+                                + "mode=";
+
+                        switch (mode) {
+                            case NAVIGATION_MODE_DRIVING:
+                                req += "driving";
+                                break;
+                            case NAVIGATION_MODE_WALKING:
+                                req += "walking";
+                                break;
+                            case NAVIGATION_MODE_BICYCLING:
+                                req += "bicycling";
+                                break;
+                        }
+
+                        if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_HIGHWAYS, false)) req += "&avoid=highways";
+                        if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false)) req += "&avoid=tolls";
+                        if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false)) req += "&avoid=ferries";
+
                         Log.i(TYPE,req);
                         final String res = Utils.getUrl(req);
                         JSONObject o = new JSONObject(res);
@@ -521,7 +525,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                 public void run() {
                                     remove();
                                 }
-                                });
+                            });
                             previousDistance = distance;
                             return;
                         } else if (distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && previousDistance>0 && previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
@@ -539,32 +543,36 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                if(track != null) {
-                                    String text = title;
-                                    LatLng markerPosition = Utils.findPoint(points, .5);
-                                    LatLngBounds bounds = Utils.reduce(map.getProjection().getVisibleRegion().latLngBounds, .8);
-                                    if (!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
-                                        if (!bounds.contains(markerPosition)) {
-                                            double fract = 0.5;
-                                            while (!bounds.contains(markerPosition)) {
-                                                fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
-                                                if (fract < 0 || fract > 1) break;
-                                                markerPosition = Utils.findPoint(points, fract);
+                                try {
+                                    if (track != null) {
+                                        String text = title;
+                                        LatLng markerPosition = Utils.findPoint(points, .5);
+                                        LatLngBounds bounds = Utils.reduce(map.getProjection().getVisibleRegion().latLngBounds, .8);
+                                        if (!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
+                                            if (!bounds.contains(markerPosition)) {
+                                                double fract = 0.5;
+                                                while (!bounds.contains(markerPosition)) {
+                                                    fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
+                                                    if (fract < 0 || fract > 1) break;
+                                                    markerPosition = Utils.findPoint(points, fract);
+                                                }
                                             }
                                         }
-                                    }
 
-                                    if (points != null) {
-                                        track.setPoints(points);
-                                        trackCenter.setPoints(points);
+                                        if (points != null) {
+                                            track.setPoints(points);
+                                            trackCenter.setPoints(points);
+                                        }
+                                        bounds = map.getProjection().getVisibleRegion().latLngBounds;
+                                        if (!bounds.contains(mePosition) || !bounds.contains(userPosition)) {
+                                            text += "\n" + myUser.getProperties().getDisplayName();
+                                        }
+                                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
+                                        marker.setPosition(markerPosition);
+                                        marker.setVisible(true);
                                     }
-                                    bounds = map.getProjection().getVisibleRegion().latLngBounds;
-                                    if (!bounds.contains(mePosition) || !bounds.contains(userPosition)) {
-                                        text += "\n" + myUser.getProperties().getDisplayName();
-                                    }
-                                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
-                                    marker.setPosition(markerPosition);
-                                    marker.setVisible(true);
+                                } catch(Exception e) {
+                                    e.printStackTrace();
                                 }
                             }
                         });
@@ -575,15 +583,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             }).start();
 
         }
-    }
-
-    @Override
-    public ArrayList<IntroRule> getIntro() {
-
-        ArrayList<IntroRule> rules = new ArrayList<>();
-        rules.add(new IntroRule().setEvent(SHOW_NAVIGATION).setId("navigation_intro").setView(context.findViewById(R.id.layout_navigation_mode)).setTitle("Navigation").setDescription("You can switch between different modes of navigation using these buttons. Also, long touch calls additional options."));
-
-        return rules;
     }
 
 

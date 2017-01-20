@@ -4,21 +4,18 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
-
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
+import ru.wtg.whereaminowserver.servers.MyWssServer;
 
 /**
- * Created 1/16/17.
+ * Created 1/19/17.
  */
 
-public class MessageRequestHolder implements RequestHolder {
+public class ProviderFlagHolder implements RequestHolder {
 
-    public static final String TYPE = REQUEST_MESSAGE;
+    public static final String TYPE = "provider";
 
-    public MessageRequestHolder(MyWssServer context) {
+    public ProviderFlagHolder(MyWssServer context) {
 
     }
 
@@ -31,8 +28,7 @@ public class MessageRequestHolder implements RequestHolder {
     @Override
     public boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result) {
 
-        result.put(USER_MESSAGE, request.getString(USER_MESSAGE));
-
+        System.out.println("PROVIDERFLAGHOLDER:" + request);
         return true;
     }
 

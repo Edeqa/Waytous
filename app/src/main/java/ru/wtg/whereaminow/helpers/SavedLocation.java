@@ -34,12 +34,11 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
  * Created 12/4/16.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class SavedLocation extends AbstractSavedItem {
 
-    static final long serialVersionUID =-6395904747332820022L;
-
     public static final String LOCATION = "location";
-
+    static final long serialVersionUID =-6395904747332820022L;
     private double latitude;
     private double longitude;
     private String title;
@@ -59,6 +58,27 @@ public class SavedLocation extends AbstractSavedItem {
 
     public static DBHelper getDb(){
         return getDb(LOCATION);
+    }
+
+    public static SavedLocation getItemByPosition(int position) {
+        return (SavedLocation) getItemByPosition(LOCATION, position);
+    }
+
+    public static SavedLocation getItemByNumber(long number) {
+//        System.out.println("NUMBER:"+number);
+        return (SavedLocation) getItemByNumber(LOCATION, number);
+    }
+
+    public static SavedLocation getItemByCursor(Cursor cursor) {
+        return (SavedLocation) getItemByCursor(LOCATION, cursor);
+    }
+
+    public static void clear(){
+        clear(LOCATION);
+    }
+
+    public static int getCount(){
+        return getCount(LOCATION);
     }
 
     public double getLatitude() {
@@ -105,15 +125,15 @@ public class SavedLocation extends AbstractSavedItem {
         return address;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getShortAddress() {
         String[] parts = address.split(", ");
         int max = 3;
         if(parts.length<max) max = parts.length;
         return TextUtils.join(", ", Arrays.copyOfRange(parts, 0, max));
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public BitmapDataObject getBitmap() {
@@ -124,40 +144,30 @@ public class SavedLocation extends AbstractSavedItem {
         this.bitmap = bitmap;
     }
 
-    public static SavedLocation getItemByPosition(int position) {
-        return (SavedLocation) getItemByPosition(LOCATION, position);
-    }
-
-    public static SavedLocation getItemByNumber(long number) {
-//        System.out.println("NUMBER:"+number);
-        return (SavedLocation) getItemByNumber(LOCATION, number);
-    }
-
-    public static SavedLocation getItemByCursor(Cursor cursor) {
-        return (SavedLocation) getItemByCursor(LOCATION, cursor);
-    }
-
     public void save(final Context context) {
+        //noinspection unchecked
         super.save(new SimpleCallback<SavedLocation>() {
             @Override
             public void call(SavedLocation listItem) {
-                final SavedLocation item = (SavedLocation) listItem;
-                if(item.getAddress() == null) {
-                    new Thread(new LoadAddress(context, item, null)).start();
+                if(listItem.getAddress() == null) {
+                    new Thread(new LoadAddress(context, listItem, null)).start();
                 }
-                if(item.getBitmap() == null) {
-                    new Thread(new LoadBitmap(context, item, null)).start();
+                if(listItem.getBitmap() == null) {
+                    new Thread(new LoadBitmap(context, listItem, null)).start();
                 }
             }
         } );
     }
 
-    public static void clear(){
-        clear(LOCATION);
-    }
-
-    public static int getCount(){
-        return getCount(LOCATION);
+    public String toString() {
+        return "{ timestamp: " + new Date(timestamp).toString()
+                + (username != null ? ", username: "+username : "")
+                + (title != null ? ", title: "+title : "")
+                + (latitude != 0 ? ", latitude: "+latitude : "")
+                + (longitude != 0 ? ", longitude: "+longitude : "")
+                + (address != null ? ", address: ["+address + "]" : "")
+                + (bitmap != null ? ", bitmap: ["+bitmap.getCurrentImage().getByteCount() + "]" : "")
+                + " }";
     }
 
     static public class SavedLocationsAdapter extends AbstractSavedItemsAdapter {
@@ -208,6 +218,7 @@ public class SavedLocation extends AbstractSavedItem {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        //noinspection unchecked
                         onItemClickListener.call(item);
                     }
                 });
@@ -277,6 +288,11 @@ public class SavedLocation extends AbstractSavedItem {
             this.onLocationClickListener = onLocationClickListener;
         }
 
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new SavedItemCursorLoader(context, LOCATION);
+        }
+
         class ViewHolder extends RecyclerView.ViewHolder {
 
             private final TextView tvTimestamp;
@@ -287,22 +303,6 @@ public class SavedLocation extends AbstractSavedItem {
             private final ImageButton ibImage;
             private final ImageButton ibExpand;
             private final ImageButton ibCollapse;
-
-            private ViewHolder(View view) {
-                super(view);
-                tvUsername = (TextView) view.findViewById(R.id.tv_saved_location_username);
-                tvTimestamp = (TextView) view.findViewById(R.id.tv_saved_location_timestamp);
-                tvAddressShort = (TextView) view.findViewById(R.id.tv_saved_location_address_short);
-                tvAddress = (TextView) view.findViewById(R.id.tv_saved_location_address);
-                tvComment = (TextView) view.findViewById(R.id.tv_saved_location_comment);
-                ibImage = (ImageButton) view.findViewById(R.id.ib_saved_location_image);
-                ibExpand = (ImageButton) view.findViewById(R.id.ib_expand_address);
-                ibCollapse = (ImageButton) view.findViewById(R.id.ib_collapse_address);
-
-                tvUsername.setOnTouchListener(onTouchListener);
-                view.findViewById(R.id.layout_address).setOnTouchListener(onTouchListener);
-            }
-
             View.OnTouchListener onTouchListener = new View.OnTouchListener() {
                 float prevY = -1;
 
@@ -323,26 +323,24 @@ public class SavedLocation extends AbstractSavedItem {
                     return false;
                 }
             };
-        }
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new SavedItemCursorLoader(context, LOCATION);
+            private ViewHolder(View view) {
+                super(view);
+                tvUsername = (TextView) view.findViewById(R.id.tv_saved_location_username);
+                tvTimestamp = (TextView) view.findViewById(R.id.tv_saved_location_timestamp);
+                tvAddressShort = (TextView) view.findViewById(R.id.tv_saved_location_address_short);
+                tvAddress = (TextView) view.findViewById(R.id.tv_saved_location_address);
+                tvComment = (TextView) view.findViewById(R.id.tv_saved_location_comment);
+                ibImage = (ImageButton) view.findViewById(R.id.ib_saved_location_image);
+                ibExpand = (ImageButton) view.findViewById(R.id.ib_expand_address);
+                ibCollapse = (ImageButton) view.findViewById(R.id.ib_collapse_address);
+
+                tvUsername.setOnTouchListener(onTouchListener);
+                view.findViewById(R.id.layout_address).setOnTouchListener(onTouchListener);
+            }
         }
 
     }
-
-    public String toString() {
-        return "{ timestamp: " + new Date(timestamp).toString()
-                + (username != null ? ", username: "+username : "")
-                + (title != null ? ", title: "+title : "")
-                + (latitude != 0 ? ", latitude: "+latitude : "")
-                + (longitude != 0 ? ", longitude: "+longitude : "")
-                + (address != null ? ", address: ["+address + "]" : "")
-                + (bitmap != null ? ", bitmap: ["+bitmap.getCurrentImage().getByteCount() + "]" : "")
-                + " }";
-    }
-
 
     private static class LoadBitmap implements Runnable {
         private SavedLocation savedLocation;

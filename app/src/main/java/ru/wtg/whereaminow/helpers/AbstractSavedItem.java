@@ -25,7 +25,7 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
  * Created 12/9/16.
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("ALL")
 abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820032L;
@@ -34,9 +34,8 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     static transient private Map<String,DBHelper> dbHelpers = new HashMap<>();
 
     private transient static String LAST = "last";
-    transient private String itemType;
     protected transient Context context;
-
+    transient private String itemType;
     transient private long number;
 
     @SuppressWarnings("WeakerAccess")
@@ -62,24 +61,9 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         return dbHelpers.get(itemType);
     }
 
-    public void save(SimpleCallback<T> onSaveCallback) {
-        dbHelpers.get(itemType).save(this);
-        if(onSaveCallback != null) {
-            onSaveCallback.call((T) this);
-        }
-    }
-
-    public void delete(SimpleCallback<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
-        dbHelpers.get(itemType).deleteByItem(this);
-        if(onDeleteCallback != null) {
-            onDeleteCallback.call(this);
-        }
-    }
-
     public static int getCount(String itemType) {
         return dbHelpers.get(itemType).getCount();
     }
-
 
     public static AbstractSavedItem getItemByPosition(String itemType, int position) {
         Cursor cursor = dbHelpers.get(itemType).getByPosition(position);
@@ -100,6 +84,20 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         dbHelpers.get(itemType).clear();
     }
 
+    public void save(SimpleCallback<T> onSaveCallback) {
+        dbHelpers.get(itemType).save(this);
+        if(onSaveCallback != null) {
+            onSaveCallback.call((T) this);
+        }
+    }
+
+    public void delete(SimpleCallback<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
+        dbHelpers.get(itemType).deleteByItem(this);
+        if(onDeleteCallback != null) {
+            onDeleteCallback.call(this);
+        }
+    }
+
     public long getNumber(){
         return number;
     }
@@ -111,9 +109,9 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     abstract static public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> extends RecyclerView.Adapter implements LoaderManager.LoaderCallbacks<Cursor> {
 
         protected final Context context;
-        protected Cursor cursor;
         private final LinearLayoutManager layoutManager;
         private final RecyclerView list;
+        protected Cursor cursor;
         protected SimpleCallback<T> onItemClickListener;
         protected SimpleCallback<T> onItemTouchListener;
         protected SimpleCallback<Cursor> onCursorReloadListener;

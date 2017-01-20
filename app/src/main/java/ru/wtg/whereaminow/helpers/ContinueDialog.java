@@ -39,6 +39,7 @@ public class ContinueDialog {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                //noinspection unchecked
                 callback.call(null);
             }
         });

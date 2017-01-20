@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -41,6 +44,23 @@ public class DBHelper<T extends AbstractSavedItem> {
         mDB = mDBHelper.getWritableDatabase();
         if(!isTableExists(fields.itemType)) {
             mDB.execSQL(fields.getCreateString());
+        } else {
+
+            Cursor cursor = mDB.query(fields.itemType, null, null, null, null, null, null);
+            ArrayList<String> columnNames = new ArrayList<>();
+            columnNames.addAll(Arrays.asList(cursor.getColumnNames()));
+            cursor.close();
+            ArrayList<Fields.FieldOptions> addColumns = new ArrayList<>();
+            for(Map.Entry<String, Fields.FieldOptions> entry:fields.fields.entrySet()){
+                if(columnNames.indexOf(entry.getKey()+"_") < 0) {
+                    addColumns.add(entry.getValue());
+                }
+            }
+            if(addColumns.size() > 0){
+                mDB.execSQL(fields.getUpdateString(addColumns));
+                mDB.close();
+                mDB = mDBHelper.getWritableDatabase();
+            }
         }
     }
 
@@ -126,6 +146,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     public T load(Cursor cursor) {
         T item = null;
         try {
+            //noinspection unchecked
             item = (T) fields.classType.getConstructor(Context.class).newInstance(context);
         } catch (InvocationTargetException e) {
             e.printStackTrace();
@@ -218,16 +239,6 @@ public class DBHelper<T extends AbstractSavedItem> {
         final Class classType;
         TreeMap<String,FieldOptions> fields = new TreeMap<>();
 
-        class FieldOptions {
-            String name;
-            String type;
-            String sourceType;
-            boolean serialize;
-            public String toString(){
-                return "{"+name+", "+type+", "+sourceType+", "+ serialize +"}";
-            }
-        }
-
         @SuppressWarnings("WeakerAccess")
         public Fields(String itemType, Class item) {
             this.itemType = itemType;
@@ -290,6 +301,27 @@ public class DBHelper<T extends AbstractSavedItem> {
             res += ")";
             return res;
         }
+
+        public String getUpdateString(ArrayList<FieldOptions> newFields) {
+            String res = "";
+            for(FieldOptions x: newFields){
+                res += "alter table " + itemType + " add column ";
+                res += x.name + "_ " + x.type + ";\n";
+            }
+//            res += ")";
+            return res;
+        }
+
+        class FieldOptions {
+            String name;
+            String type;
+            String sourceType;
+            boolean serialize;
+            public String toString(){
+                return "{"+name+", "+type+", "+sourceType+", "+ serialize +"}";
+            }
+        }
+
 
     }
 

@@ -49,12 +49,8 @@ import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
-import static ru.wtg.whereaminow.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
 import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TRAFFIC;
+import static ru.wtg.whereaminow.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
@@ -62,7 +58,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_DISCONNECTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
@@ -75,32 +70,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private SupportMapFragment mapFragment;
     private State state;
-    SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
-        @Override
-        public void call(Integer id) {
-            switch(id) {
-                case R.id.nav_settings:
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                    break;
-                case R.id.nav_traffic:
-                    state.fire(REQUEST_MODE_TRAFFIC);
-                    break;
-                case R.id.nav_satellite:
-                    if (map.getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
-                        state.fire(REQUEST_MODE_SATELLITE);
-                    } else {
-                        state.fire(REQUEST_MODE_NORMAL);
-                    }
-                    break;
-                case R.id.nav_terrain:
-                    if (map.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
-                        state.fire(REQUEST_MODE_TERRAIN);
-                    else
-                        state.fire(REQUEST_MODE_NORMAL);
-                    break;
-            }
-        }
-    };
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -111,14 +80,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (!o.has(RESPONSE_STATUS)) return;
 
                     switch (o.getString(RESPONSE_STATUS)) {
-                        case RESPONSE_STATUS_DISCONNECTED:
-                            state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-                                @Override
-                                public void call(Integer number, MyUser myUser) {
-                                    myUser.removeViews();
-                                }
-                            });
-                            break;
+//                        case RESPONSE_STATUS_DISCONNECTED:
+//                            state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+//                                @Override
+//                                public void call(Integer number, MyUser myUser) {
+//                                    myUser.removeViews();
+//                                }
+//                            });
+//                            break;
                         case RESPONSE_STATUS_ACCEPTED:
                             SmartLocation.with(MainActivity.this).location().stop();
                             if (o.has(RESPONSE_NUMBER)) {
@@ -194,17 +163,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         System.out.println("BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE
         + ", flavor=" + BuildConfig.FLAVOR);
 
-//        System.out.println("APP_ID:"+state.getStringPreference("device_id", null));
-//
-//        System.out.println("TOKENFIRE:"+FirebaseInstanceId.getInstance().getToken());
-
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        state.registerEntityHolder(new FabViewHolder(this).setView(findViewById(R.id.fab_layout)));
-        state.registerEntityHolder(new DrawerViewHolder(this).setViewAndToolbar(findViewById(R.id.drawer_layout),toolbar).setCallback(onNavigationDrawerCallback));
-        state.registerEntityHolder(new SnackbarViewHolder(getApplicationContext()).setLayout(findViewById(R.id.fab_layout)));
-
+        state.registerEntityHolder(new FabViewHolder(this));
+        state.registerEntityHolder(new DrawerViewHolder(this));
+        state.registerEntityHolder(new SnackbarViewHolder(this));
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -217,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onResume() {
         super.onResume();
-        System.out.println("RESUME");
+
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         registerReceiver(receiver, intentFilter);
 
@@ -270,24 +234,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             super.onBackPressed();
         }
     }
-
-    /*@Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        getMenuInflater().inflate(R.menu.user_menu, menu);
-
-        Object tag = v.getTag();
-        if(tag != null) {
-            int number = (int) tag;
-            MyUser user = state.getUsers().getUsers().get(number);
-            menu.setHeaderTitle(user.getProperties().getDisplayName());
-            user.fire(CREATE_CONTEXT_MENU, menu);
-        } else {
-            state.fire(CREATE_CONTEXT_MENU, menu);
-        }
-
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -407,6 +353,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for(String s:classes){
             try {
+                //noinspection unchecked
                 Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("ru.wtg.whereaminow.holders."+s);
                 Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
                 state.registerEntityHolder(ctor.newInstance(this));

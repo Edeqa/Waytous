@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 12;
+    public final static int SERVER_BUILD = 13;
 
 // debug local version
     public final static String WSS_SERVER_HOST = "https://10.0.0.96";
@@ -24,6 +24,8 @@ public class Constants {
     public final static String BROADCAST_MESSAGE = "message";
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
+    public final static int INACTIVE_USER_DISMISS_DELAY = 600;
+
 
     public final static int HTTP_PORT = 8080;
     public final static int WSS_PORT = 8081;
@@ -58,8 +60,11 @@ public class Constants {
     public static final String RESPONSE_STATUS_ACCEPTED = "accepted";
     public static final String RESPONSE_STATUS_UPDATED = "updated";
     public static final String RESPONSE_STATUS_CHECK = "check";
-    public static final String RESPONSE_STATUS_DISCONNECTED = "disconnected";
+//    public static final String RESPONSE_STATUS_DISCONNECTED = "disconnected";
     public static final String RESPONSE_STATUS_ERROR = "error";
+
+    public static final String REQUEST_DELIVERY_CONFIRMATION = "delivery";
+
 
     public static final String RESPONSE_MESSAGE = "message";
     public static final String RESPONSE_TOKEN = "token";
@@ -68,8 +73,9 @@ public class Constants {
     public static final String RESPONSE_INITIAL = "initial";
     public static final String RESPONSE_PRIVATE = "to";
 
-    public static final String USER_DISMISSED = "dismissed";
     public static final String USER_JOINED = "joined";
+    public static final String USER_DISMISSED = "dismissed";
+    public static final String USER_LEFT = "left";
     public static final String USER_LATITUDE = "lat";
     public static final String USER_LONGITUDE = "lng";
     public static final String USER_ALTITUDE = "alt";

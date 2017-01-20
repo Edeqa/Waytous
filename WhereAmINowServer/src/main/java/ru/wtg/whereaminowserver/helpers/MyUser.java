@@ -38,6 +38,7 @@ public class MyUser {
         this.webSocket = webSocket;
         this.deviceId = deviceId;
         created = new Date().getTime();
+        setChanged();
 //        positions = new ArrayList<MyPosition>();
 
         newControl();

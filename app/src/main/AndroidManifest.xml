@@ -83,17 +83,35 @@
                 <data android:scheme="https" />
             </intent-filter>
             -->
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                &lt;!&ndash;<category android:name="android.intent.category.BROWSABLE" />&ndash;&gt;
 
                 <data android:host="*" />
                 <data android:pathPrefix="/track/" />
                 <data android:port="8080" />
                 <data android:scheme="https" />
+            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:pathPrefix="/track/"
+                    android:port="8080"
+                    android:scheme="orw"/>
+                <data
+                    android:host="*"
+                    android:pathPrefix="/track/"
+                    android:port="8080"
+                    android:scheme="https"/>
             </intent-filter>
         </activity>
         <activity

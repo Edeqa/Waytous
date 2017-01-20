@@ -20,6 +20,7 @@ import ru.wtg.whereaminow.helpers.Utils;
 
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
 
 /**
@@ -102,6 +103,14 @@ public class GpsHolder extends AbstractPropertyHolder {
                         e.printStackTrace();
                     }
                 }
+                break;
+            case TRACKING_ACTIVE:
+                smartLocation.oneFix().start(locationUpdateListener);
+                smartLocation.continuous().start(locationUpdateListener);
+//                Location lastLocation = State.getInstance().getMe().getLocation();
+//                if(lastLocation != null) {
+//                    locationUpdateListener.onLocationUpdated(lastLocation);
+//                }
                 break;
         }
         return true;
