@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.helpers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.MyWssServer;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_SAVED_LOCATION;
@@ -42,7 +42,9 @@ public class SavedLocationRequestHolder implements RequestHolder {
         if(request.has(USER_ADDRESS)) {
             result.put(USER_ADDRESS, request.getString(USER_ADDRESS));
         }
-        result.put(USER_NAME, request.getString(USER_NAME));
+        if(request.has(USER_NAME)) {
+            result.put(USER_NAME, request.getString(USER_NAME));
+        }
         if(request.has(USER_DESCRIPTION)) {
             result.put(USER_DESCRIPTION, request.getString(USER_DESCRIPTION));
         }

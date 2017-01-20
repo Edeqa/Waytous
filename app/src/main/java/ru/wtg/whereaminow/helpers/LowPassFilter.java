@@ -4,10 +4,11 @@ package ru.wtg.whereaminow.helpers;
  * Created 11/26/16.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class LowPassFilter {
 
-    private float filteredValue;
     private final float smoothing;
+    private float filteredValue;
     private boolean firstTime = true;
 
     public LowPassFilter(float smoothing) {

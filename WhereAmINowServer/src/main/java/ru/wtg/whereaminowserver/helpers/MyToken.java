@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
@@ -155,12 +156,6 @@ public class MyToken {
         return dest;
     }
 
-    public void pushToAllFrom(JSONObject o, MyUser fromUser) {
-        ArrayList<MyUser> dest = ooooooo(o, fromUser);
-        System.out.println("PUSH:to all:"+o);
-        pushToUsers(o,dest);
-    }
-
     public void sendToFrom(JSONObject o, int toUserNumber, MyUser fromUser) {
         ArrayList<MyUser> dest = ooo(o,toUserNumber,fromUser);
         System.out.println("SEND:to user:"+toUserNumber+":"+o);
@@ -179,12 +174,6 @@ public class MyToken {
         return dest;
     }
 
-    public void pushToFrom(JSONObject o, int toUserNumber, MyUser fromUser) {
-        ArrayList<MyUser> dest = ooo(o,toUserNumber,fromUser);
-        System.out.println("PUSH:to user:"+toUserNumber+":"+o);
-        pushToUsers(o,dest);
-    }
-
     public void sendToFrom(JSONObject o, MyUser toUser, MyUser fromUser) {
         ArrayList<MyUser> dest = new ArrayList<MyUser>();
         dest.add(toUser);
@@ -195,29 +184,31 @@ public class MyToken {
     }
 
     public void sendToUsers(JSONObject o, ArrayList<MyUser> users) {
-        for(MyUser x:users){
-            WebSocket conn = x.getConnection();
-            if(conn != null && conn.isOpen()){
-                conn.send(o.toString());
+
+        if(o.has(REQUEST_PUSH)) {
+            o.remove(REQUEST_PUSH);
+            JSONObject push = new JSONObject();
+            try {
+                o.put(RESPONSE_TOKEN, id);
+                push.put("data", o);
+//            push.put("to")
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+
+            for(MyUser x:users){
+                sendToFirebase(x, push, "");
+            }
+        } else {
+
+            for (MyUser x : users) {
+                WebSocket conn = x.getConnection();
+                if (conn != null && conn.isOpen()) {
+                    conn.send(o.toString());
+                }
             }
         }
     }
-
-    public void pushToUsers(JSONObject o, ArrayList<MyUser> users) {
-        JSONObject push = new JSONObject();
-        try {
-            o.put(RESPONSE_TOKEN, id);
-            push.put("data", o);
-//            push.put("to")
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
-
-        for(MyUser x:users){
-            sendToFirebase(x, push, "");
-        }
-    }
-
 
     private void sendToFirebase(MyUser to, JSONObject json, String category) {
         try {
@@ -307,11 +298,12 @@ public class MyToken {
             if(x.getValue() == user) continue;
             MyUser.MyPosition p = x.getValue().getPosition();
 
-            System.out.println("AAA:"+x.getValue());
-
             try {
-                if (p.timestamp > 0 && x.getValue().getConnection().getRemoteSocketAddress() != null) {
-                    JSONObject o = p.toJSON();
+                System.out.println("INITIAL:"+x.getValue().getNumber()+":"+p);
+
+                if (/*p.timestamp > 0 && */x.getValue().getConnection().getRemoteSocketAddress() != null) {
+                    JSONObject o = new JSONObject();
+                    if(p != null) o = p.toJSON();
 
                     o.put(RESPONSE_NUMBER, x.getValue().getNumber());
                     o.put(USER_COLOR, x.getValue().getColor());

@@ -81,7 +81,7 @@ public class MyUser {
                     }
                     while(iterLocs.hasNext()) {
                         Location loc = iterLocs.next();
-                        if(loc.getLatitude() == pos.latitude && loc.getLongitude() == pos.longitude) {
+                        if(loc != null && loc.getLatitude() == pos.latitude && loc.getLongitude() == pos.longitude) {
                             if(iterPozs.hasNext()) {
                                 pos = iterPozs.next();
                             } else {

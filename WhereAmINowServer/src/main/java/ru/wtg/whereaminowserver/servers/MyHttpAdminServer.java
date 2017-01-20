@@ -1,6 +1,5 @@
-package ru.wtg.whereaminowserver.helpers;
+package ru.wtg.whereaminowserver.servers;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -17,15 +16,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
+import ru.wtg.whereaminowserver.helpers.MyToken;
+import ru.wtg.whereaminowserver.helpers.MyUser;
+
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.A;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.COLSPAN;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.DIV;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.H1;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HTTP_EQUIV;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ID;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ROWSPAN;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SMALL;
@@ -47,11 +53,29 @@ public class MyHttpAdminServer implements HttpHandler {
     private HtmlGenerator html = new HtmlGenerator();
     private volatile MyWssServer wssProcessor;
 
+    public static Map<String, List<String>> splitQuery(String url) throws UnsupportedEncodingException {
+        final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
+        String[] a = url.split("\\?");
+
+        if(a.length>0) {
+            final String[] pairs = a[a.length - 1].split("&");
+            for (String pair : pairs) {
+                final int idx = pair.indexOf("=");
+                final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
+                if (!query_pairs.containsKey(key)) {
+                    query_pairs.put(key, new LinkedList<String>());
+                }
+                final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1), "UTF-8") : null;
+                query_pairs.get(key).add(value);
+            }
+        }
+        return query_pairs;
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        System.out.println("\nAdmin server processing");
+//        System.out.println("\nAdmin server processing");
 
         StringBuilder builder = new StringBuilder();
 
@@ -114,7 +138,7 @@ public class MyHttpAdminServer implements HttpHandler {
         html.addHead().add(TITLE).with("Admin");
         html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
 
-//        html.getHead().add(META).with(HTTP_EQUIV,"refresh").with(CONTENT,2);
+        html.getHead().add(META).with(HTTP_EQUIV,"refresh").with(CONTENT,2);
 
         html.addBody().with(CLASS,"body");
 
@@ -298,25 +322,6 @@ public class MyHttpAdminServer implements HttpHandler {
 
         }
 
-    }
-
-    public static Map<String, List<String>> splitQuery(String url) throws UnsupportedEncodingException {
-        final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
-        String[] a = url.split("\\?");
-
-        if(a.length>0) {
-            final String[] pairs = a[a.length - 1].split("&");
-            for (String pair : pairs) {
-                final int idx = pair.indexOf("=");
-                final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
-                if (!query_pairs.containsKey(key)) {
-                    query_pairs.put(key, new LinkedList<String>());
-                }
-                final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1), "UTF-8") : null;
-                query_pairs.get(key).add(value);
-            }
-        }
-        return query_pairs;
     }
 
     public MyWssServer getWssProcessor() {

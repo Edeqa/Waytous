@@ -22,21 +22,15 @@ public class LightSensorManager implements SensorEventListener {
     public static final String DAY = "day";
     public static final String NIGHT = "night";
     public static final String SATELLITE = "satellite";
-
-    private SimpleCallback environmentChangeCallback;
-
-    private enum Environment {DAY, NIGHT}
-
     private static final float SMOOTHING = 10;
     private static final int THRESHOLD_DAY_LUX = 30;
     private static final int THRESHOLD_NIGHT_LUX = 20;
     private static final String TAG = "LightSensorManager";
-
     private final SensorManager sensorManager;
     private final Sensor lightSensor;
-    private Environment currentEnvironment;
     private final LowPassFilter lowPassFilter;
-
+    private SimpleCallback environmentChangeCallback;
+    private Environment currentEnvironment;
     public LightSensorManager(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
@@ -65,7 +59,6 @@ public class LightSensorManager implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
-
     public void setOnEnvironmentChangeListener(SimpleCallback callback){
         environmentChangeCallback = callback;
     }
@@ -88,9 +81,11 @@ public class LightSensorManager implements SensorEventListener {
             Log.i(TAG, "switch on luxLevel=" + luxLevel);
             switch (currentEnvironment) {
                 case DAY:
+                    //noinspection unchecked
                     environmentChangeCallback.call(DAY);
                     break;
                 case NIGHT:
+                    //noinspection unchecked
                     environmentChangeCallback.call(NIGHT);
                     break;
             }
@@ -99,6 +94,8 @@ public class LightSensorManager implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    private enum Environment {DAY, NIGHT}
 
 }
 

@@ -32,19 +32,17 @@ import static android.view.View.VISIBLE;
 
 public class UserMessage extends AbstractSavedItem {
 
-    static final long serialVersionUID = -6395904747332820028L;
-
-    private static final String MESSAGE = "message";
-
     public static final int TYPE_MESSAGE = 0;
     public static final int TYPE_PRIVATE = 1;
     public static final int TYPE_JOINED = 2;
     public static final int TYPE_USER_JOINED = 3;
     public static final int TYPE_USER_DISMISSED = 4;
-
+    static final long serialVersionUID = -6395904747332820028L;
+    private static final String MESSAGE = "message";
     private String from;
     private String to;
     private String body;
+    private String delivery;
     private long timestamp;
     private int type;
 
@@ -60,6 +58,26 @@ public class UserMessage extends AbstractSavedItem {
 
     public static DBHelper getDb(){
         return getDb(MESSAGE);
+    }
+
+    public static int getCount(){
+        return getCount(MESSAGE);
+    }
+
+    public static void clear(){
+        clear(MESSAGE);
+    }
+
+    public static UserMessage getItemByPosition(int position) {
+        return (UserMessage) getItemByPosition(MESSAGE, position);
+    }
+
+    public static UserMessage getItemByNumber(long number) {
+        return (UserMessage) getItemByNumber(MESSAGE, number);
+    }
+
+    public static UserMessage getItemByCursor(Cursor cursor) {
+        return (UserMessage) getItemByCursor(MESSAGE, cursor);
     }
 
     public String getBody() {
@@ -90,14 +108,6 @@ public class UserMessage extends AbstractSavedItem {
         this.to = to.getProperties().getDisplayName();
     }
 
-    public static int getCount(){
-        return getCount(MESSAGE);
-    }
-
-    public static void clear(){
-        clear(MESSAGE);
-    }
-
     public int getType() {
         return type;
     }
@@ -106,16 +116,21 @@ public class UserMessage extends AbstractSavedItem {
         this.type = type;
     }
 
-    public static UserMessage getItemByPosition(int position) {
-        return (UserMessage) getItemByPosition(MESSAGE, position);
+    public String getDelivery() {
+        return delivery;
     }
 
-    public static UserMessage getItemByNumber(long number) {
-        return (UserMessage) getItemByNumber(MESSAGE, number);
+    public void setDelivery(String delivery) {
+        this.delivery = delivery;
     }
 
-    public static UserMessage getItemByCursor(Cursor cursor) {
-        return (UserMessage) getItemByCursor(MESSAGE, cursor);
+    public String toString() {
+        return "{ timestamp: " + new Date(timestamp).toString()
+                + ", type: " + type
+                + (from != null ? ", from: "+from : "")
+                + (to != null ? ", to: "+to : "")
+                + (body != null ? ", body: ["+body + "]" : "")
+                + " }";
     }
 
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
@@ -243,6 +258,11 @@ public class UserMessage extends AbstractSavedItem {
             this.onItemReplyListener = onItemReplyListener;
         }
 
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new SavedItemCursorLoader(context, MESSAGE);
+        }
+
         class UserMessageViewHolder extends RecyclerView.ViewHolder {
 
             private final TextView tvTimestamp;
@@ -265,20 +285,6 @@ public class UserMessage extends AbstractSavedItem {
             }
         }
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new SavedItemCursorLoader(context, MESSAGE);
-        }
-
-    }
-
-    public String toString() {
-        return "{ timestamp: " + new Date(timestamp).toString()
-                + ", type: " + type
-                + (from != null ? ", from: "+from : "")
-                + (to != null ? ", to: "+to : "")
-                + (body != null ? ", body: ["+body + "]" : "")
-                + " }";
     }
 
 

@@ -1,9 +1,10 @@
 package ru.wtg.whereaminow.holders;
 
-import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import ru.wtg.whereaminow.MainActivity;
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.SystemMessage;
@@ -30,13 +31,15 @@ public class SnackbarViewHolder extends AbstractViewHolder {
     public static final String TYPE = "snackbar";
     public static final String CUSTOM_SNACK = "custom_snack";
 
-    private final Context context;
+    private final MainActivity context;
     private Snackbar snackbar;
 
     private boolean tokenCreatedShown = false;
 
-    public SnackbarViewHolder(Context context) {
+    public SnackbarViewHolder(MainActivity context) {
         this.context = context;
+
+        setLayout(context.findViewById(R.id.fab_layout));
     }
 
     @Override
@@ -59,7 +62,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
         return null;
     }
 
-    public SnackbarViewHolder setLayout(final View layout) {
+    public void setLayout(final View layout) {
 
         snackbar = Snackbar.make(layout, "Starting...", Snackbar.LENGTH_INDEFINITE);
 
@@ -77,7 +80,6 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 setLayout(layout);
             }
         });
-        return this;
     }
 
     @Override

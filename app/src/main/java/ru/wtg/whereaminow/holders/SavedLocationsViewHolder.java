@@ -63,6 +63,7 @@ import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminow.holders.MarkerViewHolder.MARKER_CLICK;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_SAVED_LOCATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
@@ -144,19 +145,20 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     public void perform(JSONObject o) throws JSONException {
 
         String address = null;
-        final String name;
+        String name = null;
         String description = null;
         final Float lat, lng;
         final int number;
         number = o.getInt(USER_NUMBER);
         lat = (float) o.getDouble(USER_LATITUDE);
         lng = (float) o.getDouble(USER_LONGITUDE);
-        name = o.getString(USER_NAME);
+        if(o.has(USER_NAME)) name = o.getString(USER_NAME);
         if(o.has(USER_ADDRESS)) address = o.getString(USER_ADDRESS);
         if(o.has(USER_DESCRIPTION)) description = o.getString(USER_DESCRIPTION);
 
         final String finalAddress = address;
         final String finalDescription = description;
+        final String finalName = name;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -164,7 +166,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                 final AlertDialog dialog = new AlertDialog.Builder(context).create();
                 dialog.setTitle("Add location");
                 dialog.setMessage("You've got the location from " + State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName()
-                        + ": " + name + (finalAddress == null ? "" : ", address: " + finalAddress) + (finalDescription == null ? "" : ", description: " + finalDescription) + ". Add it to your saved locations list?");
+                        + ": " + (finalName == null ? "" : finalName) + (finalAddress == null ? "" : ", address: " + finalAddress) + (finalDescription == null ? "" : ", description: " + finalDescription) + ". Add it to your saved locations list?");
 
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
@@ -174,7 +176,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         loc.setLatitude(lat);
                         loc.setLongitude(lng);
                         loc.setTimestamp(new Date().getTime());
-                        loc.setUsername(name);
+                        loc.setUsername(finalName);
                         loc.setAddress(finalAddress);
                         loc.save(context);
 
@@ -662,36 +664,59 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                     System.out.println("SHARE_SAVED_LOCATION");
                     break;
                 case DROPPED_TO_USER:
-                    MyUser user = (MyUser) object;
-                    myUser.fire(SEND_SAVED_LOCATION, user);
+                    final MyUser toUser = (MyUser) object;
+                    myUser.fire(SEND_SAVED_LOCATION, toUser);
                     break;
                 case SEND_SAVED_LOCATION:
                     System.out.println("SEND_SAVED_LOCATION");
                     if(isSavedLocation(myUser)){
-                        user = (MyUser) object;
+                        final MyUser user = (MyUser) object;
 
-                        SavedLocation savedLocation = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
+                        final SavedLocation savedLocation = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
 
-                        if(user != null && !isSavedLocation(user) && user != State.getInstance().getMe()){
-                            State.getInstance().getTracking()
-                                    .put(USER_LATITUDE, savedLocation.getLatitude())
-                                    .put(USER_LONGITUDE, savedLocation.getLongitude())
-                                    .put(USER_ADDRESS, savedLocation.getAddress())
-                                    .put(USER_NAME, savedLocation.getUsername())
-                                    .put(USER_DESCRIPTION, savedLocation.getTitle())
-                                    .put(REQUEST_PUSH, true)
-                                    .put(RESPONSE_PRIVATE, user.getProperties().getNumber())
-                                    .send(REQUEST_SAVED_LOCATION);
-                        } else if (user == null) {
-                            State.getInstance().getTracking()
-                                    .put(USER_LATITUDE, savedLocation.getLatitude())
-                                    .put(USER_LONGITUDE, savedLocation.getLongitude())
-                                    .put(USER_ADDRESS, savedLocation.getAddress())
-                                    .put(USER_NAME, savedLocation.getUsername())
-                                    .put(USER_DESCRIPTION, savedLocation.getTitle())
-                                    .put(REQUEST_PUSH, true)
-                                    .send(REQUEST_SAVED_LOCATION);
-                        }
+                        final AlertDialog dialog = new AlertDialog.Builder(context).create();
+                        dialog.setTitle("Send location");
+                        dialog.setMessage("You're going to send the location " + myUser.getProperties().getDisplayName()
+                                + " to " + (user == null ? "all" : user.getProperties().getDisplayName()) + ". Continue?");
+
+                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                                if(user != null && !isSavedLocation(user) && user != State.getInstance().getMe()){
+                                    State.getInstance().getTracking()
+                                            .put(USER_LATITUDE, savedLocation.getLatitude())
+                                            .put(USER_LONGITUDE, savedLocation.getLongitude())
+                                            .put(USER_ADDRESS, savedLocation.getAddress())
+                                            .put(USER_NAME, savedLocation.getUsername())
+                                            .put(USER_DESCRIPTION, savedLocation.getTitle())
+                                            .put(REQUEST_PUSH, true)
+                                            .put(RESPONSE_PRIVATE, user.getProperties().getNumber())
+                                            .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
+                                            .send(REQUEST_SAVED_LOCATION);
+                                } else if (user == null) {
+                                    State.getInstance().getTracking()
+                                            .put(USER_LATITUDE, savedLocation.getLatitude())
+                                            .put(USER_LONGITUDE, savedLocation.getLongitude())
+                                            .put(USER_ADDRESS, savedLocation.getAddress())
+                                            .put(USER_NAME, savedLocation.getUsername())
+                                            .put(USER_DESCRIPTION, savedLocation.getTitle())
+                                            .put(REQUEST_PUSH, true)
+                                            .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
+                                            .send(REQUEST_SAVED_LOCATION);
+                                }
+
+                            }
+                        });
+                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                System.out.println("NOADD");
+                            }
+                        });
+                        dialog.show();
+
 
                     }
                     break;

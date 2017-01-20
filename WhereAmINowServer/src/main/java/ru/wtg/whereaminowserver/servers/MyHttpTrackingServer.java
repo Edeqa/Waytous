@@ -1,4 +1,4 @@
-package ru.wtg.whereaminowserver.helpers;
+package ru.wtg.whereaminowserver.servers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -9,10 +9,15 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URI;
 
+import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
+
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.A;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.BR;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.DIV;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HTTP_EQUIV;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ID;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
@@ -65,6 +70,8 @@ public class MyHttpTrackingServer implements HttpHandler {
 
         HtmlGenerator.Tag body = html.addBody();
         body.with("Here will be a web version soon...");
+        body.add(BR);
+        body.add(A).with(HREF, mobileRedirect).with("Click for start mobile client");
 
         byte[] bytes = html.build().getBytes();
 

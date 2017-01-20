@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.neovisionaries.ws.client.PayloadGenerator;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -34,6 +35,7 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -68,7 +70,6 @@ public class MyTracking {
 
     private final static int CONNECTION_TIMEOUT = 5;
     private final static int RECONNECTION_DELAY = 5;
-//    private final static int PING_INTERVAL = 60;
 
 //    private NetworkStateChangeReceiver receiver;
     private State state;
@@ -81,6 +82,7 @@ public class MyTracking {
     private String token;
     private boolean newTracking;
     private Handler handler = new Handler(Looper.myLooper());
+    @SuppressWarnings("FieldCanBeLocal")
     private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
         @Override
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
@@ -117,6 +119,7 @@ public class MyTracking {
         @Override
         public void onTextMessage(WebSocket websocket, String message) {
             if(TRACKING_DISABLED.equals(getStatus())) return;
+//            Log.i("MyTracking","onTextMessage");
 
             try {
                 JSONObject o = new JSONObject(message);
@@ -235,16 +238,22 @@ public class MyTracking {
         state = State.getInstance();
 
         try {
-
             WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
             SSLContext context = SSLContext.getDefault();//NaiveSSLContext.getInstance("TLS");
             factory.setSSLContext(context);
             webSocket = factory.createSocket(serverUri.toString());
-//            webSocket.setPingInterval(PING_INTERVAL*1000);
 
             Log.i("MyTracking","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
 
             webSocket.addListener(webSocketListener);
+
+            webSocket.setPingInterval(INACTIVE_USER_DISMISS_DELAY / 2 * 1000);
+            webSocket.setPingPayloadGenerator(new PayloadGenerator() {
+                @Override
+                public byte[] generate() {
+                    return "1".getBytes();
+                }
+            });
         } catch (NoSuchAlgorithmException | IOException e1) {
             e1.printStackTrace();
         }
@@ -260,6 +269,7 @@ public class MyTracking {
             setStatus(TRACKING_RECONNECTING);
             trackingListener.onJoining(getToken());
         }
+        System.out.println("CONNECT1");
         webSocket.connectAsynchronously();
     }
 
@@ -268,7 +278,11 @@ public class MyTracking {
         Log.i("MyTracking","reconnect");
         setStatus(TRACKING_RECONNECTING);
         trackingListener.onReconnecting();
-
+        try {
+            webSocket = webSocket.recreate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -453,12 +467,10 @@ public class MyTracking {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
                 Log.i("MyTracking","reconnectRunnable");
-                webSocket = webSocket.recreate().connect();
+                webSocket.connect();
             } catch (WebSocketException e) {
                 Log.e("MyTracking","reconnectRunnable:error:" + e.getMessage());
                 reconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }

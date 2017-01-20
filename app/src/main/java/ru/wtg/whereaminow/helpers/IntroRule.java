@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng;
  * Created 12/31/16.
  */
 
+@SuppressWarnings("unused")
 public class IntroRule {
 
     public static final int LINK_TO_OPTIONS_MENU = 1;

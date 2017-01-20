@@ -1,11 +1,11 @@
 package ru.wtg.whereaminow.helpers;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,6 +29,7 @@ public class MyUsers {
     private HashMap<Integer,MyUser> users;
     private int myNumber = 0;
 
+    @SuppressLint("UseSparseArrays")
     public MyUsers(){
         users = new HashMap<>();
     }
@@ -119,10 +120,6 @@ public class MyUsers {
         return myUser;
     }
 
-    public interface Callback {
-        void call(Integer number,MyUser myUser);
-    }
-
     public synchronized HashMap<Integer,MyUser> getUsers(){
         return users;
     }
@@ -164,6 +161,10 @@ public class MyUsers {
             }
         }
         return count;
+    }
+
+    public interface Callback {
+        void call(Integer number,MyUser myUser);
     }
 
 }

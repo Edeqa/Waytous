@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
@@ -49,6 +50,7 @@ import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.USER_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
@@ -326,14 +328,26 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 if (etMessage.getText().toString().length() > 0) {
                     if(State.getInstance().tracking_active()) {
                         if (privateMessage && toUser != null) {
+//                            UserMessage m = new UserMessage(context);
+//                            m.setBody(etMessage.getText().toString());
+//                            m.setFrom(State.getInstance().getMe());
+//                            m.save(null);
+//                            messages.add(m);
+
+
                             State.getInstance().getTracking()
                                     .put(RESPONSE_PRIVATE, toUser.getProperties().getNumber())
                                     .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString())
                                     .put(REQUEST_PUSH, true)
+                                    .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
                                     .send(REQUEST_MESSAGE);
                             toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
                         } else {
-                            State.getInstance().getTracking().put(USER_MESSAGE, etMessage.getText().toString()).put(REQUEST_PUSH, true).send(REQUEST_MESSAGE);
+                            State.getInstance().getTracking()
+                                    .put(USER_MESSAGE, etMessage.getText().toString())
+                                    .put(REQUEST_PUSH, true)
+                                    .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
+                                    .send(REQUEST_MESSAGE);
                             State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
                         }
                         reloadCursor();
@@ -370,6 +384,8 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     }
 
     public void showMessages() {
+        State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
+
         dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);

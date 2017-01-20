@@ -43,7 +43,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
 
     private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
-    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 10;
+    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 600;
 
     private final State state;
     private android.support.v4.app.NotificationCompat.Builder notification;
@@ -160,6 +160,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     private void update(String text, int defaults, int priority) {
         if(notification == null) return;
+        if(state.tracking_disabled()) return;
         if(showNotifications) {
             notification.setDefaults(defaults);
 //            notification.setDefaults(defaults != 0 ? defaults : Notification.DEFAULT_LIGHTS);

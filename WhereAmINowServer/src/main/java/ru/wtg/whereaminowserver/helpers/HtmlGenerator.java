@@ -43,13 +43,11 @@ public class HtmlGenerator {
     public static final String REL = "rel";
     public static final String STYLESHEET = "stylesheet";
     public static final String TYPE = "type";
-
-
+    public static final String BR = "br";
+    ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{BR,META}));
     private Tag body;
     private Tag head;
     private int level = 0;
-
-    ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{"br","meta"}));
 
     public HtmlGenerator() {
 
@@ -81,6 +79,11 @@ public class HtmlGenerator {
         res += body.build();
         res += "</html>";
         return res;
+    }
+
+    public void clear(){
+        head = null;
+        body = null;
     }
 
     public class Tag {
@@ -159,11 +162,6 @@ public class HtmlGenerator {
             return this;
         }
 
-    }
-
-    public void clear(){
-        head = null;
-        body = null;
     }
 
 }

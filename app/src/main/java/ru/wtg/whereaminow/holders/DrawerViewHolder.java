@@ -1,5 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,18 +10,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import java.util.ArrayList;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
+import ru.wtg.whereaminow.SettingsActivity;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
+import static ru.wtg.whereaminow.R.id.map;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TRAFFIC;
 
 /**
  * Created 11/27/16.
@@ -33,12 +42,43 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    private GoogleMap map;
+    SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
+        @Override
+        public void call(Integer id) {
+            switch(id) {
+                case R.id.nav_settings:
+                    context.startActivity(new Intent(context, SettingsActivity.class));
+                    break;
+                case R.id.nav_traffic:
+                    State.getInstance().fire(REQUEST_MODE_TRAFFIC);
+                    break;
+                case R.id.nav_satellite:
+                    if (map != null && map.getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
+                        State.getInstance().fire(REQUEST_MODE_SATELLITE);
+                    } else {
+                        State.getInstance().fire(REQUEST_MODE_NORMAL);
+                    }
+                    break;
+                case R.id.nav_terrain:
+                    if (map != null && map.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
+                        State.getInstance().fire(REQUEST_MODE_TERRAIN);
+                    else
+                        State.getInstance().fire(REQUEST_MODE_NORMAL);
+                    break;
+            }
+        }
+    };
 
     public DrawerViewHolder(MainActivity context){
         this.context = context;
+
+        setViewAndToolbar(context.findViewById(R.id.drawer_layout),(Toolbar) context.findViewById(R.id.toolbar));
+        setCallback(onNavigationDrawerCallback);
+        setMap(context.getMap());
     }
 
-    public DrawerViewHolder setViewAndToolbar(View view, final Toolbar toolbar) {
+    public void setViewAndToolbar(View view, final Toolbar toolbar) {
         drawer = (DrawerLayout) view;
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -59,7 +99,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
         toggle.syncState();
 
         navigationView = (NavigationView) drawer.findViewById(R.id.nav_view);
-        return this;
     }
 
     @Override
@@ -95,7 +134,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    public DrawerViewHolder setCallback(final SimpleCallback<Integer> callback) {
+    public void setCallback(final SimpleCallback<Integer> callback) {
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -105,7 +144,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
                 return false;
             }
         });
-        return this;
     }
 
     public boolean isDrawerOpen() {
@@ -116,7 +154,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
         drawer.closeDrawer(GravityCompat.START);
     }
 
-
     @Override
     public ArrayList<IntroRule> getIntro() {
 
@@ -125,4 +162,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return rules;
     }
 
+    public void setMap(GoogleMap map) {
+        this.map = map;
+    }
 }

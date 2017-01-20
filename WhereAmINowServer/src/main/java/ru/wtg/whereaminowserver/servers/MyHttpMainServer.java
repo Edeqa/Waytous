@@ -1,4 +1,4 @@
-package ru.wtg.whereaminowserver.helpers;
+package ru.wtg.whereaminowserver.servers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+
+import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 
@@ -24,7 +26,7 @@ public class MyHttpMainServer implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
 
         URI uri = exchange.getRequestURI();
-        System.out.println("\nMain server processing for " + uri);
+//        System.out.println("\nMain server processing for " + uri);
 
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
@@ -56,7 +58,7 @@ public class MyHttpMainServer implements HttpHandler {
             } else if(uri.getPath().startsWith("/js/")) {
                 exchange.getResponseHeaders().set("Content-Type", "text/javascript");
             } else {
-                exchange.getResponseHeaders().set("Content-Type", "text/plain");
+                exchange.getResponseHeaders().set("Content-Type", "text/html");
             }
             exchange.sendResponseHeaders(200, 0);
 

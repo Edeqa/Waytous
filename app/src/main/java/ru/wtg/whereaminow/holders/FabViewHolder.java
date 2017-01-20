@@ -47,12 +47,63 @@ public class FabViewHolder extends AbstractViewHolder {
 
     private boolean isFabMenuOpen = false;
     private LayoutInflater inflater;
+    private OnClickListener onInitialClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            State.getInstance().setGpsAccessRequested(false);
+            context.onResume();
+        }
+    };
+    private OnClickListener onClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            close(true);
+            switch (view.getId()) {
+                case R.string.exit_group:
+                    State.getInstance().fire(TRACKING_STOP);
+                    break;
+                case R.string.share_link:
+                    new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
+                    break;
+            }
+        }
+    };
+    private OnClickListener onMainClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(isFabMenuOpen){
+                close(true);
+            } else {
+                if(State.getInstance().tracking_active()){
+                    System.out.println("A");
+                    fab_buttons.removeAllViews();
+                    add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
+                    State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            add(R.string.exit_group, R.drawable.ic_clear_black_24dp).setOnClickListener(onClickListener);
+                            open(true);
+                        }
+                    });
+                } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
+                    System.out.println("B");
+                    State.getInstance().fire(TRACKING_STOP);
+                } else {
+                    System.out.println("C");
+                    State.getInstance().fire(TRACKING_NEW);
+                }
+            }
+        }
+    };
 
     public FabViewHolder(MainActivity context){
         this.context = context;
+
+        setView(context.findViewById(R.id.fab_layout));
     }
 
-    public FabViewHolder setView(View view) {
+    public void setView(View view) {
         fab_buttons = (LinearLayoutCompat) view.findViewById(R.id.fab_buttons);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -64,7 +115,6 @@ public class FabViewHolder extends AbstractViewHolder {
 
         fab_buttons.removeAllViews();
 
-        return this;
     }
 
     @Override
@@ -162,58 +212,6 @@ public class FabViewHolder extends AbstractViewHolder {
         fab_buttons.addView(button);
         return button;
     }
-
-    private OnClickListener onInitialClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            State.getInstance().setGpsAccessRequested(false);
-            context.onResume();
-        }
-    };
-
-    private OnClickListener onMainClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if(isFabMenuOpen){
-                close(true);
-            } else {
-                if(State.getInstance().tracking_active()){
-                    System.out.println("A");
-                    fab_buttons.removeAllViews();
-                    add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
-                    State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
-                    new Handler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            add(R.string.exit_group, R.drawable.ic_clear_black_24dp).setOnClickListener(onClickListener);
-                            open(true);
-                        }
-                    });
-                } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
-                    System.out.println("B");
-                    State.getInstance().fire(TRACKING_STOP);
-                } else {
-                    System.out.println("C");
-                    State.getInstance().fire(TRACKING_NEW);
-                }
-            }
-        }
-    };
-
-    private OnClickListener onClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            close(true);
-            switch (view.getId()) {
-                case R.string.exit_group:
-                    State.getInstance().fire(TRACKING_STOP);
-                    break;
-                case R.string.share_link:
-                    new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
-                    break;
-            }
-        }
-    };
 
     @Override
     public ArrayList<IntroRule> getIntro() {
