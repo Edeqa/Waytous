@@ -1,5 +1,6 @@
 package ru.wtg.whereaminowserver;
 
+import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.HttpServer;
 
 import org.java_websocket.WebSocketImpl;
@@ -74,10 +75,13 @@ public class WAINServer {
 
         MyHttpAdminServer adminServer = new MyHttpAdminServer();
         adminServer.setWssProcessor(wssProcessor);
-        server.createContext("/admin", adminServer);
+        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
         System.out.println("Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
 
-        new Thread() {
+        server.setExecutor(null); // creates a default executor
+        server.start();
+
+/*        new Thread() {
             public void run() {
                 try {
                     server.start();
@@ -85,9 +89,19 @@ public class WAINServer {
                     e.printStackTrace();
                 }
             }
-        }.start();
+        }.start();*/
 
 
     }
 
+    static class Authenticator extends BasicAuthenticator {
+        public Authenticator(String s) {
+            super(s);
+        }
+
+        @Override
+        public boolean checkCredentials(String user, String pwd) {
+            return user.equals("wtiger") && pwd.equals("richard");
+        }
+    }
 }
