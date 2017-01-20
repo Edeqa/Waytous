@@ -4,6 +4,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -238,10 +239,15 @@ public class MyWssServer extends WebSocketServer {
             System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);
 
             String ip = conn.getRemoteSocketAddress().toString();
-            JSONObject request, response = new JSONObject();
+            JSONObject request = null, response = new JSONObject();
 
-            request = new JSONObject(message);
-            if (!request.has(REQUEST_TIMESTAMP)) return;
+            try {
+                request = new JSONObject(message);
+            } catch(JSONException e) {
+                System.err.println("WSS:error in request message: "+e.getMessage());
+                return;
+            }
+            if (request == null || !request.has(REQUEST_TIMESTAMP)) return;
             long timestamp = request.getLong(REQUEST_TIMESTAMP);
         /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
             System.out.println("WSS:ignore request because of timeout");
@@ -571,15 +577,36 @@ public class MyWssServer extends WebSocketServer {
 
     public class CheckReq {
 
-        public long timestamp;
-        MyToken token;
-        String control;
-        String name;
+        private long timestamp;
+        private MyToken token;
+        private String control;
+        private String name;
 
         public CheckReq() {
             timestamp = new Date().getTime();
         }
 
+        public long getTimestamp() {
+            return timestamp;
+        }
+        public String getControl(){
+            return control;
+        }
+        public void setControl(String control){
+            this.control = control;
+        }
+        public String getName(){
+            return name;
+        }
+        public void setName(String name){
+            this.name = name;
+        }
+        public MyToken getToken(){
+            return token;
+        }
+        public void setToken(MyToken token){
+            this.token = token;
+        }
     }
 
 }

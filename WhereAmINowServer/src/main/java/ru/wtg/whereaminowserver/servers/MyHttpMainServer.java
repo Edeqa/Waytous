@@ -26,7 +26,7 @@ public class MyHttpMainServer implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
 
         URI uri = exchange.getRequestURI();
-//        System.out.println("\nMain server processing for " + uri);
+        System.out.println("\nMain server processing for " + uri);
 
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
@@ -57,6 +57,14 @@ public class MyHttpMainServer implements HttpHandler {
                 exchange.getResponseHeaders().set("Content-Type", "text/css");
             } else if(uri.getPath().startsWith("/js/")) {
                 exchange.getResponseHeaders().set("Content-Type", "text/javascript");
+            } else if(uri.getPath().startsWith("/images/")) {
+                String type = "image/";
+                String[] parts = file.getName().split("\\.");
+                if(parts.length>1){
+                    type += parts[parts.length-1];
+                } else type += "*";
+
+                exchange.getResponseHeaders().set("Content-Type", type);
             } else {
                 exchange.getResponseHeaders().set("Content-Type", "text/html");
             }

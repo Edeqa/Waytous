@@ -47,21 +47,24 @@ public class MyHttpTrackingServer implements HttpHandler {
 
         String[] parts = uri.getPath().split("/");
         String tokenId = null;
-        if(parts.length > 0){
-            tokenId = parts[parts.length-1];
+
+        if(parts.length >= 3){
+            tokenId = parts[2];
         }
 
-        String mobileRedirect = "orw://"+InetAddress.getLocalHost().getHostAddress()+":"+HTTP_PORT+"/track/"+tokenId;
-        System.out.println("Mobile redirect generated: "+mobileRedirect);
+        if(tokenId == null) {
+
+        } else {
+
+        }
+
+
 
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
 
         HtmlGenerator.Tag head = html.addHead();
-
-
-        head.add(META).with(HTTP_EQUIV,"refresh").with(CONTENT,"0;URL='"+mobileRedirect+"'");
         head.add(TITLE).with("Tracking");
 
         head.add(DIV).with(ID,"tracking-token").with(tokenId).with(STYLE,"display:none");
@@ -71,7 +74,14 @@ public class MyHttpTrackingServer implements HttpHandler {
         HtmlGenerator.Tag body = html.addBody();
         body.with("Here will be a web version soon...");
         body.add(BR);
-        body.add(A).with(HREF, mobileRedirect).with("Click for start mobile client");
+
+        if(tokenId != null) {
+            String mobileRedirect = "orw://" + InetAddress.getLocalHost().getHostAddress() + ":" + HTTP_PORT + "/track/" + tokenId;
+            System.out.println("Mobile redirect generated: " + mobileRedirect);
+            head.add(META).with(HTTP_EQUIV, "refresh").with(CONTENT, "0;URL='" + mobileRedirect + "'");
+            body.add(A).with(HREF, mobileRedirect).with("Click for start mobile client");
+        }
+
 
         byte[] bytes = html.build().getBytes();
 

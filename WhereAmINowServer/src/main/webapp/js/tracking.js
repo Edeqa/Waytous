@@ -9,4 +9,4 @@ function trackingMain() {
     console.log("BBB");
 	
 }
-window.onload = trackingMain();
+document.addEventListener("DOMContentLoaded", trackingMain);

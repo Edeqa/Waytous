@@ -1,5 +1,8 @@
 package ru.wtg.whereaminowserver.helpers;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +47,16 @@ public class HtmlGenerator {
     public static final String STYLESHEET = "stylesheet";
     public static final String TYPE = "type";
     public static final String BR = "br";
-    ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{BR,META}));
+
+    public static final String FORM = "form";
+    public static final String NAME = "name";
+    public static final String INPUT = "input";
+    public static final String SUBMIT = "submit";
+    public static final String TEXT = "text";
+    public static final String VALUE = "value";
+
+
+    ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{BR,META,INPUT}));
     private Tag body;
     private Tag head;
     private int level = 0;
@@ -149,6 +161,16 @@ public class HtmlGenerator {
 
         public Tag with(String key,int value){
             properties.put(key,String.valueOf(value));
+            return this;
+        }
+
+        public Tag with(String key,JSONObject value){
+            inner.add("var " + key + " = " + value.toString(4) + ";");
+            return this;
+        }
+
+        public Tag with(String key,JSONArray value){
+            inner.add("var " + key + " = " + value.toString(4) + ";");
             return this;
         }
 
