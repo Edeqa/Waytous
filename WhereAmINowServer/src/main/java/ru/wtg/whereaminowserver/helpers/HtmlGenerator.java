@@ -62,13 +62,8 @@ public class HtmlGenerator {
     private int level = 0;
 
     public HtmlGenerator() {
-
-
-    }
-
-    public Tag addBody(){
+        head = new Tag("head");
         body = new Tag("body");
-        return body;
     }
 
     public Tag getHead(){
@@ -77,12 +72,6 @@ public class HtmlGenerator {
 
     public Tag getBody(){
         return body;
-    }
-
-
-    public Tag addHead() {
-        head = new Tag("head");
-        return head;
     }
 
     public String build(){
@@ -94,8 +83,8 @@ public class HtmlGenerator {
     }
 
     public void clear(){
-        head = null;
-        body = null;
+        head = new Tag("head");
+        body = new Tag("body");
     }
 
     public class Tag {

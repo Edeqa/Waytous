@@ -26,7 +26,7 @@ public class MyHttpMainServer implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
 
         URI uri = exchange.getRequestURI();
-        System.out.println("\nMain server processing for " + uri);
+//        System.out.println("Main server requested: " + uri);
 
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();

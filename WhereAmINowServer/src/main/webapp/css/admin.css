@@ -8,9 +8,27 @@ body {
     font-size: 12px;
 }
 h1 {
+    font-size: 18px;
+    width: 30%;
+    border-bottom: 1px solid #000;
+}
+h2 {
     font-size: 14px;
 }
-table {
+td {
+    vertical-align:top;
+}
+table.layout {
+    width: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    border: none;
+    position: fixed;
+}
+.material-icons.md-14 {
+    font-size: 14px;
+}
+table.menu, table.summary, table.create {
     width: 100%;
     border-style: solid;
     border-width: 1px;
@@ -19,14 +37,52 @@ table {
     font-family: sans-serif;
     font-size:12px;
 }
-th {
+table.menu th {
+    text-align: left;
+    background: #ffffdd;
+    padding: 2px;
+    border: 1px solid black;
+    vertical-align: middle;
+    cursor: pointer;
+    height: 30px;
+}
+table.menu th:hover {
+    background: #dddd99;
+}
+table.menu a {
+    text-decoration: none;
+    margin-left: 24px;
+    display: block;
+}
+table.menu i {
+    margin-left: 4px;
+    float: left;
+}
+table.create {
+    width: auto;
+    border: none;
+}
+table.create th {
+    width: 150px;
+    height: 30px;
+    white-space: nowrap;
+    text-align: left;
+    background: #ffffdd;
+    padding: 2px;
+    border: 1px solid black;
+    font-size: 12px;
+}
+table.create td {
+    vertical-align: middle;
+}
+table.summary th {
     text-align: center;
     background: #ffffdd;
     padding: 2px;
     border: 1px solid black;
-    font-size: 12px
+    font-size: 12px;
 }
-td {
+table.summary td {
     padding: 2px;
     border: 1px solid black;
     vertical-align:top;
@@ -44,7 +100,6 @@ td {
 .table_ip_to_token {
     width:48%
 }
-
 .table_ip_to_user {
     width:48%
 }

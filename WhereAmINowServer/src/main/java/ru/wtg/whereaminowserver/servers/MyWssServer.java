@@ -143,7 +143,7 @@ public class MyWssServer extends WebSocketServer {
 
         for(String s:classes){
             try {
-                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders."+s);
+                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders.request."+s);
                 Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
                 registerRequestHolder(ctor.newInstance(this));
             } catch (Exception e) {
@@ -153,13 +153,14 @@ public class MyWssServer extends WebSocketServer {
 
         flagHolders = new LinkedHashMap<String, RequestHolder>();
 
+        classes.clear();
         classes.add("PushFlagHolder");
         classes.add("DeliveryFlagHolder");
         classes.add("ProviderFlagHolder");
 
         for(String s:classes){
             try {
-                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders."+s);
+                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders.flag."+s);
                 Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
                 registerFlagHolder(ctor.newInstance(this));
             } catch (Exception e) {

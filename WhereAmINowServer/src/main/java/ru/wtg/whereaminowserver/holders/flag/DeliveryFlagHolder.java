@@ -1,4 +1,4 @@
-package ru.wtg.whereaminowserver.holders;
+package ru.wtg.whereaminowserver.holders.flag;
 
 import org.json.JSONObject;
 

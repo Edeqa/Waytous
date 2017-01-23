@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URI;
 
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
@@ -21,8 +22,6 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HTTP_EQUIV;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ID;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.STYLE;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TITLE;
 
@@ -38,7 +37,7 @@ public class MyHttpTrackingServer implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        System.out.println("\nTracking server processing");
+        System.out.println("Tracking server requested");
 
         URI uri = exchange.getRequestURI();
         System.out.println(uri.getPath());
@@ -61,14 +60,14 @@ public class MyHttpTrackingServer implements HttpHandler {
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
-        HtmlGenerator.Tag head = html.addHead();
+        HtmlGenerator.Tag head = html.getHead();
         head.add(TITLE).with("Tracking");
 
         head.add(DIV).with(ID,"tracking-token").with(tokenId).with(STYLE,"display:none");
 //        head.add(SCRIPT).with(SRC, "https://code.jquery.com/jquery-3.1.1.min.js");
 //        head.add(SCRIPT).with(SRC, "/js/tracking.js");
 
-        HtmlGenerator.Tag body = html.addBody();
+        HtmlGenerator.Tag body = html.getBody();
         body.with("Here will be a web version soon...");
         body.add(BR);
 
@@ -76,9 +75,10 @@ public class MyHttpTrackingServer implements HttpHandler {
             String mobileRedirect = "orw://" + InetAddress.getLocalHost().getHostAddress() + ":" + HTTP_PORT + "/track/" + tokenId;
             System.out.println("Mobile redirect generated: " + mobileRedirect);
             head.add(META).with(HTTP_EQUIV, "refresh").with(CONTENT, "0;URL='" + mobileRedirect + "'");
-            body.add(A).with(HREF, mobileRedirect).with("Click for start mobile client");
+            body.add(A).with(HREF, mobileRedirect).with("Click here for start mobile client");
         }
 
+        Common.addIncludes(html);
 
         byte[] bytes = html.build().getBytes();
 

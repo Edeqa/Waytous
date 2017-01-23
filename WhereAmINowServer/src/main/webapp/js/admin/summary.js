@@ -1,7 +1,7 @@
 /**
  * Created 1/19/17.
  */
-function Admin() {
+function Summary() {
 
     var alertArea;
     var tokens;
@@ -13,7 +13,10 @@ function Admin() {
 
     var u = new Utils();
 
-    var startSummary = function() {
+    var start = function() {
+        if(window.name == "content") {
+            window.parent.history.pushState({}, null, "/admin/summary");
+        }
 
         renderInterface();
         alertArea.hide();
@@ -24,14 +27,13 @@ function Admin() {
                 console.log(currentToken);
                 connectWss();
             } else {
-
                 messaging.requestPermission()
-                    .then(() => {
-                        startSummary();
+                    .then(function(){
+                        start();
                         console.log('Notification permission granted.')
                 })
-                .catch((err) => {
-                    startSummary();
+                .catch(function(err){
+                    start();
                     console.log('Unable to get permission to notify. ', err)
                 });
             }
@@ -44,30 +46,33 @@ function Admin() {
 
     var renderInterface = function() {
 
-        u.clear($("body")[0]);
+        u.clear(document.body);
 
-        $("body").append(renderAlertArea());
+        u.create("h1", "Summary", document.body);
 
-        $("body").append(renderInterfaceTokensHeader());
+        document.body.appendChild(renderAlertArea());
+
+        document.body.appendChild(renderInterfaceTokensHeader());
 
         var tt = u.create("div", {
             className: "two_tables",
-        }, $("body")[0]);
+        }, document.body);
 
         tt.appendChild(renderInterfaceIpToUserHeader());
         tt.appendChild(renderInterfaceIpToTokenHeader());
 
-        $("body").append(renderInterfaceIpToCheckHeader());
+        document.body.appendChild(renderInterfaceIpToCheckHeader());
 
 
         renderInterfaceTokens();
         renderInterfaceIpToUser();
         renderInterfaceIpToToken();
         renderInterfaceIpToCheck();
+
     }
 
     var renderAlertArea = function() {
-        alertArea = u.create("table", { style: "width:100%; background-color: red; color: white;" });
+        alertArea = u.create("table", { style: { width: "100%", backgroundColor: "rgba(244, 67, 54, 0.5)", color: "white" }});
         alertArea.content = u.create("td", {}, u.create("tr", {}, alertArea));
         alertArea.show = function(text) {
             alertArea.content.innerHTML = text;
@@ -83,12 +88,12 @@ function Admin() {
     var renderInterfaceTokensHeader = function () {
 
        var div = u.create("div");
-        u.create("h1", { innerHTML: "Tokens" }, div);
+        u.create("h2", "Tokens", div);
 
-        var table = u.create("table", {id: "tokens"}, div);
+        var table = u.create("table", {id:"tokens", className:"summary"}, div);
 
-        var thead = u.create("thead", {}, table);
-        var trhead = u.create("tr",{},thead);
+        var thead = u.create("thead", null, table);
+        var trhead = u.create("tr", null, thead);
 
         u.create("th",{
             rowspan: 2,
@@ -111,36 +116,20 @@ function Admin() {
             innerHTML: "Users"
         }, trhead);
 
-        var trhead = u.create("tr",{},thead);
+        var trhead = u.create("tr", null, thead);
 
-        u.create("th",{
-            innerHTML: "#"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "Device"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "Address"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "Created"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "Changed"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "Control"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "Pos"
-        }, trhead);
-        u.create("th",{
-            innerHTML: "X"
-        }, trhead);
+        u.create("th", "#", trhead);
+        u.create("th", "Device", trhead);
+        u.create("th", "Address", trhead);
+        u.create("th", "Created", trhead);
+        u.create("th", "Changed", trhead);
+        u.create("th", "Control", trhead);
+        u.create("th", "Pos", trhead);
+        u.create("th", "X", trhead);
 
         table.appendChild(thead);
 
-        tokens = u.create("tbody", {}, table);
+        tokens = u.create("tbody", null, table);
 
         return div;
 
@@ -156,7 +145,6 @@ function Admin() {
                 }
             }
         } else {
-            console.log("node");
             u.create("td", {
                 colspan: columnCounter,
                 align: "center",
@@ -210,8 +198,8 @@ function Admin() {
     var renderInterfaceIpToUserHeader = function () {
 
         var div = u.create("div", {className: "table_ip_to_user"});
-        u.create("h1", { innerHTML: "IP to User corresponds" }, div);
-        var table = u.create("table", {}, div);
+        u.create("h2", { innerHTML: "IP to User corresponds" }, div);
+        var table = u.create("table", {className:"summary"}, div);
 
         var thead = u.create("thead", {}, table);
         var trhead = u.create("tr",{},thead);
@@ -238,8 +226,8 @@ function Admin() {
     var renderInterfaceIpToTokenHeader = function () {
 
        var div = u.create("div", {className: "table_ip_to_token"});
-        u.create("h1", { innerHTML: "IP to Token corresponds" }, div);
-        var table = u.create("table", {}, div);
+        u.create("h2", { innerHTML: "IP to Token corresponds" }, div);
+        var table = u.create("table", {className:"summary"}, div);
 
         var thead = u.create("thead", {}, table);
         var trhead = u.create("tr",{},thead);
@@ -266,8 +254,8 @@ function Admin() {
     var renderInterfaceIpToCheckHeader = function () {
 
        var div = u.create("div");
-        u.create("h1", { innerHTML: "Checks" }, div);
-        var table = u.create("table", {}, div);
+        u.create("h2", { innerHTML: "Checks" }, div);
+        var table = u.create("table", {className:"summary"}, div);
 
         var thead = u.create("thead", {}, table);
         var trhead = u.create("tr",{},thead);
@@ -301,7 +289,7 @@ function Admin() {
         socket = new WebSocket(data.general.uri);
 
         socket.onmessage = function(event) {
-            console.log("OPEN",event);
+            console.log("MESSAGE",event);
 
             var incomingMessage = event.data;
             showMessage(incomingMessage);
@@ -330,9 +318,13 @@ function Admin() {
     };
 
     return {
-        startSummary: startSummary,
+        start: start,
         tokens: tokens,
+        icon: "list",
+        title: "Summary",
 
     }
 }
-document.addEventListener("DOMContentLoaded", (new Admin()).startSummary);
+document.addEventListener("DOMContentLoaded", (new Summary()).start);
+
+

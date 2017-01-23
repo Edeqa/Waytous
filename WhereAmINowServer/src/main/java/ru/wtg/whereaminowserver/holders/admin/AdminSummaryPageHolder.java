@@ -1,6 +1,4 @@
-package ru.wtg.whereaminowserver.holders;
-
-import com.sun.net.httpserver.HttpExchange;
+package ru.wtg.whereaminowserver.holders.admin;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,31 +10,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
+import ru.wtg.whereaminowserver.interfaces.PageHolder;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
 import ru.wtg.whereaminowserver.servers.MyWssServer;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.A;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.COLSPAN;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.DIV;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.FORM;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.H1;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HTTP_EQUIV;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ID;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.INPUT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.NAME;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ROWSPAN;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SMALL;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
@@ -54,7 +47,9 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.VALUE;
  * Created 1/20/2017.
  */
 
-public class AdminSummaryPageHolder {
+public class AdminSummaryPageHolder implements PageHolder {
+
+    public static final String HOLDER_TYPE = "summary";
 
     private final MyHttpAdminServer server;
     private HtmlGenerator html;
@@ -64,15 +59,15 @@ public class AdminSummaryPageHolder {
         this.server = server;
     }
 
+    @Override
+    public String getType() {
+        return HOLDER_TYPE;
+    }
+
     public HtmlGenerator create(Map<String, List<String>> query) {
         html.clear();
 
         header();
-
-        html.getBody().add(DIV).add(FORM).with(NAME, "publish")
-                .add(INPUT).with(TYPE,"text").with(NAME, "message")
-                .add(INPUT).with(TYPE, "submit").with(VALUE, "Send");
-
 
         if(query.containsKey("list")) {
             try {
@@ -94,11 +89,10 @@ public class AdminSummaryPageHolder {
 
     private void header() {
 
-        html.addHead().add(TITLE).with("Admin");
+        html.getHead().add(TITLE).with("Admin");
         html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
 
-        html.getHead().add(SCRIPT).with(SRC, "https://code.jquery.com/jquery-3.1.1.min.js");
-        html.getHead().add(SCRIPT).with(SRC, "/js/utils.js");
+        Common.addIncludes(html);
 
         JSONObject o = new JSONObject();
         o.put("general",fetchGeneralInfo());
@@ -111,7 +105,7 @@ public class AdminSummaryPageHolder {
         html.getHead().add(SCRIPT).with(SRC, "/js/admin/summary.js");
 
 
-        html.addBody().with(CLASS,"body");
+        html.getBody().with(CLASS,"body");
         html.getBody().add(DIV).with(CLASS, "version").with("Build: "+SERVER_BUILD);
 
     }
