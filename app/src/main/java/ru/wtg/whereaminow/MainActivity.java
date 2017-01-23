@@ -347,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         classes.add("MessagesViewHolder");
         classes.add("SensorsViewHolder");
         classes.add("StreetsViewHolder");
+        classes.add("InfoViewHolder");
 
         // IntroViewHolder must be registered last
 //        classes.put("IntroViewHolder");
@@ -417,6 +418,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 case "fire":
                     String fire = newIntent.getStringExtra("fire");
                     Integer number = newIntent.getIntExtra("number", 0);
+                    newIntent.removeExtra("fire");
+                    newIntent.removeExtra("number");
                     state.fire(fire, number);
             }
             return;

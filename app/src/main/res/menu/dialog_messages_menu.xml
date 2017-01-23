@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="Hide system messages"
-        android:id="@+id/hide_system_messages" />
-    <item android:title="Show system messages"
-        android:id="@+id/show_system_messages" />
-    <item android:title="Clear messages"
-        android:id="@+id/clear_messages" />
-    <item android:title="Smaller font"
-        android:id="@+id/smaller_font" />
-    <item android:title="Bigger font"
-        android:id="@+id/bigger_font" />
-    <item android:title="Transparent"
-        android:id="@+id/transparent" />
-    <item android:title="Opaque"
-        android:id="@+id/not_transparent" />
+    <item android:id="@+id/search_message"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always|collapseActionView"
+        />
+    <item android:id="@+id/hide_system_messages"
+        android:title="@string/hide_system_messages" />
+    <item android:id="@+id/show_system_messages"
+        android:title="@string/show_system_messages" />
+    <item android:id="@+id/clear_messages"
+        android:title="@string/clear_messages" />
+    <item android:id="@+id/smaller_font"
+        android:title="@string/smaller_font" />
+    <item android:id="@+id/bigger_font"
+        android:title="@string/bigger_font" />
+    <item android:id="@+id/transparent"
+        android:title="@string/transparent" />
+    <item android:id="@+id/not_transparent"
+        android:title="@string/opaque" />
 </menu>

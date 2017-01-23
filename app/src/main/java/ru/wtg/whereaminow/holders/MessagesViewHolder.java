@@ -6,24 +6,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
@@ -44,17 +46,14 @@ import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
+import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_PRIVATE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.NEW_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.USER_MESSAGE;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
 import static ru.wtg.whereaminow.holders.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 
 /**
  * Created 11/27/16.
@@ -69,15 +68,20 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
 
     private final MainActivity context;
+
     private UserMessage.UserMessagesAdapter adapter;
-    private View toolbar;
+    private SmoothInterpolated action;
+    private Toolbar toolbar;
     private ColorDrawable drawable;
     private RecyclerView list;
+    private AlertDialog dialog;
+
+    private String filterMessage;
+    private Integer fontSize;
+    private boolean hideSystemMessages;
     private boolean donotscroll;
     private boolean notTransparentWindow;
-    private Integer fontSize;
-    private AlertDialog dialog;
-    private SmoothInterpolated action;
+
     private SimpleCallback<MotionEvent> onTouchListener = new SimpleCallback<MotionEvent>() {
         @Override
         public void call(MotionEvent motionEvent) {
@@ -144,20 +148,18 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             return false;
         }
     };
-    private PopupMenu.OnMenuItemClickListener onDialogMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
+    private Toolbar.OnMenuItemClickListener onDialogMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()) {
                 case R.id.hide_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
                     UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
-//                    adapter.notifyDataSetChanged();
                     reloadCursor();
                     break;
                 case R.id.show_system_messages:
                     UserMessage.getDb().setRestrictions(null,null);
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-//                    adapter.notifyDataSetChanged();
                     reloadCursor();
                     break;
                 case R.id.transparent:
@@ -175,14 +177,14 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
                     adapter.setFontSize(fontSize);
                     adapter.notifyDataSetChanged();
-                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
+                    toolbar.post(new Runnable() { public void run() { toolbar.showOverflowMenu(); } });
                     break;
                 case R.id.bigger_font:
                     fontSize += 2;
                     State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
                     adapter.setFontSize(fontSize);
                     adapter.notifyDataSetChanged();
-                    toolbar.findViewById(R.id.ib_dialog_items_menu).performClick();
+                    toolbar.post(new Runnable() { public void run() { toolbar.showOverflowMenu(); } });
                     break;
                 case R.id.clear_messages:
                     AlertDialog dialog = new AlertDialog.Builder(context).create();
@@ -208,6 +210,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     dialog.show();
                     break;
             }
+            prepareToolbarMenu();
             return false;
         }
     };
@@ -215,6 +218,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     public MessagesViewHolder(MainActivity context) {
         this.context = context;
         this.dialog = new AlertDialog.Builder(context).create();
+        filterMessage = "";
     }
 
     @Override
@@ -328,27 +332,23 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 if (etMessage.getText().toString().length() > 0) {
                     if(State.getInstance().tracking_active()) {
                         if (privateMessage && toUser != null) {
-//                            UserMessage m = new UserMessage(context);
-//                            m.setBody(etMessage.getText().toString());
-//                            m.setFrom(State.getInstance().getMe());
-//                            m.save(null);
-//                            messages.add(m);
+                            UserMessage m = new UserMessage(context);
+                            m.setFrom(State.getInstance().getMe());
+                            m.setBody(etMessage.getText().toString());
+                            m.setDelivery(Utils.getUnique());
+                            m.setTo(toUser);
+                            m.setType(TYPE_PRIVATE);
+                            m.save(null);
 
-
-                            State.getInstance().getTracking()
-                                    .put(RESPONSE_PRIVATE, toUser.getProperties().getNumber())
-                                    .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, etMessage.getText().toString())
-                                    .put(REQUEST_PUSH, true)
-                                    .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
-                                    .send(REQUEST_MESSAGE);
-                            toUser.fire(SEND_MESSAGE, etMessage.getText().toString());
+                            toUser.fire(SEND_MESSAGE, m);
                         } else {
-                            State.getInstance().getTracking()
-                                    .put(USER_MESSAGE, etMessage.getText().toString())
-                                    .put(REQUEST_PUSH, true)
-                                    .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
-                                    .send(REQUEST_MESSAGE);
-                            State.getInstance().fire(SEND_MESSAGE, etMessage.getText().toString());
+                            UserMessage m = new UserMessage(context);
+                            m.setFrom(State.getInstance().getMe());
+                            m.setBody(etMessage.getText().toString());
+                            m.setDelivery(Utils.getUnique());
+                            m.save(null);
+
+                            State.getInstance().fire(SEND_MESSAGE, m);
                         }
                         reloadCursor();
                     } else {
@@ -389,50 +389,132 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
+        final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
+        final ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutFooter.setLayoutParams(params);
+
+        placeFooter.addView(layoutFooter);
+        if(State.getInstance().tracking_active()) {
+            placeFooter.setVisibility(View.VISIBLE);
+        } else {
+            placeFooter.setVisibility(View.GONE);
+        }
+
+        final SimpleCallback<EditText> sender = new SimpleCallback<EditText>() {
+            @Override
+            public void call(EditText et) {
+                if (et.getText().toString().length() > 0) {
+                    if(State.getInstance().tracking_active()) {
+                        UserMessage m = new UserMessage(context);
+                        m.setFrom(State.getInstance().getMe());
+                        m.setBody(et.getText().toString());
+                        m.setDelivery(Utils.getUnique());
+                        m.save(null);
+
+                        State.getInstance().fire(SEND_MESSAGE, m);
+
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+
+                        reloadCursor();
+                    } else {
+                        new SystemMessage<>().setText("Cannot send message because of network not available.").show();
+                    }
+                }
+                et.setText("");
+            }
+        };
+
+        layoutFooter.findViewById(R.id.ib_message_send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+            }
+        });
+        layoutFooter.findViewById(R.id.ib_message_send).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+                dialog.dismiss();
+                dialog = null;
+                return true;
+            }
+        });
+
+        layoutFooter.setVisibility(View.VISIBLE);
+        context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new UserMessage.UserMessagesAdapter(context, list);
 
-        toolbar = context.getLayoutInflater().inflate(R.layout.dialog_items_toolbar, null);
-        final ImageButton ibMenu = (ImageButton) toolbar.findViewById(R.id.ib_dialog_items_menu);
+        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
+        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                dialog = null;
+            }
+        });
 
-        final boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
+        hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
+        notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
+        fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
+
+        toolbar.inflateMenu(R.menu.dialog_messages_menu);
+        final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_message);
+        searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
+
+        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
+            @Override
+            public void call(String text) {
+                if(text != null && text.length() > 0) {
+                    UserMessage.getDb().setRestrictions("(type_ = ? OR type_ = ?) AND (from_ LIKE ? OR to_ LIKE ? OR body_ LIKE ?)", new String[]{"" + UserMessage.TYPE_MESSAGE, "" + UserMessage.TYPE_PRIVATE, "%"+text+"%", "%"+text+"%", "%"+text+"%"});
+                } else {
+                    UserMessage.getDb().setRestrictions("(type_ = ? or type_ = ?)", new String[]{"" + UserMessage.TYPE_MESSAGE, "" + UserMessage.TYPE_PRIVATE});
+                }
+                reloadCursor();
+            }
+        };
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Toast like print
+                System.out.println("SEARCH:"+query);
+                if(!searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }
+                searchItem.collapseActionView();
+                filterMessage = query;
+                setFilter.call(filterMessage);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                // UserFeedback.show( "SearchOnQueryTextChanged: " + s);
+                System.out.println("CHANGED:"+s);
+                filterMessage = s;
+                setFilter.call(filterMessage);
+                return false;
+            }
+        });
+
+
+        prepareToolbarMenu();
+
+        toolbar.setOnMenuItemClickListener(onDialogMenuItemClickListener);
+
         if(hideSystemMessages) {
             UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
         }
         context.getSupportLoaderManager().initLoader(2, null, adapter);
-        notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
-        fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
-
-        ibMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(context, view);
-                context.getMenuInflater().inflate(R.menu.dialog_messages_menu, popup.getMenu());
-
-                boolean hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-                popup.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
-                popup.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
-
-                notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
-                popup.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);
-                popup.getMenu().findItem(R.id.not_transparent).setVisible(!notTransparentWindow);
-
-                fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
-                popup.getMenu().findItem(R.id.smaller_font).setVisible(true);
-                popup.getMenu().findItem(R.id.bigger_font).setVisible(true);
-                if(fontSize < 12) {
-                    popup.getMenu().findItem(R.id.smaller_font).setVisible(false);
-                } else if(fontSize > 24) {
-                    popup.getMenu().findItem(R.id.bigger_font).setVisible(false);
-                }
-
-                popup.show();
-                popup.setOnMenuItemClickListener(onDialogMenuItemClickListener);
-
-            }
-        });
 
         adapter.setFontSize(fontSize);
         adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
@@ -450,7 +532,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             }
         });
 
-        dialog.setCustomTitle(toolbar);
+        dialog.setCustomTitle(layoutToolbar);
 
         adapter.setOnItemClickListener(new SimpleCallback<UserMessage>() {
             @Override
@@ -474,9 +556,9 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
                 MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
                 if(to != null) {
-                    newMessage(to, false, "> " + item.getBody());
+                    ((EditText) layoutFooter.findViewById(R.id.et_message_send)).setText("> " + item.getBody());
                 } else {
-                    newMessage(null, false, "> " + item.getFrom() + ":\n> " + item.getBody());
+                    ((EditText) layoutFooter.findViewById(R.id.et_message_send)).setText("> " + item.getFrom() + ":\n> " + item.getBody());
                 }
             }
         });
@@ -501,33 +583,10 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             @Override
             public void call(Cursor cursor) {
                 if(toolbar != null) {
-                    ((TextView) toolbar.findViewById(R.id.tv_dialog_items_title)).setText("Chat (" + cursor.getCount() + ")");
+                    toolbar.setTitle("Chat (" + cursor.getCount() + ")" + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
                     if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
                     donotscroll = false;
                 }
-            }
-        });
-
-        if(State.getInstance().tracking_active()) {
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "New message", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialog = null;
-                    newMessage(null, false,"");
-                }
-            });
-        }
-
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialog = null;
-            }
-        });
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                dialog = null;
             }
         });
 
@@ -552,7 +611,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
         makeDialogTransparent();
 
-//        list.setOnTouchListener(onTouchListener);
         reloadCursor();
 
     }
@@ -560,6 +618,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     private void makeDialogTransparent() {
         if(notTransparentWindow) {
             drawable.setAlpha(255);
+
         } else {
             new SmoothInterpolated(new SimpleCallback<Float[]>() {
                 @Override
@@ -579,6 +638,15 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         if(context.getSupportLoaderManager().getLoader(2) != null) {
             context.getSupportLoaderManager().getLoader(2).forceLoad();
         }
+    }
+
+    private void prepareToolbarMenu() {
+        toolbar.getMenu().findItem(R.id.hide_system_messages).setVisible(hideSystemMessages);
+        toolbar.getMenu().findItem(R.id.show_system_messages).setVisible(!hideSystemMessages);
+        toolbar.getMenu().findItem(R.id.smaller_font).setVisible(fontSize >= 12);
+        toolbar.getMenu().findItem(R.id.bigger_font).setVisible(fontSize <= 24);
+        toolbar.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);
+        toolbar.getMenu().findItem(R.id.not_transparent).setVisible(!notTransparentWindow);
     }
 
     @Override

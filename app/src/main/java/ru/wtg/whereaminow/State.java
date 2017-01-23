@@ -80,7 +80,7 @@ public class State extends MultiDexApplication {
 
         registerEntityHolder(new PropertiesHolder(this)); // ---> need to be first!
         registerEntityHolder(new TrackingHolder(this)); // ---> need to be second!
-        registerEntityHolder(new LoggerHolder());
+//        registerEntityHolder(new LoggerHolder());
         registerEntityHolder(new MessagesHolder(this)); // ---> need to be before NotificationHolder
         registerEntityHolder(new NotificationHolder(this)); // ---> need to be after MessagesHolder
         registerEntityHolder(new GpsHolder(this));

@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow.holders;
 
-import android.app.Activity;
 import android.view.WindowManager;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -24,6 +23,7 @@ import static ru.wtg.whereaminow.helpers.LightSensorManager.NIGHT;
 /**
  * Created 11/27/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class SensorsViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "sensors";
@@ -35,10 +35,11 @@ public class SensorsViewHolder extends AbstractViewHolder {
     public static final String REQUEST_MODE_TERRAIN = "request_mode_terrain";
     public static final String REQUEST_MODE_TRAFFIC = "request_mode_traffic";
 
-    private final Activity context;
+    private final MainActivity context;
     private final LightSensorManager lightSensor;
+
     private GoogleMap map;
-    private int mode;
+
     private SimpleCallback<String> onEnvironmentChangeListener = new SimpleCallback<String>() {
         @Override
         public void call(String environment) {
@@ -124,7 +125,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 }
                 break;
             case REQUEST_MODE_DAY:
-                if(map != null && map.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
+                if(context.getMap() != null && map.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
                     break;
                 }
                 if(map != null) map.setMapStyle(null);

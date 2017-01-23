@@ -120,6 +120,13 @@
     <string name="change_orientation">Change orientation</string>
     <string name="share">Share</string>
     <string name="send">Send</string>
+    <string name="hide_system_messages">Hide system messages</string>
+    <string name="show_system_messages">Show system messages</string>
+    <string name="clear_messages">Clear messages</string>
+    <string name="smaller_font">Smaller font</string>
+    <string name="bigger_font">Bigger font</string>
+    <string name="transparent">Transparent</string>
+    <string name="opaque">Opaque</string>
 
 
 </resources>

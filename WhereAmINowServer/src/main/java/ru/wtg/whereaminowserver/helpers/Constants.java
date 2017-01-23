@@ -17,7 +17,8 @@ public class Constants {
     public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
     public final static boolean DEBUGGING = false;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
-    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/build/exploded-app";
+//    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/build/exploded-app";
+    public final static String WEB_ROOT_DIRECTORY = "../..";
 */
 
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
@@ -41,6 +42,7 @@ public class Constants {
     public static final String REQUEST_TOKEN = "token";
     public static final String REQUEST_HASH = "hash";
     public static final String REQUEST_PUSH = "push";
+    public static final String REQUEST_ADMIN = "admin";
 
     public static final String REQUEST_DEVICE_ID = "device_id";
     public static final String REQUEST_MODEL = "model";

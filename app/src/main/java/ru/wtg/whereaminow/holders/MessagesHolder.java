@@ -19,6 +19,7 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.UserMessage;
+import ru.wtg.whereaminow.helpers.Utils;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
@@ -31,7 +32,9 @@ import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_JOINED;
 import static ru.wtg.whereaminow.holders.MessagesViewHolder.SHOW_MESSAGES;
 import static ru.wtg.whereaminow.holders.NotificationHolder.SHOW_CUSTOM_NOTIFICATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
@@ -102,7 +105,22 @@ public class MessagesHolder extends AbstractPropertyHolder {
 
     @Override
     public void perform(final JSONObject o) throws JSONException {
-        if (o.has(USER_MESSAGE)) {
+        if(o.has(REQUEST_DELIVERY_CONFIRMATION)) {
+            System.out.println("DELIVERED:"+o);
+            try {
+                UserMessage m = UserMessage.getItemByFieldValue("delivery", o.getString(REQUEST_DELIVERY_CONFIRMATION));
+
+                System.out.println("MESSAGEFOUND:" + m);
+                if (m != null) {
+                    m.setDelivery("delivered");
+                    m.save(null);
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+
+        } else if (o.has(USER_MESSAGE)) {
             int number = o.getInt(USER_NUMBER);
             final String text = o.getString(USER_MESSAGE);
             State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
@@ -123,12 +141,15 @@ public class MessagesHolder extends AbstractPropertyHolder {
         final MyUser user;
         switch(event){
             case SEND_MESSAGE:
-                String text = (String) object;
-                UserMessage m = new UserMessage(context);
-                m.setBody(text);
-                m.setFrom(State.getInstance().getMe());
-                m.save(null);
-                messages.add(m);
+                UserMessage m = (UserMessage) object;
+                if(m != null) {
+                    messages.add(m);
+                    State.getInstance().getTracking()
+                            .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, m.getBody())
+                            .put(REQUEST_PUSH, true)
+                            .put(REQUEST_DELIVERY_CONFIRMATION, m.getDelivery())
+                            .send(REQUEST_MESSAGE);
+                }
                 break;
             case USER_JOINED:
                 user = (MyUser) object;
@@ -151,7 +172,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 messages.add(m);
                 break;
             case WELCOME_MESSAGE:
-                text = (String) object;
+                String text = (String) object;
                 m = new UserMessage(context);
                 m.setBody(text);
                 m.setFrom(State.getInstance().getUsers().getUsers().get(0));
@@ -223,14 +244,16 @@ public class MessagesHolder extends AbstractPropertyHolder {
 
                     break;
                 case SEND_MESSAGE:
-                    text = (String) object;
-                    m = new UserMessage(context);
-                    m.setBody(text);
-                    m.setFrom(State.getInstance().getMe());
-                    m.setTo(myUser);
-                    m.setType(TYPE_PRIVATE);
-                    m.save(null);
-                    messages.add(m);
+                    m = (UserMessage) object;
+                    if(m != null) {
+                        messages.add(m);
+                        State.getInstance().getTracking()
+                                .put(RESPONSE_PRIVATE, m.getTo())
+                                .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, m.getBody())
+                                .put(REQUEST_PUSH, true)
+                                .put(REQUEST_DELIVERY_CONFIRMATION, m.getDelivery())
+                                .send(REQUEST_MESSAGE);
+                    }
                     break;
                 case CHANGE_NUMBER:
                     if(State.getInstance().tracking_active() && myUser.getProperties().getNumber() == 0) {

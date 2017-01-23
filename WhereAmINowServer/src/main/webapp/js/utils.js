@@ -14,7 +14,9 @@ function Utils() {
             if(x == "innerHTML") {
                 el.innerHTML = properties[x];
             } else {
-                el.setAttribute(x, properties[x]);
+                var name = x;
+                if(name == "className") name = "class";
+                el.setAttribute(name, properties[x]);
             }
         }
         if(appendTo) {
@@ -24,8 +26,15 @@ function Utils() {
         return el;
     }
 
+    var clear = function(node) {
+        if(!node) return;
+        for(var i = node.children.length-1; i>=0; i--) {
+            node.removeChild(node.children[i]);
+        }
+    }
+
     return {
         create: create,
-
+        clear: clear,
     }
 }

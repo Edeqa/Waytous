@@ -112,6 +112,11 @@
                     android:pathPrefix="/track/"
                     android:port="8080"
                     android:scheme="https"/>
+                <data
+                    android:host="*"
+                    android:pathPrefix="/track/"
+                    android:port="8080"
+                    android:scheme="http"/>
             </intent-filter>
         </activity>
         <activity

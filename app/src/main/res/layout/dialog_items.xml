@@ -4,12 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/material_list_text_first_position_margin_start"
-    android:paddingStart="@dimen/material_list_text_first_position_margin_start"
-    android:paddingRight="@dimen/material_list_text_last_position_margin_end"
-    android:paddingEnd="@dimen/material_list_text_last_position_margin_end"
-    android:paddingTop="@dimen/material_dialog_content_area_padding_vertical"
-    android:paddingBottom="@dimen/material_dialog_content_area_padding_vertical"
     >
 
     <!--<android.support.design.widget.TextInputLayout
@@ -21,20 +15,27 @@
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:visibility="gone"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_items"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="insideOverlay"/>
+        android:layout_weight="1"
+        >
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_items"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarStyle="insideOverlay"
+            android:scrollbars="vertical"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/layout_footer"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@color/cast_intro_overlay_background_color"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:visibility="gone"/>
 
     <!--</android.support.design.widget.TextInputLayout>-->

@@ -8,15 +8,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -117,6 +120,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             return false;
         }
     };
+    private Toolbar toolbar;
 
     public SavedLocationsViewHolder(MainActivity context) {
         this.context = context;
@@ -342,6 +346,19 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         final RecyclerView list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new SavedLocation.SavedLocationsAdapter(context, list);
+
+        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
+        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
         context.getSupportLoaderManager().initLoader(1, null, adapter);
 
         adapter.setOnLeftSwipeListener(new SimpleCallback<Integer>() {
@@ -375,7 +392,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         adapter.setOnCursorReloadListener(new SimpleCallback<Cursor>() {
             @Override
             public void call(Cursor cursor) {
-                dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
+                if(toolbar != null) {
+                    toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
+                }
             }
         });
 
@@ -408,7 +427,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             }
         });
 
-        dialog.setTitle("Locations (" + adapter.getItemCount() + ")");
+        dialog.setCustomTitle(layoutToolbar);
+
+        toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Show all", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

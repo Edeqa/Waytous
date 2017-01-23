@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.text.util.Linkify;
@@ -14,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -78,6 +77,10 @@ public class UserMessage extends AbstractSavedItem {
 
     public static UserMessage getItemByCursor(Cursor cursor) {
         return (UserMessage) getItemByCursor(MESSAGE, cursor);
+    }
+
+    public static UserMessage getItemByFieldValue(String field, String value) {
+        return (UserMessage) getItemByFieldValue(MESSAGE, field, value);
     }
 
     public String getBody() {
@@ -180,6 +183,8 @@ public class UserMessage extends AbstractSavedItem {
                 holder.tvMessageBody.setLinksClickable(true);
                 holder.tvMessageBody.setTextSize(fontSize);
 
+                holder.ivMessageDelivered.setColorFilter("delivered".equals(item.getDelivery()) ? Color.rgb(0,150,0) : Color.LTGRAY);
+
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -272,6 +277,7 @@ public class UserMessage extends AbstractSavedItem {
             private final ImageButton ibMessageShare;
             private final ImageButton ibMessageReply;
             private final ImageButton ibMessageDelete;
+            private final ImageView ivMessageDelivered;
 
             private UserMessageViewHolder(View view) {
                 super(view);
@@ -282,6 +288,7 @@ public class UserMessage extends AbstractSavedItem {
                 ibMessageShare = (ImageButton) view.findViewById(R.id.ib_message_share);
                 ibMessageReply = (ImageButton) view.findViewById(R.id.ib_message_reply);
                 ibMessageDelete = (ImageButton) view.findViewById(R.id.ib_message_delete);
+                ivMessageDelivered = (ImageView) view.findViewById(R.id.iv_message_delivered);
             }
         }
 

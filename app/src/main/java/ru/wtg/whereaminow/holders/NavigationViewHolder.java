@@ -576,7 +576,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                 }
                             }
                         });
-                    } catch (IOException | JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

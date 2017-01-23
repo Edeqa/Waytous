@@ -348,25 +348,25 @@ public class MyTracking {
     public void send(JSONObject o) {
         try {
             o.put(REQUEST_TIMESTAMP, new Date().getTime());
-            System.out.println("WEBSOCKETSEND:"+o);
+//            System.out.println("WEBSOCKETSEND:"+o);
             switch (webSocket.getState()) {
                 case CREATED:
-                    System.out.println("WEBSOCKETSTATE:CONNECT");
+//                    System.out.println("WEBSOCKETSTATE:CONNECT");
                     //webSocket.connectAsynchronously();
                     break;
                 case CONNECTING:
-                    System.out.println("WEBSOCKETSTATE:CONNECTING");
+//                    System.out.println("WEBSOCKETSTATE:CONNECTING");
                     break;
                 case OPEN:
-                    System.out.println("WEBSOCKETSTATE:OPEN");
+//                    System.out.println("WEBSOCKETSTATE:OPEN");
                     webSocket.sendText(o.toString());
                     break;
                 case CLOSING:
-                    System.out.println("WEBSOCKETSTATE:CLOSING");
+//                    System.out.println("WEBSOCKETSTATE:CLOSING");
 //                    reconnect();
                     break;
                 case CLOSED:
-                    System.out.println("WEBSOCKETSTATE:CLOSED");
+//                    System.out.println("WEBSOCKETSTATE:CLOSED");
 //                    posted = o;
                     reconnect();
                     break;
@@ -458,7 +458,7 @@ public class MyTracking {
     }
 
     public String getTrackingUri() {
-        return "https://" + serverUri.getHost() + ":" + HTTP_PORT + "/track/" + getToken();
+        return "http://" + serverUri.getHost() + ":" + HTTP_PORT + "/track/" + getToken();
     }
 
     private class ReconnectRunnable implements Runnable {

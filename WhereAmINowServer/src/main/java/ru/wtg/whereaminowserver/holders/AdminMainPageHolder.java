@@ -70,7 +70,7 @@ public class AdminMainPageHolder {
 
 
         html.getHead().add(SCRIPT).with("data", o);
-        html.getHead().add(SCRIPT).with(SRC, "/js/admin.js");
+        html.getHead().add(SCRIPT).with(SRC, "/js/admin/main.js");
 
         html.addBody().with(CLASS,"body");
         html.getBody().add(DIV).with(CLASS, "version").with("Build: "+SERVER_BUILD);

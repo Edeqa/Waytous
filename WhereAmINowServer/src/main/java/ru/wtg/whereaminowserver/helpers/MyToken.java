@@ -140,12 +140,12 @@ public class MyToken {
     }
 
     public void sendToAllFrom(JSONObject o, MyUser fromUser) {
-        ArrayList<MyUser> dest = ooooooo(o, fromUser);
+        ArrayList<MyUser> dest = fetchDestinations(o, fromUser);
         System.out.println("SEND:to all:"+o);
         sendToUsers(o,dest);
     }
 
-    public ArrayList<MyUser> ooooooo(JSONObject o, MyUser fromUser){
+    public ArrayList<MyUser> fetchDestinations(JSONObject o, MyUser fromUser){
         ArrayList<MyUser> dest = new ArrayList<MyUser>();
         o.put(USER_NUMBER,fromUser.getNumber());
         for(Map.Entry<String,MyUser> x:users.entrySet()){
@@ -153,6 +153,7 @@ public class MyToken {
                 dest.add(x.getValue());
             }
         }
+
         return dest;
     }
 

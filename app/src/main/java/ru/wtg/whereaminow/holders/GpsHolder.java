@@ -33,10 +33,11 @@ public class GpsHolder extends AbstractPropertyHolder {
     private final LocationGooglePlayServicesProvider provider;
     private final SmartLocation.LocationControl smartLocation;
 //    private final Intent intentService;
+
     private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
         @Override
         public void onLocationUpdated(Location location) {
-            System.out.println("Service:onLocationChanged:forTracking="+(State.getInstance().tracking_active())+":"+location);
+//            System.out.println("Service:onLocationChanged:forTracking="+(State.getInstance().tracking_active())+":"+location);
             if(location == null) return;
             location = Utils.normalizeLocation(State.getInstance().getGpsFilter(), location);
             if(State.getInstance().tracking_active()) {
@@ -85,13 +86,15 @@ public class GpsHolder extends AbstractPropertyHolder {
 
     @Override
     public boolean onEvent(String event, Object object) throws URISyntaxException {
-        Log.i(TYPE,event+":"+object);
+//        Log.i(TYPE,event+":"+object);
         switch (event) {
             case REQUEST_LOCATION_SINGLE:
-                smartLocation.oneFix().start(locationUpdateListener);
+//                smartLocation.oneFix().start(locationUpdateListener);
+                smartLocation.stop();
                 smartLocation.continuous().start(locationUpdateListener);
                 break;
             case ACTIVITY_RESUME:
+//                if(State.getInstance().tracking_disabled()) {
                 locationUpdateListener.onLocationUpdated(smartLocation.getLastLocation());
                 smartLocation.continuous().start(locationUpdateListener);
                 break;
@@ -105,7 +108,7 @@ public class GpsHolder extends AbstractPropertyHolder {
                 }
                 break;
             case TRACKING_ACTIVE:
-                smartLocation.oneFix().start(locationUpdateListener);
+//                smartLocation.oneFix().start(locationUpdateListener);
                 smartLocation.continuous().start(locationUpdateListener);
 //                Location lastLocation = State.getInstance().getMe().getLocation();
 //                if(lastLocation != null) {

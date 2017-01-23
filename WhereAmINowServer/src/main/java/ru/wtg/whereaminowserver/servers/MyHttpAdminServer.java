@@ -39,13 +39,12 @@ public class MyHttpAdminServer implements HttpHandler {
 
     private final AdminSummaryPageHolder summaryHolder;
     private final AdminMainPageHolder mainHolder;
+    private volatile MyWssServer wssProcessor;
 
     public MyHttpAdminServer(){
         summaryHolder = new AdminSummaryPageHolder(this);
         mainHolder = new AdminMainPageHolder(this);
     }
-
-    private volatile MyWssServer wssProcessor;
 
     public static Map<String, List<String>> splitQuery(String url) throws UnsupportedEncodingException {
         final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
@@ -78,7 +77,6 @@ public class MyHttpAdminServer implements HttpHandler {
             ArrayList<String> parts = new ArrayList<String>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
-
             System.out.println("SPLIT:" + query);
             System.out.println("PARTS:" + parts);
 
@@ -89,6 +87,17 @@ public class MyHttpAdminServer implements HttpHandler {
                 html = mainHolder.create(query);
                 new HtmlGenerator();
             }
+            html.getHead().add(SCRIPT).with(SRC, "https://www.gstatic.com/firebasejs/3.6.6/firebase-app.js");
+            html.getHead().add(SCRIPT).with(SRC, "https://www.gstatic.com/firebasejs/3.6.6/firebase-messaging.js");
+            html.getHead().add(SCRIPT).with("var config = {\n" +
+                    "messagingSenderId: \"365115596478\",\n" +
+                    "};\n" +
+                    "firebase.initializeApp(config);\n" +
+                    "messaging = firebase.messaging();");
+
+
+
+
 
 /*
         if(query.containsKey("text")){

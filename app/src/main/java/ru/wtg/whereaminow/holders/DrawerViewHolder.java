@@ -39,10 +39,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public static final String TYPE = "drawer";
 
     private final MainActivity context;
-
-    private DrawerLayout drawer;
-    private NavigationView navigationView;
-    private GoogleMap map;
     SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
         @Override
         public void call(Integer id) {
@@ -54,14 +50,14 @@ public class DrawerViewHolder extends AbstractViewHolder {
                     State.getInstance().fire(REQUEST_MODE_TRAFFIC);
                     break;
                 case R.id.nav_satellite:
-                    if (map != null && map.getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
+                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
                         State.getInstance().fire(REQUEST_MODE_SATELLITE);
                     } else {
                         State.getInstance().fire(REQUEST_MODE_NORMAL);
                     }
                     break;
                 case R.id.nav_terrain:
-                    if (map != null && map.getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
+                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
                         State.getInstance().fire(REQUEST_MODE_TERRAIN);
                     else
                         State.getInstance().fire(REQUEST_MODE_NORMAL);
@@ -69,13 +65,14 @@ public class DrawerViewHolder extends AbstractViewHolder {
             }
         }
     };
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
 
     public DrawerViewHolder(MainActivity context){
         this.context = context;
 
         setViewAndToolbar(context.findViewById(R.id.drawer_layout),(Toolbar) context.findViewById(R.id.toolbar));
         setCallback(onNavigationDrawerCallback);
-        setMap(context.getMap());
     }
 
     public void setViewAndToolbar(View view, final Toolbar toolbar) {
@@ -162,7 +159,4 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return rules;
     }
 
-    public void setMap(GoogleMap map) {
-        this.map = map;
-    }
 }

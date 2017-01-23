@@ -32,10 +32,9 @@ public class MyHttpMainServer implements HttpHandler {
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
         if(!file.isFile()) {
-            file = new File(file.getAbsolutePath() + "/index.html");
+            file = new File(file.getCanonicalPath() + "/index.html");
         }
-
-        if (!file.getPath().startsWith(root.getAbsolutePath())) {
+        if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {
             // Suspected path traversal attack: reject with 403 error.
             String response = "403 (Forbidden)\n";
             exchange.sendResponseHeaders(403, response.length());
@@ -66,7 +65,15 @@ public class MyHttpMainServer implements HttpHandler {
 
                 exchange.getResponseHeaders().set("Content-Type", type);
             } else {
-                exchange.getResponseHeaders().set("Content-Type", "text/html");
+                String type = "text/html";
+                String[] parts = file.getName().split("\\.");
+                if(parts.length>1){
+                    if("js".equals(parts[parts.length-1].toLowerCase())) {
+                        type = "text/javascript";
+                    }
+                }
+
+                exchange.getResponseHeaders().set("Content-Type", type);
             }
             exchange.sendResponseHeaders(200, 0);
 

@@ -43,18 +43,21 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
 
     private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
-    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 600;
+    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 10;
 
     private final State state;
+
     private android.support.v4.app.NotificationCompat.Builder notification;
     private Handler notificationClearHandler;
-    private boolean showNotifications = true;
+
     private long lastCloseNotifyTime = 0;
     private long lastAwayNotifyTime = 0;
+    private boolean showNotifications = true;
+
     private Runnable notificationClearRunnable = new Runnable() {
         @Override
         public void run() {
-            update(null, DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+            update("", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
         }
     };
 
@@ -171,7 +174,8 @@ public class NotificationHolder extends AbstractPropertyHolder {
             notification.setPriority(priority);
         }
 
-        if(text != null) {
+        if("".equals(text)) {
+        } else if(text != null) {
             notification.setContentTitle(text);
             notification.setContentText(state.getUsers().getCountActive() + " user(s) active.");
         } else {

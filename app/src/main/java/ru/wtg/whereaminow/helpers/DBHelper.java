@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -86,7 +85,7 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     @SuppressWarnings("WeakerAccess")
     public Cursor getById(long id){
-        return mDB.query(fields.itemType, null, COLUMN_ID + " = ?", new String[]{String.valueOf(id)},null,null,null);
+        return mDB.query(fields.itemType, null, COLUMN_ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
     }
 
     public void clear() {
@@ -102,7 +101,6 @@ public class DBHelper<T extends AbstractSavedItem> {
     @SuppressWarnings("WeakerAccess")
     public void save(T item) {
         ContentValues cv = new ContentValues();
-
         for(Map.Entry<String,Fields.FieldOptions> x: fields.fields.entrySet()){
             try {
                 Field field = item.getClass().getDeclaredField(x.getValue().name);
@@ -140,6 +138,19 @@ public class DBHelper<T extends AbstractSavedItem> {
             long a = mDB.insert(fields.itemType, null, cv);
             item.setNumber(a);
         }
+    }
+
+    public Cursor getByFieldValue(String field, String value) {
+        System.out.println("REQUESTED:"+fields.itemType+":"+field+":"+value+":"+
+                mDB.query(fields.itemType, null, field + "_ = ?", new String[]{value},null,null,null).getCount()
+        );
+
+
+        return mDB.query(fields.itemType, null, field + "_ = ?", new String[]{value},null,null,null);
+    }
+
+    public Cursor getByFieldValue(String field, Number value) {
+        return mDB.query(fields.itemType, null, field + "_ = ?", new String[]{""+value},null,null,null);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -237,6 +248,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     protected static class Fields {
         final String itemType;
         final Class classType;
+
         TreeMap<String,FieldOptions> fields = new TreeMap<>();
 
         @SuppressWarnings("WeakerAccess")
@@ -308,7 +320,6 @@ public class DBHelper<T extends AbstractSavedItem> {
                 res += "alter table " + itemType + " add column ";
                 res += x.name + "_ " + x.type + ";\n";
             }
-//            res += ")";
             return res;
         }
 
@@ -317,6 +328,7 @@ public class DBHelper<T extends AbstractSavedItem> {
             String type;
             String sourceType;
             boolean serialize;
+
             public String toString(){
                 return "{"+name+", "+type+", "+sourceType+", "+ serialize +"}";
             }

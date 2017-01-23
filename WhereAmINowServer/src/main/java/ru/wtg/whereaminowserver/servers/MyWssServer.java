@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -88,7 +89,7 @@ public class MyWssServer extends WebSocketServer {
                             System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
 
                             if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
-                            // dismiss user
+                                // dismiss user
                                 JSONObject o = new JSONObject();
                                 if(ipToToken.containsKey(entry.getKey())) {
                                     MyToken token = ipToToken.get(entry.getKey());
@@ -248,7 +249,7 @@ public class MyWssServer extends WebSocketServer {
                 return;
             }
             if (request == null || !request.has(REQUEST_TIMESTAMP)) return;
-            long timestamp = request.getLong(REQUEST_TIMESTAMP);
+//            long timestamp = request.getLong(REQUEST_TIMESTAMP);
         /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
             System.out.println("WSS:ignore request because of timeout");
 //            conn.close(CloseFrame.GOING_AWAY, "Request timeout");
@@ -458,15 +459,12 @@ public class MyWssServer extends WebSocketServer {
                         if(requestHolders.get(req).perform(token, user, request, o)) {
                             token.setChanged();
 
-                            Set<String> keys = request.keySet();
-                            Set<String> flags = flagHolders.keySet();
-
-                            keys.retainAll(flags);
+                            Set<String> keys = new LinkedHashSet<String>(request.keySet());
+                            keys.retainAll(flagHolders.keySet());
                             for(String flag: keys){
                                 flagHolders.get(flag).perform(token, user, request, o);
                             }
 
-                            System.out.println("FLAGS:" + keys);
 
                             if (request.has(RESPONSE_PRIVATE)) {
                                 o.put(RESPONSE_PRIVATE, request.getInt(RESPONSE_PRIVATE));
@@ -494,6 +492,12 @@ public class MyWssServer extends WebSocketServer {
         }
     }
 
+//    @Override
+//    public void onWebsocketPong(WebSocket conn, Framedata f) {
+//        super.onWebsocketPong(conn, f);
+//        System.out.println("PONG:"+conn.getRemoteSocketAddress()+":"+f);
+//    }
+
     @Override
     public void onError(WebSocket conn, Exception ex) {
         ex.printStackTrace();
@@ -507,12 +511,6 @@ public class MyWssServer extends WebSocketServer {
             // some errors like port binding failed may not be assignable to a specific websocket
         }
     }
-
-//    @Override
-//    public void onWebsocketPong(WebSocket conn, Framedata f) {
-//        super.onWebsocketPong(conn, f);
-//        System.out.println("PONG:"+conn.getRemoteSocketAddress()+":"+f);
-//    }
 
     @Override
     public void onWebsocketPing(WebSocket conn, Framedata f) {

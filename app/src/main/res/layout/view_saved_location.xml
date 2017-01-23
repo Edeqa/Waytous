@@ -2,20 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/material_list_icon_first_position_margin_start"
+    android:paddingRight="@dimen/material_list_icon_first_position_margin_start"
+    >
 
     <ImageButton
+        android:id="@+id/ib_saved_location_image"
         android:layout_width="0px"
         android:layout_height="100dp"
+        android:layout_marginBottom="3dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
-        app:srcCompat="@drawable/ic_pin_drop_black_24dp"
-        android:id="@+id/ib_saved_location_image"
+        android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:layout_weight="1"/>
+        app:srcCompat="@drawable/ic_pin_drop_black_24dp"/>
 
     <RelativeLayout
         android:layout_width="0px"
@@ -24,100 +27,100 @@
         android:minHeight="100dp">
 
         <ImageButton
+            android:id="@+id/ib_expand_address"
             android:layout_width="wrap_content"
             android:layout_height="10sp"
-            app:srcCompat="@drawable/ic_expand_more_black_24dp"
-            android:id="@+id/ib_expand_address"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:tint="@android:color/darker_gray" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/transparent"
+            android:tint="@android:color/darker_gray"
+            app:srcCompat="@drawable/ic_expand_more_black_24dp" />
 
         <ImageButton
+            android:id="@+id/ib_collapse_address"
             android:layout_width="wrap_content"
             android:layout_height="10sp"
-            app:srcCompat="@drawable/ic_expand_less_black_24dp"
-            android:id="@+id/ib_collapse_address"
-            android:background="@android:color/transparent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/transparent"
             android:tint="@android:color/darker_gray"
-            android:visibility="invisible"/>
+            android:visibility="invisible"
+            app:srcCompat="@drawable/ic_expand_less_black_24dp"/>
 
         <TextView
-            tools:text="Username"
+            android:id="@+id/tv_saved_location_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:id="@+id/tv_saved_location_username"
-            android:textStyle="normal|bold"
+            android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/ib_expand_address"
-            android:clickable="true" />
+            android:clickable="true"
+            android:textSize="10sp"
+            android:textStyle="normal|bold"
+            tools:text="Username" />
 
         <LinearLayout
-            android:orientation="vertical"
             android:id="@+id/layout_address"
-            android:layout_below="@+id/tv_saved_location_username"
-            android:paddingBottom="@dimen/material_list_normal_padding_vertical"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv_saved_location_username"
+
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/material_list_normal_padding_vertical">
 
             <TextView
                 android:id="@+id/tv_saved_location_address_short"
-                tools:text="11833 Shire Ct #11, Reston, VA, 20191"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="11833 Shire Ct #11, Reston, VA, 20191" />
 
             <TextView
-                tools:text="11833 Shire Ct #11, Reston, Fairfax County, Virginia, 20191, United States of America"
+                android:id="@+id/tv_saved_location_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_saved_location_address"
                 android:textSize="12sp"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:text="11833 Shire Ct #11, Reston, Fairfax County, Virginia, 20191, United States of America"/>
 
         </LinearLayout>
 
 
             <TextView
-                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec magna nisi. Donec quis tellus id augue scelerisque cursus. Phasellus tincidunt orci ut neque lacinia tempor. Phasellus laoreet mauris in felis blandit, id iaculis neque tempus. Vestibulum tristique sem et urna sodales, vitae consectetur massa facilisis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed porta varius ultrices. Morbi lorem nulla, blandit ut elementum sed, rutrum ac felis. Nulla vitae venenatis neque. Donec in turpis mi. Praesent non purus lobortis, suscipit ante sit amet, dignissim sapien. Mauris turpis risus, lacinia eu felis sit amet, elementum fringilla magna. Aliquam erat volutpat."
+                android:id="@+id/tv_saved_location_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:id="@+id/tv_saved_location_comment"
-            android:layout_below="@+id/layout_address"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/layout_address"
+            android:ellipsize="end"
                 android:textSize="12sp"
                 android:textStyle="normal|bold"
-                android:ellipsize="end" />
+                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec magna nisi. Donec quis tellus id augue scelerisque cursus. Phasellus tincidunt orci ut neque lacinia tempor. Phasellus laoreet mauris in felis blandit, id iaculis neque tempus. Vestibulum tristique sem et urna sodales, vitae consectetur massa facilisis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed porta varius ultrices. Morbi lorem nulla, blandit ut elementum sed, rutrum ac felis. Nulla vitae venenatis neque. Donec in turpis mi. Praesent non purus lobortis, suscipit ante sit amet, dignissim sapien. Mauris turpis risus, lacinia eu felis sit amet, elementum fringilla magna. Aliquam erat volutpat." />
 
 
         <TextView
-            tools:text="10/12/2016 10:00 AM"
+            android:id="@+id/tv_saved_location_timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_saved_location_timestamp"
-            android:textSize="10sp"
-            android:textAlignment="textEnd"
-            android:gravity="end|bottom"
-            android:layout_below="@+id/tv_saved_location_comment"
-            android:paddingTop="@dimen/material_list_normal_padding_vertical"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_below="@+id/tv_saved_location_comment"
+            android:gravity="end|bottom"
+            android:paddingTop="@dimen/material_list_normal_padding_vertical"
+            android:textAlignment="textEnd"
+            android:textSize="10sp"
+            tools:text="10/12/2016 10:00 AM" />
 
     </RelativeLayout>
 

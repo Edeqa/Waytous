@@ -34,11 +34,11 @@
             />
 
         <TextView
-            android:text="Street view is still not available for this place"
+            android:id="@+id/tv_street_view_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/tv_street_view_placeholder"
             android:gravity="center"
+            android:text="Street view is still not available for this place"
             android:textColor="@color/material_color_white"
             android:visibility="invisible"/>
 
@@ -49,9 +49,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
+            android:background="@drawable/semi_transparent_background"
             android:padding="10dp"
             app:srcCompat="@drawable/ic_clear_white_24dp"
-            android:background="@drawable/semi_transparent_background"
             tools:ignore="ContentDescription" />
 
     </RelativeLayout>
@@ -93,16 +93,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/sv_users"
-        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="@dimen/material_button_fab_size"
         android:layout_marginRight="@dimen/material_button_fab_size"
-        android:layout_centerHorizontal="true"
-        app:flexWrap="wrap"
-        app:alignItems="stretch"
-        app:alignContent="stretch"
-        app:justifyContent="center"
+        android:layout_marginTop="5dp"
         android:forceHasOverlappingRendering="true"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:alignContent="stretch"
+        app:alignItems="stretch"
+        app:flexWrap="wrap"
+        app:justifyContent="center">
 
         </com.google.android.flexbox.FlexboxLayout>
 
@@ -117,38 +117,58 @@
         android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView
+        android:id="@+id/tv_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/scale_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/semi_transparent_background"
+        android:padding="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="normal|bold"
+        android:visibility="gone"
+        tools:text="Info"
+        tools:visibility="visible" />
+
+    <LinearLayout
         android:id="@+id/layout_navigation_mode"
-        android:paddingBottom="8sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@id/map"
         android:layout_centerHorizontal="true"
-        android:visibility="gone">
+        android:orientation="horizontal"
+        android:paddingBottom="8sp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_directions_car_black_24dp"
             android:id="@+id/ib_navigation_driving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            app:srcCompat="@drawable/ic_directions_car_black_24dp"
             tools:ignore="ContentDescription" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_directions_walk_black_24dp"
             android:id="@+id/ib_navigation_walking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            app:srcCompat="@drawable/ic_directions_walk_black_24dp"
             tools:ignore="ContentDescription" />
 
         <ImageButton
+            android:id="@+id/ib_navigation_bicycling"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_directions_bike_black_24dp"
-            android:id="@+id/ib_navigation_bicycling"
             android:layout_weight="1"
+            app:srcCompat="@drawable/ic_directions_bike_black_24dp"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>

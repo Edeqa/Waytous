@@ -17,6 +17,7 @@ table {
     border-spacing:0px;
     border-collapse: collapse;
     font-family: sans-serif;
+    font-size:12px;
 }
 th {
     text-align: center;

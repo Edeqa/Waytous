@@ -58,18 +58,15 @@ public class MyHttpTrackingServer implements HttpHandler {
 
         }
 
-
-
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
-
 
         HtmlGenerator.Tag head = html.addHead();
         head.add(TITLE).with("Tracking");
 
         head.add(DIV).with(ID,"tracking-token").with(tokenId).with(STYLE,"display:none");
-        head.add(SCRIPT).with(SRC, "https://code.jquery.com/jquery-3.1.1.min.js");
-        head.add(SCRIPT).with(SRC, "/js/tracking.js");
+//        head.add(SCRIPT).with(SRC, "https://code.jquery.com/jquery-3.1.1.min.js");
+//        head.add(SCRIPT).with(SRC, "/js/tracking.js");
 
         HtmlGenerator.Tag body = html.addBody();
         body.with("Here will be a web version soon...");

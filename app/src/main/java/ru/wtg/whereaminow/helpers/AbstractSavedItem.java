@@ -67,17 +67,33 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     public static AbstractSavedItem getItemByPosition(String itemType, int position) {
         Cursor cursor = dbHelpers.get(itemType).getByPosition(position);
-        return dbHelpers.get(itemType).load(cursor);
+        return getSingleItemByCursor(itemType, cursor);
     }
 
     public static AbstractSavedItem getItemByNumber(String itemType, long number) {
         Cursor cursor = dbHelpers.get(itemType).getById(number);
-        cursor.moveToFirst();
-        return dbHelpers.get(itemType).load(cursor);
+        return getSingleItemByCursor(itemType, cursor);
     }
 
     public static AbstractSavedItem getItemByCursor(String itemType, Cursor cursor) {
         return dbHelpers.get(itemType).load(cursor);
+    }
+
+    public static AbstractSavedItem getItemByFieldValue(String itemType, String field, String value) {
+        Cursor cursor = dbHelpers.get(itemType).getByFieldValue(field, value);
+        return getSingleItemByCursor(itemType, cursor);
+    }
+
+    public static AbstractSavedItem getItemByFieldValue(String itemType, String field, Number value) {
+        Cursor cursor = dbHelpers.get(itemType).getByFieldValue(field, value);
+        return getSingleItemByCursor(itemType, cursor);
+    }
+
+    private static AbstractSavedItem getSingleItemByCursor(String itemType, Cursor cursor) {
+        cursor.moveToFirst();
+        AbstractSavedItem item = dbHelpers.get(itemType).load(cursor);
+        cursor.close();
+        return item;
     }
 
     public static void clear(String itemType){

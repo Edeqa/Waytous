@@ -2,14 +2,14 @@
  * Created 1/20/17.
  */
 
-function startAdmin() {
+function startMain() {
 //    var data = $("#admin-data")[0];
     console.log("DATA",data);
     console.log("MAIN");
 
     $("body").append("<div id='content'></div>");
 
-    $("body").append("<a href='summary'>Summary</div>");
+    $("body").append("<a href='/admin/summary'>Summary</div>");
 
 
 
@@ -26,4 +26,4 @@ function logout(to_url) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", startAdmin);
+document.addEventListener("DOMContentLoaded", startMain);

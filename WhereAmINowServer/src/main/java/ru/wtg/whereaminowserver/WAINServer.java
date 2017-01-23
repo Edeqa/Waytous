@@ -29,7 +29,7 @@ public class WAINServer {
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
 
-        System.out.println("Server web root directory: "+new File(WEB_ROOT_DIRECTORY).getAbsolutePath());
+        System.out.println("Server web root directory: "+new File(WEB_ROOT_DIRECTORY).getCanonicalPath());
 
         System.out.println("Server \t\t\t| Port \t| Path");
         System.out.println("----------------------------------------------");

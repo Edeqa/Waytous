@@ -64,7 +64,7 @@ public class ExceptionActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         etExceptionTrace.setMaxHeight((int) (metrics.heightPixels/1.5));
 
-        etExceptionTrace.setText("In version "+ BuildConfig.VERSION_CODE +"\n" + textException.toString());
+        etExceptionTrace.setText("In version "+ BuildConfig.VERSION_NAME +"." + BuildConfig.VERSION_CODE +"\n" + textException.toString());
         etExceptionTrace.setMovementMethod(new ScrollingMovementMethod());
 
             etExceptionTrace.setRawInputType(InputType.TYPE_CLASS_TEXT);

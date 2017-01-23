@@ -11,7 +11,10 @@ import android.hardware.TriggerEventListener;
 import android.os.Build;
 import android.util.Log;
 
+import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
+
+import static ru.wtg.whereaminow.holders.InfoViewHolder.SHOW_INFO;
 
 /**
  * Created 11/26/16.
@@ -22,15 +25,19 @@ public class LightSensorManager implements SensorEventListener {
     public static final String DAY = "day";
     public static final String NIGHT = "night";
     public static final String SATELLITE = "satellite";
+
     private static final float SMOOTHING = 10;
     private static final int THRESHOLD_DAY_LUX = 30;
     private static final int THRESHOLD_NIGHT_LUX = 20;
     private static final String TAG = "LightSensorManager";
+
     private final SensorManager sensorManager;
     private final Sensor lightSensor;
     private final LowPassFilter lowPassFilter;
+
     private SimpleCallback environmentChangeCallback;
     private Environment currentEnvironment;
+
     public LightSensorManager(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
@@ -71,6 +78,10 @@ public class LightSensorManager implements SensorEventListener {
     private void onLuxValue(float luxLevel) {
 
         luxLevel = lowPassFilter.submit(luxLevel);
+
+        State.getInstance().fire(SHOW_INFO, "lux="+luxLevel);
+
+
         Environment oldEnvironment = currentEnvironment;
         if (luxLevel < THRESHOLD_NIGHT_LUX){
             currentEnvironment = Environment.NIGHT;
