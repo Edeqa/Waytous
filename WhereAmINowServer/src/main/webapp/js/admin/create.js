@@ -54,12 +54,11 @@ function Create() {
 
         var trTtl = u.create("tr", null, tbody);
         u.create("th", "Time to live, min", trTtl);
-        inputTtl = u.create("input", { type:"input" }, u.create("td", null, trTtl));
+        inputTtl = u.create("input", { oninput: validate_ttl }, u.create("td", null, trTtl));
 
-
-        var th = u.create("th", {colspan: 2}, u.create("tr", null, tbody));
-        u.create("button", { type: "button", innerHTML:"OK", onclick: validate_submit}, th);
-        u.create("button", { type: "reset", innerHTML:"Clear"}, th);
+        var div = u.create("div", null, document.body);
+        u.create("button", { type: "button", innerHTML:"OK", onclick: validate_submit}, div);
+        u.create("button", { type: "reset", innerHTML:"Clear"}, div);
 
         inputId.focus();
 
@@ -70,10 +69,15 @@ function Create() {
         console.log(this.value)
     }
 
+    var validate_ttl = function(e) {
+        this.value = this.value.replace(/[^\d]/g, "");
+        console.log(this.value)
+    }
+
     var validate_submit = function(e) {
         console.log(inputId.value);
 
-        window.location.href = "/admin/summary/set";
+        window.location.href = "/admin/summary" + (window.name == "content" ? "/set" : "");
 
 //        if(window.name == "content") {
 //            window.parent.history.pushState({}, null, "/admin/create");
@@ -85,8 +89,10 @@ function Create() {
 
     return {
         start: start,
+        page: "create",
         icon: "add",
         title: "Create group",
+        menu: true,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Create()).start);

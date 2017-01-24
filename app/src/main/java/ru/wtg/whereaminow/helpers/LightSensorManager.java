@@ -28,7 +28,7 @@ public class LightSensorManager implements SensorEventListener {
 
     private static final float SMOOTHING = 10;
     private static final int THRESHOLD_DAY_LUX = 30;
-    private static final int THRESHOLD_NIGHT_LUX = 20;
+    private static final int THRESHOLD_NIGHT_LUX = 5;
     private static final String TAG = "LightSensorManager";
 
     private final SensorManager sensorManager;

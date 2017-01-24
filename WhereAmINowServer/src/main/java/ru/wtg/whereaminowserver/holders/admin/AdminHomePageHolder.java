@@ -1,7 +1,6 @@
 package ru.wtg.whereaminowserver.holders.admin;
 
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
@@ -21,9 +20,10 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TYPE;
  * Created 1/23/2017.
  */
 
+@SuppressWarnings("unused")
 public class AdminHomePageHolder implements PageHolder {
 
-    public static final String HOLDER_TYPE = "home";
+    private static final String HOLDER_TYPE = "home";
 
     private final MyHttpAdminServer server;
     private HtmlGenerator html;
@@ -38,15 +38,15 @@ public class AdminHomePageHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
-    public HtmlGenerator create(Map<String, List<String>> query) {
+    public HtmlGenerator create(ArrayList<String> query) {
         html.clear();
 
-        html.getHead().add(TITLE).with("Settings");
+        html.getHead().add(TITLE).with("Home");
         html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
 
         Common.addIncludes(html);
 
-        html.getHead().add(SCRIPT).with(SRC, "/js/admin/home.js");
+        html.getHead().add(SCRIPT).with(SRC, "/js/admin/Home.js");
 
         return html;
     }

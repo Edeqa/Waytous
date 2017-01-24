@@ -2,8 +2,7 @@ package ru.wtg.whereaminowserver.holders.admin;
 
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
@@ -30,6 +29,7 @@ public class AdminMainPageHolder implements PageHolder {
 
     public static final String HOLDER_TYPE = "main";
 
+    @SuppressWarnings("unused")
     private final MyHttpAdminServer server;
     private HtmlGenerator html;
     private String part;
@@ -44,7 +44,7 @@ public class AdminMainPageHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
-    public HtmlGenerator create(Map<String, List<String>> query) {
+    public HtmlGenerator create(ArrayList<String> query) {
         html.clear();
 
         Common.addIncludes(html);
@@ -55,11 +55,10 @@ public class AdminMainPageHolder implements PageHolder {
         o.put("page", part);
 
         html.getHead().add(SCRIPT).with("data", o);
-        html.getHead().add(SCRIPT).with(SRC, "/js/admin/main.js");
+        html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");
 
         html.getBody().with(CLASS,"body");
         html.getBody().add(DIV).with(CLASS, "version").with("Build: "+SERVER_BUILD);
-
 
 
         return html;
@@ -67,6 +66,5 @@ public class AdminMainPageHolder implements PageHolder {
 
     public void addPart(String s) {
         part = s;
-        System.out.println(s);
     }
 }

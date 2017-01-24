@@ -183,7 +183,6 @@ public class UserMessage extends AbstractSavedItem {
                 holder.tvMessageBody.setLinksClickable(true);
                 holder.tvMessageBody.setTextSize(fontSize);
 
-                holder.ivMessageDelivered.setColorFilter("delivered".equals(item.getDelivery()) ? Color.rgb(0,150,0) : Color.LTGRAY);
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -240,7 +239,10 @@ public class UserMessage extends AbstractSavedItem {
 
                 if(from != null && from.equals(State.getInstance().getMe().getProperties().getDisplayName())){
                     holder.itemView.setBackgroundColor(Color.argb(32,0,0,255));
+                    holder.ivMessageDelivered.setColorFilter("delivered".equals(item.getDelivery()) ? Color.rgb(0,150,0) : Color.LTGRAY);
+                    holder.ivMessageDelivered.setVisibility(VISIBLE);
                 } else {
+                    holder.ivMessageDelivered.setVisibility(GONE);
                     holder.itemView.setBackgroundColor(android.R.color.background_light);
                 }
 

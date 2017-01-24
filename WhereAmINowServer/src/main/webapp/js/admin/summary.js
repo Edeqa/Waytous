@@ -88,7 +88,7 @@ function Summary() {
     var renderInterfaceTokensHeader = function () {
 
        var div = u.create("div");
-        u.create("h2", "Tokens", div);
+        u.create("h2", "Groups", div);
 
         var table = u.create("table", {id:"tokens", className:"summary"}, div);
 
@@ -97,7 +97,7 @@ function Summary() {
 
         u.create("th",{
             rowspan: 2,
-            innerHTML: "Token"
+            innerHTML: "Group"
         }, trhead);
         u.create("th",{
             rowspan: 2,
@@ -173,14 +173,14 @@ function Summary() {
                     if(indent > 0) tr = u.create("tr", {}, tokens);
                     u.create("td", { innerHTML: users[j].number }, tr);
 
-                    u.create("a", { innerHTML: users[j].model, href: "/?list=user&token=" + data.tokens[i].id + "&number=" + j }, u.create("td", {}, tr));
+                    u.create("a", { innerHTML: users[j].model, href: "/admin/user/" + data.tokens[i].id + "/" + j + "/set"}, u.create("td", {}, tr));
 
                     u.create("td", { innerHTML: users[j].address }, tr);
                     u.create("td", { innerHTML: users[j].created }, tr);
                     u.create("td", { innerHTML: users[j].changed }, tr);
                     u.create("td", { innerHTML: users[j].control }, tr);
                     u.create("td", { innerHTML: "a" }, tr);
-                    u.create("a", { innerHTML: "Del", href: "/?action=del&token=" + data.tokens[i].id + "&number=" + j }, u.create("td", {}, tr));
+                    u.create("a", { innerHTML: "Del", href: "/admin/user/" + data.tokens[i].id + "/" + j + "/set"}, u.create("td", {}, tr));
 
                     indent ++;
                 }
@@ -226,7 +226,7 @@ function Summary() {
     var renderInterfaceIpToTokenHeader = function () {
 
        var div = u.create("div", {className: "table_ip_to_token"});
-        u.create("h2", { innerHTML: "IP to Token corresponds" }, div);
+        u.create("h2", { innerHTML: "IP to Group corresponds" }, div);
         var table = u.create("table", {className:"summary"}, div);
 
         var thead = u.create("thead", {}, table);
@@ -236,7 +236,7 @@ function Summary() {
             innerHTML: "IP"
         }, trhead);
         u.create("th",{
-            innerHTML: "Token ID"
+            innerHTML: "Group ID"
         }, trhead);
 
         table.appendChild(thead);
@@ -264,7 +264,7 @@ function Summary() {
             innerHTML: "IP"
         }, trhead);
         u.create("th",{
-            innerHTML: "Token"
+            innerHTML: "Group"
         }, trhead);
         u.create("th",{
             innerHTML: "Control"
@@ -319,9 +319,10 @@ function Summary() {
 
     return {
         start: start,
-        tokens: tokens,
+        page: "summary",
         icon: "list",
         title: "Summary",
+        menu: true,
 
     }
 }

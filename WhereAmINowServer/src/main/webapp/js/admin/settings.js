@@ -19,8 +19,10 @@ function Settings() {
 
     return {
         start: start,
+        page: "settings",
         icon: "settings",
         title: "Settings",
+        menu: true,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Settings()).start);

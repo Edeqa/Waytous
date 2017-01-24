@@ -1,5 +1,6 @@
 package ru.wtg.whereaminowserver.interfaces;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,5 +12,5 @@ import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 public interface PageHolder {
 
     String getType();
-    HtmlGenerator create(Map<String, List<String>> query);
+    HtmlGenerator create(ArrayList<String> query);
 }

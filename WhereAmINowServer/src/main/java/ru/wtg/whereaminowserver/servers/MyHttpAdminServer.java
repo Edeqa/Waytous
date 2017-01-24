@@ -16,13 +16,8 @@ import java.util.Map;
 
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.helpers.Utils;
-import ru.wtg.whereaminowserver.holders.admin.AdminHelpPageHolder;
-import ru.wtg.whereaminowserver.holders.admin.AdminHomePageHolder;
 import ru.wtg.whereaminowserver.holders.admin.AdminMainPageHolder;
-import ru.wtg.whereaminowserver.holders.admin.AdminSettingsPageHolder;
-import ru.wtg.whereaminowserver.holders.admin.AdminSummaryPageHolder;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
-
 
 /**
  * Created 10/5/16.
@@ -37,15 +32,13 @@ public class MyHttpAdminServer implements HttpHandler {
         holders = new LinkedHashMap<String, PageHolder>();
 
         LinkedList<String> classes = new LinkedList<String>();
-        classes.add("AdminCreatePageHolder");
-        classes.add("AdminHelpPageHolder");
         classes.add("AdminHomePageHolder");
-        classes.add("AdminMainPageHolder");
-        classes.add("AdminSettingsPageHolder");
+        classes.add("AdminCreatePageHolder");
         classes.add("AdminSummaryPageHolder");
-
-        // IntroViewHolder must be registered last
-//        classes.put("IntroViewHolder");
+        classes.add("AdminHelpPageHolder");
+        classes.add("AdminSettingsPageHolder");
+        classes.add("AdminUserPageHolder");
+        classes.add("AdminMainPageHolder");
 
         for(String s:classes){
             try {
@@ -63,24 +56,23 @@ public class MyHttpAdminServer implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            System.out.println("Admin server requested");
+//            System.out.println("Admin server requested");
 
             URI uri = exchange.getRequestURI();
-            Map<String, List<String>> query = Utils.splitQuery(uri.toString());
 
             ArrayList<String> parts = new ArrayList<String>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
             HtmlGenerator html;
             AdminMainPageHolder main = (AdminMainPageHolder) holders.get(AdminMainPageHolder.HOLDER_TYPE);
-            if (parts.size() > 3 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2)) && parts.get(3).equals("set")) {
-                html = holders.get(parts.get(2)).create(query);
+            if (parts.size() > 3 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2)) && parts.get(parts.size()-1).equals("set")) {
+                html = holders.get(parts.get(2)).create(parts);
             } else if (parts.size() > 2 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2))) {
                 main.addPart(parts.get(2));
-//                html = holders.get(parts.get(2)).create(query);
-                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(query);
+                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(parts);
             } else {
-                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(query);
+                main.addPart("home");
+                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(parts);
             }
 
             byte[] bytes = html.build().getBytes();
@@ -94,7 +86,6 @@ public class MyHttpAdminServer implements HttpHandler {
             e.printStackTrace();
         }
     }
-
 
     public MyWssServer getWssProcessor() {
         return wssProcessor;

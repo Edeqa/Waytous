@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,6 +30,7 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     private DBOpenHelper mDBHelper;
     private SQLiteDatabase mDB;
+    private HashMap<String, HashMap<String,Restriction>> restrictions;
     private String selection = null;
     private String[] selectionArgs = null;
 
@@ -68,6 +70,23 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     public Cursor getAll() {
+        String selection = null;
+        String[] selectionArgs = null;
+
+        if(restrictions != null && restrictions.containsKey(fields.itemType)) {
+            selection = "";
+            ArrayList<String> args = new ArrayList<>();
+            HashMap<String, Restriction> rest = restrictions.get(fields.itemType);
+            for(Map.Entry<String,Restriction> entry: rest.entrySet()) {
+                if(selection.length() > 0) {
+                    selection += " AND ";
+                }
+                selection += "(" + entry.getValue().getSelection() + ")";
+                args.addAll(Arrays.asList(entry.getValue().getArgs()));
+            }
+            selectionArgs = args.toArray(new String[args.size()]);
+        System.out.println("FIL:"+selection+":"+args);
+        }
         return mDB.query(fields.itemType, null, selection, selectionArgs, null, null, null);
     }
 
@@ -92,10 +111,21 @@ public class DBHelper<T extends AbstractSavedItem> {
         mDB.delete(fields.itemType, null, null);
     }
 
-    public void setRestrictions(String selection, String[] selectionArgs) {
-        this.selection = selection;
-        this.selectionArgs = selectionArgs;
+    public void addRestriction(String name, String selection, String[] selectionArgs) {
+        if(restrictions == null) {
+            restrictions = new HashMap<>();
+        }
+        if(!restrictions.containsKey(fields.itemType)) {
+            restrictions.put(fields.itemType, new HashMap<String, Restriction>());
+        }
+        Restriction rest = new Restriction(selection, selectionArgs);
+        restrictions.get(fields.itemType).put(name,rest);
+    }
 
+    public void removeRestriction(String name) {
+        if(restrictions.containsKey(fields.itemType) && restrictions.get(fields.itemType).containsKey(name)) {
+            restrictions.get(fields.itemType).remove(name);
+        }
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -231,7 +261,6 @@ public class DBHelper<T extends AbstractSavedItem> {
         deleteById(item.getNumber());
     }
 
-
     private boolean isTableExists(String tableName) {
         boolean isExist = false;
         Cursor cursor = mDB.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
@@ -335,6 +364,24 @@ public class DBHelper<T extends AbstractSavedItem> {
         }
 
 
+    }
+
+    class Restriction {
+        private String selection;
+        private String[] args;
+
+        Restriction(String selection, String[] args) {
+            this.selection = selection;
+            this.args = args;
+        }
+
+        public String getSelection() {
+            return selection;
+        }
+
+        public String[] getArgs() {
+            return args;
+        }
     }
 
 }

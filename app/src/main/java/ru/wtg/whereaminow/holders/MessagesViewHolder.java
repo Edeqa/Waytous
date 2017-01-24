@@ -154,11 +154,13 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             switch(menuItem.getItemId()) {
                 case R.id.hide_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
-                    UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
+                    hideSystemMessages = true;
+                    UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
                     reloadCursor();
                     break;
                 case R.id.show_system_messages:
-                    UserMessage.getDb().setRestrictions(null,null);
+                    UserMessage.getDb().removeRestriction("user");
+                    hideSystemMessages = false;
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
                     reloadCursor();
                     break;
@@ -279,6 +281,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             case PREPARE_DRAWER:
                 menuItem = (MenuItem) object;
                 generalMenu = menuItem.getSubMenu();
+                UserMessage.getDb().removeRestriction("search");
                 int count = UserMessage.getCount();
                 generalMenu.findItem(R.string.chat).setVisible(count > 0);
                 if(count>0) {
@@ -474,20 +477,13 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
             @Override
             public void call(String text) {
-                if(text != null && text.length() > 0) {
-                    UserMessage.getDb().setRestrictions("(type_ = ? OR type_ = ?) AND (from_ LIKE ? OR to_ LIKE ? OR body_ LIKE ?)", new String[]{"" + UserMessage.TYPE_MESSAGE, "" + UserMessage.TYPE_PRIVATE, "%"+text+"%", "%"+text+"%", "%"+text+"%"});
-                } else {
-                    UserMessage.getDb().setRestrictions("(type_ = ? or type_ = ?)", new String[]{"" + UserMessage.TYPE_MESSAGE, "" + UserMessage.TYPE_PRIVATE});
-                }
-                reloadCursor();
+                setFilterAndReload(text);
             }
         };
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // Toast like print
-                System.out.println("SEARCH:"+query);
                 if(!searchView.isIconified()) {
                     searchView.setIconified(true);
                 }
@@ -498,21 +494,18 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             }
             @Override
             public boolean onQueryTextChange(String s) {
-                // UserFeedback.show( "SearchOnQueryTextChanged: " + s);
-                System.out.println("CHANGED:"+s);
                 filterMessage = s;
                 setFilter.call(filterMessage);
                 return false;
             }
         });
 
-
         prepareToolbarMenu();
 
         toolbar.setOnMenuItemClickListener(onDialogMenuItemClickListener);
 
         if(hideSystemMessages) {
-            UserMessage.getDb().setRestrictions("type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
+            UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
         }
         context.getSupportLoaderManager().initLoader(2, null, adapter);
 
@@ -611,8 +604,17 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
         makeDialogTransparent();
 
-        reloadCursor();
+        setFilterAndReload(filterMessage);
 
+    }
+
+    private void setFilterAndReload(String filter) {
+        if(filter != null && filter.length() > 0) {
+            UserMessage.getDb().addRestriction("search","from_ LIKE ? OR to_ LIKE ? OR body_ LIKE ?", new String[]{"%"+filter+"%", "%"+filter+"%", "%"+filter+"%"});
+        } else {
+            UserMessage.getDb().removeRestriction("search");
+        }
+        reloadCursor();
     }
 
     private void makeDialogTransparent() {
@@ -641,8 +643,8 @@ public class MessagesViewHolder extends AbstractViewHolder  {
     }
 
     private void prepareToolbarMenu() {
-        toolbar.getMenu().findItem(R.id.hide_system_messages).setVisible(hideSystemMessages);
-        toolbar.getMenu().findItem(R.id.show_system_messages).setVisible(!hideSystemMessages);
+        toolbar.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
+        toolbar.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
         toolbar.getMenu().findItem(R.id.smaller_font).setVisible(fontSize >= 12);
         toolbar.getMenu().findItem(R.id.bigger_font).setVisible(fontSize <= 24);
         toolbar.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);

@@ -19,8 +19,10 @@ function Home() {
 
     return {
         start: start,
+        page: "home",
         icon: "home",
         title: "Home",
+        menu: true,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Home()).start);

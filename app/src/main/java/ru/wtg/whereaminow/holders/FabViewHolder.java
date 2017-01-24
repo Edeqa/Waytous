@@ -33,6 +33,7 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATED;
+import static ru.wtg.whereaminow.holders.InfoViewHolder.SHOW_INFO;
 
 /**
  * Created 11/27/16.
@@ -75,7 +76,6 @@ public class FabViewHolder extends AbstractViewHolder {
                 close(true);
             } else {
                 if(State.getInstance().tracking_active()){
-                    System.out.println("A");
                     fab_buttons.removeAllViews();
                     add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
                     State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
@@ -87,10 +87,8 @@ public class FabViewHolder extends AbstractViewHolder {
                         }
                     });
                 } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
-                    System.out.println("B");
                     State.getInstance().fire(TRACKING_STOP);
                 } else {
-                    System.out.println("C");
                     State.getInstance().fire(TRACKING_NEW);
                 }
             }
@@ -166,6 +164,7 @@ public class FabViewHolder extends AbstractViewHolder {
         switch(event){
             case PREPARE_FAB:
             case CAMERA_UPDATED:
+            case SHOW_INFO:
                 break;
             default:
                 close(true);

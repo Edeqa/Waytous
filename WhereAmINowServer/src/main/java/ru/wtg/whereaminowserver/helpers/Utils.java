@@ -17,15 +17,15 @@ import java.util.Map;
 public class Utils {
 
 
-    public static String getEncryptedHash(String str) {
-        return getEncryptedHash(str, 5);
-    }
-
     public static final int DIGEST_METHOD_MD2 = 2;
     public static final int DIGEST_METHOD_MD5 = 5;
     public static final int DIGEST_METHOD_SHA1 = 1;
     public static final int DIGEST_METHOD_SHA256 = 256;
     public static final int DIGEST_METHOD_SHA512 = 512;
+
+    public static String getEncryptedHash(String str) {
+        return getEncryptedHash(str, 5);
+    }
 
     public static String getEncryptedHash(String str, int type) {
         String sType;
@@ -75,25 +75,6 @@ public class Utils {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public static Map<String, List<String>> splitQuery(String url) throws UnsupportedEncodingException {
-        final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
-        String[] a = url.split("\\?");
-
-        if(a.length>0) {
-            final String[] pairs = a[a.length - 1].split("&");
-            for (String pair : pairs) {
-                final int idx = pair.indexOf("=");
-                final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
-                if (!query_pairs.containsKey(key)) {
-                    query_pairs.put(key, new LinkedList<String>());
-                }
-                final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1), "UTF-8") : null;
-                query_pairs.get(key).add(value);
-            }
-        }
-        return query_pairs;
     }
 
 }
