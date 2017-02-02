@@ -29,7 +29,8 @@ public class Constants {
 
 
     public final static int HTTP_PORT = 8080;
-    public final static int WSS_PORT = 8081;
+    public final static int WSSFB_PORT = 8081;
+    public final static int WSS_PORT = 8082;
 //    public final static int WSS_PORT = 443;
 
     // client constants
@@ -74,25 +75,43 @@ public class Constants {
     public static final String RESPONSE_NUMBER = "number";
     public static final String RESPONSE_INITIAL = "initial";
     public static final String RESPONSE_PRIVATE = "to";
+    public static final String RESPONSE_SIGN = "sign";
 
     public static final String USER_JOINED = "joined";
     public static final String USER_DISMISSED = "dismissed";
     public static final String USER_LEFT = "left";
-    public static final String USER_LATITUDE = "lat";
-    public static final String USER_LONGITUDE = "lng";
-    public static final String USER_ALTITUDE = "alt";
-    public static final String USER_ACCURACY = "acc";
-    public static final String USER_BEARING = "brn";
-    public static final String USER_TIMESTAMP = "time";
-    public static final String USER_PROVIDER = "provider";
-    public static final String USER_TILT = "tilt";
-    public static final String USER_SPEED = "spd";
+
+    public static final String USER_PROVIDER = "pr";
+    public static final String USER_LATITUDE = "la";
+    public static final String USER_LONGITUDE = "lo";
+    public static final String USER_ALTITUDE = "al";
+    public static final String USER_ACCURACY = "ac";
+    public static final String USER_BEARING = "be";
+    public static final String USER_TILT = "ti";
+    public static final String USER_SPEED = "sp";
+
     public static final String USER_NUMBER = "number";
     public static final String USER_COLOR = "color";
     public static final String USER_NAME = "name";
     public static final String USER_MESSAGE = "user_message";
     public static final String USER_ADDRESS = "address";
     public static final String USER_DESCRIPTION = "description";
+
+    public static final String DATABASE_SECTION_GROUPS = "_groups";
+    public static final String DATABASE_SECTION_PUBLIC = "b"; // public
+    public static final String DATABASE_SECTION_PRIVATE = "p"; // private
+    public static final String DATABASE_SECTION_USERS_DATA = "u/b"; // users/data-public
+    public static final String DATABASE_SECTION_USERS_DATA_PRIVATE = "u/p"; // users/data-private
+    public static final String DATABASE_SECTION_USERS_KEYS = "u/k"; // users/keys
+    public static final String DATABASE_SECTION_OPTIONS = "o"; // options
+    public static final String DATABASE_SECTION_OPTIONS_PERSISTENT = "o/persistent";
+    public static final String DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY = "o/time-to-live-if-empty";
+    public static final String DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS = "o/delay-to-dismiss";
+    public static final String DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE = "o/dismiss-inactive";
+    public static final String DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD = "o/requires-password";
+    public static final String DATABASE_SECTION_OPTIONS_WELCOME_MESSAGE = "o/welcome-message";
+
+
 
     public static final int LIFETIME_INACTIVE_TOKEN = 600;
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;

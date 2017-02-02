@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
@@ -65,23 +64,13 @@ public class MyToken {
         if(owner == null) setOwner(user.getDeviceId());
 
         if(user.getColor() == 0){
-            user.setColor(selectColor(user.getNumber()));
+            user.setColor(Utils.selectColor(user.getNumber()));
         }
 
         setChanged();
     }
 
-    private int selectColor(int number) {
-        Random randomGenerator = new Random();
-        int red = randomGenerator.nextInt(256);
-        int green = randomGenerator.nextInt(256);
-        int blue = randomGenerator.nextInt(256);
 
-        return new Color(red,green,blue).getRGB();
-
-//        int color = colors.get(number).getRGB();
-//        return color;
-    }
 
     public boolean removeUser(String hash){
         boolean res;
@@ -203,7 +192,7 @@ public class MyToken {
         } else {
 
             for (MyUser x : users) {
-                WebSocket conn = x.getConnection();
+                WebSocket conn = x.webSocket;//.getConnection();
                 if (conn != null && conn.isOpen()) {
                     conn.send(o.toString());
                 }
@@ -302,7 +291,7 @@ public class MyToken {
             try {
                 System.out.println("INITIAL:"+x.getValue().getNumber()+":"+p);
 
-                if (/*p.timestamp > 0 && */x.getValue().getConnection().getRemoteSocketAddress() != null) {
+                if (/*p.timestamp > 0 && */x.getValue().webSocket.getRemoteSocketAddress() != null) {
                     JSONObject o = new JSONObject();
                     if(p != null) o = p.toJSON();
 

@@ -11,9 +11,12 @@ import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.DIV;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.NAME;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
@@ -49,17 +52,17 @@ public class AdminMainPageHolder implements PageHolder {
 
         Common.addIncludes(html);
         html.getHead().add(TITLE).with("Admin");
+        html.getHead().add(META).with(NAME, "viewport").with(CONTENT, "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0");
         html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
 
         JSONObject o = new JSONObject();
         o.put("page", part);
+        o.put("version", SERVER_BUILD);
 
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");
 
         html.getBody().with(CLASS,"body");
-        html.getBody().add(DIV).with(CLASS, "version").with("Build: "+SERVER_BUILD);
-
 
         return html;
     }

@@ -3,11 +3,15 @@ package ru.wtg.whereaminow.holders;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -45,6 +49,7 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.Utils;
+import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
@@ -135,6 +140,47 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         setMap(context.getMap());
         setButtonsView(context.findViewById(R.id.layout_navigation_mode));
+
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = (Toolbar) context.findViewById(R.id.toolbar);
+        final MenuItem searchItem = toolbar.getMenu().add(Menu.NONE, R.string.search, Menu.NONE, R.string.search);
+        searchItem.setVisible(false);
+
+        final SearchView searchView = new SearchView(context);
+        searchItem.setActionView(searchView);
+        searchItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+
+        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
+            @Override
+            public void call(String text) {
+                System.out.println("FILTER:"+text);
+            }
+        };
+        searchView.setQueryHint("Address or place");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(!searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }
+                searchItem.collapseActionView();
+                setFilter.call(query);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                setFilter.call(s);
+                return false;
+            }
+        });
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchItem.expandActionView();
+            }
+        });
     }
 
     @Override
@@ -185,6 +231,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         return false;
                     }
                 });
+//                setupToolbar();
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
@@ -199,6 +246,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         }
                     }
                 });
+//                setupToolbar();
                 break;
             case SHOW_NAVIGATION:
                 buttonsView.setVisibility(View.VISIBLE);
@@ -458,6 +506,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
                     try {
                         final MyUser me = State.getInstance().getMe();
+                        if(me.getLocation() == null || myUser.getLocation() == null) return;
                         final LatLng mePosition = Utils.latLng(me.getLocation());
                         final LatLng userPosition = Utils.latLng(myUser.getLocation());
 
@@ -491,6 +540,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         String req = "https://maps.googleapis.com/maps/api/directions/json?"
                                 + "origin=" + me.getLocation().getLatitude() + "," + me.getLocation().getLongitude() + "&"
                                 + "destination=" + myUser.getLocation().getLatitude() + "," + myUser.getLocation().getLongitude() +"&"
+                                + "alternatives=false&"
                                 + "mode=";
 
                         switch (mode) {
@@ -515,7 +565,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
                         final String text = o.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
                         final List<LatLng> points = PolyUtil.decode(text);
-                        final String title = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getString("text");
+                        String distanceText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getString("text");
+                        String durationText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
+                        final String title = distanceText + "\n" + durationText;
 
                         int distance = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getInt("value");
 

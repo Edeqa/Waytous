@@ -8,5 +8,7 @@ public interface SensitiveDataInterface {
 
     String getFCMServerKey();
     String getFCMSenderKey();
+    String getFBPrivateKeyFile();
+    String getFBDatabaseUrl();
 
 }

@@ -3,18 +3,14 @@
  */
 function Help() {
 
+    var title = "Help";
+
     var u = new Utils();
 
     var start = function() {
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, "/admin/help");
-        }
+        div = u.createPage(this);
 
-        u.clear(document.body);
-
-        u.create("h1", "Help", document.body);
-
-        u.create("p", "To be implemented soon...", document.body);
+        u.create("p", "To be implemented soon...", div);
 
     }
 
@@ -22,8 +18,8 @@ function Help() {
         start: start,
         page: "help",
         icon: "help_outline",
-        title: "Help",
-        menu: true,
+        title: title,
+        menu: title,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Help()).start);

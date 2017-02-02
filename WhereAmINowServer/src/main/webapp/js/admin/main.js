@@ -4,60 +4,79 @@
 
 function Main() {
     var u = new Utils();
+    var menu;
 
     var holders = {};
     var holderFiles = [
-        "Home.js",
-        "Create.js",
-        "Summary.js",
-        "Settings.js",
-        "Help.js",
-        "User.js"
+        "Home",
+        "Create",
+        "Summary",
+        "Settings",
+        "Help",
+        "User"
     ]
 
     var start = function() {
-        if(window.name == "content") {
-            window.location.href = "/admin/home/set";
+        if(!data.page) {
+            window.location.href = "/admin/home";
             return;
         }
 
         var loaded = 0;
         for(var i in holderFiles) {
-            u.create("script", {src: "/js/admin/"+holderFiles[i], dataStart: holderFiles[i],  onload: function(e) {
+            u.create("script", {src: "/js/admin/"+holderFiles[i]+".js", dataStart: holderFiles[i],  onload: function(e) {
                 loaded++;
-                var holder = this.dataset.start.split(".")[0];
+                var holder = this.dataset.start;
                 holder = new window[holder]();
                 holders[holder.page] = holder;
                 if(loaded == u.keys(holderFiles).length) {
                     resume();
                 }
-            }}, document.body);
+            }}, document.head);
         }
     }
 
     var resume = function() {
-        var out = u.create("table", {className:"layout"}, document.body);
-        var outtr = u.create("tr", {}, out);
-        var outmenu = u.create("td", {className:"menu"}, outtr);
-        var outcontent = u.create("td", {}, outtr);
 
-        u.create("div", { className: "logo"}, u.create("a", { href: "/" }, outmenu));
+        window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
+            window.scrollTo(0, 1); }, 0);
+        });
 
-        var table = u.create("table", {className:"menu"}, outmenu);
+        var out = u.create("div", {className:"layout"}, document.body);
+        menu = u.create("div", {className:"menu", tabindex: 1, onblur: function(){
+            menu.classList.remove("menu-open");
+            document.getElementsByClassName("menu-button")[0].classList.remove("menu-button-open");
+            return true;
+        }}, out);
+        var right = u.create("div", {className:"right"}, out);
 
-        for(var x in holders) {
+        u.create("a", { href: "/", className:"logo" }, menu);
+
+        for(var i in holderFiles) {
+            var x = holderFiles[i].toLowerCase();
             if(holders[x].menu) {
-                var th = u.create("th", null, u.create("tr", null, table));
+                var th = u.create("div", {className:"menu-item"}, menu);
                 u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
-                u.create("a", { href: "/admin/"+x+"/set", innerHTML: holders[x].title, target:"content"}, th);
+                u.create("div", { dataStart: x, onclick: function(){
+                    console.log("AAA",this.dataset.start);
+                    menu.blur();
+                    holders[this.dataset.start].start();
+                    return false;
+                }, innerHTML: holders[x].menu}, th);
             }
         }
 
-        th = u.create("th", null, u.create("tr", null, table));
+        th = u.create("div", {className:"menu-item"}, menu);
         u.create("i", { className:"material-icons md-14", innerHTML:"exit_to_app" }, th);
-        u.create("a", { href: "#", onclick: logout, innerHTML: "Log out" }, th);
+        u.create("div", { onclick: logout, innerHTML: "Log out" }, th);
 
-        u.create("iframe", { name: "content", src: "/admin/"+data.page+"/set", frameBorder: 0 }, outcontent);
+        th = u.create("div", { className:"menu-bottom"}, menu);
+        u.create("div", "On The Right Way", th);
+        u.create("div", "&copy; 2017, someeee", th);
+        u.create("div", "Build " + data.version, th);
+
+        holders[data.page].start();
+//        u.create("iframe", { name: "set", src: "/admin/"+data.page, frameBorder: 0 }, content);
 
 
     }

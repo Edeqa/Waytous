@@ -18,8 +18,8 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
+import ru.wtg.whereaminow.helpers.SystemMessage;
 import ru.wtg.whereaminow.helpers.UserMessage;
-import ru.wtg.whereaminow.helpers.Utils;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
@@ -27,6 +27,7 @@ import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_JOINED;
+import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_MESSAGE;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_PRIVATE;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static ru.wtg.whereaminow.helpers.UserMessage.TYPE_USER_JOINED;
@@ -39,7 +40,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
@@ -51,7 +51,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
 
     public static final String NEW_MESSAGE = "new_message";
     public static final String SEND_MESSAGE = "send_message";
-    public static final String PRIVATE_MESSAGE = "private_message";
+    public static final String PRIVATE_MESSAGE = "private";
     public static final String USER_MESSAGE = "user_message";
     public static final String WELCOME_MESSAGE = "welcome_message";
     private final Context context;
@@ -104,6 +104,11 @@ public class MessagesHolder extends AbstractPropertyHolder {
     }
 
     @Override
+    public boolean isSaveable() {
+        return true;
+    }
+
+    @Override
     public void perform(final JSONObject o) throws JSONException {
         if(o.has(REQUEST_DELIVERY_CONFIRMATION)) {
             System.out.println("DELIVERED:"+o);
@@ -123,14 +128,30 @@ public class MessagesHolder extends AbstractPropertyHolder {
         } else if (o.has(USER_MESSAGE)) {
             int number = o.getInt(USER_NUMBER);
             final String text = o.getString(USER_MESSAGE);
+            if(o.has("key")){
+                String key = o.getString("key");
+                if(UserMessage.getItemByFieldValue("key", key) != null) return;
+            }
+
             State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
-                    if(o.has(RESPONSE_PRIVATE)){
-                        myUser.fire(MessagesHolder.PRIVATE_MESSAGE, text);
-                    } else {
-                        myUser.fire(MessagesHolder.USER_MESSAGE, text);
+                    UserMessage m = new UserMessage(context);
+                    m.setBody(text);
+                    try {
+                        m.setKey(o.getString("key"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
+
+                    m.setFrom(myUser);
+                    if(o.has(PRIVATE_MESSAGE)){
+                        m.setType(TYPE_PRIVATE);
+                        m.setTo(State.getInstance().getMe());
+                    } else {
+                        m.setType(TYPE_MESSAGE);
+                    }
+                    myUser.fire(USER_MESSAGE, m);
                 }
             });
         }
@@ -141,8 +162,12 @@ public class MessagesHolder extends AbstractPropertyHolder {
         final MyUser user;
         switch(event){
             case SEND_MESSAGE:
-                UserMessage m = (UserMessage) object;
-                if(m != null) {
+                SystemMessage mm = (SystemMessage) object;
+                UserMessage m;
+                if(mm != null) {
+                    m = new UserMessage(mm);
+                    m.save(mm.getCallback());
+
                     messages.add(m);
                     State.getInstance().getTracking()
                             .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, m.getBody())
@@ -201,54 +226,51 @@ public class MessagesHolder extends AbstractPropertyHolder {
             if(!myUser.isUser()) return true;
             switch (event){
                 case USER_MESSAGE:
-                case PRIVATE_MESSAGE:
-                    String text = (String) object;
-                    UserMessage m = new UserMessage(context);
-                    m.setBody(text);
-                    m.setFrom(myUser);
+                    UserMessage m = (UserMessage) object;
+                    if(m != null) {
+                        m.save(null);
+                        messages.add(m);
 
-                    if(PRIVATE_MESSAGE.equals(event)) {
-                        m.setTo(State.getInstance().getMe());
-                        m.setType(TYPE_PRIVATE);
+                        Intent viewIntent = new Intent(context, MainActivity.class);
+                        viewIntent.putExtra("action", "fire");
+                        viewIntent.putExtra("fire", SHOW_MESSAGES);
+
+                        Intent replyIntent = new Intent(context, MainActivity.class);
+                        replyIntent.putExtra("action", "fire");
+                        replyIntent.putExtra("fire", NEW_MESSAGE);
+                        replyIntent.putExtra("number", myUser.getProperties().getNumber());
+
+                        PendingIntent pendingViewIntent = PendingIntent.getActivity(context, 1978, viewIntent, 0);
+                        PendingIntent pendingReplyIntent = PendingIntent.getActivity(context, 1979, replyIntent, 0);
+
+                        notification.mActions.clear();
+                        notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
+                        notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
+
+                        notification
+                                .setContentTitle(myUser.getProperties().getDisplayName())
+                                .setContentText(m.getBody())
+                                .setWhen(new Date().getTime());
+
+                        if(showNotifications) {
+                            notification.setDefaults(DEFAULT_ALL);
+                        }
+
+                        State.getInstance().fire(SHOW_CUSTOM_NOTIFICATION, notification.build());
+
                     }
 
-                    m.save(null);
-                    messages.add(m);
-
-                    Intent viewIntent = new Intent(context, MainActivity.class);
-                    viewIntent.putExtra("action", "fire");
-                    viewIntent.putExtra("fire", SHOW_MESSAGES);
-
-                    Intent replyIntent = new Intent(context, MainActivity.class);
-                    replyIntent.putExtra("action", "fire");
-                    replyIntent.putExtra("fire", NEW_MESSAGE);
-                    replyIntent.putExtra("number", myUser.getProperties().getNumber());
-
-                    PendingIntent pendingViewIntent = PendingIntent.getActivity(context, 1978, viewIntent, 0);
-                    PendingIntent pendingReplyIntent = PendingIntent.getActivity(context, 1979, replyIntent, 0);
-
-                    notification.mActions.clear();
-                    notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
-                    notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
-
-                    notification
-                            .setContentTitle(myUser.getProperties().getDisplayName())
-                            .setContentText(text)
-                            .setWhen(new Date().getTime());
-
-                    if(showNotifications) {
-                        notification.setDefaults(DEFAULT_ALL);
-                    }
-
-                    State.getInstance().fire(SHOW_CUSTOM_NOTIFICATION, notification.build());
 
                     break;
                 case SEND_MESSAGE:
-                    m = (UserMessage) object;
-                    if(m != null) {
+                    SystemMessage mm = (SystemMessage) object;
+                    if(mm != null) {
+                        m = new UserMessage(mm);
+                        m.save(mm.getCallback());
+
                         messages.add(m);
                         State.getInstance().getTracking()
-                                .put(RESPONSE_PRIVATE, m.getTo())
+                                .put(RESPONSE_PRIVATE, mm.getToUser().getProperties().getNumber())
                                 .put(ru.wtg.whereaminowserver.helpers.Constants.USER_MESSAGE, m.getBody())
                                 .put(REQUEST_PUSH, true)
                                 .put(REQUEST_DELIVERY_CONFIRMATION, m.getDelivery())
@@ -257,7 +279,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                     break;
                 case CHANGE_NUMBER:
                     if(State.getInstance().tracking_active() && myUser.getProperties().getNumber() == 0) {
-                        text = State.getInstance().getStringPreference(WELCOME_MESSAGE, "");
+                        String text = State.getInstance().getStringPreference(WELCOME_MESSAGE, "");
                         if(text.length()>0) {
                             State.getInstance().getTracking().put(REQUEST_WELCOME_MESSAGE, text).send(REQUEST_WELCOME_MESSAGE);
                         }

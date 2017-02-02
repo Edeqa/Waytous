@@ -1,12 +1,8 @@
 package ru.wtg.whereaminow.holders;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -17,14 +13,14 @@ import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.SoundEffectConstants;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -46,18 +42,18 @@ import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SavedLocation;
-import ru.wtg.whereaminow.helpers.ShareSender;
 import ru.wtg.whereaminow.helpers.SystemMessage;
+import ru.wtg.whereaminow.helpers.UserMessage;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.DROPPED_TO_USER;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
@@ -65,10 +61,10 @@ import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminow.holders.MarkerViewHolder.MARKER_CLICK;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.SHOW_NAVIGATION;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_SAVED_LOCATION;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
@@ -85,7 +81,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
  * Created 11/27/16.
@@ -105,6 +100,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     private final AppCompatActivity context;
     private GoogleMap map;
     private SavedLocation.SavedLocationsAdapter adapter;
+    private Toolbar toolbar;
+    private AlertDialog dialog;
+    private String filterMessage;
     private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -120,7 +118,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             return false;
         }
     };
-    private Toolbar toolbar;
 
     public SavedLocationsViewHolder(MainActivity context) {
         this.context = context;
@@ -146,11 +143,17 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     }
 
     @Override
+    public boolean isSaveable() {
+        return true;
+    }
+
+    @Override
     public void perform(JSONObject o) throws JSONException {
 
         String address = null;
         String name = null;
         String description = null;
+        String key = null;
         final Float lat, lng;
         final int number;
         number = o.getInt(USER_NUMBER);
@@ -160,9 +163,15 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         if(o.has(USER_ADDRESS)) address = o.getString(USER_ADDRESS);
         if(o.has(USER_DESCRIPTION)) description = o.getString(USER_DESCRIPTION);
 
+        if(o.has("key")){
+            key = o.getString("key");
+            if(SavedLocation.getItemByFieldValue("key", key) != null) return;
+        }
+
         final String finalAddress = address;
         final String finalDescription = description;
         final String finalName = name;
+        final String finalKey = key;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -182,11 +191,12 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         loc.setTimestamp(new Date().getTime());
                         loc.setUsername(finalName);
                         loc.setAddress(finalAddress);
+                        loc.setKey(finalKey);
                         loc.save(context);
 
                         reloadCursor();
                         //noinspection unchecked
-                        new SystemMessage().setText("Location saved").setAction("Show", new SimpleCallback() {
+                        new SystemMessage(context).setText("Location saved").setAction("Show", new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
@@ -196,7 +206,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATIONS);
                             }
-                        }).show();
+                        }).showSnack();
                     }
                 });
                 dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
@@ -262,6 +272,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             case PREPARE_DRAWER:
                 menuItem = (MenuItem) object;
                 navigationMenu = menuItem.getSubMenu();
+                SavedLocation.getDb().removeRestriction("search");
                 int count = SavedLocation.getCount();
                 navigationMenu.findItem(R.string.locations).setVisible(count > 0);
                 if(count>0) {
@@ -300,8 +311,10 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         o.put(USER_NUMBER, 10000 + savedLocation.getNumber());
                         o.put(USER_COLOR, Color.rgb(0,155,0));
                         o.put(USER_NAME, savedLocation.getUsername());
-                        o.put(USER_TIMESTAMP, savedLocation.getTimestamp());
+                        o.put(REQUEST_TIMESTAMP, savedLocation.getTimestamp());
                         MyUser x = State.getInstance().getUsers().addUser(o);
+                        x.fire(MAKE_ACTIVE);
+//                        x.setUser(true);
 
                         x.createViews();
                         State.getInstance().fire(USER_JOINED, x);
@@ -341,23 +354,16 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
     private void showLocations() {
 
-        final AlertDialog dialog = new AlertDialog.Builder(context).create();
+        dialog = new AlertDialog.Builder(context).create();
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
         final RecyclerView list = (RecyclerView) content.findViewById(R.id.list_items);
 
-        adapter = new SavedLocation.SavedLocationsAdapter(context, list);
+        setupFooter(content);
 
-        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
-        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
-        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
+        adapter = new SavedLocation.SavedLocationsAdapter(context, list);
+        adapter.setEmptyView(content.findViewById(R.id.tv_placeholder));
+
+        dialog.setCustomTitle(setupToolbar());
 
         context.getSupportLoaderManager().initLoader(1, null, adapter);
 
@@ -393,7 +399,8 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             @Override
             public void call(Cursor cursor) {
                 if(toolbar != null) {
-                    toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
+                    toolbar.setTitle("Locations (" + cursor.getCount() + ")" + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
+//                    toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
                 }
             }
         });
@@ -427,7 +434,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
             }
         });
 
-        dialog.setCustomTitle(layoutToolbar);
 
         toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Show all", new DialogInterface.OnClickListener() {
@@ -466,14 +472,79 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 
         Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
 
+//        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        setFilterAndReload(filterMessage);
+    }
+
+    private AppBarLayout setupToolbar() {
+
+        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
+        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        toolbar.inflateMenu(R.menu.dialog_saved_locations_menu);
+        final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_location);
+        searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
+
+        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
+            @Override
+            public void call(String text) {
+                setFilterAndReload(text);
+            }
+        };
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(!searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }
+                searchItem.collapseActionView();
+                filterMessage = query;
+                setFilter.call(filterMessage);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filterMessage = s;
+                setFilter.call(filterMessage);
+                return false;
+            }
+        });
+
+        return layoutToolbar;
+    }
+
+    private LinearLayout setupFooter(View content) {
+        final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
+        ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
+
+        placeFooter.addView(layoutFooter);
+
+        return layoutFooter;
+    }
+
+    private void setFilterAndReload(String filter) {
+        if(filter != null && filter.length() > 0) {
+            SavedLocation.getDb().addRestriction("search","title_ LIKE ? OR username_ LIKE ? OR address_ LIKE ?", new String[]{"%"+filter+"%", "%"+filter+"%", "%"+filter+"%"});
+        } else {
+            SavedLocation.getDb().removeRestriction("search");
+        }
         reloadCursor();
     }
 
     private void reloadCursor(){
-        try {
+        if(context.getSupportLoaderManager().getLoader(1) != null) {
             context.getSupportLoaderManager().getLoader(1).forceLoad();
-        } catch(Exception e){
-            e.printStackTrace();
         }
     }
 
@@ -651,7 +722,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         myUser.removeViews();
                         myUser.fire(MAKE_INACTIVE);
                         State.getInstance().fire(USER_DISMISSED, myUser);
-                        myUser.fire(USER_DISMISSED);
+//                        myUser.fire(USER_DISMISSED);
                         State.getInstance().fire(UPDATE_CAMERA);
                     }
 /*
@@ -683,13 +754,13 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                     break;
                 case SHARE_SAVED_LOCATION:
                     System.out.println("SHARE_SAVED_LOCATION");
+                    //TODO
                     break;
                 case DROPPED_TO_USER:
                     final MyUser toUser = (MyUser) object;
                     myUser.fire(SEND_SAVED_LOCATION, toUser);
                     break;
                 case SEND_SAVED_LOCATION:
-                    System.out.println("SEND_SAVED_LOCATION");
                     if(isSavedLocation(myUser)){
                         final MyUser user = (MyUser) object;
 
@@ -703,8 +774,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
-
                                 if(user != null && !isSavedLocation(user) && user != State.getInstance().getMe()){
                                     State.getInstance().getTracking()
                                             .put(USER_LATITUDE, savedLocation.getLatitude())
@@ -733,12 +802,9 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                System.out.println("NOADD");
                             }
                         });
                         dialog.show();
-
-
                     }
                     break;
                 case MARKER_CLICK:
@@ -758,7 +824,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         loc.save(context);
 
                         //noinspection unchecked
-                        new SystemMessage().setText("Location saved").setAction("Show", new SimpleCallback() {
+                        new SystemMessage(context).setText("Location saved").setAction("Show", new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
@@ -768,7 +834,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATIONS);
                             }
-                        }).show();
+                        }).showSnack();
                     }
                     break;
             }
@@ -788,13 +854,12 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
 */
     }
 
-
 /*
     @Override
     public ArrayList<IntroRule> getIntro() {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
-//        rules.put(new IntroRule().setEvent(SHOW_SAVED_LOCATION).setId("saved_location_show_location").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU_ITEM).setViewId(R.string.menu_save_location).setTitle("Here you can").setDescription("Save current location of you or another member of group and show it later on the map."));
+//        rules.put(new IntroRule().setEvent(SHOW_SAVED_LOCATION).setId("saved_location_show_location").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU_ITEM).setViewId(R.string.menu_save_location).setTitle("Here you can").setDescription("Save current location of you or another member of group and showSnack it later on the map."));
 
         return rules;
     }

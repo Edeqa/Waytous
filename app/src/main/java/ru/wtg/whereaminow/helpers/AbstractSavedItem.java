@@ -38,13 +38,15 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     transient private String itemType;
     transient private long number;
 
+    protected AbstractSavedItem() {
+    }
+
     @SuppressWarnings("WeakerAccess")
     protected AbstractSavedItem(Context context, String itemType){
         this.context = context;
         this.itemType = itemType;
 
         number = 0;//sharedPreferences.getInt(LAST, 0) + 1;
-
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -52,7 +54,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 //        Fields fields = new Fields(itemType, item);
         DBHelper<? extends AbstractSavedItem> dbHelper = new DBHelper<>(context, itemType, item);
 //        System.out.println("========================================== "+dbHelper.fields.getCreateString());
-
         dbHelpers.put(itemType,new DBHelper(context, itemType, item));
     }
 
@@ -72,6 +73,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     public static AbstractSavedItem getItemByNumber(String itemType, long number) {
         Cursor cursor = dbHelpers.get(itemType).getById(number);
+        cursor.moveToFirst();
         return getSingleItemByCursor(itemType, cursor);
     }
 
@@ -90,7 +92,6 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     }
 
     private static AbstractSavedItem getSingleItemByCursor(String itemType, Cursor cursor) {
-        cursor.moveToFirst();
         AbstractSavedItem item = dbHelpers.get(itemType).load(cursor);
         cursor.close();
         return item;
@@ -131,6 +132,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         protected SimpleCallback<T> onItemClickListener;
         protected SimpleCallback<T> onItemTouchListener;
         protected SimpleCallback<Cursor> onCursorReloadListener;
+        private View emptyView;
 
         public AbstractSavedItemsAdapter(final Context context, final RecyclerView list){
             super();
@@ -156,7 +158,8 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
         @Override
         public int getItemCount() {
-            return cursor != null ? cursor.getCount() : 0;
+            int count = cursor != null ? cursor.getCount() : 0;
+            return count;
         }
 
         public Cursor getItem(final int position) {
@@ -169,6 +172,13 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public void swapCursor(final Cursor cursor) {
             this.cursor = cursor;
             this.notifyDataSetChanged();
+            if(getItemCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+                list.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+                list.setVisibility(View.GONE);
+            }
         }
 
         @Override
@@ -259,6 +269,9 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             swapCursor(null);
         }
 
+        public void setEmptyView(View emptyView) {
+            this.emptyView = emptyView;
+        }
     }
 
     static class SavedItemCursorLoader extends CursorLoader {
@@ -275,6 +288,4 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             return dbHelpers.get(itemType).getAll();
         }
     }
-
-
 }

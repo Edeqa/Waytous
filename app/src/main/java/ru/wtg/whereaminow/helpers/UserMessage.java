@@ -24,6 +24,7 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 
 /**
  * Created 12/9/16.
@@ -38,6 +39,8 @@ public class UserMessage extends AbstractSavedItem {
     public static final int TYPE_USER_DISMISSED = 4;
     static final long serialVersionUID = -6395904747332820028L;
     private static final String MESSAGE = "message";
+
+    private String key;
     private String from;
     private String to;
     private String body;
@@ -49,6 +52,29 @@ public class UserMessage extends AbstractSavedItem {
         super(context, MESSAGE);
         timestamp = new Date().getTime();
         type = TYPE_MESSAGE;
+    }
+
+    public UserMessage(SystemMessage systemMessage) {
+        super(systemMessage.getContext(), MESSAGE);
+
+        if(systemMessage.getFromUser() != null) {
+            from = systemMessage.getFromUser().getProperties().getDisplayName();
+        }
+        if(systemMessage.getToUser() != null) {
+            to = systemMessage.getToUser().getProperties().getDisplayName();
+        }
+        if(systemMessage.getText() != null) {
+            body = systemMessage.getText();
+        }
+        if(systemMessage.getDelivery() != null) {
+            delivery = systemMessage.getDelivery();
+        }
+        type = systemMessage.getType();
+
+    }
+
+    protected UserMessage(Context context, String itemType) {
+        super(context, itemType);
     }
 
     public static void init(Context context) {
@@ -133,7 +159,16 @@ public class UserMessage extends AbstractSavedItem {
                 + (from != null ? ", from: "+from : "")
                 + (to != null ? ", to: "+to : "")
                 + (body != null ? ", body: ["+body + "]" : "")
+                + (key != null ? ", key: ["+key + "]" : "")
                 + " }";
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
@@ -165,6 +200,7 @@ public class UserMessage extends AbstractSavedItem {
                 final UserMessage.UserMessagesAdapter.UserMessageViewHolder holder = (UserMessage.UserMessagesAdapter.UserMessageViewHolder) viewHolder;
 
                 final UserMessage item = UserMessage.getItemByCursor(cursor);
+                System.out.println("MESSAGE:"+item);
                 String title = "";
                 String from = item.getFrom();
                 if(from != null && item.getTo() != null) {

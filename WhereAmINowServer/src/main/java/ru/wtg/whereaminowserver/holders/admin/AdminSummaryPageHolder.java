@@ -8,13 +8,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import ru.wtg.whereaminowserver.helpers.CheckReq;
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
@@ -84,7 +84,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchTokensData() {
         JSONArray a = new JSONArray();
 
-        for (Map.Entry<String, MyToken> x : server.getWssProcessor().tokens.entrySet()) {
+        for (Map.Entry<String, MyToken> x : server.getWssProcessor().getTokens().entrySet()) {
             JSONObject o = new JSONObject();
             a.put(o);
 
@@ -116,7 +116,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchIpToUserData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyUser> x: server.getWssProcessor().ipToUser.entrySet()){
+        for(Map.Entry<String,MyUser> x: server.getWssProcessor().getIpToUser().entrySet()){
             JSONArray ua = new JSONArray();
             a.put(ua);
             ua.put(x.getKey());
@@ -128,7 +128,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchIpToTokenData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyToken> x: server.getWssProcessor().ipToToken.entrySet()){
+        for(Map.Entry<String,MyToken> x: server.getWssProcessor().getIpToToken().entrySet()){
             JSONArray ta = new JSONArray();
             a.put(ta);
             ta.put(x.getKey());
@@ -140,7 +140,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchIpToCheckData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyWssServer.CheckReq> x: server.getWssProcessor().ipToCheck.entrySet()){
+        for(Map.Entry<String,CheckReq> x: server.getWssProcessor().getIpToCheck().entrySet()){
             JSONArray ca = new JSONArray();
             a.put(ca);
             ca.put(x.getKey());

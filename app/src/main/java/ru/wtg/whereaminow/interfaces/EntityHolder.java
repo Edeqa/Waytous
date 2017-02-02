@@ -24,4 +24,7 @@ public interface EntityHolder<T extends Entity> {
     boolean onEvent(String event, Object object) throws URISyntaxException;
 
     void perform(JSONObject o) throws JSONException;
+
+    boolean isSaveable();
+
 }

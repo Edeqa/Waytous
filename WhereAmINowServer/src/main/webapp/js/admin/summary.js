@@ -3,6 +3,8 @@
  */
 function Summary() {
 
+    var title = "Summary";
+
     var alertArea;
     var tokens;
     var ipToUser;
@@ -10,16 +12,14 @@ function Summary() {
     var ipToCheck;
     var user;
     var firebaseToken;
+    var div;
 
     var u = new Utils();
 
     var start = function() {
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, "/admin/summary");
-        }
+        div = u.createPage(this);
 
         renderInterface();
-        alertArea.hide();
 
         messaging.getToken().then(function(currentToken) {
             if (currentToken) {
@@ -40,29 +40,24 @@ function Summary() {
           })
           .catch(function(err) {
             console.log('An error occurred while retrieving token. ', err);
-                alertArea.show("Data will not be updated. For instant updating you must allow notifications for this page.")
+                u.showAlert("Data will not be updated. For instant updating you must allow notifications for this page.")
           });
     }
 
     var renderInterface = function() {
 
-        u.clear(document.body);
+//        div.appendChild(renderAlertArea());
 
-        u.create("h1", "Summary", document.body);
-
-        document.body.appendChild(renderAlertArea());
-
-        document.body.appendChild(renderInterfaceTokensHeader());
+        div.appendChild(renderInterfaceTokensHeader());
 
         var tt = u.create("div", {
             className: "two_tables",
-        }, document.body);
+        }, div);
 
         tt.appendChild(renderInterfaceIpToUserHeader());
         tt.appendChild(renderInterfaceIpToTokenHeader());
 
-        document.body.appendChild(renderInterfaceIpToCheckHeader());
-
+        div.appendChild(renderInterfaceIpToCheckHeader());
 
         renderInterfaceTokens();
         renderInterfaceIpToUser();
@@ -71,23 +66,9 @@ function Summary() {
 
     }
 
-    var renderAlertArea = function() {
-        alertArea = u.create("table", { style: { width: "100%", backgroundColor: "rgba(244, 67, 54, 0.5)", color: "white" }});
-        alertArea.content = u.create("td", {}, u.create("tr", {}, alertArea));
-        alertArea.show = function(text) {
-            alertArea.content.innerHTML = text;
-            alertArea.style.display = "";
-        }
-        alertArea.hide = function() {
-            alertArea.style.display = "none";
-        }
-        return alertArea;
-    }
-
-
     var renderInterfaceTokensHeader = function () {
 
-       var div = u.create("div");
+        var div = u.create("div", {className:"tokens"});
         u.create("h2", "Groups", div);
 
         var table = u.create("table", {id:"tokens", className:"summary"}, div);
@@ -175,11 +156,11 @@ function Summary() {
 
                     u.create("a", { innerHTML: users[j].model, href: "/admin/user/" + data.tokens[i].id + "/" + j + "/set"}, u.create("td", {}, tr));
 
-                    u.create("td", { innerHTML: users[j].address }, tr);
+                    u.create("td", { innerHTML: users[j].address || "&#150;" }, tr);
                     u.create("td", { innerHTML: users[j].created }, tr);
                     u.create("td", { innerHTML: users[j].changed }, tr);
                     u.create("td", { innerHTML: users[j].control }, tr);
-                    u.create("td", { innerHTML: "a" }, tr);
+                    u.create("td", { innerHTML: "&#150;" }, tr);
                     u.create("a", { innerHTML: "Del", href: "/admin/user/" + data.tokens[i].id + "/" + j + "/set"}, u.create("td", {}, tr));
 
                     indent ++;
@@ -197,7 +178,7 @@ function Summary() {
 
     var renderInterfaceIpToUserHeader = function () {
 
-        var div = u.create("div", {className: "table_ip_to_user"});
+        var div = u.create("div", {className: "two_tables_one"});
         u.create("h2", { innerHTML: "IP to User corresponds" }, div);
         var table = u.create("table", {className:"summary"}, div);
 
@@ -225,7 +206,7 @@ function Summary() {
 
     var renderInterfaceIpToTokenHeader = function () {
 
-       var div = u.create("div", {className: "table_ip_to_token"});
+       var div = u.create("div", {className: "two_tables_one"});
         u.create("h2", { innerHTML: "IP to Group corresponds" }, div);
         var table = u.create("table", {className:"summary"}, div);
 
@@ -311,9 +292,9 @@ function Summary() {
 
         function showMessage(message) {
             console.log("MESSAGE",event);
-          var messageElem = document.createElement('div');
-          messageElem.appendChild(document.createTextNode(message));
-          document.getElementById('subscribe').appendChild(messageElem);
+            var messageElem = document.createElement('div');
+            messageElem.appendChild(document.createTextNode(message));
+            document.getElementById('subscribe').appendChild(messageElem);
         }
     };
 
@@ -321,9 +302,8 @@ function Summary() {
         start: start,
         page: "summary",
         icon: "list",
-        title: "Summary",
-        menu: true,
-
+        title: title,
+        menu: title,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Summary()).start);

@@ -36,12 +36,14 @@ public class MyUser {
     private Location location;
     private AtomicBoolean continueFiring = new AtomicBoolean();
     private long counter;
+    private boolean user;
 
     public MyUser(){
         locations = new ArrayList<>();
         entities = new LinkedHashMap<>();
         counter = 0;
         createProperties();
+        user = false;
     }
 
         /*CircleOptions circleOptions = new CircleOptions()
@@ -79,17 +81,21 @@ public class MyUser {
                     while(i++ < previous) {
                         iterLocs.next();
                     }
-                    while(iterLocs.hasNext()) {
-                        Location loc = iterLocs.next();
-                        if(loc != null && loc.getLatitude() == pos.latitude && loc.getLongitude() == pos.longitude) {
-                            if(iterPozs.hasNext()) {
-                                pos = iterPozs.next();
+                    try {
+                        while (iterLocs.hasNext()) {
+                            Location loc = iterLocs.next();
+                            if (loc != null && loc.getLatitude() == pos.latitude && loc.getLongitude() == pos.longitude) {
+                                if (iterPozs.hasNext()) {
+                                    pos = iterPozs.next();
+                                } else {
+                                    break;
+                                }
                             } else {
-                                break;
+                                iterLocs.remove();
                             }
-                        } else {
-                            iterLocs.remove();
                         }
+                    } catch(Exception e){
+                        e.printStackTrace();
                     }
                     Log.i("MyUser","Simplified locations {user:"+getProperties().getDisplayName()+", counter:"+counter+", size before:"+sizeBefore+", size after:"+locations.size()+"}");
                     onChangeLocation();
@@ -233,13 +239,17 @@ public class MyUser {
     }
 
     public boolean isUser(){
-        return location != null
-            && (location.getProvider().equals(LocationManager.GPS_PROVIDER)
+        return user;
+        /*return location != null
+                && (location.getProvider().equals(LocationManager.GPS_PROVIDER)
                 || location.getProvider().equals(LocationManager.NETWORK_PROVIDER)
                 || location.getProvider().equals(LocationManager.PASSIVE_PROVIDER)
                 || location.getProvider().equals("LocationStore")
                 || location.getProvider().equals("fused")
-                || location.getProvider().equals("touch"));
+                || location.getProvider().equals("touch"));*/
     }
 
+    public void setUser(boolean user) {
+        this.user = user;
+    }
 }

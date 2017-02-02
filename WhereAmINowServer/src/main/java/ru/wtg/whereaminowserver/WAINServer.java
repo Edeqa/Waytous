@@ -13,9 +13,11 @@ import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
 import ru.wtg.whereaminowserver.servers.MyHttpMainServer;
 import ru.wtg.whereaminowserver.servers.MyHttpTrackingServer;
 import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.MyWssServerFB;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
+import static ru.wtg.whereaminowserver.helpers.Constants.WSSFB_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
 
 /**
@@ -25,6 +27,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
 public class WAINServer {
 
     private static MyWssServer wssProcessor;
+    private static MyWssServerFB wssProcessorFB;
     private static HttpServer server;
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
@@ -34,13 +37,13 @@ public class WAINServer {
         System.out.println("Server \t\t\t| Port \t| Path");
         System.out.println("----------------------------------------------");
 
-        wssProcessor = new MyWssServer(WSS_PORT);
+        wssProcessorFB = new MyWssServerFB(WSSFB_PORT);
         new Thread() {
             public void run() {
                 try {
                     WebSocketImpl.DEBUG = false;
-                    wssProcessor.start();
-                    System.out.println("WSS\t\t\t\t| " + WSS_PORT + "\t|");
+                    wssProcessorFB.start();
+                    System.out.println("WSSFB\t\t\t\t| " + WSSFB_PORT + "\t|");
 
                     /*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
                     while (true) {
@@ -59,22 +62,47 @@ public class WAINServer {
             }
         }.start();
 
+        /*wssProcessor = new MyWssServer(WSS_PORT);
+        new Thread() {
+            public void run() {
+                try {
+                    WebSocketImpl.DEBUG = false;
+                    wssProcessor.start();
+                    System.out.println("WSS\t\t\t\t| " + WSS_PORT + "\t|");
+
+                    *//*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
+                    while (true) {
+//                        if(!wssProcessor.parse(sysin)) break;
+                        String in = sysin.readLine();
+                        System.out.println("READ:" + in);
+//                        s.sendToAll(in);
+                        if (in.equals("exit")) {
+                            wssProcessor.stop();
+                            break;
+                        }
+                    }*//*
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();*/
+
 
         server = HttpServer.create();
         server.bind(new InetSocketAddress(HTTP_PORT), 0);
 
         MyHttpMainServer mainServer = new MyHttpMainServer();
-        mainServer.setWssProcessor(wssProcessor);
+        mainServer.setWssProcessor(wssProcessorFB);
         server.createContext("/", mainServer);
         System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpTrackingServer trackingServer = new MyHttpTrackingServer();
-        trackingServer.setWssProcessor(wssProcessor);
+        trackingServer.setWssProcessor(wssProcessorFB);
         server.createContext("/track", trackingServer);
         System.out.println("Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/track");
 
         MyHttpAdminServer adminServer = new MyHttpAdminServer();
-        adminServer.setWssProcessor(wssProcessor);
+        adminServer.setWssProcessor(wssProcessorFB);
         server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
         System.out.println("Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
 

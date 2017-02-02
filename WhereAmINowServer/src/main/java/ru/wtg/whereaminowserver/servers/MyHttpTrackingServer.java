@@ -3,6 +3,8 @@ package ru.wtg.whereaminowserver.servers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import org.java_websocket.server.WebSocketServer;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +33,7 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TITLE;
 public class MyHttpTrackingServer implements HttpHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
-    private volatile MyWssServer wssProcessor;
+    private volatile WebSocketServer wssProcessor;
 
 
     @Override
@@ -93,11 +95,11 @@ public class MyHttpTrackingServer implements HttpHandler {
     }
 
 
-    public MyWssServer getWssProcessor() {
+    public WebSocketServer getWssProcessor() {
         return wssProcessor;
     }
 
-    public void setWssProcessor(MyWssServer wssProcessor) {
+    public void setWssProcessor(WebSocketServer wssProcessor) {
         this.wssProcessor = wssProcessor;
     }
 

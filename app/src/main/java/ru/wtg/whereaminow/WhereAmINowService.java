@@ -16,17 +16,12 @@ public class WhereAmINowService extends Service {
 
     private int id;
 
-    public WhereAmINowService() {
-//        new GlobalExceptionHandler(WhereAmINowService.this);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
 
         state = State.getInstance();
         state.setService(this);
-
     }
 
     @Override
@@ -38,49 +33,17 @@ public class WhereAmINowService extends Service {
         if("start".equals(mode)){
             state.fire(TRACKING_NEW);
         } else if("join".equals(mode)){
+            assert intent != null;
             state.fire(TRACKING_JOIN, intent.getStringExtra("host"));
         } else if("stop".equals(mode)){
             state.fire(TRACKING_STOP);
         }
-/*
-        if("start".equals(mode)){
-            try {
-                state.setTracking(new MyTracking());
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
-                return super.onStartCommand(intent, flags, startId);
-            }
-            state.getTracking().start();
-        } else if("join".equals(mode)){
-            try {
-                assert intent != null;
-                state.setTracking(new MyTracking(intent.getStringExtra("host")));
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                Toast.makeText(this,"Error: "+e.getReason(),Toast.LENGTH_SHORT).show();
-                return super.onStartCommand(intent, flags, startId);
-            }
-            String token = intent.getStringExtra("token");
-            state.getTracking().join(token);
-        } else if("stop".equals(mode)){
-            if(state.getTracking() != null) {
-                state.getTracking().stop();
-            }
-        }
-*/
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
-    }
-
-    class ServiceBinder extends Binder {
-        WhereAmINowService getService() {
-            return WhereAmINowService.this;
-        }
     }
 
     @Override
@@ -108,5 +71,9 @@ public class WhereAmINowService extends Service {
         return id;
     }
 
-
+    class ServiceBinder extends Binder {
+        WhereAmINowService getService() {
+            return WhereAmINowService.this;
+        }
+    }
 }

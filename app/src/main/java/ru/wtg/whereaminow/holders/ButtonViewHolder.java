@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +33,8 @@ import ru.wtg.whereaminow.helpers.Utils;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.DROPPED_TO_USER;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
@@ -39,6 +42,7 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_ZOOM;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
@@ -58,7 +62,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         setLayout((LinearLayout) context.findViewById(R.id.layout_users));
         setMenuLayout((FlexboxLayout) context.findViewById(R.id.layout_context_menu));
-
     }
 
     @Override
@@ -67,9 +70,28 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     }
 
     @Override
+    public boolean dependsOnEvent() {
+        return true;
+    }
+
+    @Override
+    public boolean onEvent(String event, Object object) {
+        switch(event){
+            case TRACKING_ACTIVE:
+                show();
+                break;
+            case TRACKING_STOP:
+            case TRACKING_DISABLED:
+                hide();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public ButtonView create(MyUser myUser) {
         if (myUser == null) return null;
-        return this.new ButtonView(myUser);
+        return new ButtonView(myUser);
     }
 
     public ButtonViewHolder setLayout(LinearLayout layout) {
@@ -93,25 +115,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         };
 
         return this;
-    }
-
-    @Override
-    public boolean dependsOnEvent() {
-        return true;
-    }
-
-    @Override
-    public boolean onEvent(String event, Object object) {
-        switch(event){
-            case TRACKING_ACTIVE:
-                show();
-                break;
-            case TRACKING_STOP:
-            case TRACKING_DISABLED:
-                hide();
-                break;
-        }
-        return true;
     }
 
     private void hide(){
@@ -149,9 +152,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 //                context.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
 //
 //                myUser.fire(CREATE_CONTEXT_MENU, popup.getMenu());
-//                popup.show();
-
-
+//                popup.showSnack();
                 return true;
             }
         };
@@ -161,7 +162,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
                 final int action = dragEvent.getAction();
                 switch(action) {
-
                     case DragEvent.ACTION_DRAG_STARTED:
                         break;
                     case DragEvent.ACTION_DRAG_EXITED:
@@ -213,7 +213,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int buttonView = myUser.getProperties().getImageResource();
-            if(buttonView <1) {
+            if(buttonView < 1) {
                 buttonView = R.layout.view_user_button;
             }
 
@@ -270,12 +270,25 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             switch(event){
                 case SELECT_USER:
                     title.setTypeface(Typeface.DEFAULT_BOLD);
+                    if(layout.getChildCount()>1) {
+                        show();
+                    } else if(State.getInstance().tracking_disabled()) {
+                        hide();
+                    }
                     break;
                 case UNSELECT_USER:
                     title.setTypeface(Typeface.DEFAULT);
                     break;
                 case CHANGE_NAME:
-                    title.setText(myUser.getProperties().getDisplayName());
+                    title.setText((myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName());
+                    break;
+                case MAKE_ACTIVE:
+                case MAKE_INACTIVE:
+                    if(layout.getChildCount()>1) {
+                        show();
+                    } else if(State.getInstance().tracking_disabled()) {
+                        hide();
+                    }
                     break;
             }
             return true;
@@ -325,10 +338,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     handlerHideMenu.postDelayed(runnableHideMenu, 3000);
                 }
             }, 0);
-
         }
 
     }
-
-
 }

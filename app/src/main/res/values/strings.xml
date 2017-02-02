@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">On The Right Way</string>
+    <string name="app_name">Waytogo</string>
     <string name="title_activity_main">@string/app_name</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -127,6 +127,7 @@
     <string name="bigger_font">Bigger font</string>
     <string name="transparent">Transparent</string>
     <string name="opaque">Opaque</string>
+    <string name="search">Search</string>
 
 
 </resources>

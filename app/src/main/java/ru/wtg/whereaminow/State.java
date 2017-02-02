@@ -25,33 +25,39 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.GpsHolder;
-import ru.wtg.whereaminow.holders.LoggerHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
 import ru.wtg.whereaminow.holders.TrackingHolder;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
-import ru.wtg.whereaminow.helpers.MyTracking;
+import ru.wtg.whereaminow.interfaces.Tracking;
 
 import static ru.wtg.whereaminow.ExceptionActivity.EXCEPTION;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_COLOR;
+import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 
 public class State extends MultiDexApplication {
 
     public static final int API = 1;
-    public static final int TRACKING_GPS_REJECTED = 6;
+
     private static State instance = null;
-    private MyTracking tracking;
-    private WhereAmINowService service;
+
     private HashMap<String, EntityHolder> entityHolders = new LinkedHashMap<>();
     private HashMap<String, EntityHolder> userEntityHolders = new LinkedHashMap<>();
     private HashMap<String, AbstractViewHolder> viewHolders = new LinkedHashMap<>();
     private HashMap<String, AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
+
+    private Tracking tracking;
+    private WhereAmINowService service;
     private SharedPreferences sharedPreferences;
     private MyUsers users;
     private MyUser me;
     private GeoTrackFilter gpsFilter;
     private Notification notification;
     private AtomicBoolean continueFiring = new AtomicBoolean();
+
     private String deviceId;
     private String token;
     private boolean gpsAccessAllowed;
@@ -61,7 +67,6 @@ public class State extends MultiDexApplication {
         public void onServiceConnected(ComponentName name, final IBinder binder) {
             serviceBound = true;
         }
-
         public void onServiceDisconnected(ComponentName name) {
             serviceBound = false;
         }
@@ -91,13 +96,14 @@ public class State extends MultiDexApplication {
         if(me == null){
             me = new MyUser();
             setMe(me);
-            me.fire(EVENTS.SELECT_USER, 0);
+            me.setUser(true);
+            me.fire(SELECT_USER, 0);
 
             String name = getStringPreference("my_name",null);
-            me.fire(EVENTS.CHANGE_NAME, name);
-            me.fire(EVENTS.CHANGE_COLOR, Color.BLUE);
+            me.fire(CHANGE_NAME, name);
+            me.fire(CHANGE_COLOR, Color.BLUE);
         }
-        me.fire(EVENTS.MAKE_ACTIVE);
+        me.fire(MAKE_ACTIVE);
 
         users = new MyUsers();
 
@@ -128,9 +134,6 @@ public class State extends MultiDexApplication {
             @Override
             public void call(Integer number, MyUser myUser) {
                 myUser.removeViews();
-//                Location lastLocation = myUser.getLocation();
-//                myUser.getLocations().clear();
-//                myUser.addLocation(lastLocation);
                 myUser.createViews();
             }
         });
@@ -143,10 +146,6 @@ public class State extends MultiDexApplication {
     public void setService(WhereAmINowService service) {
         this.service = service;
     }
-
-//    public Context getApplication(){
-//        return this;
-//    }
 
     public boolean tracking_disabled() {
         return tracking == null || EVENTS.TRACKING_DISABLED.equals(tracking.getStatus());
@@ -225,7 +224,6 @@ public class State extends MultiDexApplication {
     }
 
     public void setPreference(String key, String value){
-        System.out.println("PREFERE:"+key+":"+value);
         if(value != null && value.length()>0){
             sharedPreferences.edit().putString(key,value).apply();
         } else {
@@ -258,21 +256,21 @@ public class State extends MultiDexApplication {
     }
 
     public void registerEntityHolder(EntityHolder holder) {
-        if(holder.getType() == null) return;
-//        holder.init();
-        if(holder instanceof AbstractViewHolder){
-            if(holder.dependsOnEvent()) {
-                viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
-            }
-            if(holder.dependsOnUser()) {
-                userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
-            }
-        } else {
-            if(holder.dependsOnEvent()) {
-                entityHolders.put(holder.getType(), holder);
-            }
-            if(holder.dependsOnUser()) {
-                userEntityHolders.put(holder.getType(), holder);
+        if(holder.getType() != null) {
+            if (holder instanceof AbstractViewHolder) {
+                if (holder.dependsOnEvent()) {
+                    viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                }
+                if (holder.dependsOnUser()) {
+                    userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                }
+            } else {
+                if (holder.dependsOnEvent()) {
+                    entityHolders.put(holder.getType(), holder);
+                }
+                if (holder.dependsOnUser()) {
+                    userEntityHolders.put(holder.getType(), holder);
+                }
             }
         }
     }
@@ -325,34 +323,6 @@ public class State extends MultiDexApplication {
         return null;
     }
 
-    public void fire(final String EVENT, final Object object){
-        continueFiring.set(true);
-        for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
-            if(entry.getValue() != null){
-                try {
-                    if(!continueFiring.get()) break;
-                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
-                    if(entry.getValue() != null){
-                        try {
-                            if(!continueFiring.get()) break;
-                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-    }
-
  /*   private void updateEvents(){
         entityEvents.clear();
         userEntityEvents.clear();
@@ -381,6 +351,34 @@ public class State extends MultiDexApplication {
         System.out.println("VIEWACTIONS:"+ viewEvents);
         System.out.println("USERVIEWACTIONS:"+ userViewEvents);
     }*/
+
+    public void fire(final String EVENT, final Object object){
+        continueFiring.set(true);
+        for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
+            if(entry.getValue() != null){
+                try {
+                    if(!continueFiring.get()) break;
+                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
+                    if(entry.getValue() != null){
+                        try {
+                            if(!continueFiring.get()) break;
+                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     public void fire(final String EVENT){
         switch(EVENT){
@@ -415,11 +413,11 @@ public class State extends MultiDexApplication {
         this.gpsAccessAllowed = gpsAccessAllowed;
     }
 
-    public MyTracking getTracking() {
+    public Tracking getTracking() {
         return tracking;
     }
 
-    public void setTracking(MyTracking tracking) {
+    public void setTracking(Tracking tracking) {
         this.tracking = tracking;
     }
 

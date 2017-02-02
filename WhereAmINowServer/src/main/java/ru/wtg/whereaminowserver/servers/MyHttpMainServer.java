@@ -3,6 +3,8 @@ package ru.wtg.whereaminowserver.servers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import org.java_websocket.server.WebSocketServer;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,7 +22,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 public class MyHttpMainServer implements HttpHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
-    private volatile MyWssServer wssProcessor;
+    private volatile WebSocketServer wssProcessor;
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -90,11 +92,11 @@ public class MyHttpMainServer implements HttpHandler {
     }
 
 
-    public MyWssServer getWssProcessor() {
+    public WebSocketServer getWssProcessor() {
         return wssProcessor;
     }
 
-    public void setWssProcessor(MyWssServer wssProcessor) {
+    public void setWssProcessor(WebSocketServer wssProcessor) {
         this.wssProcessor = wssProcessor;
     }
 }

@@ -4,20 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Handler;
+import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.helpers.MyTracking;
+import ru.wtg.whereaminow.helpers.MyTrackingFB;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.ShareSender;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
+import ru.wtg.whereaminow.interfaces.Tracking;
 import ru.wtg.whereaminow.interfaces.TrackingCallback;
 
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
@@ -33,16 +34,14 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_NEW;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
-import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminow.holders.MessagesHolder.WELCOME_MESSAGE;
+import static ru.wtg.whereaminow.interfaces.Tracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHANGE_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_LEAVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
@@ -59,8 +58,8 @@ public class TrackingHolder extends AbstractPropertyHolder {
     private static final String TYPE = REQUEST_TRACKING;
 
     private final Context context;
-    //    private final Intent intentService;
-    private MyTracking tracking;
+
+    private Tracking tracking;
     private TrackingCallback onTrackingListener = new TrackingCallback() {
 
         @Override
@@ -76,12 +75,11 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
         @Override
         public void onReconnecting() {
-            State.getInstance().fire(TRACKING_RECONNECTING, "Reconnecting group...");
+            State.getInstance().fire(TRACKING_RECONNECTING, "Reconnecting...");
         }
 
         @Override
         public void onClose() {
-
         }
 
         @Override
@@ -93,20 +91,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 if (o.has(RESPONSE_TOKEN)) {
                     State.getInstance().fire(TOKEN_CREATED, o.getString(RESPONSE_TOKEN));
                 }
-                if (o.has(RESPONSE_NUMBER)) {
-                    State.getInstance().getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
-                }
-//
-                if (o.has(RESPONSE_INITIAL)) {
-                    JSONArray initialUsers = o.getJSONArray(RESPONSE_INITIAL);
-                    for (int i = 0; i < initialUsers.length(); i++) {
-                        JSONObject u = initialUsers.getJSONObject(i);
-                        State.getInstance().getUsers().addUser(u);
-                    }
-                    State.getInstance().fire(TRACKING_ACTIVE);
-                }
                 if (o.has(REQUEST_WELCOME_MESSAGE)) {
-//                            setWelcomeMessage(text);
                     State.getInstance().fire(WELCOME_MESSAGE, o.getString(REQUEST_WELCOME_MESSAGE));
                 }
             } catch (JSONException e) {
@@ -138,7 +123,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         @Override
         public void onMessage(final JSONObject o) {
             try {
-                System.out.println(o);
+                Log.i(TYPE, o.toString());
                 String responseStatus = o.getString(RESPONSE_STATUS);
                 switch (responseStatus) {
                     case RESPONSE_STATUS_UPDATED:
@@ -157,8 +142,10 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
-                                    myUser.fire(MAKE_ACTIVE);
-                                    State.getInstance().fire(USER_JOINED,myUser);
+                                    if(!myUser.getProperties().isActive()) {
+                                        myUser.fire(MAKE_ACTIVE);
+                                        State.getInstance().fire(USER_JOINED, myUser);
+                                    }
                                 }
                             });
                         }
@@ -220,11 +207,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public AbstractProperty create(MyUser myUser) {
-        return null;
-    }
-
-    @Override
     public boolean dependsOnEvent() {
         return true;
     }
@@ -233,6 +215,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
     public void perform(JSONObject o) throws JSONException {
         final Location location = Utils.jsonToLocation(o);
         int number = o.getInt(USER_NUMBER);
+
         State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
             @Override
             public void call(Integer number, MyUser myUser) {
@@ -242,10 +225,15 @@ public class TrackingHolder extends AbstractPropertyHolder {
     }
 
     @Override
+    public boolean isSaveable() {
+        return true;
+    }
+
+    @Override
     public boolean onEvent(String event, Object object) throws URISyntaxException {
         switch (event) {
             case TRACKING_NEW:
-                tracking = new MyTracking();
+                tracking = new MyTrackingFB();
                 State.getInstance().setTracking(tracking);
                 tracking.setTrackingListener(onTrackingListener);
                 tracking.start();
@@ -260,7 +248,8 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
                             State.getInstance().fire(TRACKING_STOP);
                         }
-                        tracking = new MyTracking(link);
+
+                        tracking = new MyTrackingFB(link);
                         State.getInstance().setTracking(tracking);
                         tracking.setTrackingListener(onTrackingListener);
                         tracking.start();
@@ -309,4 +298,10 @@ public class TrackingHolder extends AbstractPropertyHolder {
         }
         return true;
     }
+
+    @Override
+    public AbstractProperty create(MyUser myUser) {
+        return null;
+    }
+
 }

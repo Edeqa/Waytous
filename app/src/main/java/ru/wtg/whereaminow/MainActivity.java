@@ -49,8 +49,8 @@ import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_JOIN;
-import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminow.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
+import static ru.wtg.whereaminow.interfaces.Tracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
@@ -80,14 +80,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (!o.has(RESPONSE_STATUS)) return;
 
                     switch (o.getString(RESPONSE_STATUS)) {
-//                        case RESPONSE_STATUS_DISCONNECTED:
-//                            state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-//                                @Override
-//                                public void call(Integer number, MyUser myUser) {
-//                                    myUser.removeViews();
-//                                }
-//                            });
-//                            break;
                         case RESPONSE_STATUS_ACCEPTED:
                             SmartLocation.with(MainActivity.this).location().stop();
                             if (o.has(RESPONSE_NUMBER)) {
@@ -115,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 state.getUsers().forUser(number, new MyUsers.Callback() {
                                     @Override
                                     public void call(Integer number, final MyUser myUser) {
-                                        myUser.fire(USER_DISMISSED);
                                         myUser.removeViews();
                                     }
                                 });
@@ -126,13 +117,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     @Override
                                     public void call(Integer number, MyUser myUser) {
                                         myUser.createViews();
-                                        myUser.fire(USER_JOINED);
                                     }
                                 });
                             }
                             break;
-//                        case RESPONSE_STATUS_STOPPED:
-//                            break;
                     }
                 }
             } catch (JSONException e) {
@@ -147,11 +135,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
-
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.main);
 
         state = State.getInstance();
 
@@ -161,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         System.out.println("BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE
-        + ", flavor=" + BuildConfig.FLAVOR);
+                + ", flavor=" + BuildConfig.FLAVOR);
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -237,9 +225,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
         state.fire(CREATE_OPTIONS_MENU, menu);
-
         return true;
     }
 
@@ -260,10 +247,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        if(state.isGpsAccessAllowed()) {
-            onMapReadyPermitted();
+    protected void onNewIntent(Intent newIntent) {
+        super.onNewIntent(newIntent);
+
+        String action = newIntent.getStringExtra("action");
+        if(action != null) {
+            switch(action) {
+                case "fire":
+                    String fire = newIntent.getStringExtra("fire");
+                    Integer number = newIntent.getIntExtra("number", 0);
+                    newIntent.removeExtra("fire");
+                    newIntent.removeExtra("number");
+                    state.fire(fire, number);
+            }
+            return;
+        }
+
+        Uri data = newIntent.getData();
+        newIntent.setData(null);
+        String link = null;
+        if(data != null) {
+            link = data.toString();
+        } else if(!state.tracking_active()) {
+            link = state.getStringPreference(TRACKING_URI, null);
+        }
+        if(link != null) {
+            state.fire(TRACKING_JOIN, link);
         }
     }
 
@@ -316,9 +325,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        if(state.isGpsAccessAllowed()) {
+            onMapReadyPermitted();
+        }
+    }
+
     public void onMapReadyPermitted() {
         if(map == null) return;
-//        System.out.println("onMapReadyPermitted");
 
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()){
             new ContinueDialog(this).setMessage("Application needs the enabled location services. Please enable it on the next screen.").setCallback(new SimpleCallback() {
@@ -406,36 +422,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.fire(ACTIVITY_RESUME, this);
 
         onNewIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent newIntent) {
-        super.onNewIntent(newIntent);
-
-        String action = newIntent.getStringExtra("action");
-        if(action != null) {
-            switch(action) {
-                case "fire":
-                    String fire = newIntent.getStringExtra("fire");
-                    Integer number = newIntent.getIntExtra("number", 0);
-                    newIntent.removeExtra("fire");
-                    newIntent.removeExtra("number");
-                    state.fire(fire, number);
-            }
-            return;
-        }
-
-        Uri data = newIntent.getData();
-        newIntent.setData(null);
-        String link = null;
-        if(data != null) {
-            link = data.toString();
-        } else if(!state.tracking_active()) {
-            link = state.getStringPreference(TRACKING_URI, null);
-        }
-        if(link != null) {
-            state.fire(TRACKING_JOIN, link);
-        }
     }
 
     public GoogleMap getMap() {

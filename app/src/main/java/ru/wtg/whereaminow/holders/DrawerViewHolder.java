@@ -84,6 +84,10 @@ public class DrawerViewHolder extends AbstractViewHolder {
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_SETTLING) {
                     if (!isDrawerOpen()) {
+                        navigationView.getMenu().findItem(R.id.nav_satellite).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_SATELLITE);
+                        navigationView.getMenu().findItem(R.id.nav_terrain).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_TERRAIN);
+                        navigationView.getMenu().findItem(R.id.nav_traffic).setChecked(context.getMap().isTrafficEnabled());
+
                         MenuItem menuItem = navigationView.getMenu().findItem(R.id.nav_custom);
                         menuItem.setVisible(false);
                         State.getInstance().fire(PREPARE_DRAWER, menuItem);

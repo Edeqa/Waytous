@@ -13,6 +13,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import com.neovisionaries.ws.client.WebSocketState;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,8 +29,10 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.interfaces.Tracking;
 import ru.wtg.whereaminow.interfaces.TrackingCallback;
 
+import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
@@ -50,7 +53,9 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
@@ -64,7 +69,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.WSS_SERVER_HOST;
  * Created 10/8/16.
  */
 
-public class MyTracking {
+public class MyTracking implements Tracking {
 
     public static final String TRACKING_URI = "uri";
 
@@ -82,6 +87,7 @@ public class MyTracking {
     private String token;
     private boolean newTracking;
     private Handler handler = new Handler(Looper.myLooper());
+
     @SuppressWarnings("FieldCanBeLocal")
     private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
         @Override
@@ -141,6 +147,19 @@ public class MyTracking {
                         if (o.has(RESPONSE_TOKEN)) {
                             setToken(o.getString(RESPONSE_TOKEN));
                         }
+                        if (o.has(RESPONSE_NUMBER)) {
+                            State.getInstance().getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
+                        }
+                        if (o.has(RESPONSE_INITIAL)) {
+                            JSONArray initialUsers = o.getJSONArray(RESPONSE_INITIAL);
+                            for (int i = 0; i < initialUsers.length(); i++) {
+                                JSONObject u = initialUsers.getJSONObject(i);
+                                MyUser user = State.getInstance().getUsers().addUser(u);
+                                user.setUser(true);
+                                user.fire(MAKE_ACTIVE);
+                            }
+                        }
+
                         trackingListener.onAccept(o);
                         break;
                     case RESPONSE_STATUS_ERROR:

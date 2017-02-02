@@ -3,6 +3,8 @@ package ru.wtg.whereaminowserver.servers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import org.java_websocket.server.WebSocketServer;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,10 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ru.wtg.whereaminowserver.helpers.CheckReq;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.helpers.Utils;
+import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
+import ru.wtg.whereaminowserver.interfaces.WssServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
@@ -41,7 +43,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_NEW_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
@@ -63,14 +64,15 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
  * Created 10/5/16.
  */
 
-public class MyWssServer extends WebSocketServer {
+public class MyWssServer extends WebSocketServer implements WssServer {
 
-    public ConcurrentHashMap<String, MyToken> tokens;
-    public ConcurrentHashMap<String, MyToken> ipToToken;
-    public ConcurrentHashMap<String, MyUser> ipToUser;
-    public ConcurrentHashMap<String, CheckReq> ipToCheck;
-    private HashMap<String,RequestHolder> requestHolders;
-    private HashMap<String,RequestHolder> flagHolders;
+    protected ConcurrentHashMap<String, MyToken> tokens;
+    protected ConcurrentHashMap<String, MyToken> ipToToken;
+    protected ConcurrentHashMap<String, MyUser> ipToUser;
+    protected ConcurrentHashMap<String, CheckReq> ipToCheck;
+    protected HashMap<String,RequestHolder> requestHolders;
+
+    private HashMap<String,FlagHolder> flagHolders;
     private Runnable dismissInactiveUsers = new Runnable() {
         @Override
         public void run() {
@@ -101,7 +103,7 @@ public class MyWssServer extends WebSocketServer {
                                 if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
                                 if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
                                 if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                                user.getConnection().close();
+                                user.webSocket.close();
                             }
 
                         } else {
@@ -151,7 +153,7 @@ public class MyWssServer extends WebSocketServer {
             }
         }
 
-        flagHolders = new LinkedHashMap<String, RequestHolder>();
+        flagHolders = new LinkedHashMap<String, FlagHolder>();
 
         classes.clear();
         classes.add("PushFlagHolder");
@@ -160,8 +162,8 @@ public class MyWssServer extends WebSocketServer {
 
         for(String s:classes){
             try {
-                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders.flag."+s);
-                Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
+                Class<FlagHolder> _tempClass = (Class<FlagHolder>) Class.forName("ru.wtg.whereaminowserver.holders.flag."+s);
+                Constructor<FlagHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
                 registerFlagHolder(ctor.newInstance(this));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -175,7 +177,7 @@ public class MyWssServer extends WebSocketServer {
         requestHolders.put(holder.getType(), holder);
     }
 
-    public void registerFlagHolder(RequestHolder holder) {
+    public void registerFlagHolder(FlagHolder holder) {
         if(holder.getType() == null) return;
         flagHolders.put(holder.getType(), holder);
     }
@@ -318,13 +320,13 @@ public class MyWssServer extends WebSocketServer {
                             if (user != null) {
                                 user.setChanged();
                                 CheckReq check = new CheckReq();
-                                check.control = Utils.getUnique();
-                                check.token = token;
+                                check.setControl(Utils.getUnique());
+                                check.setToken(token);
                                 if (request.has(USER_NAME))
-                                    check.name = request.getString(USER_NAME);
+                                    check.setName(request.getString(USER_NAME));
 
                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
-                                response.put(RESPONSE_CONTROL, check.control);
+                                response.put(RESPONSE_CONTROL, check.getControl());
                                 ipToCheck.put(ip, check);
                             } else {
 
@@ -358,11 +360,11 @@ public class MyWssServer extends WebSocketServer {
 
                         } else {
                             CheckReq check = new CheckReq();
-                            check.control = Utils.getUnique();
-                            check.token = token;
+                            check.setControl(Utils.getUnique());
+                            check.setToken(token);
 
                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
-                            response.put(RESPONSE_CONTROL, check.control);
+                            response.put(RESPONSE_CONTROL, check.getControl());
                             ipToCheck.put(ip, check);
                         }
                     } else {
@@ -385,12 +387,12 @@ public class MyWssServer extends WebSocketServer {
                     if (ipToCheck.containsKey(ip)) {
                         CheckReq check = ipToCheck.get(ip);
 
-                        System.out.println("CHECK:found token: [name=" + check.name + ", token=" + check.token.getId() + ", control=" + check.control + "]");
+                        System.out.println("CHECK:found token: [name=" + check.getName() + ", token=" + check.getToken().getId() + ", control=" + check.getControl() + "]");
 
                         MyUser user = null;
-                        for (Map.Entry<String, MyUser> x : check.token.users.entrySet()) {
-                            System.out.println("CHECK:looking for device: [control=" + check.control + ", deviceId=" + x.getValue().getDeviceId().substring(0, 20) + "..., calculatedHash=" + x.getValue().calculateHash(check.control) + "]");
-                            if (hash.equals(x.getValue().calculateHash(check.control))) {
+                        for (Map.Entry<String, MyUser> x : check.getToken().users.entrySet()) {
+                            System.out.println("CHECK:looking for device: [control=" + check.getControl() + ", deviceId=" + x.getValue().getDeviceId().substring(0, 20) + "..., calculatedHash=" + x.getValue().calculateHash(check.getControl()) + "]");
+                            if (hash.equals(x.getValue().calculateHash(check.getControl()))) {
                                 user = x.getValue();
                                 break;
                             }
@@ -401,24 +403,24 @@ public class MyWssServer extends WebSocketServer {
                             response.put(RESPONSE_NUMBER, user.getNumber());
                             user.setConnection(conn);
                             user.setChanged();
-                            if (check.name != null && check.name.length() > 0) {
-                                user.setName(check.name);
+                            if (check.getName() != null && check.getName().length() > 0) {
+                                user.setName(check.getName());
                             }
 
-                            ipToToken.put(ip, check.token);
+                            ipToToken.put(ip, check.getToken());
                             ipToUser.put(ip, user);
                             ipToCheck.remove(ip);
 
-                            check.token.sendInitialTo(response, user);
+                            check.getToken().sendInitialTo(response, user);
 
                             JSONObject o = new JSONObject();//user.getPosition().toJSON();
                             o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
                             o.put(USER_COLOR, user.getColor());
                             o.put(USER_JOINED, user.getNumber());
-                            if (check.name != null && check.name.length() > 0) {
-                                o.put(USER_NAME, check.name);
+                            if (check.getName() != null && check.getName().length() > 0) {
+                                o.put(USER_NAME, check.getName());
                             }
-                            check.token.sendToAllFrom(o, user);
+                            check.getToken().sendToAllFrom(o, user);
                             return;
 //                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
 //                            response.put(RESPONSE_MESSAGE, "User not granted.");
@@ -574,38 +576,24 @@ public class MyWssServer extends WebSocketServer {
         }
     }
 
-    public class CheckReq {
+    @Override
+    public ConcurrentHashMap<String, MyToken> getTokens(){
+        return tokens;
+    }
 
-        private long timestamp;
-        private MyToken token;
-        private String control;
-        private String name;
+    @Override
+    public ConcurrentHashMap<String, MyToken> getIpToToken(){
+        return ipToToken;
+    }
 
-        public CheckReq() {
-            timestamp = new Date().getTime();
-        }
+    @Override
+    public ConcurrentHashMap<String, MyUser> getIpToUser(){
+        return ipToUser;
+    }
 
-        public long getTimestamp() {
-            return timestamp;
-        }
-        public String getControl(){
-            return control;
-        }
-        public void setControl(String control){
-            this.control = control;
-        }
-        public String getName(){
-            return name;
-        }
-        public void setName(String name){
-            this.name = name;
-        }
-        public MyToken getToken(){
-            return token;
-        }
-        public void setToken(MyToken token){
-            this.token = token;
-        }
+    @Override
+    public ConcurrentHashMap<String, CheckReq> getIpToCheck(){
+        return ipToCheck;
     }
 
 }

@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.interfaces.Tracking;
 
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
@@ -21,14 +22,14 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 
 public class NetworkStateChangeReceiver extends BroadcastReceiver {
 
-    private MyTracking tracking;
+    private Tracking tracking;
     private boolean connected = false;
 
     public NetworkStateChangeReceiver(){
 
     }
 
-    public NetworkStateChangeReceiver(MyTracking tracking) {
+    public NetworkStateChangeReceiver(Tracking tracking) {
         this.tracking = tracking;
         ConnectivityManager connectivity = (ConnectivityManager) State.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
@@ -100,4 +101,4 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
             e.printStackTrace();
         }
     }
-};
+}

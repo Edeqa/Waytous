@@ -53,11 +53,18 @@ public class NotificationHolder extends AbstractPropertyHolder {
     private long lastCloseNotifyTime = 0;
     private long lastAwayNotifyTime = 0;
     private boolean showNotifications = true;
-
     private Runnable notificationClearRunnable = new Runnable() {
         @Override
         public void run() {
-            update("", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+            if(notification == null) return;
+            if(state.tracking_disabled()) return;
+            if(showNotifications) {
+                notification.setDefaults(DEFAULT_LIGHTS);
+            } else {
+                notification.setDefaults(DEFAULT_LIGHTS);
+            }
+            NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1976, notification.build());
         }
     };
 
@@ -103,7 +110,6 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     @Override
     public boolean onEvent(String event, Object object) {
-
         switch (event){
             case TRACKING_NEW:
                 update("Creating group...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
@@ -116,6 +122,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
 //                notification = null;
                 break;
             case TRACKING_ACTIVE:
+                updateIcon(R.drawable.ic_notification_twinks);
                 update("You have joined.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case USER_JOINED:
@@ -138,7 +145,8 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 break;
             case TRACKING_RECONNECTING:
                 String message = (String) object;
-                update((message != null && message.length() > 0) ? message : "Reconnect...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                updateIcon(R.drawable.ic_notification_twinks_pause);
+                update((message != null && message.length() > 0) ? message : "Reconnecting...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case SHOW_CUSTOM_NOTIFICATION:
                 final Notification notification = (Notification) object;
@@ -174,12 +182,11 @@ public class NotificationHolder extends AbstractPropertyHolder {
             notification.setPriority(priority);
         }
 
-        if("".equals(text)) {
-        } else if(text != null) {
+        if(text != null) {
             notification.setContentTitle(text);
-            notification.setContentText(state.getUsers().getCountActive() + " user(s) active.");
+            notification.setContentText(state.getUsers().getCountActive() + " user(s) online.");
         } else {
-            notification.setContentTitle(state.getUsers().getCountActive() + " user(s) active.");
+            notification.setContentTitle(state.getUsers().getCountActive() + " user(s) online.");
             notification.setContentText(null);
         }
         notification.setWhen(new Date().getTime());
@@ -191,6 +198,12 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
         notificationClearHandler.removeCallbacks(notificationClearRunnable);
         notificationClearHandler.postDelayed(notificationClearRunnable, DELAY_BEFORE_CLEAR_NOTIFICATION * 1000);
+    }
+
+    private void updateIcon(int resource) {
+        notification.setSmallIcon(resource);
+        NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1976, notification.build());
     }
 
     public class NotificationUpdate extends AbstractProperty {

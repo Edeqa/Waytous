@@ -148,6 +148,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             return false;
         }
     };
+
     private Toolbar.OnMenuItemClickListener onDialogMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -217,10 +218,30 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         }
     };
 
-    public MessagesViewHolder(MainActivity context) {
+    public MessagesViewHolder(final MainActivity context) {
         this.context = context;
         this.dialog = new AlertDialog.Builder(context).create();
         filterMessage = "";
+
+        context.findViewById(R.id.toolbar).setOnTouchListener(new View.OnTouchListener() {
+            float x1,x2;
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        x1 = event.getY();
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        x2 = event.getY();
+                        float deltaX = x2 - x1;
+                        if(deltaX > 10) {
+                            showMessages();
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -324,7 +345,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             dialog.setTitle((privateMessage ? "Private message to " : "Reply to ") + toUser.getProperties().getDisplayName());
         }
 
-        @SuppressLint("InflateParams") View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null);
+        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null);
 
         final EditText etMessage = (EditText) content.findViewById(R.id.et_message);
         etMessage.setText(text);
@@ -335,27 +356,42 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 if (etMessage.getText().toString().length() > 0) {
                     if(State.getInstance().tracking_active()) {
                         if (privateMessage && toUser != null) {
-                            UserMessage m = new UserMessage(context);
-                            m.setFrom(State.getInstance().getMe());
-                            m.setBody(etMessage.getText().toString());
-                            m.setDelivery(Utils.getUnique());
-                            m.setTo(toUser);
-                            m.setType(TYPE_PRIVATE);
-                            m.save(null);
+                            SystemMessage mm = new SystemMessage(context)
+                                    .setFromUser(State.getInstance().getMe())
+                                    .setText(etMessage.getText().toString())
+                                    .setDelivery(Utils.getUnique())
+                                    .setToUser(toUser)
+                                    .setType(TYPE_PRIVATE);
+                            toUser.fire(SEND_MESSAGE, mm);
 
-                            toUser.fire(SEND_MESSAGE, m);
+//                            UserMessage m = new UserMessage(context);
+//                            m.setFrom(State.getInstance().getMe());
+//                            m.setBody(etMessage.getText().toString());
+//                            m.setDelivery(Utils.getUnique());
+//                            m.setTo(toUser);
+//                            m.setType(TYPE_PRIVATE);
+//                            m.save(null);
+//
+//                            toUser.fire(SEND_MESSAGE, m);
                         } else {
-                            UserMessage m = new UserMessage(context);
-                            m.setFrom(State.getInstance().getMe());
-                            m.setBody(etMessage.getText().toString());
-                            m.setDelivery(Utils.getUnique());
-                            m.save(null);
+                            SystemMessage mm = new SystemMessage(context)
+                                    .setFromUser(State.getInstance().getMe())
+                                    .setText(etMessage.getText().toString())
+                                    .setDelivery(Utils.getUnique());
 
-                            State.getInstance().fire(SEND_MESSAGE, m);
+                            State.getInstance().fire(SEND_MESSAGE, mm);
+
+//                            UserMessage m = new UserMessage(context);
+//                            m.setFrom(State.getInstance().getMe());
+//                            m.setBody(etMessage.getText().toString());
+//                            m.setDelivery(Utils.getUnique());
+//                            m.save(null);
+//
+//                            State.getInstance().fire(SEND_MESSAGE, m);
                         }
                         reloadCursor();
                     } else {
-                        new SystemMessage<>().setText("Cannot send message because of network not available.").show();
+                        new SystemMessage(context).setText("Cannot send message because of network not available.").showSnack();
                     }
                 }
             }
@@ -392,117 +428,21 @@ public class MessagesViewHolder extends AbstractViewHolder  {
         dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
-        final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
-        final ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutFooter.setLayoutParams(params);
+        final LinearLayout layoutFooter = setupFooter(content);
 
-        placeFooter.addView(layoutFooter);
-        if(State.getInstance().tracking_active()) {
-            placeFooter.setVisibility(View.VISIBLE);
-        } else {
-            placeFooter.setVisibility(View.GONE);
-        }
-
-        final SimpleCallback<EditText> sender = new SimpleCallback<EditText>() {
-            @Override
-            public void call(EditText et) {
-                if (et.getText().toString().length() > 0) {
-                    if(State.getInstance().tracking_active()) {
-                        UserMessage m = new UserMessage(context);
-                        m.setFrom(State.getInstance().getMe());
-                        m.setBody(et.getText().toString());
-                        m.setDelivery(Utils.getUnique());
-                        m.save(null);
-
-                        State.getInstance().fire(SEND_MESSAGE, m);
-
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-                        reloadCursor();
-                    } else {
-                        new SystemMessage<>().setText("Cannot send message because of network not available.").show();
-                    }
-                }
-                et.setText("");
-            }
-        };
-
-        layoutFooter.findViewById(R.id.ib_message_send).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
-            }
-        });
-        layoutFooter.findViewById(R.id.ib_message_send).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
-                dialog.dismiss();
-                dialog = null;
-                return true;
-            }
-        });
-
-        layoutFooter.setVisibility(View.VISIBLE);
         context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new UserMessage.UserMessagesAdapter(context, list);
-
-        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
-        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
-        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-                dialog = null;
-            }
-        });
+        adapter.setEmptyView(content.findViewById(R.id.tv_placeholder));
 
         hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
         notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
         fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
 
-        toolbar.inflateMenu(R.menu.dialog_messages_menu);
-        final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_message);
-        searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
-
-        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
-            @Override
-            public void call(String text) {
-                setFilterAndReload(text);
-            }
-        };
-        final SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(!searchView.isIconified()) {
-                    searchView.setIconified(true);
-                }
-                searchItem.collapseActionView();
-                filterMessage = query;
-                setFilter.call(filterMessage);
-                return false;
-            }
-            @Override
-            public boolean onQueryTextChange(String s) {
-                filterMessage = s;
-                setFilter.call(filterMessage);
-                return false;
-            }
-        });
-
-        prepareToolbarMenu();
-
-        toolbar.setOnMenuItemClickListener(onDialogMenuItemClickListener);
+        dialog.setCustomTitle(setupToolbar());
 
         if(hideSystemMessages) {
             UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+UserMessage.TYPE_PRIVATE});
@@ -525,7 +465,6 @@ public class MessagesViewHolder extends AbstractViewHolder  {
             }
         });
 
-        dialog.setCustomTitle(layoutToolbar);
 
         adapter.setOnItemClickListener(new SimpleCallback<UserMessage>() {
             @Override
@@ -533,6 +472,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                 reloadCursor();
             }
         });
+
         adapter.setOnItemShareListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
@@ -608,12 +548,131 @@ public class MessagesViewHolder extends AbstractViewHolder  {
 
     }
 
+    private AppBarLayout setupToolbar() {
+
+        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
+        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                dialog = null;
+            }
+        });
+
+        toolbar.inflateMenu(R.menu.dialog_messages_menu);
+        final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_message);
+        searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
+
+        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
+            @Override
+            public void call(String text) {
+                setFilterAndReload(text);
+            }
+        };
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(!searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }
+                searchItem.collapseActionView();
+                filterMessage = query;
+                setFilter.call(filterMessage);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filterMessage = s;
+                setFilter.call(filterMessage);
+                return false;
+            }
+        });
+
+        prepareToolbarMenu();
+
+        toolbar.setOnMenuItemClickListener(onDialogMenuItemClickListener);
+
+        return layoutToolbar;
+    }
+
+    private LinearLayout setupFooter(View content) {
+        final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
+        ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutFooter.setLayoutParams(params);
+
+        placeFooter.addView(layoutFooter);
+        if(State.getInstance().tracking_active()) {
+            placeFooter.setVisibility(View.VISIBLE);
+        } else {
+            placeFooter.setVisibility(View.GONE);
+        }
+
+        final SimpleCallback<EditText> sender = new SimpleCallback<EditText>() {
+            @Override
+            public void call(EditText et) {
+                if (et.getText().toString().length() > 0) {
+                    if(State.getInstance().tracking_active()) {
+                        SystemMessage mm = new SystemMessage(context)
+                                .setFromUser(State.getInstance().getMe())
+                                .setText(et.getText().toString())
+                                .setDelivery(Utils.getUnique());
+                        State.getInstance().fire(SEND_MESSAGE, mm);
+
+
+//                        UserMessage m = new UserMessage(context);
+//                        m.setFrom(State.getInstance().getMe());
+//                        m.setBody(et.getText().toString());
+//                        m.setDelivery(Utils.getUnique());
+//                        m.save(null);
+//
+//                        State.getInstance().fire(SEND_MESSAGE, m);
+
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+
+                        reloadCursor();
+                    } else {
+                        new SystemMessage(context).setText("Cannot send message because of network not available.").showSnack();
+                    }
+                }
+                et.setText("");
+            }
+        };
+
+        layoutFooter.findViewById(R.id.ib_message_send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+            }
+        });
+        layoutFooter.findViewById(R.id.ib_message_send).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+                dialog.dismiss();
+                dialog = null;
+                return true;
+            }
+        });
+
+        layoutFooter.setVisibility(View.VISIBLE);
+        return layoutFooter;
+    }
+
     private void setFilterAndReload(String filter) {
         if(filter != null && filter.length() > 0) {
             UserMessage.getDb().addRestriction("search","from_ LIKE ? OR to_ LIKE ? OR body_ LIKE ?", new String[]{"%"+filter+"%", "%"+filter+"%", "%"+filter+"%"});
         } else {
             UserMessage.getDb().removeRestriction("search");
         }
+        System.out.println("COUNTER:"+adapter.getItemCount());
         reloadCursor();
     }
 
@@ -680,10 +739,10 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                     if(dialog != null && dialog.isShowing()) {
                         reloadCursor();
                     } else {
-                        String text = (String) object;
+                        UserMessage m = (UserMessage) object;
 
                         //noinspection unchecked
-                        new SystemMessage().setText(myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
+                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction("Reply",new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, false,"");
@@ -693,7 +752,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_MESSAGES);
                             }
-                        }).show();
+                        }).showSnack();
 
                     }
                     break;
@@ -705,7 +764,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SystemMessage().setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
+                        new SystemMessage(context).setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, true, "");
@@ -715,7 +774,7 @@ public class MessagesViewHolder extends AbstractViewHolder  {
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_MESSAGES);
                             }
-                        }).show();
+                        }).showSnack();
                     }
                     break;
                 case NEW_MESSAGE:

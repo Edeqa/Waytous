@@ -82,9 +82,42 @@ function Utils() {
         return keys;
     }
 
+    var createPage = function(holder) {
+        window.history.pushState({}, null, "/admin/" + holder.page);
+
+        var div = document.getElementsByClassName("right")[0];
+        clear(div);
+
+        var menu = document.getElementsByClassName("menu")[0];
+        var h1 = create("div", {}, create("div",{className:"title"}, div));
+        create("span", {innerHTML:"menu", className:"menu-button", onclick: function(){
+            try {
+                menu.classList.add("menu-open");
+                this.classList.add("menu-button-open");
+                menu.focus();
+            } catch(e) {
+                console.err(e);
+            }
+        }}, h1);
+        create("span", {innerHTML:holder.title, className:"title"}, h1);
+
+        create("div", {className:"alert"}, div);
+
+        div = create("div", {className:"content"}, div);
+        return div;
+    }
+
+    var showAlert = function(text) {
+        var div = document.getElementsByClassName("alert")[0];
+        div.innerHTML = text;
+        div.style.display = "block";
+    }
+
     return {
         create: create,
         clear: clear,
         keys: keys,
+        createPage: createPage,
+        showAlert: showAlert,
     }
 }

@@ -1,10 +1,14 @@
 package ru.wtg.whereaminowserver.helpers;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import org.java_websocket.WebSocket;
 import org.json.JSONObject;
 
+import java.beans.Transient;
 import java.util.Date;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
@@ -12,26 +16,26 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LONGITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
  * Created 10/9/16.
  */
 
+@IgnoreExtraProperties
 public class MyUser {
-    private WebSocket webSocket;
+    transient public WebSocket webSocket;
+    public String name;
+    public long created;
+    public long changed;
+    public int color;
+    public int number;
 //    private ArrayList<MyPosition> positions;
-    private MyPosition position;
+    transient private MyPosition position;
     private String deviceId;
     private String control;
     private String model;
     private String manufacturer;
     private String os;
-    private String name;
-    private long created;
-    private long changed;
-    private int color;
-    private int number;
 
 
     public MyUser(WebSocket webSocket, String deviceId) {
@@ -75,15 +79,20 @@ public class MyUser {
         return deviceId;
     }
 
+    public String getUid() {
+        return Utils.getEncryptedHash(deviceId);
+    }
+
     public String getAddress() {
         if (webSocket == null) return null;
         if (webSocket.getRemoteSocketAddress() == null) return null;
         return webSocket.getRemoteSocketAddress().toString();
     }
 
-    public WebSocket getConnection() {
-        return webSocket;
-    }
+//    @Transient
+//    public WebSocket getConnection() {
+//        return webSocket;
+//    }
 
     public void setConnection(WebSocket connection) {
         this.webSocket = connection;
@@ -143,10 +152,10 @@ public class MyUser {
     }
 
     public void addPosition(JSONObject message) {
-        if (message.has(USER_TIMESTAMP)) {
+        if (message.has(REQUEST_TIMESTAMP)) {
             MyPosition pos = new MyPosition();
 
-            long timestamp = message.getLong(USER_TIMESTAMP);
+            long timestamp = message.getLong(REQUEST_TIMESTAMP);
 
             if (message.has(USER_LATITUDE)) pos.latitude = message.getDouble(USER_LATITUDE);
             if (message.has(USER_LONGITUDE)) pos.longitude = message.getDouble(USER_LONGITUDE);
@@ -167,6 +176,7 @@ public class MyUser {
         return created;
     }
 
+    @Transient
     public MyPosition getPosition() {
         return position;
 /*
@@ -234,7 +244,7 @@ public class MyUser {
             o.put(USER_BEARING, bearing);
             o.put(USER_SPEED, speed);
             o.put(USER_PROVIDER, provider);
-            o.put(USER_TIMESTAMP, timestamp);
+            o.put(REQUEST_TIMESTAMP, timestamp);
             return o;
         }
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.maps.android.SphericalUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,6 +23,7 @@ import ru.wtg.whereaminow.helpers.Utils;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.holders.InfoViewHolder.SHOW_INFO;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
 
 /**
@@ -29,17 +32,23 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
 public class GpsHolder extends AbstractPropertyHolder {
     public static final String REQUEST_LOCATION_SINGLE = "request_location_single";
     private static final String TYPE = "Gps";
-//    private final Context context;
     private final LocationGooglePlayServicesProvider provider;
     private final SmartLocation.LocationControl smartLocation;
-//    private final Intent intentService;
-
     private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
         @Override
         public void onLocationUpdated(Location location) {
-//            System.out.println("Service:onLocationChanged:forTracking="+(State.getInstance().tracking_active())+":"+location);
             if(location == null) return;
             location = Utils.normalizeLocation(State.getInstance().getGpsFilter(), location);
+
+//            State.getInstance().fire(SHOW_INFO, location.getAccuracy() + ", " + location.getSpeed()+", " + origin.getSpeed());
+            Location last = State.getInstance().getMe().getLocation();
+
+            if(last != null) {
+                if(location.getAccuracy() >= last.getAccuracy()) {
+                    if(SphericalUtil.computeDistanceBetween(Utils.latLng(last),Utils.latLng(location)) < location.getAccuracy()) return;
+                }
+            }
+
             if(State.getInstance().tracking_active()) {
                 try {
                     JSONObject message = Utils.locationToJson(location);
@@ -53,15 +62,11 @@ public class GpsHolder extends AbstractPropertyHolder {
     };
 
     public GpsHolder(Context context) {
-//        this.context = context;
-
         provider = new LocationGooglePlayServicesProvider();
         provider.setCheckLocationSettings(true);
 
         LocationParams.Builder params = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(3).setInterval(1000);
         smartLocation = new SmartLocation.Builder(context).build().location().config(params.build());
-//        smartLocation = new SmartLocation.Builder(context).logging(true).build().location().config(params.build());
-
     }
 
     @Override
@@ -75,26 +80,18 @@ public class GpsHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public AbstractProperty create(MyUser myUser) {
-        return null;
-    }
-
-    @Override
     public boolean dependsOnEvent() {
         return true;
     }
 
     @Override
     public boolean onEvent(String event, Object object) throws URISyntaxException {
-//        Log.i(TYPE,event+":"+object);
         switch (event) {
             case REQUEST_LOCATION_SINGLE:
-//                smartLocation.oneFix().start(locationUpdateListener);
                 smartLocation.stop();
                 smartLocation.continuous().start(locationUpdateListener);
                 break;
             case ACTIVITY_RESUME:
-//                if(State.getInstance().tracking_disabled()) {
                 locationUpdateListener.onLocationUpdated(smartLocation.getLastLocation());
                 smartLocation.continuous().start(locationUpdateListener);
                 break;
@@ -109,14 +106,15 @@ public class GpsHolder extends AbstractPropertyHolder {
                 break;
             case TRACKING_ACTIVE:
 //                smartLocation.oneFix().start(locationUpdateListener);
+                locationUpdateListener.onLocationUpdated(smartLocation.getLastLocation());
                 smartLocation.continuous().start(locationUpdateListener);
-//                Location lastLocation = State.getInstance().getMe().getLocation();
-//                if(lastLocation != null) {
-//                    locationUpdateListener.onLocationUpdated(lastLocation);
-//                }
                 break;
         }
         return true;
     }
 
+    @Override
+    public AbstractProperty create(MyUser myUser) {
+        return null;
+    }
 }

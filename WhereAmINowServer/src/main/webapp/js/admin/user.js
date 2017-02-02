@@ -3,16 +3,18 @@
  */
 function User() {
 
+    var title = "User";
+
     var u = new Utils();
     var positions;
+    var div;
 
     var start = function() {
         if(!data || !data.user || !data.user.created) {
-            window.location.href = "/admin/summary" + (window.name == "content" ? "/set" : "");
+            window.location.href = "/admin/summary";
+            return;
         }
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, window.location.href.replace("/set",""));
-        }
+        div = u.createPage(this);
 
         renderInterface();
 
@@ -44,12 +46,7 @@ function User() {
 
     var renderInterface = function() {
 
-        u.clear(document.body);
-
-        u.create("h1", "User", document.body);
-
-
-        document.body.appendChild(renderInterfaceUserHeader());
+        div.appendChild(renderInterfaceUserHeader());
         renderInterfaceUser();
     }
 
@@ -183,7 +180,6 @@ function User() {
         page: "user",
         icon: "navigation",
         title: "User",
-        menu: false,
     }
 }
 document.addEventListener("DOMContentLoaded", (new User()).start);

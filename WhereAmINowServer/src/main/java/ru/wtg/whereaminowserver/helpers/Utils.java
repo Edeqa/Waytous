@@ -1,5 +1,6 @@
 package ru.wtg.whereaminowserver.helpers;
 
+import java.awt.Color;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created 10/8/16.
@@ -77,4 +79,15 @@ public class Utils {
         }
     }
 
+    public static int selectColor(int number) {
+        Random randomGenerator = new Random();
+        int red = randomGenerator.nextInt(256);
+        int green = randomGenerator.nextInt(256);
+        int blue = randomGenerator.nextInt(256);
+
+        return new Color(red,green,blue).getRGB();
+
+//        int color = colors.get(number).getRGB();
+//        return color;
+    }
 }

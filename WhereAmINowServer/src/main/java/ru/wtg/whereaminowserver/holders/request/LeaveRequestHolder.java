@@ -35,5 +35,15 @@ public class LeaveRequestHolder implements RequestHolder {
         return true;
     }
 
+    @Override
+    public boolean isSaveable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return false;
+    }
+
 
 }

@@ -39,5 +39,15 @@ public class WelcomeMessageRequestHolder implements RequestHolder {
         return false;
     }
 
+    @Override
+    public boolean isSaveable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return false;
+    }
+
 
 }

@@ -36,4 +36,9 @@ abstract class AbstractPropertyHolder implements EntityHolder<AbstractProperty> 
     public void perform(JSONObject o) throws JSONException {
 
     }
+
+    @Override
+    public boolean isSaveable() {
+        return false;
+    }
 }

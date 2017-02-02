@@ -12,4 +12,8 @@ public interface RequestHolder {
     String getType();
 
     boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result);
+
+    boolean isSaveable();
+
+    boolean isPrivate();
 }

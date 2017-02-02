@@ -85,7 +85,9 @@ public class DBHelper<T extends AbstractSavedItem> {
                 args.addAll(Arrays.asList(entry.getValue().getArgs()));
             }
             selectionArgs = args.toArray(new String[args.size()]);
-        System.out.println("FIL:"+selection+":"+args);
+        }
+        if(!mDB.isOpen()){
+            mDB = mDBHelper.getWritableDatabase();
         }
         return mDB.query(fields.itemType, null, selection, selectionArgs, null, null, null);
     }
@@ -104,6 +106,9 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     @SuppressWarnings("WeakerAccess")
     public Cursor getById(long id){
+        if(!mDB.isOpen()){
+            mDB = mDBHelper.getWritableDatabase();
+        }
         return mDB.query(fields.itemType, null, COLUMN_ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
     }
 
@@ -123,7 +128,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     public void removeRestriction(String name) {
-        if(restrictions.containsKey(fields.itemType) && restrictions.get(fields.itemType).containsKey(name)) {
+        if(restrictions != null && restrictions.containsKey(fields.itemType) && restrictions.get(fields.itemType).containsKey(name)) {
             restrictions.get(fields.itemType).remove(name);
         }
     }
@@ -162,6 +167,9 @@ public class DBHelper<T extends AbstractSavedItem> {
             }
         }
 
+        if(!mDB.isOpen()){
+            mDB = mDBHelper.getWritableDatabase();
+        }
         if(item.getNumber() > 0){
             mDB.update(fields.itemType, cv, COLUMN_ID + " = ?", new String[]{String.valueOf(item.getNumber())});
         } else {
@@ -171,21 +179,26 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     public Cursor getByFieldValue(String field, String value) {
-        System.out.println("REQUESTED:"+fields.itemType+":"+field+":"+value+":"+
-                mDB.query(fields.itemType, null, field + "_ = ?", new String[]{value},null,null,null).getCount()
-        );
-
-
+//        System.out.println("REQUESTED:"+fields.itemType+":"+field+":"+value+":"+
+//                mDB.query(fields.itemType, null, field + "_ = ?", new String[]{value},null,null,null).getCount()
+//        );
+        if(!mDB.isOpen()){
+            mDB = mDBHelper.getWritableDatabase();
+        }
         return mDB.query(fields.itemType, null, field + "_ = ?", new String[]{value},null,null,null);
     }
 
     public Cursor getByFieldValue(String field, Number value) {
+        if(!mDB.isOpen()){
+            mDB = mDBHelper.getWritableDatabase();
+        }
         return mDB.query(fields.itemType, null, field + "_ = ?", new String[]{""+value},null,null,null);
     }
 
     @SuppressWarnings("WeakerAccess")
     public T load(Cursor cursor) {
         T item = null;
+        if(cursor.getCount() < 1) return null;
         try {
             //noinspection unchecked
             item = (T) fields.classType.getConstructor(Context.class).newInstance(context);
@@ -247,6 +260,9 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     @SuppressWarnings("WeakerAccess")
     public void deleteById(long id) {
+        if(!mDB.isOpen()){
+            mDB = mDBHelper.getWritableDatabase();
+        }
         mDB.delete(fields.itemType, COLUMN_ID + " = " + id, null);
     }
 

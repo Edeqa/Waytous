@@ -3,26 +3,22 @@
  */
 function Settings() {
 
+    var title = "Settings";
+
     var u = new Utils();
 
     var start = function() {
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, "/admin/settings");
-        }
+        div = u.createPage(this);
 
-        u.clear(document.body);
-
-        u.create("h1", "Settings", document.body);
-
-        u.create("p", "To be implemented soon...", document.body);
+        u.create("p", "To be implemented soon...", div);
    }
 
     return {
         start: start,
         page: "settings",
         icon: "settings",
-        title: "Settings",
-        menu: true,
+        title: title,
+        menu: title,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Settings()).start);

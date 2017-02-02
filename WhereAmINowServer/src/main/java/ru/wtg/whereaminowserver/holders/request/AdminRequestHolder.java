@@ -35,11 +35,21 @@ public class AdminRequestHolder implements RequestHolder {
     @Override
     public boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result) {
 
-        admins.put(user.getConnection().getRemoteSocketAddress().toString(), user);
+        admins.put(user.webSocket.getRemoteSocketAddress().toString(), user);
 
         System.out.println("ADMIN:"+user);
 
 
+        return false;
+    }
+
+    @Override
+    public boolean isSaveable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPrivate() {
         return false;
     }
 

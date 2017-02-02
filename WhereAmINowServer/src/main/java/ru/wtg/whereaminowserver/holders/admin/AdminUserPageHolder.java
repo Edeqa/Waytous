@@ -74,7 +74,7 @@ public class AdminUserPageHolder implements PageHolder {
         JSONObject o = new JSONObject();
 
         MyUser user = null;
-        MyToken token = server.getWssProcessor().tokens.get(tokenId);
+        MyToken token = server.getWssProcessor().getTokens().get(tokenId);
         for(Map.Entry<String,MyUser> entry:token.users.entrySet()) {
             if(userId.equals(""+entry.getValue().getNumber())){
                 user = entry.getValue();
@@ -84,7 +84,7 @@ public class AdminUserPageHolder implements PageHolder {
         if(user != null) {
 
             o.put("token", tokenId);
-            o.put("ip", user.getConnection().getRemoteSocketAddress());
+            o.put("ip", user.webSocket.getRemoteSocketAddress());
             o.put("number", user.getNumber());
             o.put("deviceId", user.getDeviceId());
             o.put("color", user.getColor());

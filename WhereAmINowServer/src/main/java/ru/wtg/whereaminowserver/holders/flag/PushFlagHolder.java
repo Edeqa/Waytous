@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
+import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 import ru.wtg.whereaminowserver.servers.MyWssServer;
 
@@ -13,7 +14,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
  * Created 1/19/17.
  */
 
-public class PushFlagHolder implements RequestHolder {
+public class PushFlagHolder implements FlagHolder {
 
     public static final String TYPE = REQUEST_PUSH;
 

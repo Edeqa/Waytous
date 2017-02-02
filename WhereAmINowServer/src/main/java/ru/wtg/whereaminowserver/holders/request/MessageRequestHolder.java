@@ -36,5 +36,15 @@ public class MessageRequestHolder implements RequestHolder {
         return true;
     }
 
+    @Override
+    public boolean isSaveable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return false;
+    }
+
 
 }

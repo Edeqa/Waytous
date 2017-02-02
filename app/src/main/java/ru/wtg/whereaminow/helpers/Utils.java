@@ -41,6 +41,7 @@ import java.util.Locale;
 import ru.wtg.whereaminow.State;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
@@ -48,7 +49,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LONGITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_TIMESTAMP;
 
 /**
  * Created 10/8/16.
@@ -131,7 +131,7 @@ public class Utils {
         loc.setAccuracy((float) json.getDouble(USER_ACCURACY));
         loc.setBearing((float) json.getDouble(USER_BEARING));
         loc.setSpeed((float) json.getDouble(USER_SPEED));
-        loc.setTime(json.getLong(USER_TIMESTAMP));
+        loc.setTime(json.getLong(REQUEST_TIMESTAMP));
         return loc;
     }
 
@@ -144,7 +144,7 @@ public class Utils {
         json.put(USER_ACCURACY,location.getAccuracy());
         json.put(USER_BEARING,location.getBearing());
         json.put(USER_SPEED,location.getSpeed());
-        json.put(USER_TIMESTAMP,location.getTime());
+        json.put(REQUEST_TIMESTAMP,location.getTime());
         return json;
     }
 

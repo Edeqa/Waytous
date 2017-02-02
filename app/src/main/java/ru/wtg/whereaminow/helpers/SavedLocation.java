@@ -39,6 +39,8 @@ public class SavedLocation extends AbstractSavedItem {
 
     public static final String LOCATION = "location";
     static final long serialVersionUID =-6395904747332820022L;
+
+    private String key;
     private double latitude;
     private double longitude;
     private String title;
@@ -65,12 +67,15 @@ public class SavedLocation extends AbstractSavedItem {
     }
 
     public static SavedLocation getItemByNumber(long number) {
-//        System.out.println("NUMBER:"+number);
         return (SavedLocation) getItemByNumber(LOCATION, number);
     }
 
     public static SavedLocation getItemByCursor(Cursor cursor) {
         return (SavedLocation) getItemByCursor(LOCATION, cursor);
+    }
+
+    public static SavedLocation getItemByFieldValue(String field, String value) {
+        return (SavedLocation) getItemByFieldValue(LOCATION, field, value);
     }
 
     public static void clear(){
@@ -168,6 +173,14 @@ public class SavedLocation extends AbstractSavedItem {
                 + (address != null ? ", address: ["+address + "]" : "")
                 + (bitmap != null ? ", bitmap: ["+bitmap.getCurrentImage().getByteCount() + "]" : "")
                 + " }";
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     static public class SavedLocationsAdapter extends AbstractSavedItemsAdapter {

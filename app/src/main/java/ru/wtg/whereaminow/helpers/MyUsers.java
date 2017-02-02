@@ -116,7 +116,7 @@ public class MyUsers {
             myUser = users.get(o.getInt(RESPONSE_NUMBER));
             if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
         }
-        myUser.fire(MAKE_ACTIVE);
+//        myUser.fire(MAKE_ACTIVE);
         return myUser;
     }
 

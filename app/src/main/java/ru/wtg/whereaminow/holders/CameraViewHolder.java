@@ -32,10 +32,10 @@ import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
-import static ru.wtg.whereaminow.helpers.MyTracking.TRACKING_URI;
 import static ru.wtg.whereaminow.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static ru.wtg.whereaminow.interfaces.Tracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
@@ -77,12 +77,96 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     private final AppCompatActivity context;
     private CameraUpdateView cameraUpdate;
+    GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
+        @Override
+        public boolean onMyLocationButtonClick() {
+//            System.out.println("onMyLocationButtonClick");
+            if(cameraUpdate == null) return false;
+            State.getInstance().fire(REQUEST_LOCATION_SINGLE);
+            if(cameraUpdate.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
+                cameraUpdate.perspectiveNorth = !cameraUpdate.perspectiveNorth;
+            }
+
+            cameraUpdate.myUser.fire(SELECT_USER);
+            return false;
+        }
+    };
     private MapScaleView scaleView;
     private GoogleMap map;
     private int padding;
     private boolean moveFromHardware = false;
     private boolean canceled = false;
     private boolean initialStart = true;
+    private GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
+        @Override
+        public void onCameraMoveStarted(int i) {
+            if(scaleView != null) {
+                scaleView.update(map.getProjection(), map.getCameraPosition());
+            }
+//            if(cameraUpdate.zoom != map.getCameraPosition().zoom)
+//                moveFromHardware = true;
+
+//            System.out.println("onCameraMoveStarted");
+        }
+    };
+    private GoogleMap.OnCameraIdleListener onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
+        @Override
+        public void onCameraIdle() {
+            if(scaleView != null) {
+                scaleView.update(map.getProjection(), map.getCameraPosition());
+            }
+
+            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1){
+                State.getInstance().fire(CAMERA_UPDATED);
+                return;
+            }
+            if(canceled && cameraUpdate.zoom != map.getCameraPosition().zoom){
+                cameraUpdate.setOrientation(cameraUpdate.previousOrientation);
+                moveFromHardware = true;
+            } else if(cameraUpdate.zoom != map.getCameraPosition().zoom){
+                moveFromHardware = true;
+            }
+
+            cameraUpdate.zoom = map.getCameraPosition().zoom;
+            cameraUpdate.bearing = map.getCameraPosition().bearing;
+            cameraUpdate.tilt = map.getCameraPosition().tilt;
+
+//            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
+            if(!moveFromHardware){
+                cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
+            }
+
+            moveFromHardware = false;
+            canceled = false;
+            State.getInstance().fire(CAMERA_UPDATED, cameraUpdate.myUser);
+//            System.out.println("onCameraIdle");
+        }
+    };
+    private GoogleMap.OnCameraMoveCanceledListener onCameraMoveCanceledListener = new GoogleMap.OnCameraMoveCanceledListener() {
+        @Override
+        public void onCameraMoveCanceled() {
+            if(scaleView != null) {
+                scaleView.update(map.getProjection(), map.getCameraPosition());
+            }
+
+//            System.out.println("onCameraMoveCanceled");
+            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
+            if(cameraUpdate.zoom == map.getCameraPosition().zoom){
+                cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
+                moveFromHardware = false;
+                canceled = true;
+            }
+        }
+    };
+    private GoogleMap.OnCameraMoveListener onCameraMoveListener = new GoogleMap.OnCameraMoveListener() {
+        @Override
+        public void onCameraMove() {
+//            System.out.println("onCameraMove");
+            if(scaleView != null) {
+                scaleView.update(map.getProjection(), map.getCameraPosition());
+            }
+        }
+    };
 
     public CameraViewHolder(MainActivity context) {
         this.context = context;
@@ -165,9 +249,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             //noinspection LoopStatementThatDoesntLoop
             for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
                 user = entry.getValue();
-
-
-                if(user.getProperties().isSelected()){
+                if(user.getProperties().isSelected() && user.getLocation() != null){
                     lat1 = user.getLocation().getLatitude();
                     lat2 = user.getLocation().getLatitude();
                     lng1 = user.getLocation().getLongitude();
@@ -177,11 +259,11 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             }
             for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
                 user = entry.getValue();
-                if(user.getProperties().isSelected()){
-                    lat1 = Math.min(lat1,user.getLocation().getLatitude());
-                    lat2 = Math.max(lat2,user.getLocation().getLatitude());
-                    lng1 = Math.min(lng1,user.getLocation().getLongitude());
-                    lng2 = Math.max(lng2,user.getLocation().getLongitude());
+                if(user.getProperties().isSelected() && user.getLocation() != null){
+                    lat1 = Math.min(lat1, user.getLocation().getLatitude());
+                    lat2 = Math.max(lat2, user.getLocation().getLatitude());
+                    lng1 = Math.min(lng1, user.getLocation().getLongitude());
+                    lng2 = Math.max(lng2, user.getLocation().getLongitude());
                 }
             }
             LatLng latLngLB = new LatLng(lat1, lng1);
@@ -490,6 +572,10 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             return true;
         }
 
+        public int getOrientation() {
+            return orientation;
+        }
+
         public void setOrientation(int orientation) {
             if(this.orientation <= CAMERA_ORIENTATION_LAST){
                 previousOrientation = this.orientation;
@@ -498,10 +584,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             orientationChanged = true;
 
 //            myUser.getProperties().saveFor(TYPE, this);
-        }
-
-        public int getOrientation() {
-            return orientation;
         }
 
         CameraPosition.Builder getCameraPosition(){
@@ -513,94 +595,5 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         }
 
     }
-
-    private GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
-        @Override
-        public void onCameraMoveStarted(int i) {
-            if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
-            }
-//            if(cameraUpdate.zoom != map.getCameraPosition().zoom)
-//                moveFromHardware = true;
-
-//            System.out.println("onCameraMoveStarted");
-        }
-    };
-
-    private GoogleMap.OnCameraIdleListener onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
-        @Override
-        public void onCameraIdle() {
-            if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
-            }
-
-            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1){
-                State.getInstance().fire(CAMERA_UPDATED);
-                return;
-            }
-            if(canceled && cameraUpdate.zoom != map.getCameraPosition().zoom){
-                cameraUpdate.setOrientation(cameraUpdate.previousOrientation);
-                moveFromHardware = true;
-            } else if(cameraUpdate.zoom != map.getCameraPosition().zoom){
-                moveFromHardware = true;
-            }
-
-            cameraUpdate.zoom = map.getCameraPosition().zoom;
-            cameraUpdate.bearing = map.getCameraPosition().bearing;
-            cameraUpdate.tilt = map.getCameraPosition().tilt;
-
-//            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
-            if(!moveFromHardware){
-                cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
-            }
-
-            moveFromHardware = false;
-            canceled = false;
-            State.getInstance().fire(CAMERA_UPDATED, cameraUpdate.myUser);
-//            System.out.println("onCameraIdle");
-        }
-    };
-
-    private GoogleMap.OnCameraMoveCanceledListener onCameraMoveCanceledListener = new GoogleMap.OnCameraMoveCanceledListener() {
-        @Override
-        public void onCameraMoveCanceled() {
-            if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
-            }
-
-//            System.out.println("onCameraMoveCanceled");
-            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
-            if(cameraUpdate.zoom == map.getCameraPosition().zoom){
-                cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
-                moveFromHardware = false;
-                canceled = true;
-            }
-        }
-    };
-
-    private GoogleMap.OnCameraMoveListener onCameraMoveListener = new GoogleMap.OnCameraMoveListener() {
-        @Override
-        public void onCameraMove() {
-//            System.out.println("onCameraMove");
-            if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
-            }
-        }
-    };
-
-    GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
-        @Override
-        public boolean onMyLocationButtonClick() {
-//            System.out.println("onMyLocationButtonClick");
-            if(cameraUpdate == null) return false;
-            State.getInstance().fire(REQUEST_LOCATION_SINGLE);
-            if(cameraUpdate.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
-                cameraUpdate.perspectiveNorth = !cameraUpdate.perspectiveNorth;
-            }
-
-            cameraUpdate.myUser.fire(SELECT_USER);
-            return false;
-        }
-    };
 
 }

@@ -3,17 +3,14 @@
  */
 function Home() {
 
+    var title = "Home";
+
     var u = new Utils();
 
     var start = function() {
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, "/admin/home");
-        }
+        div = u.createPage(this);
 
-        u.clear(document.body);
-
-        u.create("h1", "Home", document.body);
-        u.create("p", "To be implemented soon...", document.body);
+        u.create("p", "To be implemented soon...", div);
 
     }
 
@@ -21,8 +18,8 @@ function Home() {
         start: start,
         page: "home",
         icon: "home",
-        title: "Home",
-        menu: true,
+        title: title,
+        menu: title,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Home()).start);

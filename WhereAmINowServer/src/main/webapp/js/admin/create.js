@@ -3,23 +3,15 @@
  */
 function Create() {
 
+    var title = "Create group";
+
     var inputId,inputRequiresPassword,inputPassword,inputWelcomeMessage,inputPersistent,inputTtl;
 
     var u = new Utils();
 
     var start = function() {
 
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, "/admin/create");
-        }
-
-        u.clear(document.body);
-
-        u.create("h1", "Create", document.body);
-
-        u.create("h2", "Create group", document.body);
-
-        var div = u.create("div", null, document.body);
+        div = u.createPage(this);
 
         var form = u.create("form", null, div);
 
@@ -56,7 +48,18 @@ function Create() {
         u.create("th", "Time to live, min", trTtl);
         inputTtl = u.create("input", { oninput: validate_ttl }, u.create("td", null, trTtl));
 
-        var div = u.create("div", null, document.body);
+        var tr = u.create("tr", null, tbody);
+        u.create("th", "Dismiss inactive users", tr);
+        inputPersistent = u.create("input", { type:"checkbox", onchange: function() {
+            trDelay.style.display = this.checked ? "" : "none";
+            inputDelay.focus();
+        } }, u.create("td", null, tr));
+
+        var trDelay = u.create("tr", {style: {display:"none"}}, tbody);
+        u.create("th", "Delay to dismiss, sec", trDelay);
+        inputDelay = u.create("input", { onchange: validate_delay , title:"Minimum 300"}, u.create("td", null, trDelay));
+
+        var div = u.create("div", {className:"buttons"}, div);
         u.create("button", { type: "button", innerHTML:"OK", onclick: validate_submit}, div);
         u.create("button", { type: "reset", innerHTML:"Clear"}, div);
 
@@ -74,10 +77,16 @@ function Create() {
         console.log(this.value)
     }
 
+    var validate_delay = function(e) {
+        this.value = this.value.replace(/[^\d]/g, "");
+        if(this.value < 300) this.value = 300;
+        console.log(this.value)
+    }
+
     var validate_submit = function(e) {
         console.log(inputId.value);
 
-        window.location.href = "/admin/summary" + (window.name == "content" ? "/set" : "");
+        window.location.href = "/admin/summary";
 
 //        if(window.name == "content") {
 //            window.parent.history.pushState({}, null, "/admin/create");
@@ -91,8 +100,8 @@ function Create() {
         start: start,
         page: "create",
         icon: "add",
-        title: "Create group",
-        menu: true,
+        title: title,
+        menu: title,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Create()).start);

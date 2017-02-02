@@ -39,7 +39,6 @@ public class ExceptionActivity extends AppCompatActivity {
         @SuppressLint("InflateParams") View content = getLayoutInflater().inflate(R.layout.activity_exception, null);
 
         Throwable exception = (Throwable) getIntent().getSerializableExtra(EXCEPTION);
-        //noinspection ThrowableResultOfMethodCallIgnored
 
         ApplicationErrorReport.CrashInfo crashInfo = new ApplicationErrorReport.CrashInfo(exception);
         String exName = crashInfo.exceptionClassName;
