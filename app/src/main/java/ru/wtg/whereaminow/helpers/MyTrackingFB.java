@@ -116,185 +116,7 @@ public class MyTrackingFB implements Tracking {
     private String token;
 
     private boolean newTracking;
-    private ValueEventListener usersDataNameListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            System.out.println("usersDataNameListenerChanged:"+dataSnapshot.getKey()+":"+dataSnapshot.getValue());
-            try {
-                int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
-                final String name = String.valueOf(dataSnapshot.getValue());
-                state.getUsers().forUser(number, new MyUsers.Callback() {
-                    @Override
-                    public void call(Integer number, MyUser myUser) {
-                        if (!name.equals(myUser.getProperties().getName())) {
-                            myUser.fire(CHANGE_NAME, name);
-                        }
-                    }
-                });
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
-    private ValueEventListener usersDataActiveListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-//            System.out.println("usersDataActiveListenerChanged:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
-
-            try {
-                int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
-                final boolean active = Boolean.parseBoolean(String.valueOf(dataSnapshot.getValue()));
-                state.getUsers().forUser(number, new MyUsers.Callback() {
-                    @Override
-                    public void call(Integer number, MyUser myUser) {
-                        if (myUser.getProperties().isActive() != active) {
-                            try {
-                                JSONObject o = new JSONObject();
-                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                                o.put(active ? USER_JOINED : USER_DISMISSED, number);
-                                o.put(RESPONSE_NUMBER, number);
-                                trackingListener.onMessage(o);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                });
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
-    private ChildEventListener userPublicDataListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//            System.out.println("userDependentListenerADDED:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
-            try {
-                JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
-                o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getRef().getParent().getKey()));
-                o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
-                o.put("key", dataSnapshot.getKey());
-
-                trackingListener.onMessage(o);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
-    private ChildEventListener usersDataListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//            System.out.println("usersDataListenerADDED:"+dataSnapshot.getValue().getClass()+":"+dataSnapshot.getKey()+":"+dataSnapshot.getValue()+":"+s);
-
-//            System.out.println(state.getMe().getProperties().getNumber()+":"+dataSnapshot.getKey()+":"+(state.getMe().getProperties().getNumber()+"").equals(dataSnapshot.getKey()));
-
-            if(!(state.getMe().getProperties().getNumber()+"").equals(dataSnapshot.getKey())) {
-                try {
-                    JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
-                    o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getKey()));
-                    o.put(RESPONSE_INITIAL, true);
-
-                    MyUser user = State.getInstance().getUsers().addUser(o);
-                    user.setUser(true);
-
-                    registerValueListener(ref.child(DATABASE_SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("name"),usersDataNameListener);
-                    registerValueListener(ref.child(DATABASE_SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("active"),usersDataActiveListener);
-
-                    usersDataNameListener.onDataChange(dataSnapshot.child("name"));
-                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
-
-                    for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
-                        if(entry.getValue().isSaveable()) {
-                            registerChildListener(ref.child(DATABASE_SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener).limitToLast(1);
-                        }
-                    }
-                    trackingListener.onAccept(o);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            onChildChanged(dataSnapshot, s);
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
-    private ChildEventListener userPrivateDataListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//            System.out.println("userPrivateAdded:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
-            try {
-                JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
-
-                int from = Integer.parseInt(o.getString("from"));
-                o.remove("from");
-                o.put(RESPONSE_NUMBER, from);
-                o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
-                o.put("key", dataSnapshot.getKey());
-                o.put(PRIVATE_MESSAGE, true);
-
-                trackingListener.onMessage(o);
-
-                dataSnapshot.getRef().removeValue();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
     @SuppressWarnings("FieldCanBeLocal")
     private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
         @Override
@@ -794,5 +616,183 @@ public class MyTrackingFB implements Tracking {
         }
     }
 
+    private ValueEventListener usersDataNameListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            System.out.println("usersDataNameListenerChanged:"+dataSnapshot.getKey()+":"+dataSnapshot.getValue());
+            try {
+                int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
+                final String name = String.valueOf(dataSnapshot.getValue());
+                state.getUsers().forUser(number, new MyUsers.Callback() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        if (!name.equals(myUser.getProperties().getName())) {
+                            myUser.fire(CHANGE_NAME, name);
+                        }
+                    }
+                });
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
 
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+    private ValueEventListener usersDataActiveListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+//            System.out.println("usersDataActiveListenerChanged:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
+
+            try {
+                int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
+                final boolean active = Boolean.parseBoolean(String.valueOf(dataSnapshot.getValue()));
+                state.getUsers().forUser(number, new MyUsers.Callback() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        if (myUser.getProperties().isActive() != active) {
+                            try {
+                                JSONObject o = new JSONObject();
+                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                                o.put(active ? USER_JOINED : USER_DISMISSED, number);
+                                o.put(RESPONSE_NUMBER, number);
+                                trackingListener.onMessage(o);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+                });
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+    private ChildEventListener userPublicDataListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//            System.out.println("userDependentListenerADDED:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
+            try {
+                JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
+                o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getRef().getParent().getKey()));
+                o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
+                o.put("key", dataSnapshot.getKey());
+
+                trackingListener.onMessage(o);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+    private ChildEventListener usersDataListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//            System.out.println("usersDataListenerADDED:"+dataSnapshot.getValue().getClass()+":"+dataSnapshot.getKey()+":"+dataSnapshot.getValue()+":"+s);
+
+//            System.out.println(state.getMe().getProperties().getNumber()+":"+dataSnapshot.getKey()+":"+(state.getMe().getProperties().getNumber()+"").equals(dataSnapshot.getKey()));
+
+            if(!(state.getMe().getProperties().getNumber()+"").equals(dataSnapshot.getKey())) {
+                try {
+                    JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
+                    o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getKey()));
+                    o.put(RESPONSE_INITIAL, true);
+
+                    MyUser user = State.getInstance().getUsers().addUser(o);
+                    user.setUser(true);
+
+                    registerValueListener(ref.child(DATABASE_SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("name"),usersDataNameListener);
+                    registerValueListener(ref.child(DATABASE_SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("active"),usersDataActiveListener);
+
+                    usersDataNameListener.onDataChange(dataSnapshot.child("name"));
+                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
+
+                    for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
+                        if(entry.getValue().isSaveable()) {
+                            registerChildListener(ref.child(DATABASE_SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener).limitToLast(1);
+                        }
+                    }
+                    trackingListener.onAccept(o);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            onChildChanged(dataSnapshot, s);
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+    private ChildEventListener userPrivateDataListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//            System.out.println("userPrivateAdded:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
+            try {
+                JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
+
+                int from = Integer.parseInt(o.getString("from"));
+                o.remove("from");
+                o.put(RESPONSE_NUMBER, from);
+                o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
+                o.put("key", dataSnapshot.getKey());
+                o.put(PRIVATE_MESSAGE, true);
+
+                trackingListener.onMessage(o);
+
+                dataSnapshot.getRef().removeValue();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
 }
