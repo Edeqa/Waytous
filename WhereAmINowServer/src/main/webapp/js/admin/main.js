@@ -5,6 +5,7 @@
 function Main() {
     var u = new Utils();
     var menu;
+    var database;
 
     var holders = {};
     var holderFiles = [
@@ -58,7 +59,6 @@ function Main() {
                 var th = u.create("div", {className:"menu-item"}, menu);
                 u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
                 u.create("div", { dataStart: x, onclick: function(){
-                    console.log("AAA",this.dataset.start);
                     menu.blur();
                     holders[this.dataset.start].start();
                     return false;
@@ -99,6 +99,7 @@ function Main() {
 
     return {
         start: start,
+        database: database,
     }
 }
 document.addEventListener("DOMContentLoaded", (new Main()).start);

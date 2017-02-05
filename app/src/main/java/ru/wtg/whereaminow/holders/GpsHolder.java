@@ -34,32 +34,6 @@ public class GpsHolder extends AbstractPropertyHolder {
     private static final String TYPE = "Gps";
     private final LocationGooglePlayServicesProvider provider;
     private final SmartLocation.LocationControl smartLocation;
-    private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
-        @Override
-        public void onLocationUpdated(Location location) {
-            if(location == null) return;
-            location = Utils.normalizeLocation(State.getInstance().getGpsFilter(), location);
-
-//            State.getInstance().fire(SHOW_INFO, location.getAccuracy() + ", " + location.getSpeed()+", " + origin.getSpeed());
-            Location last = State.getInstance().getMe().getLocation();
-
-            if(last != null) {
-                if(location.getAccuracy() >= last.getAccuracy()) {
-                    if(SphericalUtil.computeDistanceBetween(Utils.latLng(last),Utils.latLng(location)) < location.getAccuracy()) return;
-                }
-            }
-
-            if(State.getInstance().tracking_active()) {
-                try {
-                    JSONObject message = Utils.locationToJson(location);
-                    State.getInstance().getTracking().sendMessage(REQUEST_TRACKING, message);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            State.getInstance().getMe().addLocation(location);
-        }
-    };
 
     public GpsHolder(Context context) {
         provider = new LocationGooglePlayServicesProvider();
@@ -105,8 +79,7 @@ public class GpsHolder extends AbstractPropertyHolder {
                 }
                 break;
             case TRACKING_ACTIVE:
-//                smartLocation.oneFix().start(locationUpdateListener);
-                locationUpdateListener.onLocationUpdated(smartLocation.getLastLocation());
+                sendLocation(smartLocation.getLastLocation());
                 smartLocation.continuous().start(locationUpdateListener);
                 break;
         }
@@ -116,5 +89,35 @@ public class GpsHolder extends AbstractPropertyHolder {
     @Override
     public AbstractProperty create(MyUser myUser) {
         return null;
+    }
+
+    private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
+        @Override
+        public void onLocationUpdated(Location location) {
+            if(location == null) return;
+            location = Utils.normalizeLocation(State.getInstance().getGpsFilter(), location);
+//            State.getInstance().fire(SHOW_INFO, location.getAccuracy() + ", " + location.getSpeed()+", " + origin.getSpeed());
+            Location last = State.getInstance().getMe().getLocation();
+
+            if(last != null) {
+                if(location.getAccuracy() >= last.getAccuracy()) {
+                    if(SphericalUtil.computeDistanceBetween(Utils.latLng(last),Utils.latLng(location)) < location.getAccuracy()) return;
+                }
+            }
+
+            sendLocation(location);
+        }
+    };
+
+    private void sendLocation(Location location) {
+        if(State.getInstance().tracking_active()) {
+            try {
+                JSONObject message = Utils.locationToJson(location);
+                State.getInstance().getTracking().sendMessage(REQUEST_TRACKING, message);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        State.getInstance().getMe().addLocation(location);
     }
 }

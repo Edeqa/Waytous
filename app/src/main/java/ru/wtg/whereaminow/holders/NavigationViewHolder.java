@@ -3,17 +3,12 @@ package ru.wtg.whereaminow.holders;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +19,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -33,10 +27,8 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.ui.IconGenerator;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +41,6 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.NavigationStarter;
 import ru.wtg.whereaminow.helpers.Utils;
-import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
@@ -65,14 +56,18 @@ import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolder.NavigationView> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820058L;
-    static final String SHOW_NAVIGATION = "show_navigation";
+    @SuppressWarnings("WeakerAccess")
+    public static final String SHOW_NAVIGATION = "show_navigation";
+
     private static final String TYPE = "Navigation";
-    private static final String HIDE_NAVIGATION = "hide_navigation";
+    public static final String HIDE_NAVIGATION = "hide_navigation";
 
     private static final String NAVIGATION_MODE_DRIVING = "navigation_mode_driving";
     private static final String NAVIGATION_MODE_WALKING = "navigation_mode_walking";
     private static final String NAVIGATION_MODE_BICYCLING = "navigation_mode_bicycling";
+
     private static final String PREFERENCE_MODE = "navigation_mode";
+
     private static final String PREFERENCE_AVOID_HIGHWAYS = "navigation_avoid_highways";
     private static final String PREFERENCE_AVOID_TOLLS = "navigation_avoid_tolls";
     private static final String PREFERENCE_AVOID_FERRIES = "navigation_avoid_ferries";
@@ -80,58 +75,14 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private static final int REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
     private static final int HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
     private static final int SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
+
     private final AppCompatActivity context;
     transient private GoogleMap map;
-    private String mode = NAVIGATION_MODE_DRIVING;
+
     private View buttonsView;
+
+    private String mode = NAVIGATION_MODE_DRIVING;
     private int iconNavigationStyle;
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            buttonsView.findViewById(R.id.ib_navigation_driving).getBackground().setAlpha(150);
-            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).setColorFilter(Color.argb(120, 255, 255, 255));
-
-            buttonsView.findViewById(R.id.ib_navigation_walking).getBackground().setAlpha(150);
-            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).setColorFilter(Color.argb(120, 255, 255, 255));
-
-            buttonsView.findViewById(R.id.ib_navigation_bicycling).getBackground().setAlpha(150);
-            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).setColorFilter(Color.argb(120, 255, 255, 255));
-
-            switch (view.getId()) {
-                case R.id.ib_navigation_driving:
-                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).clearColorFilter();
-                    mode = NAVIGATION_MODE_DRIVING;
-                    break;
-                case R.id.ib_navigation_walking:
-                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).clearColorFilter();
-                    mode = NAVIGATION_MODE_WALKING;
-                    break;
-                case R.id.ib_navigation_bicycling:
-                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).clearColorFilter();
-                    mode = NAVIGATION_MODE_BICYCLING;
-                    break;
-            }
-            updateAll();
-        }
-    };
-    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View view) {
-            switch (view.getId()) {
-                case R.id.ib_navigation_driving:
-                    options(R.id.ib_navigation_driving);
-                    break;
-                case R.id.ib_navigation_walking:
-                    options(R.id.ib_navigation_walking);
-                    break;
-                case R.id.ib_navigation_bicycling:
-                    options(R.id.ib_navigation_bicycling);
-                    break;
-            }
-            return false;
-        }
-    };
-
 
     public NavigationViewHolder(MainActivity context) {
         this.context = context;
@@ -140,47 +91,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         setMap(context.getMap());
         setButtonsView(context.findViewById(R.id.layout_navigation_mode));
-
-    }
-
-    private void setupToolbar() {
-        Toolbar toolbar = (Toolbar) context.findViewById(R.id.toolbar);
-        final MenuItem searchItem = toolbar.getMenu().add(Menu.NONE, R.string.search, Menu.NONE, R.string.search);
-        searchItem.setVisible(false);
-
-        final SearchView searchView = new SearchView(context);
-        searchItem.setActionView(searchView);
-        searchItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-
-        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
-            @Override
-            public void call(String text) {
-                System.out.println("FILTER:"+text);
-            }
-        };
-        searchView.setQueryHint("Address or place");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(!searchView.isIconified()) {
-                    searchView.setIconified(true);
-                }
-                searchItem.collapseActionView();
-                setFilter.call(query);
-                return false;
-            }
-            @Override
-            public boolean onQueryTextChange(String s) {
-                setFilter.call(s);
-                return false;
-            }
-        });
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchItem.expandActionView();
-            }
-        });
     }
 
     @Override
@@ -231,7 +141,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         return false;
                     }
                 });
-//                setupToolbar();
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
@@ -246,7 +155,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         }
                     }
                 });
-//                setupToolbar();
                 break;
             case SHOW_NAVIGATION:
                 buttonsView.setVisibility(View.VISIBLE);
@@ -469,8 +377,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             return true;
         }
 
-
-
         private boolean locationChanged(Location current, Location previous) {
             LatLng currentPosition = Utils.latLng(current);
             LatLng previousPosition = Utils.latLng(previous);
@@ -588,10 +494,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         }
                         previousDistance = distance;
 
-//                        iconFactory = new IconGenerator(State.getInstance());
-//                        iconFactory.setColor(color);
-//                        iconFactory.setTextAppearance(R.style.iconNavigationMarkerText);
-
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
@@ -636,6 +538,54 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         }
     }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            buttonsView.findViewById(R.id.ib_navigation_driving).getBackground().setAlpha(150);
+            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).setColorFilter(Color.argb(120, 255, 255, 255));
+
+            buttonsView.findViewById(R.id.ib_navigation_walking).getBackground().setAlpha(150);
+            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).setColorFilter(Color.argb(120, 255, 255, 255));
+
+            buttonsView.findViewById(R.id.ib_navigation_bicycling).getBackground().setAlpha(150);
+            ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).setColorFilter(Color.argb(120, 255, 255, 255));
+
+            switch (view.getId()) {
+                case R.id.ib_navigation_driving:
+                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_driving)).clearColorFilter();
+                    mode = NAVIGATION_MODE_DRIVING;
+                    break;
+                case R.id.ib_navigation_walking:
+                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_walking)).clearColorFilter();
+                    mode = NAVIGATION_MODE_WALKING;
+                    break;
+                case R.id.ib_navigation_bicycling:
+                    ((ImageButton)buttonsView.findViewById(R.id.ib_navigation_bicycling)).clearColorFilter();
+                    mode = NAVIGATION_MODE_BICYCLING;
+                    break;
+            }
+            updateAll();
+        }
+    };
+
+    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            switch (view.getId()) {
+                case R.id.ib_navigation_driving:
+                    options(R.id.ib_navigation_driving);
+                    break;
+                case R.id.ib_navigation_walking:
+                    options(R.id.ib_navigation_walking);
+                    break;
+                case R.id.ib_navigation_bicycling:
+                    options(R.id.ib_navigation_bicycling);
+                    break;
+            }
+            return false;
+        }
+    };
 
 
 }

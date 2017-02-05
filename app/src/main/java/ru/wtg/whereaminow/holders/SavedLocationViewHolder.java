@@ -43,7 +43,6 @@ import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SavedLocation;
 import ru.wtg.whereaminow.helpers.SystemMessage;
-import ru.wtg.whereaminow.helpers.UserMessage;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
@@ -85,7 +84,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
 /**
  * Created 11/27/16.
  */
-public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsViewHolder.SavedLocationView> {
+public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationViewHolder.SavedLocationView> {
 
     public static final String TYPE = REQUEST_SAVED_LOCATION;
 
@@ -103,23 +102,8 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     private Toolbar toolbar;
     private AlertDialog dialog;
     private String filterMessage;
-    private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            if(State.getInstance().getUsers().getCountSelected() == 1) {
-                State.getInstance().getUsers().forSelectedUsers(new MyUsers.Callback() {
-                    @Override
-                    public void call(Integer number, MyUser myUser) {
-                        myUser.fire(SAVE_LOCATION);
 
-                    }
-                });
-            }
-            return false;
-        }
-    };
-
-    public SavedLocationsViewHolder(MainActivity context) {
+    public SavedLocationViewHolder(MainActivity context) {
         this.context = context;
         SavedLocation.init(context);
         setMap(context.getMap());
@@ -148,6 +132,11 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     }
 
     @Override
+    public boolean isEraseable() {
+        return false;
+    }
+
+    @Override
     public void perform(JSONObject o) throws JSONException {
 
         String address = null;
@@ -172,6 +161,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         final String finalDescription = description;
         final String finalName = name;
         final String finalKey = key;
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -246,8 +236,6 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
                         return false;
                     }
                 });*/
-
-
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
@@ -338,7 +326,7 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
         return true;
     }
 
-    public SavedLocationsViewHolder setMap(GoogleMap map) {
+    public SavedLocationViewHolder setMap(GoogleMap map) {
         this.map = map;
 
 //        map.setOnMarkerClickListener(onMarkerClickListener);
@@ -865,5 +853,20 @@ public class SavedLocationsViewHolder extends AbstractViewHolder<SavedLocationsV
     }
 */
 
+    private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            if(State.getInstance().getUsers().getCountSelected() == 1) {
+                State.getInstance().getUsers().forSelectedUsers(new MyUsers.Callback() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        myUser.fire(SAVE_LOCATION);
+
+                    }
+                });
+            }
+            return false;
+        }
+    };
 
 }

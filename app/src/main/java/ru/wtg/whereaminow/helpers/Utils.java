@@ -128,9 +128,9 @@ public class Utils {
         loc.setLatitude(json.getDouble(USER_LATITUDE));
         loc.setLongitude(json.getDouble(USER_LONGITUDE));
         loc.setAltitude(json.has(USER_ALTITUDE) ? json.getDouble(USER_ALTITUDE) : 0);
-        loc.setAccuracy((float) json.getDouble(USER_ACCURACY));
-        loc.setBearing((float) json.getDouble(USER_BEARING));
-        loc.setSpeed((float) json.getDouble(USER_SPEED));
+        loc.setAccuracy(json.has(USER_ACCURACY) ? (float) json.getDouble(USER_ACCURACY) : 0);
+        loc.setBearing(json.has(USER_BEARING) ? (float) json.getDouble(USER_BEARING): 0);
+        loc.setSpeed(json.has(USER_SPEED) ? (float) json.getDouble(USER_SPEED): 0);
         loc.setTime(json.getLong(REQUEST_TIMESTAMP));
         return loc;
     }

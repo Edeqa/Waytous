@@ -27,4 +27,6 @@ public interface EntityHolder<T extends Entity> {
 
     boolean isSaveable();
 
+    boolean isEraseable();
+
 }

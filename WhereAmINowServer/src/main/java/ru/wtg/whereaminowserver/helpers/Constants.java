@@ -7,19 +7,19 @@ public class Constants {
     public final static int SERVER_BUILD = 14;
 
 // debug local version
+/*
     public final static String WSS_SERVER_HOST = "https://10.0.0.96";
     public final static boolean DEBUGGING = true;
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
     public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/src/main/webapp";
+*/
 
 // public internet version
-/*
     public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
     public final static boolean DEBUGGING = false;
     public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
 //    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/build/exploded-app";
     public final static String WEB_ROOT_DIRECTORY = "../..";
-*/
 
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
     public final static String BROADCAST_MESSAGE = "message";

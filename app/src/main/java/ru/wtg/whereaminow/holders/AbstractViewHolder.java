@@ -37,11 +37,15 @@ abstract public class AbstractViewHolder<T extends AbstractView> implements Enti
 
     @Override
     public void perform(JSONObject o) throws JSONException {
-
     }
 
     @Override
     public boolean isSaveable() {
         return false;
+    }
+
+    @Override
+    public boolean isEraseable() {
+        return true;
     }
 }

@@ -208,7 +208,8 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             }
         };
 
-        ButtonView(MyUser myUser){
+        public ButtonView(MyUser myUser){
+
             this.myUser = myUser;
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

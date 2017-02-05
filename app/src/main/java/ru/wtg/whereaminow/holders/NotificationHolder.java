@@ -158,7 +158,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case HIDE_CUSTOM_NOTIFICATION:
                 NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancel(1977);
-
+                break;
         }
 
         return true;

@@ -58,30 +58,30 @@ public class MyUser {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    List<LatLng> positions = new ArrayList<>();
-
-                    long previous = locations.size() - SIMPLIFY_AFTER_EACH - 1;
-                    if(previous < 0) previous = 0;
-
-                    for(long i = previous; i<locations.size()-1;i++) {
-                        try {
-                            positions.add(Utils.latLng(locations.get((int) i)));
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    positions = PolyUtil.simplify(positions, 10);
-
-                    Iterator<Location> iterLocs = locations.iterator();
-                    Iterator<LatLng> iterPozs = positions.iterator();
-
-                    int sizeBefore = locations.size();
-                    LatLng pos = iterPozs.next();
-                    int i = 0;
-                    while(i++ < previous) {
-                        iterLocs.next();
-                    }
                     try {
+                        List<LatLng> positions = new ArrayList<>();
+
+                        long previous = locations.size() - SIMPLIFY_AFTER_EACH - 1;
+                        if(previous < 0) previous = 0;
+
+                        for(long i = previous; i<locations.size()-1;i++) {
+                            try {
+                                positions.add(Utils.latLng(locations.get((int) i)));
+                            } catch(Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        positions = PolyUtil.simplify(positions, 10);
+
+                        Iterator<Location> iterLocs = locations.iterator();
+                        Iterator<LatLng> iterPozs = positions.iterator();
+
+                        int sizeBefore = locations.size();
+                        LatLng pos = iterPozs.next();
+                        int i = 0;
+                        while(i++ < previous) {
+                            iterLocs.next();
+                        }
                         while (iterLocs.hasNext()) {
                             Location loc = iterLocs.next();
                             if (loc != null && loc.getLatitude() == pos.latitude && loc.getLongitude() == pos.longitude) {
@@ -94,17 +94,16 @@ public class MyUser {
                                 iterLocs.remove();
                             }
                         }
+                        Log.i("MyUser","Simplified locations {user:"+getProperties().getDisplayName()+", counter:"+counter+", size before:"+sizeBefore+", size after:"+locations.size()+"}");
                     } catch(Exception e){
                         e.printStackTrace();
                     }
-                    Log.i("MyUser","Simplified locations {user:"+getProperties().getDisplayName()+", counter:"+counter+", size before:"+sizeBefore+", size after:"+locations.size()+"}");
                     onChangeLocation();
                 }
             }).start();
         } else {
             onChangeLocation();
         }
-
         return this;
     }
 

@@ -10,6 +10,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
@@ -77,9 +78,11 @@ public class FacebookViewHolder extends AbstractViewHolder {
                 Bundle m = (Bundle) object;
                 if(m != null){
                     int requestCode = m.getInt("requestCode");
-                    int resultCode = m.getInt("resultCode");
-                    Intent data = m.getParcelable("data");
-                    callbackManager.onActivityResult(requestCode, resultCode, data);
+                    if(CallbackManagerImpl.RequestCodeOffset.Share.toRequestCode() == requestCode) {
+                        int resultCode = m.getInt("resultCode");
+                        Intent data = m.getParcelable("data");
+                        callbackManager.onActivityResult(requestCode, resultCode, data);
+                    }
                 }
                 break;
             case WELCOME_MESSAGE:

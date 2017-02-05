@@ -401,6 +401,14 @@ public class State extends MultiDexApplication {
         fire(EVENT, null);
     }
 
+    public PropertiesHolder getPropertiesHolder(){
+        if(entityHolders.containsKey(PropertiesHolder.TYPE)) {
+            return (PropertiesHolder) entityHolders.get(PropertiesHolder.TYPE);
+        } else {
+            return null;
+        }
+    }
+
     public GeoTrackFilter getGpsFilter() {
         return gpsFilter;
     }

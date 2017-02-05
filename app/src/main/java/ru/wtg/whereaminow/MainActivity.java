@@ -37,6 +37,7 @@ import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
+import ru.wtg.whereaminow.holders.FacebookViewHolder;
 import ru.wtg.whereaminow.holders.MapButtonsViewHolder;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
@@ -70,64 +71,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private SupportMapFragment mapFragment;
     private State state;
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                String r = intent.getStringExtra(BROADCAST_MESSAGE);
-                if(r != null && r.length() > 0) {
-                    JSONObject o = new JSONObject(r);
-                    if (!o.has(RESPONSE_STATUS)) return;
-
-                    switch (o.getString(RESPONSE_STATUS)) {
-                        case RESPONSE_STATUS_ACCEPTED:
-                            SmartLocation.with(MainActivity.this).location().stop();
-                            if (o.has(RESPONSE_NUMBER)) {
-                                state.getUsers().forMe(new MyUsers.Callback() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.createViews();
-                                    }
-                                });
-                            }
-                            if (o.has(RESPONSE_INITIAL)) {
-                                state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.createViews();
-                                    }
-                                });
-                            }
-                            break;
-                        case RESPONSE_STATUS_ERROR:
-                            break;
-                        case RESPONSE_STATUS_UPDATED:
-                            if (o.has(USER_DISMISSED)) {
-                                int number = o.getInt(USER_DISMISSED);
-                                state.getUsers().forUser(number, new MyUsers.Callback() {
-                                    @Override
-                                    public void call(Integer number, final MyUser myUser) {
-                                        myUser.removeViews();
-                                    }
-                                });
-                            }
-                            if (o.has(USER_JOINED)) {
-                                int number = o.getInt(USER_JOINED);
-                                state.getUsers().forUser(number, new MyUsers.Callback() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.createViews();
-                                    }
-                                });
-                            }
-                            break;
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new FabViewHolder(this));
         state.registerEntityHolder(new DrawerViewHolder(this));
         state.registerEntityHolder(new SnackbarViewHolder(this));
+        state.registerEntityHolder(new FacebookViewHolder(this));
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -350,13 +294,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         new MapButtonsViewHolder(mapFragment);
 
         LinkedList<String> classes = new LinkedList<>();
-        classes.add("FacebookViewHolder");
+//        classes.add("FacebookViewHolder");
         classes.add("ButtonViewHolder");
         classes.add("MenuViewHolder");
         classes.add("MarkerViewHolder");
         classes.add("AddressViewHolder");
         classes.add("CameraViewHolder");
-        classes.add("SavedLocationsViewHolder");
+        classes.add("SavedLocationViewHolder");
+        classes.add("PlaceViewHolder");
         classes.add("TrackViewHolder");
         classes.add("NavigationViewHolder");
         classes.add("DistanceViewHolder");
@@ -427,4 +372,64 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public GoogleMap getMap() {
         return map;
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String r = intent.getStringExtra(BROADCAST_MESSAGE);
+                if(r != null && r.length() > 0) {
+                    JSONObject o = new JSONObject(r);
+                    if (!o.has(RESPONSE_STATUS)) return;
+
+                    switch (o.getString(RESPONSE_STATUS)) {
+                        case RESPONSE_STATUS_ACCEPTED:
+                            SmartLocation.with(MainActivity.this).location().stop();
+                            if (o.has(RESPONSE_NUMBER)) {
+                                state.getUsers().forMe(new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, MyUser myUser) {
+                                        myUser.createViews();
+                                    }
+                                });
+                            }
+                            if (o.has(RESPONSE_INITIAL)) {
+                                state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, MyUser myUser) {
+                                        myUser.createViews();
+                                    }
+                                });
+                            }
+                            break;
+                        case RESPONSE_STATUS_ERROR:
+                            break;
+                        case RESPONSE_STATUS_UPDATED:
+                            if (o.has(USER_DISMISSED)) {
+                                int number = o.getInt(USER_DISMISSED);
+                                state.getUsers().forUser(number, new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, final MyUser myUser) {
+                                        myUser.removeViews();
+                                    }
+                                });
+                            }
+                            if (o.has(USER_JOINED)) {
+                                int number = o.getInt(USER_JOINED);
+                                state.getUsers().forUser(number, new MyUsers.Callback() {
+                                    @Override
+                                    public void call(Integer number, MyUser myUser) {
+                                        myUser.createViews();
+                                    }
+                                });
+                            }
+                            break;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
 }

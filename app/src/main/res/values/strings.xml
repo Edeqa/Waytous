@@ -128,6 +128,7 @@
     <string name="transparent">Transparent</string>
     <string name="opaque">Opaque</string>
     <string name="search">Search</string>
+    <string name="hide_places">Hide places</string>
 
 
 </resources>

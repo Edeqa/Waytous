@@ -109,6 +109,12 @@ public class MessagesHolder extends AbstractPropertyHolder {
     }
 
     @Override
+    public boolean isEraseable() {
+        return false;
+    }
+
+
+    @Override
     public void perform(final JSONObject o) throws JSONException {
         if(o.has(REQUEST_DELIVERY_CONFIRMATION)) {
             System.out.println("DELIVERED:"+o);
