@@ -10,11 +10,4 @@ import ru.wtg.whereaminowserver.helpers.MyUser;
  * Created 2/2/17.
  */
 public interface WssServer {
-    ConcurrentHashMap<String, MyToken> getTokens();
-
-    ConcurrentHashMap<String, MyToken> getIpToToken();
-
-    ConcurrentHashMap<String, MyUser> getIpToUser();
-
-    ConcurrentHashMap<String, CheckReq> getIpToCheck();
 }

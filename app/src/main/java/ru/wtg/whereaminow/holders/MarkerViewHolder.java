@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;

@@ -32,8 +32,8 @@ import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 import ru.wtg.whereaminowserver.interfaces.WssServer;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -64,77 +64,59 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
  * Created 10/5/16.
  */
 
-public class MyWssServer extends WebSocketServer implements WssServer {
-
-    protected ConcurrentHashMap<String, MyToken> tokens;
-    protected ConcurrentHashMap<String, MyToken> ipToToken;
-    protected ConcurrentHashMap<String, MyUser> ipToUser;
-    protected ConcurrentHashMap<String, CheckReq> ipToCheck;
-    protected HashMap<String,RequestHolder> requestHolders;
+public class WainProcessorDedicated extends AbstractWainProcessor {
 
     private HashMap<String,FlagHolder> flagHolders;
-    private Runnable dismissInactiveUsers = new Runnable() {
-        @Override
-        public void run() {
 
-            while(true) {
-                try {
-                    Thread.sleep(INACTIVE_USER_DISMISS_DELAY * 1000);
+//    public WainProcessorDedicated() {
+//        super();
+//    }
 
-                    MyUser user;
-                    long currentDate = new Date().getTime();
-                    for (Map.Entry<String, MyUser> entry : ipToUser.entrySet()) {
+    @Override
+    public void dismissInactiveUsers() {
+        while(true) {
+            try {
+                Thread.sleep(INACTIVE_USER_DISMISS_DELAY * 1000);
 
-                        user = entry.getValue();
-                        if (user != null) {
+                MyUser user;
+                long currentDate = new Date().getTime();
+                for (Map.Entry<String, MyUser> entry : ipToUser.entrySet()) {
 
-                            System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
+                    user = entry.getValue();
+                    if (user != null) {
 
-                            if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
-                                // dismiss user
-                                JSONObject o = new JSONObject();
-                                if(ipToToken.containsKey(entry.getKey())) {
-                                    MyToken token = ipToToken.get(entry.getKey());
-                                    o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                                    o.put(USER_DISMISSED, user.getNumber());
-                                    token.sendToAllFrom(o, user);
-                                }
+                        System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
 
-                                if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
-                                if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
-                                if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                                user.webSocket.close();
+                        if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
+                            // dismiss user
+                            JSONObject o = new JSONObject();
+                            if(ipToToken.containsKey(entry.getKey())) {
+                                MyToken token = ipToToken.get(entry.getKey());
+                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                                o.put(USER_DISMISSED, user.getNumber());
+                                token.sendToAllFrom(o, user);
                             }
 
-                        } else {
-                            if (ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
-                            if (ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                            ipToUser.remove(entry.getKey());
+                            if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
+                            if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
+                            if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
+                            user.webSocket.close();
                         }
+
+                    } else {
+                        if (ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
+                        if (ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
+                        ipToUser.remove(entry.getKey());
                     }
-                } catch(Exception e) {
-                    e.printStackTrace();
                 }
+            } catch(Exception e) {
+                e.printStackTrace();
             }
         }
-    };
-
-    public MyWssServer(int port) throws UnknownHostException {
-        this(new InetSocketAddress(port));
-        tokens = new ConcurrentHashMap<String, MyToken>();
-        ipToToken = new ConcurrentHashMap<String, MyToken>();
-        ipToUser = new ConcurrentHashMap<String, MyUser>();
-        ipToCheck = new ConcurrentHashMap<String, CheckReq>();
-
-        new Thread(dismissInactiveUsers).start();
-
     }
 
-    public MyWssServer(InetSocketAddress address) {
-        super(address);
-
-        requestHolders = new LinkedHashMap<String, RequestHolder>();
-
+    @Override
+    public LinkedList<String> getRequestHoldersList() {
         LinkedList<String> classes = new LinkedList<String>();
         classes.add("TrackingRequestHolder");
         classes.add("MessageRequestHolder");
@@ -142,63 +124,16 @@ public class MyWssServer extends WebSocketServer implements WssServer {
         classes.add("WelcomeMessageRequestHolder");
         classes.add("LeaveRequestHolder");
         classes.add("SavedLocationRequestHolder");
+        return classes;
+    }
 
-        for(String s:classes){
-            try {
-                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders.request."+s);
-                Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
-                registerRequestHolder(ctor.newInstance(this));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        flagHolders = new LinkedHashMap<String, FlagHolder>();
-
-        classes.clear();
+    @Override
+    public LinkedList<String> getFlagsHoldersList() {
+        LinkedList<String> classes = new LinkedList<String>();
         classes.add("PushFlagHolder");
         classes.add("DeliveryFlagHolder");
         classes.add("ProviderFlagHolder");
-
-        for(String s:classes){
-            try {
-                Class<FlagHolder> _tempClass = (Class<FlagHolder>) Class.forName("ru.wtg.whereaminowserver.holders.flag."+s);
-                Constructor<FlagHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
-                registerFlagHolder(ctor.newInstance(this));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    public void registerRequestHolder(RequestHolder holder) {
-        if(holder.getType() == null) return;
-        requestHolders.put(holder.getType(), holder);
-    }
-
-    public void registerFlagHolder(FlagHolder holder) {
-        if(holder.getType() == null) return;
-        flagHolders.put(holder.getType(), holder);
-    }
-
-    /*   @Override
-    public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
-        System.out.println("HANDSHAKE:"+conn+":"+draft+":"+request);
-
-        return super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
-    }
-*/
-    @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
-//        this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
-        System.out.println("WSS:on open:" + conn.getRemoteSocketAddress() + " connected");
-
-        try {
-//            conn.send("{\"" + RESPONSE_STATUS + "\":\""+RESPONSE_STATUS_CONNECTED+"\",\"version\":" + SERVER_BUILD + "}");
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+        return classes;
     }
 
     @Override
@@ -501,41 +436,7 @@ public class MyWssServer extends WebSocketServer implements WssServer {
 //        System.out.println("PONG:"+conn.getRemoteSocketAddress()+":"+f);
 //    }
 
-    @Override
-    public void onError(WebSocket conn, Exception ex) {
-        ex.printStackTrace();
-        if (conn != null && conn.getRemoteSocketAddress() != null) {
-            System.out.println("WSS:on error:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
-
-            String ip = conn.getRemoteSocketAddress().toString();
-            if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
-            if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
-            if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
-            // some errors like port binding failed may not be assignable to a specific websocket
-        }
-    }
-
-    @Override
-    public void onWebsocketPing(WebSocket conn, Framedata f) {
-        super.onWebsocketPing(conn, f);
-
-        try {
-            String ip = conn.getRemoteSocketAddress().toString();
-            if (ipToUser.containsKey(ip)) {
-                ipToUser.get(ip).setChanged();
-            }
-//            System.out.println("PING:" + conn.getRemoteSocketAddress() + ":" + f);
-        } catch ( Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Sends <var>text</var> to all currently connected WebSocket clients.
-     *
-     * @param text The String to send across the network.
-     */
-    public void sendToAll(String text, WebSocket insteadConnection) {
+    /*public void sendToAll(String text, WebSocket insteadConnection) {
         Collection<WebSocket> con = connections();
 //        synchronized (con) {
             for (WebSocket c : con) {
@@ -544,22 +445,7 @@ public class MyWssServer extends WebSocketServer implements WssServer {
                 c.send(text);
             }
 //        }
-    }
-
-    public boolean parse(BufferedReader sysin) throws IOException, InterruptedException {
-        String in = sysin.readLine();
-        System.out.println("READ:" + in);
-//                        s.sendToAll(in);
-        if (in.equals("exit")) {
-            stop();
-            return false;
-        } else if (in.equals("restart")) {
-            stop();
-            start();
-            return false;
-        }
-        return true;
-    }
+    }*/
 
     public void removeUser(String tokenId,String id){
         if(tokenId != null && id != null && tokens.containsKey(tokenId)){
@@ -574,26 +460,6 @@ public class MyWssServer extends WebSocketServer implements WssServer {
                 t.removeUser(id);
             }
         }
-    }
-
-    @Override
-    public ConcurrentHashMap<String, MyToken> getTokens(){
-        return tokens;
-    }
-
-    @Override
-    public ConcurrentHashMap<String, MyToken> getIpToToken(){
-        return ipToToken;
-    }
-
-    @Override
-    public ConcurrentHashMap<String, MyUser> getIpToUser(){
-        return ipToUser;
-    }
-
-    @Override
-    public ConcurrentHashMap<String, CheckReq> getIpToCheck(){
-        return ipToCheck;
     }
 
 }

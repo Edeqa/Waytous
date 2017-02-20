@@ -12,5 +12,5 @@ import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 public interface PageHolder {
 
     String getType();
-    HtmlGenerator create(ArrayList<String> query);
+    HtmlGenerator create(HtmlGenerator html,ArrayList<String> query);
 }

@@ -2,7 +2,7 @@ package ru.wtg.whereaminow.holders;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
+import android.location.LocationManager;
 
 import com.google.maps.android.SphericalUtil;
 
@@ -17,6 +17,8 @@ import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 
@@ -30,10 +32,14 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
  * Created 01/13/17.
  */
 public class GpsHolder extends AbstractPropertyHolder {
-    public static final String REQUEST_LOCATION_SINGLE = "request_location_single";
     private static final String TYPE = "Gps";
+
+    public static final String REQUEST_LOCATION_SINGLE = "request_location_single";
+
     private final LocationGooglePlayServicesProvider provider;
     private final SmartLocation.LocationControl smartLocation;
+
+    private long lastGps = 0;
 
     public GpsHolder(Context context) {
         provider = new LocationGooglePlayServicesProvider();
@@ -96,15 +102,21 @@ public class GpsHolder extends AbstractPropertyHolder {
         public void onLocationUpdated(Location location) {
             if(location == null) return;
             location = Utils.normalizeLocation(State.getInstance().getGpsFilter(), location);
-//            State.getInstance().fire(SHOW_INFO, location.getAccuracy() + ", " + location.getSpeed()+", " + origin.getSpeed());
+//            State.getInstance().fire(SHOW_INFO,location.getProvider()+":"+ location.getAccuracy());
             Location last = State.getInstance().getMe().getLocation();
 
+            if(LocationManager.GPS_PROVIDER.equals(location.getProvider())) {
+                lastGps = location.getTime(); // register last gps-location time
+            } else {
+                if(location.getTime()-lastGps < 300*1000) return; // if gps-location not provided longer than 5 minutes then accept network-location
+            }
+
             if(last != null) {
+                if(location.getAccuracy() > 50) return;
                 if(location.getAccuracy() >= last.getAccuracy()) {
                     if(SphericalUtil.computeDistanceBetween(Utils.latLng(last),Utils.latLng(location)) < location.getAccuracy()) return;
                 }
             }
-
             sendLocation(location);
         }
     };

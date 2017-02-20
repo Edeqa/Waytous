@@ -1,12 +1,11 @@
 package ru.wtg.whereaminowserver.servers;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.internal.NonNull;
 import com.google.firebase.tasks.OnFailureListener;
@@ -14,18 +13,14 @@ import com.google.firebase.tasks.OnSuccessListener;
 import com.google.firebase.tasks.Task;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
@@ -44,6 +39,7 @@ import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_GROUPS;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_DATE_CREATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_PERSISTENT;
@@ -84,62 +80,12 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
  * Created 10/5/16.
  */
 
-public class MyWssServerFB extends MyWssServer {
+public class WainProcessorFirebase extends AbstractWainProcessor {
 
     private DatabaseReference ref;
 
-    private Runnable dismissInactiveUsers = new Runnable() {
-        @Override
-        public void run() {
-
-            while(true) {
-                try {
-                    Thread.sleep(INACTIVE_USER_DISMISS_DELAY * 1000);
-
-                    MyUser user;
-                    long currentDate = new Date().getTime();
-                    for (Map.Entry<String, MyUser> entry : ipToUser.entrySet()) {
-
-                        user = entry.getValue();
-                        if (user != null) {
-
-                            System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
-
-                            if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
-                                // dismiss user
-                                JSONObject o = new JSONObject();
-                                if(ipToToken.containsKey(entry.getKey())) {
-                                    MyToken token = ipToToken.get(entry.getKey());
-                                    o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                                    o.put(USER_DISMISSED, user.getNumber());
-                                    token.sendToAllFrom(o, user);
-                                }
-
-                                if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
-                                if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
-                                if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                                user.webSocket.close();
-                            }
-
-                        } else {
-                            if (ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
-                            if (ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                            ipToUser.remove(entry.getKey());
-                        }
-                    }
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
-
-    public MyWssServerFB(int port) throws UnknownHostException {
-        this(new InetSocketAddress(port));
-        tokens = new ConcurrentHashMap<String, MyToken>();
-        ipToToken = new ConcurrentHashMap<String, MyToken>();
-        ipToUser = new ConcurrentHashMap<String, MyUser>();
-        ipToCheck = new ConcurrentHashMap<String, CheckReq>();
+    public WainProcessorFirebase() {
+        super();
 
         File f = new File(new SensitiveData().getFBPrivateKeyFile());
         try {
@@ -148,22 +94,13 @@ public class MyWssServerFB extends MyWssServer {
             e.printStackTrace();
         }
 
-        try {
-            FirebaseApp.initializeApp(new FirebaseOptions.Builder()
-                    .setServiceAccount(new FileInputStream(new SensitiveData().getFBPrivateKeyFile()))
-                    .setDatabaseUrl(new SensitiveData().getFBDatabaseUrl())
-                    .build());
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        ref = database.getReference();
 
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            ref = database.getReference();
+    }
 
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        requestHolders = new LinkedHashMap<>();
-
+    @Override
+    public LinkedList<String> getRequestHoldersList() {
         LinkedList<String> classes = new LinkedList<String>();
         classes.add("TrackingRequestHolder");
         classes.add("MessageRequestHolder");
@@ -171,52 +108,21 @@ public class MyWssServerFB extends MyWssServer {
         classes.add("WelcomeMessageRequestHolder");
         classes.add("LeaveRequestHolder");
         classes.add("SavedLocationRequestHolder");
-
-        for(String s:classes){
-            try {
-                Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("ru.wtg.whereaminowserver.holders.request."+s);
-                Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(MyWssServer.class);
-                registerRequestHolder(ctor.newInstance(this));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        return classes;
     }
 
-
-    public MyWssServerFB(InetSocketAddress address) {
-        super(address);
-
+    @Override
+    public LinkedList<String> getFlagsHoldersList() {
+        return null;
     }
 
     /*   @Override
-    public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
-        System.out.println("HANDSHAKE:"+conn+":"+draft+":"+request);
+        public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
+            System.out.println("HANDSHAKE:"+conn+":"+draft+":"+request);
 
-        return super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
-    }
-*/
-    @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
-//        this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
-        System.out.println("WSS:on open:" + conn.getRemoteSocketAddress() + " connected");
-
-        try {
-//            conn.send("{\"" + RESPONSE_STATUS + "\":\""+RESPONSE_STATUS_CONNECTED+"\",\"version\":" + SERVER_BUILD + "}");
-        } catch(Exception e){
-            e.printStackTrace();
+            return super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
         }
-    }
-
-    @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
-//        this.sendToAll( conn + " has left the room!" );
-        String ip = conn.getRemoteSocketAddress().toString();
-        if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
-
-    }
+    */
 
     @Override
     public void onMessage(final WebSocket conn, String message) {
@@ -329,7 +235,11 @@ public class MyWssServerFB extends MyWssServer {
                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                                 response.put(RESPONSE_CONTROL, check.getControl());
                                 ipToCheck.put(ip, check);
-                                conn.send(response.toString());
+                                try {
+                                    conn.send(response.toString());
+                                } catch(Exception e){
+                                    e.printStackTrace();
+                                }
 
 //                                long number = (long) dataSnapshot.getValue();
 //                                refToken.child("/users/data-private/" + number+"/control").setValue(check.control);
@@ -676,6 +586,7 @@ if(true)return;
         childUpdates.put(DATABASE_SECTION_OPTIONS_PERSISTENT,false);
         childUpdates.put(DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE,false);
         childUpdates.put(DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS,300);
+        childUpdates.put(DATABASE_SECTION_OPTIONS_DATE_CREATED, ServerValue.TIMESTAMP);
 
         Task<Void> a = ref.child(tokenId).updateChildren(childUpdates);
         a.addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -718,41 +629,22 @@ if(true)return;
 //        System.out.println("PONG:"+conn.getRemoteSocketAddress()+":"+f);
 //    }
 
-    @Override
-    public void onError(WebSocket conn, Exception ex) {
-        ex.printStackTrace();
-        if (conn != null && conn.getRemoteSocketAddress() != null) {
-            System.out.println("WSS:on error:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
+//    @Override
+//    public void onWebsocketPing(WebSocket conn, Framedata f) {
+//        super.onWebsocketPing(conn, f);
+//
+//        try {
+//            String ip = conn.getRemoteSocketAddress().toString();
+//            if (ipToUser.containsKey(ip)) {
+//                ipToUser.get(ip).setChanged();
+//            }
+////            System.out.println("PING:" + conn.getRemoteSocketAddress() + ":" + f);
+//        } catch ( Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-            String ip = conn.getRemoteSocketAddress().toString();
-            if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
-            if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
-            if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
-            // some errors like port binding failed may not be assignable to a specific websocket
-        }
-    }
-
-    @Override
-    public void onWebsocketPing(WebSocket conn, Framedata f) {
-        super.onWebsocketPing(conn, f);
-
-        try {
-            String ip = conn.getRemoteSocketAddress().toString();
-            if (ipToUser.containsKey(ip)) {
-                ipToUser.get(ip).setChanged();
-            }
-//            System.out.println("PING:" + conn.getRemoteSocketAddress() + ":" + f);
-        } catch ( Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Sends <var>text</var> to all currently connected WebSocket clients.
-     *
-     * @param text The String to send across the network.
-     */
-    public void sendToAll(String text, WebSocket insteadConnection) {
+    /*public void sendToAll(String text, WebSocket insteadConnection) {
         Collection<WebSocket> con = connections();
 //        synchronized (con) {
         for (WebSocket c : con) {
@@ -761,22 +653,7 @@ if(true)return;
             c.send(text);
         }
 //        }
-    }
-
-    public boolean parse(BufferedReader sysin) throws IOException, InterruptedException {
-        String in = sysin.readLine();
-        System.out.println("READ:" + in);
-//                        s.sendToAll(in);
-        if (in.equals("exit")) {
-            stop();
-            return false;
-        } else if (in.equals("restart")) {
-            stop();
-            start();
-            return false;
-        }
-        return true;
-    }
+    }*/
 
     public void removeUser(String tokenId,String id){
         if(tokenId != null && id != null && tokens.containsKey(tokenId)){
@@ -792,4 +669,47 @@ if(true)return;
             }
         }
     }
+
+    public void dismissInactiveUsers() {
+        while(true) {
+            try {
+                Thread.sleep(INACTIVE_USER_DISMISS_DELAY * 1000);
+
+                MyUser user;
+                long currentDate = new Date().getTime();
+                for (Map.Entry<String, MyUser> entry : ipToUser.entrySet()) {
+
+                    user = entry.getValue();
+                    if (user != null) {
+
+                        System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
+
+                        if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
+                            // dismiss user
+                            JSONObject o = new JSONObject();
+                            if(ipToToken.containsKey(entry.getKey())) {
+                                MyToken token = ipToToken.get(entry.getKey());
+                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                                o.put(USER_DISMISSED, user.getNumber());
+                                token.sendToAllFrom(o, user);
+                            }
+
+                            if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
+                            if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
+                            if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
+                            user.webSocket.close();
+                        }
+
+                    } else {
+                        if (ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
+                        if (ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
+                        ipToUser.remove(entry.getKey());
+                    }
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

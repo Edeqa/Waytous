@@ -2,7 +2,6 @@ package ru.wtg.whereaminow.holders;
 
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -22,6 +21,8 @@ import java.util.Map;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 

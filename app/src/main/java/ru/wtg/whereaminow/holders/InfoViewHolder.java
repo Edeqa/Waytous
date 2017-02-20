@@ -3,31 +3,14 @@ package ru.wtg.whereaminow.holders;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
-import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
-import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.helpers.SmoothInterpolated;
-import ru.wtg.whereaminow.interfaces.SimpleCallback;
-
-import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
-import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
 
 /**
  * Created 11/24/16.

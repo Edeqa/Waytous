@@ -20,6 +20,28 @@ function Summary() {
         div = u.createPage(this);
 
         renderInterface();
+//        start();
+        /*messaging.getToken().then(function(currentToken) {
+            if (currentToken) {
+                firebaseToken = currentToken;
+                console.log(currentToken);
+                connectWss();
+            } else {
+                messaging.requestPermission()
+                    .then(function(){
+                        start();
+                        console.log('Notification permission granted.')
+                })
+                .catch(function(err){
+                    start();
+                    console.log('Unable to get permission to notify. ', err)
+                });
+            }
+          })
+          .catch(function(err) {
+            console.log('An error occurred while retrieving token. ', err);
+                u.showAlert("Data will not be updated. For instant updating you must allow notifications for this page.")
+          });*/
     }
 
     var renderInterface = function() {
@@ -285,5 +307,3 @@ function Summary() {
     }
 }
 document.addEventListener("DOMContentLoaded", (new Summary()).start);
-
-

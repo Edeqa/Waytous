@@ -4,7 +4,8 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
@@ -17,7 +18,7 @@ public class WelcomeMessageRequestHolder implements RequestHolder {
 
     public static final String TYPE = REQUEST_WELCOME_MESSAGE;
 
-    public WelcomeMessageRequestHolder(MyWssServer context) {
+    public WelcomeMessageRequestHolder(AbstractWainProcessor context) {
 
     }
 

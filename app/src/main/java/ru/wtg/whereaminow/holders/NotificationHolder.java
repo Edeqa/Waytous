@@ -15,6 +15,8 @@ import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.WhereAmINowService;
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
@@ -53,20 +55,6 @@ public class NotificationHolder extends AbstractPropertyHolder {
     private long lastCloseNotifyTime = 0;
     private long lastAwayNotifyTime = 0;
     private boolean showNotifications = true;
-    private Runnable notificationClearRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if(notification == null) return;
-            if(state.tracking_disabled()) return;
-            if(showNotifications) {
-                notification.setDefaults(DEFAULT_LIGHTS);
-            } else {
-                notification.setDefaults(DEFAULT_LIGHTS);
-            }
-            NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1976, notification.build());
-        }
-    };
 
     public NotificationHolder(State state) {
         this.state = state;
@@ -205,6 +193,21 @@ public class NotificationHolder extends AbstractPropertyHolder {
         NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1976, notification.build());
     }
+
+    private Runnable notificationClearRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(notification == null) return;
+            if(state.tracking_disabled()) return;
+            if(showNotifications) {
+                notification.setDefaults(DEFAULT_LIGHTS);
+            } else {
+                notification.setDefaults(DEFAULT_LIGHTS);
+            }
+            NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1976, notification.build());
+        }
+    };
 
     public class NotificationUpdate extends AbstractProperty {
         NotificationUpdate(MyUser myUser) {

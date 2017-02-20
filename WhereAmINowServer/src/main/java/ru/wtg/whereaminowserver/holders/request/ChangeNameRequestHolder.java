@@ -4,7 +4,8 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHANGE_NAME;
@@ -18,7 +19,7 @@ public class ChangeNameRequestHolder implements RequestHolder {
 
     public static final String TYPE = REQUEST_CHANGE_NAME;
 
-    public ChangeNameRequestHolder(MyWssServer context) {
+    public ChangeNameRequestHolder(AbstractWainProcessor context) {
 
     }
 

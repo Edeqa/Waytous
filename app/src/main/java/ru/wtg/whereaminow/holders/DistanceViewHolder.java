@@ -27,6 +27,8 @@ import java.util.Iterator;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
@@ -56,7 +58,8 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
     private ArrayList<DistanceMark> marks;
 
     public DistanceViewHolder(MainActivity context) {
-        setMap(context.getMap());
+        this.map = context.getMap();
+        marks = new ArrayList<>();
     }
 
     @Override
@@ -68,12 +71,6 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
     public DistanceView create(MyUser myUser) {
         if (myUser == null) return null;
         return new DistanceView(myUser);
-    }
-
-    public DistanceViewHolder setMap(GoogleMap map) {
-        this.map = map;
-        marks = new ArrayList<>();
-        return this;
     }
 
     @Override
@@ -149,6 +146,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
     class DistanceView extends AbstractView {
 
         private boolean show = false;
+
         DistanceView(final MyUser myUser){
             this.myUser = myUser;
 
@@ -242,8 +240,6 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                             }
                         }
                     });*/
-
-
                     break;
                 case HIDE_DISTANCE:
                     remove();
@@ -268,6 +264,13 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         Marker marker;
         MyUser firstUser;
         MyUser secondUser;
+        BitmapDescriptor icon;
+        LatLng markerPosition;
+        LatLngBounds boundsForName;
+        LatLngBounds bounds;
+
+        String title;
+
         private IconGenerator iconFactory;
 
         DistanceMark(MyUser user1, MyUser user2) {
@@ -295,12 +298,15 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(Utils.formatLengthToLocale(distance))));
             marker.setPosition(markerPosition);
         }
+
         private LatLng firstPosition(){
             return new LatLng(firstUser.getLocation().getLatitude(), firstUser.getLocation().getLongitude());
         }
+
         private LatLng secondPosition(){
             return new LatLng(secondUser.getLocation().getLatitude(), secondUser.getLocation().getLongitude());
         }
+
         public void update(boolean animate){
 
             final LatLng firstUserInitial = line.getPoints().get(0);
@@ -311,11 +317,11 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                     @Override
                     public void call(Float[] value) {
                         if (line != null && marker != null) {
-                             LatLng firstCurrent = new LatLng(
+                            LatLng firstCurrent = new LatLng(
                                     firstUserInitial.latitude * (1 - value[TIME_ELAPSED]) + firstPosition().latitude * value[TIME_ELAPSED],
                                     firstUserInitial.longitude * (1 - value[TIME_ELAPSED]) + firstPosition().longitude * value[TIME_ELAPSED]);
 
-                             LatLng secondCurrent = new LatLng(
+                            LatLng secondCurrent = new LatLng(
                                     secondUserInitial.latitude * (1 - value[TIME_ELAPSED]) + secondPosition().latitude * value[TIME_ELAPSED],
                                     secondUserInitial.longitude * (1 - value[TIME_ELAPSED]) + secondPosition().longitude * value[TIME_ELAPSED]);
 
@@ -329,11 +335,6 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             }
         }
 
-        BitmapDescriptor icon;
-        LatLng markerPosition;
-        LatLngBounds boundsForName;
-        LatLngBounds bounds;
-        String title;
         private void updateLineAndMarker(final LatLng firstPosition, final LatLng secondPosition) {
             title = Utils.formatLengthToLocale(SphericalUtil.computeDistanceBetween(firstPosition, secondPosition));
 
@@ -376,8 +377,8 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 }
             });
         }
-
     }
+
     private DistanceMark fetchDistanceMark(MyUser user1, MyUser user2) {
         for(DistanceMark entry: marks) {
             if(user1 == entry.firstUser && user2 == entry.secondUser) return entry;

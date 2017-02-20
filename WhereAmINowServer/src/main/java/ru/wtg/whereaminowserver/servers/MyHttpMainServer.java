@@ -22,13 +22,13 @@ import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 public class MyHttpMainServer implements HttpHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
-    private volatile WebSocketServer wssProcessor;
+    private volatile AbstractWainProcessor wainProcessor;
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
         URI uri = exchange.getRequestURI();
-//        System.out.println("Main server requested: " + uri);
+        System.out.println("Main server requested: " + uri);
 
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
@@ -92,11 +92,11 @@ public class MyHttpMainServer implements HttpHandler {
     }
 
 
-    public WebSocketServer getWssProcessor() {
-        return wssProcessor;
+    public AbstractWainProcessor getWainProcessor() {
+        return wainProcessor;
     }
 
-    public void setWssProcessor(WebSocketServer wssProcessor) {
-        this.wssProcessor = wssProcessor;
+    public void setWainProcessor(AbstractWainProcessor wainProcessor) {
+        this.wainProcessor = wainProcessor;
     }
 }

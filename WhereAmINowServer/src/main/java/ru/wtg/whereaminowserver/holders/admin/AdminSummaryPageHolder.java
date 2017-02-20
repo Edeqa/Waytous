@@ -19,14 +19,9 @@ import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.DIV;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.STYLESHEET;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TITLE;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TYPE;
 
 /**
  * Created 1/20/2017.
@@ -41,7 +36,6 @@ public class AdminSummaryPageHolder implements PageHolder {
     private HtmlGenerator html;
 
     public AdminSummaryPageHolder(MyHttpAdminServer server) {
-        html = new HtmlGenerator();
         this.server = server;
     }
 
@@ -50,7 +44,8 @@ public class AdminSummaryPageHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
-    public HtmlGenerator create(ArrayList<String> query) {
+    public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query) {
+        this.html = html;
         html.clear();
 
         header();
@@ -61,9 +56,6 @@ public class AdminSummaryPageHolder implements PageHolder {
     private void header() {
 
         html.getHead().add(TITLE).with("Summary");
-        html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
-
-        Common.addIncludes(html);
 
         JSONObject o = new JSONObject();
         o.put("general",Common.fetchGeneralInfo());
@@ -84,7 +76,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchTokensData() {
         JSONArray a = new JSONArray();
 
-        for (Map.Entry<String, MyToken> x : server.getWssProcessor().getTokens().entrySet()) {
+        for (Map.Entry<String, MyToken> x : server.getWainProcessor().getTokens().entrySet()) {
             JSONObject o = new JSONObject();
             a.put(o);
 
@@ -116,7 +108,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchIpToUserData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyUser> x: server.getWssProcessor().getIpToUser().entrySet()){
+        for(Map.Entry<String,MyUser> x: server.getWainProcessor().getIpToUser().entrySet()){
             JSONArray ua = new JSONArray();
             a.put(ua);
             ua.put(x.getKey());
@@ -128,7 +120,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchIpToTokenData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyToken> x: server.getWssProcessor().getIpToToken().entrySet()){
+        for(Map.Entry<String,MyToken> x: server.getWainProcessor().getIpToToken().entrySet()){
             JSONArray ta = new JSONArray();
             a.put(ta);
             ta.put(x.getKey());
@@ -140,7 +132,7 @@ public class AdminSummaryPageHolder implements PageHolder {
     private JSONArray fetchIpToCheckData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,CheckReq> x: server.getWssProcessor().getIpToCheck().entrySet()){
+        for(Map.Entry<String,CheckReq> x: server.getWainProcessor().getIpToCheck().entrySet()){
             JSONArray ca = new JSONArray();
             a.put(ca);
             ca.put(x.getKey());
@@ -171,7 +163,7 @@ public class AdminSummaryPageHolder implements PageHolder {
             if(query.containsKey("token")) token = query.get("token").get(0);
             if(query.containsKey("id")) id = query.get("id").get(0);
 
-            server.getWssProcessor().removeUser(token,id);
+            server.getWainProcessor().removeUser(token,id);
 
         }
 

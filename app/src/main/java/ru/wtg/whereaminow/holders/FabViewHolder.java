@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.ShareSender;
 import ru.wtg.whereaminow.helpers.MyUser;
@@ -40,7 +42,7 @@ import static ru.wtg.whereaminow.holders.InfoViewHolder.SHOW_INFO;
  */
 public class FabViewHolder extends AbstractViewHolder {
 
-    public static final String TYPE = "fab_layout";
+    public static final String TYPE = "fab";
 
     private final MainActivity context;
     private LinearLayoutCompat fab_buttons;
@@ -48,52 +50,6 @@ public class FabViewHolder extends AbstractViewHolder {
 
     private boolean isFabMenuOpen = false;
     private LayoutInflater inflater;
-    private OnClickListener onInitialClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            State.getInstance().setGpsAccessRequested(false);
-            context.onResume();
-        }
-    };
-    private OnClickListener onClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            close(true);
-            switch (view.getId()) {
-                case R.string.exit_group:
-                    State.getInstance().fire(TRACKING_STOP);
-                    break;
-                case R.string.share_link:
-                    new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
-                    break;
-            }
-        }
-    };
-    private OnClickListener onMainClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if(isFabMenuOpen){
-                close(true);
-            } else {
-                if(State.getInstance().tracking_active()){
-                    fab_buttons.removeAllViews();
-                    add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
-                    State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
-                    new Handler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            add(R.string.exit_group, R.drawable.ic_clear_black_24dp).setOnClickListener(onClickListener);
-                            open(true);
-                        }
-                    });
-                } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
-                    State.getInstance().fire(TRACKING_STOP);
-                } else {
-                    State.getInstance().fire(TRACKING_NEW);
-                }
-            }
-        }
-    };
 
     public FabViewHolder(MainActivity context){
         this.context = context;
@@ -224,5 +180,54 @@ public class FabViewHolder extends AbstractViewHolder {
 
         return rules;
     }
+
+    private OnClickListener onInitialClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            State.getInstance().setGpsAccessRequested(false);
+            context.onResume();
+        }
+    };
+
+    private OnClickListener onClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            close(true);
+            switch (view.getId()) {
+                case R.string.exit_group:
+                    State.getInstance().fire(TRACKING_STOP);
+                    break;
+                case R.string.share_link:
+                    new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
+                    break;
+            }
+        }
+    };
+
+    private OnClickListener onMainClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(isFabMenuOpen){
+                close(true);
+            } else {
+                if(State.getInstance().tracking_active()){
+                    fab_buttons.removeAllViews();
+                    add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
+                    State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            add(R.string.exit_group, R.drawable.ic_clear_black_24dp).setOnClickListener(onClickListener);
+                            open(true);
+                        }
+                    });
+                } else if(State.getInstance().tracking_connecting() || State.getInstance().tracking_reconnecting()) {
+                    State.getInstance().fire(TRACKING_STOP);
+                } else {
+                    State.getInstance().fire(TRACKING_NEW);
+                }
+            }
+        }
+    };
 
 }

@@ -39,6 +39,8 @@ import java.util.Date;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SavedLocation;
@@ -310,7 +312,22 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.createViews();
-                                myUser.fire(SELECT_USER);
+//                                myUser.fire(SELECT_USER);
+
+                                //noinspection unchecked
+                                new SystemMessage(context).setText(savedLocation.getUsername() + (
+                                        savedLocation.getTitle() != null && savedLocation.getTitle().length() > 0 ? ": "+savedLocation.getTitle() : ""
+                                        )).setAction("Edit", new SimpleCallback() {
+                                    @Override
+                                    public void call(Object arg) {
+                                        editLocation(savedLocation);
+                                    }
+                                }).setOnClickListener(new SimpleCallback() {
+                                    @Override
+                                    public void call(Object arg) {
+                                        State.getInstance().fire(SHOW_SAVED_LOCATIONS);
+                                    }
+                                }).showSnack();
                             }
                         });
 
@@ -322,7 +339,37 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             case SHOW_SAVED_LOCATIONS:
                 showLocations();
                 break;
-            }
+            case DELETE_SAVED_LOCATION:
+                if(object != null){
+                    int position = -1;
+                    SavedLocation saved;
+                    if(object instanceof SavedLocation) {
+                        saved = (SavedLocation) object;
+                    } else {
+                        position = (int) object;
+                        saved = SavedLocation.getItemByPosition(position);
+                        if(adapter != null) adapter.notifyItemRemoved(position);
+                    }
+                    SavedLocation.getDb().deleteByItem(saved);
+
+                    System.out.println("POSITION:"+position);
+                    System.out.println("SAVED:"+saved);
+                    State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new MyUsers.Callback() {
+                        @Override
+                        public void call(Integer number, MyUser myUser) {
+                    System.out.println("USER:"+myUser);
+                            myUser.fire(HIDE_SAVED_LOCATION);
+                        }
+                    });
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            reloadCursor();
+                        }
+                    },500);
+                }
+                break;
+        }
         return true;
     }
 
@@ -365,21 +412,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
             @Override
             public void call(final Integer position) {
-                SavedLocation savedLocation = SavedLocation.getItemByPosition(position);
-                SavedLocation.getDb().deleteByPosition(position);
-                State.getInstance().getUsers().forUser((int)(10000 + savedLocation.getNumber()), new MyUsers.Callback() {
-                    @Override
-                    public void call(Integer number, MyUser myUser) {
-                        myUser.fire(DELETE_SAVED_LOCATION);
-                    }
-                });
-                adapter.notifyItemRemoved(position);
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        reloadCursor();
-                    }
-                }, 500);
+                State.getInstance().fire(DELETE_SAVED_LOCATION, position);
             }
         });
 
@@ -573,6 +606,12 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 reloadCursor();
             }
         });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                State.getInstance().fire(DELETE_SAVED_LOCATION, savedLocation);
+            }
+        });
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
@@ -602,7 +641,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             iconFactory.setColor(Color.rgb(0,235,0));
             MarkerOptions markerOptions = new MarkerOptions().
                     icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(myUser.getProperties().getDisplayName()))).
-                    position( new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude())).
+                    position(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude())).
                     anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
             marker = map.addMarker(markerOptions);
@@ -728,25 +767,15 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     });
 */
                     break;
-                case DELETE_SAVED_LOCATION:
-                    if(isSavedLocation(myUser)) {
-                        myUser.fire(HIDE_SAVED_LOCATION);
-                        State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
-                            @Override
-                            public void call(Integer number, MyUser myUser) {
-                            }
-                        });
-                        SavedLocation saved = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
-                        if (saved != null) SavedLocation.getDb().deleteById(saved.getNumber());
-                    }
-                    break;
                 case SHARE_SAVED_LOCATION:
                     System.out.println("SHARE_SAVED_LOCATION");
                     //TODO
                     break;
                 case DROPPED_TO_USER:
                     final MyUser toUser = (MyUser) object;
-                    myUser.fire(SEND_SAVED_LOCATION, toUser);
+                    if(toUser.isUser() && toUser != State.getInstance().getMe()) {
+                        myUser.fire(SEND_SAVED_LOCATION, toUser);
+                    }
                     break;
                 case SEND_SAVED_LOCATION:
                     if(isSavedLocation(myUser)){

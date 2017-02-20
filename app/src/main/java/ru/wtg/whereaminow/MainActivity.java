@@ -33,7 +33,7 @@ import io.nlopez.smartlocation.SmartLocation;
 import ru.wtg.whereaminow.helpers.ContinueDialog;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.holders.AbstractViewHolder;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
@@ -309,9 +309,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         classes.add("SensorsViewHolder");
         classes.add("StreetsViewHolder");
         classes.add("InfoViewHolder");
+        classes.add("NmeaStatusViewHolder");
 
         // IntroViewHolder must be registered last
-//        classes.put("IntroViewHolder");
+
+//        classes.add("IntroViewHolder");
 
         for(String s:classes){
             try {

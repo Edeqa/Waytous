@@ -1,18 +1,19 @@
-package ru.wtg.whereaminow.holders;
+package ru.wtg.whereaminow.abstracts;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 
 /**
  * Created 11/18/16.
  */
-abstract class AbstractPropertyHolder implements EntityHolder<AbstractProperty> {
+abstract public class AbstractPropertyHolder implements EntityHolder<AbstractProperty> {
 
-    AbstractPropertyHolder(){}
+    protected AbstractPropertyHolder(){}
 
     public void init() {
     }

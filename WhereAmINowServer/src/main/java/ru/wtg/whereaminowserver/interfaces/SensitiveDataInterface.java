@@ -10,5 +10,6 @@ public interface SensitiveDataInterface {
     String getFCMSenderKey();
     String getFBPrivateKeyFile();
     String getFBDatabaseUrl();
+    String getSSLCertificatePassword();
 
 }

@@ -5,13 +5,12 @@ import org.json.JSONObject;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
-import ru.wtg.whereaminowserver.interfaces.RequestHolder;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 
 /**
  * Created 1/19/17.
@@ -21,7 +20,7 @@ public class DeliveryFlagHolder implements FlagHolder {
 
     public static final String TYPE = REQUEST_DELIVERY_CONFIRMATION;
 
-    public DeliveryFlagHolder(MyWssServer context) {
+    public DeliveryFlagHolder(AbstractWainProcessor context) {
 
     }
 

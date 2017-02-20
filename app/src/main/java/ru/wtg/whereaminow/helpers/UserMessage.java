@@ -20,11 +20,11 @@ import java.util.Date;
 
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractSavedItem;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static ru.wtg.whereaminow.holders.MessagesHolder.SEND_MESSAGE;
 
 /**
  * Created 12/9/16.
@@ -155,6 +155,7 @@ public class UserMessage extends AbstractSavedItem {
 
     public String toString() {
         return "{ timestamp: " + new Date(timestamp).toString()
+                + ", number: " + getNumber()
                 + ", type: " + type
                 + (from != null ? ", from: "+from : "")
                 + (to != null ? ", to: "+to : "")

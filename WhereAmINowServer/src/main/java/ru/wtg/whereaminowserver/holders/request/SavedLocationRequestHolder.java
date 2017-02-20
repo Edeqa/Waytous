@@ -4,7 +4,8 @@ import org.json.JSONObject;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_SAVED_LOCATION;
@@ -22,7 +23,7 @@ public class SavedLocationRequestHolder implements RequestHolder {
 
     public static final String TYPE = REQUEST_SAVED_LOCATION;
 
-    public SavedLocationRequestHolder(MyWssServer context) {
+    public SavedLocationRequestHolder(AbstractWainProcessor context) {
 
     }
 

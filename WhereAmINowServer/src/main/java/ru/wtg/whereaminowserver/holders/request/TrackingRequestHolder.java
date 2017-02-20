@@ -6,7 +6,8 @@ import java.util.Iterator;
 
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
@@ -19,7 +20,7 @@ public class TrackingRequestHolder implements RequestHolder {
 
     public static final String TYPE = REQUEST_TRACKING;
 
-    public TrackingRequestHolder(MyWssServer context) {
+    public TrackingRequestHolder(AbstractWainProcessor context) {
 
     }
 

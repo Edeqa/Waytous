@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.helpers;
 
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,9 +16,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.holders.AbstractProperty;
-import ru.wtg.whereaminow.holders.AbstractView;
-import ru.wtg.whereaminow.holders.AbstractViewHolder;
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.PropertiesHolder;
 import ru.wtg.whereaminow.interfaces.Entity;
 import ru.wtg.whereaminow.interfaces.EntityHolder;

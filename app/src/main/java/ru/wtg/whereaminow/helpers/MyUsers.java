@@ -68,12 +68,16 @@ public class MyUsers {
     }
 
     public void forAllUsersExceptMe(Callback callback) {
-        if(myNumber != 0){
-            forUser(0,callback);
-        }
-        for (Map.Entry<Integer, MyUser> entry : users.entrySet()) {
-            if (entry.getKey() == myNumber || entry.getKey() == 0) continue;
-            forUser(entry.getKey(), callback);
+        try {
+            if (myNumber != 0) {
+                forUser(0, callback);
+            }
+            for (Map.Entry<Integer, MyUser> entry : users.entrySet()) {
+                if (entry.getKey() == myNumber || entry.getKey() == 0) continue;
+                forUser(entry.getKey(), callback);
+            }
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 

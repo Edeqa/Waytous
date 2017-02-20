@@ -3,6 +3,8 @@ package ru.wtg.whereaminow.holders;
 import android.location.Location;
 import android.util.Log;
 
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 
 /**

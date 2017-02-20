@@ -12,6 +12,7 @@ import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -343,6 +344,10 @@ public class Utils {
             }
         }
         dialog.getWindow().setLayout(width, height);
+    }
+
+    public static int adaptedSize(Context context,int size) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, context.getResources().getDisplayMetrics());
     }
 
 }

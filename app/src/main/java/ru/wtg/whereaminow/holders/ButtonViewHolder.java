@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +24,8 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
@@ -42,7 +43,6 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_STOP;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_ZOOM;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
 
 /**
@@ -53,7 +53,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     private final Activity context;
     private Handler handlerHideMenu;
     private Runnable runnableHideMenu;
-
     private LinearLayout layout;
     private FlexboxLayout menuLayout;
 
@@ -113,7 +112,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 menuLayout.setVisibility(View.GONE);
             }
         };
-
         return this;
     }
 
@@ -127,7 +125,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
     @Override
     public ArrayList<IntroRule> getIntro() {
-
         ArrayList<IntroRule> rules = new ArrayList<>();
         rules.add(new IntroRule().setEvent(TRACKING_ACTIVE).setId("button_intro").setView(layout).setTitle("Top buttons").setDescription("Here are the buttons of group members. Touch any button to switch to this member or long touch for context menu."));
 
@@ -174,7 +171,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
                             @Override
                             public void call(Integer number, MyUser user) {
-                                user.fire(DROPPED_TO_USER, myUser);
+                                    user.fire(DROPPED_TO_USER, myUser);
                             }
                         });
                         return true;

@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import ru.wtg.whereaminow.R;
+import ru.wtg.whereaminow.abstracts.AbstractSavedItem;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 /**
@@ -166,6 +167,7 @@ public class SavedLocation extends AbstractSavedItem {
 
     public String toString() {
         return "{ timestamp: " + new Date(timestamp).toString()
+                + ", number: "+getNumber()
                 + (username != null ? ", username: "+username : "")
                 + (title != null ? ", title: "+title : "")
                 + (latitude != 0 ? ", latitude: "+latitude : "")

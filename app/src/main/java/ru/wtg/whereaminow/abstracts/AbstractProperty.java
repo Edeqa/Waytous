@@ -1,4 +1,4 @@
-package ru.wtg.whereaminow.holders;
+package ru.wtg.whereaminow.abstracts;
 
 import android.location.Location;
 
@@ -9,14 +9,10 @@ import ru.wtg.whereaminow.interfaces.Entity;
  * Created 11/24/16.
  */
 
-abstract public class AbstractView implements Entity {
+abstract public class AbstractProperty implements Entity {
     protected MyUser myUser;
 
-    AbstractView(){
-    }
-
-    AbstractView(MyUser myUser){
-        super();
+    protected AbstractProperty(MyUser myUser){
         this.myUser = myUser;
     }
 
@@ -26,12 +22,6 @@ abstract public class AbstractView implements Entity {
 
     @Override
     public void onChangeLocation(Location location){
-        System.out.println("onChangeLocation:"+(this.getClass().getSimpleName()));
     }
 
-/*
-    public View infoWindow() {
-        return null;
-    }
-*/
 }

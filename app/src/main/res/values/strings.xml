@@ -129,6 +129,9 @@
     <string name="opaque">Opaque</string>
     <string name="search">Search</string>
     <string name="hide_places">Hide places</string>
+    <string name="remove">Remove</string>
+    <string name="show_nmea_status">Show NMEA status</string>
+    <string name="hide_nmea_status">Hide NMEA status</string>
 
 
 </resources>

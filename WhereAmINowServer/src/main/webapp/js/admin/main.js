@@ -3,15 +3,14 @@
  */
 
 function Main() {
-    var u = new Utils();
     var menu;
-    var database;
 
     var holders = {};
     var holderFiles = [
         "Home",
         "Create",
-        "Summary",
+        "Group",
+        "Groups",
         "Settings",
         "Help",
         "User"
@@ -23,18 +22,34 @@ function Main() {
             return;
         }
 
-        var loaded = 0;
-        for(var i in holderFiles) {
-            u.create("script", {src: "/js/admin/"+holderFiles[i]+".js", dataStart: holderFiles[i],  onload: function(e) {
-                loaded++;
-                var holder = this.dataset.start;
-                holder = new window[holder]();
-                holders[holder.page] = holder;
-                if(loaded == u.keys(holderFiles).length) {
-                    resume();
+        window.u = new Utils();
+
+//        database.goOnline();
+        firebase.auth().signInWithCustomToken(sign.token)
+        .then(function(e){
+                var loaded = 0;
+                for(var i in holderFiles) {
+                    u.create("script", {src: "/js/admin/"+holderFiles[i]+".js", dataStart: holderFiles[i],  onload: function(e) {
+                        loaded++;
+                        var holder = this.dataset.start;
+                        holder = new window[holder]();
+                        holders[holder.page] = holder;
+                        if(loaded == u.keys(holderFiles).length) {
+                            resume();
+                        }
+                    }}, document.head);
                 }
-            }}, document.head);
-        }
+//            console.log("AAA",e)
+        }).catch(function(error) {
+                          // Handle Errors here.
+                          var errorCode = error.code;
+                          var errorMessage = error.message;
+                          // ...
+                        });
+
+        var a = u.byId("sign");
+        a.parentNode.removeChild(a);
+
     }
 
     var resume = function() {
@@ -46,7 +61,6 @@ function Main() {
         var out = u.create("div", {className:"layout"}, document.body);
         menu = u.create("div", {className:"menu", tabindex: 1, onblur: function(){
             menu.classList.remove("menu-open");
-            document.getElementsByClassName("menu-button")[0].classList.remove("menu-button-open");
             return true;
         }}, out);
         var right = u.create("div", {className:"right"}, out);
@@ -71,8 +85,8 @@ function Main() {
         u.create("div", { onclick: logout, innerHTML: "Log out" }, th);
 
         th = u.create("div", { className:"menu-bottom"}, menu);
-        u.create("div", "On The Right Way", th);
-        u.create("div", "&copy; 2017, someeee", th);
+        u.create("div", "Waytogo", th);
+        u.create("div", "&copy; 2017, White Tiger Group", th);
         u.create("div", "Build " + data.version, th);
 
         holders[data.page].start();
@@ -97,9 +111,17 @@ function Main() {
         });
     }
 
+    var switchTo = function(to) {
+        var parts = to.split("/");
+        if(parts[1] == "admin") {
+            holders[parts[2]].start(parts);
+        }
+    }
+
     return {
         start: start,
-        database: database,
+        switchTo: switchTo,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Main()).start);
+//document.addEventListener("DOMContentLoaded", (window.WAIN = new Main()).start);
+document.addEventListener("readystatechange", function(){if(document.readyState == "complete"){(window.WAIN = new Main()).start()}});

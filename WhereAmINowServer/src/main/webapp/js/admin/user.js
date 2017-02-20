@@ -8,8 +8,12 @@ function User() {
     var u = new Utils();
     var positions;
     var div;
+    var groupId;
+    var userNumber;
+    var summary;
 
-    var start = function() {
+
+    /*var start = function() {
         if(!data || !data.user || !data.user.created) {
             window.location.href = "/admin/summary";
             return;
@@ -42,141 +46,236 @@ function User() {
 
 
 
-    }
+    }*/
+
+    var u = new Utils();
 
     var renderInterface = function() {
 
-        div.appendChild(renderInterfaceUserHeader());
-        renderInterfaceUser();
+//        div.appendChild(renderAlertArea());
+
+        div.appendChild(renderInterfaceHeader());
+
+        updateSummary();
+
     }
 
-    var renderInterfaceUserHeader = function () {
+    var renderInterfaceHeader = function () {
 
-        var div = u.create("div");
+        var div = u.create("div", {className:"summary"});
+
         u.create("h2", "Summary", div);
 
-        var table = u.create("table", {className:"user"}, div);
+        var table = u.create("div", {className:"table option"}, div);
 
-        var tr;
-        tr = u.create("tr", null, table);
-        u.create("th","IP", tr);
-        u.create("td",data.user.ip, tr);
+        summary = u.create("div", {className:"tbody"}, table);
+        u.create("div", {className:"th", align: "center", innerHTML: "Loading..."}, u.create("div", {className:"tr"}, summary));
 
-        tr = u.create("tr", null, table);
-        u.create("th","Name", tr);
-        u.create("td",data.user.name, tr);
+        /*u.create("h2", "Positions", div);
 
-        tr = u.create("tr", null, table);
-        u.create("th","Device ID", tr);
-        u.create("td",data.user.deviceId, tr);
+        var table = u.create("div", {id:"users", className:"summary table"}, div);
+        var thead = u.create("div", { className:"thead"}, table);
+        trhead = u.create("div", {className:"tr"}, thead);
 
-        tr = u.create("tr", null, table);
-        u.create("th","Group ID", tr);
-        u.create("a", {href:"/admin/group/"+data.user.token, innerHTML: data.user.token}, u.create("td", null, tr));
+        u.create("div", {className:"th", innerHTML:"#", width:"5%"}, trhead);
+        u.create("div", {className:"th", innerHTML:"Name"}, trhead);
+        u.create("div", {className:"th", innerHTML:"Color", width:"5%"}, trhead);
+        u.create("div", {className:"th", innerHTML:"Created"}, trhead);
+        u.create("div", {className:"th", innerHTML:"Updated"}, trhead);
+        u.create("div", {className:"th", innerHTML:"Platform"}, trhead);
+        u.create("div", {className:"th", innerHTML:"Device"}, trhead);
 
-        tr = u.create("tr", null, table);
-        u.create("th","Number in group", tr);
-        u.create("td",""+data.user.number, tr);
+        tbody = u.create("tbody", null, table);
+        u.create("td", {
+            colspan: trhead.childElementCount,
+            align: "center",
+            innerHTML: "Loading..."
+        }, u.create("tr", {}, tbody));
+*/
 
-        tr = u.create("tr", null, table);
-        u.create("th","Color", tr);
-        u.create("td",data.user.color, tr);
-
-        tr = u.create("tr", null, table);
-        u.create("th","Model", tr);
-        u.create("td",data.user.model, tr);
-
-        tr = u.create("tr", null, table);
-        u.create("th","Created", tr);
-        u.create("td",data.user.created, tr);
-
-        tr = u.create("tr", null, table);
-        u.create("th","Changed", tr);
-        u.create("td",data.user.changed, tr);
-
-
-        u.create("h2", "Positions", div);
-
-        table = u.create("table", {className:"summary"}, div);
-
-        var thead = u.create("thead", {}, table);
-        var tr = u.create("tr", null, thead);
-        u.create("th", "#", tr);
-        u.create("th", "Time", tr);
-        u.create("th", "Latitude", tr);
-        u.create("th", "Longitude", tr);
-        u.create("th", "Altitude", tr);
-        u.create("th", "Accuracy", tr);
-        u.create("th", "Bearing", tr);
-        u.create("th", "Speed", tr);
-
-        positions = u.create("tbody", {}, table);
+        u.create("br", null, div);
+        buttons = u.create("div", {className:"buttons"}, div);
+        renderButtons(buttons);
 
         return div;
 
     }
 
-    var renderInterfaceUser = function() {
-        u.clear(positions);
+    function updateSummary() {
+        var ref = database.ref();
 
-        if(data && data.user && data.user.positions.length > 0) {
-            for(var i in data.user.positions) {
-                var position = data.user.positions[i];
+        ref.child(groupId).child("u/b").child(userNumber).once("value").then(function(snapshot) {
+            if(!snapshot || !snapshot.val()) return;
+            u.clear(summary);
 
-                var tr = u.create("tr", {}, positions);
+            var tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Number"}, tr);
+            u.create("div", {className: "td option", innerHTML:userNumber}, tr);
 
-                u.create("a", { innerHTML: 1, href: "http://maps.google.com/?q="+position[2]+"+"+position[3]+"&z=13", target: "_blank" }, u.create("td", null, tr));
-                u.create("td", position[1], tr);
-                u.create("td", position[2], tr);
-                u.create("td", position[3], tr);
-                u.create("td", position[4], tr);
-                u.create("td", position[5], tr);
-                u.create("td", position[6], tr);
-                u.create("td", position[7], tr);
-          }
-        } else {
-            u.create("td", {
-                colspan: 8,
-                align: "center",
-                innerHTML: "No data"
-            }, u.create("tr", {}, positions));
-        }
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Name"}, tr);
+            u.create("div", {className: "td option", innerHTML:snapshot.val().name}, tr);
+
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Active"}, tr);
+            var userActiveNode = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+
+            ref.child(groupId).child("u/b").child(userNumber).child("active").on("value", function(snapshot){
+                userActiveNode.innerHTML = snapshot.val() ? "Yes" : "No";
+                userActiveNode.classList.add("changed");
+                setTimeout(function(){userActiveNode.classList.remove("changed")}, 2000);
+            });
+
+            tr = u.create("div", {className:"tr clickable", onclick:function(){
+                WAIN.switchTo("/admin/group/"+groupId);
+                return false;
+            }}, summary);
+            u.create("div", {className: "th option", innerHTML:"Group"}, tr);
+            u.create("div", {className:"td option", innerHTML:groupId}, tr);
+
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Key"}, tr);
+            var userKey = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Color"}, tr);
+            u.create("td", { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
+
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Created"}, tr);
+            u.create("div", {className: "td option", innerHTML:snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;"}, tr);
+
+            tr = u.create("div", {className:"tr", style: { display: (snapshot.val().persistent ? "none" : "")}}, summary);
+            u.create("div", {className: "th option", innerHTML:"Updated"}, tr);
+            var userUpdatedNode = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+
+            ref.child(groupId).child("u/b").child(userNumber).child("changed").on("value", function(snapshot){
+                userUpdatedNode.innerHTML = new Date(snapshot.val()).toLocaleString();
+                userUpdatedNode.classList.add("changed");
+                setTimeout(function(){userUpdatedNode.classList.remove("changed")}, 2000);
+            });
+
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Platform"}, tr);
+            var userOs = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+
+            tr = u.create("div", {className:"tr"}, summary);
+            u.create("div", {className: "th option", innerHTML:"Device"}, tr);
+            var userDevice = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+
+            ref.child(groupId).child("u/p").child(userNumber).once("value").then(function(snapshot){
+                userOs.innerHTML = snapshot.val().os;
+                userDevice.innerHTML = snapshot.val().model;
+                userKey.innerHTML = snapshot.val().key;
+            });
+
+        }).catch(function(error){
+            u.clear(summary);
+            u.create("div", {className:"th", align: "center", innerHTML: "Error loading data, try to refresh page."}, u.create("div", {className:"tr"}, summary));
+        });
+
     }
 
-    var connectWss = function () {
-        socket = new WebSocket(data.general.uri);
+    function updateData(){
 
-        socket.onmessage = function(event) {
-            console.log("MESSAGE",event);
+        var ref = database.ref();
+        u.clear(tbody);
 
-            var incomingMessage = event.data;
-            showMessage(incomingMessage);
-        };
+        ref.child(groupId).child("u/b").on("child_added", function(snapshot) {
+            if(!snapshot || !snapshot.val()) return;
+            var tr = u.create("tr", { className: "changeable " + ((snapshot.val().active ? "" : "inactive"))}, tbody);
 
-        socket.onopen = function(event) {
-            console.log("OPEN",event);
-            var o = { "client":"admin" };
-            socket.send(JSON.stringify(o));
-        };
+            u.create("a", { href:"#", onclick: function(){
+                WAIN.switchTo("/admin/user/"+groupId+"/"+snapshot.key);
+                return false;
+            }, innerHTML:snapshot.key, style:{
+                display: "block",
+                cursor: "pointer"
+            }}, u.create("td", {}, tr));
+            u.create("td", snapshot.val().name, tr);
+            u.create("td", { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
+            u.create("td", snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;", tr);
+            var userChanged = u.create("td", "...", tr);
+            var userOs = u.create("td", "...", tr);
+            var userDevice = u.create("td", "...", tr);
 
-        socket.onclose = function(event) {
-            console.log("CLOSE",event);
-        };
+            ref.child(groupId).child("u/b").child(snapshot.key).child("changed").on("value", function(snapshot){
+                userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
+                tr.classList.add("changed");
+                setTimeout(function(){tr.classList.remove("changed")}, 2000);
+            });
+            ref.child(groupId).child("u/p").child(snapshot.key).once("value").then(function(snapshot){
+                userOs.innerHTML = snapshot.val().os;
+                userDevice.innerHTML = snapshot.val().model;
+            });
+        });
 
-        socket.onerror = function(event) {
-            console.log("ERROR",event);
-        };
+//        r.on("value").then(function(snapshot) {
+//          snapshot.forEach(function(childSnapshot) {
+//            var childKey = childSnapshot.key;
+//            var childData = childSnapshot.val();
+//            console.log(this,childSnapshot);
+//          });
+//        });
 
-        function showMessage(message) {
-            console.log("MESSAGE",event);
-          var messageElem = document.createElement('div');
-          messageElem.appendChild(document.createTextNode(message));
-          document.getElementById('subscribe').appendChild(messageElem);
-        }
-    };
+    }
+
+    function renderButtons(div) {
+        u.clear(div);
+        u.create("button", { type: "button", innerHTML:"Switch activity", onclick: switchActivity}, div);
+        u.create("button", { type: "button", innerHTML:"Remove", onclick: removeUserQuestion}, div);
+    }
+
+    function switchActivity(e){
+        var ref = database.ref();
+        u.clear(buttons);
+
+        u.create("button",{type: "button", innerHTML:"Active", onclick: function(){
+            ref.child(groupId).child("u/b").child(userNumber).child("active").set(true);
+            renderButtons(buttons);
+        }}, buttons);
+        u.create("button",{type: "button", innerHTML:"Inactive", onclick: function(){
+            ref.child(groupId).child("u/b").child(userNumber).child("active").set(false);
+            renderButtons(buttons);
+        }}, buttons);
+        u.create("button",{type: "button", innerHTML:"Cancel", onclick: function(){
+            renderButtons(buttons);
+        }}, buttons);
+    }
+
+    function removeUserQuestion(e) {
+        u.clear(buttons);
+        u.create("div",{className:"question", innerHTML: "Are you sure you want to remove user "+userNumber+" from group "+groupId+"?"}, buttons);
+        u.create("button",{className:"question", type: "button", innerHTML:"Yes", onclick: removeUser}, buttons);
+
+        u.create("button",{ type: "button", innerHTML:"No", onclick: function(){
+            renderButtons(buttons);
+        }}, buttons);
+    }
+
+    function removeUser() {
+        // database.ref().child(groupId).remove();
+        // database.ref("_groups").child(groupId).remove();
+        console.log("REMOVE",userNumber);
+        WAIN.switchTo("/admin/groups/" + groupId);
+    }
 
     return {
-        start: start,
+        start: function(request) {
+           if(request) {
+               groupId = request[3];
+               userNumber = request[4];
+           } else {
+               groupId = data.request[3];
+               userNumber = data.request[4];
+           }
+           this.page = "user" + "/" + groupId + "/" + userNumber;
+           div = u.createPage(this);
+
+           renderInterface();
+
+//           updateData();
+        },
         page: "user",
         icon: "navigation",
         title: "User",

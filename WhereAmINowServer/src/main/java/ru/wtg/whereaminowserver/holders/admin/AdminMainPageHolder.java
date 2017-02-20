@@ -36,9 +36,9 @@ public class AdminMainPageHolder implements PageHolder {
     private final MyHttpAdminServer server;
     private HtmlGenerator html;
     private String part;
+    private ArrayList<String> request;
 
     public AdminMainPageHolder(MyHttpAdminServer server) {
-        html = new HtmlGenerator();
         this.server = server;
     }
 
@@ -47,27 +47,27 @@ public class AdminMainPageHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
-    public HtmlGenerator create(ArrayList<String> query) {
+    public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query) {
+        this.html = html;
         html.clear();
 
-        Common.addIncludes(html);
         html.getHead().add(TITLE).with("Admin");
-        html.getHead().add(META).with(NAME, "viewport").with(CONTENT, "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0");
-        html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
 
         JSONObject o = new JSONObject();
         o.put("page", part);
+        o.put("request", request);
         o.put("version", SERVER_BUILD);
 
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");
-
-        html.getBody().with(CLASS,"body");
 
         return html;
     }
 
     public void addPart(String s) {
         part = s;
+    }
+    public void addRequest(ArrayList<String> s) {
+        request = s;
     }
 }

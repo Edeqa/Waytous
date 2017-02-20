@@ -7,7 +7,8 @@ import java.util.HashMap;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_LEAVE;
 
@@ -22,7 +23,7 @@ public class AdminRequestHolder implements RequestHolder {
     private HashMap<String,MyUser> admins;
 
 
-    public AdminRequestHolder(MyWssServer context) {
+    public AdminRequestHolder(AbstractWainProcessor context) {
         admins = new HashMap<String, MyUser>();
     }
 

@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
-import ru.wtg.whereaminowserver.interfaces.RequestHolder;
-import ru.wtg.whereaminowserver.servers.MyWssServer;
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
+import ru.wtg.whereaminowserver.servers.MyWsServer;
 
 /**
  * Created 1/19/17.
@@ -16,7 +16,7 @@ public class ProviderFlagHolder implements FlagHolder {
 
     public static final String TYPE = "provider";
 
-    public ProviderFlagHolder(MyWssServer context) {
+    public ProviderFlagHolder(AbstractWainProcessor context) {
 
     }
 

@@ -75,7 +75,7 @@ public class HtmlGenerator {
     }
 
     public String build(){
-        String res = "<html>";
+        String res = "<!DOCTYPE html>\n<html>";
         res += head.build();
         res += body.build();
         res += "</html>";

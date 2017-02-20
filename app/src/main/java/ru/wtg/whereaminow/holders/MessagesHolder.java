@@ -16,6 +16,8 @@ import java.util.Date;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SystemMessage;

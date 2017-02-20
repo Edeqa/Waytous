@@ -39,6 +39,8 @@ import java.util.Map;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;
@@ -53,12 +55,14 @@ import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
+import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.HIDE_NAVIGATION;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ADDRESS;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
+import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LONGITUDE;
@@ -70,12 +74,13 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_PROVIDER;
  * Created 2/4/17.
  */
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceView> implements Serializable, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     transient static final long serialVersionUID = -6395904747342820059L;
 
-    transient static final String SHOW_PLACE = "show_place";
-    transient static final String HIDE_PLACE = "hide_place";
+    private transient static final String SHOW_PLACE = "show_place";
+    private transient static final String HIDE_PLACE = "hide_place";
 
     transient private static final String TYPE = "place";
 
@@ -92,7 +97,6 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         this.context = context;
 
         setMap(context.getMap());
-
     }
 
     @Override
@@ -201,43 +205,42 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     if(requestCode == REQUEST_CODE_AUTOCOMPLETE_PLACE) {
                         int resultCode = m.getInt("resultCode");
                         Intent data = m.getParcelable("data");
+
                         Place place = PlaceAutocomplete.getPlace(context, data);
+                        if(place != null) {
+                            Map<String, Serializable> mm = new HashMap<>();
 
-                        Map<String,Serializable> mm = new HashMap<>();
+                            mm.put(USER_PROVIDER, TYPE);
+                            mm.put(USER_LATITUDE, place.getLatLng().latitude);
+                            mm.put(USER_LONGITUDE, place.getLatLng().longitude);
+                            mm.put(USER_NUMBER, REQUEST_CODE_AUTOCOMPLETE_PLACE * 10000 + places.size());
+                            mm.put(USER_COLOR, Color.rgb(0, 200, 200));
+                            mm.put(USER_NAME, place.getName().subSequence(0, place.getName().toString().length() > 9 ? 9 : place.getName().toString().length()).toString());
+                            mm.put("id", place.getId());
+                            mm.put(USER_ADDRESS, place.getAddress().toString());
+                            mm.put(REQUEST_TIMESTAMP, new Date().getTime());
 
-                        mm.put(USER_PROVIDER, TYPE);
-                        mm.put(USER_LATITUDE, place.getLatLng().latitude);
-                        mm.put(USER_LONGITUDE, place.getLatLng().longitude);
-                        mm.put(USER_NUMBER, REQUEST_CODE_AUTOCOMPLETE_PLACE * 10000 + places.size());
-                        mm.put(USER_COLOR, Color.rgb(0,200,200));
-                        mm.put(USER_NAME, place.getName().subSequence(0,place.getName().toString().length() > 9 ? 9 : place.getName().toString().length()).toString());
-                        mm.put("id", place.getId());
-                        mm.put(USER_ADDRESS, place.getAddress().toString());
-                        mm.put(REQUEST_TIMESTAMP, new Date().getTime());
+                            for (Map<String, Serializable> x : places) {
+                                if (x.containsKey("id") && place.getId().equals(x.get("id"))) {
+                                    int number = (int) x.get("number");
 
-                        for (Map<String, Serializable> x : places) {
-                            if(x.containsKey("id") && place.getId().equals(x.get("id"))) {
-                                int number = (int) x.get("number");
-
-                                State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.fire(MAKE_ACTIVE);
-                                        myUser.fire(SELECT_USER);
-                                        myUser.fire(SHOW_NAVIGATION);
-                                    }
-                                });
-                                return true;
+                                    State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                                        @Override
+                                        public void call(Integer number, MyUser myUser) {
+                                            myUser.fire(MAKE_ACTIVE);
+                                            myUser.fire(SELECT_USER);
+                                            myUser.fire(SHOW_NAVIGATION);
+                                        }
+                                    });
+                                    return true;
+                                }
                             }
 
+                            places.add(mm);
+                            State.getInstance().getPropertiesHolder().saveFor(TYPE, this);
+
+                            State.getInstance().fire(SHOW_PLACE, mm);
                         }
-
-
-                        places.add(mm);
-                        State.getInstance().getPropertiesHolder().saveFor(TYPE, this);
-
-                        State.getInstance().fire(SHOW_PLACE, mm);
-
                     }
                 }
                 break;
@@ -267,8 +270,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude()))
                     .rotation(myUser.getLocation().getBearing())
-                    .anchor(0.5f, 0.5f)
-                    .flat(true)
+                    .anchor(0.5f, 1.0f)
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
             marker = map.addMarker(markerOptions);
@@ -318,7 +320,10 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     myUser.fire(MAKE_INACTIVE);
                     myUser.fire(UNSELECT_USER);
 
+//                    State.getInstance().fire(USER_DISMISSED, myUser);
+//                    myUser.fire(USER_DISMISSED);
                     State.getInstance().getUsers().getUsers().remove(myUser.getProperties().getNumber());
+                    State.getInstance().fire(UPDATE_CAMERA);
 
                     for(int i=0;i<places.size();i++){
                         if(((int) places.get(i).get("number")) == myUser.getProperties().getNumber()) {

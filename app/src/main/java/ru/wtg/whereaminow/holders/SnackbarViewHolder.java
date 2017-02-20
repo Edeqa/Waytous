@@ -1,11 +1,15 @@
 package ru.wtg.whereaminow.holders;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.SystemMessage;
 
@@ -179,23 +183,30 @@ public class SnackbarViewHolder extends AbstractViewHolder {
             case CUSTOM_SNACK:
                 final SystemMessage m = (SystemMessage) object;
                 if(m != null){
-                    snackbar.setText(m.getText()).setDuration(m.getDuration()).setAction(m.getTitle(), new View.OnClickListener() {
+                    snackbar.dismiss();
+                    new Handler(Looper.myLooper()).post(new Runnable() {
                         @Override
-                        public void onClick(View view) {
-                            //noinspection unchecked
-                            m.getAction().call(SnackbarViewHolder.this);
-                        }
-                    }).show();
-                    if(m.getOnClickListener() != null) {
-                        snackbar.getView().setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                snackbar.dismiss();
-                                //noinspection unchecked
-                                m.getOnClickListener().call(SnackbarViewHolder.this);
+                        public void run() {
+                            snackbar.setText(m.getText()).setDuration(m.getDuration()).setAction(m.getTitle(), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    //noinspection unchecked
+                                    m.getAction().call(SnackbarViewHolder.this);
+                                }
+                            }).show();
+                            if(m.getOnClickListener() != null) {
+                                snackbar.getView().setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        snackbar.dismiss();
+                                        //noinspection unchecked
+                                        m.getOnClickListener().call(SnackbarViewHolder.this);
+                                    }
+                                });
                             }
-                        });
-                    }
+
+                        }
+                    });
                 }
                 break;
         }

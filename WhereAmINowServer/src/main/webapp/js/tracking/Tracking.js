@@ -1,18 +1,12 @@
 /**
- * Created 1/19/17.
+ * Created 2/9/17.
  */
 
-function Tracking() {
+function TrackingFB() {
 
 	var socket;
 
     var start = function() {
-        if(window.name == "content") {
-            window.parent.history.pushState({}, null, "/admin/summary");
-        }
-
-        renderInterface();
-        alertArea.hide();
 
         messaging.getToken().then(function(currentToken) {
             if (currentToken) {
@@ -71,4 +65,4 @@ function Tracking() {
         menu: true,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Tracking()).start);
+document.addEventListener("DOMContentLoaded", (new TrackingFB()).start);

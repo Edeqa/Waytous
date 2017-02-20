@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
@@ -21,6 +23,7 @@ import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
 /**
  * Created 11/18/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
     
     private static final String TYPE = "address";

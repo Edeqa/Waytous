@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.Utils;

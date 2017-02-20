@@ -3,68 +3,18 @@
  */
 
 /* TAGS */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 body {
     font-family: sans-serif;
     font-size: 12px;
     margin: 0px;
 }
-iframe {
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-}
 h2 {
     font-size: 14px;
-}
-td {
-    vertical-align:top;
-}
-table.summary, table.create, table.user {
-    width: 100%;
-    border-style: solid;
-    border-width: 1px;
-    border-spacing:0px;
-    border-collapse: collapse;
-    font-family: sans-serif;
-    font-size:12px;
-}
-table.create {
-    width: auto;
-    border: none;
-}
-table.create th {
-    width: 250px;
-    height: 30px;
-    white-space: nowrap;
-    text-align: left;
-    background: #ffffdd;
-    padding: 2px;
-    border: 1px solid black;
-}
-table.create td {
-    vertical-align: middle;
-}
-table.create input {
-    width: 250px;
-}
-table.summary th {
-    text-align: center;
-    background: #ffffdd;
-    padding: 2px;
-    border: 1px solid black;
-}
-table.summary td {
-    padding: 2px;
-    border: 1px solid black;
-    vertical-align:top;
-}
-table.user th {
-    width: 250px;
-    white-space: nowrap;
-    text-align: left;
-    background: #ffffdd;
-    padding: 2px;
-    border: 1px solid black;
 }
 
 
@@ -74,13 +24,16 @@ table.user th {
     height: 100%;
     display: flex;
 }
-.title {
+.actionbar {
     font-size: 18px;
     width: 30%;
     border-bottom: 1px solid #000;
     padding: 5px;
     font-weight: bold;
     margin-bottom: 20px;
+}
+.title {
+    padding: 5px;
 }
 .alert {
     background-color: rgba(244, 67, 54, 0.7);
@@ -113,6 +66,7 @@ table.user th {
     border-width: 1px;
     height: 100%;
     background-color: floralwhite;
+    z-index: 100;
 }
 .menu-open {
     display: block;
@@ -161,6 +115,79 @@ table.user th {
 .two_tables_one {
     width:48%
 }
+.inactive {
+    color: darkgray;
+}
+.changeable {
+    transition: 0.7s ease-in-out all;
+}
+.changed {
+    color: chocolate;
+}
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
+    background-color: lightcyan;
+}
+.table {
+    display: table;
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-spacing:0px;
+    border-collapse: collapse;
+    font-family: sans-serif;
+    font-size:12px;
+}
+.thead {
+    display: table-header-group;
+}
+.tbody {
+    display: table-row-group;
+}
+.th {
+    display: table-cell;
+    text-align: center;
+    background: #ffffdd;
+    padding: 2px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px solid black;
+    font-weight: bold;
+}
+.tr {
+    display: table-row;
+}
+.td {
+    display: table-cell;
+    padding: 2px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px solid black;
+    vertical-align:top;
+}
+.table.option {
+    border: none;
+}
+.th.option {
+    text-align: left;
+    width: 250px;
+}
+.td.option {
+    text-align: left;
+    border: none;
+}
+.td.option input {
+    width: 250px;
+}
+.question {
+    font-weight: bold;
+    color: red;
+}
+
+
+
 
 @media screen and (max-width: 1000px) {
     * {
@@ -190,64 +217,6 @@ table.user th {
         width: 100%;
         //border-bottom: 1px solid #000;
     }
-    td {
-        vertical-align:top;
-    }
-    table.summary, table.create, table.user {
-        width: 100%;
-        border: none;
-        border-spacing:0px;
-        border-collapse: collapse;
-        font-family: sans-serif;
-    }
-    table.create {
-        width: 100%;
-        border: none;
-        font-size: 16px;
-    }
-    table.create th {
-        width: 50%;
-        height: 30px;
-        white-space: nowrap;
-        text-align: left;
-        background: white;
-        padding-top: 15px;
-        padding-bottom: 15px;
-        border: none;
-        font-weight: normal;
-    }
-    table.create td {
-        width: 50%;
-        vertical-align: middle;
-    }
-    table.create input {
-        width: 100%;
-        border-style: solid;
-        border-width: 1px;
-        font-size:16px;
-        height: 25px;
-    }
-    table.summary th {
-        text-align: center;
-        background: #ffffdd;
-        padding: 2px;
-        border: 1px solid black;
-        font-size: 12px;
-    }
-    table.summary td {
-        padding: 2px;
-        border: 1px solid black;
-        vertical-align:top;
-    }
-    table.user th {
-        width: 250px;
-        white-space: nowrap;
-        text-align: left;
-        background: #ffffdd;
-        padding: 2px;
-        border: 1px solid black;
-        font-size: 12px;
-    }
     button {
         font-size: 16px;
         min-width: 100px;
@@ -257,24 +226,27 @@ table.user th {
         padding: 10px;
     }
 
-    // CLASSES
+    /* CLASSES */
     .layout {
         width: 100%;
         height: 100%;
         display: flex;
     }
-    .title {
+    .actionbar {
+        padding: 0px;
+        position: fixed;
+        left: 0px;
+        right: 0px;
         border: none;
-        padding:5px;
-        font-size: 18px;
         background-color: darkcyan;
         color: white;
-        font-weight: bold;
-        padding-top:15px;
-        padding-bottom:15px;
-        padding-left: 26px;
         width: auto;
-        margin: 0px;
+        height: 50px;
+    }
+    .title {
+        position: absolute;
+        padding-top:15px;
+        padding-left: 52px;
     }
     .alert {
         margin: 0px;
@@ -282,12 +254,11 @@ table.user th {
     .menu-button {
         font-family: "Material Icons";
         position: absolute;
-        left: 16px;
+        padding-left: 16px;
+        padding-top: 14px;
         font-size: 22px;
         display: block;
-    }
-    .menu-button-open {
-        display: none;
+        z-index: 10;
     }
     .menu {
         float: left;
@@ -339,6 +310,7 @@ table.user th {
     }
     .content {
         padding:0px;
+        margin-top: 64px;
     }
     .two_tables_one {
         width:100%
@@ -350,16 +322,32 @@ table.user th {
     .buttons {
         text-align: center;
     }
+    .table {
+        font-size:14px;
+    }
+    .th {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    .td {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    .th.option {
+        text-align: left;
+        width: 40%;
+    }
+    .td.option input {
+        width: 100%;
+        border-style: solid;
+        border-width: 1px;
+        font-size:16px;
+        height: 25px;
+    }
 
-
-    /*#tokens tr td:nth-child(3),
-    #tokens tr th:nth-child(3) {
+    /* media specific classes */
+    .hideable {
         display: none;
     }
-    #tokens tr td:nth-child(8) {
-        display: none;
-    }
-    #tokens tr td:nth-child(10) {
-        display: none;
-    }*/
+
 }

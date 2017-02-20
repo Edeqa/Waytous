@@ -36,6 +36,8 @@ import java.util.List;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
@@ -56,10 +58,11 @@ import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolder.NavigationView> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820058L;
-    @SuppressWarnings("WeakerAccess")
-    public static final String SHOW_NAVIGATION = "show_navigation";
 
     private static final String TYPE = "Navigation";
+
+    @SuppressWarnings("WeakerAccess")
+    public static final String SHOW_NAVIGATION = "show_navigation";
     public static final String HIDE_NAVIGATION = "hide_navigation";
 
     private static final String NAVIGATION_MODE_DRIVING = "navigation_mode_driving";
@@ -107,9 +110,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     public NavigationViewHolder setMap(GoogleMap map) {
         this.map = map;
 
-        PropertiesHolder propertiesHolder = (PropertiesHolder) State.getInstance().getEntityHolder(PropertiesHolder.TYPE);
-
-        NavigationViewHolder m = (NavigationViewHolder) propertiesHolder.loadFor(TYPE);
+        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
         if(m != null) {
             mode = m.mode;
         }
@@ -125,7 +126,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     public boolean onEvent(String event, Object object) {
         switch (event) {
             case CAMERA_UPDATED:
-                updateAll();
+//                updateAll();
                 break;
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
@@ -266,6 +267,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         private Marker marker;
         private IconGenerator iconFactory;
         private int previousDistance;
+        private String title;
+        private List<LatLng> points;
+
 
         NavigationView(MyUser myUser){
             this.myUser = myUser;
@@ -378,6 +382,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         }
 
         private boolean locationChanged(Location current, Location previous) {
+            if(current == null || previous == null) return true;
+
             LatLng currentPosition = Utils.latLng(current);
             LatLng previousPosition = Utils.latLng(previous);
             double distance = SphericalUtil.computeDistanceBetween(currentPosition, previousPosition);
@@ -406,94 +412,126 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 marker.setVisible(false);
                 buttonsView.setVisibility(View.INVISIBLE);
             }
+
+            boolean needUpdate = true;
+            /*if(locationChanged(State.getInstance().getMe().getLocation(), previousMeLocation) && !PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), track.getPoints(), false, 20)) {
+                needUpdate = true;
+            } else if(locationChanged(myUser.getLocation(), previousLocation) && !needUpdate && !PolyUtil.isLocationOnPath(Utils.latLng(myUser.getLocation()), track.getPoints(), false, 20)) {
+                needUpdate = true;
+            }
+            if(!needUpdate) {
+                points = track.getPoints();
+                LatLng removed = null;
+                if(locationChanged(State.getInstance().getMe().getLocation(), previousMeLocation)) {
+                    while(PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), points, false, 20)) {
+                        removed = points.remove(0);
+                    }
+                    if(removed != null) {
+                        points.add(0, removed);
+                    }
+                } else if(locationChanged(myUser.getLocation(), previousLocation)) {
+                    while(PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), points, false, 20)) {
+                        removed = points.remove(points.size()-1);
+                    }
+                    if(removed != null) {
+                        points.add(removed);
+                    }
+                }
+            }*/
+
+            final boolean finalNeedUpdate = needUpdate;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
 
                     try {
                         final MyUser me = State.getInstance().getMe();
-                        if(me.getLocation() == null || myUser.getLocation() == null) return;
+                        if (me.getLocation() == null || myUser.getLocation() == null) return;
                         final LatLng mePosition = Utils.latLng(me.getLocation());
                         final LatLng userPosition = Utils.latLng(myUser.getLocation());
 
                         boolean changed = false;
-                        if(previousMeLocation == null || previousLocation == null) {
+                        if (previousMeLocation == null || previousLocation == null) {
                             changed = true;
                         }
-                        if(!changed) {
+                        if (!changed) {
                             double distanceToMe = SphericalUtil.computeDistanceBetween(mePosition, userPosition);
-                            if(distanceToMe < 30) {
+                            if (distanceToMe < 30) {
                                 changed = true;
                             }
                         }
-                        if(!changed && previousMeLocation != null) {
-                            if(locationChanged(me.getLocation(),previousMeLocation)) {
+                        if (!changed && previousMeLocation != null) {
+                            if (locationChanged(me.getLocation(), previousMeLocation)) {
                                 changed = true;
                             }
                         }
-                        if(!changed && previousLocation != null) {
-                            if(locationChanged(myUser.getLocation(),previousLocation)) {
+                        if (!changed && previousLocation != null) {
+                            if (locationChanged(myUser.getLocation(), previousLocation)) {
                                 changed = true;
                             }
                         }
                         previousLocation = myUser.getLocation();
                         previousMeLocation = me.getLocation();
 
-                        if(!changed) {
+                        if (!changed) {
                             return;
                         }
 
-                        String req = "https://maps.googleapis.com/maps/api/directions/json?"
-                                + "origin=" + me.getLocation().getLatitude() + "," + me.getLocation().getLongitude() + "&"
-                                + "destination=" + myUser.getLocation().getLatitude() + "," + myUser.getLocation().getLongitude() +"&"
-                                + "alternatives=false&"
-                                + "mode=";
+                        if(finalNeedUpdate) {
+                            String req = "https://maps.googleapis.com/maps/api/directions/json?"
+                                    + "origin=" + me.getLocation().getLatitude() + "," + me.getLocation().getLongitude() + "&"
+                                    + "destination=" + myUser.getLocation().getLatitude() + "," + myUser.getLocation().getLongitude() + "&"
+                                    + "alternatives=false&"
+                                    + "mode=";
 
-                        switch (mode) {
-                            case NAVIGATION_MODE_DRIVING:
-                                req += "driving";
-                                break;
-                            case NAVIGATION_MODE_WALKING:
-                                req += "walking";
-                                break;
-                            case NAVIGATION_MODE_BICYCLING:
-                                req += "bicycling";
-                                break;
+                            switch (mode) {
+                                case NAVIGATION_MODE_DRIVING:
+                                    req += "driving";
+                                    break;
+                                case NAVIGATION_MODE_WALKING:
+                                    req += "walking";
+                                    break;
+                                case NAVIGATION_MODE_BICYCLING:
+                                    req += "bicycling";
+                                    break;
+                            }
+
+                            if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_HIGHWAYS, false))
+                                req += "&avoid=highways";
+                            if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false))
+                                req += "&avoid=tolls";
+                            if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false))
+                                req += "&avoid=ferries";
+
+                            Log.i(TYPE, req);
+                            final String res = Utils.getUrl(req);
+                            JSONObject o = new JSONObject(res);
+
+                            final String text = o.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                            points = PolyUtil.decode(text);
+                            String distanceText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getString("text");
+                            String durationText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
+                            title = distanceText + "\n" + durationText;
+
+                            int distance = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getInt("value");
+
+                            if (distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        remove();
+                                    }
+                                });
+                                previousDistance = distance;
+                                return;
+                            } else if (distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && previousDistance > 0 && previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
+                                previousDistance = distance;
+                            } else if (distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN && distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
+                                previousDistance = distance;
+                                return;
+                            }
+                            previousDistance = distance;
                         }
-
-                        if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_HIGHWAYS, false)) req += "&avoid=highways";
-                        if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false)) req += "&avoid=tolls";
-                        if(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false)) req += "&avoid=ferries";
-
-                        Log.i(TYPE,req);
-                        final String res = Utils.getUrl(req);
-                        JSONObject o = new JSONObject(res);
-
-                        final String text = o.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
-                        final List<LatLng> points = PolyUtil.decode(text);
-                        String distanceText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getString("text");
-                        String durationText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
-                        final String title = distanceText + "\n" + durationText;
-
-                        int distance = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getInt("value");
-
-                        if (distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    remove();
-                                }
-                            });
-                            previousDistance = distance;
-                            return;
-                        } else if (distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && previousDistance>0 && previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
-                            previousDistance = distance;
-                        } else if (distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN && distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN && track == null) {
-                            previousDistance = distance;
-                            return;
-                        }
-                        previousDistance = distance;
-
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
@@ -525,7 +563,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                         marker.setPosition(markerPosition);
                                         marker.setVisible(true);
                                     }
-                                } catch(Exception e) {
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -535,7 +573,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     }
                 }
             }).start();
-
         }
     }
 

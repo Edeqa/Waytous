@@ -16,6 +16,8 @@ import com.google.android.gms.maps.model.StreetViewPanoramaLocation;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 
@@ -31,6 +33,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
  * Created 11/24/16.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.StreetsView> implements OnStreetViewPanoramaReadyCallback {
     private static final String TYPE = "streets";
 
@@ -129,7 +132,9 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
             @Override
             public void onStreetViewPanoramaChange(StreetViewPanoramaLocation streetViewPanoramaLocation) {
                 if (panorama != null && streetViewPanoramaLocation != null && streetViewPanoramaLocation.links != null) {
-                    panorama.animateTo(camera, LOCATION_UPDATES_DELAY);
+                    if(camera != null) {
+                        panorama.animateTo(camera, LOCATION_UPDATES_DELAY);
+                    }
                     streetViewLayout.findViewById(R.id.tv_street_view_placeholder).setVisibility(View.INVISIBLE);
                 } else {
                     streetViewLayout.findViewById(R.id.tv_street_view_placeholder).setVisibility(View.VISIBLE);

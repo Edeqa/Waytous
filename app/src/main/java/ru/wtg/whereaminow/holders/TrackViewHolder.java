@@ -17,6 +17,8 @@ import java.util.List;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
 import ru.wtg.whereaminow.helpers.SmoothInterpolated;
@@ -174,7 +176,9 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                                             try {
                                                 if (track != null)
                                                     track.setPoints(points);
-                                            } catch(NullPointerException e){}
+                                            } catch(NullPointerException e){
+                                                e.printStackTrace();
+                                            }
                                         }
                                     });
                                 }

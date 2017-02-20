@@ -1,10 +1,11 @@
-package ru.wtg.whereaminow.holders;
+package ru.wtg.whereaminow.abstracts;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import ru.wtg.whereaminow.abstracts.AbstractView;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.EntityHolder;

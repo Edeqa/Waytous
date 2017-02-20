@@ -18,11 +18,12 @@ import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.SettingsActivity;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
-import static ru.wtg.whereaminow.R.id.map;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
@@ -39,32 +40,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public static final String TYPE = "drawer";
 
     private final MainActivity context;
-    SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
-        @Override
-        public void call(Integer id) {
-            switch(id) {
-                case R.id.nav_settings:
-                    context.startActivity(new Intent(context, SettingsActivity.class));
-                    break;
-                case R.id.nav_traffic:
-                    State.getInstance().fire(REQUEST_MODE_TRAFFIC);
-                    break;
-                case R.id.nav_satellite:
-                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
-                        State.getInstance().fire(REQUEST_MODE_SATELLITE);
-                    } else {
-                        State.getInstance().fire(REQUEST_MODE_NORMAL);
-                    }
-                    break;
-                case R.id.nav_terrain:
-                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
-                        State.getInstance().fire(REQUEST_MODE_TERRAIN);
-                    else
-                        State.getInstance().fire(REQUEST_MODE_NORMAL);
-                    break;
-            }
-        }
-    };
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
@@ -136,7 +111,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
     }
 
     public void setCallback(final SimpleCallback<Integer> callback) {
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -162,5 +136,32 @@ public class DrawerViewHolder extends AbstractViewHolder {
         rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("drawer_intro").setLinkTo(IntroRule.LINK_TO_DRAWER_BUTTON).setTitle("Drawer").setDescription("Open left drawer to access main preferences."));
         return rules;
     }
+
+    private SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
+        @Override
+        public void call(Integer id) {
+            switch(id) {
+                case R.id.nav_settings:
+                    context.startActivity(new Intent(context, SettingsActivity.class));
+                    break;
+                case R.id.nav_traffic:
+                    State.getInstance().fire(REQUEST_MODE_TRAFFIC);
+                    break;
+                case R.id.nav_satellite:
+                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
+                        State.getInstance().fire(REQUEST_MODE_SATELLITE);
+                    } else {
+                        State.getInstance().fire(REQUEST_MODE_NORMAL);
+                    }
+                    break;
+                case R.id.nav_terrain:
+                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
+                        State.getInstance().fire(REQUEST_MODE_TERRAIN);
+                    else
+                        State.getInstance().fire(REQUEST_MODE_NORMAL);
+                    break;
+            }
+        }
+    };
 
 }

@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractProperty;
+import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.helpers.MyTrackingFB;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
@@ -60,6 +62,121 @@ public class TrackingHolder extends AbstractPropertyHolder {
     private final Context context;
 
     private Tracking tracking;
+
+    public TrackingHolder(Context context) {
+        this.context = context;
+//        intentService = new Intent(context, WhereAmINowService.class);
+        tracking = null;
+    }
+
+    @Override
+    public String getType(){
+        return TYPE;
+    }
+
+    @Override
+    public boolean dependsOnUser() {
+        return false;
+    }
+
+    @Override
+    public boolean dependsOnEvent() {
+        return true;
+    }
+
+    @Override
+    public void perform(JSONObject o) throws JSONException {
+        final Location location = Utils.jsonToLocation(o);
+        int number = o.getInt(USER_NUMBER);
+
+        State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+            @Override
+            public void call(Integer number, MyUser myUser) {
+                myUser.addLocation(location);
+            }
+        });
+    }
+
+    @Override
+    public boolean isSaveable() {
+        return true;
+    }
+
+    @Override
+    public boolean onEvent(String event, Object object) throws URISyntaxException {
+        switch (event) {
+            case TRACKING_NEW:
+                tracking = new MyTrackingFB();
+                State.getInstance().setTracking(tracking);
+                tracking.setTrackingListener(onTrackingListener);
+                tracking.start();
+
+                break;
+            case TRACKING_JOIN:
+                String link  = (String) object;
+
+                if(link != null) {
+                    if(!link.equals(State.getInstance().getStringPreference(TRACKING_URI, null)) || State.getInstance().tracking_disabled()) {
+                        State.getInstance().setPreference(TRACKING_URI, link);
+                        if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
+                            State.getInstance().fire(TRACKING_STOP);
+                        }
+
+                        tracking = new MyTrackingFB(link);
+                        State.getInstance().setTracking(tracking);
+                        tracking.setTrackingListener(onTrackingListener);
+                        tracking.start();
+                    } else if(State.getInstance().tracking_active()){
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                State.getInstance().fire(TRACKING_ACTIVE);
+                            }
+                        },0);
+                        return false;
+                    }
+//                } else {
+//                    State.getInstance().fire(TRACKING_ACTIVE);
+                }
+                break;
+            case TRACKING_STOP:
+                State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        myUser.removeViews();
+                    }
+                });
+                State.getInstance().setPreference(TRACKING_URI, null);
+
+                if(tracking != null) {
+                    tracking.stop();
+                    tracking = null;
+                }
+                State.getInstance().setToken(null);
+                break;
+//            case TRACKING_DISABLED:
+//                State.getInstance().setPreference(TRACKING_URI, null);
+//                break;
+            case TRACKING_DISABLED:
+                State.getInstance().getUsers().removeAllUsersExceptMe();
+                State.getInstance().getMe().fire(SELECT_USER);
+
+                break;
+            case TRACKING_ERROR:
+                System.out.println("TRACKING_ERROR");
+                break;
+            case TOKEN_CREATED:
+                new ShareSender(context).sendLink(tracking.getTrackingUri());
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public AbstractProperty create(MyUser myUser) {
+        return null;
+    }
+
     private TrackingCallback onTrackingListener = new TrackingCallback() {
 
         @Override
@@ -189,119 +306,5 @@ public class TrackingHolder extends AbstractPropertyHolder {
         }
 
     };
-
-    public TrackingHolder(Context context) {
-        this.context = context;
-//        intentService = new Intent(context, WhereAmINowService.class);
-        tracking = null;
-    }
-
-    @Override
-    public String getType(){
-        return TYPE;
-    }
-
-    @Override
-    public boolean dependsOnUser() {
-        return false;
-    }
-
-    @Override
-    public boolean dependsOnEvent() {
-        return true;
-    }
-
-    @Override
-    public void perform(JSONObject o) throws JSONException {
-        final Location location = Utils.jsonToLocation(o);
-        int number = o.getInt(USER_NUMBER);
-
-        State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
-            @Override
-            public void call(Integer number, MyUser myUser) {
-                myUser.addLocation(location);
-            }
-        });
-    }
-
-    @Override
-    public boolean isSaveable() {
-        return true;
-    }
-
-    @Override
-    public boolean onEvent(String event, Object object) throws URISyntaxException {
-        switch (event) {
-            case TRACKING_NEW:
-                tracking = new MyTrackingFB();
-                State.getInstance().setTracking(tracking);
-                tracking.setTrackingListener(onTrackingListener);
-                tracking.start();
-
-                break;
-            case TRACKING_JOIN:
-                String link  = (String) object;
-
-                if(link != null) {
-                    if(!link.equals(State.getInstance().getStringPreference(TRACKING_URI, null)) || State.getInstance().tracking_disabled()) {
-                        State.getInstance().setPreference(TRACKING_URI, link);
-                        if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
-                            State.getInstance().fire(TRACKING_STOP);
-                        }
-
-                        tracking = new MyTrackingFB(link);
-                        State.getInstance().setTracking(tracking);
-                        tracking.setTrackingListener(onTrackingListener);
-                        tracking.start();
-                    } else if(State.getInstance().tracking_active()){
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                State.getInstance().fire(TRACKING_ACTIVE);
-                            }
-                        },0);
-                        return false;
-                    }
-//                } else {
-//                    State.getInstance().fire(TRACKING_ACTIVE);
-                }
-                break;
-            case TRACKING_STOP:
-                State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
-                    @Override
-                    public void call(Integer number, MyUser myUser) {
-                        myUser.removeViews();
-                    }
-                });
-                State.getInstance().setPreference(TRACKING_URI, null);
-
-                if(tracking != null) {
-                    tracking.stop();
-                    tracking = null;
-                }
-                State.getInstance().setToken(null);
-                break;
-//            case TRACKING_DISABLED:
-//                State.getInstance().setPreference(TRACKING_URI, null);
-//                break;
-            case TRACKING_DISABLED:
-                State.getInstance().getUsers().removeAllUsersExceptMe();
-                State.getInstance().getMe().fire(SELECT_USER);
-
-                break;
-            case TRACKING_ERROR:
-                System.out.println("TRACKING_ERROR");
-                break;
-            case TOKEN_CREATED:
-                new ShareSender(context).sendLink(tracking.getTrackingUri());
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public AbstractProperty create(MyUser myUser) {
-        return null;
-    }
 
 }

@@ -29,7 +29,6 @@ public class AdminCreatePageHolder implements PageHolder {
     private HtmlGenerator html;
 
     public AdminCreatePageHolder(MyHttpAdminServer server) {
-        html = new HtmlGenerator();
         this.server = server;
     }
 
@@ -39,14 +38,10 @@ public class AdminCreatePageHolder implements PageHolder {
     }
 
     @Override
-    public HtmlGenerator create(ArrayList<String> query) {
+    public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query) {
+        this.html = html;
         html.clear();
-
         html.getHead().add(TITLE).with("Create");
-        html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
-
-        Common.addIncludes(html);
-
         html.getHead().add(SCRIPT).with(SRC, "/js/admin/Create.js");
 
         return html;

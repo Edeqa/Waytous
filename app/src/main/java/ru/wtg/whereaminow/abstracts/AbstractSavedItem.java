@@ -1,4 +1,4 @@
-package ru.wtg.whereaminow.helpers;
+package ru.wtg.whereaminow.abstracts;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.wtg.whereaminow.helpers.DBHelper;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 /**
@@ -274,7 +275,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         }
     }
 
-    static class SavedItemCursorLoader extends CursorLoader {
+    public static class SavedItemCursorLoader extends CursorLoader {
 
         private final String itemType;
 

@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ru.wtg.whereaminow.abstracts.AbstractSavedItem;
+
 /**
  * Created 12/20/2016.
  */
@@ -34,7 +36,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     private String selection = null;
     private String[] selectionArgs = null;
 
-    DBHelper(Context context, String itemType, Class<?> item){
+    public DBHelper(Context context, String itemType, Class<?> item){
         this.context = context;
         fields = new Fields(itemType, item);
         open();

@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.LightSensorManager;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
@@ -61,7 +63,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
         lightSensor = new LightSensorManager(context);
         lightSensor.setOnEnvironmentChangeListener(onEnvironmentChangeListener);
 
-        Object m = ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).loadFor(TYPE);
+        Object m = State.getInstance().getPropertiesHolder().loadFor(TYPE);
         if(m != null) {
             switch ((int) m) {
                 case GoogleMap.MAP_TYPE_SATELLITE:
@@ -72,7 +74,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     break;
             }
         }
-        m = ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).loadFor(TYPE + "_traffic");
+        m = State.getInstance().getPropertiesHolder().loadFor(TYPE + "_traffic");
         if(m != null) {
             State.getInstance().fire(REQUEST_MODE_TRAFFIC, m);
         }
@@ -129,7 +131,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     break;
                 }
                 if(map != null) map.setMapStyle(null);
-                ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE, null);
+                State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
 
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
@@ -150,7 +152,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     break;
                 }
                 if(map != null) map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night));
-                ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE, null);
+                State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
 
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
@@ -168,7 +170,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 break;
             case REQUEST_MODE_NORMAL:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE, null);
+                State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
 
                 lightSensor.enable();
                 onEvent(REQUEST_MODE_DAY, null);
@@ -178,12 +180,12 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     lightSensor.disable();
                     onEvent(REQUEST_MODE_NIGHT, null);
                     map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                    ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE, GoogleMap.MAP_TYPE_SATELLITE);
+                    State.getInstance().getPropertiesHolder().saveFor(TYPE, GoogleMap.MAP_TYPE_SATELLITE);
                 }
                 break;
             case REQUEST_MODE_TERRAIN:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE, GoogleMap.MAP_TYPE_TERRAIN);
+                State.getInstance().getPropertiesHolder().saveFor(TYPE, GoogleMap.MAP_TYPE_TERRAIN);
                 lightSensor.disable();
                 onEvent(REQUEST_MODE_DAY, null);
                 break;
@@ -193,7 +195,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     state = (boolean) object;
                 }
                 map.setTrafficEnabled(state);
-                ((PropertiesHolder)State.getInstance().getEntityHolder(PropertiesHolder.TYPE)).saveFor(TYPE + "_traffic", state);
+                State.getInstance().getPropertiesHolder().saveFor(TYPE + "_traffic", state);
                 break;
         }
         return true;

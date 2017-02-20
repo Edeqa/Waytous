@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.IntroRule;
 import ru.wtg.whereaminow.helpers.MyUser;
 
@@ -78,7 +80,7 @@ public class MenuViewHolder extends AbstractViewHolder {
 
                         if(name != null && name.length()>0){
                             etMyName.setText(name);
-                            builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
+                            builder.setNeutralButton(context.getString(R.string.remove), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     State.getInstance().getMe().fire(CHANGE_NAME, null);

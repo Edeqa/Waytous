@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,7 +55,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTION
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_KEYS;
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
@@ -89,8 +87,9 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSSFB_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.WSS_FB_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.WSS_SERVER_HOST;
+import static ru.wtg.whereaminowserver.helpers.Constants.WS_FB_PORT;
 
 /**
  * Created 1/29/17.
@@ -119,173 +118,6 @@ public class MyTrackingFB implements Tracking {
 
     private boolean newTracking;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
-        @Override
-        public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-            super.onConnected(websocket, headers);
-            if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTrackingFB","onConnected");
-            if(newTracking) {
-                put(REQUEST, REQUEST_NEW_TOKEN);
-            } else {
-                put(REQUEST, REQUEST_JOIN_TOKEN);
-
-                String path = MyTrackingFB.this.serverUri.getPath();
-                if(path != null) {
-                    String[] parts = path.split("/");
-                    if(parts.length > 2) {
-                        setToken(parts[2]);
-                    }
-                }
-                put(REQUEST_TOKEN, getToken());
-                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
-            }
-            if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
-            }
-            put(REQUEST_MODEL, Build.MODEL);
-            put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
-            put(REQUEST_OS, "android");
-            if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
-                put(USER_NAME,state.getMe().getProperties().getName());
-            }
-            send();
-        }
-
-        @Override
-        public void onTextMessage(WebSocket websocket, String message) {
-            if(TRACKING_DISABLED.equals(getStatus())) return;
-            try {
-                final JSONObject o = new JSONObject(message);
-                if (!o.has(RESPONSE_STATUS)) return;
-                switch (o.getString(RESPONSE_STATUS)) {
-                    case RESPONSE_STATUS_CHECK:
-                        if (o.has(RESPONSE_CONTROL)) {
-                            String control = o.getString(RESPONSE_CONTROL);
-                            String deviceId = State.getInstance().getDeviceId();
-                            String hash = Utils.getEncryptedHash(control + ":" + deviceId);
-                            put(REQUEST,REQUEST_CHECK_USER);
-                            put(REQUEST_HASH,hash);
-                            send();
-                        }
-                        break;
-                    case RESPONSE_STATUS_ACCEPTED:
-                        newTracking = false;
-
-                        if (o.has(RESPONSE_SIGN)) {
-                            String authToken = o.getString(RESPONSE_SIGN);
-                            o.remove(RESPONSE_SIGN);
-
-                            FirebaseAuth.getInstance().signInWithCustomToken(authToken).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    try {
-                                        setStatus(TRACKING_ACTIVE);
-                                        if (o.has(RESPONSE_TOKEN)) {
-                                            setToken(o.getString(RESPONSE_TOKEN));
-                                        }
-                                        if (o.has(RESPONSE_NUMBER)) {
-                                            state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
-                                        }
-                                        o.put(RESPONSE_INITIAL, true);
-
-                                        System.out.println("SNAPSHOT:"+authResult.getUser().getUid());
-
-
-
-                                        ref = database.getReference().child(getToken());
-
-                                        registerChildListener(ref.child(DATABASE_SECTION_USERS_DATA),usersDataListener, -1);
-                                        for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
-                                            if(entry.getValue().isSaveable()) {
-                                                registerChildListener(ref.child(DATABASE_SECTION_PRIVATE).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()),userPrivateDataListener, -1);
-                                            }
-                                        }
-                                        trackingListener.onAccept(o);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e1) {
-                                    try {
-                                        setStatus(TRACKING_DISABLED);
-
-                                        String reason = "";
-                                        if (o.has(RESPONSE_MESSAGE)) {
-                                            reason = o.getString(RESPONSE_MESSAGE);
-                                        }
-                                        trackingListener.onReject(reason);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        } else {
-                            setStatus(TRACKING_DISABLED);
-
-                            String reason = "Old version of server";
-                            trackingListener.onReject(reason);
-                        }
-                        break;
-                    case RESPONSE_STATUS_ERROR:
-                        setStatus(TRACKING_DISABLED);
-
-                        String reason = "";
-                        if (o.has(RESPONSE_MESSAGE)) {
-                            reason = o.getString(RESPONSE_MESSAGE);
-                        }
-                        trackingListener.onReject(reason);
-                        break;
-                    default:
-                        trackingListener.onMessage(o);
-                        break;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onError(WebSocket websocket, WebSocketException cause) {
-            if(TRACKING_DISABLED.equals(getStatus())) return;
-//            Log.i("MyTrackingFB","onError:" + websocket.getState() + ":" + cause.getMessage());
-
-            if(websocket.getState() == WebSocketState.CLOSED) {
-                if(newTracking) {
-                    setStatus(TRACKING_DISABLED);
-                    trackingListener.onReject(cause.getLocalizedMessage());
-                } else {
-                    reconnect();
-                }
-            }
-        }
-
-        @Override
-        public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
-                                   WebSocketFrame clientCloseFrame, boolean closedByServer) {
-            Log.i("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking);
-
-            if (closedByServer) {
-            } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
-                if(newTracking) {
-                    trackingListener.onStop();
-                } else {
-                    trackingListener.onClose();
-                    reconnect();
-                }
-            }
-        }
-
-        @Override
-        public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
-            Log.i("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage());
-            reconnect();
-        }
-    };
-
     public MyTrackingFB() {
         this(WSS_SERVER_HOST, true);
     }
@@ -299,7 +131,7 @@ public class MyTrackingFB implements Tracking {
 
         try {
             URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + WSSFB_PORT + uri.getPath());
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + WS_FB_PORT + uri.getPath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -310,13 +142,59 @@ public class MyTrackingFB implements Tracking {
         refs = new HashMap<>();
 
         try {
-            WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
-            SSLContext context = SSLContext.getDefault();//NaiveSSLContext.getInstance("TLS");
+//            SSLContext context = NaiveSSLContext.getInstance("TLS");
+//            SSLContext context = SSLContext.getInstance("TLS");
+//            WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
+//            WebSocketFactory factory = new DefaultSSLWebSocketClientFactory( context );
+//                    new WebSocketFactory().setConnectionTimeout(CONNECTION_TIMEOUT*1000);
+
+//            SSLContext sslContext = null;
+//            sslContext = SSLContext.getInstance("TLS");
+//            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+
+//            factory.setSSLContext(context);
+//            webSocket = factory.createSocket(serverUri.toString());
+//            webSocket.setWebSocketFactory( new DefaultSSLWebSocketClientFactory( sslContext ) );
+
+
+
+//            String STORETYPE = "JKS";
+//            String KEYSTORE = "../../keystore.jks";
+//            String STOREPASSWORD = new SensitiveData().getSSLCertificatePassword();
+//            String KEYPASSWORD = new SensitiveData().getSSLCertificatePassword();
+//
+//            KeyStore ks = KeyStore.getInstance(STORETYPE);
+//            File kf = new File(KEYSTORE);
+//            ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
+
+//    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+//    kmf.init(ks, KEYPASSWORD.toCharArray());
+//    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+//    tmf.init(ks);
+
+
+
+//            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//            kmf.init(ks, KEYPASSWORD.toCharArray());
+//            TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//            tmf.init(ks);
+//
+//            SSLContext context = SSLContext.getInstance("TLS");
+////    sslContext.init(null, null, null);
+//            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+
+
+
+
+            WebSocketFactory factory = new WebSocketFactory();
+            SSLContext context = NaiveSSLContext.getInstance("TLS");
+            context.init(null,null,null);
             factory.setSSLContext(context);
             webSocket = factory.createSocket(serverUri.toString());
 
             Log.i("MyTrackingFB","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
-
             webSocket.addListener(webSocketListener);
 
             webSocket.setPingInterval(INACTIVE_USER_DISMISS_DELAY / 2 * 1000);
@@ -326,8 +204,8 @@ public class MyTrackingFB implements Tracking {
                     return "1".getBytes();
                 }
             });
-        } catch (NoSuchAlgorithmException | IOException e1) {
-            e1.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -505,7 +383,7 @@ public class MyTrackingFB implements Tracking {
                     a.addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            System.out.println("SUCCESS:");
+//                            System.out.println("SUCCESS:");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -629,6 +507,173 @@ public class MyTrackingFB implements Tracking {
             }
         }
     }
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
+        @Override
+        public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
+            super.onConnected(websocket, headers);
+            if(TRACKING_DISABLED.equals(getStatus())) return;
+            Log.i("MyTrackingFB","onConnected");
+            if(newTracking) {
+                put(REQUEST, REQUEST_NEW_TOKEN);
+            } else {
+                put(REQUEST, REQUEST_JOIN_TOKEN);
+
+                String path = MyTrackingFB.this.serverUri.getPath();
+                if(path != null) {
+                    String[] parts = path.split("/");
+                    if(parts.length > 2) {
+                        setToken(parts[2]);
+                    }
+                }
+                put(REQUEST_TOKEN, getToken());
+                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
+            }
+            if(!TRACKING_RECONNECTING.equals(getStatus())) {
+                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
+            }
+            put(REQUEST_MODEL, Build.MODEL);
+            put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
+            put(REQUEST_OS, "android");
+            if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
+                put(USER_NAME,state.getMe().getProperties().getName());
+            }
+            send();
+        }
+
+        @Override
+        public void onTextMessage(WebSocket websocket, String message) {
+            if(TRACKING_DISABLED.equals(getStatus())) return;
+            try {
+                final JSONObject o = new JSONObject(message);
+                if (!o.has(RESPONSE_STATUS)) return;
+                switch (o.getString(RESPONSE_STATUS)) {
+                    case RESPONSE_STATUS_CHECK:
+                        if (o.has(RESPONSE_CONTROL)) {
+                            String control = o.getString(RESPONSE_CONTROL);
+                            String deviceId = State.getInstance().getDeviceId();
+                            String hash = Utils.getEncryptedHash(control + ":" + deviceId);
+                            put(REQUEST,REQUEST_CHECK_USER);
+                            put(REQUEST_HASH,hash);
+                            send();
+                        }
+                        break;
+                    case RESPONSE_STATUS_ACCEPTED:
+                        newTracking = false;
+
+                        if (o.has(RESPONSE_SIGN)) {
+                            String authToken = o.getString(RESPONSE_SIGN);
+                            o.remove(RESPONSE_SIGN);
+
+                            FirebaseAuth.getInstance().signInWithCustomToken(authToken).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                @Override
+                                public void onSuccess(AuthResult authResult) {
+                                    try {
+                                        setStatus(TRACKING_ACTIVE);
+                                        if (o.has(RESPONSE_TOKEN)) {
+                                            setToken(o.getString(RESPONSE_TOKEN));
+                                        }
+                                        if (o.has(RESPONSE_NUMBER)) {
+                                            state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
+                                        }
+                                        o.put(RESPONSE_INITIAL, true);
+
+                                        System.out.println("SNAPSHOT:"+authResult.getUser().getUid());
+
+
+
+                                        ref = database.getReference().child(getToken());
+
+                                        registerChildListener(ref.child(DATABASE_SECTION_USERS_DATA),usersDataListener, -1);
+                                        for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
+                                            if(entry.getValue().isSaveable()) {
+                                                registerChildListener(ref.child(DATABASE_SECTION_PRIVATE).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()),userPrivateDataListener, -1);
+                                            }
+                                        }
+                                        trackingListener.onAccept(o);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e1) {
+                                    try {
+                                        setStatus(TRACKING_DISABLED);
+
+                                        String reason = "";
+                                        if (o.has(RESPONSE_MESSAGE)) {
+                                            reason = o.getString(RESPONSE_MESSAGE);
+                                        }
+                                        trackingListener.onReject(reason);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        } else {
+                            setStatus(TRACKING_DISABLED);
+
+                            String reason = "Old version of server";
+                            trackingListener.onReject(reason);
+                        }
+                        break;
+                    case RESPONSE_STATUS_ERROR:
+                        setStatus(TRACKING_DISABLED);
+
+                        String reason = "";
+                        if (o.has(RESPONSE_MESSAGE)) {
+                            reason = o.getString(RESPONSE_MESSAGE);
+                        }
+                        trackingListener.onReject(reason);
+                        break;
+                    default:
+                        trackingListener.onMessage(o);
+                        break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onError(WebSocket websocket, WebSocketException cause) {
+            if(TRACKING_DISABLED.equals(getStatus())) return;
+//            Log.i("MyTrackingFB","onError:" + websocket.getState() + ":" + cause.getMessage());
+
+            if(websocket.getState() == WebSocketState.CLOSED) {
+                if(newTracking) {
+                    setStatus(TRACKING_DISABLED);
+                    trackingListener.onReject(cause.getLocalizedMessage());
+                } else {
+                    reconnect();
+                }
+            }
+        }
+
+        @Override
+        public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
+                                   WebSocketFrame clientCloseFrame, boolean closedByServer) {
+            Log.i("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking);
+
+            if (closedByServer) {
+            } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
+                if(newTracking) {
+                    trackingListener.onStop();
+                } else {
+                    trackingListener.onClose();
+                    reconnect();
+                }
+            }
+        }
+
+        @Override
+        public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
+            Log.i("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage());
+            reconnect();
+        }
+    };
 
     private ChildEventListener usersDataListener = new ChildEventListener() {
         @Override

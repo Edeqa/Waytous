@@ -20,10 +20,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.GeoTrackFilter;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.holders.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.GpsHolder;
 import ru.wtg.whereaminow.holders.MessagesHolder;
 import ru.wtg.whereaminow.holders.NotificationHolder;
@@ -438,8 +438,8 @@ public class State extends MultiDexApplication {
         public static final String CHANGE_NAME = "change_name";
         public static final String CHANGE_NUMBER = "change_number";
         public static final String CHANGE_COLOR = "change_color";
-        public static final String PUSH_MESSAGE = "push_message";
         public static final String SYSTEM_MESSAGE = "system_message";
+        public static final String MAP_MY_LOCATION_BUTTON_CLICKED = "map_my_location_button_clicked";
 
         public static final String CREATE_CONTEXT_MENU = "create_context_menu";
         public static final String CREATE_OPTIONS_MENU = "create_options_menu";

@@ -20,7 +20,6 @@ public class Common {
 
     public static void addIncludes(HtmlGenerator html) {
 
-
         html.getHead().add(SCRIPT).with(SRC, "https://www.gstatic.com/firebasejs/3.6.8/firebase-app.js");
         html.getHead().add(SCRIPT).with(SRC, "https://www.gstatic.com/firebasejs/3.6.8/firebase-auth.js");
         html.getHead().add(SCRIPT).with(SRC, "https://www.gstatic.com/firebasejs/3.6.8/firebase-database.js");
