@@ -40,6 +40,7 @@
                 android:textSize="10sp"
                 android:textAlignment="center"
                 android:foregroundGravity="center_horizontal"
+                android:textColor="?attr/buttonTextColor"
                 android:gravity="center_horizontal" />
 
             <TextView

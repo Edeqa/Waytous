@@ -42,6 +42,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
     private GoogleMap map;
 
     public TrackViewHolder(MainActivity context) {
+        super(context);
         setMap(context.getMap());
     }
 

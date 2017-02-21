@@ -5,6 +5,8 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
+import ru.wtg.whereaminow.MainActivity;
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.abstracts.AbstractView;
 import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
@@ -17,8 +19,10 @@ import static ru.wtg.whereaminow.State.EVENTS.MAP_MY_LOCATION_BUTTON_CLICKED;
  */
 public class MapButtonsViewHolder extends AbstractViewHolder {
 
-    public MapButtonsViewHolder(SupportMapFragment mapFragment) {
+    public MapButtonsViewHolder(MainActivity context) {
+        super(context);
         try {
+            SupportMapFragment mapFragment = (SupportMapFragment) context.getSupportFragmentManager().findFragmentById(R.id.map);
             View myLocationButton = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
 
             if(myLocationButton != null) {

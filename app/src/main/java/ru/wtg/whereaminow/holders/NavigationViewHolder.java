@@ -79,7 +79,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private static final int HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
     private static final int SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
 
-    private final AppCompatActivity context;
     transient private GoogleMap map;
 
     private View buttonsView;
@@ -88,7 +87,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private int iconNavigationStyle;
 
     public NavigationViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
 

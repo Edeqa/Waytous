@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        state.registerEntityHolder(new FabViewHolder(this));
-        state.registerEntityHolder(new DrawerViewHolder(this));
-        state.registerEntityHolder(new SnackbarViewHolder(this));
-        state.registerEntityHolder(new FacebookViewHolder(this));
+        state.registerEntityHolder(new FabViewHolder(this),this);
+        state.registerEntityHolder(new DrawerViewHolder(this),this);
+        state.registerEntityHolder(new SnackbarViewHolder(this),this);
+        state.registerEntityHolder(new FacebookViewHolder(this),this);
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        new MapButtonsViewHolder(mapFragment);
+        new MapButtonsViewHolder(this);
 
         LinkedList<String> classes = new LinkedList<>();
 //        classes.add("FacebookViewHolder");
@@ -314,13 +314,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // IntroViewHolder must be registered last
 
 //        classes.add("IntroViewHolder");
-
+        System.out.println("REINITIALISE");
         for(String s:classes){
             try {
                 //noinspection unchecked
                 Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("ru.wtg.whereaminow.holders."+s);
                 Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
-                state.registerEntityHolder(ctor.newInstance(this));
+                state.registerEntityHolder(ctor.newInstance(this), MainActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

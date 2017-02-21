@@ -34,6 +34,7 @@ function MapHolder(main) {
             scrollwheel: true,
             zoom: 15
         });
+        main.map = map;
     }
 
     function onEvent(EVENT,object){

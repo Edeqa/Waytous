@@ -30,12 +30,12 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 public class MenuViewHolder extends AbstractViewHolder {
     private static final String TYPE = "menu";
 
-    private final MainActivity context;
     private boolean day = true;
 
     public MenuViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
     }
+
 
     @Override
     public String getType() {

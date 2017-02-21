@@ -36,13 +36,12 @@ public class FacebookViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "facebook";
 
-    private MainActivity context;
     private CallbackManager callbackManager;
     private FabViewHolder fab;
     private String welcomeMessage;
 
     public FacebookViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
         FacebookSdk.sdkInitialize(context.getApplicationContext());
         AppEventsLogger.activateApp(context);
     }

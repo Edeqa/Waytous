@@ -37,8 +37,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.StreetsView> implements OnStreetViewPanoramaReadyCallback {
     private static final String TYPE = "streets";
 
-    private final AppCompatActivity context;
-
     private View streetViewLayout;
     private SupportStreetViewPanoramaFragment streetView;
     private StreetViewPanorama panorama;
@@ -56,7 +54,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
     }
 
     public StreetsViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         setStreetViewLayout(context.findViewById(R.id.street_view_layout));
     }

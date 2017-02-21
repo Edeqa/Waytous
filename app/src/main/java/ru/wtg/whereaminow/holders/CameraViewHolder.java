@@ -81,7 +81,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private final static String PREVIOUS_ORIENTATION = "previous_orientation";
     private final static String PERSPECTIVE_NORTH = "perspective_north";
 
-    private final AppCompatActivity context;
     private CameraUpdateView cameraUpdate;
     private MapScaleView scaleView;
     private GoogleMap map;
@@ -91,7 +90,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private boolean initialStart = true;
 
     public CameraViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
         padding = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
 
         setMap(context.getMap());

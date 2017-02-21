@@ -83,12 +83,12 @@ public class State extends MultiDexApplication {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        registerEntityHolder(new PropertiesHolder(this)); // ---> need to be first!
-        registerEntityHolder(new TrackingHolder(this)); // ---> need to be second!
-//        registerEntityHolder(new LoggerHolder());
-        registerEntityHolder(new MessagesHolder(this)); // ---> need to be before NotificationHolder
-        registerEntityHolder(new NotificationHolder(this)); // ---> need to be after MessagesHolder
-        registerEntityHolder(new GpsHolder(this));
+        registerEntityHolder(new PropertiesHolder(this),null); // ---> need to be first!
+        registerEntityHolder(new TrackingHolder(this),null); // ---> need to be second!
+//        registerEntityHolder(new LoggerHolder(),null);
+        registerEntityHolder(new MessagesHolder(this),null); // ---> need to be before NotificationHolder
+        registerEntityHolder(new NotificationHolder(this),null); // ---> need to be after MessagesHolder
+        registerEntityHolder(new GpsHolder(this),null);
 
         gpsFilter = new GeoTrackFilter(1.);
 
@@ -255,14 +255,22 @@ public class State extends MultiDexApplication {
         this.me = me;
     }
 
-    public void registerEntityHolder(EntityHolder holder) {
+    public void registerEntityHolder(EntityHolder holder, MainActivity context) {
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {
                 if (holder.dependsOnEvent()) {
-                    viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                    if(viewHolders.containsKey(holder.getType()) && viewHolders.get(holder.getType()) != null) {
+                        viewHolders.get(holder.getType()).setContext(context);
+                    } else {
+                        viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                    }
                 }
                 if (holder.dependsOnUser()) {
-                    userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                    if(userViewHolders.containsKey(holder.getType()) && userViewHolders.get(holder.getType()) != null) {
+                        userViewHolders.get(holder.getType()).setContext(context);
+                    } else {
+                        userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                    }
                 }
             } else {
                 if (holder.dependsOnEvent()) {

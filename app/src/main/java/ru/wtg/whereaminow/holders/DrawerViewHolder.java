@@ -39,12 +39,11 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "drawer";
 
-    private final MainActivity context;
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
     public DrawerViewHolder(MainActivity context){
-        this.context = context;
+        super(context);
 
         setViewAndToolbar(context.findViewById(R.id.drawer_layout),(Toolbar) context.findViewById(R.id.toolbar));
         setCallback(onNavigationDrawerCallback);

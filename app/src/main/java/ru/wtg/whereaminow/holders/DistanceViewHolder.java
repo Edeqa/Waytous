@@ -58,6 +58,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
     private ArrayList<DistanceMark> marks;
 
     public DistanceViewHolder(MainActivity context) {
+        super(context);
         this.map = context.getMap();
         marks = new ArrayList<>();
     }

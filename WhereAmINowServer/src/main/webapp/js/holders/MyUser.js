@@ -3,15 +3,7 @@
  */
 function MyUser(main) {
 
-    var locations = [];
-    var entities = {};
-    var views = {};
-    var location;
-    var user;
-    var properties;
-
-
-    var fire = function(EVENT,object) {
+    function fire(EVENT,object) {
         // console.log("EVENT",EVENT, object);
 
         for(var i in this.views) {
@@ -21,13 +13,13 @@ function MyUser(main) {
         }
     }
 
-    var createViews = function() {
+    function createViews() {
         if(this.number) {
             for (var i in main.holders) {
-                if (main.holders[i] && main.holders[i].dependsOnUser && !views[i] && main.holders[i].createView) {
+                if (main.holders[i] && main.holders[i].dependsOnUser && !this.views[i] && main.holders[i].createView) {
                     try {
                         var view = main.holders[i].createView(this);
-                        if (view) views[i] = view;
+                        if (view) this.views[i] = view;
                     } catch (e) {
                         console.error(i,e.message);
                     }
@@ -36,15 +28,20 @@ function MyUser(main) {
         }
     }
 
-    var getLocation = function(){
-        return location;
+    function addLocation(location) {
+        this.locations.push(location);
+        this.location = location;
+
     }
 
     return {
-        user:user,
+        locations: [],
+        views: {},
+        location: null,
+        user: null,
+        properties: null,
         fire:fire,
         createViews:createViews,
-        views:views,
-        getLocation:getLocation,
+        addLocation:addLocation,
     }
 }

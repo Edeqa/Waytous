@@ -35,13 +35,12 @@ public class SnackbarViewHolder extends AbstractViewHolder {
     public static final String TYPE = "snackbar";
     public static final String CUSTOM_SNACK = "custom_snack";
 
-    private final MainActivity context;
     private Snackbar snackbar;
 
     private boolean tokenCreatedShown = false;
 
     public SnackbarViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         setLayout(context.findViewById(R.id.fab_layout));
     }

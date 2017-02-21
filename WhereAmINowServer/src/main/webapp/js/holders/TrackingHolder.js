@@ -28,6 +28,17 @@ function TrackingHolder(main) {
 
     function perform(json){
         console.log("JSON",json);
+
+        // final Location location = Utils.jsonToLocation(o);
+        // int number = o.getInt(USER_NUMBER);
+        //
+        // State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+        // @Override
+        //     public void call(Integer number, MyUser myUser) {
+        //         myUser.addLocation(location);
+        //     }
+        // });
+
     }
 
     function onEvent(EVENT,object){
@@ -160,5 +171,6 @@ function TrackingHolder(main) {
         dependsOnEvent:true,
         onEvent:onEvent,
         dependsOnUser:false,
+        perform:perform,
     }
 }

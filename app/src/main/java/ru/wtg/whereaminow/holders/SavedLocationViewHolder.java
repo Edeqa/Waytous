@@ -98,7 +98,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
     private static final String SHARE_SAVED_LOCATION = "share_saved_locations";
     private static final String SEND_SAVED_LOCATION = "send_saved_locations";
 
-    private final AppCompatActivity context;
     private GoogleMap map;
     private SavedLocation.SavedLocationsAdapter adapter;
     private Toolbar toolbar;
@@ -106,7 +105,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
     private String filterMessage;
 
     public SavedLocationViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
         SavedLocation.init(context);
         setMap(context.getMap());
     }

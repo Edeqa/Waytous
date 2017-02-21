@@ -37,7 +37,6 @@ public class SensorsViewHolder extends AbstractViewHolder {
     public static final String REQUEST_MODE_TERRAIN = "request_mode_terrain";
     public static final String REQUEST_MODE_TRAFFIC = "request_mode_traffic";
 
-    private final MainActivity context;
     private final LightSensorManager lightSensor;
 
     private GoogleMap map;
@@ -57,7 +56,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
     };
 
     public SensorsViewHolder(final MainActivity context) {
-        this.context = context;
+        super(context);
 
         onEnvironmentChangeListener.call(DAY);
         lightSensor = new LightSensorManager(context);

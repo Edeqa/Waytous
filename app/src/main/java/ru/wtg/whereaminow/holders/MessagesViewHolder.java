@@ -69,7 +69,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
     private static final String PREFERENCE_FONT_SIZE = "messages_font_size";
     private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
 
-    private final MainActivity context;
 
     private UserMessage.UserMessagesAdapter adapter;
     private SmoothInterpolated action;
@@ -85,7 +84,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
     private boolean notTransparentWindow;
 
     public MessagesViewHolder(final MainActivity context) {
-        this.context = context;
+        super(context);
         this.dialog = new AlertDialog.Builder(context).create();
         filterMessage = "";
 

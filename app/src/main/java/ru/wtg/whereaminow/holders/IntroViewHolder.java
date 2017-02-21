@@ -34,15 +34,14 @@ import static android.content.Context.MODE_PRIVATE;
 public class IntroViewHolder extends AbstractViewHolder {
     private static final String TYPE = "intro";
 
-    private final MainActivity context;
     private final SharedPreferences preferences;
     private HashMap<String, ArrayList<IntroRule>> queue;
     private ShowcaseView sv;
 
 
     public IntroViewHolder(MainActivity context) {
+        super(context);
         System.out.println("INTRO:SYSTEMCONSTRUCT");
-        this.context = context;
 
         preferences = context.getSharedPreferences("intro", MODE_PRIVATE);
 

@@ -44,7 +44,6 @@ public class FabViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "fab";
 
-    private final MainActivity context;
     private LinearLayoutCompat fab_buttons;
     private FloatingActionButton fab;
 
@@ -52,7 +51,7 @@ public class FabViewHolder extends AbstractViewHolder {
     private LayoutInflater inflater;
 
     public FabViewHolder(MainActivity context){
-        this.context = context;
+        super(context);
 
         setView(context.findViewById(R.id.fab_layout));
     }

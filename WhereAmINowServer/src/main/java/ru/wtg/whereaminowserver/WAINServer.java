@@ -328,7 +328,7 @@ try {
 
         @Override
         public boolean checkCredentials(String user, String pwd) {
-            return user.equals("wtiger") && pwd.equals("richard");
+            return user.equals(new SensitiveData().getLogin()) && pwd.equals(new SensitiveData().getPassword());
         }
     }
 }

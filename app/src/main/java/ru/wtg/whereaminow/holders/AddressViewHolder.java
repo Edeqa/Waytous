@@ -30,6 +30,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     private SimpleCallback<String> callback;
 
     public AddressViewHolder(final MainActivity context) {
+        super(context);
         setCallback(new SimpleCallback<String>() {
             @Override
             public void call(String text) {

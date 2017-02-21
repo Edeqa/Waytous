@@ -24,6 +24,8 @@ import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.abstracts.AbstractProperty;
 import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
+import ru.wtg.whereaminow.abstracts.AbstractView;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.Utils;
 
@@ -31,31 +33,31 @@ import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
+import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 
 /**
  * Created 01/13/17.
  */
 @SuppressWarnings("deprecation")
-public class NmeaStatusViewHolder extends AbstractPropertyHolder implements GpsStatus.Listener {
+public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatus.Listener {
     private static final String TYPE = "NmeaStatus";
 
     public static final String SHOW_NMEA_STATUS = "show_nmea_status";
     public static final String HIDE_NMEA_STATUS = "hide_nmea_status";
-    private final MainActivity context;
-
 
     private boolean showStatus = false;
     private ViewGroup layoutSatellites;
     private LinearLayout layoutGpsStatus;
 
     public NmeaStatusViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         layoutGpsStatus = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_nmea_status, null);
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        params.bottomMargin = Utils.adaptedSize(context, 50);
+        params.bottomMargin = Utils.adaptedSize(context, 64);
 //        params.setMargins(Utils.adaptedSize(context,8), 0, Utils.adaptedSize(context, 8), Utils.adaptedSize(context, 50));
         layoutGpsStatus.setLayoutParams(params);
         layoutSatellites = (ViewGroup) layoutGpsStatus.findViewById(R.id.layout_satellites);
@@ -75,10 +77,7 @@ public class NmeaStatusViewHolder extends AbstractPropertyHolder implements GpsS
         layoutGpsStatus.findViewById(R.id.layout_nmea_info).setVisibility(View.GONE);
         params.height = height;
         layoutGpsStatus.setLayoutParams(params);
-//        layoutGpsStatus.setVisibility(View.INVISIBLE);
-
-        ViewGroup mainView = (ViewGroup) context.findViewById(R.id.content);
-        mainView.addView(layoutGpsStatus);
+        layoutGpsStatus.setVisibility(View.INVISIBLE);
 
 //        height = Utils.adaptedSize(context, 180);
 
@@ -105,24 +104,24 @@ public class NmeaStatusViewHolder extends AbstractPropertyHolder implements GpsS
     }
 
     @Override
-    public boolean onEvent(String event, Object object) throws URISyntaxException {
+    public boolean onEvent(String event, Object object) {
         switch (event) {
             case ACTIVITY_RESUME:
                 if(showStatus) {
-                    ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).addGpsStatusListener(this);
+                    State.getInstance().fire(SHOW_NMEA_STATUS);
                 }
                 break;
             case ACTIVITY_PAUSE:
-                ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).removeGpsStatusListener(this);
-//                mainView = (ViewGroup) context.findViewById(R.id.content);
-//                mainView.removeView(layoutGpsStatus);
+                if(showStatus) {
+                    State.getInstance().fire(SHOW_NMEA_STATUS);
+                }
                 break;
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.show_nmea_status, Menu.NONE, R.string.show_nmea_status).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        showStatus = !showStatus;
+                        showStatus = true;
                         State.getInstance().fire(SHOW_NMEA_STATUS);
                         State.getInstance().getPropertiesHolder().saveFor(TYPE, showStatus);
                         return false;
@@ -131,7 +130,7 @@ public class NmeaStatusViewHolder extends AbstractPropertyHolder implements GpsS
                 optionsMenu.add(Menu.NONE, R.string.hide_nmea_status, Menu.NONE, R.string.hide_nmea_status).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        showStatus = !showStatus;
+                        showStatus = false;
                         State.getInstance().fire(HIDE_NMEA_STATUS);
                         State.getInstance().getPropertiesHolder().saveFor(TYPE, showStatus);
                         return false;
@@ -144,20 +143,25 @@ public class NmeaStatusViewHolder extends AbstractPropertyHolder implements GpsS
                 optionsMenu.findItem(R.string.hide_nmea_status).setVisible(showStatus);
                 break;
             case SHOW_NMEA_STATUS:
-                layoutGpsStatus.findViewById(R.id.layout_nmea_info).setVisibility(View.GONE);
+//                layoutGpsStatus.findViewById(R.id.layout_nmea_info).setVisibility(View.GONE);
+                ViewGroup mainView = (ViewGroup) context.findViewById(R.id.content);
+                mainView.addView(layoutGpsStatus);
                 layoutGpsStatus.setVisibility(View.VISIBLE);
                 ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).addGpsStatusListener(this);
                 break;
             case HIDE_NMEA_STATUS:
                 layoutGpsStatus.setVisibility(View.INVISIBLE);
                 ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).removeGpsStatusListener(this);
+                mainView = (ViewGroup) context.findViewById(R.id.content);
+                mainView.removeView(layoutGpsStatus);
+
                 break;
         }
         return true;
     }
 
     @Override
-    public AbstractProperty create(MyUser myUser) {
+    public AbstractView create(MyUser myUser) {
         return null;
     }
 

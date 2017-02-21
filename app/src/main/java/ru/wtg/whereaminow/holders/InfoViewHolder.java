@@ -22,7 +22,6 @@ public class InfoViewHolder extends AbstractViewHolder<InfoViewHolder.InfoView> 
     private static final String TYPE = "info";
     private static final int DELAY_BEFORE_HIDE = 5;
 
-    private final MainActivity context;
 
     private TextView view;
     private Handler handler;
@@ -34,7 +33,7 @@ public class InfoViewHolder extends AbstractViewHolder<InfoViewHolder.InfoView> 
     };
 
     public InfoViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
         handler = new Handler(Looper.getMainLooper());
         setView();
     }

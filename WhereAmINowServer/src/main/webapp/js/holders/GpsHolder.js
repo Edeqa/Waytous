@@ -54,6 +54,7 @@ function GpsHolder(main) {
 
     function locationUpdateListener(position) {
         console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
+        main.me.addLocation(position);
     }
 
     return {

@@ -86,15 +86,13 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
     transient private static final int REQUEST_CODE_AUTOCOMPLETE_PLACE = 3;
 
-    transient private final AppCompatActivity context;
-
     transient private GoogleMap map;
     transient private GoogleApiClient mGoogleApiClient;
 
     private ArrayList<Map<String,Serializable>> places = new ArrayList<>();
 
     public PlaceViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         setMap(context.getMap());
     }

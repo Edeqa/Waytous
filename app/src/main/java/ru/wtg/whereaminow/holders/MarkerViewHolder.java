@@ -43,7 +43,6 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
     public static final String TYPE = "marker";
     static final String MARKER_CLICK = "marker_click";
-    private final Context context;
 
     private GoogleMap map;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
@@ -57,7 +56,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
 
     public MarkerViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         setMap(context.getMap());
     }

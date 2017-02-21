@@ -109,6 +109,7 @@ function ButtonHolder(main) {
         contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
         contextMenuLayout.style.top = Math.floor(size.top) + "px";
         contextMenuLayout.classList.remove("hidden");
+        clearTimeout(delayDismiss);
         delayDismiss = setTimeout(function(){
             contextMenuLayout.classList.add("hidden");
         },2000);

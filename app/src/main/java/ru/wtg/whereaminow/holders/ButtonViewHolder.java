@@ -50,14 +50,13 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
  */
 public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.ButtonView> {
     private static final String TYPE = "Button";
-    private final Activity context;
     private Handler handlerHideMenu;
     private Runnable runnableHideMenu;
     private LinearLayout layout;
     private FlexboxLayout menuLayout;
 
     public ButtonViewHolder(MainActivity context) {
-        this.context = context;
+        super(context);
 
         setLayout((LinearLayout) context.findViewById(R.id.layout_users));
         setMenuLayout((FlexboxLayout) context.findViewById(R.id.layout_context_menu));
