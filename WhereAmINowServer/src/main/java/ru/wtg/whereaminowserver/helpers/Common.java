@@ -4,6 +4,9 @@ import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
@@ -17,6 +20,8 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
  */
 
 public class Common {
+
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z", Locale.getDefault());
 
     public static void addIncludes(HtmlGenerator html) {
 
@@ -49,6 +54,14 @@ public class Common {
             e.printStackTrace();
         }
         return o;
+    }
+
+    public static void log(String... text) {
+        String str = "";
+        for(int i = 0; i < text.length; i++){
+            str += text[i] + " ";
+        }
+        System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
     }
 
 }

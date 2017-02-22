@@ -2,17 +2,31 @@ package ru.wtg.whereaminowserver.servers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.org.apache.xalan.internal.xsltc.dom.SortingIterator;
 
 import org.java_websocket.server.WebSocketServer;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
+import ru.wtg.whereaminowserver.helpers.Utils;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 
 
@@ -27,18 +41,47 @@ public class MyHttpMainServer implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
+        boolean gzip = false;
+        String ifModifiedSince = null;
+
+
         URI uri = exchange.getRequestURI();
-        System.out.println("Main server requested: " + uri);
+
+        for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
+            if ("accept-encoding".equals(entry.getKey().toLowerCase())) {
+                for (String s : entry.getValue()) {
+                    for (String ss : s.split(", ")) {
+                        if ("gzip".equals(ss.toLowerCase())) {
+                            gzip = true;
+                            break;
+                        }
+                    }
+                }
+            } else if ("if-none-match".equals(entry.getKey().toLowerCase())) {
+
+            }
+        }
 
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
-        if(!file.isFile()) {
+        Common.log("Main:",uri.getPath(),"(" + (file.exists() ? file.length() +" byte(s)" : "not found") + ")" );
+
+        String etag = "W/1976" + ("" + file.lastModified()).hashCode();
+
+
+        if (!file.isFile()) {
             file = new File(file.getCanonicalPath() + "/index.html");
         }
-        if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {
+        if(etag.equals(ifModifiedSince)) {
+            String response = "304 Not Modified\n";
+            exchange.sendResponseHeaders(304, 0);
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        } else if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {
             // Suspected path traversal attack: reject with 403 error.
-            String response = "403 (Forbidden)\n";
+            String response = "403 Forbidden\n";
             exchange.sendResponseHeaders(403, response.length());
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
@@ -46,7 +89,7 @@ public class MyHttpMainServer implements HttpHandler {
         } else if (!file.isFile()) {
 
             // Object does not exist or is not a file: reject with 404 error.
-            String response = "404 (Not Found)\n";
+            String response = "404 Not Found\n";
             exchange.sendResponseHeaders(404, response.length());
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
@@ -64,7 +107,7 @@ public class MyHttpMainServer implements HttpHandler {
                 if(parts.length>1){
                     type += parts[parts.length-1];
                 } else type += "*";
-
+                gzip = false;
                 exchange.getResponseHeaders().set("Content-Type", type);
             } else {
                 String type = "text/html";
@@ -74,12 +117,33 @@ public class MyHttpMainServer implements HttpHandler {
                         type = "text/javascript";
                     }
                 }
-
                 exchange.getResponseHeaders().set("Content-Type", type);
             }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+            dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+            String lastModified = dateFormat.format(file.lastModified());
+
+            exchange.getResponseHeaders().set("Last-Modified", lastModified);
+            exchange.getResponseHeaders().set("ETag", etag);
+            exchange.getResponseHeaders().set("Server", "WAIN/"+SERVER_BUILD);
+            exchange.getResponseHeaders().set("Accept-Ranges", "bytes");
+
+            if(gzip){
+                exchange.getResponseHeaders().set("Content-Encoding", "gzip");
+            } else {
+                exchange.getResponseHeaders().set("Content-Length", String.valueOf(file.length()));
+            }
+
             exchange.sendResponseHeaders(200, 0);
 
-            OutputStream os = exchange.getResponseBody();
+            OutputStream os;
+            if(gzip) {
+                os = new BufferedOutputStream(new GZIPOutputStream(exchange.getResponseBody()));
+            } else {
+                os = exchange.getResponseBody();
+            }
+
             FileInputStream fs = new FileInputStream(file);
             final byte[] buffer = new byte[0x10000];
             int count = 0;
@@ -89,6 +153,7 @@ public class MyHttpMainServer implements HttpHandler {
             fs.close();
             os.close();
         }
+
     }
 
 

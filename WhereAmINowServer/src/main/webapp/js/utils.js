@@ -138,7 +138,7 @@ function Utils() {
         }
 
         // var needInstantiate = !callback.toString().match("^function \\(\\)");
-
+// http-equiv="Cache-Control" content="no-store"
         create("script", {src: name, dataStart: needInstantiate ? onlyname : null, onload: function() {
             if (callback) {
                 var a;

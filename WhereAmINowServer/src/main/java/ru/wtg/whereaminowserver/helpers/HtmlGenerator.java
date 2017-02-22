@@ -55,11 +55,16 @@ public class HtmlGenerator {
     public static final String TEXT = "text";
     public static final String VALUE = "value";
 
+    public static final String MANIFEST = "manifest";
+
+
+
 
     ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{BR,META,INPUT}));
     private Tag body;
     private Tag head;
     private int level = 0;
+    Map<String,String> properties = new HashMap<String,String>();
 
     public HtmlGenerator() {
         head = new Tag("head");
@@ -75,7 +80,17 @@ public class HtmlGenerator {
     }
 
     public String build(){
-        String res = "<!DOCTYPE html>\n<html>";
+        String res = "<!DOCTYPE html>\n";
+        ArrayList<String> parts = new ArrayList();
+        parts.add("html");
+        for(Map.Entry<String,String> entry: properties.entrySet()){
+            if(entry.getValue() != null && entry.getValue().length() > 0) {
+                parts.add(entry.getKey() + "=\"" + entry.getValue() + "\"");
+            } else {
+                parts.add(entry.getKey());
+            }
+        }
+        res += "<" + Utils.join(" ", parts) + ">";
         res += head.build();
         res += body.build();
         res += "</html>";
@@ -85,7 +100,14 @@ public class HtmlGenerator {
     public void clear(){
         head = new Tag("head");
         body = new Tag("body");
+        properties.clear();
     }
+
+    public HtmlGenerator with(String key,String value){
+        properties.put(key,value);
+        return this;
+    }
+
 
     public class Tag {
         String tag;

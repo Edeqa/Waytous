@@ -90,4 +90,17 @@ public class Utils {
 //        int color = colors.get(number).getRGB();
 //        return color;
     }
+
+    public static String join(String conjunction, List<String> list) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (String item : list) {
+            if (first)
+                first = false;
+            else
+                sb.append(conjunction);
+            sb.append(item);
+        }
+        return sb.toString();
+    }
 }

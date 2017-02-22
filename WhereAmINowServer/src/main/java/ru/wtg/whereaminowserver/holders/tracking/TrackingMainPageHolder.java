@@ -13,6 +13,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.MANIFEST;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.NAME;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
