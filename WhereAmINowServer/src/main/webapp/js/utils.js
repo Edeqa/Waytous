@@ -4,7 +4,7 @@
 
 function Utils() {
 
-    var normalizeName = function(name) {
+    function normalizeName(name) {
         if(name == "className"){
             name = "class";
         } else if(name.toLowerCase() == "frameborder") {
@@ -17,9 +17,9 @@ function Utils() {
             }
         }
         return name;
-    };
+    }
 
-    var create = function(name, properties, appendTo, position) {
+    function create(name, properties, appendTo, position) {
         var el = document.createElement(name);
 
         if(properties) {
@@ -72,24 +72,24 @@ function Utils() {
         }
 
         return el;
-    };
+    }
 
-    var clear = function(node) {
+    function clear(node) {
         if(!node) return;
         for(var i = node.children.length-1; i>=0; i--) {
             node.removeChild(node.children[i]);
         }
-    };
+    }
 
-    var keys = function(o) {
+    function keys(o) {
         var keys = [];
         for(var x in o) {
             keys.push(x);
         }
         return keys;
-    };
+    }
 
-    var createPage = function(holder) {
+    function createPage(holder) {
         window.history.pushState({}, null, "/admin/" + holder.page);
 
         var div = document.getElementsByClassName("right")[0];
@@ -111,23 +111,23 @@ function Utils() {
 
         div = create("div", {className:"content"}, div);
         return div;
-    };
+    }
 
-    var showAlert = function(text) {
+    function showAlert(text) {
         var div = document.getElementsByClassName("alert")[0];
         div.innerHTML = text;
         div.style.display = "block";
-    };
+    }
 
-    var byId = function(id) {
+    function byId(id) {
         return document.getElementById(id);
-    };
+    }
 
-    var getHexColor = function(number){
+    function getHexColor(number){
         return "#"+((number)>>>0).toString(16).slice(-6);
-    };
+    }
 
-    var require = function(name, callback, context){
+    function require(name, callback, context){
         var parts = name.split("/");
         var filename = parts[parts.length-1];
         var onlyname = filename.split(".")[0];
@@ -148,26 +148,26 @@ function Utils() {
                 callback(a);
             }
         }}, document.head);
-    };
+    }
 
-    var save = function(name, value) {
+    function save(name, value) {
         if(value) {
             localStorage["WAIN:" + name] = JSON.stringify(value);
         } else {
             delete localStorage["WAIN:" + name];
         }
-    };
+    }
 
-    var load = function (name) {
+    function load(name) {
         var value = localStorage["WAIN:"+name];
         if(value) {
             return JSON.parse(value);
         } else {
             return null;
         }
-    };
+    }
 
-    var getUuid = function() {
+    function getUuid() {
         var uuid = load("uuid");
         if(!uuid) {
             var d = new Date().getTime();
@@ -179,10 +179,28 @@ function Utils() {
             save("uuid",uuid);
         }
         return uuid;
-    };
+    }
 
+    function jsonToLocation(json) {
+        var loc = {};
+        loc.coords = {};
+        loc.provider = json[USER.PROVIDER];
+        loc.coords.latitude = json[USER.LATITUDE];
+        loc.coords.longitude = json[USER.LONGITUDE];
+        loc.coords.altitude = json[USER.ALTITUDE] || null;
+        loc.coords.altitudeAccuracy = json[USER.ACCURACY] || null;
+        loc.coords.heading = json[USER.BEARING] || null;
+        loc.coords.speed = json[USER.SPEED] || null;
+        loc.timestamp = json[REQUEST.TIMESTAMP];
+        return loc;
+    }
 
-    var getEncryptedHash = function (s) {
+    function latLng(location) {
+        if(!location || !location.coords) return null;
+        return new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
+    }
+
+    function getEncryptedHash(s) {
         function L(k, d) {
             return (k << d) | (k >>> (32 - d))
         }
@@ -386,11 +404,6 @@ function Utils() {
         }
         var i = B(Y) + B(X) + B(W) + B(V);
         return i.toLowerCase()
-    };
-
-    var latLng = function(location) {
-        if(!location) return null;
-        new google.maps.LatLng(location.latitude, location.longitude);
     }
 
     return {
@@ -407,5 +420,6 @@ function Utils() {
         getUuid:getUuid,
         getEncryptedHash:getEncryptedHash,
         latLng:latLng,
+        jsonToLocation:jsonToLocation,
     }
 }

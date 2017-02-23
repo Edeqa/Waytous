@@ -20,3 +20,9 @@ libs/
 /WhereAmINowServer/src/main/webapp/firebase-messaging-sw1.js
 /inchem.jks
 /wain.log
+/servercert.pem
+/servercert.p12
+/servercert.der
+/temp.jks
+/cacerts
+/WhereAmINowServer/src/main/webapp/inchem.jks

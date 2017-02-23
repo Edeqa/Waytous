@@ -27,6 +27,11 @@ function SampleHolder(main) {
         // console.log("SAMPLECREATEVIEW",user);
     }
 
+    function onChangeLocation(location) {
+        // console.log("SAMPLEONCHANGELOCATION",this,location);
+
+    }
+
     return {
         type:type,
         start:start,
@@ -34,5 +39,6 @@ function SampleHolder(main) {
         onEvent:onEvent,
         dependsOnUser:true,
         createView:createView,
+        onChangeLocation:onChangeLocation,
     }
 }

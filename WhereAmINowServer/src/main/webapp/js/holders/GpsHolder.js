@@ -7,7 +7,13 @@ function GpsHolder(main) {
     var user;
 
     function start() {
-        // console.log("GPSHOLDER",this);
+        console.log("GPSHOLDER",this);
+
+        /*var latLong;
+        $.getJSON("https://ipinfo.io", function(ipinfo){
+            console.log("Found location ["+ipinfo.loc+"] by ipinfo.io");
+            latLong = ipinfo.loc.split(",");
+        });*/
 
         navigator.geolocation.getCurrentPosition(function(location){
             console.log("GPS ALLOWED",location);

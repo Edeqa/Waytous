@@ -355,6 +355,7 @@ p.bottom-desc {
     100%  { transform: rotate(360deg); }
 }
 .progress-title {
+    white-space: nowrap;
 }
 .alpha {
     position: fixed;

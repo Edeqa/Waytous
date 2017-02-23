@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.concurrent.Executors;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -215,8 +216,8 @@ try {
         System.out.println("Redirect HTTP\t\t| " + HTTP_PORT + "\t| " + "/");
         server.createContext("/", redirectServer);
 
-        server.setExecutor(null); // creates a default executor
-        server.start();
+//        server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
+//        server.start();
 
 
 //        server = HttpServer.create();
@@ -240,8 +241,8 @@ try {
 //        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
 //        System.out.println("Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
 
-//        server.setExecutor(null); // creates a default executor
-//        server.start();
+        server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
+        server.start();
 
 
         try {
@@ -298,7 +299,7 @@ try {
             sslServer.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
             System.out.println("Admin HTTPS\t\t| " + HTTPS_PORT + "\t| " + "/admin");
 
-            sslServer.setExecutor(null); // creates a default executor
+            sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
 
 
 //            sslServer.setHttpsConfigurator(new HttpsConfigurator(SSLContext.getDefault()));

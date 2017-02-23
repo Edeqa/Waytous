@@ -2,12 +2,9 @@ package ru.wtg.whereaminowserver.servers;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsExchange;
-
-import org.java_websocket.server.WebSocketServer;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +21,7 @@ import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.holders.tracking.TrackingMainPageHolder;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 
 /**
  * Created 1/19/17.
@@ -67,18 +62,27 @@ public class MyHttpTrackingServer implements HttpHandler {
 
         System.out.println("Tracking server requested");
 
-        HttpsExchange httpsExchange = (HttpsExchange) exchange;
-
         URI uri = exchange.getRequestURI();
-        System.out.println(uri.getPath());
-        System.out.println(exchange.getRemoteAddress().getAddress().getHostAddress());
-        System.out.println(InetAddress.getLocalHost().getHostAddress());
+
+        Headers headers = exchange.getRequestHeaders();
+        String host;
+        try {
+            host = exchange.getRequestHeaders().get("Host").get(0);
+            host = host.split(":")[0];
+            System.out.println(host);
+        } catch(Exception e){
+            e.printStackTrace();
+//            host = InetAddress.getLocalHost().getHostAddress();
+        }
+
+//        System.out.println(InetAddress.getLocalHost().getHostAddress());
 
         ArrayList<String> parts = new ArrayList<String>();
         parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
-//        String[] parts = uri.getPath().split("/");
         String tokenId = null;
+
+//        HttpsExchange httpsExchange = (HttpsExchange) exchange;
 
         if(parts.size() >= 3){
             tokenId = parts.get(2);
@@ -106,18 +110,18 @@ public class MyHttpTrackingServer implements HttpHandler {
 
         if(tokenId != null) {
 
-            String mobileRedirect = "orw://" + InetAddress.getLocalHost().getHostAddress() + ":" + HTTP_PORT + "/track/" + tokenId;
+//            String mobileRedirect = "orw://" + InetAddress.getLocalHost().getHostAddress() + ":" + HTTP_PORT + "/track/" + tokenId;
 
 
 
 
-            if (parts.size() > 2 && parts.get(1).equals("track")) {
+/*            if (parts.size() > 2 && parts.get(1).equals("track")) {
                 System.out.println("Mobile redirect generated: " + mobileRedirect);
                 JSONObject o = new JSONObject();
                 o.put("url", mobileRedirect);
                 head.add(SCRIPT).with("redirect",o);
 //                head.add(META).with(HTTP_EQUIV, "refresh").with(CONTENT, "0;URL='" + mobileRedirect + "'");
-            }
+            }*/
 //            body.add(A).with(HREF, mobileRedirect).with("Click here for start mobile client");
 
 

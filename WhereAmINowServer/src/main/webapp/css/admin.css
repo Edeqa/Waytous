@@ -67,6 +67,7 @@ h2 {
     height: 100%;
     background-color: floralwhite;
     z-index: 100;
+    position: fixed;
 }
 .menu-open {
     display: block;
@@ -99,6 +100,7 @@ h2 {
     font-size: 10px;
 }
 .right {
+    padding-left: 250px;
     width: 100%;
 }
 .version {
@@ -227,6 +229,9 @@ h2 {
     }
 
     /* CLASSES */
+    .right {
+        padding-left: 0px;
+    }
     .layout {
         width: 100%;
         height: 100%;

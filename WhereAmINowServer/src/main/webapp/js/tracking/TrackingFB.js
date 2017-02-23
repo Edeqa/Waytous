@@ -13,7 +13,7 @@ function TrackingFB(main) {
 	var serverUri;
 	var ref;
 
-    var start = function() {
+    function start() {
         status = EVENTS.TRACKING_DISABLED;
         var uri;
         if(this.link) {
@@ -32,9 +32,9 @@ function TrackingFB(main) {
             trackingListener.onJoining()
         }
         webSocketListener = webSocketListener(serverUri);
-    };
+    }
 
-    var webSocketListener = function (link) {
+    function webSocketListener(link) {
         var a = new WebSocket(link);
 
         a.onopen = function(event) {
@@ -142,59 +142,59 @@ function TrackingFB(main) {
         };
 
         return a;
-    };
+    }
 
-    var put = function(name, value){
+    function put(name, value){
         if(!json) json = {};
         json[name] = value;
-    };
+    }
 
-    var send = function () {
+    function send() {
         // console.log("SEND",json);
         put(REQUEST.TIMESTAMP, new Date().getTime());
         webSocketListener.send(JSON.stringify(json));
         json = {};
-    };
+    }
 
-    var setLink = function(link) {
+    function setLink(link) {
         this.link = link;
-    };
+    }
 
-    var setTrackingListener = function(callback) {
+    function setTrackingListener(callback) {
         trackingListener = callback;
-    };
+    }
 
-    var setToken = function(id){
+    function setToken(id){
         this.token = id;
-    };
+    }
 
-    var getToken = function(){
+    function getToken(){
         return this.token;
     }
 
-    var setStatus = function(status){
+    function setStatus(status){
         this.status = status;
-    };
+    }
 
-    var getTrackingUri = function(){
+    function getTrackingUri(){
         return "http://" + serverUri.host + ":" + 8080 + "/track/" + token;
-    };
+    }
 
-    var registerChildListener = function(ref, listener, limit) {
+    function registerChildListener(ref, listener, limit) {
         if(limit >= 0){
             ref.limitToLast(limit).on("child_added", listener);
         } else {
             ref.on("child_added", listener);
         }
         // refs[ref] = listener;
-    };
+    }
 
-    var registerValueListener = function(ref, listener) {
+    function registerValueListener(ref, listener) {
         ref.on("value", listener);
         // refs[ref] = listener;
-    };
+    }
 
-    var usersDataListener = function(data){
+    function usersDataListener(data){
         if(main.me.number != parseInt(data.getKey())) {
             try{
                 var o = data.val();
@@ -213,7 +213,7 @@ function TrackingFB(main) {
                 usersDataActiveListener(data.child("active"));
 
                 for(var i in main.holders) {
-                    if(main.holders[i] && main.holders.saveable) {
+                    if(main.holders[i] && main.holders[i].saveable) {
                         registerChildListener(ref.child(DATABASE.SECTION_PUBLIC).child(i).child(user.number), userPublicDataListener, 1);
                     }
                 }
@@ -224,32 +224,30 @@ function TrackingFB(main) {
             }
         }
         // console.log(data);
-    };
+    }
 
-    var userPublicDataListener = function(data) {
+    function userPublicDataListener(data) {
         try {
             var o = data.val();
-            debugger;
-            o[RESPONSE.NUMBER] = parseInt(data.getRef().getParent().getKey());
-            o[RESPONSE.STATUS] = data.getRef().getParent().getParent().getKey();
+            o[RESPONSE.NUMBER] = parseInt(data.ref.parent.getKey());
+            o[RESPONSE.STATUS] = data.ref.parent.parent.getKey();
             o["key"] = data.getKey();
 
             trackingListener.onMessage(o);
         } catch(e) {
             console.error(e.message);
         }
-
     }
 
-    var userPrivateDataListener = function(data) {
+    function userPrivateDataListener(data) {
         try{
             var o = data.val();
             var from = parseInt(o["from"]);
             delete o["from"];
-            o[RESPONSE.NUMBER] = from;
-            o[RESPONSE.STATUS] = data.getRef().parent().parent().getKey();
-            o["key"] = data.getKey();
 debugger;
+            o[RESPONSE.NUMBER] = from;
+            o[RESPONSE.STATUS] = data.ref.parent.parent.getKey();
+            o["key"] = data.getKey();
             // trackingListener.onMessage(o);
             // data.getRef().remove();
 
@@ -257,9 +255,9 @@ debugger;
             console.error(e.message);
         }
         console.log(data);
-    };
+    }
 
-    var usersDataNameListener = function(data) {
+    function usersDataNameListener(data) {
         try {
             var number = parseInt(data.ref.parent.getKey());
             var name = data.val();
@@ -273,7 +271,7 @@ debugger;
         }
     }
 
-    var usersDataActiveListener = function(data) {
+    function usersDataActiveListener(data) {
         try {
             var number = parseInt(data.ref.parent.getKey());
             var active = data.val();

@@ -32,6 +32,15 @@ function MyUser(main) {
         this.locations.push(location);
         this.location = location;
 
+        this.onChangeLocation();
+    }
+
+    function onChangeLocation() {
+        for(var i in this.views) {
+            if(main.holders[i] && main.holders[i].onChangeLocation) {
+                main.holders[i].onChangeLocation.call(this, this.location);
+            }
+        }
     }
 
     return {
@@ -43,5 +52,6 @@ function MyUser(main) {
         fire:fire,
         createViews:createViews,
         addLocation:addLocation,
+        onChangeLocation:onChangeLocation,
     }
 }

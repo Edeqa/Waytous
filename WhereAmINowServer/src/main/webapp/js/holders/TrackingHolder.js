@@ -28,6 +28,11 @@ function TrackingHolder(main) {
 
     function perform(json){
         console.log("JSON",json);
+        var loc = u.jsonToLocation(json);
+        var number = json[USER.NUMBER];
+        main.users.forUser(number, function(number,user){
+            user.addLocation(loc);
+        });
 
         // final Location location = Utils.jsonToLocation(o);
         // int number = o.getInt(USER_NUMBER);
@@ -51,7 +56,7 @@ function TrackingHolder(main) {
         return true;
     }
 
-    var startTracking = function(){
+    function startTracking(){
 
         tracking = new TrackingFB(main);
         // console.log("LOADED", tracking);
@@ -67,7 +72,7 @@ function TrackingHolder(main) {
             tracking.start();
         }
 
-    };
+    }
 
     var onTrackingListener = {
         onCreating: function(){
@@ -172,5 +177,6 @@ function TrackingHolder(main) {
         onEvent:onEvent,
         dependsOnUser:false,
         perform:perform,
+        saveable:true,
     }
 }
