@@ -7,6 +7,7 @@ function MessagesHolder(main) {
 
     function start() {
         // console.log("MESSAGESHOLDER",main);
+
     }
 
     function onEvent(EVENT,object){

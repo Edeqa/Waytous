@@ -173,6 +173,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
             } else if (REQUEST_JOIN_TOKEN.equals(req)) {
                 if (request.has(REQUEST_TOKEN)) {
+
                     final String tokenId = request.getString(REQUEST_TOKEN);
 
                     final DatabaseReference refToken = ref.child(tokenId);

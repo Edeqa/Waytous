@@ -27,6 +27,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import ru.wtg.whereaminowserver.helpers.SensitiveData;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
+import ru.wtg.whereaminowserver.servers.MyHttpJoinServer;
 import ru.wtg.whereaminowserver.servers.MyHttpMainServer;
 import ru.wtg.whereaminowserver.servers.MyHttpRedirectServer;
 import ru.wtg.whereaminowserver.servers.MyHttpTrackingServer;
@@ -159,7 +160,7 @@ try {
     new Thread() {
         public void run() {
             try {
-                WebSocketImpl.DEBUG = false;
+                WebSocketImpl.DEBUG = true;
                 System.out.println("WS FB\t\t\t\t| " + WS_FB_PORT + "\t|");
                 wsServer.start();
                 System.out.println("WSS FB\t\t\t\t| " + WSS_FB_PORT + "\t|");
@@ -225,6 +226,11 @@ try {
 
         MyHttpMainServer mainServer = new MyHttpMainServer();
         mainServer.setWainProcessor(wainProcessorFirebase);
+//        server.createContext("/", mainServer);
+//        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
+
+        MyHttpJoinServer joinServer = new MyHttpJoinServer();
+        joinServer.setWainProcessor(wainProcessorFirebase);
 //        server.createContext("/", mainServer);
 //        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
@@ -295,6 +301,9 @@ try {
 
             sslServer.createContext("/group", trackingServer);
             System.out.println("Tracking HTTPS\t| " + HTTPS_PORT + "\t| " + "/group");
+
+            sslServer.createContext("/join", joinServer);
+            System.out.println("Join HTTPS\t| " + HTTPS_PORT + "\t| " + "/join");
 
             sslServer.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
             System.out.println("Admin HTTPS\t\t| " + HTTPS_PORT + "\t| " + "/admin");

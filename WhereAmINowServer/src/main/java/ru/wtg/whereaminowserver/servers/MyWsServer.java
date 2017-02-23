@@ -90,6 +90,7 @@ public class MyWsServer extends WebSocketServer implements WssServer {
 */
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        System.out.println("WSS:on open:"+conn.getRemoteSocketAddress() + ": " + handshake);
         processor.onOpen(conn, handshake);
     }
 

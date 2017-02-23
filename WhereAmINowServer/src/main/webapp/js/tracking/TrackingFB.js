@@ -12,6 +12,7 @@ function TrackingFB(main) {
 	var status;
 	var serverUri;
 	var ref;
+	var webSocketListener;
 
     function start() {
         status = EVENTS.TRACKING_DISABLED;
@@ -23,6 +24,7 @@ function TrackingFB(main) {
         }
         var path = uri.pathname.replace("/group/","/track/");
         serverUri = "wss://" + uri.hostname + ":8001" + path;
+//        serverUri = "ws://" + uri.hostname + ":8081" + path;
 
         if(newTracking) {
             setStatus(EVENTS.TRACKING_CONNECTING);
@@ -32,12 +34,13 @@ function TrackingFB(main) {
             trackingListener.onJoining()
         }
         webSocketListener = webSocketListener(serverUri);
+
     }
 
     function webSocketListener(link) {
-        var a = new WebSocket(link);
 
-        a.onopen = function(event) {
+        var onopen =  function(event) {
+            opened = true;
             if(newTracking) {
                 put(REQUEST.REQUEST, REQUEST.NEW_TOKEN);
             } else {
@@ -59,7 +62,7 @@ function TrackingFB(main) {
             send();
         };
 
-        a.onmessage = function(event) {
+        var onmessage = function(event) {
             var o = JSON.parse(event.data);
             if(!o[RESPONSE.STATUS]) return;
             switch (o[RESPONSE.STATUS]) {
@@ -133,16 +136,63 @@ function TrackingFB(main) {
             }
         };
 
-        a.onclose = function(event) {
+        var onclose = function(event) {
+//            console.log("CLOSE",opened,event.code,event.reason,event.wasClean);
+            if(!opened) {
+                console.error("Error processing websocket, try to use XHR on",link," (error ",event.code,event.reason?" "+event.reason+")":")");
+                xhrMode(link);
+            }
         };
 
-        a.onerror = function(event) {
-            console.log("ONERROR-RECONNECT-SHOULDBEDONE")
+        var onerror = function(event) {
+            console.log("ONERROR-RECONNECT-SHOULDBEDONE",event)
             if(status == EVENTS.TRACKING_DISABLED) return;
         };
 
+        var xhrMode = function(link) {
+            console.log("XHRMODE", link);
+            var xhr = new XMLHttpRequest();
+
+            var uri = new URL(link);
+            link = "https://" + uri.hostname + ":8100/join" + uri.pathname;
+
+            xhr.onreadystatechange = function() { // (3)
+                switch(xhr.readyState){
+                    case 4:
+                        console.log("SATTECHANGE",xhr);
+                        break;
+                }
+            }
+
+            send = function(){
+                put(REQUEST.TIMESTAMP, new Date().getTime());
+                xhr.send(JSON.stringify(json));
+                json = {};
+            }
+
+            xhr.open('POST', link, true);
+            onopen();
+
+            return xhr;
+        }
+
+        var a = {};
+        try {
+            a = new WebSocket(link);
+        } catch(e){
+            console.error(e);
+            xhrMode(link);
+        }
+        var opened = false;
+
+        a.onopen = onopen;
+        a.onmessage = onmessage;
+        a.onclose = onclose;
+        a.onerror = onerror;
+
         return a;
     }
+
 
     function put(name, value){
         if(!json) json = {};

@@ -609,6 +609,31 @@ p.bottom-desc {
     .user-context-menu-item-title {
         display: none;
     }
+    .console {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        font-size: 9px;
+        height: 30%;
+        width: 100%;
+        white-space: pre;
+        overflow-y: scroll;
+        background-color: rgba(211, 211, 211, 0.6);
+        border-top-style: solid;
+        border-top-width: 1px;
+        z-index: 1000;
+        white-space: pre-wrap;
+    }
+    .console-close {
+        position: absolute;
+        top: 0px;
+        font-size: 20px;
+        right: 0px;
+        padding: 0px;
+        margin: 0px;
+        min-width: auto;
+        min-height: auto;
+    }
 
     /* media specific classes */
     .hideable {

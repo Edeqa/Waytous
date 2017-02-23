@@ -6,7 +6,7 @@ function TrackingHolder(main) {
     var type ="tracking";
 
     const TRACKING_URI = "uri";
-    var tracking;
+//    var tracking;
     var progress;
     var progressTitle;
 
@@ -22,7 +22,7 @@ function TrackingHolder(main) {
             progress.classList.remove("hidden");
         }
 
-        u.require("/js/tracking/TrackingFB.js", startTracking);
+        u.require("/js/tracking/TrackingFB.js", startTracking.bind(this));
 
     }
 
@@ -58,7 +58,7 @@ function TrackingHolder(main) {
 
     function startTracking(){
 
-        tracking = new TrackingFB(main);
+        this.tracking = new TrackingFB(main);
         // console.log("LOADED", tracking);
         // tracking.start();
 
@@ -66,10 +66,10 @@ function TrackingHolder(main) {
         var groupOld = u.load("group");
         if(group) {
             main.fire(EVENTS.TRACKING_JOIN, window.location.href);
-            tracking.setLink(window.location.href);
-            tracking.setTrackingListener(onTrackingListener);
+            this.tracking.setLink(window.location.href);
+            this.tracking.setTrackingListener(onTrackingListener);
             u.save("group",group);
-            tracking.start();
+            this.tracking.start();
         }
 
     }
@@ -100,7 +100,8 @@ function TrackingHolder(main) {
         onAccept: function(o){
             // console.log("ONACCEPT",o);
             progress.classList.add("hidden");
-            u.save(TRACKING_URI, tracking.getTrackingUri());
+            //FIXME
+//            u.save(TRACKING_URI, this.tracking.getTrackingUri());
             main.fire(EVENTS.TRACKING_ACTIVE);
             if(o[RESPONSE.TOKEN]) {
                 main.fire(EVENTS.TOKEN_CREATED, o[RESPONSE.TOKEN]);
