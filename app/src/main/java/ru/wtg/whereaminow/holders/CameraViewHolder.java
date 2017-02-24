@@ -1,10 +1,7 @@
 package ru.wtg.whereaminow.holders;
 
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Location;
-import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,7 +10,6 @@ import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -35,6 +31,7 @@ import ru.wtg.whereaminow.helpers.Utils;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_CONTEXT_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.MAP_MY_LOCATION_BUTTON_CLICKED;
+import static ru.wtg.whereaminow.State.EVENTS.MARKER_CLICK;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_FAB;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
@@ -52,13 +49,12 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     public static final String TYPE = "camera";
 
-    public static final String UPDATE_CAMERA = "update_camera";
+    public static final String CAMERA_UPDATE = "camera_update";
     public static final String CAMERA_UPDATED = "camera_updated";
     public static final String CAMERA_ZOOM_IN = "camera_zoom_in";
     public static final String CAMERA_ZOOM_OUT = "camera_zoom_out";
     public static final String CAMERA_ZOOM = "camera_zoom";
-
-    static final String CAMERA_NEXT_ORIENTATION = "change_next_orientation";
+    public static final String CAMERA_NEXT_ORIENTATION = "camera_next_orientation";
 
     private final static int CAMERA_ORIENTATION_NORTH = 0;
     private final static int CAMERA_ORIENTATION_DIRECTION = 1;
@@ -122,7 +118,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             case REQUEST_MODE_NIGHT:
                 scaleView.setColor(Color.WHITE);
                 break;
-            case UPDATE_CAMERA:
+            case CAMERA_UPDATE:
                 if(State.getInstance().getUsers().getCountAllSelected()==0){
                     State.getInstance().getMe().fire(SELECT_USER);
                 }
@@ -421,6 +417,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         CameraViewHolder.this.update();
                     }
                     break;
+                case MARKER_CLICK:
+                    onEvent(CAMERA_NEXT_ORIENTATION, null);
+                    break;
                 case CAMERA_NEXT_ORIENTATION:
                     if(orientation > CAMERA_ORIENTATION_LAST) {
                         orientation = previousOrientation;
@@ -495,7 +494,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
                     zoom = z;
                     onChangeLocation(myUser.getLocation());
-//                    State.getInstance().fire(UPDATE_CAMERA);
+//                    State.getInstance().fire(CAMERA_UPDATE);
                     break;
                 case CAMERA_ZOOM_IN:
                     z = 1;
@@ -504,7 +503,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
                     zoom = zoom + z;
                     onChangeLocation(myUser.getLocation());
-//                    State.getInstance().fire(UPDATE_CAMERA);
+//                    State.getInstance().fire(CAMERA_UPDATE);
                     break;
                 case CAMERA_ZOOM_OUT:
                     z = -1;
@@ -513,7 +512,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
                     zoom = zoom + z;
                     onChangeLocation(myUser.getLocation());
-//                    State.getInstance().fire(UPDATE_CAMERA);
+//                    State.getInstance().fire(CAMERA_UPDATE);
                     break;
             }
             return true;

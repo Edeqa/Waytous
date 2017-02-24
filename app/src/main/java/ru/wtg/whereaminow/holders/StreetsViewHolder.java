@@ -1,7 +1,6 @@
 package ru.wtg.whereaminow.holders;
 
 import android.location.Location;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +25,7 @@ import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_SINGLE_USER;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
-import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
+import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 /**
@@ -88,7 +87,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                         streetViewLayout.getLayoutParams().height = (int) (State.getInstance().getResources().getDisplayMetrics().heightPixels / 2.5);
                         streetView.getStreetViewPanoramaAsync(StreetsViewHolder.this);
                         streetViewLayout.setVisibility(View.VISIBLE);
-                        State.getInstance().fire(UPDATE_CAMERA);
+                        State.getInstance().fire(CAMERA_UPDATE);
 //                        .setMinimumHeight(height);
 
                         return false;
@@ -98,7 +97,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         streetViewLayout.setVisibility(View.GONE);
-                        State.getInstance().fire(UPDATE_CAMERA);
+                        State.getInstance().fire(CAMERA_UPDATE);
                         return false;
                     }
                 }).setVisible(false);

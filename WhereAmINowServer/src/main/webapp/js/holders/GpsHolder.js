@@ -17,6 +17,7 @@ function GpsHolder(main) {
 
         navigator.geolocation.getCurrentPosition(function(location){
             console.log("GPS ALLOWED",location);
+            locationUpdateListener(location);
             navigator.geolocation.watchPosition(locationUpdateListener);
         },function(error){
             var message;

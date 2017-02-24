@@ -5,12 +5,14 @@ function MarkerHolder(main) {
 
     var type = "marker";
 
+    EVENTS.MARKER_CLICK = "marker_click";
+
     function start() {
         // console.log("MARKERHOLDER",main);
     }
 
     function createView(user){
-        console.log("CREATEMARKER",user);
+        // console.log("CREATEMARKER",user.location);
 
         // var h=document.createElement('a');
         // var t=document.createTextNode('Hello World');
@@ -19,19 +21,23 @@ function MarkerHolder(main) {
 
         var marker = new google.maps.Marker({
             position: u.latLng(user.location),
-            title: "Hello World!",
+            title: user.properties.getDisplayName(),
             icon:{
-                path: 'M0 12c0 -9 7 -16 16 -16c 9 0 16 7 16 16c 0 9 -7 16 -16 16c -9 0 -16 -7 -16 -16M 16 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71z',
-                fillColor: 'blue',
+                path: 'M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 M 20 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71 z',
+                fillColor: user.properties.color,
                 fillOpacity: 0.6,
-                scale: 1.5,
-                strokeColor: 'transparent',
-                strokeWeight: 0,
-                size: new google.maps.Size(32, 32),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(32/2, 32/2)
+                scale: 1.2,
+                strokeColor: "gray",
+                strokeWeight: 1,
+                // size: new google.maps.Size(32, 32),
+                // origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(40/2, 40/2)
             },
             optimized:false,
+        });
+        marker.addListener("click", function(e){
+            console.log("MARKERCLICK",this,user.properties.getDisplayName(),e);
+            user.fire(EVENTS.MARKER_CLICK, marker);
         });
 
         // if(icon && icon[0]) {
@@ -72,8 +78,13 @@ function MarkerHolder(main) {
     }
 
     function onChangeLocation(location) {
-        console.log("MARKER");
+        if(location && location.coords && location.coords.heading) {
+            var icon = this.views.marker.marker.getIcon();
+            icon.rotation = location.coords.heading;
+            this.views.marker.marker.setIcon(icon);
+        }
         this.views.marker.marker.setPosition(u.latLng(location));
+
     }
 
     return {

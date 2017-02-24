@@ -448,6 +448,7 @@ public class State extends MultiDexApplication {
         public static final String CHANGE_COLOR = "change_color";
         public static final String SYSTEM_MESSAGE = "system_message";
         public static final String MAP_MY_LOCATION_BUTTON_CLICKED = "map_my_location_button_clicked";
+        public static final String MARKER_CLICK = "marker_click";
 
         public static final String CREATE_CONTEXT_MENU = "create_context_menu";
         public static final String CREATE_OPTIONS_MENU = "create_options_menu";

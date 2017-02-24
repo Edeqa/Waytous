@@ -32,7 +32,14 @@ function MapHolder(main) {
         map = new google.maps.Map(document.getElementById("map"), {
             center: {lat: 38.93421936035156, lng: -77.35877990722656},
             scrollwheel: true,
-            zoom: 15
+            zoom: 15,
+            panControl: true,
+            zoomControl: true,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: true,
+            overviewMapControl: true,
+            rotateControl: true,
         });
         main.map = map;
     }

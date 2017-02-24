@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -58,8 +57,7 @@ import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
-import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
+import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATE;
 import static ru.wtg.whereaminow.holders.MarkerViewHolder.MARKER_CLICK;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
@@ -749,7 +747,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         myUser.fire(MAKE_INACTIVE);
                         State.getInstance().fire(USER_DISMISSED, myUser);
 //                        myUser.fire(USER_DISMISSED);
-                        State.getInstance().fire(UPDATE_CAMERA);
+                        State.getInstance().fire(CAMERA_UPDATE);
                     }
 /*
                     State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
@@ -760,7 +758,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 myUser.fire(MAKE_INACTIVE);
                                 State.getInstance().fire(USER_DISMISSED, myUser);
                                 myUser.fire(USER_DISMISSED);
-                                State.getInstance().fire(UPDATE_CAMERA);
+                                State.getInstance().fire(CAMERA_UPDATE);
                             }
                         }
                     });

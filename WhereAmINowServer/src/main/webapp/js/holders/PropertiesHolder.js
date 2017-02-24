@@ -11,6 +11,24 @@ function PropertiesHolder(main) {
 
     function onEvent(EVENT,object){
         switch (EVENT){
+            case EVENTS.SELECT_USER:
+                this.properties.selected = true;
+                break;
+            case EVENTS.UNSELECT_USER:
+                this.properties.selected = false;
+                break;
+            case EVENTS.SELECT_SINGLE_USER:
+                main.users.forAllUsers(function(number,user){
+                    user.properties.selected = false;
+                });
+                var myUser = this;
+                myUser.fire(EVENTS.SELECT_USER);
+                main.users.forAllUsers(function(number,user){
+                    if(myUser != user) {
+                        user.fire(EVENTS.UNSELECT_USER);
+                    }
+                });
+                break;
             case EVENTS.CHANGE_NAME:
                 if(this.properties)this.properties.name = object;
                 break;
@@ -40,6 +58,7 @@ function PropertiesHolder(main) {
             number: myUser.number,
             active: myUser.active,
             selected: myUser.selected,
+            getDisplayName: getDisplayName.bind(myUser),
         };
         delete myUser.color;
         delete myUser.name;
@@ -49,6 +68,17 @@ function PropertiesHolder(main) {
         return view;
     }
 
+    function getDisplayName(){
+        var name = this.properties.name;
+        if(!name){
+            if(this.number == main.me.number) {
+                name = "Me";
+            } else {
+                name = "Friend "+this.number;
+            }
+        }
+        return name;
+    }
 
     return {
         type:type,

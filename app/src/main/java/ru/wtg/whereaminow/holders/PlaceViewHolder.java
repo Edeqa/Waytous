@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,14 +54,13 @@ import static ru.wtg.whereaminow.State.EVENTS.MAKE_INACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.SELECT_USER;
 import static ru.wtg.whereaminow.State.EVENTS.UNSELECT_USER;
-import static ru.wtg.whereaminow.holders.CameraViewHolder.UPDATE_CAMERA;
+import static ru.wtg.whereaminow.holders.CameraViewHolder.CAMERA_UPDATE;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.HIDE_NAVIGATION;
 import static ru.wtg.whereaminow.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ADDRESS;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LATITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_LONGITUDE;
@@ -321,7 +319,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 //                    State.getInstance().fire(USER_DISMISSED, myUser);
 //                    myUser.fire(USER_DISMISSED);
                     State.getInstance().getUsers().getUsers().remove(myUser.getProperties().getNumber());
-                    State.getInstance().fire(UPDATE_CAMERA);
+                    State.getInstance().fire(CAMERA_UPDATE);
 
                     for(int i=0;i<places.size();i++){
                         if(((int) places.get(i).get("number")) == myUser.getProperties().getNumber()) {

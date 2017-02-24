@@ -33,6 +33,13 @@ function ButtonHolder(main) {
             case EVENTS.TRACKING_DISABLED:
                 buttons.classList.add("hidden");
                 break;
+
+            case EVENTS.SELECT_USER:
+                this.views.button.classList.add("selected");
+                break;
+            case EVENTS.UNSELECT_USER:
+                this.views.button.classList.remove("selected");
+                break;
             case EVENTS.CHANGE_NAME:
                 var name;
                 if(object){
@@ -80,24 +87,15 @@ function ButtonHolder(main) {
                 }, 500);
                 openContextMenu(user);
             }
-
             console.log(user);
         }}, buttons);
         u.create("i", {className:"material-icons", innerHTML:"person"}, b);
-        var name = user.properties.name;
-        if(!name){
-            if(user.number == main.me.number) {
-                name = "Me";
-            } else {
-                name = "Friend "+user.number;
-            }
-        }
-        u.create("div", {className:"user-button-title",innerHTML:name}, b);
+        u.create("div", {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, b);
         return b;
     }
 
     function openContextMenu(user) {
-        console.log(user);
+        // console.log(user);
         u.clear(contextMenuLayout);
         sections = [];
         for(var i = 0; i < 10; i ++) {

@@ -32,6 +32,7 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
 
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
+import static ru.wtg.whereaminow.State.EVENTS.MARKER_CLICK;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static ru.wtg.whereaminow.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
@@ -42,7 +43,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
 
     public static final String TYPE = "marker";
-    static final String MARKER_CLICK = "marker_click";
 
     private GoogleMap map;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
@@ -98,7 +98,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                         State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
-                                myUser.fire(CameraViewHolder.CAMERA_NEXT_ORIENTATION);
+                                myUser.fire(MARKER_CLICK);
                             }
                         });
                     }
