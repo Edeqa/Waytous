@@ -45,14 +45,14 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TYPE;
 /**
  * Created 10/5/16.
  */
-public class MyHttpAdminServer implements HttpHandler {
+public class MyHttpAdminHandler implements HttpHandler {
 
     private final LinkedHashMap<String, PageHolder> holders;
     private DatabaseReference ref;
     private volatile AbstractWainProcessor wainProcessor;
     private HtmlGenerator html;
 
-    public MyHttpAdminServer(){
+    public MyHttpAdminHandler(){
 
         holders = new LinkedHashMap<String, PageHolder>();
 
@@ -71,7 +71,7 @@ public class MyHttpAdminServer implements HttpHandler {
             try {
                 //noinspection unchecked
                 Class<PageHolder> _tempClass = (Class<PageHolder>) Class.forName("ru.wtg.whereaminowserver.holders.admin."+s);
-                Constructor<PageHolder> ctor = _tempClass.getDeclaredConstructor(MyHttpAdminServer.class);
+                Constructor<PageHolder> ctor = _tempClass.getDeclaredConstructor(MyHttpAdminHandler.class);
                 PageHolder holder = ctor.newInstance(this);
                 holders.put(holder.getType(), holder);
             } catch (Exception e) {

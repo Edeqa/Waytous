@@ -2,78 +2,57 @@ package ru.wtg.whereaminowserver.servers;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
-import ru.wtg.whereaminowserver.holders.tracking.TrackingMainPageHolder;
-import ru.wtg.whereaminowserver.interfaces.PageHolder;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
+import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TITLE;
 
 /**
  * Created 1/19/17.
  */
-public class MyHttpTrackingServer implements HttpHandler {
+public class MyHttpTrackingHandler implements HttpHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
     private volatile AbstractWainProcessor wainProcessor;
-    private final LinkedHashMap<String, PageHolder> holders;
     private DatabaseReference ref;
 
-    public MyHttpTrackingServer(){
-
-        holders = new LinkedHashMap<String, PageHolder>();
-
-        LinkedList<String> classes = new LinkedList<String>();
-        classes.add("TrackingMainPageHolder");
-
-        for(String s:classes){
-            try {
-                //noinspection unchecked
-                Class<PageHolder> _tempClass = (Class<PageHolder>) Class.forName("ru.wtg.whereaminowserver.holders.tracking."+s);
-                Constructor<PageHolder> ctor = _tempClass.getDeclaredConstructor(MyHttpTrackingServer.class);
-                PageHolder holder = ctor.newInstance(this);
-                holders.put(holder.getType(), holder);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public MyHttpTrackingHandler(){
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         ref = database.getReference();
     }
 
-
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        System.out.println("Tracking server requested");
-
         URI uri = exchange.getRequestURI();
 
-        Headers headers = exchange.getRequestHeaders();
-        String host;
+        String host = null;
         try {
             host = exchange.getRequestHeaders().get("Host").get(0);
             host = host.split(":")[0];
-            System.out.println(host);
         } catch(Exception e){
             e.printStackTrace();
 //            host = InetAddress.getLocalHost().getHostAddress();
         }
+
+        Common.log("Tracking",host + uri.getPath() );
 
 //        System.out.println(InetAddress.getLocalHost().getHostAddress());
 
@@ -112,9 +91,6 @@ public class MyHttpTrackingServer implements HttpHandler {
 
 //            String mobileRedirect = "orw://" + InetAddress.getLocalHost().getHostAddress() + ":" + HTTP_PORT + "/track/" + tokenId;
 
-
-
-
 /*            if (parts.size() > 2 && parts.get(1).equals("track")) {
                 System.out.println("Mobile redirect generated: " + mobileRedirect);
                 JSONObject o = new JSONObject();
@@ -125,23 +101,23 @@ public class MyHttpTrackingServer implements HttpHandler {
 //            body.add(A).with(HREF, mobileRedirect).with("Click here for start mobile client");
 
 
-            TrackingMainPageHolder main = (TrackingMainPageHolder) holders.get(TrackingMainPageHolder.HOLDER_TYPE);
-            main.addRequest(parts);
+//            if (parts.size() > 2 && (parts.get(1).equals("track") || parts.get(1).equals("group"))) {
 
+                html.getHead().add(TITLE).with("Waytogo");
 
-            if (parts.size() > 2 && (parts.get(1).equals("track") || parts.get(1).equals("group"))) {
-                html = holders.get(TrackingMainPageHolder.HOLDER_TYPE).create(html,parts);
-            } else {
+                JSONObject o = new JSONObject();
+//                o.put("page", part);
+                o.put("request", parts);
+                o.put("version", SERVER_BUILD);
+
+                html.getHead().add(SCRIPT).with("data", o);
+                html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js");
+
+//            } else {
                 // interface for create tracking
-                html = holders.get(TrackingMainPageHolder.HOLDER_TYPE).create(html,parts);
-            }
+//            }
 
         }
-
-//        Common.addIncludes(html);
-
-//        html.getHead().add(SCRIPT).with(SRC, "/js/Utils.js");
-
 
         byte[] bytes = html.build().getBytes();
 
@@ -154,6 +130,7 @@ public class MyHttpTrackingServer implements HttpHandler {
         os.close();
 
     }
+
 
 
     public AbstractWainProcessor getWainProcessor() {

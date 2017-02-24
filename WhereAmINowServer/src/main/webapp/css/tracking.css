@@ -575,13 +575,14 @@ p.bottom-desc {
     }
     .user-buttons {
         display: flex;
-        width: auto;
+        width: 80%;
         position: absolute;
         top: 52px;
         left: 50%;
         right: auto;
         transform: translateX(-50%);
-        overflow-y: scroll;
+        overflow-x: scroll;
+        overflow-y: none;
     }
     .user-button {
         display: block;

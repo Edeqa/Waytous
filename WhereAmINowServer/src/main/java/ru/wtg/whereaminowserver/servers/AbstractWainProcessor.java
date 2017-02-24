@@ -5,12 +5,14 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 
 import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.wtg.whereaminowserver.helpers.CheckReq;
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
@@ -84,9 +86,7 @@ abstract public class AbstractWainProcessor {
         flagHolders.put(holder.getType(), holder);
     }
 
-    final public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        System.out.println("WSS:on open:" + conn.getRemoteSocketAddress() + " connected");
-
+    final public void onOpen(Connection conn, ClientHandshake handshake) {
         try {
 //            conn.send("{\"" + RESPONSE_STATUS + "\":\""+RESPONSE_STATUS_CONNECTED+"\",\"version\":" + SERVER_BUILD + "}");
         } catch(Exception e){
@@ -94,21 +94,19 @@ abstract public class AbstractWainProcessor {
         }
     }
 
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
+    public void onClose(Connection conn, int code, String reason, boolean remote) {
+//        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
         if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
 
     }
 
-    abstract public void onMessage(final WebSocket conn, String message);
+    abstract public void onMessage(final Connection conn, String message);
 
-    final public void onError(WebSocket conn, Exception ex) {
+    final public void onError(Connection conn, Exception ex) {
         ex.printStackTrace();
         if (conn != null && conn.getRemoteSocketAddress() != null) {
-            System.out.println("WSS:on error:" + conn.getRemoteSocketAddress() + ": " + ex.getMessage());
-
             String ip = conn.getRemoteSocketAddress().toString();
             if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
             if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
@@ -117,7 +115,7 @@ abstract public class AbstractWainProcessor {
         }
     }
 
-    public void onWebSocketPing(WebSocket conn, Framedata f) {
+    public void onWebSocketPing(Connection conn, Framedata f) {
         try {
             String ip = conn.getRemoteSocketAddress().toString();
             if (ipToUser.containsKey(ip)) {
@@ -147,5 +145,14 @@ abstract public class AbstractWainProcessor {
         return ipToCheck;
     }
 
+
+    public interface Connection {
+        boolean isOpen();
+        InetSocketAddress getRemoteSocketAddress();
+        void send(String string);
+
+        void close();
+//        void send();
+    }
 
 }

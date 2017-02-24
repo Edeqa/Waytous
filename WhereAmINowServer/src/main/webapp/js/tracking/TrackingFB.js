@@ -156,16 +156,24 @@ function TrackingFB(main) {
             var uri = new URL(link);
             link = "https://" + uri.hostname + ":8100/join" + uri.pathname;
 
-            xhr.onreadystatechange = function() { // (3)
+            var onreadystatechange = function() { // (3)
+            console.log("XHR",xhr.readyState,xhr);
                 switch(xhr.readyState){
                     case 4:
-                        console.log("SATTECHANGE",xhr);
+                        onmessage({data:xhr.response});
                         break;
                 }
             }
+            xhr.onreadystatechange = onreadystatechange;
 
             send = function(){
                 put(REQUEST.TIMESTAMP, new Date().getTime());
+                if(xhr.readyState != 1) {
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = onreadystatechange;
+                    xhr.open('POST', link, false);
+                }
+
                 xhr.send(JSON.stringify(json));
                 json = {};
             }
@@ -173,8 +181,37 @@ function TrackingFB(main) {
             xhr.open('POST', link, true);
             onopen();
 
-            return xhr;
         }
+
+        function onCheckControl(e) {
+            var json = JSON.parse(e);
+        console.log("CHECKCONTROL",json);
+
+//            var xhr = new XMLHttpRequest();
+//
+//            var uri = new URL(link);
+//            link = "https://" + uri.hostname + ":8100/join" + uri.pathname;
+//
+//            xhr.onreadystatechange = function() { // (3)
+//                switch(xhr.readyState){
+//                    case 4:
+//                        onCheckControl(xhr.response);
+//                        break;
+//                }
+//            }
+//
+//            send = function(){
+//                put(REQUEST.TIMESTAMP, new Date().getTime());
+//                xhr.send(JSON.stringify(json));
+//                json = {};
+//            }
+//
+//            xhr.open('POST', link, true);
+//            onopen();
+
+        }
+
+
 
         var a = {};
         try {

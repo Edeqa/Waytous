@@ -25,7 +25,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 /**
  * Created 1/19/17.
  */
-public class MyHttpMainServer implements HttpHandler {
+public class MyHttpMainHandler implements HttpHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
     private volatile AbstractWainProcessor wainProcessor;
@@ -57,7 +57,7 @@ public class MyHttpMainServer implements HttpHandler {
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
-        Common.log("Main:",uri.getPath(),"(" + (file.exists() ? file.length() +" byte(s)" : "not found") + ")" );
+        Common.log("Main",uri.getPath(),"(" + (file.exists() ? file.length() +" byte(s)" : "not found") + ")" );
 
         String etag = "W/1976" + ("" + file.lastModified()).hashCode();
 

@@ -21,7 +21,7 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
 
 public class Common {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z", Locale.getDefault());
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
 
     public static void addIncludes(HtmlGenerator html) {
 

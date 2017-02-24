@@ -2,11 +2,12 @@ package ru.wtg.whereaminowserver.helpers;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import org.java_websocket.WebSocket;
 import org.json.JSONObject;
 
 import java.beans.Transient;
 import java.util.Date;
+
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
@@ -23,7 +24,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_SPEED;
 
 @IgnoreExtraProperties
 public class MyUser {
-    transient public WebSocket webSocket;
+    transient public AbstractWainProcessor.Connection connection;
     public String name;
     public long created;
     public long changed;
@@ -38,8 +39,8 @@ public class MyUser {
     private String os;
 
 
-    public MyUser(WebSocket webSocket, String deviceId) {
-        this.webSocket = webSocket;
+    public MyUser(AbstractWainProcessor.Connection connection, String deviceId) {
+        this.connection = connection;
         this.deviceId = deviceId;
         created = new Date().getTime();
         setChanged();
@@ -84,18 +85,18 @@ public class MyUser {
     }
 
     public String getAddress() {
-        if (webSocket == null) return null;
-        if (webSocket.getRemoteSocketAddress() == null) return null;
-        return webSocket.getRemoteSocketAddress().toString();
+        if (connection == null) return null;
+        if (connection.getRemoteSocketAddress() == null) return null;
+        return connection.getRemoteSocketAddress().toString();
     }
 
 //    @Transient
 //    public WebSocket getConnection() {
-//        return webSocket;
+//        return connection;
 //    }
 
-    public void setConnection(WebSocket connection) {
-        this.webSocket = connection;
+    public void setConnection(AbstractWainProcessor.Connection connection) {
+        this.connection = connection;
     }
 
     public void setManufacturer(String manufacturer) {
@@ -114,7 +115,7 @@ public class MyUser {
         String res = "";
         res += "number:" + number;
         res += ", deviceId:" + deviceId;
-        res += ", address:" + webSocket.getRemoteSocketAddress();
+        res += ", address:" + connection.getRemoteSocketAddress();
         res += ", created:" + getCreated() + "/" + new Date(getCreated()).toString();
         res += ", changed:" + getChanged() + "/" + new Date(getChanged()).toString();
         res += ", control:" + getControl();
@@ -144,11 +145,11 @@ public class MyUser {
     }
 
     public void send(String text) {
-        webSocket.send(text);
+        connection.send(text);
     }
 
     public void disconnect() {
-        webSocket.close();
+        connection.close();
     }
 
     public void addPosition(JSONObject message) {

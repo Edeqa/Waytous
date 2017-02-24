@@ -1,6 +1,5 @@
 package ru.wtg.whereaminowserver.helpers;
 
-import org.java_websocket.WebSocket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +16,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_PUSH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
@@ -192,7 +193,7 @@ public class MyToken {
         } else {
 
             for (MyUser x : users) {
-                WebSocket conn = x.webSocket;//.getConnection();
+                AbstractWainProcessor.Connection conn = x.connection;//.getConnection();
                 if (conn != null && conn.isOpen()) {
                     conn.send(o.toString());
                 }
@@ -291,7 +292,7 @@ public class MyToken {
             try {
                 System.out.println("INITIAL:"+x.getValue().getNumber()+":"+p);
 
-                if (/*p.timestamp > 0 && */x.getValue().webSocket.getRemoteSocketAddress() != null) {
+                if (/*p.timestamp > 0 && */x.getValue().connection.getRemoteSocketAddress() != null) {
                     JSONObject o = new JSONObject();
                     if(p != null) o = p.toJSON();
 

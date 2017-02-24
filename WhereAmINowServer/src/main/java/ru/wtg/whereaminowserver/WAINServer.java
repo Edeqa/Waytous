@@ -26,11 +26,11 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
 import ru.wtg.whereaminowserver.helpers.SensitiveData;
-import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
-import ru.wtg.whereaminowserver.servers.MyHttpJoinServer;
-import ru.wtg.whereaminowserver.servers.MyHttpMainServer;
-import ru.wtg.whereaminowserver.servers.MyHttpRedirectServer;
-import ru.wtg.whereaminowserver.servers.MyHttpTrackingServer;
+import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
+import ru.wtg.whereaminowserver.servers.MyHttpJoinHandler;
+import ru.wtg.whereaminowserver.servers.MyHttpMainHandler;
+import ru.wtg.whereaminowserver.servers.MyHttpRedirectHandler;
+import ru.wtg.whereaminowserver.servers.MyHttpTrackingHandler;
 import ru.wtg.whereaminowserver.servers.MyWsServer;
 import ru.wtg.whereaminowserver.servers.WainProcessorFirebase;
 
@@ -160,7 +160,7 @@ try {
     new Thread() {
         public void run() {
             try {
-                WebSocketImpl.DEBUG = true;
+                WebSocketImpl.DEBUG = false;
                 System.out.println("WS FB\t\t\t\t| " + WS_FB_PORT + "\t|");
                 wsServer.start();
                 System.out.println("WSS FB\t\t\t\t| " + WSS_FB_PORT + "\t|");
@@ -213,7 +213,7 @@ try {
         server = HttpServer.create();
         server.bind(new InetSocketAddress(HTTP_PORT), 0);
 
-        MyHttpRedirectServer redirectServer = new MyHttpRedirectServer();
+        MyHttpRedirectHandler redirectServer = new MyHttpRedirectHandler();
         System.out.println("Redirect HTTP\t\t| " + HTTP_PORT + "\t| " + "/");
         server.createContext("/", redirectServer);
 
@@ -224,17 +224,17 @@ try {
 //        server = HttpServer.create();
 //        server.bind(new InetSocketAddress(HTTP_PORT), 0);
 
-        MyHttpMainServer mainServer = new MyHttpMainServer();
+        MyHttpMainHandler mainServer = new MyHttpMainHandler();
         mainServer.setWainProcessor(wainProcessorFirebase);
 //        server.createContext("/", mainServer);
 //        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
-        MyHttpJoinServer joinServer = new MyHttpJoinServer();
+        MyHttpJoinHandler joinServer = new MyHttpJoinHandler();
         joinServer.setWainProcessor(wainProcessorFirebase);
 //        server.createContext("/", mainServer);
 //        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
-        MyHttpTrackingServer trackingServer = new MyHttpTrackingServer();
+        MyHttpTrackingHandler trackingServer = new MyHttpTrackingHandler();
         trackingServer.setWainProcessor(wainProcessorFirebase);
 //        server.createContext("/track", trackingServer);
 //        System.out.println("Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/track");
@@ -242,7 +242,7 @@ try {
 //        server.createContext("/group", trackingServer);
 //        System.out.println("Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/group");
 
-        MyHttpAdminServer adminServer = new MyHttpAdminServer();
+        MyHttpAdminHandler adminServer = new MyHttpAdminHandler();
         adminServer.setWainProcessor(wainProcessorFirebase);
 //        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
 //        System.out.println("Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
@@ -316,7 +316,6 @@ try {
         } catch(Exception e){
             e.printStackTrace();
         }
-
 
 /*        new Thread() {
             public void run() {

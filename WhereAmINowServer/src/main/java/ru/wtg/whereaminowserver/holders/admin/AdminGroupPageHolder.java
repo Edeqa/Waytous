@@ -6,7 +6,7 @@ import java.util.Map;
 
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
-import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
+import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
 
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
@@ -21,10 +21,10 @@ public class AdminGroupPageHolder implements PageHolder {
 
     private static final String HOLDER_TYPE = "group";
 
-    private final MyHttpAdminServer server;
+    private final MyHttpAdminHandler server;
     private HtmlGenerator html;
 
-    public AdminGroupPageHolder(MyHttpAdminServer server) {
+    public AdminGroupPageHolder(MyHttpAdminHandler server) {
         this.server = server;
     }
 

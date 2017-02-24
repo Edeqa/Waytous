@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import ru.wtg.whereaminowserver.helpers.CheckReq;
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.helpers.Utils;
@@ -90,18 +91,20 @@ public class MyWsServer extends WebSocketServer implements WssServer {
 */
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        System.out.println("WSS:on open:"+conn.getRemoteSocketAddress() + ": " + handshake);
-        processor.onOpen(conn, handshake);
+        Common.log("Ws","onOpen:"+conn.getRemoteSocketAddress(),handshake.getResourceDescriptor() );
+        processor.onOpen(new WSConnection(conn), handshake);
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        processor.onClose(conn, code, reason, remote);
+        Common.log("Ws","onClose:"+conn.getRemoteSocketAddress(),"code:"+code, "reason:"+reason);
+        processor.onClose(new WSConnection(conn), code, reason, remote);
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        processor.onMessage(conn, message);
+        Common.log("Ws","onMessage:"+conn.getRemoteSocketAddress(), message.length() > 200 ? "("+message.length() + " byte(s))" : message );
+        processor.onMessage(new WSConnection(conn), message);
     }
 
 //    @Override
@@ -112,13 +115,14 @@ public class MyWsServer extends WebSocketServer implements WssServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        processor.onError(conn, ex);
+        Common.log("Ws","onError:"+conn.getRemoteSocketAddress(),"exception:"+ex.getMessage());
+        processor.onError(new WSConnection(conn), ex);
     }
 
     @Override
     public void onWebsocketPing(WebSocket conn, Framedata f) {
         super.onWebsocketPing(conn, f);
-        processor.onWebSocketPing(conn, f);
+        processor.onWebSocketPing(new WSConnection(conn), f);
     }
 
     /**
@@ -151,5 +155,35 @@ public class MyWsServer extends WebSocketServer implements WssServer {
         }
         return true;
     }
+
+    class WSConnection implements AbstractWainProcessor.Connection {
+
+        private final WebSocket conn;
+
+        public WSConnection(WebSocket conn) {
+            this.conn = conn;
+        }
+
+        @Override
+        public boolean isOpen() {
+            return conn.isOpen();
+        }
+
+        @Override
+        public InetSocketAddress getRemoteSocketAddress() {
+            return conn.getRemoteSocketAddress();
+        }
+
+        @Override
+        public void send(String string) {
+            conn.send(string);
+        }
+
+        @Override
+        public void close() {
+            conn.close();
+        }
+    }
+
 
 }

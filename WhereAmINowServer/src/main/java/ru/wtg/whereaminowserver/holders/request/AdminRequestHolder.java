@@ -8,7 +8,6 @@ import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
-import ru.wtg.whereaminowserver.servers.MyWsServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_LEAVE;
 
@@ -36,7 +35,7 @@ public class AdminRequestHolder implements RequestHolder {
     @Override
     public boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result) {
 
-        admins.put(user.webSocket.getRemoteSocketAddress().toString(), user);
+        admins.put(user.connection.getRemoteSocketAddress().toString(), user);
 
         System.out.println("ADMIN:"+user);
 

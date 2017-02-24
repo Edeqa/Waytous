@@ -14,7 +14,7 @@ import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
-import ru.wtg.whereaminowserver.servers.MyHttpAdminServer;
+import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
@@ -32,10 +32,10 @@ public class AdminSummaryPageHolder implements PageHolder {
 
     private static final String HOLDER_TYPE = "summary";
 
-    private final MyHttpAdminServer server;
+    private final MyHttpAdminHandler server;
     private HtmlGenerator html;
 
-    public AdminSummaryPageHolder(MyHttpAdminServer server) {
+    public AdminSummaryPageHolder(MyHttpAdminHandler server) {
         this.server = server;
     }
 

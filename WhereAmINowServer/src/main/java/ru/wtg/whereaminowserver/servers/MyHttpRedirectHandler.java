@@ -52,19 +52,13 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TYPE;
 /**
  * Created 10/5/16.
  */
-public class MyHttpRedirectServer implements HttpHandler {
+public class MyHttpRedirectHandler implements HttpHandler {
 
     @Override
     public void handle(final HttpExchange exchange) throws IOException {
         try {
-//            System.out.println("Admin server requested");
-
             URI uri = exchange.getRequestURI();
-
-            System.out.println(uri.getPath());
-            System.out.println(uri.getRawQuery());
-
-            Headers headers = exchange.getRequestHeaders();
+//            Headers headers = exchange.getRequestHeaders();
             String host;
             try {
                 host = exchange.getRequestHeaders().get("Host").get(0);
@@ -74,9 +68,7 @@ public class MyHttpRedirectServer implements HttpHandler {
                 host = InetAddress.getLocalHost().getHostAddress();
             }
 
-            System.out.println(InetAddress.getLocalHost().getHostAddress());
-            System.out.println(host);
-
+            Common.log("Redirect",host + uri.getPath());
 
             ArrayList<String> parts = new ArrayList<String>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
@@ -100,6 +92,8 @@ public class MyHttpRedirectServer implements HttpHandler {
                     "\nwindow.location.href = mobile;\n" +
                     "\nsetTimeout(noClient,500);\n");
 
+                Common.log("Redirect ->", mobileRedirect, "||", webRedirect);
+
                 byte[] bytes = html.build().getBytes();
                 try {
                     exchange.getResponseHeaders().set("Content-Type", "text/html");
@@ -113,23 +107,21 @@ public class MyHttpRedirectServer implements HttpHandler {
             } else {
                 redirect(exchange, host, uri.getPath());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void redirect(HttpExchange exchange, String host, String path) throws IOException {
-            System.out.println("RES::" + "https://" + host + ":" + HTTPS_PORT + path);
-
             String newUri = "https://" + host + ":" + HTTPS_PORT + path;
 //            OutputStream os = exchange.getResponseBody();
 //            os.write(response.getBytes());
 //            os.close();
 
+            Common.log("Redirect ->", newUri);
+
             String requestMethod = exchange.getRequestMethod();
             if (requestMethod.equalsIgnoreCase("GET")) {
-                System.out.println("Request is GET; Getting response headers");
                 Headers responseHeaders = exchange.getResponseHeaders();
                 responseHeaders.set("Content-Type", "text/plain");
                 responseHeaders.set("Date", new Date().toString());

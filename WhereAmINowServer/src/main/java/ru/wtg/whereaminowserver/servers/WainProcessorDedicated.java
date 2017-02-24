@@ -1,26 +1,15 @@
 package ru.wtg.whereaminowserver.servers;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.framing.Framedata;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -29,8 +18,6 @@ import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.helpers.Utils;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
-import ru.wtg.whereaminowserver.interfaces.RequestHolder;
-import ru.wtg.whereaminowserver.interfaces.WssServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
@@ -100,7 +87,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
                             if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
                             if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
                             if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                            user.webSocket.close();
+                            user.connection.close();
                         }
 
                     } else {
@@ -137,7 +124,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
     }
 
     @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+    public void onClose(AbstractWainProcessor.Connection conn, int code, String reason, boolean remote) {
         System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
@@ -172,7 +159,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
     }
 
     @Override
-    public void onMessage(WebSocket conn, String message) {
+    public void onMessage(AbstractWainProcessor.Connection conn, String message) {
         boolean disconnect = false;
         try {
             System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);
