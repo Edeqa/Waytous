@@ -195,6 +195,20 @@ function Utils() {
         return loc;
     }
 
+    function locationToJson(location) {
+        var json = {};
+        json[USER.PROVIDER] = loc.provider;
+        location.coords = location.coords || {};
+        json[USER.LATITUDE] = location.coords.latitude;
+        json[USER.LONGITUDE] = location.coords.longitude;
+        json[USER.ALTITUDE] = location.coords.altitude;
+        json[USER.ACCURACY] = location.coords.altitudeAccuracy;
+        json[USER.BEARING] = location.coords.heading;
+        json[USER.SPEED] = location.coords.speed;
+        json[USER.TIMESTAMP] = location.timestamp;
+        return json;
+    }
+
     function latLng(location) {
         if(!location || !location.coords) return null;
         return new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
@@ -421,5 +435,6 @@ function Utils() {
         getEncryptedHash:getEncryptedHash,
         latLng:latLng,
         jsonToLocation:jsonToLocation,
+        locationToJson:locationToJson,
     }
 }

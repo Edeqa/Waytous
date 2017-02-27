@@ -575,7 +575,8 @@ p.bottom-desc {
     }
     .user-buttons {
         display: flex;
-        width: 80%;
+        width: auto;
+        max-width: 80%;
         position: absolute;
         top: 52px;
         left: 50%;

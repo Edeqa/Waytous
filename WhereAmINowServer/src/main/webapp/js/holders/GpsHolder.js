@@ -61,6 +61,8 @@ function GpsHolder(main) {
 
     function locationUpdateListener(position) {
         console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
+        var message = u.locationToJson(position);
+        main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
     }
 

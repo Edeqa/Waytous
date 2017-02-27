@@ -154,7 +154,7 @@ function TrackingFB(main) {
             var xhr = new XMLHttpRequest();
 
             var uri = new URL(link);
-            link = "https://" + uri.hostname + ":8100/join" + uri.pathname;
+            link = "https://" + uri.hostname + ":8000/join" + uri.pathname;
 
             var onreadystatechange = function() { // (3)
             console.log("XHR",xhr.readyState,xhr);
@@ -241,6 +241,11 @@ function TrackingFB(main) {
         put(REQUEST.TIMESTAMP, new Date().getTime());
         webSocketListener.send(JSON.stringify(json));
         json = {};
+    }
+
+    function sendMessage(type, json) {
+        
+
     }
 
     function setLink(link) {
@@ -382,5 +387,6 @@ debugger;
         setLink:setLink,
         setTrackingListener:setTrackingListener,
         getTrackingUri:getTrackingUri,
+        sendMessage:sendMessage,
     }
 }
