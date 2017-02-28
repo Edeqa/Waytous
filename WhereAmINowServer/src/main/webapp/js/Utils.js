@@ -197,15 +197,15 @@ function Utils() {
 
     function locationToJson(location) {
         var json = {};
-        json[USER.PROVIDER] = loc.provider;
+        json[USER.PROVIDER] = location.provider || "fused";
         location.coords = location.coords || {};
         json[USER.LATITUDE] = location.coords.latitude;
         json[USER.LONGITUDE] = location.coords.longitude;
-        json[USER.ALTITUDE] = location.coords.altitude;
-        json[USER.ACCURACY] = location.coords.altitudeAccuracy;
-        json[USER.BEARING] = location.coords.heading;
-        json[USER.SPEED] = location.coords.speed;
-        json[USER.TIMESTAMP] = location.timestamp;
+        json[USER.ALTITUDE] = location.coords.altitude || 0;
+        json[USER.ACCURACY] = location.coords.altitudeAccuracy || 50;
+        json[USER.BEARING] = location.coords.heading || 0;
+        json[USER.SPEED] = location.coords.speed || 0;
+        json[REQUEST.TIMESTAMP] = location.timestamp;
         return json;
     }
 

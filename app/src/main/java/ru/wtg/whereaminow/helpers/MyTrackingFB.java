@@ -350,48 +350,45 @@ public class MyTrackingFB implements Tracking {
 
                 EntityHolder holder = state.getAllHolders().get(type);
 
-                if(holder == null) return;
+                if(holder == null || !holder.isSaveable()) return;
 
                 Map<String, Object> updates = new HashMap<>();
 
-                String path;
-                if(holder.isSaveable()) {
-
-                    String key = ref.push().getKey();
-                    Map<String,Object> data = new HashMap();
-                    Iterator<String> keys = o.keys();
-                    while(keys.hasNext()) {
-                        String k = keys.next();
-                        data.put(k,o.get(k));
-                    }
-                    data.remove(REQUEST);
-                    data.remove(REQUEST_PUSH);
-                    data.remove(REQUEST_DELIVERY_CONFIRMATION);
-
-                    if(data.containsKey("to")) {
-                        String to = String.valueOf(data.get("to"));
-                        data.remove("to");
-                        data.put("from", state.getMe().getProperties().getNumber());
-                        path = DATABASE_SECTION_PRIVATE + "/" + type + "/" + to;
-                    } else {
-                        path = DATABASE_SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
-                    }
-
-                    updates.put(path + "/" + key, data);
-                    updates.put(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/changed", ServerValue.TIMESTAMP);
-                    Task<Void> a = ref.updateChildren(updates);
-                    a.addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-//                            System.out.println("SUCCESS:");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            System.out.println("FAIL:"+e.getMessage());
-                        }
-                    });
+                String key = ref.push().getKey();
+                Map<String,Object> data = new HashMap();
+                Iterator<String> keys = o.keys();
+                while(keys.hasNext()) {
+                    String k = keys.next();
+                    data.put(k,o.get(k));
                 }
+                data.remove(REQUEST);
+                data.remove(REQUEST_PUSH);
+                data.remove(REQUEST_DELIVERY_CONFIRMATION);
+
+                String path;
+                if(data.containsKey("to")) {
+                    String to = String.valueOf(data.get("to"));
+                    data.remove("to");
+                    data.put("from", state.getMe().getProperties().getNumber());
+                    path = DATABASE_SECTION_PRIVATE + "/" + type + "/" + to;
+                } else {
+                    path = DATABASE_SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
+                }
+
+                updates.put(path + "/" + key, data);
+                updates.put(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/changed", ServerValue.TIMESTAMP);
+                Task<Void> a = ref.updateChildren(updates);
+                a.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+//                            System.out.println("SUCCESS:");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        System.out.println("FAIL:"+e.getMessage());
+                    }
+                });
             } else {
                 System.err.println("ERROR SENDING");
             }

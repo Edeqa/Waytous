@@ -42,6 +42,9 @@ function MapHolder(main) {
             rotateControl: true,
         });
         main.map = map;
+        main.map.addListener("zoom_changed", function() {
+            main.fire(EVENTS.CAMERA_ZOOM, map.getZoom());
+        });
     }
 
     function onEvent(EVENT,object){

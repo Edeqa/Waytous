@@ -25,21 +25,27 @@ function CameraHolder(main) {
 
     function start() {
         console.log("CameraHOLDER",main);
+
     }
 
     function onEvent(EVENT,object){
-        if(!this || !this.views || !this.views.camera) return true;
-        var camera = this.views.camera;
+        // if(!this || !this.views || !this.views.camera) return true;
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(2,type+"_1","Fit to screen","fullscreen",function(){console.log("FITTOSCREEN")});
+                object.add(2,type+"_1","Fit to screen","fullscreen",function(){
+                    main.users.forAllUsers(function (number, user) {
+                        user.fire(EVENTS.SELECT_USER);
+                    });
+                    console.log("FITTOSCREEN")
+                });
                 break;
             case EVENTS.MARKER_CLICK:
                 onEvent.call(this,EVENTS.CAMERA_NEXT_ORIENTATION);
                 break;
             case EVENTS.CAMERA_NEXT_ORIENTATION:
                 console.log("NEXTORIENTATION",this);
-                if(camera.orientation > CAMERA_ORIENTATION_LAST) {
+                var camera = this.views.camera;
+                if(this.views.camera.orientation > CAMERA_ORIENTATION_LAST) {
                     camera.orientation = camera.previousOrientation;
                 } else if(camera.orientation == CAMERA_ORIENTATION_LAST){
                     camera.orientation = CAMERA_ORIENTATION_NORTH;
@@ -54,9 +60,24 @@ function CameraHolder(main) {
                 onChangeLocation.call(this,this.location);
                 break;
             case EVENTS.SELECT_USER:
-                var center = u.latLng(this.location);
-                if(center) {
-                    WAIN.main.map.panTo(center);
+                onChangeLocation.call(this, this.location)
+                break;
+            case EVENTS.CAMERA_ZOOM:
+                if(main.users.getCountSelected()==1) {
+                    main.users.forAllUsers(function (number, user) {
+                        if(user.properties.selected) {
+                            if(!object) {
+                                var z = user.views.camera.zoom;
+                                var zooms = [CAMERA_DEFAULT_ZOOM, CAMERA_DEFAULT_ZOOM + 2, CAMERA_DEFAULT_ZOOM + 4, CAMERA_DEFAULT_ZOOM - 2, CAMERA_DEFAULT_ZOOM - 4, CAMERA_DEFAULT_ZOOM];
+                                var index = zooms.indexOf(z);
+                                object = zooms[index+1];
+                            }
+                            user.views.camera.zoom = object;
+                        }
+                    });
+                }
+                if(main.map.getZoom() != object) {
+                    main.map.setZoom(object);
                 }
                 break;
             default:
@@ -69,6 +90,7 @@ function CameraHolder(main) {
         if(!this || !this.views || !this.views.camera) return;
         var camera = this.views.camera;
         this.location = location;
+        update.call();
         switch (camera.orientation){
             /*case CAMERA_ORIENTATION_NORTH:
 //                    if(orientationChanged) {
@@ -118,6 +140,29 @@ function CameraHolder(main) {
                 break;*/
         }
 
+    }
+
+    function update() {
+        if(main.users.getCountSelected() > 1) {
+            var bounds = new google.maps.LatLngBounds();
+            for(var i in main.users.users) {
+                var user = main.users.users[i];
+                if(user.properties.selected && user.location && user.location.coords) {
+                    bounds.extend(u.latLng(user.location));
+                }
+            }
+            main.map.fitBounds(bounds);
+        } else {
+            main.users.forAllUsers(function(number,user){
+                if(user.properties.selected) {
+                    var center = u.latLng(user.location);
+                    if (center) {
+                        main.map.setZoom(user.views.camera.zoom || CAMERA_DEFAULT_ZOOM);
+                        main.map.panTo(center);
+                    }
+                }
+            });
+        }
     }
 
     function createView(user){

@@ -4,7 +4,7 @@
 function GpsHolder(main) {
 
     var type = "gps";
-    var user;
+    var geoTrackFilter = new GeoTrackFilter();
 
     function start() {
         console.log("GPSHOLDER",this);
@@ -46,8 +46,9 @@ function GpsHolder(main) {
                 icon.classList.add("hidden");
                 alert.classList.remove("hidden");
             }}, main.right);
+        }, {
+            enableHighAccuracy: true
         });
-
     }
 
     function onEvent(EVENT,object){
@@ -61,9 +62,41 @@ function GpsHolder(main) {
 
     function locationUpdateListener(position) {
         console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
+
+        if(!position) return;
+        // position = geoTrackFilter.normalizeLocation(position);
+        var last = main.me.location;
+        if(last && last.coords && last.coords.latitude == position.coords.latitude && last.coords.longitude == position.coords.longitude) {
+            return;
+        }
+
         var message = u.locationToJson(position);
         main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
+    }
+
+    function GeoTrackFilter() {
+        return {
+            current:0,
+            earthRadius: 6371009,
+            lastTimeStep: null,
+            kalmanFilter: null,
+
+            normalizeLocation: function(position) {
+                console.log(this.current,position);
+                this.current ++;
+
+                filter.update(position.coords.latitude, position.coords.longitude, position.timestamp);
+                var latLng = filter.getLatLng();
+                position.coords.latitude = latLng[0];
+                position.coords.longitude = latLng[1];
+                position.coords.heading = filter.getBearing();
+                position.coords.speed = filter.getSpeed(position.coords.altitude)
+
+                return position;
+            }
+
+        }
     }
 
     return {

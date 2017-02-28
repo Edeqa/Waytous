@@ -33,7 +33,6 @@ function ButtonHolder(main) {
             case EVENTS.TRACKING_DISABLED:
                 buttons.classList.add("hidden");
                 break;
-
             case EVENTS.SELECT_USER:
                 this.views.button.classList.add("selected");
                 break;
@@ -87,7 +86,7 @@ function ButtonHolder(main) {
                 }, 500);
                 openContextMenu(user);
             }
-            console.log(user);
+            // console.log(user);
         }}, buttons);
         u.create("i", {className:"material-icons", innerHTML:"person"}, b);
         u.create("div", {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, b);

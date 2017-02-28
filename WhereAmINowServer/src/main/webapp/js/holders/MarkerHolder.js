@@ -25,10 +25,11 @@ function MarkerHolder(main) {
             icon:{
                 path: 'M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 M 20 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71 z',
                 fillColor: user.properties.color,
-                fillOpacity: 0.6,
+                fillOpacity: 0.7,
                 scale: 1.2,
-                strokeColor: "gray",
-                strokeWeight: 1,
+                strokeColor: "white",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
                 // size: new google.maps.Size(32, 32),
                 // origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(40/2, 40/2)

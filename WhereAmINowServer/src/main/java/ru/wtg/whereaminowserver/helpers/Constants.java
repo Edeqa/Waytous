@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 16;
+    public final static int SERVER_BUILD = 17;
 
 // debug local version
     public final static String WSS_SERVER_HOST = "https://10.0.0.96";

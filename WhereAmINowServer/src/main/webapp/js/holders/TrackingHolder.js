@@ -59,6 +59,7 @@ function TrackingHolder(main) {
     function startTracking(){
 
         this.tracking = new TrackingFB(main);
+        main.tracking = this.tracking;
         // console.log("LOADED", tracking);
         // tracking.start();
 

@@ -6,7 +6,7 @@ function MyUsers(main) {
     var users = {};
     var myNumber = 0;
 
-    var addUser = function (json) {
+    function addUser (json) {
         var user;// = new MyUser();
         if (!users[json[RESPONSE.NUMBER]]) {
             user = new MyUser(main);
@@ -33,6 +33,7 @@ function MyUsers(main) {
 
     function setMe() {
         delete users[myNumber];
+        main.me.number = myNumber;
         main.me.fire(EVENTS.CHANGE_NUMBER, myNumber);
         users[myNumber] = main.me;
         return main.me;
@@ -63,6 +64,16 @@ function MyUsers(main) {
         if(users[number]) callback(number, users[number], arguments);
     }
 
+    function getCountSelected(){
+        var count = 0;
+        for(var i in users) {
+            if(users[i] && i == users[i].number && users[i].properties && users[i].properties.selected) {
+                count ++;
+            }
+        }
+        return count;
+    }
+
     return {
         addUser:addUser,
         setMe:setMe,
@@ -72,6 +83,7 @@ function MyUsers(main) {
         forAllUsersExceptMe:forAllUsersExceptMe,
         forUser:forUser,
         users:users,
+        getCountSelected:getCountSelected,
 
     }
 }

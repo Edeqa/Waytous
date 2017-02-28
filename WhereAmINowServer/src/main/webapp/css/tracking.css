@@ -159,7 +159,10 @@ h2 {
     cursor: pointer;
 }
 .selected {
-
+    border-color: #00ff00;
+    border-width: 2px;
+    border-style: ridge;
+    padding: 3px !important;
 }
 .clickable:hover {
     background-color: lightcyan;

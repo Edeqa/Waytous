@@ -236,16 +236,81 @@ function TrackingFB(main) {
         json[name] = value;
     }
 
-    function send() {
-        // console.log("SEND",json);
-        put(REQUEST.TIMESTAMP, new Date().getTime());
-        webSocketListener.send(JSON.stringify(json));
-        json = {};
+
+    function send(jsonMessage) {
+        if(!jsonMessage) {
+            put(REQUEST.TIMESTAMP, new Date().getTime());
+            send(json);
+            json = {};
+            return;
+        }
+
+        if(jsonMessage.constructor === String) {
+            put(REQUEST.REQUEST, jsonMessage);
+            send();
+            return;
+        }
+
+        jsonMessage[REQUEST.TIMESTAMP] = new Date().getTime();
+        var type = jsonMessage[REQUEST.REQUEST];
+        if(type == REQUEST.NEW_TOKEN || type == REQUEST.JOIN_TOKEN || type == REQUEST.CHECK_USER) {
+            // console.error("WRONG WAY");
+            // switch (webSocketListener.status) {
+            webSocketListener.send(JSON.stringify(json));
+            //
+            // }
+        } else if(ref) {
+            if(type == REQUEST.CHANGE_NAME) {
+                console.error("CHANGENAME");
+
+                return;
+            } else if(type == REQUEST.WELCOME_MESSAGE) {
+                console.error("WELCOMEMESSAGE");
+
+                return;
+            }
+
+            var holder = main.holders[type];
+            if(!holder || !holder.saveable) return;
+
+            delete jsonMessage[REQUEST.REQUEST];
+            delete jsonMessage[REQUEST.PUSH];
+            delete jsonMessage[REQUEST.DELIVERY_CONFIRMATION];
+
+            var path;
+            if(jsonMessage.to) {
+                var to = jsonMessage.to;
+                delete jsonMessage.to;
+                jsonMessage.from = main.me.number;
+                path = DATABASE.SECTION_PRIVATE + "/" + type + "/" + to;
+            } else {
+                path = DATABASE.SECTION_PUBLIC + "/" + type + "/" + main.me.number;
+            }
+            var key = ref.push().key;
+
+            var updates = {};
+            updates[path + "/" + key] = jsonMessage;
+            updates[DATABASE.SECTION_USERS_DATA + "/" + main.me.number + "/changed"] = firebase.database.ServerValue.TIMESTAMP;
+
+            ref.update(updates);
+        }
+
+
     }
 
-    function sendMessage(type, json) {
-        
+    function sendMessage(type, jsonMessage) {
+        json = json || {};
+        for(var x in jsonMessage) {
+            json[x] = jsonMessage[x];
+        }
+        json[REQUEST.REQUEST] = type;
+        sendUpdate();
+    }
 
+    function sendUpdate() {
+        json = json || {};
+        if(!json[REQUEST.REQUEST]) json[REQUEST.REQUEST] = REQUEST.UPDATE;
+        send();
     }
 
     function setLink(link) {
