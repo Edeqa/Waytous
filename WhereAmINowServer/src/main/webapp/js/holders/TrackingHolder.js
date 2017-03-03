@@ -13,7 +13,7 @@ function TrackingHolder(main) {
 
     function start(){
 
-        progress = u.create("div", {className:"progress shadow hidden"}, main.right);
+        progress = u.create("div", {className:"modal progress shadow hidden"}, main.right);
         u.create("div", {className:"progress-circle"}, progress);
         progressTitle = u.create("div", {className:"progress-title"}, progress);
         var group = window.location.pathname.split("/")[2];
@@ -100,7 +100,6 @@ function TrackingHolder(main) {
         },
         onAccept: function(o){
             // console.log("ONACCEPT",o);
-            progress.classList.add("hidden");
             //FIXME
 //            u.save(TRACKING_URI, this.tracking.getTrackingUri());
             main.fire(EVENTS.TRACKING_ACTIVE);
@@ -113,6 +112,7 @@ function TrackingHolder(main) {
             if(o[RESPONSE.NUMBER]) {
                 main.users.forMe(function(number,user){
                     user.createViews();
+                    progress.classList.add("hidden");
                 })
             }
             if(o[RESPONSE.INITIAL]) {

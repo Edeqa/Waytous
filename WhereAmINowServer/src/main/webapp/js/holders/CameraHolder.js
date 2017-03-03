@@ -23,6 +23,9 @@ function CameraHolder(main) {
     const CAMERA_ORIENTATION_LAST = 2;
     const CAMERA_ORIENTATION_PERSPECTIVE_NORTH = true;
 
+    var menuFitToScreen;
+    var task;
+
     function start() {
         console.log("CameraHOLDER",main);
 
@@ -32,12 +35,12 @@ function CameraHolder(main) {
         // if(!this || !this.views || !this.views.camera) return true;
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(2,type+"_1","Fit to screen","fullscreen",function(){
+                menuFitToScreen = object.add(2,type+"_1","Fit to screen","fullscreen",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SELECT_USER);
                     });
-                    console.log("FITTOSCREEN")
                 });
+                menuFitToScreen.classList.add("disabled");
                 break;
             case EVENTS.MARKER_CLICK:
                 onEvent.call(this,EVENTS.CAMERA_NEXT_ORIENTATION);
@@ -60,7 +63,8 @@ function CameraHolder(main) {
                 onChangeLocation.call(this,this.location);
                 break;
             case EVENTS.SELECT_USER:
-                onChangeLocation.call(this, this.location)
+                onChangeLocation.call(this, this.location);
+                menuFitToScreen.classList.remove("disabled");
                 break;
             case EVENTS.CAMERA_ZOOM:
                 if(main.users.getCountSelected()==1) {
@@ -144,22 +148,67 @@ function CameraHolder(main) {
 
     function update() {
         if(main.users.getCountSelected() > 1) {
-            var bounds = new google.maps.LatLngBounds();
+            var finalBounds = new google.maps.LatLngBounds();
             for(var i in main.users.users) {
                 var user = main.users.users[i];
                 if(user.properties.selected && user.location && user.location.coords) {
-                    bounds.extend(u.latLng(user.location));
+                    finalBounds.extend(u.latLng(user.location));
                 }
             }
-            main.map.fitBounds(bounds);
+            main.map.fitBounds(finalBounds);
+/*            var startBounds = main.map.getBounds();
+            var startNE = startBounds.getNorthEast();
+            var startSW = startBounds.getSouthWest();
+            var finalNE = finalBounds.getNorthEast();
+            var finalSW = finalBounds.getSouthWest();
+            clearInterval(task);
+            task = u.smoothInterpolated(1000, function(time,value) {
+
+                var currentNE = new google.maps.LatLng(
+                    startNE.lat()*(1-time) + finalNE.lat()*time,
+                    startNE.lng()*(1-time) + finalNE.lng()*time
+                );
+                var currentSW = new google.maps.LatLng(
+                    startSW.lat()*(1-time) + finalSW.lat()*time,
+                    startSW.lng()*(1-time) + finalSW.lng()*time
+                );
+                var currentBounds = new google.maps.LatLngBounds(currentNE, currentSW);
+
+                main.map.fitBounds(currentBounds);
+            }, function(){
+                main.map.fitBounds(finalBounds);
+            });*/
         } else {
             main.users.forAllUsers(function(number,user){
                 if(user.properties.selected) {
-                    var center = u.latLng(user.location);
-                    if (center) {
-                        main.map.setZoom(user.views.camera.zoom || CAMERA_DEFAULT_ZOOM);
-                        main.map.panTo(center);
+                    var finalCenter = u.latLng(user.location);
+                    if (finalCenter) {
+                        var startCenter = main.map.getCenter();
+
+                        var startZoom = main.map.getZoom();
+                        var finalZoom = user.views.camera.zoom || CAMERA_DEFAULT_ZOOM;
+
+                        clearInterval(task);
+                        task = u.smoothInterpolated(1000, function(time,value) {
+
+                            var currentCenter = new google.maps.LatLng(
+                                startCenter.lat()*(1-time) + finalCenter.lat()*time,
+                                startCenter.lng()*(1-time) + finalCenter.lng()*time
+                            );
+                            var currentZoom = startZoom*(1-time) + finalZoom*time;
+
+                            main.map.setZoom(currentZoom);
+                            main.map.setCenter(currentCenter);
+
+                        }, function(){
+                            main.map.setZoom(finalZoom);
+                            main.map.setCenter(finalCenter);
+                        });
                     }
+
+                    // main.map.setZoom(finalZoom);
+                    // main.map.panTo(finalCenter);
+
                 }
             });
         }

@@ -45,7 +45,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
 
     private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
-    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 10;
+    private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 5;
 
     private final State state;
 
@@ -205,7 +205,8 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 notification.setDefaults(DEFAULT_LIGHTS);
             }
             NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1976, notification.build());
+//            notificationManager.notify(1976, notification.build());
+            notificationManager.cancel(1976);
         }
     };
 

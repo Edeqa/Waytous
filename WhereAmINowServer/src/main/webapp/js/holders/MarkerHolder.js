@@ -79,13 +79,40 @@ function MarkerHolder(main) {
     }
 
     function onChangeLocation(location) {
-        if(location && location.coords && location.coords.heading) {
-            var icon = this.views.marker.marker.getIcon();
-            icon.rotation = location.coords.heading;
-            this.views.marker.marker.setIcon(icon);
-        }
-        this.views.marker.marker.setPosition(u.latLng(location));
+        // var start = this.views.marker.
+        if(this.locations && this.locations.length >1) {
+            var marker = this.views.marker.marker;
+            var prev = this.locations[this.locations.length-2];
 
+            var startPosition = u.latLng(prev);
+            var finalPosition = u.latLng(location);
+
+            var startRotation = prev.coords.heading;
+            var finalRotation = location.coords.heading;
+
+            u.smoothInterpolated(1000, function(time,value) {
+
+                var currentPosition = new google.maps.LatLng(
+                    startPosition.lat()*(1-time) + finalPosition.lat()*time,
+                    startPosition.lng()*(1-time) + finalPosition.lng()*time
+                );
+                var rot = startRotation*(1-time) + finalRotation*time;
+
+                var icon = marker.getIcon();
+                icon.rotation = rot;
+                marker.setIcon(icon);
+                marker.setPosition(currentPosition);
+
+            });
+
+        } else {
+            if (location && location.coords && location.coords.heading) {
+                var icon = this.views.marker.marker.getIcon();
+                icon.rotation = location.coords.heading;
+                this.views.marker.marker.setIcon(icon);
+            }
+            this.views.marker.marker.setPosition(u.latLng(location));
+        }
     }
 
     return {

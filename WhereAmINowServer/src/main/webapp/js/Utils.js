@@ -81,6 +81,16 @@ function Utils() {
         }
     }
 
+    function destroy(node) {
+        try {
+            clear(node);
+            node.parentNode.removeChild(node);
+            node = null;
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
     function keys(o) {
         var keys = [];
         for(var x in o) {
@@ -212,6 +222,24 @@ function Utils() {
     function latLng(location) {
         if(!location || !location.coords) return null;
         return new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
+    }
+
+    function smoothInterpolated(duration, callback, postCallback) {
+        var start = new Date().getTime();
+
+        var a = setInterval(function(){
+            var t,v,elapsed;
+            elapsed = new Date().getTime() - start;
+            t = elapsed / duration;
+            v = elapsed / duration;
+            callback(t,v);
+        }, 16);
+        setTimeout(function() {
+            clearInterval(a);
+            if(postCallback) postCallback();
+        }, duration+1);
+
+        return a;
     }
 
     function getEncryptedHash(s) {
@@ -420,6 +448,55 @@ function Utils() {
         return i.toLowerCase()
     }
 
+    function dialog(options) {
+
+        var dialog = u.create("div", {className:"modal shadow hidden "+(options.className ? options.className : "")}, document.body);
+        options = options || {};
+        var items = [];
+
+        if(options.title) {
+            u.create("div", {className:"dialog-title", innerHTML: options.title}, dialog);
+            u.create("button", {className:"material-icons dialog-button-close", innerHTML:"clear", onclick:function(){
+                dialog.onclose();
+            }}, dialog);
+        }
+        var divItems = u.create("div", {className:"dialog-items"}, dialog);
+        for(var i in options.items) {
+            var item = options.items[i];
+            item = item || {};
+
+            var div = u.create("div", {className:"dialog-item"}, divItems);
+            u.create("div", {className:"dialog-item-label", innerHTML:item.label}, div);
+            items.push(u.create("input", {className:"dialog-item-"+item.type, value:item.value}, div));
+        }
+        var buttons = u.create("div", {className:"dialog-buttons"}, dialog);
+        if(options.positive) {
+            u.create("button", {className:"dialog-button-positive", onclick:function(){
+                dialog.onclose();
+                if(options.positive.callback) options.positive.callback(items);
+            }, innerHTML: options.positive.title}, buttons);
+        }
+        if(options.negative) {
+            u.create("button", {className:"dialog-button-negative", onclick:function(){
+                dialog.onclose();
+                if(options.negative.callback) options.negative.callback(items);
+            }, innerHTML: options.negative.title}, buttons);
+        }
+
+        dialog.onopen = function(){
+            dialog.classList.remove("hidden");
+            return dialog;
+        };
+
+        dialog.onclose = function (){
+            clear(dialog);
+            destroy(dialog);
+        };
+
+        return dialog;
+    }
+
+
     return {
         create: create,
         clear: clear,
@@ -436,5 +513,8 @@ function Utils() {
         latLng:latLng,
         jsonToLocation:jsonToLocation,
         locationToJson:locationToJson,
+        smoothInterpolated:smoothInterpolated,
+        dialog:dialog,
+        destroy:destroy,
     }
 }

@@ -261,7 +261,10 @@ function TrackingFB(main) {
             // }
         } else if(ref) {
             if(type == REQUEST.CHANGE_NAME) {
-                console.error("CHANGENAME");
+                var updates = {};
+                updates[USER.NAME] = jsonMessage[USER.NAME];
+                updates["changed"] = firebase.database.ServerValue.TIMESTAMP;
+                ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);
 
                 return;
             } else if(type == REQUEST.WELCOME_MESSAGE) {
@@ -419,7 +422,7 @@ debugger;
             var number = parseInt(data.ref.parent.getKey());
             var name = data.val();
             main.users.forUser(number, function(number, user, name){
-                if(user.properties && name != user.properties.name) {
+                if(user.number != main.me.number && user.properties && name != user.properties.name) {
                     user.fire(EVENTS.CHANGE_NAME, name);
                 }
             }, name);
@@ -453,5 +456,8 @@ debugger;
         setTrackingListener:setTrackingListener,
         getTrackingUri:getTrackingUri,
         sendMessage:sendMessage,
+        put:put,
+        sendUpdate:sendUpdate,
+        send:send,
     }
 }

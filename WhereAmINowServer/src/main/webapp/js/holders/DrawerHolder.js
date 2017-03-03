@@ -73,7 +73,7 @@ function DrawerHolder(main) {
                 name:name,
                 icon:icon,
                 callback:callback
-            }
+            };
             var th = u.create("div", {className:"menu-item"}, sections[section]);
             u.create("i", { className:"material-icons md-14", innerHTML: icon }, th);
             u.create("div", { onclick: function() {
@@ -83,6 +83,7 @@ function DrawerHolder(main) {
                 }, 300);
             }, innerHTML: name}, th);
             sections[section].classList.remove("hidden");
+            return th;
         }
         function getDrawer(){
             console.log("GETDRAWER:",items);

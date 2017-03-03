@@ -3,14 +3,29 @@
  */
 function PropertiesHolder(main) {
 
-    var type = "properties";
+    this.type = "properties";
+    this.dependsOnEvent = true;
+    this.dependsOnUser = true;
+    this.saveable = true;
 
-    function start() {
+    var dialog;
+
+    this.start = function() {
         // console.log("PROPERTIESHOLDER",this);
-    }
 
-    function onEvent(EVENT,object){
+    };
+
+    this.onEvent = function(EVENT,object){
+        var self = this;
         switch (EVENT){
+            case EVENTS.CREATE_CONTEXT_MENU:
+                var user = this;
+                if(user.number == main.me.number) {
+                    object.add(1, self.type + "_1", "Set my name", "face", function () {
+                        setMyName.call(user);
+                    });
+                }
+                break;
             case EVENTS.SELECT_USER:
                 this.properties.selected = true;
                 break;
@@ -31,6 +46,10 @@ function PropertiesHolder(main) {
                 break;
             case EVENTS.CHANGE_NAME:
                 if(this.properties)this.properties.name = object;
+                if(this.number == main.me.number) {
+                    main.tracking.put(USER.NAME, object);
+                    main.tracking.send(REQUEST.CHANGE_NAME);
+                }
                 break;
             case EVENTS.CHANGE_NUMBER:
                 if(this.properties)this.properties.number = object;
@@ -48,9 +67,9 @@ function PropertiesHolder(main) {
                 break;
         }
         return true;
-    }
+    };
 
-    function createView(myUser) {
+    this.createView = function(myUser) {
         var view = {
             user: myUser,
             color: myUser.color,
@@ -60,13 +79,14 @@ function PropertiesHolder(main) {
             selected: myUser.selected,
             getDisplayName: getDisplayName.bind(myUser),
         };
+
         delete myUser.color;
         delete myUser.name;
         delete myUser.active;
         delete myUser.selected;
         myUser.properties = view;
         return view;
-    }
+    };
 
     function getDisplayName(){
         var name = this.properties.name;
@@ -78,15 +98,44 @@ function PropertiesHolder(main) {
             }
         }
         return name;
+    };
+
+    function setMyName(name){
+        if(dialog) dialog.onclose();
+        dialog = u.dialog({
+            title: "Set my name",
+            items: [
+                { type: "input", label: "Name", value: main.me.properties.name }
+            ],
+            positive: {
+                title: "OK",
+                callback: function(args) {
+                    dialog = null;
+                    if(args[0].value) {
+                        var name = args[0].value;
+                        u.save("properties:name", name);
+                        main.me.fire(EVENTS.CHANGE_NAME, name);
+                    }
+                    console.log(args);
+                }
+            },
+            negative: {
+                title: "Cancel",
+                callback: function(args) {
+                    dialog = null;
+                    console.log(args);
+                }
+            }
+        }).onopen();
     }
 
-    return {
-        type:type,
-        start:start,
-        dependsOnEvent:true,
-        onEvent:onEvent,
-        dependsOnUser:true,
-        createView:createView,
-        saveable:true,
-    }
+    // return {
+    //     type:type,
+    //     start:start,
+    //     dependsOnEvent:true,
+    //     onEvent:onEvent,
+    //     dependsOnUser:true,
+    //     createView:createView,
+    //     saveable:true,
+    // }
 }

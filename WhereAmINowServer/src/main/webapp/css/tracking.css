@@ -48,35 +48,22 @@ h2 {
     display: none;
 }
 .alert-dialog {
-    display: table;
-    background-color: beige;
+    background-color: beige !important;
     color: red;
-    opacity: 0.8;
     padding: 30px;
-    border-radius: 10px;
-    border-style: solid;
-    border-width: 2px;
-    width: 50%;
     text-align: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10000;
 }
 .alert-icon {
     position: fixed;
     top: 50px;
     z-index: 10000;
-    background-color: red;
+    background-color: transparent;
     color: white;
-    height: 60px;
-    width: 60px;
-    border-radius: 40px;
-    font-size: 40px;
+    font-size: 40px !important;
     border: none;
     transform: translateX(10px);
     outline: none;
+    color: red;
 }
 .drawer {
     border-right-style: solid;
@@ -144,7 +131,7 @@ h2 {
     padding:5px;
 }
 .shadow {
-    box-shadow: 5px 5px 20px 5px rgba(0,0,0,.8);
+    box-shadow: 3px 3px 7px 2px rgba(0,0,0,.5);
 }
 .inactive {
     color: darkgray;
@@ -158,14 +145,20 @@ h2 {
 .clickable {
     cursor: pointer;
 }
+.clickable:hover {
+    background-color: lightcyan;
+}
 .selected {
     border-color: #00ff00;
     border-width: 2px;
     border-style: ridge;
     padding: 3px !important;
 }
-.clickable:hover {
-    background-color: lightcyan;
+.hidden {
+    display: none !important;
+}
+.disabled {
+    color: darkgray;
 }
 .table {
     display: table;
@@ -237,9 +230,6 @@ h2 {
     border-bottom-width: 1px;
     border-bottom-color: darkgray;
 }
-.hidden {
-    display: none !important;
-}
 .actionbar {
     display: none;
 }
@@ -284,8 +274,8 @@ p.bottom-desc {
 }
 .user-buttons {
     position: fixed;
-    top: 50px;
-    right: 20px;
+    top: 12px;
+    right: 52px;
     border-radius: 5px;
     background-color: transparent;
 }
@@ -298,7 +288,7 @@ p.bottom-desc {
 }
 .user-button:hover {
     /*background-color: #dddd99;*/
-    border-color: darkred;
+    border-color: green;
     border-style: solid;
     border-width: 2px;
     padding: 3px;
@@ -315,6 +305,7 @@ p.bottom-desc {
     right: 150px;
     background-color: rgba(211, 211, 211, 0.7);
     border-radius: 5px;
+    outline: none;
 }
 .user-context-menu-item {
     display: flex;
@@ -330,15 +321,11 @@ p.bottom-desc {
     padding-left: 10px;
     padding-right: 10px;
 }
-.progress {
+.modal {
     display: flex;
     flex-direction: column;
     background-color: lightgray;
-    opacity: 0.8;
-    padding-left: 20%;
-    padding-right: 20%;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    opacity: 0.9;
     border-radius: 10px;
     border-style: solid;
     border-width: 2px;
@@ -346,6 +333,13 @@ p.bottom-desc {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+.progress {
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 .progress-circle {
     margin: 20px;
@@ -366,7 +360,7 @@ p.bottom-desc {
 .alpha {
     position: fixed;
     top: -10px;
-    right: 10px;
+    left: 260px;
     z-index: 9999;
     color: red;
     font-size: 50px;
@@ -400,6 +394,60 @@ p.bottom-desc {
     z-index: 1000;
     white-space: pre-wrap;
 }
+.dialog-title {
+    width: 100%;
+    text-align: center;
+    background-color: beige;
+    border-radius: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.dialog-items {
+    padding: 10px;
+}
+.dialog-item {
+    display: flex;
+    align-items: center;
+}
+.dialog-item-label {
+    padding-right: 5px;
+}
+.dialog-item-input {
+    font-size: 12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.dialog-buttons {
+    align-self: center;
+    padding: 5px;
+}
+.dialog-button-close {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: none;
+    border: none;
+    font-size: 20px !important;
+    cursor: pointer;
+}
+.dialog-button-close:hover {
+    color: red;
+}
+.dialog-button-positive {
+
+}
+.dialog-button-negative {
+
+}
+
+
+/* shift zoom control */
+/*.gmnoprint:nth-child(9) {
+    top: 50px !important;
+}
+.gmnoprint:nth-child(10) {
+    top: 110px !important;
+}*/
 
 @media screen and (max-width: 1000px) {
     body {
@@ -422,11 +470,14 @@ p.bottom-desc {
     }
     button {
         font-size: 16px;
-        min-width: 100px;
+        min-width: 80px;
         border-style: solid;
         border-radius: 10px;
+        border-width: 1px;
+        border-color: gray;
         margin: 1px;
         padding: 10px;
+        background-color: ivory;
     }
 
     /* CLASSES */
@@ -473,6 +524,10 @@ p.bottom-desc {
         top: 0px;
         opacity: 0.8;
         z-index: 10;
+    }
+    .alpha {
+        left: auto;
+        right: 10px;
     }
     .drawer-button {
         font-family: "Material Icons";
@@ -635,10 +690,34 @@ p.bottom-desc {
         left: 0;
         font-size: 9px;
     }
+    .dialog-title {
+
+    }
+    .dialog-items {
+
+    }
+    .dialog-item {
+
+    }
+    .dialog-buttons {
+        white-space: nowrap;
+    }
+    .dialog-button-close {
+        min-width: inherit;
+        padding: 2px;
+    }
 
     /* media specific classes */
     .hideable {
         display: none;
+    }
+
+    /* shift zoom control */
+    .gmnoprint:nth-child(8) {
+        top: 50px !important;
+    }
+    .gmnoprint:nth-child(9) {
+        top: 110px !important;
     }
 
 }

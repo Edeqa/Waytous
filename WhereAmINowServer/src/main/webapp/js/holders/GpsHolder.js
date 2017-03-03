@@ -35,14 +35,14 @@ function GpsHolder(main) {
                     message = "An unknown error occurred while requesting geolocation.";
                     break;
             }
-            var alert = u.create("div", {className:"alert-dialog shadow"}, main.right);
+            var alert = u.create("div", {className:"modal alert-dialog shadow"}, main.right);
             u.create("div", message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly.<br>", alert);
             u.create("div", "&nbsp;", alert);
             u.create("button", {type:"button", innerHTML:"OK", onclick:function(){
                 icon.classList.remove("hidden");
                 alert.classList.add("hidden");
             }}, alert);
-            var icon = u.create("button", {className:"material-icons alert-icon shadow hidden", type: "button", innerHTML:"warning", onclick: function(){
+            var icon = u.create("button", {className:"material-icons alert-icon hidden", type: "button", innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");
                 alert.classList.remove("hidden");
             }}, main.right);

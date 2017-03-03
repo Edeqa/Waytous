@@ -17,10 +17,10 @@ function MessagesHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                object.add(8,type+"_1","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                object.add(8,type+"_2","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                object.add(8,type+"_3","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                object.add(8,type+"_4","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
+                // object.add(8,type+"_1","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
+                // object.add(8,type+"_2","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
+                // object.add(8,type+"_3","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
+                // object.add(8,type+"_4","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
                 break;
             default:
                 break;

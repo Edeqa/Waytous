@@ -35,6 +35,11 @@ function MyUsers(main) {
         delete users[myNumber];
         main.me.number = myNumber;
         main.me.fire(EVENTS.CHANGE_NUMBER, myNumber);
+        var name = u.load("properties:name");
+        if(name) {
+            main.me.name = name;
+            main.me.fire(EVENTS.CHANGE_NAME, name);
+        }
         users[myNumber] = main.me;
         return main.me;
     }

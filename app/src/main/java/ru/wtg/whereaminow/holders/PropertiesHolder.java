@@ -248,7 +248,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
         public String getDisplayName(){
             String res = name;
-            if(name == null || name.length()==0){
+            if(name == null || name.length()==0 || "null".equals(name)){
                 if(myUser == State.getInstance().getMe()){
                     res = "Me";
                 } else if (getNumber() == 0) {
