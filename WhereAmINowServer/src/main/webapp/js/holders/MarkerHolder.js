@@ -36,7 +36,7 @@ function MarkerHolder(main) {
             },
             optimized:false,
         });
-        marker.addListener("click", function(e){
+        marker.addListener(HTML.CLICK, function(e){
             console.log("MARKERCLICK",this,user.properties.getDisplayName(),e);
             user.fire(EVENTS.MARKER_CLICK, marker);
         });
@@ -66,12 +66,12 @@ function MarkerHolder(main) {
         // console.log(EVENT)
         switch (EVENT){
             case EVENTS.MAKE_ACTIVE:
-                console.log(EVENT,this.properties.name,object);
+//                console.log(EVENT,this.properties.name,object);
                     // this.views.marker.icon = makeIcon(this);
                 this.views.marker.marker.setMap(main.map);
                 break;
             case EVENTS.MAKE_INACTIVE:
-                console.log(EVENT,this.properties.name,object);
+//                console.log(EVENT,this.properties.name,object);
                 this.views.marker.marker.setMap(null);
                 break;
         }

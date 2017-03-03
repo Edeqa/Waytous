@@ -157,7 +157,7 @@ function Utils() {
                 }
                 callback(a);
             }
-        }}, document.head);
+        }, async:"", defer:""}, document.head);
     }
 
     function save(name, value) {

@@ -20,7 +20,7 @@ function MapHolder(main) {
     u.create("div", {id: "map"}, main.right);
 
     function start() {
-        u.create("script", {
+        u.create(HTML.SCRIPT, {
             src: "https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap",
             async: "",
             defer: ""

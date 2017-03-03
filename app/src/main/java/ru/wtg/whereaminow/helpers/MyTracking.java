@@ -371,7 +371,7 @@ public class MyTracking implements Tracking {
             switch (webSocket.getState()) {
                 case CREATED:
 //                    System.out.println("WEBSOCKETSTATE:CONNECT");
-                    //webSocket.connectAsynchronously();
+                    //connection.connectAsynchronously();
                     break;
                 case CONNECTING:
 //                    System.out.println("WEBSOCKETSTATE:CONNECTING");

@@ -218,10 +218,12 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                                 check.setTokenId(tokenId);
                                 check.setUid(dataSnapshot.getKey());
                                 check.setNumber((long) dataSnapshot.getValue());
-                                Common.log("WpFB","onMessage:checkRequest:"+conn.getRemoteSocketAddress(),"{ number:"+dataSnapshot.getValue(), "key:"+dataSnapshot.getKey(), "control:"+check.getControl()+" }");
-                                if (request.has(USER_NAME))
-                                    check.setName(request.getString(USER_NAME));
+                                check.setUser(conn, request);
 
+                                Common.log("WpFB","onMessage:checkRequest:"+conn.getRemoteSocketAddress(),"{ number:"+dataSnapshot.getValue(), "key:"+dataSnapshot.getKey(), "control:"+check.getControl()+" }");
+//                                if (request.has(USER_NAME))
+//                                    check.setName(request.getString(USER_NAME));
+//
                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                                 response.put(RESPONSE_CONTROL, check.getControl());
                                 ipToCheck.put(ip, check);
@@ -306,6 +308,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                         final ValueEventListener userDataListener = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
+                                System.out.println("DATASNAPSHOT:"+dataSnapshot);
                                 if(dataSnapshot.getValue() != null) { //join as existing member
                                     Common.log("WpFB", "onMessage:joinAsExisting:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
 /*
@@ -356,8 +359,13 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 //                                    refToken.child("/users/data-private/" + number+"/control").setValue(check.control);
 
                                 } else { // join as new member
-                                    Common.log("WpFB", "onMessage:joinedAsNew:"+conn.getRemoteSocketAddress(),dataSnapshot.getValue().toString());
-                                    long number = (long) dataSnapshot.getValue();
+
+//                                    final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+//                                    user.number = (int) check.getNumber();
+                                    check.getUser().setNumber((int) check.getNumber());
+                                    registerUser(check.getTokenId(), check.getUser(), request);
+                                    Common.log("WpFB", "onMessage:joinedAsNew:"+check.getUser().connection.getRemoteSocketAddress());
+//                                    long number = (long) dataSnapshot.getValue();
 //                                    refToken.child("/users/data-private/" + number).addListenerForSingleValueEvent(userDataListener);
                                 }
 
@@ -417,10 +425,10 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
         final JSONObject response = new JSONObject();
 
         user.setColor(Utils.selectColor(user.getNumber()));
-        user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
-        user.setModel(request.getString(REQUEST_MODEL));
-        user.setOs(request.getString(REQUEST_OS));
-        if (request.has(USER_NAME)) user.setName(request.getString(USER_NAME));
+        if(request.has(REQUEST_MANUFACTURER)) user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
+        if(request.has(REQUEST_MODEL)) user.setModel(request.getString(REQUEST_MODEL));
+        if(request.has(REQUEST_OS)) user.setOs(request.getString(REQUEST_OS));
+        if(request.has(USER_NAME)) user.setName(request.getString(USER_NAME));
 
         final String uid = Utils.getEncryptedHash(user.getDeviceId());
 
@@ -449,12 +457,29 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
         }
 
         childUpdates.put(DATABASE_SECTION_USERS_KEYS + "/"+uid,user.getNumber());
-        childUpdates.put(DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY,15);
-        childUpdates.put(DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD,false);
-        childUpdates.put(DATABASE_SECTION_OPTIONS_PERSISTENT,false);
-        childUpdates.put(DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE,false);
-        childUpdates.put(DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS,300);
-        childUpdates.put(DATABASE_SECTION_OPTIONS_DATE_CREATED, ServerValue.TIMESTAMP);
+
+        System.out.println("LISTENER:"+tokenId+"/"+DATABASE_SECTION_OPTIONS);
+        ref.child(tokenId).child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                System.out.println("SINGLE:"+dataSnapshot.getKey()+":"+dataSnapshot.getValue());
+//FIXME
+                childUpdates.put(DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY,15);
+                childUpdates.put(DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD,false);
+                childUpdates.put(DATABASE_SECTION_OPTIONS_PERSISTENT,false);
+                childUpdates.put(DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE,false);
+                childUpdates.put(DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS,300);
+                childUpdates.put(DATABASE_SECTION_OPTIONS_DATE_CREATED, ServerValue.TIMESTAMP);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("CANCELLED:"+databaseError);
+            }
+        });
+
 
         Task<Void> a = ref.child(tokenId).updateChildren(childUpdates);
         a.addOnSuccessListener(new OnSuccessListener<Void>() {

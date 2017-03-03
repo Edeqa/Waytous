@@ -152,7 +152,7 @@ function Group() {
             }}, tbody);
 
             u.create("div", {className: "td", innerHTML:snapshot.key}, tr);
-            u.create("div", {className: "td", innerHTML:snapshot.val().name}, tr);
+            var userName = u.create("div", {className: "td", innerHTML:snapshot.val().name}, tr);
             u.create("div", {className: "td", style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
             u.create("div", {className: "td hideable", innerHTML:snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;"}, tr);
             var userChanged = u.create("div", {className: "td", innerHTML:"..."}, tr);
@@ -164,6 +164,20 @@ function Group() {
                 userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
                 tr.classList.add("changed");
                 setTimeout(function(){tr.classList.remove("changed")}, 2000);
+            });
+            ref.child(groupId).child("u/b").child(snapshot.key).child("active").on("value", function(snapshot){
+                if(snapshot.val()) {
+                    tr.classList.remove("inactive");
+                } else {
+                    tr.classList.add("inactive");
+                }
+            });
+            ref.child(groupId).child("u/b").child(snapshot.key).child("name").on("value", function(snapshot){
+                if(snapshot.val()) {
+                    userName.innerHTML = snapshot.val();
+                } else {
+                    userName.innerHTML = "undefined";
+                }
             });
             ref.child(groupId).child("u/p").child(snapshot.key).once("value").then(function(snapshot){
                 if(!snapshot.val()) return;

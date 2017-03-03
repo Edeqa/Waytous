@@ -8,13 +8,13 @@ function DrawerHolder(main) {
 
     var drawer = new Drawer();
 
-    var drawerLayout = u.create("div", {className:"drawer", tabindex: 1, onblur: function(){
+    var drawerLayout = u.create(HTML.DIV, {className:"drawer", tabindex: 1, onblur: function(){
         drawerLayout.classList.remove("drawer-open");
         return true;
     }}, main.layout, "first");
 
-    var actionbar = u.create("div", {className:"actionbar"}, main.right);
-    u.create("span", {innerHTML:"menu", className:"drawer-button", onclick: function(){
+    var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
+    u.create(HTML.SPAN, {innerHTML:"menu", className:"drawer-button", onclick: function(){
         try {
             drawerLayout.classList.add("drawer-open");
             drawerLayout.focus();
@@ -22,14 +22,14 @@ function DrawerHolder(main) {
             console.err(e);
         }
     }}, actionbar);
-    u.create("div", {className:"title", innerHTML:"Waytogo"}, actionbar);
+    u.create(HTML.DIV, {className:"title", innerHTML:"Waytogo"}, actionbar);
 
-    u.create("a", { href: "/", className:"drawer-header" }, drawerLayout);
+    u.create(HTML.A, { href: "/", className:"drawer-header" }, drawerLayout);
 
-    var menu = u.create("div", {className:"menu"}, drawerLayout);
+    var menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
     var sections = [];
     for(var i=0;i<10;i++){
-        sections[i] = u.create("div", {className:"hidden" + (i==9 ? "" : " divider")}, menu);
+        sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, menu);
     }
 
 
@@ -58,10 +58,10 @@ function DrawerHolder(main) {
         u.create("i", { className:"material-icons md-14", innerHTML:"exit_to_app" }, th);
         // u.create("div", { onclick: logout, innerHTML: "Log out" }, th);*/
 
-        var th = u.create("div", { className:"drawer-footer"}, drawerLayout);
-        u.create("div", "Waytogo", th);
-        u.create("div", "&copy; 2017, White Tiger Group", th);
-        u.create("div", "Build " + data.version, th);
+        var th = u.create(HTML.DIV, { className:"drawer-footer"}, drawerLayout);
+        u.create(HTML.DIV, "Waytogo", th);
+        u.create(HTML.DIV, "&copy;2017 White Tiger Group", th);
+        u.create(HTML.DIV, "Build " + data.version, th);
 
     }
 
@@ -74,9 +74,9 @@ function DrawerHolder(main) {
                 icon:icon,
                 callback:callback
             };
-            var th = u.create("div", {className:"menu-item"}, sections[section]);
-            u.create("i", { className:"material-icons md-14", innerHTML: icon }, th);
-            u.create("div", { onclick: function() {
+            var th = u.create(HTML.DIV, {className:"menu-item"}, sections[section]);
+            u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+            u.create(HTML.DIV, { onclick: function() {
                 setTimeout(function(){
                     drawerLayout.blur();
                     callback();

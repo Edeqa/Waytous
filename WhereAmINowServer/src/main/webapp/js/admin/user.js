@@ -256,8 +256,12 @@ function User() {
     function removeUser() {
         // database.ref().child(groupId).remove();
         // database.ref("_groups").child(groupId).remove();
-        console.log("REMOVE",userNumber);
-        WAIN.switchTo("/admin/groups/" + groupId);
+
+        var ref = database.ref();
+        ref.child(groupId).child("u/p").child(userNumber).remove();
+        ref.child(groupId).child("u/b").child(userNumber).remove();
+
+        WAIN.switchTo("/admin/group/" + groupId);
     }
 
     return {

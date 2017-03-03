@@ -12,8 +12,8 @@ function ButtonHolder(main) {
 
     function start() {
         // console.log("BUTTONHOLDER",this);
-        buttons = u.create("div", {className:"user-buttons shadow hidden"}, main.right);
-        contextMenuLayout = u.create("div", {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
+        buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
+        contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
             contextMenuLayout.classList.add("hidden");
         }, onmouseleave: function(){
             contextMenuLayout.classList.add("hidden");
@@ -76,7 +76,7 @@ function ButtonHolder(main) {
         var b = parseInt(color[4]+color[5],16);
         color = "rgba("+r+", "+g+", "+b+", 0.4)";
 
-        var b = u.create("div", {className:"user-button" +(user.properties.active ? "" : " hidden"), style:{backgroundColor:color}, onclick: function(){
+        var b = u.create(HTML.DIV, {className:"user-button" +(user.properties.active ? "" : " hidden"), style:{backgroundColor:color}, onclick: function(){
             if(clicked) {
                 user.fire(EVENTS.CAMERA_ZOOM);
                 clicked = false;
@@ -90,9 +90,9 @@ function ButtonHolder(main) {
             }
             // console.log(user);
         }}, buttons);
-        u.create("i", {className:"material-icons", innerHTML:"person"}, b);
-        console.log(user)
-        u.create("div", {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, b);
+        u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
+//        console.log(user)
+        u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, b);
         return b;
     }
 
@@ -101,7 +101,7 @@ function ButtonHolder(main) {
         u.clear(contextMenuLayout);
         sections = [];
         for(var i = 0; i < 10; i ++) {
-            sections[i] = u.create("div", {className:"user-context-menu-section hidden"}, contextMenuLayout);
+            sections[i] = u.create(HTML.DIV, {className:"user-context-menu-section hidden"}, contextMenuLayout);
         }
         user.fire(EVENTS.CREATE_CONTEXT_MENU, contextMenu);
         var size = user.views.button.getBoundingClientRect();
@@ -118,15 +118,15 @@ function ButtonHolder(main) {
     function ContextMenu() {
 
         function add(section,id,name,icon,callback) {
-            var th = u.create("div", {className:"user-context-menu-item", onclick: function() {
+            var th = u.create(HTML.DIV, {className:"user-context-menu-item", onclick: function() {
                 setTimeout(function(){
                     contextMenuLayout.focus();
                     contextMenuLayout.blur();
                     callback();
                 }, 300);
             }}, sections[section]);
-            u.create("i", { className:"material-icons md-14", innerHTML: icon }, th);
-            u.create("div", { className:"user-context-menu-item-title", innerHTML: name}, th);
+            u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+            u.create(HTML.DIV, { className:"user-context-menu-item-title", innerHTML: name}, th);
             sections[section].classList.remove("hidden");
         }
         function getContextMenu(){

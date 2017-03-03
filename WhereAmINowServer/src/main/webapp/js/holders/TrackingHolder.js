@@ -13,9 +13,9 @@ function TrackingHolder(main) {
 
     function start(){
 
-        progress = u.create("div", {className:"modal progress shadow hidden"}, main.right);
-        u.create("div", {className:"progress-circle"}, progress);
-        progressTitle = u.create("div", {className:"progress-title"}, progress);
+        progress = u.create(HTML.DIV, {className:"modal progress shadow hidden"}, main.right);
+        u.create(HTML.DIV, {className:"progress-circle"}, progress);
+        progressTitle = u.create(HTML.DIV, {className:"progress-title"}, progress);
         var group = window.location.pathname.split("/")[2];
         var groupOld = u.load("group");
         if(group) {
@@ -27,7 +27,7 @@ function TrackingHolder(main) {
     }
 
     function perform(json){
-        console.log("JSON",json);
+//        console.log("JSON",json);
         var loc = u.jsonToLocation(json);
         var number = json[USER.NUMBER];
         main.users.forUser(number, function(number,user){

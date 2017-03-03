@@ -105,7 +105,7 @@ function PropertiesHolder(main) {
         dialog = u.dialog({
             title: "Set my name",
             items: [
-                { type: "input", label: "Name", value: main.me.properties.name }
+                { type: HTML.INPUT, label: "Name", value: main.me.properties.name }
             ],
             positive: {
                 title: "OK",

@@ -110,6 +110,9 @@ function Constants() {
         SECTION_PUBLIC : "b", // public
         SECTION_PRIVATE : "p", // private
         SECTION_USERS_DATA : "u/b", // users/data-public
+        USER_NAME : "name", // name
+        USER_ACTIVE : "active", // active
+        USER_CHANGED : "changed", // changed
         SECTION_USERS_DATA_PRIVATE : "u/p", // users/data-private
         SECTION_USERS_KEYS : "u/k", // users/keys
         SECTION_OPTIONS : "o", // options
@@ -121,6 +124,53 @@ function Constants() {
         SECTION_OPTIONS_WELCOME_MESSAGE : "o/welcome-message",
         SECTION_OPTIONS_DATE_CREATED : "o/date-created"
 
+    };
+
+    window.HTML = {
+        DIV: "div",
+        LINK:"link",
+        A:"a",
+        META:"meta",
+        STYLE:"style",
+        CLASS:"class",
+        SCRIPT:"script",
+        TITLE:"title",
+        ID:"id",
+        SRC:"src",
+        HTTP_EQUIV: "http-equiv",
+        CONTENT:"content",
+        TABLE:"table",
+        TR:"tr",
+        TH:"th",
+        TD:"td",
+        H1:"h1",
+        H2:"h2",
+        H3:"h3",
+        H4:"h4",
+        H5:"h5",
+        H6:"h6",
+        H7:"h7",
+        I:"i",
+        BORDER:"border",
+        COLSPAN:"colspan",
+        ROWSPAN:"rowspan",
+        HREF:"href",
+        TARGET:"target",
+        SMALL:"small",
+        REL:"rel",
+        STYLESHEET:"stylesheet",
+        TYPE:"type",
+        BR:"br",
+        FORM:"form",
+        NAME:"name",
+        INPUT:"input",
+        SUBMIT:"submit",
+        TEXT:"text",
+        VALUE:"value",
+        MANIFEST:"manifest",
+        SPAN:"span",
+        BUTTON:"button",
+        CLICK:"click"
     };
 
     return {

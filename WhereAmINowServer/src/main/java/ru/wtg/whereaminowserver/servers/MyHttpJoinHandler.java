@@ -61,7 +61,7 @@ public class MyHttpJoinHandler implements HttpHandler {
 //            host = InetAddress.getLocalHost().getHostAddress();
         }
 
-        Common.log("Join",host + uri.getPath(), body);
+        Common.log("Join",host + uri.getPath(),exchange.getRemoteAddress().toString(), body);
 
 
 //        System.out.println(InetAddress.getLocalHost().getHostAddress());

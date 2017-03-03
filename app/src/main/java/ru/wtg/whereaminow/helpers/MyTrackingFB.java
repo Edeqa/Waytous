@@ -154,8 +154,8 @@ public class MyTrackingFB implements Tracking {
 
 
 //            factory.setSSLContext(context);
-//            webSocket = factory.createSocket(serverUri.toString());
-//            webSocket.setWebSocketFactory( new DefaultSSLWebSocketClientFactory( sslContext ) );
+//            connection = factory.createSocket(serverUri.toString());
+//            connection.setWebSocketFactory( new DefaultSSLWebSocketClientFactory( sslContext ) );
 
 
 

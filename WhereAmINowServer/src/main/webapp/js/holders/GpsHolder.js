@@ -35,14 +35,14 @@ function GpsHolder(main) {
                     message = "An unknown error occurred while requesting geolocation.";
                     break;
             }
-            var alert = u.create("div", {className:"modal alert-dialog shadow"}, main.right);
-            u.create("div", message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly.<br>", alert);
-            u.create("div", "&nbsp;", alert);
-            u.create("button", {type:"button", innerHTML:"OK", onclick:function(){
+            var alert = u.create(HTML.DIV, {className:"modal alert-dialog shadow"}, main.right);
+            u.create(HTML.DIV, message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly.<br>", alert);
+            u.create(HTML.DIV, "&nbsp;", alert);
+            u.create(HTML.BUTTON, {type:HTML.BUTTON, innerHTML:"OK", onclick:function(){
                 icon.classList.remove("hidden");
                 alert.classList.add("hidden");
             }}, alert);
-            var icon = u.create("button", {className:"material-icons alert-icon hidden", type: "button", innerHTML:"warning", onclick: function(){
+            var icon = u.create(HTML.BUTTON, {className:"material-icons alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");
                 alert.classList.remove("hidden");
             }}, main.right);
@@ -52,7 +52,6 @@ function GpsHolder(main) {
     }
 
     function onEvent(EVENT,object){
-        // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             default:
                 break;
@@ -71,7 +70,7 @@ function GpsHolder(main) {
         }
 
         var message = u.locationToJson(position);
-        main.tracking.sendMessage(REQUEST.TRACKING, message);
+        if(main.tracking) main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
     }
 

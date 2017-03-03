@@ -13,6 +13,7 @@ function TrackingFB(main) {
 	var serverUri;
 	var ref;
 	var webSocketListener;
+	var sendOriginal;
 
     function start() {
         status = EVENTS.TRACKING_DISABLED;
@@ -78,6 +79,7 @@ function TrackingFB(main) {
                     break;
                 case RESPONSE.STATUS_ACCEPTED:
                     newTracking = false;
+                    send = sendOriginal;
                     if(o[RESPONSE.SIGN]) {
                         var authToken = o[RESPONSE.SIGN];
                         delete o[RESPONSE.SIGN];
@@ -140,6 +142,7 @@ function TrackingFB(main) {
 //            console.log("CLOSE",opened,event.code,event.reason,event.wasClean);
             if(!opened) {
                 console.error("Error processing websocket, try to use XHR on",link," (error ",event.code,event.reason?" "+event.reason+")":")");
+                sendOriginal = send;
                 xhrMode(link);
             }
         };
@@ -157,7 +160,7 @@ function TrackingFB(main) {
             link = "https://" + uri.hostname + ":8000/join" + uri.pathname;
 
             var onreadystatechange = function() { // (3)
-            console.log("XHR",xhr.readyState,xhr);
+                console.log("XHR",xhr.readyState,xhr);
                 switch(xhr.readyState){
                     case 4:
                         onmessage({data:xhr.response});
@@ -168,17 +171,16 @@ function TrackingFB(main) {
 
             send = function(){
                 put(REQUEST.TIMESTAMP, new Date().getTime());
-                if(xhr.readyState != 1) {
+                if(xhr.readyState > 2) {
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = onreadystatechange;
-                    xhr.open('POST', link, false);
+                    xhr.open("POST", link, false);
                 }
-
                 xhr.send(JSON.stringify(json));
                 json = {};
             }
 
-            xhr.open('POST', link, true);
+            xhr.open("POST", link, true);
             onopen();
 
         }
@@ -211,8 +213,6 @@ function TrackingFB(main) {
 
         }
 
-
-
         var a = {};
         try {
             a = new WebSocket(link);
@@ -236,10 +236,9 @@ function TrackingFB(main) {
         json[name] = value;
     }
 
-
     function send(jsonMessage) {
         if(!jsonMessage) {
-            put(REQUEST.TIMESTAMP, new Date().getTime());
+//            put(REQUEST.TIMESTAMP, new Date().getTime());
             send(json);
             json = {};
             return;
@@ -293,12 +292,10 @@ function TrackingFB(main) {
 
             var updates = {};
             updates[path + "/" + key] = jsonMessage;
-            updates[DATABASE.SECTION_USERS_DATA + "/" + main.me.number + "/changed"] = firebase.database.ServerValue.TIMESTAMP;
+            updates[DATABASE.SECTION_USERS_DATA + "/" + main.me.number + "/" + DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
             ref.update(updates);
         }
-
-
     }
 
     function sendMessage(type, jsonMessage) {
@@ -366,11 +363,11 @@ function TrackingFB(main) {
                 user.user = true;
 
                 //registers
-                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child("name"), usersDataNameListener);
-                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child("active"), usersDataActiveListener);
+                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_NAME), usersDataNameListener);
+                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_ACTIVE), usersDataActiveListener);
 
-                usersDataNameListener(data.child("name"));
-                usersDataActiveListener(data.child("active"));
+                usersDataNameListener(data.child(DATABASE.USER_NAME));
+                usersDataActiveListener(data.child(DATABASE.USER_ACTIVE));
 
                 for(var i in main.holders) {
                     if(main.holders[i] && main.holders[i].saveable) {

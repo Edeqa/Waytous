@@ -9,7 +9,7 @@ function FabHolder(main) {
 
     function start() {
         // console.log("FABHOLDER",main);
-        FabHolder.fab = u.create("div", {className:"material-icons md-14 fab", innerHTML:"gps_off", onclick:onFabClick}, main.layout);
+        FabHolder.fab = u.create(HTML.DIV, {className:"material-icons md-14 fab", innerHTML:"gps_off", onclick:onFabClick}, main.layout);
     }
 
     function onFabClick(){
