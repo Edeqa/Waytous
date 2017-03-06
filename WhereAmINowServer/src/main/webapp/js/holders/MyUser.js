@@ -8,7 +8,11 @@ function MyUser(main) {
 
         for(var i in this.views) {
             if(main.holders[i] && main.holders[i].dependsOnUser && main.holders[i].onEvent) {
-                if(!main.holders[i].onEvent.call(this, EVENT, object)) break;
+                try {
+                    if (!main.holders[i].onEvent.call(this, EVENT, object)) break;
+                } catch(e) {
+                    console.error(i +": "+ e);
+                }
             }
         }
     }
@@ -21,11 +25,15 @@ function MyUser(main) {
                         var view = main.holders[i].createView(this);
                         if (view) this.views[i] = view;
                     } catch (e) {
-                        console.error(i,e.message);
+                        console.error(i +": "+ e);
                     }
                 }
             }
         }
+    }
+
+    function removeViews() {
+        console.log("REMOVEVIEWS:"+this.number);
     }
 
     function addLocation(location) {
@@ -38,7 +46,11 @@ function MyUser(main) {
     function onChangeLocation() {
         for(var i in this.views) {
             if(main.holders[i] && main.holders[i].onChangeLocation) {
-                main.holders[i].onChangeLocation.call(this, this.location);
+                try {
+                    main.holders[i].onChangeLocation.call(this, this.location);
+                } catch(e) {
+                    console.error(i +": "+ e);
+                }
             }
         }
     }
@@ -51,6 +63,7 @@ function MyUser(main) {
         properties: null,
         fire:fire,
         createViews:createViews,
+        removeViews:removeViews,
         addLocation:addLocation,
         onChangeLocation:onChangeLocation,
     }

@@ -42,6 +42,11 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PUBLIC
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_KEYS;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_ACTIVE;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CHANGED;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_COLOR;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CREATED;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -326,9 +331,9 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                                         public void onSuccess(final String customToken) {
 
                                             Map<String,Object> update = new HashMap<>();
-                                            update.put("active", true);
-                                            update.put("color",Utils.selectColor((int) check.getNumber()));
-                                            update.put("changed", new Date().getTime());
+                                            update.put(DATABASE_USER_ACTIVE, true);
+                                            update.put(DATABASE_USER_COLOR,Utils.selectColor((int) check.getNumber()));
+                                            update.put(DATABASE_USER_CHANGED, new Date().getTime());
                                             if (check.getName() != null && check.getName().length() > 0) {
                                                 update.put(USER_NAME,check.getName());
                                             }
@@ -435,10 +440,10 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
         final Map<String, Object> childUpdates = new HashMap<>();
 
         Map<String,Object> o = new HashMap();
-        o.put(USER_COLOR, user.getColor());
-        o.put(USER_NAME, user.getName());
-        o.put("active", true);
-        o.put("created", user.getCreated());
+        o.put(DATABASE_USER_COLOR, user.getColor());
+        o.put(DATABASE_USER_NAME, user.getName());
+        o.put(DATABASE_USER_ACTIVE, true);
+        o.put(DATABASE_USER_CREATED, user.getCreated());
         childUpdates.put(DATABASE_SECTION_USERS_DATA + "/" + user.getNumber(),o);
 
         o = new HashMap();

@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 17;
+    public final static int SERVER_BUILD = 18;
 
 // debug local version
     public final static String WSS_SERVER_HOST = "https://10.0.0.96";
@@ -106,6 +106,11 @@ public class Constants {
     public static final String DATABASE_SECTION_PUBLIC = "b"; // public
     public static final String DATABASE_SECTION_PRIVATE = "p"; // private
     public static final String DATABASE_SECTION_USERS_DATA = "u/b"; // users/data-public
+    public static final String DATABASE_USER_NAME = "name";
+    public static final String DATABASE_USER_ACTIVE = "active";
+    public static final String DATABASE_USER_COLOR = "color";
+    public static final String DATABASE_USER_CREATED = "color";
+    public static final String DATABASE_USER_CHANGED = "change";
     public static final String DATABASE_SECTION_USERS_DATA_PRIVATE = "u/p"; // users/data-private
     public static final String DATABASE_SECTION_USERS_KEYS = "u/k"; // users/keys
     public static final String DATABASE_SECTION_OPTIONS = "o"; // options
@@ -116,6 +121,7 @@ public class Constants {
     public static final String DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD = "o/requires-password";
     public static final String DATABASE_SECTION_OPTIONS_WELCOME_MESSAGE = "o/welcome-message";
     public static final String DATABASE_SECTION_OPTIONS_DATE_CREATED = "o/date-created";
+
 
     public static final int LIFETIME_INACTIVE_TOKEN = 600;
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;

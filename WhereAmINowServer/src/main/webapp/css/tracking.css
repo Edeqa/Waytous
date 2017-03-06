@@ -96,9 +96,6 @@ input, textarea {
     background-repeat: no-repeat;
     background-position: center center;
 }
-.drawer-button {
-    display: none;
-}
 .menu {
 
 }
@@ -301,9 +298,18 @@ p.bottom-desc {
 }
 .user-button-icon {
 }
-.user-button-title {
+.user-button-label {
     padding-left: 10px;
     padding-right: 10px;
+}
+.user-button-title {
+}
+.user-button-subtitle {
+    font-size: 9px;
+    max-width: 150px;
+    /*overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;*/
 }
 .user-context-menu {
     position: fixed;
@@ -435,6 +441,7 @@ p.bottom-desc {
     border: none;
     font-size: 20px !important;
     cursor: pointer;
+    outline: none;
 }
 .dialog-button-close:hover {
     color: red;
@@ -444,6 +451,61 @@ p.bottom-desc {
 }
 .dialog-button-negative {
 
+}
+.chat {
+    width: 500px;
+    max-width: 60%;
+    padding: 8px;
+    font-size: 10px;
+    bottom: 20px;
+    top: auto;
+    left: 270px;
+    transform: none;
+    opacity: 0.4;
+    outline: none;
+}
+.chat:hover {
+    opacity: 1.0;
+}
+.chat:focus {
+    opacity: 1.0;
+}
+.chat-messages {
+    max-height: 200px;
+    overflow: scroll;
+}
+.chat-message {
+}
+.chat-message-from {
+    font-weight: bolder;
+}
+.chat-message-timestamp {
+    float: right;
+    padding-right: 40px;
+}
+.chat-message-body {
+    padding-bottom: 8px;
+}
+.chat-reply {
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+.chat-reply-input {
+    width: 100%;
+}
+.chat-reply-button {
+    width: 40px;
+    float: right;
+    background: none;
+    border: none;
+    outline: none;
+}
+.chat-reply-button:hover {
+    color: blue;
+}
+.chat-reply-button:active {
+    color: cyan;
 }
 
 
@@ -524,25 +586,35 @@ p.bottom-desc {
         border: none;
         background-color: darkcyan;
         color: white;
-        width: auto;
         height: 50px;
-        display: block;
+        display: flex;
         top: 0px;
         opacity: 0.8;
         z-index: 10;
     }
+    .actionbar-button {
+        font-family: "Material Icons";
+        padding-left: 16px;
+        font-size: 22px;
+        align-self: center;
+    }
+    .actionbar-label {
+        align-self: center;
+        padding-left: 16px;
+    }
+    .actionbar-label-title {
+        font-size: 16px;
+        font-weight: bolder;
+    }
+    .actionbar-label-subtitle {
+        font-size: 12px;
+        overflow-x: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
     .alpha {
         left: auto;
         right: 10px;
-    }
-    .drawer-button {
-        font-family: "Material Icons";
-        position: absolute;
-        padding-left: 16px;
-        padding-top: 14px;
-        font-size: 22px;
-        display: block;
-        z-index: 10;
     }
     .drawer {
         float: left;
@@ -583,12 +655,7 @@ p.bottom-desc {
         font-size: 16px;
     }
     .menu-item div {
-        text-decoration: none;
-        margin-left: 24px;
-        cursor: pointer;
-        display: block;
         padding: 15px;
-        color: darkslategray;
     }
     .drawer-header {
 
@@ -657,10 +724,19 @@ p.bottom-desc {
         cursor: pointer;
         font-size: 10px;
     }
+    .user-button-label {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
     .user-button-title {
         white-space: nowrap;
         min-width: 40px;
         padding: 0px;
+    }
+    .user-button-subtitle {
+        font-size: 9px;
+        max-width: 200px;
+        display: none;
     }
     .user-context-menu {
         display: flex;
@@ -711,6 +787,27 @@ p.bottom-desc {
     .dialog-button-close {
         min-width: inherit;
         padding: 2px;
+    }
+    .chat {
+        border: none;
+        left: 0px;
+        bottom: 0px;
+        padding: 0px;
+        max-width: 100%;
+        opacity: 0.8;
+    }
+    .chat-messages {
+        padding: 8px;
+    }
+    .chat-reply {
+        padding: 8px;
+        display: flex;
+        align-items: stretch;
+    }
+    .chat-reply-button {
+        min-width: 40px;
+        height: 32px;
+        padding: 0px;
     }
 
     /* media specific classes */

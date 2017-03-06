@@ -16,7 +16,6 @@ function GpsHolder(main) {
         });*/
 
         navigator.geolocation.getCurrentPosition(function(location){
-            console.log("GPS ALLOWED",location);
             locationUpdateListener(location);
             navigator.geolocation.watchPosition(locationUpdateListener);
         },function(error){
@@ -53,6 +52,16 @@ function GpsHolder(main) {
 
     function onEvent(EVENT,object){
         switch (EVENT){
+            case EVENTS.TRACKING_ACTIVE:
+                if(main.me.location) {
+                    var message = u.locationToJson(main.me.location);
+                    main.tracking.sendMessage(REQUEST.TRACKING, message);
+                }
+                //
+                // navigator.geolocation.getCurrentPosition(function(location){
+                //     locationUpdateListener(location);
+                // });
+                break;
             default:
                 break;
         }
@@ -70,7 +79,7 @@ function GpsHolder(main) {
         }
 
         var message = u.locationToJson(position);
-        if(main.tracking) main.tracking.sendMessage(REQUEST.TRACKING, message);
+        if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
     }
 

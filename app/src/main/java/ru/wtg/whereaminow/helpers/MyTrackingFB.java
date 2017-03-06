@@ -55,6 +55,9 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTION
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_ACTIVE;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CHANGED;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
@@ -245,8 +248,8 @@ public class MyTrackingFB implements Tracking {
     public void stop() {
         setStatus(TRACKING_DISABLED);
         Map<String, Object> updates = new HashMap<>();
-        updates.put("active", false);
-        updates.put("changed", ServerValue.TIMESTAMP);
+        updates.put(DATABASE_USER_ACTIVE, false);
+        updates.put(DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
         ref.child(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
 
         for(Map.Entry<DatabaseReference,Object> entry: refs.entrySet()) {
@@ -337,8 +340,8 @@ public class MyTrackingFB implements Tracking {
             } else if (ref != null) {
                 if(REQUEST_CHANGE_NAME.equals(type)) {
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(USER_NAME, o.get(USER_NAME));
-                    childUpdates.put("changed", ServerValue.TIMESTAMP);
+                    childUpdates.put(DATABASE_USER_NAME, o.get(USER_NAME));
+                    childUpdates.put(DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
                     ref.child(DATABASE_SECTION_USERS_DATA).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
                     return;
                 } else if(REQUEST_WELCOME_MESSAGE.equals(type)) {

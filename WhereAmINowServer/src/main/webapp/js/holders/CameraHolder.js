@@ -42,6 +42,12 @@ function CameraHolder(main) {
                 });
                 menuFitToScreen.classList.add("disabled");
                 break;
+            case EVENTS.TRACKING_ACTIVE:
+                menuFitToScreen.classList.remove("disabled");
+                break;
+            case EVENTS.TRACKING_DISABLED:
+                menuFitToScreen.classList.add("disabled");
+                break;
             case EVENTS.MARKER_CLICK:
                 onEvent.call(this,EVENTS.CAMERA_NEXT_ORIENTATION);
                 break;
@@ -81,7 +87,7 @@ function CameraHolder(main) {
                     });
                 }
                 if(main.map.getZoom() != object) {
-                    main.map.setZoom(object);
+                    main.map.setZoom(Math.round(object));
                 }
                 break;
             default:
@@ -151,7 +157,7 @@ function CameraHolder(main) {
             var finalBounds = new google.maps.LatLngBounds();
             for(var i in main.users.users) {
                 var user = main.users.users[i];
-                if(user.properties.selected && user.location && user.location.coords) {
+                if(user.properties && user.properties.selected && user.location && user.location.coords) {
                     finalBounds.extend(u.latLng(user.location));
                 }
             }
@@ -180,13 +186,18 @@ function CameraHolder(main) {
             });*/
         } else {
             main.users.forAllUsers(function(number,user){
-                if(user.properties.selected) {
+                if(user.properties && user.properties.selected) {
                     var finalCenter = u.latLng(user.location);
                     if (finalCenter) {
                         var startCenter = main.map.getCenter();
 
+
                         var startZoom = main.map.getZoom();
                         var finalZoom = user.views.camera.zoom || CAMERA_DEFAULT_ZOOM;
+
+                        if(startCenter.lat() == finalCenter.lat()
+                            && startCenter.lng() == finalCenter.lng()
+                            && startZoom == finalZoom) return;
 
                         clearInterval(task);
                         task = u.smoothInterpolated(1000, function(time,value) {

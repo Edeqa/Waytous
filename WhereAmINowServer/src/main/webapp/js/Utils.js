@@ -467,7 +467,7 @@ function Utils() {
 
             var div = u.create("div", {className:"dialog-item"}, divItems);
             u.create("div", {className:"dialog-item-label", innerHTML:item.label}, div);
-            items.push(u.create("input", {className:"dialog-item-"+item.type, value:item.value}, div));
+            items.push(u.create("input", {className:"dialog-item-"+item.type, tabindex: i, value:item.value}, div));
         }
         var buttons = u.create("div", {className:"dialog-buttons"}, dialog);
         if(options.positive) {
@@ -485,6 +485,7 @@ function Utils() {
 
         dialog.onopen = function(){
             dialog.classList.remove("hidden");
+            items[i].focus();
             return dialog;
         };
 

@@ -66,7 +66,7 @@ function Constants() {
         LEAVE : "leave",
         SAVED_LOCATION : "saved_location",
 
-        DELIVERY_CONFIRMATION : "delivery",
+        DELIVERY_CONFIRMATION : "delivery"
     };
     window.RESPONSE = {
         STATUS : "server",
@@ -82,7 +82,7 @@ function Constants() {
         NUMBER : "number",
         INITIAL : "initial",
         PRIVATE : "to",
-        SIGN : "sign",
+        SIGN : "sign"
     };
     window.USER = {
         JOINED : "joined",
@@ -103,7 +103,7 @@ function Constants() {
         NAME : "name",
         MESSAGE : "user_message",
         ADDRESS : "address",
-        DESCRIPTION : "description",
+        DESCRIPTION : "description"
     };
     window.DATABASE = {
         SECTION_GROUPS : "_groups",
@@ -125,7 +125,6 @@ function Constants() {
         SECTION_OPTIONS_DATE_CREATED : "o/date-created"
 
     };
-
     window.HTML = {
         DIV: "div",
         LINK:"link",
@@ -171,6 +170,14 @@ function Constants() {
         SPAN:"span",
         BUTTON:"button",
         CLICK:"click"
+    };
+    window.CONSTANTS = {
+        HTTP_PORT: 8080,
+        HTTPS_PORT: 8000,
+        WS_FB_PORT: 8081,
+        WSS_FB_PORT: 8001,
+        WS_PORT: 8082,
+        WSS_PORT: 8002
     };
 
     return {

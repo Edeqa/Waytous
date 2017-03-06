@@ -18,10 +18,11 @@ function MarkerHolder(main) {
         // var t=document.createTextNode('Hello World');
         // h.appendChild(t);
         // document.body.appendChild(h);
+        if(!user.properties) return;
 
         var marker = new google.maps.Marker({
             position: u.latLng(user.location),
-            title: user.properties.getDisplayName(),
+            title: user.properties ? user.properties.getDisplayName() : "",
             icon:{
                 path: 'M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 M 20 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71 z',
                 fillColor: user.properties.color,
@@ -73,6 +74,9 @@ function MarkerHolder(main) {
             case EVENTS.MAKE_INACTIVE:
 //                console.log(EVENT,this.properties.name,object);
                 this.views.marker.marker.setMap(null);
+                break;
+            case EVENTS.CHANGE_NAME:
+                this.views.marker.marker;
                 break;
         }
         return true;

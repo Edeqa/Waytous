@@ -14,7 +14,7 @@ function DrawerHolder(main) {
     }}, main.layout, "first");
 
     var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
-    u.create(HTML.SPAN, {innerHTML:"menu", className:"drawer-button", onclick: function(){
+    u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
         try {
             drawerLayout.classList.add("drawer-open");
             drawerLayout.focus();
@@ -22,7 +22,9 @@ function DrawerHolder(main) {
             console.err(e);
         }
     }}, actionbar);
-    u.create(HTML.DIV, {className:"title", innerHTML:"Waytogo"}, actionbar);
+    var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
+    u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:"Waytogo"}, label);
+    var subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle hidden"}, label);
 
     u.create(HTML.A, { href: "/", className:"drawer-header" }, drawerLayout);
 
@@ -33,13 +35,9 @@ function DrawerHolder(main) {
     }
 
 
-    function start() {
+    var start = function() {
 
         main.fire(CREATE_DRAWER, drawer);
-
-        drawer.add(9,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
-            main.fire(EVENTS.TRACKING_STOP);
-        });
 
         /*for(var i in holderFiles) {
             var x = holderFiles[i].toLowerCase();
@@ -63,7 +61,7 @@ function DrawerHolder(main) {
         u.create(HTML.DIV, "&copy;2017 White Tiger Group", th);
         u.create(HTML.DIV, "Build " + data.version, th);
 
-    }
+    };
 
     function Drawer() {
         var items = {};
@@ -95,11 +93,29 @@ function DrawerHolder(main) {
         }
     }
 
-    function onEvent(EVENT,object){
+    var onEvent = function(EVENT,object){
         switch (EVENT){
-
+            case EVENTS.UPDATE_ADDRESS:
+                var userSubtitle = this.views.button.subtitle;
+                if(object) {
+                    userSubtitle.innerHTML = object;
+                    userSubtitle.classList.remove("hidden");
+                } else {
+                    userSubtitle.classList.add("hidden");
+                }
+                if(main.users.getCountSelected() == 1 && this.properties.selected) {
+                    subtitle.innerHTML = object;
+                    subtitle.classList.remove("hidden");
+                } else {
+                    subtitle.classList.add("hidden");
+                }
+                break;
         }
         return true;
+    };
+
+    function createView(user) {
+        return {};
     }
 
     return {
@@ -107,6 +123,8 @@ function DrawerHolder(main) {
         start:start,
         dependsOnEvent:true,
         onEvent:onEvent,
+        dependsOnUser:true,
+        createView:createView,
     }
 }
 

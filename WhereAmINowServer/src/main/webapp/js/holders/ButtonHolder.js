@@ -14,12 +14,12 @@ function ButtonHolder(main) {
         // console.log("BUTTONHOLDER",this);
         buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
-            contextMenuLayout.classList.add("hidden");
-        }, onmouseleave: function(){
-            contextMenuLayout.classList.add("hidden");
-        }, onmouseenter: function(){
-            clearTimeout(delayDismiss);
-        }
+                contextMenuLayout.classList.add("hidden");
+            }, onmouseleave: function(){
+                contextMenuLayout.classList.add("hidden");
+            }, onmouseenter: function(){
+                clearTimeout(delayDismiss);
+            }
         }, main.right);
         contextMenu = new ContextMenu();
     }
@@ -34,10 +34,10 @@ function ButtonHolder(main) {
                 buttons.classList.add("hidden");
                 break;
             case EVENTS.SELECT_USER:
-                this.views.button.classList.add("selected");
+                this.views.button.button.classList.add("selected");
                 break;
             case EVENTS.UNSELECT_USER:
-                this.views.button.classList.remove("selected");
+                this.views.button.button.classList.remove("selected");
                 break;
             case EVENTS.CHANGE_NAME:
 /*
@@ -52,13 +52,22 @@ function ButtonHolder(main) {
                     }
                 }
 */
-                this.views.button.children[1].innerHTML = this.properties.getDisplayName();
+                this.views.button.button.children[1].innerHTML = this.properties.getDisplayName();
                 break;
             case EVENTS.MAKE_ACTIVE:
-                if(this.views && this.views.button && this.views.button.classList) this.views.button.classList.remove("hidden");
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
                 break;
             case EVENTS.MAKE_INACTIVE:
-                if(this.views && this.views.button && this.views.button.classList) this.views.button.classList.add("hidden");
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
+                break;
+            case EVENTS.UPDATE_ADDRESS:
+                var subtitle = this.views.button.subtitle;
+                if(object) {
+                    subtitle.innerHTML = object;
+                    subtitle.classList.remove("hidden");
+                } else {
+                    subtitle.classList.add("hidden");
+                }
                 break;
             default:
                 break;
@@ -92,8 +101,14 @@ function ButtonHolder(main) {
         }}, buttons);
         u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
 //        console.log(user)
-        u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, b);
-        return b;
+        var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
+        u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, div);
+        var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden",innerHTML:""}, div);
+
+        return {
+            button: b,
+            subtitle: subtitle
+        };
     }
 
     function openContextMenu(user) {
@@ -104,7 +119,7 @@ function ButtonHolder(main) {
             sections[i] = u.create(HTML.DIV, {className:"user-context-menu-section hidden"}, contextMenuLayout);
         }
         user.fire(EVENTS.CREATE_CONTEXT_MENU, contextMenu);
-        var size = user.views.button.getBoundingClientRect();
+        var size = user.views.button.button.getBoundingClientRect();
 
         contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
         contextMenuLayout.style.top = Math.floor(size.top) + "px";

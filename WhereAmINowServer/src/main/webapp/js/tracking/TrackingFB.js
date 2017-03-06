@@ -4,16 +4,14 @@
 
 function TrackingFB(main) {
 
-	var link;
-	var trackingListener;
-	var json;
-	var newTracking;
-	var token;
-	var status;
-	var serverUri;
-	var ref;
-	var webSocketListener;
-	var sendOriginal;
+    var link;
+    var trackingListener;
+    var json;
+    var newTracking;
+    var token;
+    var status;
+    var serverUri;
+    var ref;
 
     function start() {
         status = EVENTS.TRACKING_DISABLED;
@@ -24,8 +22,8 @@ function TrackingFB(main) {
             newTracking = true;
         }
         var path = uri.pathname.replace("/group/","/track/");
-        serverUri = "wss://" + uri.hostname + ":8001" + path;
-//        serverUri = "ws://" + uri.hostname + ":8081" + path;
+        serverUri = "wss://" + uri.hostname + ":"+ CONSTANTS.WSS_FB_PORT + path;
+        // serverUri = "ws://" + uri.hostname + ":" + CONSTANTS.WS_FB_PORT + path;
 
         if(newTracking) {
             setStatus(EVENTS.TRACKING_CONNECTING);
@@ -38,8 +36,25 @@ function TrackingFB(main) {
 
     }
 
+    function stop(){
+        status = EVENTS.TRACKING_DISABLED;
+
+        var updates = {};
+        updates[DATABASE.USER_ACTIVE] = false;
+        updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
+
+        ref.child(DATABASE.SECTION_USERS_DATA + "/" + main.me.number).update(updates);
+
+        firebase.auth().signOut();
+        trackingListener.onStop();
+
+        var uri = new URL(this.link);
+        window.location.href = "https://" + uri.hostname + ":"+ CONSTANTS.HTTPS_PORT + "/";
+    }
+
     function webSocketListener(link) {
 
+        var sendOriginal = send;
         var onopen =  function(event) {
             opened = true;
             if(newTracking) {
@@ -79,7 +94,6 @@ function TrackingFB(main) {
                     break;
                 case RESPONSE.STATUS_ACCEPTED:
                     newTracking = false;
-                    send = sendOriginal;
                     if(o[RESPONSE.SIGN]) {
                         var authToken = o[RESPONSE.SIGN];
                         delete o[RESPONSE.SIGN];
@@ -119,8 +133,8 @@ function TrackingFB(main) {
                                     console.error(e.message);
                                 }
                             }).catch(function(error) {
-                                setStatus(EVENTS.TRACKING_DISABLED);
-                                trackingListener.onReject(error.message);
+                            setStatus(EVENTS.TRACKING_DISABLED);
+                            trackingListener.onReject(error.message);
                         });
                     } else {
                         setStatus(EVENTS.TRACKING_DISABLED);
@@ -142,83 +156,71 @@ function TrackingFB(main) {
 //            console.log("CLOSE",opened,event.code,event.reason,event.wasClean);
             if(!opened) {
                 console.error("Error processing websocket, try to use XHR on",link," (error ",event.code,event.reason?" "+event.reason+")":")");
-                sendOriginal = send;
-                xhrMode(link);
+                xhrModeStart(link);
             }
         };
 
         var onerror = function(event) {
-            console.log("ONERROR-RECONNECT-SHOULDBEDONE",event)
+            console.log("ONERROR-RECONNECT-SHOULDBEDONE",event);
             if(status == EVENTS.TRACKING_DISABLED) return;
         };
 
-        var xhrMode = function(link) {
-            console.log("XHRMODE", link);
-            var xhr = new XMLHttpRequest();
-
+        var xhrModeStart = function(link) {
             var uri = new URL(link);
-            link = "https://" + uri.hostname + ":8000/join" + uri.pathname;
+            link = "https://" + uri.hostname + ":" + CONSTANTS.HTTPS_PORT + "/join" + uri.pathname;
 
-            var onreadystatechange = function() { // (3)
-                console.log("XHR",xhr.readyState,xhr);
-                switch(xhr.readyState){
-                    case 4:
-                        onmessage({data:xhr.response});
-                        break;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() { //
+                if (xhr.readyState != 4) return;
+                console.log("XHR:START",xhr.readyState,xhr);
+                xhrModeCheck(link,xhr.response);
+            };
+            send = function(jsonMessage){
+                if(!jsonMessage) {
+                    send(json);
+                    json = {};
+                    return;
                 }
-            }
-            xhr.onreadystatechange = onreadystatechange;
-
-            send = function(){
                 put(REQUEST.TIMESTAMP, new Date().getTime());
-                if(xhr.readyState > 2) {
-                    xhr = new XMLHttpRequest();
-                    xhr.onreadystatechange = onreadystatechange;
-                    xhr.open("POST", link, false);
-                }
+                console.log("SEND:"+JSON.stringify(json));
                 xhr.send(JSON.stringify(json));
                 json = {};
-            }
-
+            };
             xhr.open("POST", link, true);
             onopen();
+        };
 
-        }
+        var xhrModeCheck = function(link, check) {
+            // var check = JSON.parse(check);
 
-        function onCheckControl(e) {
-            var json = JSON.parse(e);
-        console.log("CHECKCONTROL",json);
-
-//            var xhr = new XMLHttpRequest();
-//
-//            var uri = new URL(link);
-//            link = "https://" + uri.hostname + ":8100/join" + uri.pathname;
-//
-//            xhr.onreadystatechange = function() { // (3)
-//                switch(xhr.readyState){
-//                    case 4:
-//                        onCheckControl(xhr.response);
-//                        break;
-//                }
-//            }
-//
-//            send = function(){
-//                put(REQUEST.TIMESTAMP, new Date().getTime());
-//                xhr.send(JSON.stringify(json));
-//                json = {};
-//            }
-//
-//            xhr.open('POST', link, true);
-//            onopen();
-
-        }
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() { //
+                if (xhr.readyState != 4) return;
+                console.log("XHR:CHECK",xhr.readyState,xhr);
+                send = sendOriginal;
+                onmessage({data:xhr.response});
+                // xhrModeCheck(xhr.response);
+            };
+            send = function(jsonMessage){
+                if(!jsonMessage) {
+                    send(json);
+                    json = {};
+                    return;
+                }
+                put(REQUEST.TIMESTAMP, new Date().getTime());
+                xhr.send(JSON.stringify(json));
+                json = {};
+            };
+            xhr.open("POST", link, true);
+            onmessage({data:check});
+        };
 
         var a = {};
         try {
             a = new WebSocket(link);
         } catch(e){
             console.error(e);
-            xhrMode(link);
+            xhrModeStart(link);
         }
         var opened = false;
 
@@ -237,6 +239,8 @@ function TrackingFB(main) {
     }
 
     function send(jsonMessage) {
+        var updates;
+
         if(!jsonMessage) {
 //            put(REQUEST.TIMESTAMP, new Date().getTime());
             send(json);
@@ -260,7 +264,7 @@ function TrackingFB(main) {
             // }
         } else if(ref) {
             if(type == REQUEST.CHANGE_NAME) {
-                var updates = {};
+                updates = {};
                 updates[USER.NAME] = jsonMessage[USER.NAME];
                 updates["changed"] = firebase.database.ServerValue.TIMESTAMP;
                 ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);
@@ -290,7 +294,7 @@ function TrackingFB(main) {
             }
             var key = ref.push().key;
 
-            var updates = {};
+            updates = {};
             updates[path + "/" + key] = jsonMessage;
             updates[DATABASE.SECTION_USERS_DATA + "/" + main.me.number + "/" + DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
@@ -329,12 +333,16 @@ function TrackingFB(main) {
         return this.token;
     }
 
-    function setStatus(status){
-        this.status = status;
+    function setStatus(currentStatus){
+        status = currentStatus;
+    }
+
+    function getStatus(){
+        return status;
     }
 
     function getTrackingUri(){
-        return "http://" + serverUri.host + ":" + 8080 + "/track/" + token;
+        return "http://" + serverUri.host + ":" + CONSTANTS.HTTP_PORT + "/track/" + token;
     }
 
     function registerChildListener(ref, listener, limit) {
@@ -401,7 +409,7 @@ function TrackingFB(main) {
             var o = data.val();
             var from = parseInt(o["from"]);
             delete o["from"];
-debugger;
+            debugger;
             o[RESPONSE.NUMBER] = from;
             o[RESPONSE.STATUS] = data.ref.parent.parent.getKey();
             o["key"] = data.getKey();
@@ -447,11 +455,13 @@ debugger;
 
     return {
         start: start,
+        stop:stop,
         title: "Group",
         menu: true,
         setLink:setLink,
         setTrackingListener:setTrackingListener,
         getTrackingUri:getTrackingUri,
+        getStatus:getStatus,
         sendMessage:sendMessage,
         put:put,
         sendUpdate:sendUpdate,

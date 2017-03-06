@@ -49,6 +49,18 @@ function TrackingHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
+                object.add(9,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
+                    main.fire(EVENTS.TRACKING_STOP);
+                });
+                break;
+            case EVENTS.TRACKING_STOP:
+                if(main.tracking.getStatus() != EVENTS.TRACKING_DISABLED) {
+                    main.users.forAllUsersExceptMe(function (number, user) {
+                        user.removeViews();
+                    });
+                    main.tracking && main.tracking.stop();
+                    u.save("group");
+                }
                 break;
             default:
                 break;
@@ -102,23 +114,27 @@ function TrackingHolder(main) {
             // console.log("ONACCEPT",o);
             //FIXME
 //            u.save(TRACKING_URI, this.tracking.getTrackingUri());
-            main.fire(EVENTS.TRACKING_ACTIVE);
-            if(o[RESPONSE.TOKEN]) {
-                main.fire(EVENTS.TOKEN_CREATED, o[RESPONSE.TOKEN]);
-            }
-            if(o[REQUEST.WELCOME_MESSAGE]) {
-                main.fire(EVENTS.WELCOME_MESSAGE, o[RESPONSE.WELCOME_MESSAGE]);
-            }
-            if(o[RESPONSE.NUMBER]) {
-                main.users.forMe(function(number,user){
-                    user.createViews();
-                    progress.classList.add("hidden");
-                })
-            }
-            if(o[RESPONSE.INITIAL]) {
-                main.users.forAllUsersExceptMe(function(number,user){
-                    user.createViews();
-                })
+            try {
+                main.fire(EVENTS.TRACKING_ACTIVE);
+                if (o[RESPONSE.TOKEN]) {
+                    main.fire(EVENTS.TOKEN_CREATED, o[RESPONSE.TOKEN]);
+                }
+                if (o[REQUEST.WELCOME_MESSAGE]) {
+                    main.fire(EVENTS.WELCOME_MESSAGE, o[RESPONSE.WELCOME_MESSAGE]);
+                }
+                if (o[RESPONSE.NUMBER]) {
+                    main.users.forMe(function (number, user) {
+                        user.createViews();
+                        progress.classList.add("hidden");
+                    })
+                }
+                if (o[RESPONSE.INITIAL]) {
+                    main.users.forAllUsersExceptMe(function (number, user) {
+                        user.createViews();
+                    })
+                }
+            } catch(e) {
+                console.error(e);
             }
         },
         onReject: function(reason){
@@ -134,40 +150,45 @@ function TrackingHolder(main) {
         },
         onMessage: function(o){
             // console.log("ONMESSAGE",o);
-            var response = o[RESPONSE.STATUS];
-            switch (response){
-                case RESPONSE.STATUS_UPDATED:
-                    if(o[USER.DISMISSED]) {
-                        var number = o[USER.DISMISSED];
-                        // console.log("DISMISSED",number);
-                        var user = main.users.users[number];
-                        user.fire(EVENTS.MAKE_INACTIVE);
-                        main.fire(USER.DISMISSED, user);
-                    } else if(o[USER.JOINED]){
-                        var number = o[USER.JOINED];
-                        var user = main.users.users[number];
-                        user.fire(EVENTS.MAKE_ACTIVE);
-                        main.fire(USER.JOINED, user);
+            try {
+                var response = o[RESPONSE.STATUS];
+                switch (response) {
+                    case RESPONSE.STATUS_UPDATED:
+                        if (o[USER.DISMISSED]) {
+                            var number = o[USER.DISMISSED];
+                            // console.log("DISMISSED",number);
+                            var user = main.users.users[number];
+                            user.fire(EVENTS.MAKE_INACTIVE);
+                            main.fire(USER.DISMISSED, user);
+                        } else if (o[USER.JOINED]) {
+                            var number = o[USER.JOINED];
+                            var user = main.users.users[number];
+                            user.fire(EVENTS.MAKE_ACTIVE);
+                            main.fire(USER.JOINED, user);
 
-                        // console.log("JOINED",number);
-                    }
-                    break;
-                case RESPONSE.LEAVE:
-                    if(o[USER.NUMBER]) {
-                        console.log("LEAVE",o[USER.NUMBER]);
-                    }
-                    break;
-                case RESPONSE.CHANGE_NAME:
-                    if(o[USER.NAME]) {
-                        console.log("CHANGENAME",o[USER.NUMBER],o[USER.NAME]);
-                    }
-                    break;
-                default:
-                    var holder = main.holders[response];
-                    if(holder && holder.perform){
-                        holder.perform(o);
-                    }
-                    break;
+                            // console.log("JOINED",number);
+                        }
+                        break;
+                    case RESPONSE.LEAVE:
+                        if (o[USER.NUMBER]) {
+                            console.log("LEAVE", o[USER.NUMBER]);
+                        }
+                        break;
+                    case RESPONSE.CHANGE_NAME:
+                        if (o[USER.NAME]) {
+                            console.log("CHANGENAME", o[USER.NUMBER], o[USER.NAME]);
+                        }
+                        break;
+                    default:
+                        // console.log(type,response,o);
+                        var holder = main.holders[response];
+                        if (holder && holder.perform) {
+                            holder.perform(o);
+                        }
+                        break;
+                }
+            } catch(e) {
+                console.error(e);
             }
         }
     };

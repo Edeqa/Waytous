@@ -4,17 +4,19 @@
 function SampleHolder(main) {
 
     var type = "sample";
-    var user;
+    var view;
 
     function start() {
         console.log("SAMPLEHOLDER",this);
+        view = {};
     }
 
     function onEvent(EVENT,object){
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(0,type+"_1","Sample","ac_unit",function(){console.log("SAMPLEEVENTDRAWERCALLBACK",EVENT)});
+                var menuItem = object.add(0,type+"_1","Sample","ac_unit",function(){console.log("SAMPLEEVENTDRAWERCALLBACK",EVENT)});
+                menuItem.classList.add("disabled");
                 break;
             default:
                 break;
@@ -23,7 +25,9 @@ function SampleHolder(main) {
     }
 
     function createView(myUser){
-        user = myUser;
+        view.user = myUser;
+
+        return view;
         // console.log("SAMPLECREATEVIEW",user);
     }
 
