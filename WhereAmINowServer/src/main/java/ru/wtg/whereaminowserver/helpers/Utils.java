@@ -1,9 +1,18 @@
 package ru.wtg.whereaminowserver.helpers;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.LinkedHashMap;
@@ -11,6 +20,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import static com.google.common.net.HttpHeaders.USER_AGENT;
 
 /**
  * Created 10/8/16.
@@ -103,4 +116,70 @@ public class Utils {
         }
         return sb.toString();
     }
+
+
+    public static String getUrl(String url, String post, String urlCharset) throws IOException {
+
+        if(urlCharset == null) urlCharset = "UTF-8";
+
+        URL obj = new URL(url);
+        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+
+        //add reuqest header
+        con.setRequestMethod("POST");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+//        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+        con.setRequestProperty("Content-Type", "application/json");
+
+//        String urlParameters = "sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
+
+        // Send post request
+        con.setDoOutput(true);
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(con.getOutputStream());
+        outputStreamWriter.write(URLEncoder.encode(post,urlCharset));
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+
+        int responseCode = con.getResponseCode();
+//        int responseCode = con.getResponseCode();
+//        System.out.println("\nSending 'POST' request to URL : " + url);
+        System.out.println("Post parameters : " + post);
+        System.out.println("Response Code : " + responseCode);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        //print result
+        return response.toString();
+    }
+
+    public static String getUrl(String url, String urlCharset) throws IOException {
+        String line;
+        StringBuilder sb = new StringBuilder();
+        InputStream in;
+        URLConnection feedUrl;
+        feedUrl = new URL(url).openConnection();
+        feedUrl.setConnectTimeout(5000);
+        feedUrl.setRequestProperty(
+                "User-Agent",
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
+
+        in = feedUrl.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));
+        while ((line = reader.readLine()) != null) {
+            sb.append(new String(line.getBytes("UTF-8"))).append("\n");
+        }
+        in.close();
+
+        return sb.toString();
+    }
+
 }
