@@ -66,6 +66,8 @@ input, textarea {
     color: red;
     padding: 30px;
     text-align: center;
+    width: 500px;
+    max-width: 80%;
 }
 .alert-icon {
     position: fixed;
@@ -81,13 +83,15 @@ input, textarea {
 }
 .drawer {
     border-right-style: solid;
-    float: left;
     width: 250px;
-    min-width:250px;
+    min-width: 250px;
     border-width: 1px;
-    height: 100%;
-    background-color: floralwhite;
-    z-index: 100;
+    background-color: azure;
+    left: 0px;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    z-index: 10000;
 }
 .drawer-open {
     display: block;
@@ -96,16 +100,39 @@ input, textarea {
     outline: none;
 }
 .drawer-header {
-    background-color: #438d71;
-    display: block;
+    background: linear-gradient(135deg, #2e5d7d 0%,#4c93af 54%,#819bc7 100%);
+    display: flex;
     height: 150px;
-    background-image: url(/images/logo.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center center;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: sticky;
+}
+.drawer-header-name {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    font-size: x-large;
+    font-weight: bold;
+}
+.drawer-header-title {
+    color: white;
+    font-weight: bold;
+    font-size: larger;
+}
+.drawer-header-subtitle {
+    color: white;
+    padding-bottom: 10px;
+    white-space: pre;
 }
 .menu {
-
+    position: absolute;
+    top: 150px;
+    bottom: 50px;
+    overflow: auto;
+    width: 100%;
 }
 .menu-item:hover {
     background: #dddd99;
@@ -116,7 +143,7 @@ input, textarea {
     font-size: 16px;
 }
 .menu-item div {
-    font-weight: bolder;
+    font-weight: bold;
     text-decoration: none;
     margin-left: 24px;
     cursor: pointer;
@@ -289,6 +316,8 @@ p.bottom-desc {
     right: 52px;
     border-radius: 5px;
     background-color: transparent;
+    max-height: 90%;
+    overflow-y: auto;
 }
 .user-button {
     display: flex;
@@ -315,8 +344,9 @@ p.bottom-desc {
     border-width: 1px;
     border-color: white;
     border-style: solid;
-    position: absolute;
-    right: 5px;
+    position: relative;
+    right: 8px;
+    top: -8px;
 }
 .user-button-icon {
 }
@@ -367,8 +397,8 @@ p.bottom-desc {
     border-width: 2px;
     z-index: 1000;
     outline: none;
-    top: 45%;
-    left: 20%;
+    /*top: 45%;
+    left: 20%;*/
 }
 .progress {
     width: 20%;
@@ -437,6 +467,8 @@ p.bottom-desc {
     padding-top: 5px;
     padding-bottom: 5px;
     cursor: pointer;
+}
+.dialog-title-label {
 }
 .dialog-items {
     padding: 10px;
@@ -519,11 +551,11 @@ p.bottom-desc {
 
 }
 .chat-message-from {
-    font-weight: bolder;
+    font-weight: bold;
 }
 .chat-message-timestamp {
     float: right;
-    padding-right: 40px;
+    padding-right: 4px;
 }
 .chat-message-body {
     padding-bottom: 8px;
@@ -613,8 +645,8 @@ p.bottom-desc {
     }
     .modal {
         width: 60%;
-        left: 50%;
-        top: 50%;
+        left: 50% !important;
+        top: 50% !important;
         transform: translate(-50%,-50%);
     }
     .actionbar {
@@ -643,7 +675,7 @@ p.bottom-desc {
     }
     .actionbar-label-title {
         font-size: 16px;
-        font-weight: bolder;
+        font-weight: bold;
     }
     .actionbar-label-subtitle {
         font-size: 12px;
@@ -658,7 +690,7 @@ p.bottom-desc {
     .drawer {
         left: 0px;
         width: 70%;
-        min-width:300px;
+        max-width:300px;
         position: fixed;
         top: 0px;
         bottom: 0px;
@@ -673,13 +705,6 @@ p.bottom-desc {
     }
     .drawer:focus {
         display: block;
-    }
-    .menu {
-        position: absolute;
-        top: 150px;
-        bottom: 50px;
-        overflow: auto;
-        width: 100%;
     }
     .menu-item {
         text-decoration: none;
@@ -762,9 +787,12 @@ p.bottom-desc {
         padding: 5px;
         cursor: pointer;
         font-size: 10px;
+        min-width: 45px;
     }
     .user-button-badge {
-        transform: translate(30px,-30px);
+        top: 0px;
+        float: right;
+        right: 0px;
     }
 
     .user-button-label {
@@ -833,12 +861,12 @@ p.bottom-desc {
     }
     .chat {
         border: none;
-        left: 0px;
-        bottom: 0px;
+        left: 0px !important;
+        bottom: 0px !important;
+        top: auto !important;
         padding: 0px;
         max-width: 100%;
         width: 100%;
-        top: auto;
         transform: none;
     }
     .chat-messages {

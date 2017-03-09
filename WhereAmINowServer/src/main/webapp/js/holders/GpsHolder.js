@@ -23,6 +23,9 @@ function GpsHolder(main) {
                 case error.PERMISSION_DENIED:
                     message = "You have denied geolocation.";
                     break;
+                case error.PERMISSION_DENIED_TIMEOUT:
+                    message = "User took too long to grant/deny geolocation permission.";
+                    break;
                 case error.POSITION_UNAVAILABLE:
                     message = "Geolocation is unavailable.";
                     break;
@@ -33,19 +36,29 @@ function GpsHolder(main) {
                     message = "An unknown error occurred while requesting geolocation.";
                     break;
             }
-            var alert = u.create(HTML.DIV, {className:"modal alert-dialog shadow"}, main.right);
-            u.create(HTML.DIV, message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly.<br>", alert);
-            u.create(HTML.DIV, "&nbsp;", alert);
-            u.create(HTML.BUTTON, {type:HTML.BUTTON, innerHTML:"OK", onclick:function(){
-                icon.classList.remove("hidden");
-                alert.classList.add("hidden");
-            }}, alert);
+
+            var alert = u.dialog({
+                className: "alert-dialog",
+                items: [
+                    { type: HTML.DIV, label: message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly." },
+                ],
+                positive: {
+                    title: "OK",
+                    callback: function(){
+                        icon.classList.remove("hidden");
+                        alert.onclose();
+                    }
+                }
+            }).onopen();
+
             var icon = u.create(HTML.BUTTON, {className:"material-icons alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");
                 alert.classList.remove("hidden");
             }}, main.right);
         }, {
-            enableHighAccuracy: true
+            enableHighAccuracy: true,
+            maximumAge: 60000,
+            timeout: 30000
         });
     }
 
@@ -68,7 +81,6 @@ function GpsHolder(main) {
     }
 
     function locationUpdateListener(position) {
-        console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
 
         if(!position) return;
         // position = geoTrackFilter.normalizeLocation(position);
@@ -76,6 +88,7 @@ function GpsHolder(main) {
         if(last && last.coords && last.coords.latitude == position.coords.latitude && last.coords.longitude == position.coords.longitude) {
             return;
         }
+        console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
 
         var message = u.locationToJson(position);
         if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);

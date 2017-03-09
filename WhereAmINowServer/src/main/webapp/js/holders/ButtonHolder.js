@@ -13,6 +13,8 @@ function ButtonHolder(main) {
     EVENTS.SHOW_BADGE = "show_badge";
     EVENTS.HIDE_BADGE = "hide_badge";
     EVENTS.INCREASE_BADGE = "increase_badge";
+    EVENTS.HIDE_MENU_SUBTITLE = "hide_menu_subtitle";
+    EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
 
 
     function start() {
@@ -32,6 +34,37 @@ function ButtonHolder(main) {
     function onEvent(EVENT,object){
         // console.log(EVENT)
         switch (EVENT){
+            case EVENTS.CREATE_CONTEXT_MENU:
+                var user = this;
+                if(user.number == main.me.number) {
+                    var itemMinimize = contextMenu.add(1, type + "_1", "Minimize menu", "view_headline", function () {
+                        u.save("button:minimized", true);
+                        main.users.forAllUsers(function(number,user){
+                            user.views.button.subtitle.classList.add("hidden");
+                            itemMinimize.classList.add("hidden");
+                            itemMaximize.classList.remove("hidden");
+                        });
+                    });
+                    itemMinimize.classList.add("hideable");
+
+                    var itemMaximize = contextMenu.add(1, type + "_1", "Restore menu", "view_stream", function () {
+                        u.save("button:minimized");
+                        main.users.forAllUsers(function(number,user){
+                            user.views.button.subtitle.classList.remove("hidden");
+                            itemMinimize.classList.remove("hidden");
+                            itemMaximize.classList.add("hidden");
+                        });
+                    });
+                    itemMaximize.classList.add("hideable");
+
+                    itemMaximize.classList.add("hideable");
+                    if(u.load("button:minimized")) {
+                        itemMinimize.classList.add("hidden");
+                    } else {
+                        itemMaximize.classList.add("hidden");
+                    }
+                }
+                break;
             case EVENTS.TRACKING_ACTIVE:
                 buttons.classList.remove("hidden");
                 break;
@@ -69,7 +102,9 @@ function ButtonHolder(main) {
                 var subtitle = this.views.button.subtitle;
                 if(object) {
                     subtitle.innerHTML = object;
-                    subtitle.classList.remove("hidden");
+                    if(!u.load("button:minimized")) {
+                        subtitle.classList.remove("hidden");
+                    }
                 } else {
                     subtitle.classList.add("hidden");
                 }
@@ -167,6 +202,7 @@ function ButtonHolder(main) {
             u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
             u.create(HTML.DIV, { className:"user-context-menu-item-title", innerHTML: name}, th);
             sections[section].classList.remove("hidden");
+            return th;
         }
         function getContextMenu(){
             console.log("GETCONTEXTMENU:",items);

@@ -25,7 +25,7 @@ function MarkerHolder(main) {
             title: user.properties ? user.properties.getDisplayName() : "",
             icon:{
                 path: 'M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 M 20 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71 z',
-                fillColor: user.properties.color,
+                fillColor: user.properties ? user.properties.color : "blue",
                 fillOpacity: 0.7,
                 scale: 1.2,
                 strokeColor: "white",
@@ -53,6 +53,9 @@ function MarkerHolder(main) {
         function setPosition(location) {
             console.log(this,marker,location);
             this.marker.setPosition(location);
+        }
+        if(user.properties.active) {
+            marker.setMap(main.map);
         }
 
         return {

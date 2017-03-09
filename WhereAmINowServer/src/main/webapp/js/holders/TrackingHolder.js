@@ -174,7 +174,6 @@ function TrackingHolder(main) {
                             var user = main.users.users[number];
                             user.fire(EVENTS.MAKE_ACTIVE);
                             main.fire(USER.JOINED, user);
-
                             // console.log("JOINED",number);
                         }
                         break;

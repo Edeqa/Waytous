@@ -43,6 +43,7 @@ function TrackingFB(main) {
         updates[DATABASE.USER_ACTIVE] = false;
         updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
+//console.log("UPDATE",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
         ref.child(DATABASE.SECTION_USERS_DATA + "/" + main.me.number).update(updates);
 
         firebase.auth().signOut();
@@ -159,7 +160,7 @@ function TrackingFB(main) {
         var onclose = function(event) {
 //            console.log("CLOSE",opened,event.code,event.reason,event.wasClean);
             if(!opened) {
-                console.error("Error processing websocket, try to use XHR on",link," (error ",event.code,event.reason?" "+event.reason+")":")");
+                console.error("Error processing websocket, will try to use XHR instead of",link," (error ",event.code,event.reason?" "+event.reason+")":")");
                 xhrModeStart(link);
             }
         };
@@ -176,7 +177,6 @@ function TrackingFB(main) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //
                 if (xhr.readyState != 4) return;
-                console.log("XHR:START",xhr.readyState,xhr);
                 xhrModeCheck(link,xhr.response);
             };
             send = function(jsonMessage){
@@ -186,7 +186,6 @@ function TrackingFB(main) {
                     return;
                 }
                 put(REQUEST.TIMESTAMP, new Date().getTime());
-                console.log("SEND:"+JSON.stringify(json));
                 xhr.send(JSON.stringify(json));
                 json = {};
             };
@@ -200,10 +199,8 @@ function TrackingFB(main) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //
                 if (xhr.readyState != 4) return;
-                console.log("XHR:CHECK",xhr.readyState,xhr);
                 send = sendOriginal;
                 onmessage({data:xhr.response});
-                // xhrModeCheck(xhr.response);
             };
             send = function(jsonMessage){
                 if(!jsonMessage) {
@@ -271,6 +268,8 @@ function TrackingFB(main) {
                 updates = {};
                 updates[USER.NAME] = jsonMessage[USER.NAME];
                 updates["changed"] = firebase.database.ServerValue.TIMESTAMP;
+
+//console.log("UPDATE1",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
                 ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);
 
                 return;
@@ -287,7 +286,7 @@ function TrackingFB(main) {
             delete jsonMessage[REQUEST.PUSH];
             delete jsonMessage[REQUEST.DELIVERY_CONFIRMATION];
 
-            var path;
+            var path,refPath;
             if(jsonMessage.to) {
                 var to = jsonMessage.to;
                 delete jsonMessage.to;
@@ -302,7 +301,9 @@ function TrackingFB(main) {
             updates[path + "/" + key] = jsonMessage;
             updates[DATABASE.SECTION_USERS_DATA + "/" + main.me.number + "/" + DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
+//console.log("UPDATE2",updates);
             ref.update(updates);
+
         }
     }
 

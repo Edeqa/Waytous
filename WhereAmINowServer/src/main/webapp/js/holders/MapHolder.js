@@ -29,11 +29,12 @@ function MapHolder(main) {
 
     window.initMap = function() {
         // Create a map object and specify the DOM element for display.
+        var center = u.load("map:coords") || {lat:38.93421936035156,lng:-77.35877990722656,zoom:15};
         map = new google.maps.Map(document.getElementById("map"), {
-            center: {lat: 38.93421936035156, lng: -77.35877990722656},
+            center: {lat: center.lat, lng: center.lng},
             scrollwheel: true,
             panControl: false,
-            zoom: 15,
+            zoom: center.zoom,
             zoomControl: true,
             zoomControlOptions: {
                 position: google.maps.ControlPosition.TOP_RIGHT
@@ -54,6 +55,14 @@ function MapHolder(main) {
     }
 
     function onEvent(EVENT,object){
+        var center = main.map && main.map.getCenter();
+        if(center) {
+            u.save("map:coords", {
+                lat:center.lat(),
+                lng:center.lng(),
+                zoom:main.map.getZoom()
+            });
+        }
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 object.add(8,EVENTS.REQUEST_MODE_TRAFFIC,"Traffic","traffic",function(){

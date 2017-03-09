@@ -261,6 +261,16 @@ function User() {
         ref.child(groupId).child("u/p").child(userNumber).remove();
         ref.child(groupId).child("u/b").child(userNumber).remove();
 
+        ref.child(groupId).child("u/k").once("value").then(function(snapshot){
+            var val = snapshot.val();
+            if(!val) return;
+            for(var i in val) {
+                if(""+val[i] == ""+userNumber) {
+                    ref.child(groupId).child("u/k").child(i).remove();
+                }
+            }
+        });
+
         WAIN.switchTo("/admin/group/" + groupId);
     }
 

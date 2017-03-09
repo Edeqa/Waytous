@@ -4,7 +4,7 @@
 
 function Utils() {
 
-    if(!URL) {
+//    if(!URL) {
         URL = function(link) {
             var href = link;
             var p = link.split("://");
@@ -33,7 +33,7 @@ function Utils() {
                 username: ""
             }
         }
-    }
+//    }
 
     function normalizeName(name) {
         if(name == "className"){
@@ -229,7 +229,7 @@ function Utils() {
         loc.coords.latitude = json[USER.LATITUDE];
         loc.coords.longitude = json[USER.LONGITUDE];
         loc.coords.altitude = json[USER.ALTITUDE] || null;
-        loc.coords.altitudeAccuracy = json[USER.ACCURACY] || null;
+        loc.coords.accuracy = json[USER.ACCURACY] || null;
         loc.coords.heading = json[USER.BEARING] || null;
         loc.coords.speed = json[USER.SPEED] || null;
         loc.timestamp = json[REQUEST.TIMESTAMP];
@@ -243,7 +243,7 @@ function Utils() {
         json[USER.LATITUDE] = location.coords.latitude;
         json[USER.LONGITUDE] = location.coords.longitude;
         json[USER.ALTITUDE] = location.coords.altitude || 0;
-        json[USER.ACCURACY] = location.coords.altitudeAccuracy || 50;
+        json[USER.ACCURACY] = location.coords.accuracy || 50;
         json[USER.BEARING] = location.coords.heading || 0;
         json[USER.SPEED] = location.coords.speed || 0;
         json[REQUEST.TIMESTAMP] = location.timestamp;
@@ -486,12 +486,11 @@ function Utils() {
         var items = [];
 
         if(options.title) {
-            u.create("div", {
+            var titleLayout = u.create("div", {
                 className:"dialog-title",
-                innerHTML: options.title,
                 onmousedown: function(e) {
                     var position = dialog.getBoundingClientRect();
-                    var offset = [ e.x, e.y ];
+                    var offset = [ e.clientX, e.clientY ];
                     function mouseup(e){
                         window.removeEventListener("mouseup", mouseup, false);
                         window.removeEventListener("mousemove", mousemove, false);
@@ -501,8 +500,8 @@ function Utils() {
                         }
                     }
                     function mousemove(e){
-                        dialog.style.left = (position.left - offset[0] + e.x)+"px";
-                        dialog.style.top = (position.top - offset[1] + e.y )+"px";
+                        dialog.style.left = (position.left - offset[0] + e.clientX)+"px";
+                        dialog.style.top = (position.top - offset[1] + e.clientY )+"px";
                         dialog.style.right = "auto";
                         dialog.style.bottom = "auto";
                     }
@@ -511,19 +510,19 @@ function Utils() {
                     e.preventDefault();
                 }
             }, dialog);
+            dialog.titleString = u.create("div", {className:"dialog-title-label", innerHTML: options.title }, titleLayout);
             u.create("button", {className:"material-icons dialog-button-close", innerHTML:"clear", onclick:function(){
                 dialog.onclose();
-            }}, dialog);
+                if(options.negative && options.negative.callback) options.negative.callback(items);
+            }}, titleLayout);
 
-            if(options.title) {
-                var left = load("dialog:left:"+options.title);
-                var top = load("dialog:top:"+options.title);
-                if(left && top) {
-                    dialog.style.left = left;
-                    dialog.style.top = top;
-                    dialog.style.right = "auto";
-                    dialog.style.bottom = "auto";
-                }
+            var left = load("dialog:left:"+options.title);
+            var top = load("dialog:top:"+options.title);
+            if(left && top) {
+                dialog.style.left = left;
+                dialog.style.top = top;
+                dialog.style.right = "auto";
+                dialog.style.bottom = "auto";
             }
         }
         var divItems = u.create("div", {className:"dialog-items"}, dialog);
@@ -535,7 +534,7 @@ function Utils() {
             if(item.type == "div") {
                 x = u.create("div", {
                     className: "dialog-item" + (item.className ? " " + item.className : ""),
-                    innerHTML: item.label || ""
+                    innerHTML: item.label || item.title || item.innerHTML || ""
                 }, divItems);
             } else if(item.type == "hidden") {
                 x = u.create("input", {type:"hidden", value:item.value || ""}, divItems);
@@ -550,7 +549,13 @@ function Utils() {
                     className:"dialog-item-"+item.type,
                     tabindex: i,
                     value:item.value || "",
-                    onclick: function() { this.focus() }
+                    onclick: function() { this.focus() },
+                    onkeyup:function(e){
+                        if(e.keyCode == 13) {
+                            dialog.onclose();
+                            if(options.positive && options.positive.callback) options.positive.callback(items);
+                        }
+                    }
                 }, div);
             }
             items.push(x);
@@ -558,21 +563,21 @@ function Utils() {
         }
         dialog.items = items;
         var buttons = u.create("div", {className:"dialog-buttons hidden"}, dialog);
-        if(options.positive) {
+        if(options.positive && options.positive.title) {
             u.create("button", {className:"dialog-button-positive", onclick:function(){
                 dialog.onclose();
                 if(options.positive.callback) options.positive.callback(items);
             }, innerHTML: options.positive.title}, buttons);
             buttons.classList.remove("hidden");
         }
-        if(options.negative) {
+        if(options.negative && options.negative.title) {
             u.create("button", {className:"dialog-button-negative", onclick:function(){
                 dialog.onclose();
                 if(options.negative.callback) options.negative.callback(items);
             }, innerHTML: options.negative.title}, buttons);
             buttons.classList.remove("hidden");
         }
-        if(options.neutral) {
+        if(options.neutral && options.neutral.title) {
             u.create("button", {className:"dialog-button-neutral", onclick:function(){
                 dialog.onclose();
                 if(options.neutral.callback) options.neutral.callback(items);
@@ -600,6 +605,15 @@ function Utils() {
 
         dialog.onopen = function(){
             dialog.classList.remove("hidden");
+
+            var left = dialog.offsetLeft;
+            var leftMain = window.innerWidth;
+
+            if(left >= leftMain) {
+                dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
+                dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
+            }
+
             console.log("F",dialog.style.left)
             items[i].focus();
             return dialog;
@@ -615,7 +629,6 @@ function Utils() {
 
         return dialog;
     }
-
 
     return {
         create: create,
