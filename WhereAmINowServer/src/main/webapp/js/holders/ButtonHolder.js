@@ -10,6 +10,11 @@ function ButtonHolder(main) {
     var contextMenuLayout;
     var delayDismiss;
 
+    EVENTS.SHOW_BADGE = "show_badge";
+    EVENTS.HIDE_BADGE = "hide_badge";
+    EVENTS.INCREASE_BADGE = "increase_badge";
+
+
     function start() {
         // console.log("BUTTONHOLDER",this);
         buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
@@ -52,7 +57,7 @@ function ButtonHolder(main) {
                     }
                 }
 */
-                this.views.button.button.children[1].innerHTML = this.properties.getDisplayName();
+                this.views.button.title.innerHTML = this.properties.getDisplayName();
                 break;
             case EVENTS.MAKE_ACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
@@ -68,6 +73,22 @@ function ButtonHolder(main) {
                 } else {
                     subtitle.classList.add("hidden");
                 }
+                break;
+            case EVENTS.SHOW_BADGE:
+                if(object == EVENTS.INCREASE_BADGE) {
+                    var value = parseInt(this.views.button.badge.innerHTML);
+                    value = value || 0;
+                    this.views.button.badge.innerHTML = ""+(++value);
+                } else {
+                    this.views.button.badge.innerHTML = object || "";
+                }
+                if(this.views.button.badge.innerHTML) {
+                    this.views.button.badge.classList.remove("hidden");
+                }
+                break;
+            case EVENTS.HIDE_BADGE:
+                this.views.button.badge.classList.add("hidden");
+                this.views.button.badge.innerHTML = "";
                 break;
             default:
                 break;
@@ -100,14 +121,17 @@ function ButtonHolder(main) {
             // console.log(user);
         }}, buttons);
         u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
+        var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
-        u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, div);
+        var title = u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, div);
         var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden",innerHTML:""}, div);
 
         return {
             button: b,
-            subtitle: subtitle
+            title: title,
+            subtitle: subtitle,
+            badge:badge,
         };
     }
 

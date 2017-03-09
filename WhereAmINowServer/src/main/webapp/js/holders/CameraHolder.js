@@ -27,7 +27,6 @@ function CameraHolder(main) {
     var task;
 
     function start() {
-        console.log("CameraHOLDER",main);
 
     }
 

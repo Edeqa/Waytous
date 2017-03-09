@@ -8,7 +8,6 @@ function AddressHolder(main) {
     EVENTS.UPDATE_ADDRESS = "update_address";
 
     function start() {
-        console.log("ADDRESSHOLDER",this);
     }
 
     function onEvent(EVENT,object){
@@ -25,7 +24,7 @@ function AddressHolder(main) {
     function onChangeLocation(location) {
         var user = this;
         // if (main.users.getCountSelected() == 1){// && this.properties && this.properties.selected) {
-
+        if(location) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1", true);
 
@@ -37,7 +36,7 @@ function AddressHolder(main) {
             };
 
             xhr.send();
-
+        }
         // }
     }
 

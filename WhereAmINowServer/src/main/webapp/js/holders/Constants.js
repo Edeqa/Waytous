@@ -163,6 +163,7 @@ function Constants() {
         FORM:"form",
         NAME:"name",
         INPUT:"input",
+        HIDDEN:"hidden",
         SUBMIT:"submit",
         TEXT:"text",
         VALUE:"value",

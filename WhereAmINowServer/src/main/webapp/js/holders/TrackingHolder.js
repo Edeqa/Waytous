@@ -13,13 +13,19 @@ function TrackingHolder(main) {
 
     function start(){
 
-        progress = u.create(HTML.DIV, {className:"modal progress shadow hidden"}, main.right);
-        u.create(HTML.DIV, {className:"progress-circle"}, progress);
-        progressTitle = u.create(HTML.DIV, {className:"progress-title"}, progress);
+        progress = u.dialog({
+            className: "progress",
+            items: [
+                { type: HTML.DIV, className: "progress-circle" },
+                { type: HTML.DIV, className: "progress-title" },
+            ]
+        });
+        progressTitle = progress.items[1];
+
         var group = window.location.pathname.split("/")[2];
         var groupOld = u.load("group");
         if(group) {
-            progress.classList.remove("hidden");
+            progress.onopen();
         }
 
         u.require("/js/tracking/TrackingFB.js", startTracking.bind(this));
@@ -91,20 +97,20 @@ function TrackingHolder(main) {
         onCreating: function(){
             // console.log("ONCREATING");
             progressTitle.innerHTML = "Connecting...";
-            progress.classList.remove("hidden");
+            progress.onopen();
             u.save(TRACKING_URI, null);
             main.fire(EVENTS.TRACKING_CONNECTING);
         },
         onJoining: function(){
             // console.log("ONJOINING");
             progressTitle.innerHTML = "Joining group...";
-            progress.classList.remove("hidden");
+            progress.onopen();
             main.fire(EVENTS.TRACKING_RECONNECTING, "Joining group...");
         },
         onReconnecting: function(){
             // console.log("ONRECONNECTING");
             progressTitle.innerHTML = "Reconnecting...";
-            progress.classList.remove("hidden");
+            progress.onopen();
             main.fire(EVENTS.TRACKING_RECONNECTING, "Reconnecting...");
         },
         onClose: function(){
@@ -115,7 +121,10 @@ function TrackingHolder(main) {
             //FIXME
 //            u.save(TRACKING_URI, this.tracking.getTrackingUri());
             try {
-                main.fire(EVENTS.TRACKING_ACTIVE);
+                if(main.tracking.getStatus() != EVENTS.TRACKING_ACTIVE) {
+                    main.tracking.setStatus(EVENTS.TRACKING_ACTIVE);
+                    main.fire(EVENTS.TRACKING_ACTIVE);
+                }
                 if (o[RESPONSE.TOKEN]) {
                     main.fire(EVENTS.TOKEN_CREATED, o[RESPONSE.TOKEN]);
                 }
@@ -125,7 +134,7 @@ function TrackingHolder(main) {
                 if (o[RESPONSE.NUMBER]) {
                     main.users.forMe(function (number, user) {
                         user.createViews();
-                        progress.classList.add("hidden");
+                        progress.onclose();
                     })
                 }
                 if (o[RESPONSE.INITIAL]) {

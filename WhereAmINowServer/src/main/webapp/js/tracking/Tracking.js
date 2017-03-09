@@ -65,4 +65,4 @@ function TrackingFB() {
         menu: true,
     }
 }
-document.addEventListener("DOMContentLoaded", (new TrackingFB()).start);
+// document.addEventListener("DOMContentLoaded", (new TrackingFB()).start);

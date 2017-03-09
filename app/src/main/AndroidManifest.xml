@@ -70,6 +70,10 @@
                 <data
                     android:host="*"
                     android:pathPrefix="/track/"
+                    android:scheme="wain"/>
+                <data
+                    android:host="*"
+                    android:pathPrefix="/track/"
                     android:port="8080"
                     android:scheme="orw"/>
                 <data

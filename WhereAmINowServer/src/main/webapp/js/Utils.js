@@ -4,6 +4,37 @@
 
 function Utils() {
 
+    if(!URL) {
+        URL = function(link) {
+            var href = link;
+            var p = link.split("://");
+            var protocol = "http:";
+            if(p.length > 1) protocol = p.shift() +":";
+            p = p.join("//").split("/");
+            var host = p.shift();
+            var pathname = "/" + p.join("/");
+            p = host.split(":");
+            var hostname = p.shift();
+            var port = p.shift();
+            if(!port) port = "";
+            var origin = protocol + "//" + host;
+
+            return {
+                hash: "",
+                host: host,
+                hostname: hostname,
+                href: href,
+                origin: origin,
+                pathname: pathname,
+                password: "",
+                port: port,
+                protocol: protocol,
+                search: "",
+                username: ""
+            }
+        }
+    }
+
     function normalizeName(name) {
         if(name == "className"){
             name = "class";
@@ -84,7 +115,7 @@ function Utils() {
     function destroy(node) {
         try {
             clear(node);
-            node.parentNode.removeChild(node);
+            if(node.parentNode) node.parentNode.removeChild(node);
             node = null;
         } catch(e) {
             console.error(e);
@@ -449,49 +480,137 @@ function Utils() {
     }
 
     function dialog(options) {
-
-        var dialog = u.create("div", {className:"modal shadow hidden "+(options.className ? options.className : "")}, document.body);
+        var dialog = u.create("div", {className:"modal shadow hidden "+(options.className ? options.className : ""), tabindex:999},
+            document.getElementsByClassName("layout")[0]);
         options = options || {};
         var items = [];
 
         if(options.title) {
-            u.create("div", {className:"dialog-title", innerHTML: options.title}, dialog);
+            u.create("div", {
+                className:"dialog-title",
+                innerHTML: options.title,
+                onmousedown: function(e) {
+                    var position = dialog.getBoundingClientRect();
+                    var offset = [ e.x, e.y ];
+                    function mouseup(e){
+                        window.removeEventListener("mouseup", mouseup, false);
+                        window.removeEventListener("mousemove", mousemove, false);
+                        if(options.title) {
+                            save("dialog:left:"+options.title, dialog.style.left);
+                            save("dialog:top:"+options.title, dialog.style.top);
+                        }
+                    }
+                    function mousemove(e){
+                        dialog.style.left = (position.left - offset[0] + e.x)+"px";
+                        dialog.style.top = (position.top - offset[1] + e.y )+"px";
+                        dialog.style.right = "auto";
+                        dialog.style.bottom = "auto";
+                    }
+                    window.addEventListener("mouseup", mouseup);
+                    window.addEventListener("mousemove", mousemove);
+                    e.preventDefault();
+                }
+            }, dialog);
             u.create("button", {className:"material-icons dialog-button-close", innerHTML:"clear", onclick:function(){
                 dialog.onclose();
             }}, dialog);
+
+            if(options.title) {
+                var left = load("dialog:left:"+options.title);
+                var top = load("dialog:top:"+options.title);
+                if(left && top) {
+                    dialog.style.left = left;
+                    dialog.style.top = top;
+                    dialog.style.right = "auto";
+                    dialog.style.bottom = "auto";
+                }
+            }
         }
         var divItems = u.create("div", {className:"dialog-items"}, dialog);
         for(var i in options.items) {
             var item = options.items[i];
             item = item || {};
 
-            var div = u.create("div", {className:"dialog-item"}, divItems);
-            u.create("div", {className:"dialog-item-label", innerHTML:item.label}, div);
-            items.push(u.create("input", {className:"dialog-item-"+item.type, tabindex: i, value:item.value}, div));
+            var x;
+            if(item.type == "div") {
+                x = u.create("div", {
+                    className: "dialog-item" + (item.className ? " " + item.className : ""),
+                    innerHTML: item.label || ""
+                }, divItems);
+            } else if(item.type == "hidden") {
+                x = u.create("input", {type:"hidden", value:item.value || ""}, divItems);
+            } else {
+                var div = u.create("div", {className:"dialog-item"}, divItems);
+                u.create("div", {
+                    className:"dialog-item-label"+(item.className ? " "+item.className : ""),
+                    innerHTML:item.label || ""
+                }, div);
+                x = u.create("input", {
+                    type:item.type,
+                    className:"dialog-item-"+item.type,
+                    tabindex: i,
+                    value:item.value || "",
+                    onclick: function() { this.focus() }
+                }, div);
+            }
+            items.push(x);
+
         }
-        var buttons = u.create("div", {className:"dialog-buttons"}, dialog);
+        dialog.items = items;
+        var buttons = u.create("div", {className:"dialog-buttons hidden"}, dialog);
         if(options.positive) {
             u.create("button", {className:"dialog-button-positive", onclick:function(){
                 dialog.onclose();
                 if(options.positive.callback) options.positive.callback(items);
             }, innerHTML: options.positive.title}, buttons);
+            buttons.classList.remove("hidden");
         }
         if(options.negative) {
             u.create("button", {className:"dialog-button-negative", onclick:function(){
                 dialog.onclose();
                 if(options.negative.callback) options.negative.callback(items);
             }, innerHTML: options.negative.title}, buttons);
+            buttons.classList.remove("hidden");
+        }
+        if(options.neutral) {
+            u.create("button", {className:"dialog-button-neutral", onclick:function(){
+                dialog.onclose();
+                if(options.neutral.callback) options.neutral.callback(items);
+            }, innerHTML: options.neutral.title}, buttons);
+            buttons.classList.remove("hidden");
+        }
+
+        var intervalTask;
+        if(options.timeout) {
+            var progressBar = u.create("div", {className:"dialog-progress-bar"}, dialog);
+            var progress = u.create("div", {className:"dialog-progress-value"}, progressBar);
+            progress.style.width = "0%";
+
+            var atom = options.timeout / 16;
+            var current = 0;
+            intervalTask = setInterval(function(){
+                current += 16;
+                progress.style.width = (current / options.timeout * 100) + "%";
+                if(current >= options.timeout) {
+                    clearInterval(intervalTask);
+                    dialog.onclose();
+                }
+            }, 16);
         }
 
         dialog.onopen = function(){
             dialog.classList.remove("hidden");
+            console.log("F",dialog.style.left)
             items[i].focus();
             return dialog;
         };
 
         dialog.onclose = function (){
-            clear(dialog);
-            destroy(dialog);
+            dialog.classList.add("hidden");
+            clearInterval(intervalTask);
+
+            // clear(dialog);
+            // destroy(dialog);
         };
 
         return dialog;

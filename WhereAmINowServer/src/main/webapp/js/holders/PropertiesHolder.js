@@ -13,11 +13,61 @@ function PropertiesHolder(main) {
     this.start = function() {
         // console.log("PROPERTIESHOLDER",this);
 
+        dialog = u.dialog({
+            title: "Set my name",
+            items: [
+                { type: HTML.INPUT, label: "Name" }
+            ],
+            positive: {
+                title: "OK",
+                callback: function(args) {
+                    if(args[0].value) {
+                        var name = args[0].value;
+                        u.save("properties:name", name);
+                        u.save("properties:name_asked", true);
+                        main.me.fire(EVENTS.CHANGE_NAME, name);
+                    }
+                    console.log(args);
+                }
+            },
+            negative: {
+                title: "Cancel",
+                callback: function(args) {
+                    console.log(args);
+                }
+            }
+        });
+
     };
 
     this.onEvent = function(EVENT,object){
         var self = this;
         switch (EVENT){
+            case EVENTS.TRACKING_ACTIVE:
+                if(!u.load("properties:name") && !u.load("properties:name_asked")) {
+                    var askIfNameNotDefinedDialog = u.dialog({
+                        items: [
+                            { type: HTML.DIV, label: "Your name is not defined. Set up your name now?" }
+                        ],
+                        positive: {
+                            title: "Yes",
+                            callback: function(args) {
+                                setMyName.call(main.me);
+                            }
+                        },
+                        negative: {
+                            title: "No",
+                            callback: function(){
+                                u.save("properties:name_asked", true);
+                            }
+                        },
+                        neutral: {
+                            title: "Remind me later"
+                        },
+                        timeout: 10000
+                    }).onopen();
+                }
+                break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user.number == main.me.number) {
@@ -102,31 +152,8 @@ function PropertiesHolder(main) {
 
     function setMyName(name){
         if(dialog) dialog.onclose();
-        dialog = u.dialog({
-            title: "Set my name",
-            items: [
-                { type: HTML.INPUT, label: "Name", value: main.me.properties.name }
-            ],
-            positive: {
-                title: "OK",
-                callback: function(args) {
-                    dialog = null;
-                    if(args[0].value) {
-                        var name = args[0].value;
-                        u.save("properties:name", name);
-                        main.me.fire(EVENTS.CHANGE_NAME, name);
-                    }
-                    console.log(args);
-                }
-            },
-            negative: {
-                title: "Cancel",
-                callback: function(args) {
-                    dialog = null;
-                    console.log(args);
-                }
-            }
-        }).onopen();
+        dialog.items[0].value = main.me.properties.name || "";
+        dialog.onopen();
     }
 
     // return {

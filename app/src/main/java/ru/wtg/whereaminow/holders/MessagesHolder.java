@@ -255,8 +255,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                         notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
                         notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
 
-                        notification
-                                .setContentTitle(myUser.getProperties().getDisplayName())
+                        notification.setContentTitle(myUser.getProperties().getDisplayName())
                                 .setContentText(m.getBody())
                                 .setWhen(new Date().getTime());
 
@@ -267,7 +266,6 @@ public class MessagesHolder extends AbstractPropertyHolder {
                         State.getInstance().fire(SHOW_CUSTOM_NOTIFICATION, notification.build());
 
                     }
-
 
                     break;
                 case SEND_MESSAGE:

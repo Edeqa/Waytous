@@ -99,43 +99,47 @@ function TrackingFB(main) {
                         delete o[RESPONSE.SIGN];
 
                         // console.log("SIGN WITH",authToken);
-                        firebase.auth().signInWithCustomToken(authToken)
-                            .then(function(e){
+                        try {
+                            firebase.auth().signInWithCustomToken(authToken)
+                                .then(function (e) {
 
-                                setStatus(EVENTS.TRACKING_ACTIVE);
-                                if (o[RESPONSE.TOKEN]) {
-                                    setToken(o[RESPONSE.TOKEN]);
-                                }
-                                if (o[RESPONSE.NUMBER]) {
-                                    console.log("SETNUMBER", o[RESPONSE.NUMBER]);
-                                    var old = main.me.number;
-                                    main.me.number = o[RESPONSE.NUMBER];
-                                    main.users.users[o[RESPONSE.NUMBER]] = main.me;
-                                    if (old) delete main.users.users[old];
-                                }
-                                o[RESPONSE.INITIAL] = true;
+                                    // setStatus(EVENTS.TRACKING_ACTIVE);
+                                    if (o[RESPONSE.TOKEN]) {
+                                        setToken(o[RESPONSE.TOKEN]);
+                                    }
+                                    if (o[RESPONSE.NUMBER]) {
+                                        var old = main.me.number;
+                                        main.me.number = o[RESPONSE.NUMBER];
+                                        main.users.users[o[RESPONSE.NUMBER]] = main.me;
+                                        if (old) delete main.users.users[old];
+                                    }
+                                    o[RESPONSE.INITIAL] = true;
 
-                                ref = database.ref().child(getToken());
+                                    ref = database.ref().child(getToken());
 
-                                registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
-                                for (var i in main.holders) {
-                                    if (main.holders[i] && main.holders.saveable) {
-                                        try {
-                                            registerChildListener(ref.child(DATABASE.SECTION_PRIVATE).child(i).child(main.me.number), userPrivateDataListener, -1);
-                                        } catch(e){
-                                            console.error(e.message);
+                                    registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
+                                    for (var i in main.holders) {
+                                        if (main.holders[i] && main.holders[i].saveable) {
+                                            try {
+                                                registerChildListener(ref.child(DATABASE.SECTION_PRIVATE).child(i).child(main.me.number), userPrivateDataListener, -1);
+                                            } catch (e) {
+                                                console.error(e.message);
+                                            }
                                         }
                                     }
-                                }
-                                try {
-                                    trackingListener.onAccept(o);
-                                } catch(e){
-                                    console.error(e.message);
-                                }
-                            }).catch(function(error) {
-                            setStatus(EVENTS.TRACKING_DISABLED);
-                            trackingListener.onReject(error.message);
-                        });
+                                    try {
+                                        trackingListener.onAccept(o);
+                                    } catch (e) {
+                                        console.error(e.message);
+                                    }
+                                }).catch(function (error) {
+                                setStatus(EVENTS.TRACKING_DISABLED);
+                                trackingListener.onReject(error.message);
+                            });
+                        } catch(e) {
+                            console.error(e);
+                            main.initialize();
+                        }
                     } else {
                         setStatus(EVENTS.TRACKING_DISABLED);
                         console.log("REJECTED");
@@ -409,17 +413,18 @@ function TrackingFB(main) {
             var o = data.val();
             var from = parseInt(o["from"]);
             delete o["from"];
-            debugger;
+
             o[RESPONSE.NUMBER] = from;
             o[RESPONSE.STATUS] = data.ref.parent.parent.getKey();
             o["key"] = data.getKey();
-            // trackingListener.onMessage(o);
-            // data.getRef().remove();
+            o[EVENTS.PRIVATE_MESSAGE] = true;
+
+            trackingListener.onMessage(o);
+            // data.ref.remove();
 
         } catch(e) {
             console.error(e.message);
         }
-        console.log(data);
     }
 
     function usersDataNameListener(data) {
@@ -462,6 +467,7 @@ function TrackingFB(main) {
         setTrackingListener:setTrackingListener,
         getTrackingUri:getTrackingUri,
         getStatus:getStatus,
+        setStatus:setStatus,
         sendMessage:sendMessage,
         put:put,
         sendUpdate:sendUpdate,

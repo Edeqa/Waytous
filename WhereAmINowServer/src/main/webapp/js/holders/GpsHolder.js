@@ -7,7 +7,6 @@ function GpsHolder(main) {
     var geoTrackFilter = new GeoTrackFilter();
 
     function start() {
-        console.log("GPSHOLDER",this);
 
         /*var latLong;
         $.getJSON("https://ipinfo.io", function(ipinfo){

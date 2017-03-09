@@ -12,6 +12,7 @@
 /* TAGS */
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
 }
@@ -37,6 +38,13 @@ input, textarea {
     width: 100%;
     height: 100%;
     display: flex;
+    position: fixed;
+    display: -webkit-box;   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+    display: -ms-flexbox;  /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .title {
     font-size: 18px;
@@ -219,7 +227,7 @@ input, textarea {
     color: red;
 }
 .fab {
-    background-color: rgba(255, 0, 0, 0.5);;
+    background-color: rgba(255, 0, 0, 0.5);
     position: fixed;
     right: 16px;
     bottom: 24px;
@@ -296,6 +304,20 @@ p.bottom-desc {
     border-width: 2px;
     padding: 3px;
 }
+.user-button-badge {
+    background-color: red;
+    color: white;
+    font-size: 10px;
+    border-radius: 7px;
+    width: 12px;
+    height: 12px;
+    text-align: center;
+    border-width: 1px;
+    border-color: white;
+    border-style: solid;
+    position: absolute;
+    right: 5px;
+}
 .user-button-icon {
 }
 .user-button-label {
@@ -318,6 +340,7 @@ p.bottom-desc {
     background-color: rgba(211, 211, 211, 0.7);
     border-radius: 5px;
     outline: none;
+    z-index: 10000;
 }
 .user-context-menu-item {
     display: flex;
@@ -334,6 +357,7 @@ p.bottom-desc {
     padding-right: 10px;
 }
 .modal {
+    position: fixed;
     display: flex;
     flex-direction: column;
     background-color: lightgray;
@@ -341,17 +365,16 @@ p.bottom-desc {
     border-radius: 10px;
     border-style: solid;
     border-width: 2px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     z-index: 1000;
+    outline: none;
+    top: 45%;
+    left: 20%;
 }
 .progress {
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    width: 20%;
+    height: 20%;
+    align-items: center;
+    justify-content: center;
 }
 .progress-circle {
     margin: 20px;
@@ -413,6 +436,7 @@ p.bottom-desc {
     border-radius: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
+    cursor: pointer;
 }
 .dialog-items {
     padding: 10px;
@@ -428,6 +452,7 @@ p.bottom-desc {
     font-size: 12px;
     padding-top: 5px;
     padding-bottom: 5px;
+    width: 100%;
 }
 .dialog-buttons {
     align-self: center;
@@ -452,15 +477,24 @@ p.bottom-desc {
 .dialog-button-negative {
 
 }
+.dialog-progress-bar {
+    height: 5px;
+    width: 90%;
+    background-color: aliceblue;
+    margin-bottom: 5px;
+    align-self: center;
+}
+.dialog-progress-value {
+    background-color: burlywood;
+    height: 100%;
+}
 .chat {
     width: 500px;
     max-width: 60%;
-    padding: 8px;
     font-size: 10px;
-    bottom: 20px;
     top: auto;
+    bottom: 20px;
     left: 270px;
-    transform: none;
     opacity: 0.4;
     outline: none;
 }
@@ -470,11 +504,19 @@ p.bottom-desc {
 .chat:focus {
     opacity: 1.0;
 }
+.chat:active {
+    opacity: 1.0;
+}
 .chat-messages {
     max-height: 200px;
-    overflow: scroll;
+    overflow-y: scroll;
+    flex-direction: column;
 }
 .chat-message {
+    width: 100%;
+}
+.chat-message-private {
+
 }
 .chat-message-from {
     font-weight: bolder;
@@ -485,11 +527,11 @@ p.bottom-desc {
 }
 .chat-message-body {
     padding-bottom: 8px;
+    white-space: pre;
 }
 .chat-reply {
     padding-top: 8px;
-    display: flex;
-    justify-content: space-between;
+    align-items: stretch;
 }
 .chat-reply-input {
     width: 100%;
@@ -533,7 +575,7 @@ p.bottom-desc {
         padding: 5px;
         font-size: 18px;
         width: 100%;
-        //border-bottom: 1px solid #000;
+        /*border-bottom: 1px solid #000;*/
     }
     button {
         font-size: 16px;
@@ -552,7 +594,7 @@ p.bottom-desc {
         width: 100%;
         height: 100%;
         min-height: 100%;
-        display: flex;
+        align-items: center;
     }
     .title {
         position: absolute;
@@ -564,19 +606,16 @@ p.bottom-desc {
     }
     .alert-icon {
         position: fixed;
-        left: 16px;
-        bottom: 24px;
-        border-radius: 40px;
-        color: white;
+        right: 32px;
+        top: -4px !important;
+        color: red;
         cursor: pointer;
-        top: auto;
-        transform: none;
-        font-size: 30px;
-        min-width: 60px;
     }
-    .progress {
-        padding-left: 40px;
-        padding-right: 40px;
+    .modal {
+        width: 60%;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
     }
     .actionbar {
         padding: 0px;
@@ -617,7 +656,7 @@ p.bottom-desc {
         right: 10px;
     }
     .drawer {
-        float: left;
+        left: 0px;
         width: 70%;
         min-width:300px;
         position: fixed;
@@ -625,7 +664,7 @@ p.bottom-desc {
         bottom: 0px;
         background-color: white;
         display:none;
-        z-index: 1000;
+        z-index: 10000;
     }
     .drawer-open {
         display: block;
@@ -724,6 +763,10 @@ p.bottom-desc {
         cursor: pointer;
         font-size: 10px;
     }
+    .user-button-badge {
+        transform: translate(30px,-30px);
+    }
+
     .user-button-label {
         padding-left: 0px;
         padding-right: 0px;
@@ -794,7 +837,9 @@ p.bottom-desc {
         bottom: 0px;
         padding: 0px;
         max-width: 100%;
-        opacity: 0.8;
+        width: 100%;
+        top: auto;
+        transform: none;
     }
     .chat-messages {
         padding: 8px;

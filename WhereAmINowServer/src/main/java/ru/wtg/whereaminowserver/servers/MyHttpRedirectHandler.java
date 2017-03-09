@@ -48,7 +48,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
             }
 
             if(uri.getPath().startsWith("/track/") && tokenId != null) {
-                String mobileRedirect = "orw://" + host + ":" + HTTP_PORT + "/track/" + tokenId;
+                String mobileRedirect = "wain://" + host + "/track/" + tokenId;
                 String webRedirect = "https://" + host + ":" + HTTPS_PORT + "/group/" + tokenId;
                 String mainLink = "https://" + host + ":" + HTTPS_PORT + "/track/" + tokenId;
 
