@@ -16,7 +16,13 @@ function GpsHolder(main) {
 
         navigator.geolocation.getCurrentPosition(function(location){
             locationUpdateListener(location);
-            navigator.geolocation.watchPosition(locationUpdateListener);
+            navigator.geolocation.watchPosition(locationUpdateListener, function(error){
+                console.error(error);
+            }, {
+                enableHighAccuracy: true,
+                maximumAge: 1000,
+                timeout: 30000
+            });
         },function(error){
             var message;
             switch(error.code) {
@@ -91,7 +97,7 @@ function GpsHolder(main) {
         console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
 
         var message = u.locationToJson(position);
-        if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
+        if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
     }
 

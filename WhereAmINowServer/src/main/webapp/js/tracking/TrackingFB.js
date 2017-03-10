@@ -139,6 +139,7 @@ function TrackingFB(main) {
                             });
                         } catch(e) {
                             console.error(e);
+                            debugger;
                             main.initialize();
                         }
                     } else {

@@ -55,7 +55,7 @@ function TrackingHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(9,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
+                object.add(DRAWER.SECTION_EXIT,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
                 break;

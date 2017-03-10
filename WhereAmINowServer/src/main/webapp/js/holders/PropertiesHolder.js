@@ -31,10 +31,7 @@ function PropertiesHolder(main) {
                 }
             },
             negative: {
-                title: "Cancel",
-                callback: function(args) {
-                    console.log(args);
-                }
+                title: "Cancel"
             }
         });
 
@@ -71,7 +68,7 @@ function PropertiesHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user.number == main.me.number) {
-                    object.add(1, self.type + "_1", "Set my name", "face", function () {
+                    object.add(MENU.SECTION_PRIMARY, self.type + "_1", "Set my name", "face", function () {
                         setMyName.call(user);
                     });
                 }

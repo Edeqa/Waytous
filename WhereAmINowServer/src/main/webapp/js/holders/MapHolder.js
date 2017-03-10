@@ -1,16 +1,17 @@
 /**
  * Created 2/9/17.
  */
-function MapHolder(main) {
+EVENTS.MAP_READY = "map_ready";
+EVENTS.REQUEST_MODE_DAY = "request_mode_day";
+EVENTS.REQUEST_MODE_NIGHT = "request_mode_night";
+EVENTS.REQUEST_MODE_NORMAL = "request_mode_normal";
+EVENTS.REQUEST_MODE_SATELLITE = "request_mode_satellite";
+EVENTS.REQUEST_MODE_TERRAIN = "request_mode_terrain";
+EVENTS.REQUEST_MODE_TRAFFIC = "request_mode_traffic";
+EVENTS.REQUEST_MODE_TRANSIT = "request_mode_transit";
+EVENTS.REQUEST_MODE_BIKE = "request_mode_bike";
 
-    EVENTS.REQUEST_MODE_DAY = "request_mode_day";
-    EVENTS.REQUEST_MODE_NIGHT = "request_mode_night";
-    EVENTS.REQUEST_MODE_NORMAL = "request_mode_normal";
-    EVENTS.REQUEST_MODE_SATELLITE = "request_mode_satellite";
-    EVENTS.REQUEST_MODE_TERRAIN = "request_mode_terrain";
-    EVENTS.REQUEST_MODE_TRAFFIC = "request_mode_traffic";
-    EVENTS.REQUEST_MODE_TRANSIT = "request_mode_transit";
-    EVENTS.REQUEST_MODE_BIKE = "request_mode_bike";
+function MapHolder(main) {
 
     var map;
     var trafficLayer;
@@ -49,6 +50,7 @@ function MapHolder(main) {
             rotateControl: true,
         });
         main.map = map;
+        main.fire(EVENTS.MAP_READY);
         main.map.addListener("zoom_changed", function() {
             main.fire(EVENTS.CAMERA_ZOOM, map.getZoom());
         });
@@ -65,19 +67,19 @@ function MapHolder(main) {
         }
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(8,EVENTS.REQUEST_MODE_TRAFFIC,"Traffic","traffic",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRAFFIC,"Traffic","traffic",function(){
                     main.fire(EVENTS.REQUEST_MODE_TRAFFIC);
                 });
-                object.add(8,EVENTS.REQUEST_MODE_TRANSIT,"Transit","directions_transit",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRANSIT,"Transit","directions_transit",function(){
                     main.fire(EVENTS.REQUEST_MODE_TRANSIT);
                 });
-                object.add(8,EVENTS.REQUEST_MODE_BIKE,"Bicycle","directions_bike",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_BIKE,"Bicycle","directions_bike",function(){
                     main.fire(EVENTS.REQUEST_MODE_BIKE);
                 });
-                object.add(8,EVENTS.REQUEST_MODE_SATELLITE,"Satellite","satellite",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_SATELLITE,"Satellite","satellite",function(){
                     main.fire(EVENTS.REQUEST_MODE_SATELLITE);
                 });
-                object.add(8,EVENTS.REQUEST_MODE_TERRAIN,"Terrain","terrain",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TERRAIN,"Terrain","terrain",function(){
                     main.fire(EVENTS.REQUEST_MODE_TERRAIN);
                 });
                 break;

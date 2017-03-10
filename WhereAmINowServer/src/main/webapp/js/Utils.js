@@ -258,18 +258,19 @@ function Utils() {
     function smoothInterpolated(duration, callback, postCallback) {
         var start = new Date().getTime();
 
-        var a = setInterval(function(){
-            var t,v,elapsed;
-            elapsed = new Date().getTime() - start;
-            t = elapsed / duration;
-            v = elapsed / duration;
-            callback(t,v);
-        }, 16);
-        setTimeout(function() {
-            clearInterval(a);
-            if(postCallback) postCallback();
-        }, duration+1);
-
+        // var a = setInterval(function(){
+        //     var t,v,elapsed;
+        //     elapsed = new Date().getTime() - start;
+        //     t = elapsed / duration;
+        //     v = elapsed / duration;
+        //     callback(t,v);
+        // }, 16);
+        // setTimeout(function() {
+        //     clearInterval(a);
+        //     if(postCallback) postCallback();
+        // }, duration+1);
+        callback(1,1);
+        var a = null;
         return a;
     }
 
@@ -491,19 +492,25 @@ function Utils() {
                 onmousedown: function(e) {
                     var position = dialog.getBoundingClientRect();
                     var offset = [ e.clientX, e.clientY ];
+                    var moved = false;
                     function mouseup(e){
                         window.removeEventListener("mouseup", mouseup, false);
                         window.removeEventListener("mousemove", mousemove, false);
-                        if(options.title) {
+                        if(options.title && moved) {
                             save("dialog:left:"+options.title, dialog.style.left);
                             save("dialog:top:"+options.title, dialog.style.top);
                         }
                     }
                     function mousemove(e){
-                        dialog.style.left = (position.left - offset[0] + e.clientX)+"px";
-                        dialog.style.top = (position.top - offset[1] + e.clientY )+"px";
-                        dialog.style.right = "auto";
-                        dialog.style.bottom = "auto";
+                        var deltaX = e.clientX - offset[0];
+                        var deltaY = e.clientY - offset[1];
+                        if(deltaX || deltaY) {
+                            moved = true;
+                            dialog.style.left = (position.left + deltaX) + "px";
+                            dialog.style.top = (position.top + deltaY ) + "px";
+                            dialog.style.right = "auto";
+                            dialog.style.bottom = "auto";
+                        }
                     }
                     window.addEventListener("mouseup", mouseup);
                     window.addEventListener("mousemove", mousemove);
@@ -511,7 +518,7 @@ function Utils() {
                 }
             }, dialog);
             dialog.titleString = u.create("div", {className:"dialog-title-label", innerHTML: options.title }, titleLayout);
-            u.create("button", {className:"material-icons dialog-button-close", innerHTML:"clear", onclick:function(){
+            u.create("button", {className:"material-icons dialog-button-close", innerHTML:"clear", onclick:function(e){
                 dialog.onclose();
                 if(options.negative && options.negative.callback) options.negative.callback(items);
             }}, titleLayout);
@@ -614,7 +621,6 @@ function Utils() {
                 dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
             }
 
-            console.log("F",dialog.style.left)
             items[i].focus();
             return dialog;
         };

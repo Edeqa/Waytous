@@ -1,6 +1,21 @@
 /**
  * Created 2/11/17.
  */
+EVENTS.SHOW_BADGE = "show_badge";
+EVENTS.HIDE_BADGE = "hide_badge";
+EVENTS.INCREASE_BADGE = "increase_badge";
+EVENTS.HIDE_MENU_SUBTITLE = "hide_menu_subtitle";
+EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
+
+MENU = {
+    SECTION_PRIMARY: 0,
+    SECTION_COMMUNICATION: 2,
+    SECTION_VIEWS: 3,
+    SECTION_NAVIGATION: 4,
+    SECTION_MAP: 8,
+    SECTION_EXIT: 9
+}
+
 function ButtonHolder(main) {
 
     var type = "button";
@@ -9,12 +24,7 @@ function ButtonHolder(main) {
     var sections;
     var contextMenuLayout;
     var delayDismiss;
-
-    EVENTS.SHOW_BADGE = "show_badge";
-    EVENTS.HIDE_BADGE = "hide_badge";
-    EVENTS.INCREASE_BADGE = "increase_badge";
-    EVENTS.HIDE_MENU_SUBTITLE = "hide_menu_subtitle";
-    EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
+    var startTime;
 
 
     function start() {
@@ -37,7 +47,7 @@ function ButtonHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user.number == main.me.number) {
-                    var itemMinimize = contextMenu.add(1, type + "_1", "Minimize menu", "view_headline", function () {
+                    var itemMinimize = contextMenu.add(MENU.SECTION_VIEWS, type + "_1", "Minimize menu", "view_headline", function () {
                         u.save("button:minimized", true);
                         main.users.forAllUsers(function(number,user){
                             user.views.button.subtitle.classList.add("hidden");
@@ -47,7 +57,7 @@ function ButtonHolder(main) {
                     });
                     itemMinimize.classList.add("hideable");
 
-                    var itemMaximize = contextMenu.add(1, type + "_1", "Restore menu", "view_stream", function () {
+                    var itemMaximize = contextMenu.add(MENU.SECTION_VIEWS, type + "_1", "Restore menu", "view_stream", function () {
                         u.save("button:minimized");
                         main.users.forAllUsers(function(number,user){
                             user.views.button.subtitle.classList.remove("hidden");
@@ -141,20 +151,33 @@ function ButtonHolder(main) {
         var b = parseInt(color[4]+color[5],16);
         color = "rgba("+r+", "+g+", "+b+", 0.4)";
 
-        var b = u.create(HTML.DIV, {className:"user-button" +(user.properties.active ? "" : " hidden"), style:{backgroundColor:color}, onclick: function(){
-            if(clicked) {
-                user.fire(EVENTS.CAMERA_ZOOM);
-                clicked = false;
-            } else {
-                user.fire(EVENTS.SELECT_SINGLE_USER);
-                clicked = true;
-                setTimeout(function(){
-                    clicked = false;
+        var task;
+        var b = u.create(HTML.DIV, {className:"user-button" +(user.properties.active ? "" : " hidden"), style:{backgroundColor:color},
+            onmousedown: function(){
+                startTime = new Date().getTime();
+                task = setTimeout(function(){
+                    openContextMenu(user);
                 }, 500);
-                openContextMenu(user);
+                // console.log(user);
+            },
+            onmouseup: function(){
+                var delay = new Date().getTime() - startTime;
+                if(delay < 500) {
+                    if(clicked) {
+                        user.fire(EVENTS.CAMERA_ZOOM);
+                        clicked = false;
+                    } else {
+                        user.fire(EVENTS.SELECT_SINGLE_USER);
+                        clicked = true;
+                        setTimeout(function(){
+                            clicked = false;
+                        }, 500);
+                        openContextMenu(user);
+                    }
+                }
+                clearTimeout(task);
             }
-            // console.log(user);
-        }}, buttons);
+        }, buttons);
         u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)

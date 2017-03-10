@@ -69,6 +69,7 @@ public class UserMessage extends AbstractSavedItem {
         if(systemMessage.getDelivery() != null) {
             delivery = systemMessage.getDelivery();
         }
+        timestamp = new Date().getTime();
         type = systemMessage.getType();
 
     }

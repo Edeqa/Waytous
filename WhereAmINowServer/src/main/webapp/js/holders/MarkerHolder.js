@@ -1,11 +1,12 @@
 /**
  * Created 2/9/17.
  */
+EVENTS.MARKER_CLICK = "marker_click";
+
 function MarkerHolder(main) {
 
     var type = "marker";
 
-    EVENTS.MARKER_CLICK = "marker_click";
 
     function start() {
         // console.log("MARKERHOLDER",main);

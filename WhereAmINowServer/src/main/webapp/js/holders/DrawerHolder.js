@@ -1,9 +1,17 @@
 /**
  * Created 2/8/17.
  */
+DRAWER = {
+    SECTION_PRIMARY: 0,
+    SECTION_COMMUNICATION: 2,
+    SECTION_VIEWS: 3,
+    SECTION_NAVIGATION: 4,
+    SECTION_MAP: 8,
+    SECTION_EXIT: 9
+};
+
 function DrawerHolder(main) {
 
-    const CREATE_DRAWER = "create_drawer";
 
     var drawer;
     var nameInHeader;
@@ -44,7 +52,7 @@ function DrawerHolder(main) {
             sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, menu);
         }
 
-        main.fire(CREATE_DRAWER, drawer);
+        main.fire(EVENTS.CREATE_DRAWER, drawer);
 
         /*for(var i in holderFiles) {
             var x = holderFiles[i].toLowerCase();

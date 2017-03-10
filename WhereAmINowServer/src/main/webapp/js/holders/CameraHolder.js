@@ -1,16 +1,17 @@
 /**
  * Created 2/9/17.
  */
+EVENTS.CAMERA_UPDATE = "camera_update";
+EVENTS.CAMERA_UPDATED = "camera_updated";
+EVENTS.CAMERA_ZOOM_IN = "camera_zoom_in";
+EVENTS.CAMERA_ZOOM_OUT = "camera_zoom_out";
+EVENTS.CAMERA_ZOOM = "camera_zoom";
+EVENTS.CAMERA_NEXT_ORIENTATION = "camera_next_orientation";
+
 function CameraHolder(main) {
 
     var type = "camera";
 
-    EVENTS.CAMERA_UPDATE = "camera_update";
-    EVENTS.CAMERA_UPDATED = "camera_updated";
-    EVENTS.CAMERA_ZOOM_IN = "camera_zoom_in";
-    EVENTS.CAMERA_ZOOM_OUT = "camera_zoom_out";
-    EVENTS.CAMERA_ZOOM = "camera_zoom";
-    EVENTS.CAMERA_NEXT_ORIENTATION = "camera_next_orientation";
 
     const CAMERA_ORIENTATION_NORTH = 0;
     const CAMERA_ORIENTATION_DIRECTION = 1;
@@ -25,27 +26,54 @@ function CameraHolder(main) {
 
     var menuFitToScreen;
     var task;
+    var orientation;
 
     function start() {
-
+        orientation = CAMERA_ORIENTATION_NORTH;
     }
 
     function onEvent(EVENT,object){
         // if(!this || !this.views || !this.views.camera) return true;
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                menuFitToScreen = object.add(2,type+"_1","Fit to screen","fullscreen",function(){
+                menuFitToScreen = object.add(DRAWER.SECTION_VIEWS,type+"_1","Fit to screen","fullscreen",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SELECT_USER);
                     });
                 });
                 menuFitToScreen.classList.add("disabled");
                 break;
+            case EVENTS.CREATE_CONTEXT_MENU:
+                var user = this;
+                if(user && (main.users.getCountSelected() >1 || !user.properties.selected)) {
+                    var select, unselect;
+                    select = object.add(MENU.SECTION_VIEWS, type + "_1", "Select user", "select_all", function () {
+                        select.classList.add("hidden");
+                        unselect.classList.remove("hidden");
+                        user.fire(EVENTS.SELECT_USER);
+                    });
+                    unselect = object.add(MENU.SECTION_VIEWS, type + "_1", "Unselect user", "border_clear", function () {
+                        select.classList.remove("hidden");
+                        unselect.classList.add("hidden");
+                        user.fire(EVENTS.UNSELECT_USER);
+                    });
+                    if(user.properties.selected) {
+                        select.classList.add("hidden");
+                    } else {
+                        unselect.classList.add("hidden");
+                    }
+                }
+                break;
             case EVENTS.TRACKING_ACTIVE:
                 menuFitToScreen.classList.remove("disabled");
                 break;
             case EVENTS.TRACKING_DISABLED:
                 menuFitToScreen.classList.add("disabled");
+                break;
+            case EVENTS.MAP_READY:
+                main.map.addListener("dragend", function(e){
+                    orientation = CAMERA_ORIENTATION_USER;
+                });
                 break;
             case EVENTS.MARKER_CLICK:
                 onEvent.call(this,EVENTS.CAMERA_NEXT_ORIENTATION);
@@ -65,9 +93,12 @@ function CameraHolder(main) {
                 }
                 camera.orientationChanged = true;
                 camera.previousOrientation = camera.orientation;
+
+                if(orientation == CAMERA_ORIENTATION_USER) orientation = CAMERA_ORIENTATION_NORTH;
                 onChangeLocation.call(this,this.location);
                 break;
             case EVENTS.SELECT_USER:
+                orientation = this && this.views && this.views.camera ? this.views.camera.orientation : CAMERA_ORIENTATION_NORTH;
                 onChangeLocation.call(this, this.location);
                 menuFitToScreen.classList.remove("disabled");
                 break;
@@ -152,6 +183,7 @@ function CameraHolder(main) {
     }
 
     function update() {
+        if(orientation == CAMERA_ORIENTATION_USER) return;
         if(main.users.getCountSelected() > 1) {
             var finalBounds = new google.maps.LatLngBounds();
             for(var i in main.users.users) {
@@ -208,11 +240,11 @@ function CameraHolder(main) {
                             var currentZoom = startZoom*(1-time) + finalZoom*time;
 
                             main.map.setZoom(currentZoom);
-                            main.map.setCenter(currentCenter);
+                            main.map.panTo(currentCenter);
 
                         }, function(){
                             main.map.setZoom(finalZoom);
-                            main.map.setCenter(finalCenter);
+                            main.map.panTo(finalCenter);
                         });
                     }
 

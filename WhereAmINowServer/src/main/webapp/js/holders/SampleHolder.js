@@ -15,8 +15,16 @@ function SampleHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                var menuItem = object.add(0,type+"_1","Sample","ac_unit",function(){console.log("SAMPLEEVENTDRAWERCALLBACK",EVENT)});
+                var menuItem = object.add(DRAWER.SECTION_PRIMARY,type+"_1","Sample item","ac_unit",function(){console.log("SAMPLEEVENTDRAWERCALLBACK",EVENT)});
                 menuItem.classList.add("disabled");
+                break;
+            case EVENTS.CREATE_CONTEXT_MENU:
+                var user = this;
+                if(user) {
+                    object.add(MENU.SECTION_PRIMARY, type + "_1", "Sample menu item", "ac_unit", function () {
+                        console.log("SAMPLEEVENTMENUCALLBACK",user);
+                    });
+                }
                 break;
             default:
                 break;

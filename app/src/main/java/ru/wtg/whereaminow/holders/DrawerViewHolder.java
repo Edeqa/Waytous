@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -27,6 +28,10 @@ import ru.wtg.whereaminow.interfaces.SimpleCallback;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_DRAWER;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_DRAWER;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
+import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
@@ -38,15 +43,21 @@ import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_TRAFFIC;
 public class DrawerViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "drawer";
+    private ActionBar actionBar;
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
+
 
     public DrawerViewHolder(MainActivity context){
         super(context);
 
         setViewAndToolbar(context.findViewById(R.id.drawer_layout),(Toolbar) context.findViewById(R.id.toolbar));
         setCallback(onNavigationDrawerCallback);
+
+        if(context.getSupportActionBar() != null) {
+            actionBar = context.getSupportActionBar();
+        }
     }
 
     public void setViewAndToolbar(View view, final Toolbar toolbar) {
@@ -104,6 +115,18 @@ public class DrawerViewHolder extends AbstractViewHolder {
                 menuItem.setVisible(false);
                 State.getInstance().fire(CREATE_DRAWER, menuItem);
 
+                break;
+            case TRACKING_ACTIVE:
+            case TRACKING_DISABLED:
+                if(actionBar != null) {
+                    actionBar.setTitle(context.getString(R.string.app_name));
+                }
+                break;
+            case TRACKING_CONNECTING:
+            case TRACKING_RECONNECTING:
+                if(actionBar != null) {
+                    actionBar.setTitle("Connecting...");
+                }
                 break;
         }
         return true;
