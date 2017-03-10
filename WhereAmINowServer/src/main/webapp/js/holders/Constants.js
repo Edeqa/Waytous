@@ -170,11 +170,12 @@ function Constants() {
         MANIFEST:"manifest",
         SPAN:"span",
         BUTTON:"button",
-        CLICK:"click"
+        CLICK:"click",
+        STYLESHEET:"stylesheet",
     };
     window.CONSTANTS = {
         HTTP_PORT: 8080,
-        HTTPS_PORT: 8000,
+        HTTPS_PORT: 8100,
         WS_FB_PORT: 8081,
         WSS_FB_PORT: 8001,
         WS_PORT: 8082,

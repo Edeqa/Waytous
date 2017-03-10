@@ -4,7 +4,6 @@
 
 function Utils() {
 
-//    if(!URL) {
         URL = function(link) {
             var href = link;
             var p = link.split("://");
@@ -33,7 +32,6 @@ function Utils() {
                 username: ""
             }
         }
-//    }
 
     function normalizeName(name) {
         if(name == "className"){
@@ -60,7 +58,7 @@ function Utils() {
                 for(var x in properties) {
                     if(x == "innerHTML" || x == "innerText") {
                         el[x] = properties[x];
-                    } else if(x == "content") {
+                    } else if(x == "content" && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
 //                    } else if(x == "async") {
 //                        el.appendChild(properties[x]);

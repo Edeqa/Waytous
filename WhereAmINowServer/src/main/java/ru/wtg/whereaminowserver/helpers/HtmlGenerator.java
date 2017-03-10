@@ -24,6 +24,7 @@ public class HtmlGenerator {
     public static final String SRC = "src";
     public static final String HTTP_EQUIV = "http-equiv";
     public static final String CONTENT = "content";
+    public static final String SIZES = "sizes";
     public static final String TABLE = "table";
     public static final String TR = "tr";
     public static final String TH = "th";
@@ -47,6 +48,7 @@ public class HtmlGenerator {
     public static final String STYLESHEET = "stylesheet";
     public static final String TYPE = "type";
     public static final String BR = "br";
+    public static final String ONLOAD = "onload";
 
     public static final String FORM = "form";
     public static final String NAME = "name";

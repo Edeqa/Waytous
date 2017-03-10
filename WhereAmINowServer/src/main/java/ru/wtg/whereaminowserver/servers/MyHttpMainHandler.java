@@ -89,11 +89,19 @@ public class MyHttpMainHandler implements HttpHandler {
         } else {
             // Object exists and is a file: accept with response code 200.
 
-            if(uri.getPath().startsWith("/css/")) {
+            String path = uri.getPath().toLowerCase();
+
+            if(path.startsWith("/css/")) {
                 exchange.getResponseHeaders().set("Content-Type", "text/css");
-            } else if(uri.getPath().startsWith("/js/")) {
+            } else if(path.startsWith("/js/")) {
                 exchange.getResponseHeaders().set("Content-Type", "text/javascript");
-            } else if(uri.getPath().startsWith("/images/")) {
+            } else if(path.endsWith(".xml")) {
+                exchange.getResponseHeaders().set("Content-Type", "application/xml");
+            } else if(path.endsWith(".json")) {
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+            } else if(path.endsWith("manifest.json")) {
+                exchange.getResponseHeaders().set("Content-Type", "application/x-web-app-manifest+json");
+            } else if(path.endsWith(".gif") || path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".svg")) {
                 String type = "image/";
                 String[] parts = file.getName().split("\\.");
                 if(parts.length>1){
@@ -121,6 +129,7 @@ public class MyHttpMainHandler implements HttpHandler {
             exchange.getResponseHeaders().set("Server", "WAIN/"+SERVER_BUILD);
             exchange.getResponseHeaders().set("Accept-Ranges", "bytes");
 
+            gzip = false;
             if(gzip){
                 exchange.getResponseHeaders().set("Content-Encoding", "gzip");
             } else {
