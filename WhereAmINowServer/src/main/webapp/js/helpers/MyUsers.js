@@ -79,6 +79,16 @@ function MyUsers(main) {
         return count;
     }
 
+    function getCountActive(){
+        var count = 0;
+        for(var i in users) {
+            if(users[i] && i == users[i].number && users[i].properties && users[i].properties.active) {
+                count ++;
+            }
+        }
+        return count;
+    }
+
     return {
         addUser:addUser,
         setMe:setMe,
@@ -89,6 +99,7 @@ function MyUsers(main) {
         forUser:forUser,
         users:users,
         getCountSelected:getCountSelected,
+        getCountActive:getCountActive,
 
     }
 }

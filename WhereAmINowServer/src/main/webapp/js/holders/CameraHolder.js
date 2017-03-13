@@ -27,6 +27,22 @@ function CameraHolder(main) {
     var menuFitToScreen;
     var task;
     var orientation;
+    var unselect_icon;
+
+    var unselect_svg = {
+        xmlns:"http://www.w3.org/2000/svg",
+        viewbox:"0 0 24 24",
+        version:"1.1",
+        className: "menu-item"
+    };
+    var unselect_path = {
+        xmlns:"http://www.w3.org/2000/svg",
+        strokeWidth:"0",
+        fill:"darkslategray",
+        d: "M3,5h2L5,3c-1.1,0 -2,0.9 -2,2zM3,13h2v-2L3,11v2zM7,21h2v-2L7,19v2zM3,9h2L5,7L3,7v2zM13,3h-2v2h2L13,3zM19,3v2h2c0,-1.1 -0.9,-2 -2,-2zM5,21v-2L3,19c0,1.1 0.9,2 2,2zM3,17h2v-2L3,15v2zM9,3L7,3v2h2L9,3zM11,21h2v-2h-2v2zM19,13h2v-2h-2v2zM19,21c1.1,0 2,-0.9 2,-2h-2v2zM19,9h2L21,7h-2v2zM19,17h2v-2h-2v2zM15,21h2v-2h-2v2zM15,5h2L17,3h-2v2z"
+    };
+
+
 
     function start() {
         orientation = CAMERA_ORIENTATION_NORTH;
@@ -47,12 +63,13 @@ function CameraHolder(main) {
                 var user = this;
                 if(user && (main.users.getCountSelected() >1 || !user.properties.selected)) {
                     var select, unselect;
-                    select = object.add(MENU.SECTION_VIEWS, type + "_1", "Select user", "select_all", function () {
+                    select = object.add(MENU.SECTION_PRIMARY, type + "_1", "Select user", "select_all", function () {
                         select.classList.add("hidden");
                         unselect.classList.remove("hidden");
                         user.fire(EVENTS.SELECT_USER);
                     });
-                    unselect = object.add(MENU.SECTION_VIEWS, type + "_1", "Unselect user", "border_clear", function () {
+                    unselect_icon = unselect_icon || u.create(HTML.PATH, unselect_path, u.create(HTML.SVG, unselect_svg)).parentNode;
+                    unselect = object.add(MENU.SECTION_PRIMARY, type + "_1", "Unselect user", unselect_icon, function () {
                         select.classList.remove("hidden");
                         unselect.classList.add("hidden");
                         user.fire(EVENTS.UNSELECT_USER);
@@ -120,6 +137,9 @@ function CameraHolder(main) {
                     main.map.setZoom(Math.round(object));
                 }
                 break;
+            case EVENTS.CAMERA_UPDATE:
+                update()
+                break;
             default:
                 break;
         }
@@ -130,7 +150,7 @@ function CameraHolder(main) {
         if(!this || !this.views || !this.views.camera) return;
         var camera = this.views.camera;
         this.location = location;
-        update.call();
+        update();
         switch (camera.orientation){
             /*case CAMERA_ORIENTATION_NORTH:
 //                    if(orientationChanged) {

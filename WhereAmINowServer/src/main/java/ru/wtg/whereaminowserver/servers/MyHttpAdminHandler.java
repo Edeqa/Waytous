@@ -106,9 +106,6 @@ public class MyHttpAdminHandler implements HttpHandler {
                 html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts);
             }
 
-            html.getHead().add(META).with(NAME, "viewport").with(CONTENT, "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0");
-            html.getHead().add(LINK).with(REL, STYLESHEET).with(TYPE,"text/css").with(HREF, "/css/admin.css");
-            Common.addIncludes(html);
             html.getBody().with(CLASS,"body");
 
 

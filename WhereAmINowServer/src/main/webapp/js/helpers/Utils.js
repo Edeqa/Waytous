@@ -4,39 +4,41 @@
 
 function Utils() {
 
-        URL = function(link) {
-            var href = link;
-            var p = link.split("://");
-            var protocol = "http:";
-            if(p.length > 1) protocol = p.shift() +":";
-            p = p.join("//").split("/");
-            var host = p.shift();
-            var pathname = "/" + p.join("/");
-            p = host.split(":");
-            var hostname = p.shift();
-            var port = p.shift();
-            if(!port) port = "";
-            var origin = protocol + "//" + host;
+    URL = function(link) {
+        var href = link;
+        var p = link.split("://");
+        var protocol = "http:";
+        if(p.length > 1) protocol = p.shift() +":";
+        p = p.join("//").split("/");
+        var host = p.shift();
+        var pathname = "/" + p.join("/");
+        p = host.split(":");
+        var hostname = p.shift();
+        var port = p.shift();
+        if(!port) port = "";
+        var origin = protocol + "//" + host;
 
-            return {
-                hash: "",
-                host: host,
-                hostname: hostname,
-                href: href,
-                origin: origin,
-                pathname: pathname,
-                password: "",
-                port: port,
-                protocol: protocol,
-                search: "",
-                username: ""
-            }
+        return {
+            hash: "",
+            host: host,
+            hostname: hostname,
+            href: href,
+            origin: origin,
+            pathname: pathname,
+            password: "",
+            port: port,
+            protocol: protocol,
+            search: "",
+            username: ""
         }
+    };
 
     function normalizeName(name) {
         if(name == "className"){
             name = "class";
         } else if(name.toLowerCase() == "frameborder") {
+        } else if(name.toLowerCase() == "viewbox") {
+            name = "viewBox";
         } else if(name != name.toLowerCase()) {
             var ps = name.split(/([A-Z])/);
             name = ps[0];
@@ -49,7 +51,13 @@ function Utils() {
     }
 
     function create(name, properties, appendTo, position) {
-        var el = document.createElement(name);
+        var el,namespace;
+        if(properties && properties.xmlns) {
+            el = document.createElementNS(properties.xmlns, name);
+            namespace = properties.xmlns;
+        } else {
+            el = document.createElement(name);
+        }
 
         if(properties) {
             if(properties instanceof HTMLElement) {
@@ -62,7 +70,7 @@ function Utils() {
                         el.appendChild(properties[x]);
 //                    } else if(x == "async") {
 //                        el.appendChild(properties[x]);
-                    } else if(x.indexOf("on") >= 0) {
+                    } else if(x.indexOf("on") == 0) {
                         var action = x.substr(2).toLowerCase();
                         var call = properties[x];
                         el.addEventListener(action, call/*function(){
@@ -175,14 +183,12 @@ function Utils() {
             needInstantiate = true;
             name += ".js";
         }
-
-        // var needInstantiate = !callback.toString().match("^function \\(\\)");
-// http-equiv="Cache-Control" content="no-store"
         create("script", {src: name, dataStart: needInstantiate ? onlyname : null, onload: function() {
             if (callback) {
                 var a;
                 if(needInstantiate) {
                     a = new window[this.dataset.start](context);
+                    a.moduleName = this.dataset.start;
                 }
                 callback(a);
             }
@@ -206,17 +212,30 @@ function Utils() {
         }
     }
 
-    function getUuid() {
+    function getUuid(callback) {
         var uuid = load("uuid");
+
         if(!uuid) {
-            var d = new Date().getTime();
-            uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = (d + Math.random()*16)%16 | 0;
-                d = Math.floor(d/16);
-                return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-            });
-            save("uuid",uuid);
+            if(callback) {
+                new Fingerprint2().get(function(result, components){
+                    console.log(result); //a hash, representing your device fingerprint
+                    console.log(components); // an array of FP components
+                    if(!result) {
+                        var d = new Date().getTime();
+                        result = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                            var r = (d + Math.random()*16)%16 | 0;
+                            d = Math.floor(d/16);
+                            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+                        });
+                    }
+                    save("uuid", result);
+                    callback();
+                });
+            } else {
+                console.error("UUID not defined.");
+            }
         }
+        if(callback) callback();
         return uuid;
     }
 
@@ -479,14 +498,77 @@ function Utils() {
     }
 
     function dialog(options) {
-        var dialog = u.create("div", {className:"modal shadow hidden "+(options.className ? options.className : ""), tabindex:999},
-            document.getElementsByClassName("layout")[0]);
+        var dialog = create("div", {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
+            document.getElementsByClassName("right")[0]);
+
+        dialog.addItem = function(item) {
+            item = item || {};
+
+            var x;
+            if(item.type == "div") {
+                x = create("div", {
+                    className: "dialog-item" + (item.className ? " " + item.className : ""),
+                    innerHTML: item.label || item.title || item.innerHTML || ""
+                }, dialog.itemsLayout);
+            } else if(item.type == "hidden") {
+                x = create("input", {type:"hidden", value:item.value || ""}, dialog.itemsLayout);
+            } else {
+                var div = create("div", {className:"dialog-item"}, dialog.itemsLayout);
+                create("div", {
+                    className:"dialog-item-label"+(item.className ? " "+item.className : ""),
+                    innerHTML:item.label || ""
+                }, div);
+                x = create("input", {
+                    type:item.type,
+                    className:"dialog-item-"+item.type,
+                    tabindex: i,
+                    value:item.value || "",
+                    onclick: function() { this.focus() },
+                    onkeyup:function(e){
+                        if(e.keyCode == 13) {
+                            dialog.onclose();
+                            if(options.positive && options.positive.callback) options.positive.callback.call(dialog,items);
+                        } else if(e.keyCode == 27) {
+                            dialog.onclose();
+                            if(options.negative && options.negative.callback) options.negative.callback.call(dialog,items);
+                        }
+                    }
+                }, div);
+            }
+            items.push(x);
+        }
+
+        dialog.onopen = function(){
+            dialog.classList.remove("hidden");
+
+            var left = dialog.offsetLeft;
+            var leftMain = window.innerWidth;
+
+            if(left >= leftMain) {
+                dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
+                dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
+            }
+
+            items[i].focus();
+            if(options.onopen) options.onopen.call(dialog,items);
+            return dialog;
+        };
+
+        dialog.onclose = function (){
+            dialog.classList.add("hidden");
+            clearInterval(intervalTask);
+
+            if(options.onclose) options.onclose.call(dialog,items);
+            // clear(dialog);
+            // destroy(dialog);
+        };
+
         options = options || {};
         var items = [];
 
         if(options.title) {
-            var titleLayout = u.create("div", {
-                className:"dialog-title",
+            var titleLayout = create("div", {
+                className:"dialog-title" + (options.titleClassName ? " " + options.titleClassName : ""),
                 onmousedown: function(e) {
                     var position = dialog.getBoundingClientRect();
                     var offset = [ e.clientX, e.clientY ];
@@ -495,8 +577,8 @@ function Utils() {
                         window.removeEventListener("mouseup", mouseup, false);
                         window.removeEventListener("mousemove", mousemove, false);
                         if(options.title && moved) {
-                            save("dialog:left:"+options.title, dialog.style.left);
-                            save("dialog:top:"+options.title, dialog.style.top);
+                            save("dialog:left:"+(options.id || options.title), dialog.style.left);
+                            save("dialog:top:"+(options.id || options.title), dialog.style.top);
                         }
                     }
                     function mousemove(e){
@@ -515,14 +597,21 @@ function Utils() {
                     e.preventDefault();
                 }
             }, dialog);
-            dialog.titleString = u.create("div", {className:"dialog-title-label", innerHTML: options.title }, titleLayout);
-            u.create("button", {className:"material-icons dialog-button-close", innerHTML:"clear", onclick:function(e){
-                dialog.onclose();
-                if(options.negative && options.negative.callback) options.negative.callback(items);
-            }}, titleLayout);
+            dialog.titleLayout = create("div", {className:"dialog-title-label", innerHTML: options.title }, titleLayout);
+            if(!options.persistent) {
+                create("button", {className:"material-icons dialog-title-button", innerHTML:"clear", onclick:function(e){
+                    dialog.onclose();
+                    if(options.negative && options.negative.callback) options.negative.callback.call(dialog,items);
+                }}, titleLayout);
+            }
+            if(options.titleButton) {
+                create("button", {className:"material-icons dialog-title-button"+ (options.titleButton.className ? " " + options.titleButton.className : ""), innerHTML: options.titleButton.icon || "ac_unit", onclick:function(e){
+                    if(options.titleButton.callback) options.titleButton.callback.call(dialog,items);
+                }}, titleLayout);
+            }
 
-            var left = load("dialog:left:"+options.title);
-            var top = load("dialog:top:"+options.title);
+            var left = load("dialog:left:"+(options.id || options.title));
+            var top = load("dialog:top:"+(options.id || options.title));
             if(left && top) {
                 dialog.style.left = left;
                 dialog.style.top = top;
@@ -530,70 +619,40 @@ function Utils() {
                 dialog.style.bottom = "auto";
             }
         }
-        var divItems = u.create("div", {className:"dialog-items"}, dialog);
+        dialog.itemsLayout = create("div", {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);
         for(var i in options.items) {
             var item = options.items[i];
-            item = item || {};
-
-            var x;
-            if(item.type == "div") {
-                x = u.create("div", {
-                    className: "dialog-item" + (item.className ? " " + item.className : ""),
-                    innerHTML: item.label || item.title || item.innerHTML || ""
-                }, divItems);
-            } else if(item.type == "hidden") {
-                x = u.create("input", {type:"hidden", value:item.value || ""}, divItems);
-            } else {
-                var div = u.create("div", {className:"dialog-item"}, divItems);
-                u.create("div", {
-                    className:"dialog-item-label"+(item.className ? " "+item.className : ""),
-                    innerHTML:item.label || ""
-                }, div);
-                x = u.create("input", {
-                    type:item.type,
-                    className:"dialog-item-"+item.type,
-                    tabindex: i,
-                    value:item.value || "",
-                    onclick: function() { this.focus() },
-                    onkeyup:function(e){
-                        if(e.keyCode == 13) {
-                            dialog.onclose();
-                            if(options.positive && options.positive.callback) options.positive.callback(items);
-                        }
-                    }
-                }, div);
-            }
-            items.push(x);
+            dialog.addItem(item);
 
         }
         dialog.items = items;
-        var buttons = u.create("div", {className:"dialog-buttons hidden"}, dialog);
+        var buttons = create("div", {className:"dialog-buttons hidden"}, dialog);
         if(options.positive && options.positive.title) {
-            u.create("button", {className:"dialog-button-positive", onclick:function(){
+            create("button", {className:"dialog-button-positive", onclick:function(){
                 dialog.onclose();
-                if(options.positive.callback) options.positive.callback(items);
+                if(options.positive.callback) options.positive.callback.call(dialog,items);
             }, innerHTML: options.positive.title}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.negative && options.negative.title) {
-            u.create("button", {className:"dialog-button-negative", onclick:function(){
+            create("button", {className:"dialog-button-negative", onclick:function(){
                 dialog.onclose();
-                if(options.negative.callback) options.negative.callback(items);
+                if(options.negative.callback) options.negative.callback.call(dialog,items);
             }, innerHTML: options.negative.title}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.neutral && options.neutral.title) {
-            u.create("button", {className:"dialog-button-neutral", onclick:function(){
+            create("button", {className:"dialog-button-neutral", onclick:function(){
                 dialog.onclose();
-                if(options.neutral.callback) options.neutral.callback(items);
+                if(options.neutral.callback) options.neutral.callback.call(dialog,items);
             }, innerHTML: options.neutral.title}, buttons);
             buttons.classList.remove("hidden");
         }
 
         var intervalTask;
         if(options.timeout) {
-            var progressBar = u.create("div", {className:"dialog-progress-bar"}, dialog);
-            var progress = u.create("div", {className:"dialog-progress-value"}, progressBar);
+            var progressBar = create("div", {className:"dialog-progress-bar"}, dialog);
+            var progress = create("div", {className:"dialog-progress-value"}, progressBar);
             progress.style.width = "0%";
 
             var atom = options.timeout / 16;
@@ -608,31 +667,97 @@ function Utils() {
             }, 16);
         }
 
-        dialog.onopen = function(){
-            dialog.classList.remove("hidden");
-
-            var left = dialog.offsetLeft;
-            var leftMain = window.innerWidth;
-
-            if(left >= leftMain) {
-                dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
-                dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
-            }
-
-            items[i].focus();
-            return dialog;
-        };
-
-        dialog.onclose = function (){
-            dialog.classList.add("hidden");
-            clearInterval(intervalTask);
-
-            // clear(dialog);
-            // destroy(dialog);
-        };
-
         return dialog;
     }
+
+    function formatLengthToLocale(meters) {
+        if(navigator.language && navigator.language.toLowerCase() == "en-us") {
+            meters = meters * 3.2808399;
+            if(meters < 530) {
+                return sprintf.call("%s %s", meters.toFixed(0), "ft");
+            } else {
+                meters = meters / 5280;
+                return sprintf.call("%s %s", meters.toFixed(1), "mi");
+            }
+        } else {
+            var unit = "m";
+            if (meters < 1) {
+                meters *= 1000;
+                unit = "mm";
+            } else if (meters > 1000) {
+                meters /= 1000;
+                unit = "km";
+            }
+            return sprintf.call("%s %s", meters.toFixed(1), unit);
+        }
+    }
+
+    function sprintf() {
+        var a = this, b;
+        for(b in arguments){
+            a = a.replace(/%[a-z]/,arguments[b]);
+        }
+        return a; // Make chainable
+    }
+
+    var label = function(opt_options, node) {
+        // Initialization
+        this.setValues(opt_options);
+
+        // Label specific
+        if(!node) {
+            node = u.create("div", {className:"distance-label"});
+            if(opt_options.style) {
+                if(opt_options.style.constructor !== String) {
+                    var s = "";
+                    for(var x in opt_options.style) {
+                        if(opt_options.style.hasOwnProperty(x)) {
+                            s += normalizeName(x) + ":" + opt_options.style[x] + ";";
+                        }
+                    }
+                    opt_options.style = s;
+                }
+                node.setAttribute("style", opt_options.style);
+            }
+        }
+        this.span_ = node;
+        var div = this.div_ = u.create("div", {style: "position: absolute; display: none"});
+        div.appendChild(node);
+
+
+        this.onAdd = function() {
+             var pane = this.getPanes().overlayLayer;
+             pane.appendChild(this.div_);
+
+             // Ensures the label is redrawn if the text or position is changed.
+             var me = this;
+             this.listeners_ = [
+                 google.maps.event.addListener(this, "position_changed", function() { me.draw(); }),
+                 google.maps.event.addListener(this, "text_changed", function() { me.draw(); })
+             ];
+         };
+        this.draw = function() {
+             var projection = this.getProjection();
+             var position = projection.fromLatLngToDivPixel(this.get('position'));
+
+             var div = this.div_;
+             div.style.left = position.x + "px";
+             div.style.top = position.y + "px";
+             div.style.display = "block";
+
+             this.span_.innerHTML = this.get("text").toString();
+         };
+         this.onRemove = function() {
+             this.div_.parentNode.removeChild(this.div_);
+
+             // Label is removed from the map, stop updating its position/text.
+             for (var i = 0, I = this.listeners_.length; i < I; ++i) {
+                 google.maps.event.removeListener(this.listeners_[i]);
+             }
+         };
+    };
+
+
 
     return {
         create: create,
@@ -653,5 +778,8 @@ function Utils() {
         smoothInterpolated:smoothInterpolated,
         dialog:dialog,
         destroy:destroy,
+        formatLengthToLocale:formatLengthToLocale,
+        sprintf:sprintf,
+        label:label,
     }
 }

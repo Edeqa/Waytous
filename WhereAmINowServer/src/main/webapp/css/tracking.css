@@ -138,10 +138,13 @@ input, textarea {
 .menu-item:hover {
     background: #dddd99;
 }
-.menu-item i {
+.menu-item i, .menu-item svg {
     margin: 12px;
     float: left;
     font-size: 16px;
+    width: 16px;
+    height: 16px;
+    stroke: darkslategray;
 }
 .menu-item div {
     font-weight: bold;
@@ -150,6 +153,15 @@ input, textarea {
     cursor: pointer;
     display: block;
     padding: 12px;
+}
+.menu-item-social {
+    display: flex;
+}
+.menu-item-facebook {
+
+}
+.menu-item-twitter {
+
 }
 .drawer-footer {
     position: fixed;
@@ -161,6 +173,9 @@ input, textarea {
 .right {
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .version {
     position: fixed;
@@ -312,13 +327,22 @@ p.bottom-desc {
   padding: 0em 1em 1em 1em;
 }
 .user-buttons {
-    position: fixed;
+    max-height: 90%;
+    border: none !important;
     top: 12px;
     right: 52px;
+}
+.user-buttons-title {
+}
+.user-buttons-title-button {
+}
+.user-buttons-items {
+    position: initial;
     border-radius: 5px;
     background-color: transparent;
-    max-height: 90%;
     overflow-y: auto;
+    display: block !important;
+    padding: 0px !important;
 }
 .user-button {
     display: flex;
@@ -371,7 +395,7 @@ p.bottom-desc {
     background-color: rgba(211, 211, 211, 0.7);
     border-radius: 5px;
     outline: none;
-    z-index: 10000;
+    z-index: 5000;
 }
 .user-context-menu-item {
     display: flex;
@@ -379,6 +403,13 @@ p.bottom-desc {
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
+}
+.user-context-menu-item i, .user-context-menu-item svg {
+    padding: 5px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    stroke: darkslategray;
 }
 .user-context-menu-item:hover {
     background-color: rgba(180, 180, 180, 0.8);
@@ -468,11 +499,16 @@ p.bottom-desc {
     padding-top: 5px;
     padding-bottom: 5px;
     cursor: pointer;
+    position: relative;
 }
 .dialog-title-label {
 }
 .dialog-items {
     padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 .dialog-item {
     display: flex;
@@ -491,7 +527,7 @@ p.bottom-desc {
     align-self: center;
     padding: 5px;
 }
-.dialog-button-close {
+.dialog-title-button {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -501,7 +537,7 @@ p.bottom-desc {
     cursor: pointer;
     outline: none;
 }
-.dialog-button-close:hover {
+.dialog-title-button:hover {
     color: red;
 }
 .dialog-button-positive {
@@ -526,8 +562,8 @@ p.bottom-desc {
     max-width: 60%;
     font-size: 10px;
     top: auto;
-    bottom: 20px;
-    left: 270px;
+    bottom: 10px;
+    left: 260px;
     opacity: 0.4;
     outline: none;
 }
@@ -542,6 +578,7 @@ p.bottom-desc {
 }
 .chat-messages {
     max-height: 200px;
+    width: 100%;
     overflow-y: scroll;
     flex-direction: column;
 }
@@ -565,6 +602,7 @@ p.bottom-desc {
 .chat-reply {
     padding-top: 8px;
     align-items: stretch;
+    width: 100%;
 }
 .chat-reply-input {
     width: 100%;
@@ -582,7 +620,38 @@ p.bottom-desc {
 .chat-reply-button:active {
     color: cyan;
 }
-
+.streetview {
+    width: 500px;
+    max-width: 60%;
+    top: auto;
+    top: 10px;
+    left: 260px;
+    outline: none;
+}
+.streetview-placeholder {
+    height: 300px;
+}
+.streetview-view {
+    width: 100%;
+    height: 300px;
+    padding: 5px;
+    margin: -5px;
+}
+.distance-label {
+    font-size: 12px;
+    position: relative;
+    left: -50%;
+    top: -10px;
+    white-space: pre;
+    background-color: rgba(100, 100, 100, 0.7);
+    border: none;
+    outline: none;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    z-index: 1000;
+    font-weight: bold;
+}
 
 /* shift zoom control */
 /*.gmnoprint:nth-child(9) {
@@ -629,6 +698,9 @@ p.bottom-desc {
         min-height: 100%;
         align-items: center;
     }
+    .right {
+        flex-direction: column;
+    }
     .title {
         position: absolute;
         padding-top:15px;
@@ -656,7 +728,7 @@ p.bottom-desc {
         left: 0px;
         right: 0px;
         border: none;
-        background-color: darkcyan;
+        background-color: rgba(76, 147, 175, 1);
         color: white;
         height: 50px;
         display: flex;
@@ -714,7 +786,7 @@ p.bottom-desc {
     .menu-item:hover {
         background: #dddd99;
     }
-    .menu-item i {
+    .menu-item i, .menu-item svg {
         margin: 15px;
         float: left;
         font-size: 16px;
@@ -741,9 +813,11 @@ p.bottom-desc {
     .content {
         padding:0px;
     }
+/*
     .shadow {
         box-shadow: 3px 3px 10px 3px rgba(0,0,0,.7)
     }
+*/
     .buttons {
         text-align: center;
     }
@@ -772,14 +846,23 @@ p.bottom-desc {
     .user-buttons {
         display: flex;
         width: auto;
-        max-width: 80%;
+        max-width: 95%;
         position: absolute;
-        top: 52px;
+        top: 52px !important;
         left: 50%;
         right: auto;
         transform: translateX(-50%);
         overflow-x: scroll;
         overflow-y: hidden;
+    }
+    .user-buttons-title {
+        display: none;
+    }
+    .user-buttons-items {
+        display: flex !important;
+        flex-direction: row;
+        width: 100%;
+        justify-content: initial;
     }
     .user-button {
         display: block;
@@ -804,6 +887,8 @@ p.bottom-desc {
         white-space: nowrap;
         min-width: 40px;
         padding: 0px;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     .user-button-subtitle {
         font-size: 9px;
@@ -856,12 +941,14 @@ p.bottom-desc {
     .dialog-buttons {
         white-space: nowrap;
     }
-    .dialog-button-close {
+    .dialog-title-button {
         min-width: inherit;
         padding: 2px;
     }
     .chat {
-        border: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
         left: 0px !important;
         bottom: 0px !important;
         top: auto !important;
@@ -883,6 +970,19 @@ p.bottom-desc {
         height: 32px;
         padding: 0px;
     }
+    .streetview {
+        position: inherit;
+        width: 100%;
+        transform: none;
+        height: 60%;
+        z-index: 0;
+        max-width: 100%;
+        border-bottom: none;
+    }
+    .streetview-view {
+        margin: -10px;
+        padding: 10px;
+    }
 
     /* media specific classes */
     .hideable {
@@ -891,10 +991,7 @@ p.bottom-desc {
 
     /* shift zoom control */
     .gmnoprint:nth-child(8) {
-        top: 50px !important;
-    }
-    .gmnoprint:nth-child(9) {
-        top: 110px !important;
+        top: 100px !important;
     }
 
 }

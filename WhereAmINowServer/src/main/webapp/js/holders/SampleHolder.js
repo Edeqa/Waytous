@@ -4,11 +4,9 @@
 function SampleHolder(main) {
 
     var type = "sample";
-    var view;
 
     function start() {
         console.log("SAMPLEHOLDER",this);
-        view = {};
     }
 
     function onEvent(EVENT,object){
@@ -21,7 +19,8 @@ function SampleHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user) {
-                    object.add(MENU.SECTION_PRIMARY, type + "_1", "Sample menu item", "ac_unit", function () {
+                    object.add(MENU.SECTION_PRIMARY, type + "_1", "Sample menu", "ac_unit", function () {
+                        u.save("sample:show:"+user.number, true);
                         console.log("SAMPLEEVENTMENUCALLBACK",user);
                     });
                 }
@@ -32,9 +31,11 @@ function SampleHolder(main) {
         return true;
     }
 
-    function createView(myUser){
-        view.user = myUser;
-
+    function createView(user){
+        var view = {
+            user: user,
+            show: u.load("sample:user:"+user.number)
+        };
         return view;
         // console.log("SAMPLECREATEVIEW",user);
     }

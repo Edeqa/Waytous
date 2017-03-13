@@ -268,7 +268,7 @@ function TrackingFB(main) {
             if(type == REQUEST.CHANGE_NAME) {
                 updates = {};
                 updates[USER.NAME] = jsonMessage[USER.NAME];
-                updates["changed"] = firebase.database.ServerValue.TIMESTAMP;
+                updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE1",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
                 ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);

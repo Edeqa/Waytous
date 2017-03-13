@@ -66,7 +66,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WhereAmINowService.class).putExtra("mode", "stop"),0);
 
         notification = new NotificationCompat.Builder(state)
-                .setVisibility(Notification.VISIBILITY_PRIVATE)
+                .setVisibility(Notification.VISIBILITY_SECRET)
                 .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.ic_notification_twinks)
 //                .setAutoCancel(true)

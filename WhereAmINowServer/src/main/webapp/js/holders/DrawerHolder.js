@@ -14,14 +14,20 @@ function DrawerHolder(main) {
 
 
     var drawer;
-    var nameInHeader;
+    var headerName;
     var sections;
+    var title;
+    var headerTitle;
     var subtitle;
     var drawerLayout;
+
+    var target = window; // this can be any scrollable element
+    var last_y = 0;
 
     var start = function() {
 
         drawer = new Drawer();
+        target.addEventListener("touchmove", preventPullToRefresh);
 
         drawerLayout = u.create(HTML.DIV, {className:"drawer", tabindex: 1, onblur: function(){
             drawerLayout.classList.remove("drawer-open");
@@ -38,12 +44,12 @@ function DrawerHolder(main) {
             }
         }}, actionbar);
         var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
-        u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:"Waytogo"}, label);
+        title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:"Waytogo"}, label);
         subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle hidden"}, label);
 
         var header = u.create(HTML.DIV, { className:"drawer-header" }, drawerLayout);
-        nameInHeader = u.create(HTML.DIV, {className:"drawer-header-name"}, header);
-        u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:"Waytogo"}, header);
+        headerName = u.create(HTML.DIV, {className:"drawer-header-name"}, header);
+        headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:"Waytogo"}, header);
         u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML:"Be always on the same way\nwith your friends"}, header);
 
         var menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
@@ -88,13 +94,23 @@ function DrawerHolder(main) {
                 callback:callback
             };
             var th = u.create(HTML.DIV, {className:"menu-item"}, sections[section]);
-            u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
-            u.create(HTML.DIV, { onclick: function() {
-                setTimeout(function(){
-                    drawerLayout.blur();
-                    callback();
-                }, 300);
-            }, innerHTML: name}, th);
+            if(icon) {
+                if(icon.constructor === String) {
+                    u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+                } else {
+                    th.appendChild(icon);
+                }
+            }
+            if(callback) {
+                u.create(HTML.DIV, {
+                    onclick: function () {
+                        setTimeout(function () {
+                            drawerLayout.blur();
+                            callback();
+                        }, 300);
+                    }, innerHTML: name
+                }, th);
+            }
             sections[section].classList.remove("hidden");
             return th;
         }
@@ -118,10 +134,20 @@ function DrawerHolder(main) {
                     subtitle.classList.add("hidden");
                 }
                 break;
+            case EVENTS.TRACKING_ACTIVE:
+            case EVENTS.TRACKING_DISABLED:
+                title.innerHTML = "Waytogo";
+                headerTitle.innerHTML = "Waytogo";
+                break;
+            case EVENTS.TRACKING_CONNECTING:
+            case EVENTS.TRACKING_RECONNECTING:
+                title.innerHTML = "Connecting...";
+                headerTitle.innerHTML = "Connecting...";
+                break;
             case EVENTS.CHANGE_NAME:
             case USER.JOINED:
                 if(main.me.properties && main.me.properties.getDisplayName) {
-                    nameInHeader.innerHTML = main.me.properties.getDisplayName();
+                    headerName.innerHTML = main.me.properties.getDisplayName();
                 }
                 break;
         }
@@ -130,6 +156,15 @@ function DrawerHolder(main) {
 
     function createView(user) {
         return {};
+    }
+
+    function preventPullToRefresh(e){
+        var scrolly = target.pageYOffset || target.scrollTop || 0;
+        var direction = e.changedTouches[0].pageY > last_y ? 1 : -1;
+        if(direction>0 && scrolly===0){
+           e.preventDefault();
+        }
+        last_y = e.changedTouches[0].pageY;
     }
 
     return {

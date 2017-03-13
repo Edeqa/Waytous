@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 19;
+    public final static int SERVER_BUILD = 21;
 
 // debug local version
     public final static String WSS_SERVER_HOST = "https://10.0.0.96";
@@ -12,7 +12,6 @@ public class Constants {
     public final static String HTTP_SERVER_HOST = "10.0.0.96";
     public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/src/main/webapp";
     public final static String KEYSTORE = "debug.jks";
-
 // public internet version
 /*
     public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
@@ -109,8 +108,8 @@ public class Constants {
     public static final String DATABASE_USER_NAME = "name";
     public static final String DATABASE_USER_ACTIVE = "active";
     public static final String DATABASE_USER_COLOR = "color";
-    public static final String DATABASE_USER_CREATED = "color";
-    public static final String DATABASE_USER_CHANGED = "change";
+    public static final String DATABASE_USER_CREATED = "created";
+    public static final String DATABASE_USER_CHANGED = "changed";
     public static final String DATABASE_SECTION_USERS_DATA_PRIVATE = "u/p"; // users/data-private
     public static final String DATABASE_SECTION_USERS_KEYS = "u/k"; // users/keys
     public static final String DATABASE_SECTION_OPTIONS = "o"; // options

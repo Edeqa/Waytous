@@ -64,6 +64,11 @@ function PropertiesHolder(main) {
                         timeout: 10000
                     }).onopen();
                 }
+                var name = main.me.name;
+                if(!name && main.me.properties) name = main.me.properties.name;
+                if(name) {
+                    main.me.fire(EVENTS.CHANGE_NAME, name);
+                }
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;

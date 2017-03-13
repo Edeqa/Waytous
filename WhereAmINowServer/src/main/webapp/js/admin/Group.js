@@ -80,7 +80,7 @@ function Group() {
             var td = u.create("div", {className: "td option"}, tr);
             u.create("a", { href:"/track/"+groupId, innerHTML:groupId, target:"_blank"}, td);
             u.create("span", " ", td);
-            u.create("a", { href:"/group/"+groupId, innerHTML:"(Open in browser)", target:"_blank"}, td);
+            u.create("a", { href:"/group/"+groupId, innerHTML:"(Open forced in browser)", target:"_blank"}, td);
 
 
             tr = u.create("div", {className: "tr"}, summary);

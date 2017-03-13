@@ -22,7 +22,7 @@ function MapHolder(main) {
 
     function start() {
         u.create(HTML.SCRIPT, {
-            src: "https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap",
+            src: "https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap&libraries=geometry,places",
             async: "",
             defer: ""
         }, main.right);
@@ -42,14 +42,16 @@ function MapHolder(main) {
             },
             mapTypeControl: false,
             scaleControl: true,
-            streetViewControl: true,
-            streetViewControlOptions: {
+            streetViewControl: false,
+            fullscreenControl: false,
+            /*streetViewControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_TOP
-            },
+            },*/
             overviewMapControl: true,
             rotateControl: true,
         });
         main.map = map;
+        u.label.prototype = new google.maps.OverlayView;
         main.fire(EVENTS.MAP_READY);
         main.map.addListener("zoom_changed", function() {
             main.fire(EVENTS.CAMERA_ZOOM, map.getZoom());

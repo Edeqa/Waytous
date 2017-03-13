@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -88,10 +87,14 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
     public NavigationViewHolder(MainActivity context) {
         super(context);
+        this.map = context.getMap();
+
+        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
+        if(m != null) {
+            mode = m.mode;
+        }
 
         iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
-
-        setMap(context.getMap());
         setButtonsView(context.findViewById(R.id.layout_navigation_mode));
     }
 
@@ -104,16 +107,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     public NavigationView create(MyUser myUser) {
         if (myUser == null) return null;
         return new NavigationView(myUser);
-    }
-
-    public NavigationViewHolder setMap(GoogleMap map) {
-        this.map = map;
-
-        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
-        if(m != null) {
-            mode = m.mode;
-        }
-        return this;
     }
 
     @Override
@@ -178,6 +171,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         buttonsView.findViewById(R.id.ib_navigation_walking).setOnLongClickListener(onLongClickListener);
         buttonsView.findViewById(R.id.ib_navigation_bicycling).setOnClickListener(onClickListener);
         buttonsView.findViewById(R.id.ib_navigation_bicycling).setOnLongClickListener(onLongClickListener);
+
         switch (mode) {
             case NAVIGATION_MODE_DRIVING:
                 buttonsView.findViewById(R.id.ib_navigation_driving).performClick();
@@ -246,15 +240,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         });
         dialog.setView(content);
         dialog.show();
-    }
-
-    @Override
-    public ArrayList<IntroRule> getIntro() {
-
-        ArrayList<IntroRule> rules = new ArrayList<>();
-        rules.add(new IntroRule().setEvent(SHOW_NAVIGATION).setId("navigation_intro").setView(context.findViewById(R.id.layout_navigation_mode)).setTitle("Navigation").setDescription("You can switch between different modes of navigation using these buttons. Also, long touch calls additional options."));
-
-        return rules;
     }
 
     class NavigationView extends AbstractView {
@@ -345,7 +330,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                 myUser.fire(HIDE_NAVIGATION);
                                 return false;
                             }
-                        }).setIcon(R.drawable.ic_navigation_black_outline_24dp_xml);
+                        }).setIcon(R.drawable.ic_navigation_outline_black_24dp_xml);
                     }
                     if(myUser != State.getInstance().getMe()) {
                         menu.add(0, R.string.navigate_on_maps, Menu.NONE, R.string.navigate_on_maps).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -622,6 +607,15 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             return false;
         }
     };
+
+    @Override
+    public ArrayList<IntroRule> getIntro() {
+
+        ArrayList<IntroRule> rules = new ArrayList<>();
+        rules.add(new IntroRule().setEvent(SHOW_NAVIGATION).setId("navigation_intro").setView(context.findViewById(R.id.layout_navigation_mode)).setTitle("Navigation").setDescription("You can switch between different modes of navigation using these buttons. Also, long touch calls additional options."));
+
+        return rules;
+    }
 
 
 }

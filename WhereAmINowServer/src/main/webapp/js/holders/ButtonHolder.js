@@ -26,10 +26,32 @@ function ButtonHolder(main) {
     var delayDismiss;
     var startTime;
 
-
     function start() {
         // console.log("BUTTONHOLDER",this);
-        buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
+        buttons = u.dialog({
+            id: "button",
+            title: "Users",
+            className: "user-buttons",
+            tabindex: 1,
+            items: [
+            ],
+            itemsClassName: "user-buttons-items",
+            titleClassName: "user-buttons-title",
+            titleButton: {
+                icon: "view_headline",
+                className: "user-buttons-title-button",
+                callback: function() {
+                    var mininized = u.load("button:minimized");
+                    u.save("button:minimized", !mininized);
+                    main.users.forAllUsers(function(number,user){
+                        user.views.button.subtitle.classList[mininized ? "remove" : "add"]("hidden");
+                    });
+                }
+            },
+            persistent: true,
+        });
+
+//        buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
                 contextMenuLayout.classList.add("hidden");
             }, onmouseleave: function(){
@@ -45,9 +67,9 @@ function ButtonHolder(main) {
         // console.log(EVENT)
         switch (EVENT){
             case EVENTS.CREATE_CONTEXT_MENU:
-                var user = this;
+                /*var user = this;
                 if(user.number == main.me.number) {
-                    var itemMinimize = contextMenu.add(MENU.SECTION_VIEWS, type + "_1", "Minimize menu", "view_headline", function () {
+                    var itemMinimize = contextMenu.add(MENU.SECTION_EXIT, type + "_1", "Minimize menu", "view_headline", function () {
                         u.save("button:minimized", true);
                         main.users.forAllUsers(function(number,user){
                             user.views.button.subtitle.classList.add("hidden");
@@ -57,7 +79,7 @@ function ButtonHolder(main) {
                     });
                     itemMinimize.classList.add("hideable");
 
-                    var itemMaximize = contextMenu.add(MENU.SECTION_VIEWS, type + "_1", "Restore menu", "view_stream", function () {
+                    var itemMaximize = contextMenu.add(MENU.SECTION_EXIT, type + "_1", "Restore menu", "view_stream", function () {
                         u.save("button:minimized");
                         main.users.forAllUsers(function(number,user){
                             user.views.button.subtitle.classList.remove("hidden");
@@ -73,7 +95,7 @@ function ButtonHolder(main) {
                     } else {
                         itemMaximize.classList.add("hidden");
                     }
-                }
+                }*/
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 buttons.classList.remove("hidden");
@@ -104,9 +126,11 @@ function ButtonHolder(main) {
                 break;
             case EVENTS.MAKE_ACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
+                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
+                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 break;
             case EVENTS.UPDATE_ADDRESS:
                 var subtitle = this.views.button.subtitle;
@@ -124,6 +148,7 @@ function ButtonHolder(main) {
                     var value = parseInt(this.views.button.badge.innerHTML);
                     value = value || 0;
                     this.views.button.badge.innerHTML = ""+(++value);
+                    this.views.button.badge.scrollIntoView();
                 } else {
                     this.views.button.badge.innerHTML = object || "";
                 }
@@ -152,15 +177,21 @@ function ButtonHolder(main) {
         color = "rgba("+r+", "+g+", "+b+", 0.4)";
 
         var task;
+        var onlyTouch;
         var b = u.create(HTML.DIV, {className:"user-button" +(user.properties.active ? "" : " hidden"), style:{backgroundColor:color},
             onmousedown: function(){
+                onlyTouch = true;
                 startTime = new Date().getTime();
                 task = setTimeout(function(){
                     openContextMenu(user);
                 }, 500);
                 // console.log(user);
             },
+            onmousemove: function(){
+                onlyTouch = false;
+            },
             onmouseup: function(){
+                if(!onlyTouch) return;
                 var delay = new Date().getTime() - startTime;
                 if(delay < 500) {
                     if(clicked) {
@@ -177,7 +208,7 @@ function ButtonHolder(main) {
                 }
                 clearTimeout(task);
             }
-        }, buttons);
+        }, buttons.itemsLayout);
         u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
@@ -220,9 +251,15 @@ function ButtonHolder(main) {
                     contextMenuLayout.focus();
                     contextMenuLayout.blur();
                     callback();
-                }, 300);
+                }, 0);
             }}, sections[section]);
-            u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+            if(icon) {
+                if(icon.constructor === String) {
+                    u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+                } else {
+                    th.appendChild(icon);
+                }
+            }
             u.create(HTML.DIV, { className:"user-context-menu-item-title", innerHTML: name}, th);
             sections[section].classList.remove("hidden");
             return th;

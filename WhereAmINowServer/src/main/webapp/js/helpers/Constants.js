@@ -112,6 +112,7 @@ function Constants() {
         SECTION_USERS_DATA : "u/b", // users/data-public
         USER_NAME : "name", // name
         USER_ACTIVE : "active", // active
+        USER_CREATED : "created", // created
         USER_CHANGED : "changed", // changed
         SECTION_USERS_DATA_PRIVATE : "u/p", // users/data-private
         SECTION_USERS_KEYS : "u/k", // users/keys
@@ -172,10 +173,12 @@ function Constants() {
         BUTTON:"button",
         CLICK:"click",
         STYLESHEET:"stylesheet",
+        SVG:"svg",
+        PATH:"path",
     };
     window.CONSTANTS = {
         HTTP_PORT: 8080,
-        HTTPS_PORT: 8100,
+        HTTPS_PORT: 8000,
         WS_FB_PORT: 8081,
         WSS_FB_PORT: 8001,
         WS_PORT: 8082,

@@ -114,7 +114,6 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
             html.getHead().add(TITLE).with("Waytogo");
 
-/*
             html.getHead().add(LINK).with(REL,"apple-touch-icon").with(HREF, "/images/apple-touch-icon.png");
             html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "57x57").with(HREF, "/images/apple-touch-icon-57x57.png");
             html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "60x60").with(HREF, "/images/apple-touch-icon-60x60.png");
@@ -134,7 +133,6 @@ public class MyHttpTrackingHandler implements HttpHandler {
             html.getHead().add(META).with(NAME,"application-name").with(CONTENT, "Waytogo");
             html.getHead().add(META).with(NAME,"msapplication-config").with(CONTENT, "/images/browserconfig.xml");
             html.getHead().add(META).with(NAME,"theme-color").with(CONTENT, "#ffffff");
-*/
 
             JSONObject o = new JSONObject();
 //                o.put("page", part);

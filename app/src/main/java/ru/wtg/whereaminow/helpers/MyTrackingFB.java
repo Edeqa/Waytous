@@ -379,7 +379,7 @@ public class MyTrackingFB implements Tracking {
                 }
 
                 updates.put(path + "/" + key, data);
-                updates.put(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/changed", ServerValue.TIMESTAMP);
+                updates.put(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/" + DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
                 Task<Void> a = ref.updateChildren(updates);
                 a.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

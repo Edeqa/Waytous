@@ -1,6 +1,8 @@
 /**
  * Created 2/9/17.
  */
+EVENTS.SHARE_LINK = "share_link";
+
 function TrackingHolder(main) {
 
     var type ="tracking";
@@ -9,6 +11,9 @@ function TrackingHolder(main) {
 //    var tracking;
     var progress;
     var progressTitle;
+    var drawerItemShare;
+    var noSleep;
+    var wakeLockEnabled;
 
 
     function start(){
@@ -28,7 +33,10 @@ function TrackingHolder(main) {
             progress.onopen();
         }
 
-        u.require("/js/tracking/TrackingFB.js", startTracking.bind(this));
+        noSleep = new NoSleep();
+        wakeLockEnabled = false;
+
+        u.require("/js/helpers/TrackingFB.js", startTracking.bind(this));
 
     }
 
@@ -58,6 +66,46 @@ function TrackingHolder(main) {
                 object.add(DRAWER.SECTION_EXIT,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
+                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(){
+                    main.fire(EVENTS.SHARE_LINK);
+                });
+                drawerItemShare.classList.add("disabled");
+                break;
+            case EVENTS.TRACKING_ACTIVE:
+                if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
+                    drawerItemShare.classList.remove("disabled");
+                }
+                if (!wakeLockEnabled) {
+                    noSleep.enable(); // keep the screen on!
+                    wakeLockEnabled = true;
+                }
+                break;
+            case EVENTS.TRACKING_CONNECTING:
+                if(drawerItemShare) {
+                    drawerItemShare.classList.add("disabled");
+                }
+                if (!wakeLockEnabled) {
+                    noSleep.enable(); // keep the screen on!
+                    wakeLockEnabled = true;
+                }
+                break;
+            case EVENTS.TRACKING_RECONNECTING:
+                if(drawerItemShare) {
+                    drawerItemShare.classList.add("disabled");
+                }
+                if (!wakeLockEnabled) {
+                    noSleep.enable(); // keep the screen on!
+                    wakeLockEnabled = true;
+                }
+                break;
+            case EVENTS.TRACKING_DISABLED:
+                if(drawerItemShare) {
+                    drawerItemShare.classList.add("disabled");
+                }
+                if (wakeLockEnabled) {
+                    noSleep.disable(); // let the screen turn off.
+                    wakeLockEnabled = false;
+                }
                 break;
             case EVENTS.TRACKING_STOP:
                 if(main.tracking.getStatus() != EVENTS.TRACKING_DISABLED) {
@@ -67,6 +115,9 @@ function TrackingHolder(main) {
                     main.tracking && main.tracking.stop();
                     u.save("group");
                 }
+                break;
+            case EVENTS.SHARE_LINK:
+                console.log("share link",main.tracking.getTrackingUri())
                 break;
             default:
                 break;
