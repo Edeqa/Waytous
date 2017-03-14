@@ -213,6 +213,8 @@ function CameraHolder(main) {
                 }
             }
             main.map.fitBounds(finalBounds);
+            main.fire(EVENTS.CAMERA_UPDATED);
+
 /*            var startBounds = main.map.getBounds();
             var startNE = startBounds.getNorthEast();
             var startSW = startBounds.getSouthWest();
@@ -265,6 +267,7 @@ function CameraHolder(main) {
                         }, function(){
                             main.map.setZoom(finalZoom);
                             main.map.panTo(finalCenter);
+                            main.fire(EVENTS.CAMERA_UPDATED);
                         });
                     }
 

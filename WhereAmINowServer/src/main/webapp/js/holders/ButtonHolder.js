@@ -30,25 +30,26 @@ function ButtonHolder(main) {
         // console.log("BUTTONHOLDER",this);
         buttons = u.dialog({
             id: "button",
-            title: "Users",
+            title: {
+                label: "Users",
+                className: "user-buttons-title",
+                button: {
+                    icon: "view_headline",
+                    className: "user-buttons-title-button",
+                    onclick: function() {
+                        var mininized = u.load("button:minimized");
+                        u.save("button:minimized", !mininized);
+                        main.users.forAllUsers(function(number,user){
+                            user.views.button.subtitle.classList[mininized ? "remove" : "add"]("hidden");
+                        });
+                    }
+                }
+            },
             className: "user-buttons",
             tabindex: 1,
             items: [
             ],
             itemsClassName: "user-buttons-items",
-            titleClassName: "user-buttons-title",
-            titleButton: {
-                icon: "view_headline",
-                className: "user-buttons-title-button",
-                callback: function() {
-                    var mininized = u.load("button:minimized");
-                    u.save("button:minimized", !mininized);
-                    main.users.forAllUsers(function(number,user){
-                        user.views.button.subtitle.classList[mininized ? "remove" : "add"]("hidden");
-                    });
-                }
-            },
-            persistent: true,
         });
 
 //        buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
@@ -160,6 +161,12 @@ function ButtonHolder(main) {
                 this.views.button.badge.classList.add("hidden");
                 this.views.button.badge.innerHTML = "";
                 break;
+            case EVENTS.MOUSE_OVER:
+                this.views.button.button.classList.add("user-button-hover");
+                break;
+            case EVENTS.MOUSE_OUT:
+                this.views.button.button.classList.remove("user-button-hover");
+                break;
             default:
                 break;
         }
@@ -178,7 +185,10 @@ function ButtonHolder(main) {
 
         var task;
         var onlyTouch;
-        var b = u.create(HTML.DIV, {className:"user-button" +(user.properties.active ? "" : " hidden"), style:{backgroundColor:color},
+        var b = u.create(HTML.DIV, {
+            className:"user-button" +(user.properties.active ? "" : " hidden"),
+            dataNumber:user.number,
+            style:{backgroundColor:color},
             onmousedown: function(){
                 onlyTouch = true;
                 startTime = new Date().getTime();
@@ -207,14 +217,35 @@ function ButtonHolder(main) {
                     }
                 }
                 clearTimeout(task);
+            },
+            onmouseenter: function(e) {
+                user.fire(EVENTS.MOUSE_OVER,e);
+            },
+            onmouseleave: function(e) {
+                user.fire(EVENTS.MOUSE_OUT,e);
             }
-        }, buttons.itemsLayout);
+        });
         u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
         var title = u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, div);
         var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden",innerHTML:""}, div);
+
+        buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
+
+        var added = false;
+        for(var i =0; i < buttons.itemsLayout.children.length; i++) {
+            var number = parseInt(buttons.itemsLayout.children[i].dataset.number);
+            if(number != main.me.number && number >= user.number) {
+                buttons.insertBefore(b, buttons.itemsLayout.children[i]);
+                added = true;
+                break;
+            }
+        }
+        if(!added) {
+            buttons.itemsLayout.appendChild(b);
+        }
 
         return {
             button: b,
@@ -234,9 +265,16 @@ function ButtonHolder(main) {
         user.fire(EVENTS.CREATE_CONTEXT_MENU, contextMenu);
         var size = user.views.button.button.getBoundingClientRect();
 
-        contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
-        contextMenuLayout.style.top = Math.floor(size.top) + "px";
+
         contextMenuLayout.classList.remove("hidden");
+        contextMenuLayout.style.top = Math.floor(size.top) + "px";
+        if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
+            contextMenuLayout.style.left = Math.floor(size.left - contextMenuLayout.offsetWidth -10) + "px";
+//            contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
+        } else {
+            contextMenuLayout.style.left = Math.floor(size.right + 10) + "px";
+        }
+
         clearTimeout(delayDismiss);
         delayDismiss = setTimeout(function(){
             contextMenuLayout.classList.add("hidden");

@@ -68,6 +68,7 @@ input, textarea {
     text-align: center;
     width: 500px;
     max-width: 80%;
+    z-index: 6000;
 }
 .alert-icon {
     position: fixed;
@@ -358,6 +359,13 @@ p.bottom-desc {
     border-width: 2px;
     padding: 3px;
 }
+.user-button-hover {
+    /*background-color: #dddd99;*/
+    border-color: green;
+    border-style: solid;
+    border-width: 2px;
+    padding: 3px;
+}
 .user-button-badge {
     background-color: red;
     color: white;
@@ -391,7 +399,6 @@ p.bottom-desc {
 .user-context-menu {
     position: fixed;
     top: 10px;
-    right: 150px;
     background-color: rgba(211, 211, 211, 0.7);
     border-radius: 5px;
     outline: none;
@@ -651,6 +658,25 @@ p.bottom-desc {
     text-align: center;
     z-index: 1000;
     font-weight: bold;
+    text-shadow: #000 0px 0px 5px;
+}
+.navigation-label {
+    opacity: 0.7;
+    font-size: 12px;
+    position: relative;
+    transform: translate(-50%,-50%);
+    white-space: pre;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    z-index: 1000;
+    font-weight: bold;
+    text-shadow: #000 0px 0px 5px;
+}
+.marker-hover {
+    background-color: red !important;
 }
 
 /* shift zoom control */
@@ -939,7 +965,7 @@ p.bottom-desc {
 
     }
     .dialog-buttons {
-        white-space: nowrap;
+        text-align: center;
     }
     .dialog-title-button {
         min-width: inherit;
@@ -980,7 +1006,7 @@ p.bottom-desc {
         border-bottom: none;
     }
     .streetview-view {
-        margin: -10px;
+        margin: -12px;
         padding: 10px;
     }
 

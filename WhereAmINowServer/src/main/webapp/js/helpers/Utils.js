@@ -286,7 +286,7 @@ function Utils() {
         //     clearInterval(a);
         //     if(postCallback) postCallback();
         // }, duration+1);
-        callback(1,1);
+        postCallback();
         var a = null;
         return a;
     }
@@ -500,6 +500,7 @@ function Utils() {
     function dialog(options) {
         var dialog = create("div", {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
             document.getElementsByClassName("right")[0]);
+        var intervalTask;
 
         dialog.addItem = function(item) {
             item = item || {};
@@ -527,10 +528,10 @@ function Utils() {
                     onkeyup:function(e){
                         if(e.keyCode == 13) {
                             dialog.onclose();
-                            if(options.positive && options.positive.callback) options.positive.callback.call(dialog,items);
+                            if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
                         } else if(e.keyCode == 27) {
                             dialog.onclose();
-                            if(options.negative && options.negative.callback) options.negative.callback.call(dialog,items);
+                            if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
                         }
                     }
                 }, div);
@@ -551,6 +552,18 @@ function Utils() {
 
             items[i].focus();
             if(options.onopen) options.onopen.call(dialog,items);
+            if(options.timeout) {
+                var atom = options.timeout / 16;
+                var current = 0;
+                intervalTask = setInterval(function(){
+                    current += 16;
+                    progress.style.width = (current / options.timeout * 100) + "%";
+                    if(current >= options.timeout) {
+                        clearInterval(intervalTask);
+                        dialog.onclose();
+                    }
+                }, 16);
+            }
             return dialog;
         };
 
@@ -566,9 +579,30 @@ function Utils() {
         options = options || {};
         var items = [];
 
+        var defaultCloseButton = {
+             icon: "clear",
+             className: "",
+             onclick: function(e){
+                 dialog.onclose();
+                 if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+             }
+         };
         if(options.title) {
+            if(options.title.constructor === String) {
+                options.title = {
+                    label: options.title,
+                    className: "",
+                    button: defaultCloseButton
+                }
+            } else {
+                if(options.title.className) options.title.className = " " + options.title.className;
+                options.title.button = options.title.button || defaultCloseButton;
+                if(options.title.button.className) options.title.button.className = " " + options.title.button.className;
+                options.title.button.onclick = options.title.button.onclick || function(){};
+
+            }
             var titleLayout = create("div", {
-                className:"dialog-title" + (options.titleClassName ? " " + options.titleClassName : ""),
+                className:"dialog-title" + options.title.className,
                 onmousedown: function(e) {
                     var position = dialog.getBoundingClientRect();
                     var offset = [ e.clientX, e.clientY ];
@@ -577,8 +611,8 @@ function Utils() {
                         window.removeEventListener("mouseup", mouseup, false);
                         window.removeEventListener("mousemove", mousemove, false);
                         if(options.title && moved) {
-                            save("dialog:left:"+(options.id || options.title), dialog.style.left);
-                            save("dialog:top:"+(options.id || options.title), dialog.style.top);
+                            save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
+                            save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
                         }
                     }
                     function mousemove(e){
@@ -597,17 +631,10 @@ function Utils() {
                     e.preventDefault();
                 }
             }, dialog);
-            dialog.titleLayout = create("div", {className:"dialog-title-label", innerHTML: options.title }, titleLayout);
-            if(!options.persistent) {
-                create("button", {className:"material-icons dialog-title-button", innerHTML:"clear", onclick:function(e){
-                    dialog.onclose();
-                    if(options.negative && options.negative.callback) options.negative.callback.call(dialog,items);
-                }}, titleLayout);
-            }
-            if(options.titleButton) {
-                create("button", {className:"material-icons dialog-title-button"+ (options.titleButton.className ? " " + options.titleButton.className : ""), innerHTML: options.titleButton.icon || "ac_unit", onclick:function(e){
-                    if(options.titleButton.callback) options.titleButton.callback.call(dialog,items);
-                }}, titleLayout);
+            dialog.titleLayout = create("div", {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
+
+            if(options.title.button && options.title.button.icon) {
+                create("button", {className:"material-icons dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
 
             var left = load("dialog:left:"+(options.id || options.title));
@@ -627,44 +654,32 @@ function Utils() {
         }
         dialog.items = items;
         var buttons = create("div", {className:"dialog-buttons hidden"}, dialog);
-        if(options.positive && options.positive.title) {
+        if(options.positive && options.positive.label) {
             create("button", {className:"dialog-button-positive", onclick:function(){
                 dialog.onclose();
-                if(options.positive.callback) options.positive.callback.call(dialog,items);
-            }, innerHTML: options.positive.title}, buttons);
+                if(options.positive.onclick) options.positive.onclick.call(dialog,items);
+            }, innerHTML: options.positive.label}, buttons);
             buttons.classList.remove("hidden");
         }
-        if(options.negative && options.negative.title) {
+        if(options.negative && options.negative.label) {
             create("button", {className:"dialog-button-negative", onclick:function(){
                 dialog.onclose();
-                if(options.negative.callback) options.negative.callback.call(dialog,items);
-            }, innerHTML: options.negative.title}, buttons);
+                if(options.negative.onclick) options.negative.onclick.call(dialog,items);
+            }, innerHTML: options.negative.label}, buttons);
             buttons.classList.remove("hidden");
         }
-        if(options.neutral && options.neutral.title) {
+        if(options.neutral && options.neutral.label) {
             create("button", {className:"dialog-button-neutral", onclick:function(){
                 dialog.onclose();
-                if(options.neutral.callback) options.neutral.callback.call(dialog,items);
-            }, innerHTML: options.neutral.title}, buttons);
+                if(options.neutral.onclick) options.neutral.onclick.call(dialog,items);
+            }, innerHTML: options.neutral.label}, buttons);
             buttons.classList.remove("hidden");
         }
 
-        var intervalTask;
         if(options.timeout) {
             var progressBar = create("div", {className:"dialog-progress-bar"}, dialog);
             var progress = create("div", {className:"dialog-progress-value"}, progressBar);
             progress.style.width = "0%";
-
-            var atom = options.timeout / 16;
-            var current = 0;
-            intervalTask = setInterval(function(){
-                current += 16;
-                progress.style.width = (current / options.timeout * 100) + "%";
-                if(current >= options.timeout) {
-                    clearInterval(intervalTask);
-                    dialog.onclose();
-                }
-            }, 16);
         }
 
         return dialog;
@@ -700,24 +715,24 @@ function Utils() {
         return a; // Make chainable
     }
 
-    var label = function(opt_options, node) {
+    var label = function(options, node) {
         // Initialization
-        this.setValues(opt_options);
+        this.setValues(options);
 
         // Label specific
         if(!node) {
-            node = u.create("div", {className:"distance-label"});
-            if(opt_options.style) {
-                if(opt_options.style.constructor !== String) {
+            node = u.create("div", {className:options.className});
+            if(options.style) {
+                if(options.style.constructor !== String) {
                     var s = "";
-                    for(var x in opt_options.style) {
-                        if(opt_options.style.hasOwnProperty(x)) {
-                            s += normalizeName(x) + ":" + opt_options.style[x] + ";";
+                    for(var x in options.style) {
+                        if(options.style.hasOwnProperty(x)) {
+                            s += normalizeName(x) + ":" + options.style[x] + ";";
                         }
                     }
-                    opt_options.style = s;
+                    options.style = s;
                 }
-                node.setAttribute("style", opt_options.style);
+                node.setAttribute("style", options.style);
             }
         }
         this.span_ = node;
@@ -757,6 +772,35 @@ function Utils() {
          };
     };
 
+    function findPoint(points, fraction) {
+        var length = 0;
+        fraction = fraction || .5;
+        for(var i in points) {
+            if(i == 0) continue;
+            length += google.maps.geometry.spherical.computeDistanceBetween(points[i-1], points[i]);
+        }
+        length = length * fraction;
+
+        for(var i in points) {
+            if(i == 0) continue;
+            var current = google.maps.geometry.spherical.computeDistanceBetween(points[i-1], points[i]);
+            if(length - current < 0) {
+                return google.maps.geometry.spherical.interpolate(points[i-1], points[i], length / current);
+            } else {
+                length -= current;
+            }
+
+        }
+        return google.maps.geometry.spherical.interpolate(points[0], points[points.length -1], fraction);
+    }
+
+    function reduce(bounds, fraction) {
+        var newNortheast = google.maps.geometry.spherical.interpolate(bounds.getNorthEast(), bounds.getSouthWest(), (1+fraction)/2);
+        var newSouthwest = google.maps.geometry.spherical.interpolate(bounds.getSouthWest(), bounds.getNorthEast(), (1+fraction)/2);
+        bounds = new google.maps.LatLngBounds();
+        bounds.extend(newNortheast, newSouthwest);
+        return bounds;
+    }
 
 
     return {
@@ -781,5 +825,7 @@ function Utils() {
         formatLengthToLocale:formatLengthToLocale,
         sprintf:sprintf,
         label:label,
+        findPoint:findPoint,
+        reduce:reduce,
     }
 }

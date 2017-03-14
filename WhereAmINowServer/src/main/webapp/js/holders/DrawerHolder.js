@@ -103,10 +103,10 @@ function DrawerHolder(main) {
             }
             if(callback) {
                 u.create(HTML.DIV, {
-                    onclick: function () {
+                    onclick: function (event) {
                         setTimeout(function () {
                             drawerLayout.blur();
-                            callback();
+                            callback(event);
                         }, 300);
                     }, innerHTML: name
                 }, th);

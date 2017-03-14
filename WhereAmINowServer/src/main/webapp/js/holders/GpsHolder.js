@@ -49,7 +49,7 @@ function GpsHolder(main) {
                     { type: HTML.DIV, label: message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly." },
                 ],
                 positive: {
-                    title: "OK",
+                    label: "OK",
                     callback: function(){
                         icon.classList.remove("hidden");
                         alert.onclose();

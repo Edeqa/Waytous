@@ -32,6 +32,12 @@ function MarkerHolder(main) {
         marker.addListener(HTML.CLICK, function(e){
             user.fire(EVENTS.MARKER_CLICK, marker);
         });
+        marker.addListener("mouseover", function(e){
+            user.fire(EVENTS.MOUSE_OVER);
+        });
+        marker.addListener("mouseout", function(e){
+            user.fire(EVENTS.MOUSE_OUT);
+        });
 
         function setBearing(angle){
             icon[0].style.transform = "rotate("+angle+"deg)";
@@ -68,6 +74,13 @@ function MarkerHolder(main) {
             case EVENTS.CHANGE_NAME:
                 this.views.marker.marker;
                 break;
+            case EVENTS.MOUSE_OVER:
+//                this.views.marker.marker.classList.add("marker-hover");
+                break;
+            case EVENTS.MOUSE_OUT:
+//                this.views.marker.marker.classList.remove("marker-hover");
+                break;
+
         }
         return true;
     }
@@ -96,7 +109,12 @@ function MarkerHolder(main) {
                 marker.setIcon(icon);
                 marker.setPosition(currentPosition);
 
-            });
+            }, function(time,value) {
+               var icon = marker.getIcon();
+               icon.rotation = finalRotation;
+               marker.setIcon(icon);
+               marker.setPosition(finalPosition);
+           });
 
         } else {
             if (location && location.coords && location.coords.heading) {

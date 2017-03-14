@@ -14,6 +14,7 @@ function TrackingHolder(main) {
     var drawerItemShare;
     var noSleep;
     var wakeLockEnabled;
+    var shareDialog;
 
 
     function start(){
@@ -66,8 +67,8 @@ function TrackingHolder(main) {
                 object.add(DRAWER.SECTION_EXIT,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
-                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(){
-                    main.fire(EVENTS.SHARE_LINK);
+                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(e){
+                    main.fire(EVENTS.SHARE_LINK,e);
                 });
                 drawerItemShare.classList.add("disabled");
                 break;
@@ -117,7 +118,26 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.SHARE_LINK:
-                console.log("share link",main.tracking.getTrackingUri())
+                if(shareDialog) shareDialog.onclose();
+                shareDialog = shareDialog || u.dialog({
+                    items: [
+                        {type:HTML.DIV, innerHTML:"Let your e-mail client compose the message with link to this group? You can add there all your friends you'd like."},
+                        {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
+                    ],
+                    positive: {
+                        label: "OK",
+                        onclick: function() {
+                            window.open("mailto:?subject=Follow%20me%20at%20Waytogo&body="+main.tracking.getTrackingUri(),"_blank");
+                        }
+                    },
+                    negative: {
+                        label: "Cancel"
+                    },
+                    timeout: 20000
+                });
+                shareDialog.onopen();
+
+
                 break;
             default:
                 break;

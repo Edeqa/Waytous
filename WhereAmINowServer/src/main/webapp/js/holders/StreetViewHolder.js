@@ -24,22 +24,27 @@ function StreetViewHolder(main) {
                 drawerHide = object.add(DRAWER.SECTION_VIEWS,type+"_1","Hide street view","streetview",function(){
                     view.onclose();
                 });
-                if(show) {
-                    drawerShow.classList.add("hidden");
-                } else {
-                    drawerHide.classList.add("hidden");
-                }
+                drawerShow.classList.add("hidden");
+                drawerHide.classList.add("hidden");
                 break;
             case EVENTS.SELECT_USER:
             case EVENTS.SELECT_SINGLE_USER:
                 update();
                 break;
             case EVENTS.MAP_READY:
+                if(show) {
+                    drawerHide.classList.remove("hidden");
+                } else {
+                    drawerShow.classList.remove("hidden");
+                }
 
                 streetviewService = new google.maps.StreetViewService();
 
                 view = u.dialog({
-                    title: "Street view",
+                    title: {
+                        label: "Street view",
+                        className: "hideable"
+                    },
                     className: "streetview",
                     tabindex: 1,
                     items: [

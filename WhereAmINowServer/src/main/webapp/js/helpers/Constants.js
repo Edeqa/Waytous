@@ -40,7 +40,10 @@ function Constants() {
         TOKEN_CREATED: "token_created",
 
         MOVING_CLOSE_TO: "moving_close_to",
-        MOVING_AWAY_FROM: "moving_away_from"
+        MOVING_AWAY_FROM: "moving_away_from",
+
+        MOUSE_OVER: "mouse_over",
+        MOUSE_OUT: "mouse_out",
     };
     window.REQUEST = {
         REQUEST: "client",
@@ -175,6 +178,10 @@ function Constants() {
         STYLESHEET:"stylesheet",
         SVG:"svg",
         PATH:"path",
+        MOUSEOVER:"mouseover",
+        MOUSEOUT:"mouseout",
+        MOUSEENTER:"mouseenter",
+        MOUSELEAVE:"mouseleave",
     };
     window.CONSTANTS = {
         HTTP_PORT: 8080,

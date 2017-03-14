@@ -332,11 +332,11 @@ function TrackingFB(main) {
     }
 
     function setToken(id){
-        this.token = id;
+        token = id;
     }
 
     function getToken(){
-        return this.token;
+        return token;
     }
 
     function setStatus(currentStatus){
@@ -348,7 +348,8 @@ function TrackingFB(main) {
     }
 
     function getTrackingUri(){
-        return "http://" + serverUri.host + ":" + CONSTANTS.HTTP_PORT + "/track/" + token;
+        var uri = new URL(serverUri);
+        return "http://" + uri.hostname + (CONSTANTS.HTTP_PORT != 80 ? ":"+CONSTANTS.HTTP_PORT  : "") + "/track/" + token;
     }
 
     function registerChildListener(ref, listener, limit) {

@@ -94,6 +94,8 @@ function NavigationHolder(main) {
                 if(this.views && this.views.navigation && this.views.navigation.track) {
                     this.views.navigation.track.setMap(null);
                     this.views.navigation.track = null;
+                    this.views.navigation.trackCenter.setMap(null);
+                    this.views.navigation.trackCenter = null;
                     this.views.navigation.marker.setMap(null);
                     this.views.navigation.marker = null;
                     this.views.navigation.label.setMap(null);
@@ -137,7 +139,7 @@ function NavigationHolder(main) {
 
     function update() {
 
-        if(!this || !this.views || !this.views.navigation || !this.views.navigation.show) return;
+        if(!this || !this.views || !this.views.navigation || !this.views.navigation.show || !main.me.location || !this.location) return;
 
         var user = this;
         var req = "https://crossorigin.me/https://maps.googleapis.com/maps/api/directions/json?"
@@ -198,10 +200,7 @@ function NavigationHolder(main) {
 
         this.views.navigation.distance = o.routes[0].legs[0].distance.value;
 
-        console.log("NAV",title,this.views.navigation.distance,points)
-
         if (this.views.navigation.distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
-            console.log("remove path");
             this.views.navigation.previousDistance = this.views.navigationdistance;
             return;
         } else if (this.views.navigation.distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
@@ -222,7 +221,24 @@ function NavigationHolder(main) {
             this.views.navigation.track.setPath(points);
             this.views.navigation.trackCenter.setPath(points);
 
-            var markerPosition = google.maps.geometry.spherical.interpolate(points[0], points[points.length-1], .5);
+            var mePosition = u.latLng(main.me.location);
+            var userPosition = u.latLng(this.location);
+
+
+            var markerPosition = u.findPoint(points);
+            var bounds = u.reduce(main.map.getBounds(), 0.8);
+
+            if(!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
+                if(!bounds.contains(markerPosition)) {
+                    var fract = 0.5;
+                    while(!bounds.contains(markerPosition)) {
+                        fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
+                        if (fract < 0 || fract > 1) break;
+                        markerPosition = u.findPoint(points, fract);
+                    }
+                }
+            }
+
             this.views.navigation.marker.setPosition(markerPosition);
 //            var title = u.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[points.length-1]));
             title = this.properties.getDisplayName() + "\n" + title;
@@ -279,16 +295,23 @@ function NavigationHolder(main) {
         });
         this.views.navigation.label = new u.label({
             map:main.map,
-            style: {backgroundColor:this.properties.color, opacity:0.7, color:"white"},
-
+            className:"navigation-label",
+            style: {backgroundColor:this.properties.color},
         });
         this.views.navigation.label.bindTo("position", this.views.navigation.marker, "position");
 
     }
 
     function onChangeLocation(location) {
-        update.call(this);
-        // console.log("SAMPLEONCHANGELOCATION",this,location);
+        if(this == main.me) {
+            main.users.forAllUsersExceptMe(function(number,user){
+                if(user.views.navigation && user.views.navigation.show) {
+                    update.call(user);
+                }
+            })
+        } else if(this.views.navigation.show && location) {
+            update.call(this);
+        }
     }
 
     return {

@@ -19,8 +19,8 @@ function PropertiesHolder(main) {
                 { type: HTML.INPUT, label: "Name" }
             ],
             positive: {
-                title: "OK",
-                callback: function(args) {
+                label: "OK",
+                onclick: function(args) {
                     if(args[0].value) {
                         var name = args[0].value;
                         u.save("properties:name", name);
@@ -31,7 +31,7 @@ function PropertiesHolder(main) {
                 }
             },
             negative: {
-                title: "Cancel"
+                label: "Cancel"
             }
         });
 
@@ -47,19 +47,19 @@ function PropertiesHolder(main) {
                             { type: HTML.DIV, label: "Your name is not defined. Set up your name now?" }
                         ],
                         positive: {
-                            title: "Yes",
-                            callback: function(args) {
+                            label: "Yes",
+                            onclick: function(args) {
                                 setMyName.call(main.me);
                             }
                         },
                         negative: {
-                            title: "No",
-                            callback: function(){
+                            label: "No",
+                            onclick: function(){
                                 u.save("properties:name_asked", true);
                             }
                         },
                         neutral: {
-                            title: "Remind me later"
+                            label: "Remind me later"
                         },
                         timeout: 10000
                     }).onopen();

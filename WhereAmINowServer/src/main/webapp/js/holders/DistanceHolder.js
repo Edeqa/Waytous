@@ -129,7 +129,7 @@ function DistanceHolder(main) {
                     map: main.map,
                     visible: false
                 });
-                this.views.distance.label = new u.label({map:main.map});
+                this.views.distance.label = new u.label({map:main.map, className:"distance-label"});
                 this.views.distance.label.bindTo("position", this.views.distance.marker, "position");
             }
 
