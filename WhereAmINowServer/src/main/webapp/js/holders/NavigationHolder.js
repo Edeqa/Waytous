@@ -42,12 +42,12 @@ function NavigationHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_NAVIGATION,"Show navigations","navigation",function(){
+                /*drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_NAVIGATION,"Show navigations","navigation",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SHOW_NAVIGATION);
                         drawerPopulate();
                     });
-                });
+                });*/
                 navigation_outline_drawer = navigation_outline_drawer || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
                 drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_NAVIGATION,"Hide navigations",navigation_outline_drawer,function(){
                     main.users.forAllUsers(function (number, user) {
@@ -123,14 +123,14 @@ function NavigationHolder(main) {
     }
 
     function drawerPopulate() {
+//        drawerItemShow.classList.add("hidden");
         drawerItemHide.classList.add("hidden");
-        drawerItemShow.classList.add("hidden");
         main.users.forAllUsers(function (number, user) {
             if(user.views.navigation) {
                 if (user.views.navigation.show) {
                     drawerItemHide.classList.remove("hidden");
                 } else {
-                    drawerItemShow.classList.remove("hidden");
+//                    drawerItemShow.classList.remove("hidden");
                 }
             }
         })
@@ -202,18 +202,17 @@ function NavigationHolder(main) {
 
         if (this.views.navigation.distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
             this.views.navigation.previousDistance = this.views.navigationdistance;
-            return;
+                return;
         } else if (this.views.navigation.distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
             && this.views.navigation.previousDistance
             && this.views.navigation.previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
             && this.views.navigation.track == null) {
-
-            this.views.navigation.previousDistance = this.views.navigation.distance;
+                this.views.navigation.previousDistance = this.views.navigation.distance;
         } else if (this.views.navigation.distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN
             && this.views.navigation.distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
-            && track == null) {
-            this.views.navigation.previousDistance = this.views.navigation.distance;
-            return;
+            && this.views.navigation.track == null) {
+                this.views.navigation.previousDistance = this.views.navigation.distance;
+                return;
         }
         this.views.navigation.previousDistance = this.views.navigation.distance;
 

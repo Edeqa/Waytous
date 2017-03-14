@@ -174,24 +174,37 @@ function Utils() {
         return "#"+((number)>>>0).toString(16).slice(-6);
     }
 
-    function require(name, callback, context){
+    function require(name, onload, onerror, context){
         var parts = name.split("/");
         var filename = parts[parts.length-1];
         var onlyname = filename.split(".")[0];
         var needInstantiate = false;
+        if(onerror && onerror.constructor !== Function) {
+            context = onerror;
+            onerror = function(){};
+        }
         if(!filename.match(/\.js$/)) {
             needInstantiate = true;
             name += ".js";
         }
-        create("script", {src: name, dataStart: needInstantiate ? onlyname : null, onload: function() {
-            if (callback) {
+        create("script", {src: name, dataName: needInstantiate ? onlyname : null, onload: function(e) {
+            if (onload) {
                 var a;
                 if(needInstantiate) {
-                    a = new window[this.dataset.start](context);
-                    a.moduleName = this.dataset.start;
+                    if(window[this.dataset.name] && window[this.dataset.name].constructor === Function) {
+                        a = new window[this.dataset.name](context);
+                        a.moduleName = this.dataset.name;
+                    } else {
+                        onerror(ERRORS.NOT_AN_OBJECT, this.dataset.name, e);
+                    }
                 }
-                callback(a);
+                onload(a);
             }
+        }, onerror: function(e) {
+            if(onerror) {
+                onerror(ERRORS.NOT_EXISTS, this.dataset.name, e);
+            }
+
         }, async:"", defer:""}, document.head);
     }
 
@@ -502,15 +515,39 @@ function Utils() {
             document.getElementsByClassName("right")[0]);
         var intervalTask;
 
+        dialog.clearItems = function() {
+            clear(dialog.itemsLayout);
+            dialog.items = [];
+        };
+
         dialog.addItem = function(item) {
             item = item || {};
 
             var x;
             if(item.type == "div") {
-                x = create("div", {
-                    className: "dialog-item" + (item.className ? " " + item.className : ""),
-                    innerHTML: item.label || item.title || item.innerHTML || ""
-                }, dialog.itemsLayout);
+                if(item.enclosed) {
+                    x = create("div", {
+                        className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
+                    }, dialog.itemsLayout);
+                    var enclosedButton, enclosedIcon;
+                    enclosedButton = u.create(HTML.DIV, {className:"dialog-item-enclosed-button", onclick: function(){
+                        if(x.body.classList.contains("hidden")) {
+                            enclosedIcon.innerHTML = "expand_less";
+                            x.body.classList.remove("hidden");
+                        } else {
+                            enclosedIcon.innerHTML = "expand_more";
+                            x.body.classList.add("hidden");
+                        }
+                    }}, x);
+                    enclosedIcon = u.create(HTML.DIV, {className:"material-icons dialog-item-enclosed-icon", innerHTML:"expand_more"}, enclosedButton);
+                    u.create(HTML.DIV, {className:"dialog-item-enclosed-label", innerHTML: item.label || "Show more information"}, enclosedButton);
+                    x.body = u.create(HTML.DIV, {className:"dialog-item-enclosed-body hidden", innerHTML:item.body || ""}, x);
+                } else {
+                    x = create("div", {
+                        className: "dialog-item" + (item.className ? " " + item.className : ""),
+                        innerHTML: item.label || item.title || item.innerHTML || ""
+                    }, dialog.itemsLayout);
+                }
             } else if(item.type == "hidden") {
                 x = create("input", {type:"hidden", value:item.value || ""}, dialog.itemsLayout);
             } else {
@@ -540,17 +577,28 @@ function Utils() {
         }
 
         dialog.onopen = function(){
+
             dialog.classList.remove("hidden");
 
-            var left = dialog.offsetLeft;
-            var leftMain = window.innerWidth;
+            var left = load("dialog:left:"+(options.id || (options.title && options.title.label)));
+            var top = load("dialog:top:"+(options.id || (options.title && options.title.label)));
+            if(left && top) {
+                dialog.style.left = left;
+                dialog.style.top = top;
+                dialog.style.right = "auto";
+                dialog.style.bottom = "auto";
+            } else {
+                left = dialog.offsetLeft;
+                var leftMain = window.innerWidth;
 
-            if(left >= leftMain) {
-                dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
-                dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
+                if(left >= leftMain || left == 0) {
+                    dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
+                    dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
+                }
             }
 
-            items[i].focus();
+
+            items[0].focus();
             if(options.onopen) options.onopen.call(dialog,items);
             if(options.timeout) {
                 var atom = options.timeout / 16;
@@ -636,21 +684,11 @@ function Utils() {
             if(options.title.button && options.title.button.icon) {
                 create("button", {className:"material-icons dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
-
-            var left = load("dialog:left:"+(options.id || options.title));
-            var top = load("dialog:top:"+(options.id || options.title));
-            if(left && top) {
-                dialog.style.left = left;
-                dialog.style.top = top;
-                dialog.style.right = "auto";
-                dialog.style.bottom = "auto";
-            }
         }
         dialog.itemsLayout = create("div", {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);
         for(var i in options.items) {
             var item = options.items[i];
             dialog.addItem(item);
-
         }
         dialog.items = items;
         var buttons = create("div", {className:"dialog-buttons hidden"}, dialog);
@@ -674,6 +712,9 @@ function Utils() {
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items);
             }, innerHTML: options.neutral.label}, buttons);
             buttons.classList.remove("hidden");
+        }
+        if(options.help) {
+            create("button", {className:"material-icons dialog-help-button", onclick:options.help, innerHTML:"help_outline"}, dialog);
         }
 
         if(options.timeout) {
@@ -755,12 +796,14 @@ function Utils() {
              var projection = this.getProjection();
              var position = projection.fromLatLngToDivPixel(this.get('position'));
 
-             var div = this.div_;
-             div.style.left = position.x + "px";
-             div.style.top = position.y + "px";
-             div.style.display = "block";
+            if(position) {
+                 var div = this.div_;
+                 div.style.left = position.x + "px";
+                 div.style.top = position.y + "px";
+                 div.style.display = "block";
 
-             this.span_.innerHTML = this.get("text").toString();
+                 this.span_.innerHTML = this.get("text").toString();
+             }
          };
          this.onRemove = function() {
              this.div_.parentNode.removeChild(this.div_);

@@ -244,7 +244,6 @@ function CameraHolder(main) {
                     if (finalCenter) {
                         var startCenter = main.map.getCenter();
 
-
                         var startZoom = main.map.getZoom();
                         var finalZoom = user.views.camera.zoom || CAMERA_DEFAULT_ZOOM;
 

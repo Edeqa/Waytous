@@ -11,7 +11,7 @@ function MyUser(main) {
                 try {
                     if (!main.holders[i].onEvent.call(this, EVENT, object)) break;
                 } catch(e) {
-                    console.error(i +": "+ e);
+                    console.error(i,EVENT,e);
                 }
             }
         }
@@ -25,7 +25,7 @@ function MyUser(main) {
                         var view = main.holders[i].createView(this);
                         if (view) this.views[i] = view;
                     } catch (e) {
-                        console.error(i +": "+ e);
+                        console.error(i,e);
                     }
                 }
             }
@@ -49,7 +49,7 @@ function MyUser(main) {
                 try {
                     main.holders[i].onChangeLocation.call(this, this.location);
                 } catch(e) {
-                    console.error(i +": "+ e);
+                    console.error(i,e);
                 }
             }
         }

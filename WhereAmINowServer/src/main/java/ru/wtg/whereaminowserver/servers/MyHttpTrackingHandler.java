@@ -114,25 +114,25 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
             html.getHead().add(TITLE).with("Waytogo");
 
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(HREF, "/images/apple-touch-icon.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "57x57").with(HREF, "/images/apple-touch-icon-57x57.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "60x60").with(HREF, "/images/apple-touch-icon-60x60.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "72x72").with(HREF, "/images/apple-touch-icon-72x72.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "76x76").with(HREF, "/images/apple-touch-icon-76x76.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "114x114").with(HREF, "/images/apple-touch-icon-114x114.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "120x120").with(HREF, "/images/apple-touch-icon-120x120.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "152x152").with(HREF, "/images/apple-touch-icon-152x152.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "180x180").with(HREF, "/images/apple-touch-icon.png");
-            html.getHead().add(LINK).with(REL,"apple-touch-startup-image").with(HREF, "/images/apple-touch-icon.png");
-            html.getHead().add(LINK).with(REL,"icon").with(TYPE,"image/png").with(SIZES, "32x32").with(HREF, "/images/favicon-32x32.png");
-            html.getHead().add(LINK).with(REL,"icon").with(TYPE,"image/png").with(SIZES, "16x16").with(HREF, "/images/favicon-16x16.png");
-            html.getHead().add(LINK).with(REL,"manifest").with(HREF, "/images/manifest.json");
-            html.getHead().add(LINK).with(REL,"mask-icon").with(HREF, "/images/safari-pinned-tab.svg").with("color","#007574");
-            html.getHead().add(LINK).with(REL,"shortcut icon").with(HREF, "/images/favicon.ico");
-            html.getHead().add(META).with(NAME,"apple-mobile-web-app-capable").with(CONTENT, "yes");
-            html.getHead().add(META).with(NAME,"application-name").with(CONTENT, "Waytogo");
-            html.getHead().add(META).with(NAME,"msapplication-config").with(CONTENT, "/images/browserconfig.xml");
-            html.getHead().add(META).with(NAME,"theme-color").with(CONTENT, "#ffffff");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(HREF, "/images/apple-touch-icon.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "57x57").with(HREF, "/images/apple-touch-icon-57x57.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "60x60").with(HREF, "/images/apple-touch-icon-60x60.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "72x72").with(HREF, "/images/apple-touch-icon-72x72.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "76x76").with(HREF, "/images/apple-touch-icon-76x76.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "114x114").with(HREF, "/images/apple-touch-icon-114x114.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "120x120").with(HREF, "/images/apple-touch-icon-120x120.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "152x152").with(HREF, "/images/apple-touch-icon-152x152.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "180x180").with(HREF, "/images/apple-touch-icon.png");
+//            html.getHead().add(LINK).with(REL,"apple-touch-startup-image").with(HREF, "/images/apple-touch-icon.png");
+//            html.getHead().add(LINK).with(REL,"icon").with(TYPE,"image/png").with(SIZES, "32x32").with(HREF, "/images/favicon-32x32.png");
+//            html.getHead().add(LINK).with(REL,"icon").with(TYPE,"image/png").with(SIZES, "16x16").with(HREF, "/images/favicon-16x16.png");
+//            html.getHead().add(LINK).with(REL,"manifest").with(HREF, "/images/manifest.json");
+//            html.getHead().add(LINK).with(REL,"mask-icon").with(HREF, "/images/safari-pinned-tab.svg").with("color","#007574");
+//            html.getHead().add(LINK).with(REL,"shortcut icon").with(HREF, "/images/favicon.ico");
+//            html.getHead().add(META).with(NAME,"apple-mobile-web-app-capable").with(CONTENT, "yes");
+//            html.getHead().add(META).with(NAME,"application-name").with(CONTENT, "Waytogo");
+//            html.getHead().add(META).with(NAME,"msapplication-config").with(CONTENT, "/images/browserconfig.xml");
+//            html.getHead().add(META).with(NAME,"theme-color").with(CONTENT, "#ffffff");
 
             JSONObject o = new JSONObject();
 //                o.put("page", part);

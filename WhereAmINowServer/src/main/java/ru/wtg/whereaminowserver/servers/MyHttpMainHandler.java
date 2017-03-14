@@ -101,7 +101,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 exchange.getResponseHeaders().set("Content-Type", "application/json");
             } else if(path.endsWith("manifest.json")) {
                 exchange.getResponseHeaders().set("Content-Type", "application/x-web-app-manifest+json");
-            } else if(path.endsWith(".gif") || path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".svg")) {
+            } else if(path.endsWith(".gif") || path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".svg") || path.endsWith(".ico")) {
                 String type = "image/";
                 String[] parts = file.getName().split("\\.");
                 if(parts.length>1){

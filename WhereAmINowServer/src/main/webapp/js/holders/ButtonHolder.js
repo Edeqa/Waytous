@@ -13,7 +13,7 @@ MENU = {
     SECTION_VIEWS: 3,
     SECTION_NAVIGATION: 4,
     SECTION_MAP: 8,
-    SECTION_EXIT: 9
+    SECTION_LAST: 9
 }
 
 function ButtonHolder(main) {
@@ -70,7 +70,7 @@ function ButtonHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 /*var user = this;
                 if(user.number == main.me.number) {
-                    var itemMinimize = contextMenu.add(MENU.SECTION_EXIT, type + "_1", "Minimize menu", "view_headline", function () {
+                    var itemMinimize = contextMenu.add(MENU.SECTION_LAST, type + "_1", "Minimize menu", "view_headline", function () {
                         u.save("button:minimized", true);
                         main.users.forAllUsers(function(number,user){
                             user.views.button.subtitle.classList.add("hidden");
@@ -80,7 +80,7 @@ function ButtonHolder(main) {
                     });
                     itemMinimize.classList.add("hideable");
 
-                    var itemMaximize = contextMenu.add(MENU.SECTION_EXIT, type + "_1", "Restore menu", "view_stream", function () {
+                    var itemMaximize = contextMenu.add(MENU.SECTION_LAST, type + "_1", "Restore menu", "view_stream", function () {
                         u.save("button:minimized");
                         main.users.forAllUsers(function(number,user){
                             user.views.button.subtitle.classList.remove("hidden");

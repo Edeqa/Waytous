@@ -7,7 +7,7 @@ DRAWER = {
     SECTION_VIEWS: 3,
     SECTION_NAVIGATION: 4,
     SECTION_MAP: 8,
-    SECTION_EXIT: 9
+    SECTION_LAST: 9
 };
 
 function DrawerHolder(main) {

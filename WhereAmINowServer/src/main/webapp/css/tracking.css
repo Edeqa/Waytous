@@ -32,6 +32,21 @@ input, textarea {
   -ms-user-select: text;
   user-select: text;
 }
+button {
+    border-radius: 5px;
+    box-shadow: none;
+    outline: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+button:hover {
+    background-color: #eeeeee;
+}
+button:active {
+    background-color: #aaaaaa;
+}
 
 /* CLASSES */
 .layout {
@@ -68,7 +83,7 @@ input, textarea {
     text-align: center;
     width: 500px;
     max-width: 80%;
-    z-index: 6000;
+    z-index: 6000 !important;
 }
 .alert-icon {
     position: fixed;
@@ -436,11 +451,10 @@ p.bottom-desc {
     border-width: 2px;
     z-index: 1000;
     outline: none;
-    /*top: 45%;
-    left: 20%;*/
+    max-height: 90%;
 }
 .progress {
-    width: 20%;
+    min-width: 20%;
     height: 20%;
     align-items: center;
     justify-content: center;
@@ -449,6 +463,8 @@ p.bottom-desc {
     margin: 20px;
     height: 28px;
     width: 28px;
+    min-height: 28px;
+    min-width: 28px;
     animation: rotate 0.8s infinite linear;
     border: 8px solid #888888;
     border-right-color: transparent;
@@ -510,12 +526,27 @@ p.bottom-desc {
 }
 .dialog-title-label {
 }
+.dialog-title-button {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: none;
+    border: none;
+    font-size: 16px !important;
+    cursor: pointer;
+    outline: none;
+}
+.dialog-title-button:hover {
+    color: red;
+    background-color: initial;
+}
 .dialog-items {
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    overflow-y: auto;
 }
 .dialog-item {
     display: flex;
@@ -530,22 +561,34 @@ p.bottom-desc {
     padding-bottom: 5px;
     width: 100%;
 }
+.dialog-item-enclosed {
+    margin-top: 10px;
+    outline-style: dashed;
+    outline-width: 1px;
+    font-size: smaller;
+}
+.dialog-item-enclosed-button {
+    display: flex;
+    align-items: center;
+    cursor: default;
+}
+.dialog-item-enclosed-button:hover {
+    background-color: burlywood;
+}
+.dialog-item-enclosed-icon {
+    font-size: initial !important;
+}
+.dialog-item-enclosed-label {
+    padding-right: 5px;
+}
+.dialog-item-enclosed-body {
+    text-align: left;
+    padding: 2px;
+    padding-top: 10px;
+}
 .dialog-buttons {
     align-self: center;
     padding: 5px;
-}
-.dialog-title-button {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    background: none;
-    border: none;
-    font-size: 20px !important;
-    cursor: pointer;
-    outline: none;
-}
-.dialog-title-button:hover {
-    color: red;
 }
 .dialog-button-positive {
 
@@ -563,6 +606,20 @@ p.bottom-desc {
 .dialog-progress-value {
     background-color: burlywood;
     height: 100%;
+}
+.dialog-help-button {
+    background: none;
+    border: none;
+    outline: none;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    padding: 0px;
+    min-width: auto;
+    font-size: initial !important;
+}
+.dialog-help-button:hover {
+    background-color: burlywood;
 }
 .chat {
     width: 500px;
@@ -678,6 +735,19 @@ p.bottom-desc {
 .marker-hover {
     background-color: red !important;
 }
+.help {
+    z-index: 15000 !important;
+    width: 90% !important;
+}
+.help-item {
+}
+.help-item-title {
+}
+.help-item-body {
+    align-items: initial;
+    padding-top: 10px;
+    flex-direction: column;
+}
 
 /* shift zoom control */
 /*.gmnoprint:nth-child(9) {
@@ -709,7 +779,7 @@ p.bottom-desc {
         font-size: 16px;
         min-width: 80px;
         border-style: solid;
-        border-radius: 10px;
+        border-radius: 5px;
         border-width: 1px;
         border-color: gray;
         margin: 1px;
@@ -744,9 +814,11 @@ p.bottom-desc {
     }
     .modal {
         width: 60%;
-        left: 50% !important;
+        /*left: auto !important;
+        top: auto !important;*/
+        /*left: 50% !important;
         top: 50% !important;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);*/
     }
     .actionbar {
         padding: 0px;

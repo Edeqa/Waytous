@@ -44,6 +44,7 @@ function Constants() {
 
         MOUSE_OVER: "mouse_over",
         MOUSE_OUT: "mouse_out",
+
     };
     window.REQUEST = {
         REQUEST: "client",
@@ -185,12 +186,17 @@ function Constants() {
     };
     window.CONSTANTS = {
         HTTP_PORT: 8080,
-        HTTPS_PORT: 8000,
+        HTTPS_PORT: 8100,
         WS_FB_PORT: 8081,
         WSS_FB_PORT: 8001,
         WS_PORT: 8082,
         WSS_PORT: 8002
     };
+    window.ERRORS = {
+        NOT_EXISTS: 1,
+        NOT_AN_OBJECT: 2,
+    };
+
 
     return {
         type:"constants",

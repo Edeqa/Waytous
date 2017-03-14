@@ -12,7 +12,7 @@ function SocialHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                // var drawerItem = object.add(DRAWER.SECTION_EXIT,type+"_1");
+                // var drawerItem = object.add(DRAWER.SECTION_LAST,type+"_1");
                 //
                 // drawerItem.classList.add("menu-item-social");
                 //
@@ -35,7 +35,7 @@ function SocialHolder(main) {
 
         if(view.show) {
             show.call(myUser);
-        }
+//        }
         drawerPopulate();
         return view;
         // console.log("SAMPLECREATEVIEW",user);

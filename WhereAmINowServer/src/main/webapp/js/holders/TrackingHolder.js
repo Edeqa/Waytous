@@ -64,7 +64,7 @@ function TrackingHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(DRAWER.SECTION_EXIT,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
+                object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
                 drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(e){
