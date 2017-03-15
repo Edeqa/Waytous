@@ -15,6 +15,8 @@ function NavigationHolder(main) {
     var drawerItemShow;
     var drawerItemHide;
     var navigation_outline_drawer, navigation_outline_menu;
+    var panTask;
+    var installation = false;
 
     var navigation_outline_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -59,25 +61,27 @@ function NavigationHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user) {
+                if(user && user != main.me && !user.views.navigation.show) {
                     var menuItemShow = object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_NAVIGATION,"Show navigation","navigation",function(){
                         user.fire(EVENTS.SHOW_NAVIGATION);
                         menuItemShow.classList.add("hidden");
-                        menuItemHide.classList.remove("hidden");
                         drawerPopulate();
                     });
                     navigation_outline_menu = navigation_outline_menu || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
-                    var menuItemHide = object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_NAVIGATION,"Hide navigation",navigation_outline_menu,function(){
+                    if(!main.me.location || !user.location) {
+                        menuItemShow.classList.add("hidden");
+                    }
+                    if(main.me.location && user.location) {
+                        var distance = google.maps.geometry.spherical.computeDistanceBetween(u.latLng(main.me.location), u.latLng(user.location))
+                        if(distance < 20) {
+                            menuItemShow.classList.add("hidden");
+                        }
+                    }
+                } else if(user.views.navigation.show) {
+                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_NAVIGATION,"Hide navigation",navigation_outline_menu,function(){
                         user.fire(EVENTS.HIDE_NAVIGATION);
-                        menuItemShow.classList.remove("hidden");
-                        menuItemHide.classList.add("hidden");
                         drawerPopulate();
                     });
-                    if(user.views.navigation.show) {
-                        menuItemShow.classList.add("hidden");
-                    } else {
-                        menuItemHide.classList.add("hidden");
-                    }
                 }
                 // object.add(8,type+"_2","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
                 // object.add(8,type+"_3","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
@@ -86,9 +90,12 @@ function NavigationHolder(main) {
             case EVENTS.SHOW_NAVIGATION:
                 this.views.navigation.show = true;
                 u.save("navigation:show:" + this.number, true);
+                installation = true;
+                main.toast.show("Setting up direction...", -1);
                 update.call(this);
                 break;
             case EVENTS.HIDE_NAVIGATION:
+                main.toast.hide();
                 this.views.navigation.show = false;
                 u.save("navigation:show:" + this.number);
                 if(this.views && this.views.navigation && this.views.navigation.track) {
@@ -187,10 +194,17 @@ function NavigationHolder(main) {
 
     function updateTrack(o) {
 
+        if(!this || !this.views || !this.views.navigation || !this.views.navigation.show) return;
+
         if(!this.views.navigation.track) {
             createTrack.call(this);
         }
 
+        if(!o.routes || !o.routes[0]) {
+//            main.toast.show("Route ");
+            console.error("NO ROUTE",o);
+            return;
+        }
         var text = o.routes[0].overview_polyline.points;
         var points = google.maps.geometry.encoding.decodePath(text);
 
@@ -245,6 +259,16 @@ function NavigationHolder(main) {
 
         }
 
+        if(installation) {
+            main.toast.hide();
+            if(this.properties.selected && main.users.getCountSelected() == 1) {
+                main.me.fire(EVENTS.SELECT_USER);
+                panTask = setTimeout(function(){
+                    main.me.fire(EVENTS.UNSELECT_USER);
+                },2000);
+            }
+            installation = false;
+        }
 
 
         /*

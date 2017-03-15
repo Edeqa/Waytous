@@ -30,7 +30,7 @@ public class Constants {
 
 
     public final static int HTTP_PORT = 8080;
-    public final static int HTTPS_PORT = 8000;
+    public final static int HTTPS_PORT = 8100;
     public final static int WS_FB_PORT = 8081;
     public final static int WSS_FB_PORT = 8001;
     public final static int WS_PORT = 8082;

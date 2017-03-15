@@ -36,28 +36,19 @@ function TrackHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user) {
-                    var menuItemShow = object.add(MENU.SECTION_VIEWS,type+"_1","Show track","title",function(){
+                if(user && user.location && !user.views.track.show) {
+                    object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_TRACK,"Show track","title",function(){
                         user.fire(EVENTS.SHOW_TRACK);
                         menuItemShow.classList.add("hidden");
                         menuItemHide.classList.remove("hidden");
                         drawerPopulate();
                     });
-                    var menuItemHide = object.add(MENU.SECTION_VIEWS,type+"_1","Hide track","format_strikethrough",function(){
+                } else if(user.views.track.show) {
+                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_TRACK,"Hide track","format_strikethrough",function(){
                         user.fire(EVENTS.HIDE_TRACK);
-                        menuItemShow.classList.remove("hidden");
-                        menuItemHide.classList.add("hidden");
                         drawerPopulate();
                     });
-                    if(user.views.track.show) {
-                        menuItemShow.classList.add("hidden");
-                    } else {
-                        menuItemHide.classList.add("hidden");
-                    }
                 }
-                // object.add(8,type+"_2","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                // object.add(8,type+"_3","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                // object.add(8,type+"_4","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
                 break;
             case EVENTS.SHOW_TRACK:
                 this.views.track.show = true;

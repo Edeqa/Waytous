@@ -20,13 +20,13 @@ function DistanceHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,type+"_1","Show distances","settings_ethernet",function(){
+                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_DISTANCE,"Show distances","settings_ethernet",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SHOW_DISTANCE);
                         drawerPopulate();
                     });
                 });
-                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,type+"_1","Hide distances","code",function(){
+                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_DISTANCE,"Hide distances","code",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.HIDE_DISTANCE);
                         drawerPopulate();
@@ -36,28 +36,17 @@ function DistanceHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user) {
-                    var menuItemShow = object.add(MENU.SECTION_VIEWS,type+"_1","Show distance","settings_ethernet",function(){
+                if(user && user.location && !user.views.distance.show) {
+                    object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_DISTANCE,"Show distance","settings_ethernet",function(){
                         user.fire(EVENTS.SHOW_DISTANCE);
-                        menuItemShow.classList.add("hidden");
-                        menuItemHide.classList.remove("hidden");
                         drawerPopulate();
                     });
-                    var menuItemHide = object.add(MENU.SECTION_VIEWS,type+"_1","Hide distance","code",function(){
+                } else if(user.views.distance.show) {
+                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_DISTANCE,"Hide distance","code",function(){
                         user.fire(EVENTS.HIDE_DISTANCE);
-                        menuItemShow.classList.remove("hidden");
-                        menuItemHide.classList.add("hidden");
                         drawerPopulate();
                     });
-                    if(user.views.distance.show) {
-                        menuItemShow.classList.add("hidden");
-                    } else {
-                        menuItemHide.classList.add("hidden");
-                    }
                 }
-                // object.add(8,type+"_2","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                // object.add(8,type+"_3","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                // object.add(8,type+"_4","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
                 break;
             case EVENTS.SHOW_DISTANCE:
                 this.views.distance.show = true;

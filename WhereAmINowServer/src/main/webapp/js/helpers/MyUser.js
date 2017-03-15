@@ -6,8 +6,10 @@ function MyUser(main) {
     function fire(EVENT,object) {
         // console.log("EVENT",EVENT, object);
 
+//        if(this.views.properties) main.holders.properties.onEvent.call(this, EVENT, object);
         for(var i in this.views) {
             if(main.holders[i] && main.holders[i].dependsOnUser && main.holders[i].onEvent) {
+//                if(i == "properties") continue;
                 try {
                     if (!main.holders[i].onEvent.call(this, EVENT, object)) break;
                 } catch(e) {

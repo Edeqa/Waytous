@@ -20,6 +20,7 @@ function DrawerHolder(main) {
     var headerTitle;
     var subtitle;
     var drawerLayout;
+    var menu;
 
     var target = window; // this can be any scrollable element
     var last_y = 0;
@@ -27,7 +28,7 @@ function DrawerHolder(main) {
     var start = function() {
 
         drawer = new Drawer();
-        target.addEventListener("touchmove", preventPullToRefresh);
+//        target.addEventListener("touchmove", preventPullToRefresh);
 
         drawerLayout = u.create(HTML.DIV, {className:"drawer", tabindex: 1, onblur: function(){
             drawerLayout.classList.remove("drawer-open");
@@ -38,11 +39,12 @@ function DrawerHolder(main) {
         u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
             try {
                 drawerLayout.classList.add("drawer-open");
+                menu.scroll(0,0);
                 drawerLayout.focus();
             } catch(e) {
                 console.err(e);
             }
-        }}, actionbar);
+        },onfocus:function(){}}, actionbar);
         var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
         title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:"Waytogo"}, label);
         subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle hidden"}, label);
@@ -52,7 +54,7 @@ function DrawerHolder(main) {
         headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:"Waytogo"}, header);
         u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML:"Be always on the same way\nwith your friends"}, header);
 
-        var menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
+        menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
         sections = [];
         for(var i=0;i<10;i++){
             sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, menu);
@@ -96,7 +98,7 @@ function DrawerHolder(main) {
             var th = u.create(HTML.DIV, {className:"menu-item"}, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+                    u.create(HTML.I, { className:"material-icons", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }
@@ -158,14 +160,14 @@ function DrawerHolder(main) {
         return {};
     }
 
-    function preventPullToRefresh(e){
+    /*function preventPullToRefresh(e){
         var scrolly = target.pageYOffset || target.scrollTop || 0;
         var direction = e.changedTouches[0].pageY > last_y ? 1 : -1;
         if(direction>0 && scrolly===0){
            e.preventDefault();
         }
         last_y = e.changedTouches[0].pageY;
-    }
+    }*/
 
     return {
         type:"drawer",

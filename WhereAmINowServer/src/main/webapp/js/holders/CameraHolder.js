@@ -61,24 +61,24 @@ function CameraHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user && (main.users.getCountSelected() >1 || !user.properties.selected)) {
-                    var select, unselect;
-                    select = object.add(MENU.SECTION_PRIMARY, type + "_1", "Select user", "select_all", function () {
-                        select.classList.add("hidden");
-                        unselect.classList.remove("hidden");
-                        user.fire(EVENTS.SELECT_USER);
-                    });
-                    unselect_icon = unselect_icon || u.create(HTML.PATH, unselect_path, u.create(HTML.SVG, unselect_svg)).parentNode;
-                    unselect = object.add(MENU.SECTION_PRIMARY, type + "_1", "Unselect user", unselect_icon, function () {
-                        select.classList.remove("hidden");
-                        unselect.classList.add("hidden");
-                        user.fire(EVENTS.UNSELECT_USER);
-                    });
-                    if(user.properties.selected) {
-                        select.classList.add("hidden");
-                    } else {
-                        unselect.classList.add("hidden");
-                    }
+                if(main.users.getCountSelected() == 1 && user.properties.selected) break;
+
+                var select, unselect;
+                select = object.add(MENU.SECTION_PRIMARY, type + "_1", "Select user", "select_all", function () {
+                    select.classList.add("hidden");
+                    unselect.classList.remove("hidden");
+                    user.fire(EVENTS.SELECT_USER);
+                });
+                unselect_icon = unselect_icon || u.create(HTML.PATH, unselect_path, u.create(HTML.SVG, unselect_svg)).parentNode;
+                unselect = object.add(MENU.SECTION_PRIMARY, type + "_1", "Unselect user", unselect_icon, function () {
+                    select.classList.remove("hidden");
+                    unselect.classList.add("hidden");
+                    user.fire(EVENTS.UNSELECT_USER);
+                });
+                if(user.properties.selected) {
+                    select.classList.add("hidden");
+                } else {
+                    unselect.classList.add("hidden");
                 }
                 break;
             case EVENTS.TRACKING_ACTIVE:
@@ -118,6 +118,12 @@ function CameraHolder(main) {
                 orientation = this && this.views && this.views.camera ? this.views.camera.orientation : CAMERA_ORIENTATION_NORTH;
                 onChangeLocation.call(this, this.location);
                 menuFitToScreen.classList.remove("disabled");
+                break;
+            case EVENTS.UNSELECT_USER:
+                update();
+//                orientation = this && this.views && this.views.camera ? this.views.camera.orientation : CAMERA_ORIENTATION_NORTH;
+//                onChangeLocation.call(this, this.location);
+//                menuFitToScreen.classList.remove("disabled");
                 break;
             case EVENTS.CAMERA_ZOOM:
                 if(main.users.getCountSelected()==1) {

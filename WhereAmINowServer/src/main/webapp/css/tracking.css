@@ -22,9 +22,11 @@ body {
     color: darkslategray;
     margin: 0px;
 }
+/*
 h2 {
     font-size: 14px;
 }
+*/
 input, textarea {
   -webkit-user-select: text;
   -khtml-user-select: text;
@@ -97,6 +99,18 @@ button:active {
     outline: none;
     color: red;
 }
+.toast {
+    position: fixed;
+    z-index: 5000;
+    padding: 10px;
+    background-color: rgba(128, 128, 128, 0.7);
+    color: white;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(255, 255, 240, 0.7);
+    bottom: 20px;
+}
 .drawer {
     border-right-style: solid;
     width: 250px;
@@ -148,7 +162,7 @@ button:active {
     position: absolute;
     top: 150px;
     bottom: 50px;
-    overflow: auto;
+    overflow-y: auto;
     width: 100%;
 }
 .menu-item:hover {
@@ -357,7 +371,6 @@ p.bottom-desc {
     position: initial;
     border-radius: 5px;
     background-color: transparent;
-    overflow-y: auto;
     display: block !important;
     padding: 0px !important;
 }
@@ -382,6 +395,21 @@ p.bottom-desc {
     border-width: 2px;
     padding: 3px;
 }
+.user-button-icon {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
 .user-button-badge {
     background-color: red;
     color: white;
@@ -396,8 +424,6 @@ p.bottom-desc {
     position: relative;
     right: 8px;
     top: -8px;
-}
-.user-button-icon {
 }
 .user-button-label {
     padding-left: 10px;
@@ -424,18 +450,24 @@ p.bottom-desc {
     display: flex;
     align-items: center;
     border-radius: 5px;
-    padding: 5px;
+    padding: 8px;
     cursor: pointer;
-}
-.user-context-menu-item i, .user-context-menu-item svg {
-    padding: 5px;
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    stroke: darkslategray;
 }
 .user-context-menu-item:hover {
     background-color: rgba(180, 180, 180, 0.8);
+}
+.user-context-menu-item-icon {
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+}
+.user-context-menu-item svg {
+    width: 20px;
+    height: 20px;
+    stroke: darkslategray;
 }
 .user-context-menu-item-title {
     padding-left: 10px;
@@ -780,13 +812,18 @@ p.bottom-desc {
         margin: 0px;
         zoom: 1;
         color: darkslategray;
+        overflow-y: hidden;
     }
+/*
     h2 {
         padding: 5px;
         font-size: 18px;
         width: 100%;
-        /*border-bottom: 1px solid #000;*/
+        */
+/*border-bottom: 1px solid #000;*//*
+
     }
+*/
     button {
         font-size: 16px;
         min-width: 80px;
@@ -962,8 +999,6 @@ p.bottom-desc {
         left: 50%;
         right: auto;
         transform: translateX(-50%);
-        overflow-x: scroll;
-        overflow-y: hidden;
     }
     .user-buttons-title {
         display: none;

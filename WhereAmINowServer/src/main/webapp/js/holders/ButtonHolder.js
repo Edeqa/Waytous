@@ -184,7 +184,7 @@ function ButtonHolder(main) {
         color = "rgba("+r+", "+g+", "+b+", 0.4)";
 
         var task;
-        var onlyTouch;
+        var onlyTouch,clicked;
         var b = u.create(HTML.DIV, {
             className:"user-button" +(user.properties.active ? "" : " hidden"),
             dataNumber:user.number,
@@ -206,14 +206,15 @@ function ButtonHolder(main) {
                 if(delay < 500) {
                     if(clicked) {
                         user.fire(EVENTS.CAMERA_ZOOM);
+                        contextMenuLayout.classList.add("hidden");
                         clicked = false;
                     } else {
                         user.fire(EVENTS.SELECT_SINGLE_USER);
+                        openContextMenu(user);
                         clicked = true;
                         setTimeout(function(){
                             clicked = false;
                         }, 500);
-                        openContextMenu(user);
                     }
                 }
                 clearTimeout(task);
@@ -225,7 +226,7 @@ function ButtonHolder(main) {
                 user.fire(EVENTS.MOUSE_OUT,e);
             }
         });
-        u.create(HTML.I, {className:"material-icons", innerHTML:"person"}, b);
+        u.create(HTML.DIV, {className:"user-button-icon", innerHTML:"person"}, b);
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
@@ -265,7 +266,6 @@ function ButtonHolder(main) {
         user.fire(EVENTS.CREATE_CONTEXT_MENU, contextMenu);
         var size = user.views.button.button.getBoundingClientRect();
 
-
         contextMenuLayout.classList.remove("hidden");
         contextMenuLayout.style.top = Math.floor(size.top) + "px";
         if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
@@ -293,7 +293,7 @@ function ButtonHolder(main) {
             }}, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.I, { className:"material-icons md-14", innerHTML: icon }, th);
+                    u.create(HTML.DIV, { className:"user-context-menu-item-icon", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }

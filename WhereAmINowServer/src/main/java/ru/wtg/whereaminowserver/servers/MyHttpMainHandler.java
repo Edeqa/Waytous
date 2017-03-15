@@ -129,7 +129,7 @@ public class MyHttpMainHandler implements HttpHandler {
             exchange.getResponseHeaders().set("Server", "WAIN/"+SERVER_BUILD);
             exchange.getResponseHeaders().set("Accept-Ranges", "bytes");
 
-            gzip = false;
+//            gzip = false;
             if(gzip){
                 exchange.getResponseHeaders().set("Content-Encoding", "gzip");
             } else {
