@@ -35,7 +35,7 @@ function SocialHolder(main) {
 
         if(view.show) {
             show.call(myUser);
-//        }
+        }
         drawerPopulate();
         return view;
         // console.log("SAMPLECREATEVIEW",user);

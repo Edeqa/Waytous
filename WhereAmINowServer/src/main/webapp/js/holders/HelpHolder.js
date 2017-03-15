@@ -33,9 +33,9 @@ function HelpHolder(main) {
                     }
                 });
 
+                dialog.clearItems();
                 if(object) {
                     if(object["module"].help) {
-                        dialog.clearItems();
                         dialog.addItem({
                             type:HTML.DIV,
                             className:"help-item-title",
@@ -48,6 +48,30 @@ function HelpHolder(main) {
                         });
                     }
                 } else {
+                    var modules = main.holders;
+                    modules.main = main;
+                    for(var i in modules) {
+                        console.log(i);
+                        if(modules[i] && modules[i].help) {
+                            var help = modules[i].help;
+                            dialog.addItem({
+                                type:HTML.DIV,
+                                className:"help-module-title",
+                                innerHTML: help.title || modules[i].type
+                            });
+                            for(var j in help) {
+                                if(j == "title") continue;
+                                dialog.addItem({
+                                    type:HTML.DIV,
+                                    className:"help-module-item",
+                                    enclosed:true,
+                                    label:j + ". " + (help[j].title || ""),
+                                    body:help[j].body
+                                });
+                            }
+                        }
+                    }
+
 //                items: [
 //                                                        { type: HTML.DIV, className: "streetview-placeholder", innerHTML: "Loading..." },
 //                                                        { type: HTML.DIV, className: "streetview-view hidden", id: "streetview" },

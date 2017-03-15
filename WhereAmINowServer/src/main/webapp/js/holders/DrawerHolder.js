@@ -107,7 +107,7 @@ function DrawerHolder(main) {
                         setTimeout(function () {
                             drawerLayout.blur();
                             callback(event);
-                        }, 300);
+                        }, 100);
                     }, innerHTML: name
                 }, th);
             }

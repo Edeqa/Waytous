@@ -598,7 +598,7 @@ function Utils() {
             }
 
 
-            items[0].focus();
+            if(items && items[0]) items[0].focus();
             if(options.onopen) options.onopen.call(dialog,items);
             if(options.timeout) {
                 var atom = options.timeout / 16;
@@ -682,7 +682,7 @@ function Utils() {
             dialog.titleLayout = create("div", {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
 
             if(options.title.button && options.title.button.icon) {
-                create("button", {className:"material-icons dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
+                create("button", {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
         }
         dialog.itemsLayout = create("div", {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);
