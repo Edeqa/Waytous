@@ -22,8 +22,8 @@ function TrackingFB(main) {
             newTracking = true;
         }
         var path = uri.pathname.replace("/group/","/track/");
-        serverUri = "wss://" + uri.hostname + ":"+ CONSTANTS.WSS_FB_PORT + path;
-        // serverUri = "ws://" + uri.hostname + ":" + CONSTANTS.WS_FB_PORT + path;
+        serverUri = "wss://" + uri.hostname + ":"+ data.WSS_FB_PORT + path;
+        // serverUri = "ws://" + uri.hostname + ":" + data.WS_FB_PORT + path;
 
         if(newTracking) {
             setStatus(EVENTS.TRACKING_CONNECTING);
@@ -50,7 +50,7 @@ function TrackingFB(main) {
         trackingListener.onStop();
 
         var uri = new URL(this.link);
-        window.location.href = "https://" + uri.hostname + ":"+ CONSTANTS.HTTPS_PORT + "/";
+        window.location.href = "https://" + uri.hostname + ":"+ data.HTTPS_PORT + "/";
     }
 
     function webSocketListener(link) {
@@ -161,19 +161,20 @@ function TrackingFB(main) {
         var onclose = function(event) {
 //            console.log("CLOSE",opened,event.code,event.reason,event.wasClean);
             if(!opened) {
-                console.error("Error processing websocket, will try to use XHR instead of",link," (error ",event.code,event.reason?" "+event.reason+")":")");
+                console.error("Websocket processing closed unexpectedly, will try to use XHR instead of " + link + " (error " + event.code + (event.reason?": "+event.reason:")")+".");
                 xhrModeStart(link);
             }
         };
 
         var onerror = function(event) {
-            console.log("ONERROR-RECONNECT-SHOULDBEDONE",event);
+                console.error("Websocket processing failed, will try to use XHR instead of " + link + ".");
             if(status == EVENTS.TRACKING_DISABLED) return;
+            xhrModeStart(link);
         };
 
         var xhrModeStart = function(link) {
             var uri = new URL(link);
-            link = "https://" + uri.hostname + ":" + CONSTANTS.HTTPS_PORT + "/join" + uri.pathname;
+            link = "https://" + uri.hostname + ":" + data.HTTPS_PORT + "/join" + uri.pathname;
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //
@@ -349,11 +350,11 @@ function TrackingFB(main) {
 
     function getTrackingUri(){
         var uri = new URL(serverUri);
-        return "http://" + uri.hostname + (CONSTANTS.HTTP_PORT != 80 ? ":"+CONSTANTS.HTTP_PORT  : "") + "/track/" + token;
+        return "http://" + uri.hostname + (data.HTTP_PORT != 80 ? ":"+data.HTTP_PORT  : "") + "/track/" + token;
     }
 
     function registerChildListener(ref, listener, limit) {
-        if(limit >= 0){
+        if(limit > 0){
             ref.limitToLast(limit).on("child_added", listener);
         } else {
             ref.on("child_added", listener);
@@ -386,7 +387,8 @@ function TrackingFB(main) {
 
                 for(var i in main.holders) {
                     if(main.holders[i] && main.holders[i].saveable) {
-                        registerChildListener(ref.child(DATABASE.SECTION_PUBLIC).child(i).child(user.number), userPublicDataListener, 1);
+                        var loadSaved = main.holders[i].loadsaved || 1;
+                        registerChildListener(ref.child(DATABASE.SECTION_PUBLIC).child(i).child(user.number), userPublicDataListener, loadSaved);
                     }
                 }
 

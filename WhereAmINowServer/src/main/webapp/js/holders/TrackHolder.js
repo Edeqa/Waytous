@@ -20,13 +20,13 @@ function TrackHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,type+"_1","Show tracks","title",function(){
+                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_TRACK,"Show tracks","title",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SHOW_TRACK);
                         drawerPopulate();
                     });
                 });
-                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,type+"_1","Hide tracks","format_strikethrough",function(){
+                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_TRACK,"Hide tracks","format_strikethrough",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.HIDE_TRACK);
                         drawerPopulate();
@@ -84,18 +84,19 @@ function TrackHolder(main) {
     }
 
     function drawerPopulate() {
-        drawerItemHide.classList.add("hidden");
-        drawerItemShow.classList.add("hidden");
-        main.users.forAllUsers(function (number, user) {
-            if(user.views.track) {
-                if (user.views.track.show) {
-                    drawerItemHide.classList.remove("hidden");
-                } else {
-                    drawerItemShow.classList.remove("hidden");
+        setTimeout(function(){
+            drawerItemHide.classList.add("hidden");
+            drawerItemShow.classList.add("hidden");
+            main.users.forAllUsers(function (number, user) {
+                if(user.views.track) {
+                    if (user.views.track.show) {
+                        drawerItemHide.classList.remove("hidden");
+                    } else {
+                        drawerItemShow.classList.remove("hidden");
+                    }
                 }
-            }
-        })
-
+            })
+        },0);
     }
 
     function show() {

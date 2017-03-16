@@ -362,6 +362,7 @@ p.bottom-desc {
     border: none !important;
     top: 12px;
     right: 52px;
+    min-width: 120px;
 }
 .user-buttons-title {
 }
@@ -390,7 +391,7 @@ p.bottom-desc {
 }
 .user-button-hover {
     /*background-color: #dddd99;*/
-    border-color: green;
+    border-color: cyan;
     border-style: solid;
     border-width: 2px;
     padding: 3px;
@@ -686,8 +687,8 @@ p.bottom-desc {
 .chat-message-private {
 
 }
-.chat-message-from {
-    font-weight: bold;
+.chat-message-name {
+    text-shadow: #000 0px 0px 1px;
 }
 .chat-message-timestamp {
     float: right;
@@ -706,14 +707,18 @@ p.bottom-desc {
     width: 100%;
 }
 .chat-reply-button {
+    font-family: 'Material Icons';
+    font-size: 24px;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
     width: 40px;
-    float: right;
     background: none;
     border: none;
     outline: none;
 }
 .chat-reply-button:hover {
     color: blue;
+    background: none;
 }
 .chat-reply-button:active {
     color: cyan;
@@ -766,9 +771,6 @@ p.bottom-desc {
     font-weight: bold;
     text-shadow: #000 0px 0px 5px;
 }
-.marker-hover {
-    background-color: red !important;
-}
 .help {
     z-index: 9000 !important;
     width: 70%;
@@ -791,6 +793,34 @@ p.bottom-desc {
 .help-module-item {
     width: 100%;
     margin-top: 0px;
+}
+.saved-locations {
+
+}
+.saved-locations-items {
+
+}
+.saved-locations-item {
+    width: 100%;
+    display: flex;
+}
+.saved-locations-item-text {
+    width: 100%;
+}
+.saved-locations-item-label {
+
+}
+.saved-locations-item-address {
+
+}
+.saved-locations-item-description {
+
+}
+.saved-locations-item-timestamp {
+
+}
+.saved-locations-item-image {
+    align-self: center;
 }
 
 /* shift zoom control */

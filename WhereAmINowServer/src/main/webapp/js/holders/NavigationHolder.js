@@ -131,17 +131,18 @@ function NavigationHolder(main) {
 
     function drawerPopulate() {
 //        drawerItemShow.classList.add("hidden");
-        drawerItemHide.classList.add("hidden");
-        main.users.forAllUsers(function (number, user) {
-            if(user.views.navigation) {
-                if (user.views.navigation.show) {
-                    drawerItemHide.classList.remove("hidden");
-                } else {
-//                    drawerItemShow.classList.remove("hidden");
+        setTimeout(function(){
+            drawerItemHide.classList.add("hidden");
+            main.users.forAllUsersExceptMe(function (number, user) {
+                if(user.views.navigation) {
+                    if (user.views.navigation.show) {
+                        drawerItemHide.classList.remove("hidden");
+                    } else {
+    //                    drawerItemShow.classList.remove("hidden");
+                    }
                 }
-            }
-        })
-
+            })
+        },0);
     }
 
     function update() {

@@ -264,21 +264,23 @@ function ButtonHolder(main) {
             sections[i] = u.create(HTML.DIV, {className:"user-context-menu-section hidden"}, contextMenuLayout);
         }
         user.fire(EVENTS.CREATE_CONTEXT_MENU, contextMenu);
-        var size = user.views.button.button.getBoundingClientRect();
 
-        contextMenuLayout.classList.remove("hidden");
-        contextMenuLayout.style.top = Math.floor(size.top) + "px";
-        if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
-            contextMenuLayout.style.left = Math.floor(size.left - contextMenuLayout.offsetWidth -10) + "px";
-//            contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
-        } else {
-            contextMenuLayout.style.left = Math.floor(size.right + 10) + "px";
-        }
+        setTimeout(function(){
+            var size = user.views.button.button.getBoundingClientRect();
+            contextMenuLayout.classList.remove("hidden");
+            contextMenuLayout.style.top = Math.floor(size.top) + "px";
+            if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
+                contextMenuLayout.style.left = Math.floor(size.left - contextMenuLayout.offsetWidth -10) + "px";
+    //            contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
+            } else {
+                contextMenuLayout.style.left = Math.floor(size.right + 10) + "px";
+            }
 
-        clearTimeout(delayDismiss);
-        delayDismiss = setTimeout(function(){
-            contextMenuLayout.classList.add("hidden");
-        },2000);
+            clearTimeout(delayDismiss);
+            delayDismiss = setTimeout(function(){
+                contextMenuLayout.classList.add("hidden");
+            },2000);
+        },0);
     }
 
     function ContextMenu() {

@@ -17,8 +17,14 @@ import java.util.Arrays;
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.HTTPS_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
+import static ru.wtg.whereaminowserver.helpers.Constants.WSS_FB_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.WS_FB_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.WS_PORT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
@@ -138,6 +144,12 @@ public class MyHttpTrackingHandler implements HttpHandler {
 //                o.put("page", part);
             o.put("request", parts);
             o.put("version", SERVER_BUILD);
+            o.put("HTTP_PORT", HTTP_PORT);
+            o.put("HTTPS_PORT", HTTPS_PORT);
+            o.put("WS_FB_PORT", WS_FB_PORT);
+            o.put("WSS_FB_PORT", WSS_FB_PORT);
+            o.put("WS_PORT", WS_PORT);
+            o.put("WSS_PORT", WSS_PORT);
 
             html.getHead().add(SCRIPT).with("data", o);
 

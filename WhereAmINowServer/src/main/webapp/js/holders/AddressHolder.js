@@ -7,6 +7,9 @@ function AddressHolder(main) {
 
     EVENTS.UPDATE_ADDRESS = "update_address";
 
+    const delayInError = 10000;
+    var delayStart;
+
     function start() {
     }
 
@@ -23,21 +26,35 @@ function AddressHolder(main) {
 
     function onChangeLocation(location) {
         var user = this;
-        // if (main.users.getCountSelected() == 1){// && this.properties && this.properties.selected) {
-        if(location) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1", true);
+        setTimeout(function(){
+            if(location) {
+                if(delayStart) {
+                    if(new Date().getTime() - (delayStart||0) < delayInError) return;
+                    delayStart = 0;
+                }
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState != 4) return;
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1", true);
 
-                var address = JSON.parse(xhr.response);
-                user.fire(EVENTS.UPDATE_ADDRESS, address["display_name"]);
-            };
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState != 4) return;
+                    if(xhr.status == 0) {
+                        user.fire(EVENTS.UPDATE_ADDRESS);
+                        delayStart = new Date().getTime();
+                        return;
+                    }
 
-            xhr.send();
-        }
-        // }
+                    var address = JSON.parse(xhr.response);
+                    user.fire(EVENTS.UPDATE_ADDRESS, address["display_name"]);
+                };
+                try {
+                    xhr.send();
+                } catch(e) {
+                    console.warn(e);
+                }
+            }
+            // }
+        }, 0);
     }
 
     function createView(user) {

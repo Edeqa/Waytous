@@ -68,7 +68,9 @@ function TrackingHolder(main) {
                     main.fire(EVENTS.TRACKING_STOP);
                 });
                 drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(e){
-                    main.fire(EVENTS.SHARE_LINK,e);
+                    if(EVENTS.TRACKING_ACTIVE) {
+                        main.fire(EVENTS.SHARE_LINK,e);
+                    }
                 });
                 drawerItemShare.classList.add("disabled");
                 break;

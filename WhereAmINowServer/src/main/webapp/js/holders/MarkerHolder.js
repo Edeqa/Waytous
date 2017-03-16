@@ -75,12 +75,21 @@ function MarkerHolder(main) {
                 this.views.marker.marker;
                 break;
             case EVENTS.MOUSE_OVER:
-//                this.views.marker.marker.classList.add("marker-hover");
+                if(this.views.marker.marker) {
+                    var icon = this.views.marker.marker.getIcon();
+                    icon.strokeColor = "black";
+                    icon.strokeWidth = 4;
+                    this.views.marker.marker.setIcon(icon);
+                }
                 break;
             case EVENTS.MOUSE_OUT:
-//                this.views.marker.marker.classList.remove("marker-hover");
+                if(this.views.marker.marker) {
+                    var icon = this.views.marker.marker.getIcon();
+                    icon.strokeColor = "white";
+                    icon.strokeWidth = 2;
+                    this.views.marker.marker.setIcon(icon);
+                }
                 break;
-
         }
         return true;
     }

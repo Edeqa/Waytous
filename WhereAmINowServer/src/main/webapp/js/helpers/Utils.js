@@ -574,6 +574,7 @@ function Utils() {
                 }, div);
             }
             items.push(x);
+            return x;
         }
 
         dialog.onopen = function(){

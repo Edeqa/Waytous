@@ -28,6 +28,7 @@ function CameraHolder(main) {
     var task;
     var orientation;
     var unselect_icon;
+    var maxZoomService;
 
     var unselect_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -91,6 +92,7 @@ function CameraHolder(main) {
                 main.map.addListener("dragend", function(e){
                     orientation = CAMERA_ORIENTATION_USER;
                 });
+                maxZoomService = new google.maps.MaxZoomService();
                 break;
             case EVENTS.MARKER_CLICK:
                 onEvent.call(this,EVENTS.CAMERA_NEXT_ORIENTATION);
@@ -139,9 +141,18 @@ function CameraHolder(main) {
                         }
                     });
                 }
-                if(main.map.getZoom() != object) {
-                    main.map.setZoom(Math.round(object));
-                }
+                setTimeout(function(){
+                    maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
+                        if (response.status !== google.maps.MaxZoomStatus.OK) {
+                            console.error('Error in MaxZoomService',response);
+                        } else {
+                            if(object && object > response.zoom) object = response.zoom;
+                            if(main.map.getZoom() != object) {
+                                main.map.setZoom(Math.round(object));
+                            }
+                        }
+                    });
+                },0);
                 break;
             case EVENTS.CAMERA_UPDATE:
                 update()
