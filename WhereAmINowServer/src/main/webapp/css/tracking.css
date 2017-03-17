@@ -88,6 +88,8 @@ button:active {
     z-index: 6000 !important;
 }
 .alert-icon {
+    font-family: "Material Icons";
+    font-style: normal;
     position: fixed;
     top: 50px;
     z-index: 10000;
@@ -169,6 +171,8 @@ button:active {
     background: #dddd99;
 }
 .menu-item i, .menu-item svg {
+    font-family: "Material Icons";
+    font-style: normal;
     margin: 12px;
     float: left;
     font-size: 16px;
@@ -301,6 +305,8 @@ button:active {
     color: red;
 }
 .fab {
+    font-family: "Material Icons";
+    font-style: normal;
     background-color: rgba(255, 0, 0, 0.5);
     position: fixed;
     right: 16px;
@@ -386,6 +392,12 @@ p.bottom-desc {
     /*background-color: #dddd99;*/
     border-color: green;
     border-style: solid;
+    border-width: 2px;
+    padding: 3px;
+}
+.user-button-selected {
+    border-color: green;
+    border-style: ridge;
     border-width: 2px;
     padding: 3px;
 }
@@ -564,6 +576,7 @@ p.bottom-desc {
 }
 .dialog-title-button {
     font-family: "Material Icons";
+    font-style: normal;
     position: absolute;
     right: 5px;
     background: none;
@@ -622,6 +635,8 @@ p.bottom-desc {
     background-color: burlywood;
 }
 .dialog-item-enclosed-icon {
+    font-family: "Material Icons";
+    font-style: normal;
     font-size: initial !important;
 }
 .dialog-item-enclosed-label {
@@ -654,6 +669,8 @@ p.bottom-desc {
     height: 100%;
 }
 .dialog-help-button {
+    font-family: "Material Icons";
+    font-style: normal;
     background: none;
     border: none;
     outline: none;
@@ -718,6 +735,7 @@ p.bottom-desc {
 }
 .chat-reply-button {
     font-family: 'Material Icons';
+    font-style: normal;
     font-size: 24px;
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
@@ -874,11 +892,13 @@ p.bottom-desc {
     align-items: center;
     justify-content: center;
     font-family: "Material Icons";
+    font-style: normal;
     font-size: 32px;
     object-fit: cover;
 }
 .saved-location-item-button {
     font-family: "Material Icons";
+    font-style: normal;
     font-size: 10px;
     flex: 1 0 0%;
     border: none;
@@ -892,9 +912,11 @@ p.bottom-desc {
 }
 .saved-location-edit {
     width: 400px;
+    z-index: 1001;
 }
 .saved-location-delete {
     width: 250px;
+    z-index: 1002;
 }
 
 /* shift zoom control */
@@ -966,12 +988,12 @@ p.bottom-desc {
         cursor: pointer;
     }
     .modal {
-        width: 80%;
+        width: 90% !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%,-50%) !important;
         /*left: auto !important;
         top: auto !important;*/
-        /*left: 50% !important;
-        top: 50% !important;
-        transform: translate(-50%,-50%);*/
     }
     .actionbar {
         padding: 0px;
@@ -1096,13 +1118,12 @@ p.bottom-desc {
     }
     .user-buttons {
         display: flex;
-        width: auto;
+        width: auto !important;
         max-width: 95%;
         position: absolute;
         top: 52px !important;
-        left: 50%;
         right: auto;
-        transform: translateX(-50%);
+        transform: translateX(-50%) !important;
     }
     .user-buttons-title {
         display: none;
@@ -1122,12 +1143,17 @@ p.bottom-desc {
         font-size: 10px;
         min-width: 45px;
     }
+    .user-button-selected {
+        border-color: green;
+        border-style: ridge;
+        border-width: 2px;
+        padding: 3px;
+    }
     .user-button-badge {
         top: 0px;
         float: right;
         right: 0px;
     }
-
     .user-button-label {
         padding-left: 0px;
         padding-right: 0px;
@@ -1206,8 +1232,8 @@ p.bottom-desc {
         top: auto !important;
         padding: 0px;
         max-width: 100%;
-        width: 100%;
-        transform: none;
+        width: 100% !important;
+        transform: none !important;
     }
     .chat-messages {
         padding: 8px;

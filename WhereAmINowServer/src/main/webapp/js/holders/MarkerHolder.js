@@ -90,6 +90,9 @@ function MarkerHolder(main) {
                     this.views.marker.marker.setIcon(icon);
                 }
                 break;
+            case EVENTS.MARKER_CLICK:
+                this.fire(EVENTS.SELECT_SINGLE_USER);
+                break;
         }
         return true;
     }

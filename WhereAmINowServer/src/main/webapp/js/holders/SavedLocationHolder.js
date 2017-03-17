@@ -79,19 +79,20 @@ function SavedLocationHolder(main) {
 
                     locationSavedDialog = locationSavedDialog || u.dialog({
                         items: [
+                            { type: HTML.HIDDEN },
                             { type: HTML.DIV, innerHTML: "You have added location. It could be found under \"Saved locations\" menu." },
                             { type: HTML.DIV, innerHTML: "Would you like to do something else?" }
                         ],
                         positive: {
                             label: "Show",
-                            onclick: function() {
-                                main.fire(EVENTS.SHOW_SAVED_LOCATION, last);
+                            onclick: function(items) {
+                                main.fire(EVENTS.SHOW_SAVED_LOCATION, items[0].value);
                             }
                         },
                         negative: {
                             label: "Edit",
-                            onclick: function() {
-                                main.fire(EVENTS.EDIT_SAVED_LOCATION, last);
+                            onclick: function(items) {
+                                main.fire(EVENTS.EDIT_SAVED_LOCATION, items[0].value);
                             }
                         },
                         neutral: {
@@ -99,6 +100,7 @@ function SavedLocationHolder(main) {
                         },
                         timeout: 5000
                     });
+                    locationSavedDialog.items[0].value = last;
                     locationSavedDialog.onopen();
                 }
                 break;
@@ -115,6 +117,9 @@ function SavedLocationHolder(main) {
                 }//TODO
                 break;
             case EVENTS.EDIT_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.onclose();
+                locationShareDialog && locationShareDialog.onclose();
+                locationDeleteDialog && locationDeleteDialog.onclose();
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
                 locationEditDialog = locationEditDialog || u.dialog({
@@ -152,6 +157,9 @@ function SavedLocationHolder(main) {
                 }
                 break;
             case EVENTS.SHARE_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.onclose();
+                locationShareDialog && locationShareDialog.onclose();
+                locationDeleteDialog && locationDeleteDialog.onclose();
                 var loc = u.load("saved_location:"+parseInt(object));
                 console.log("SHARE",loc);
                 if(loc) {
@@ -159,6 +167,9 @@ function SavedLocationHolder(main) {
 
                 break;
             case EVENTS.DELETE_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.onclose();
+                locationShareDialog && locationShareDialog.onclose();
+                locationDeleteDialog && locationDeleteDialog.onclose();
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
                 locationDeleteDialog = locationDeleteDialog || u.dialog({
@@ -206,7 +217,7 @@ function SavedLocationHolder(main) {
                             className: "saved-location-item",
                         });
 
-                        var url = "https://maps.google.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo;
+                        var url = "http://maps.google.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo;
 
                         u.create("img", {
                             src: url,

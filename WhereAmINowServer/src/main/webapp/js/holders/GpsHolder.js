@@ -57,7 +57,7 @@ function GpsHolder(main) {
                 }
             }).onopen();
 
-            var icon = u.create(HTML.BUTTON, {className:"material-icons alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
+            var icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");
                 alert.classList.remove("hidden");
             }}, main.right);

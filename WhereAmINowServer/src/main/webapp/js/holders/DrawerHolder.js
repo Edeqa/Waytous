@@ -98,7 +98,7 @@ function DrawerHolder(main) {
             var th = u.create(HTML.DIV, {className:"menu-item"}, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.I, { className:"material-icons", innerHTML: icon }, th);
+                    u.create(HTML.I, { className:"menu-item-icon", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }

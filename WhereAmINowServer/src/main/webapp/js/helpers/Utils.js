@@ -1,6 +1,74 @@
 /**
  * Created 1/19/17.
  */
+window.HTML = {
+    DIV: "div",
+    LINK:"link",
+    A:"a",
+    META:"meta",
+    STYLE:"style",
+    CLASS:"className",
+    CLASSNAME:"className",
+    SCRIPT:"script",
+    TITLE:"title",
+    ID:"id",
+    SRC:"src",
+    HTTP_EQUIV: "http-equiv",
+    CONTENT:"content",
+    TABLE:"table",
+    TR:"tr",
+    TH:"th",
+    TD:"td",
+    H1:"h1",
+    H2:"h2",
+    H3:"h3",
+    H4:"h4",
+    H5:"h5",
+    H6:"h6",
+    H7:"h7",
+    I:"i",
+    BORDER:"border",
+    COLSPAN:"colspan",
+    ROWSPAN:"rowspan",
+    HREF:"href",
+    TARGET:"target",
+    SMALL:"small",
+    REL:"rel",
+    STYLESHEET:"stylesheet",
+    TYPE:"type",
+    BR:"br",
+    FORM:"form",
+    NAME:"name",
+    INPUT:"input",
+    TEXTAREA:"textarea",
+    HIDDEN:"hidden",
+    SUBMIT:"submit",
+    TEXT:"text",
+    VALUE:"value",
+    MANIFEST:"manifest",
+    SPAN:"span",
+    BUTTON:"button",
+    CLICK:"click",
+    STYLESHEET:"stylesheet",
+    SVG:"svg",
+    PATH:"path",
+    MOUSEOVER:"mouseover",
+    MOUSEOUT:"mouseout",
+    MOUSEUP:"mouseup",
+    MOUSEDOWN:"mousedown",
+    MOUSEMOVE:"mousemove",
+    MOUSEENTER:"mouseenter",
+    MOUSELEAVE:"mouseleave",
+    VIEWBOX:"viewBox",
+    INNERHTML:"innerHTML",
+    INNERTEXT:"innerText",
+    BLOCK:"block",
+    AUTO:"auto",
+};
+window.ERRORS = {
+    NOT_EXISTS: 1,
+    NOT_AN_OBJECT: 2,
+};
 
 function Utils() {
 
@@ -34,11 +102,11 @@ function Utils() {
     };
 
     function normalizeName(name) {
-        if(name == "className"){
+        if(name == HTML.CLASSNAME){
             name = "class";
         } else if(name.toLowerCase() == "frameborder") {
         } else if(name.toLowerCase() == "viewbox") {
-            name = "viewBox";
+            name = HTML.VIEWBOX;
         } else if(name != name.toLowerCase()) {
             var ps = name.split(/([A-Z])/);
             name = ps[0];
@@ -64,9 +132,9 @@ function Utils() {
                 el.appendChild(properties);
             } else if(properties.constructor === Object) {
                 for(var x in properties) {
-                    if(x == "innerHTML" || x == "innerText") {
+                    if(x == HTML.INNERHTML || x == HTML.INNERTEXT) {
                         el[x] = properties[x];
-                    } else if(x == "content" && properties[x].constructor !== String) {
+                    } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
 //                    } else if(x == "async") {
 //                        el.appendChild(properties[x]);
@@ -76,7 +144,7 @@ function Utils() {
                         el.addEventListener(action, call/*function(){
                             console.log(call);
 
-                        }*/);
+                        }*/, false);
 //                        el.add
                     } else {
                         var name = x, value = properties[x];
@@ -143,8 +211,8 @@ function Utils() {
         clear(div);
 
         var menu = document.getElementsByClassName("menu")[0];
-        var h1 = create("div",{className:"actionbar"}, div);
-        create("span", {innerHTML:"menu", className:"menu-button", onclick: function(){
+        var h1 = create(HTML.DIV,{className:"actionbar"}, div);
+        create(HTML.SPAN, {innerHTML:"menu", className:"menu-button", onclick: function(){
             try {
                 menu.classList.add("menu-open");
                 menu.focus();
@@ -152,18 +220,18 @@ function Utils() {
                 console.err(e);
             }
         }}, h1);
-        create("span", {innerHTML:holder.title, className:"title"}, h1);
+        create(HTML.SPAN, {innerHTML:holder.title, className:"title"}, h1);
 
-        create("div", {className:"alert"}, div);
+        create(HTML.DIV, {className:"alert"}, div);
 
-        div = create("div", {className:"content"}, div);
+        div = create(HTML.DIV, {className:HTML.CONTENT}, div);
         return div;
     }
 
     function showAlert(text) {
         var div = document.getElementsByClassName("alert")[0];
         div.innerHTML = text;
-        div.style.display = "block";
+        div.style.display = HTML.BLOCK;
     }
 
     function byId(id) {
@@ -187,7 +255,7 @@ function Utils() {
             needInstantiate = true;
             name += ".js";
         }
-        create("script", {src: name, dataName: needInstantiate ? onlyname : null, onload: function(e) {
+        create(HTML.SCRIPT, {src: name, dataName: needInstantiate ? onlyname : null, onload: function(e) {
             if (onload) {
                 var a;
                 if(needInstantiate) {
@@ -511,9 +579,9 @@ function Utils() {
     }
 
     function dialog(options) {
-        var dialog = create("div", {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
+        var dialog = create(HTML.DIV, {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
             document.getElementsByClassName("right")[0]);
-        var intervalTask;
+
         dialog.opened = false;
 
         dialog.clearItems = function() {
@@ -525,9 +593,9 @@ function Utils() {
             item = item || {};
 
             var x;
-            if(item.type == "div") {
+            if(item.type == HTML.DIV) {
                 if(item.enclosed) {
-                    x = create("div", {
+                    x = create(HTML.DIV, {
                         className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
                     }, dialog.itemsLayout);
                     var enclosedButton, enclosedIcon;
@@ -540,25 +608,25 @@ function Utils() {
                             x.body.classList.add("hidden");
                         }
                     }}, x);
-                    enclosedIcon = u.create(HTML.DIV, {className:"material-icons dialog-item-enclosed-icon", innerHTML:"expand_more"}, enclosedButton);
+                    enclosedIcon = u.create(HTML.DIV, {className:"dialog-item-enclosed-icon", innerHTML:"expand_more"}, enclosedButton);
                     u.create(HTML.DIV, {className:"dialog-item-enclosed-label", innerHTML: item.label || "Show more information"}, enclosedButton);
                     x.body = u.create(HTML.DIV, {className:"dialog-item-enclosed-body hidden", innerHTML:item.body || ""}, x);
                 } else {
-                    x = create("div", {
+                    x = create(HTML.DIV, {
                         className: "dialog-item" + (item.className ? " " + item.className : ""),
                         innerHTML: item.label || item.title || item.innerHTML || ""
                     }, dialog.itemsLayout);
                 }
             } else if(item.type == "hidden") {
-                x = create("input", {type:"hidden", value:item.value || ""}, dialog.itemsLayout);
+                x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""}, dialog.itemsLayout);
             } else {
-                var div = create("div", {className:"dialog-item dialog-item-input"}, dialog.itemsLayout);
-                create("div", {
+                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input"}, dialog.itemsLayout);
+                create(HTML.DIV, {
                     className:"dialog-item-label"+(item.className ? " "+item.className : ""),
                     innerHTML:item.label || ""
                 }, div);
-                var type = "input";
-                if(item.type.toLowerCase() == "textarea") type = "textarea";
+                var type = HTML.INPUT;
+                if(item.type.toLowerCase() == HTML.TEXTAREA) type = HTML.TEXTAREA;
 
                 x = create(type, {
                     type:item.type,
@@ -567,7 +635,7 @@ function Utils() {
                     value:item.value || "",
                     onclick: function() { this.focus() },
                     onkeyup:function(e){
-                        if(e.keyCode == 13 && this.type != "textarea") {
+                        if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
                             dialog.onclose();
                             if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
                         } else if(e.keyCode == 27) {
@@ -582,7 +650,7 @@ function Utils() {
         }
 
         dialog.onopen = function(){
-
+            clearInterval(dialog.intervalTask);
             dialog.classList.remove("hidden");
             dialog.opened = true;
 
@@ -591,8 +659,8 @@ function Utils() {
             if(left && top) {
                 dialog.style.left = left;
                 dialog.style.top = top;
-                dialog.style.right = "auto";
-                dialog.style.bottom = "auto";
+                dialog.style.right = HTML.AUTO;
+                dialog.style.bottom = HTML.AUTO;
             } else {
                 left = dialog.offsetLeft;
                 var leftMain = window.innerWidth;
@@ -603,17 +671,19 @@ function Utils() {
                 }
             }
 
-
+            dialog.focus();
             if(items && items[0]) items[0].focus();
+            else if(dialog.positive && !options.timeout) dialog.positive.focus();
+            else if(dialog.negative && options.timeout) dialog.negative.focus();
             if(options.onopen) options.onopen.call(dialog,items);
             if(options.timeout) {
                 var atom = options.timeout / 16;
                 var current = 0;
-                intervalTask = setInterval(function(){
+                dialog.intervalTask = setInterval(function(){
                     current += 16;
                     progress.style.width = (current / options.timeout * 100) + "%";
                     if(current >= options.timeout) {
-                        clearInterval(intervalTask);
+                        clearInterval(dialog.intervalTask);
                         dialog.onclose();
                     }
                 }, 16);
@@ -625,7 +695,7 @@ function Utils() {
             dialog.classList.add("hidden");
             dialog.opened = false;
 
-            clearInterval(intervalTask);
+            clearInterval(dialog.intervalTask);
 
             if(options.onclose) options.onclose.call(dialog,items);
         };
@@ -655,15 +725,16 @@ function Utils() {
                 options.title.button.onclick = options.title.button.onclick || function(){};
 
             }
-            var titleLayout = create("div", {
+            var titleLayout = create(HTML.DIV, {
                 className:"dialog-title" + options.title.className,
                 onmousedown: function(e) {
+                    if(e.button != 0) return;
                     var position = dialog.getBoundingClientRect();
                     var offset = [ e.clientX, e.clientY ];
                     var moved = false;
                     function mouseup(e){
-                        window.removeEventListener("mouseup", mouseup, false);
-                        window.removeEventListener("mousemove", mousemove, false);
+                        window.removeEventListener(HTML.MOUSEUP, mouseup, false);
+                        window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
                         if(options.title && moved) {
                             save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
                             save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
@@ -680,52 +751,52 @@ function Utils() {
                             dialog.style.bottom = "auto";
                         }
                     }
-                    window.addEventListener("mouseup", mouseup);
-                    window.addEventListener("mousemove", mousemove);
+                    window.addEventListener(HTML.MOUSEUP, mouseup);
+                    window.addEventListener(HTML.MOUSEMOVE, mousemove);
                     e.preventDefault();
                 }
             }, dialog);
-            dialog.titleLayout = create("div", {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
+            dialog.titleLayout = create(HTML.DIV, {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
 
             if(options.title.button && options.title.button.icon) {
-                create("div", {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
+                create(HTML.DIV, {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
         }
-        dialog.itemsLayout = create("div", {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);
+        dialog.itemsLayout = create(HTML.DIV, {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);
         for(var i in options.items) {
             var item = options.items[i];
             dialog.addItem(item);
         }
         dialog.items = items;
-        var buttons = create("div", {className:"dialog-buttons hidden"}, dialog);
+        var buttons = create(HTML.DIV, {className:"dialog-buttons hidden"}, dialog);
         if(options.positive && options.positive.label) {
-            create("button", {className:"dialog-button-positive", onclick:function(){
+            dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(){
                 dialog.onclose();
                 if(options.positive.onclick) options.positive.onclick.call(dialog,items);
             }, innerHTML: options.positive.label}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.negative && options.negative.label) {
-            create("button", {className:"dialog-button-negative", onclick:function(){
+            dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(){
                 dialog.onclose();
                 if(options.negative.onclick) options.negative.onclick.call(dialog,items);
             }, innerHTML: options.negative.label}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.neutral && options.neutral.label) {
-            create("button", {className:"dialog-button-neutral", onclick:function(){
+            dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(){
                 dialog.onclose();
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items);
             }, innerHTML: options.neutral.label}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.help) {
-            create("button", {className:"material-icons dialog-help-button", onclick:options.help, innerHTML:"help_outline"}, dialog);
+            create(HTML.BUTTON, {className:"dialog-help-button", onclick:options.help, innerHTML:"help_outline"}, dialog);
         }
 
         if(options.timeout) {
-            var progressBar = create("div", {className:"dialog-progress-bar"}, dialog);
-            var progress = create("div", {className:"dialog-progress-value"}, progressBar);
+            var progressBar = create(HTML.DIV, {className:"dialog-progress-bar"}, dialog);
+            var progress = create(HTML.DIV, {className:"dialog-progress-value"}, progressBar);
             progress.style.width = "0%";
         }
 
@@ -768,7 +839,7 @@ function Utils() {
 
         // Label specific
         if(!node) {
-            node = u.create("div", {className:options.className});
+            node = u.create(HTML.DIV, {className:options.className});
             if(options.style) {
                 if(options.style.constructor !== String) {
                     var s = "";
@@ -783,7 +854,7 @@ function Utils() {
             }
         }
         this.span_ = node;
-        var div = this.div_ = u.create("div", {style: "position: absolute; display: none"});
+        var div = this.div_ = u.create(HTML.DIV, {style: "position: absolute; display: none"});
         div.appendChild(node);
 
 
@@ -806,7 +877,7 @@ function Utils() {
                  var div = this.div_;
                  div.style.left = position.x + "px";
                  div.style.top = position.y + "px";
-                 div.style.display = "block";
+                 div.style.display = HTML.BLOCK;
 
                  this.span_.innerHTML = this.get("text").toString();
              }

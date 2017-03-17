@@ -105,10 +105,10 @@ function ButtonHolder(main) {
                 buttons.classList.add("hidden");
                 break;
             case EVENTS.SELECT_USER:
-                this.views.button.button.classList.add("selected");
+                this.views.button.button.classList.add("user-button-selected");
                 break;
             case EVENTS.UNSELECT_USER:
-                this.views.button.button.classList.remove("selected");
+                this.views.button.button.classList.remove("user-button-selected");
                 break;
             case EVENTS.CHANGE_NAME:
 /*
