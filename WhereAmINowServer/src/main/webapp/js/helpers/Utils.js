@@ -514,6 +514,7 @@ function Utils() {
         var dialog = create("div", {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
             document.getElementsByClassName("right")[0]);
         var intervalTask;
+        dialog.opened = false;
 
         dialog.clearItems = function() {
             clear(dialog.itemsLayout);
@@ -551,19 +552,22 @@ function Utils() {
             } else if(item.type == "hidden") {
                 x = create("input", {type:"hidden", value:item.value || ""}, dialog.itemsLayout);
             } else {
-                var div = create("div", {className:"dialog-item"}, dialog.itemsLayout);
+                var div = create("div", {className:"dialog-item dialog-item-input"}, dialog.itemsLayout);
                 create("div", {
                     className:"dialog-item-label"+(item.className ? " "+item.className : ""),
                     innerHTML:item.label || ""
                 }, div);
-                x = create("input", {
+                var type = "input";
+                if(item.type.toLowerCase() == "textarea") type = "textarea";
+
+                x = create(type, {
                     type:item.type,
-                    className:"dialog-item-"+item.type,
+                    className:"dialog-item-input-"+type,
                     tabindex: i,
                     value:item.value || "",
                     onclick: function() { this.focus() },
                     onkeyup:function(e){
-                        if(e.keyCode == 13) {
+                        if(e.keyCode == 13 && this.type != "textarea") {
                             dialog.onclose();
                             if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
                         } else if(e.keyCode == 27) {
@@ -580,6 +584,7 @@ function Utils() {
         dialog.onopen = function(){
 
             dialog.classList.remove("hidden");
+            dialog.opened = true;
 
             var left = load("dialog:left:"+(options.id || (options.title && options.title.label)));
             var top = load("dialog:top:"+(options.id || (options.title && options.title.label)));
@@ -618,11 +623,11 @@ function Utils() {
 
         dialog.onclose = function (){
             dialog.classList.add("hidden");
+            dialog.opened = false;
+
             clearInterval(intervalTask);
 
             if(options.onclose) options.onclose.call(dialog,items);
-            // clear(dialog);
-            // destroy(dialog);
         };
 
         options = options || {};
@@ -683,7 +688,7 @@ function Utils() {
             dialog.titleLayout = create("div", {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
 
             if(options.title.button && options.title.button.icon) {
-                create("button", {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
+                create("div", {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
         }
         dialog.itemsLayout = create("div", {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);

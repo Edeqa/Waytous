@@ -301,7 +301,7 @@ function NavigationHolder(main) {
             geodesic: true,
             strokeColor: this.properties.color,
             strokeOpacity: 0.6,
-            strokeWeight: 8,
+            strokeWeight: 12,
             zIndex: 100,
             map: main.map
         });
@@ -309,7 +309,7 @@ function NavigationHolder(main) {
             geodesic: true,
             strokeColor: "white",
 //            strokeOpacity: 0.6,
-            strokeWeight: 2,
+            strokeWeight: 4,
             zIndex: 100,
             map: main.map
         });

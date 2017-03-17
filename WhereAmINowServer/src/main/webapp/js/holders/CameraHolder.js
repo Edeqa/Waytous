@@ -144,7 +144,7 @@ function CameraHolder(main) {
                 setTimeout(function(){
                     maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
                         if (response.status !== google.maps.MaxZoomStatus.OK) {
-                            console.error('Error in MaxZoomService',response);
+//                            console.error('Error in MaxZoomService',response);
                         } else {
                             if(object && object > response.zoom) object = response.zoom;
                             if(main.map.getZoom() != object) {

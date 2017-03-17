@@ -22,6 +22,8 @@ public class Constants {
     public final static String KEYSTORE = "../../inchem.jks";
 */
 
+
+
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
     public final static String BROADCAST_MESSAGE = "message";
 

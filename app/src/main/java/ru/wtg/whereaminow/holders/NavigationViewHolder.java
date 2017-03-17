@@ -383,8 +383,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 iconFactory.setTextAppearance(iconNavigationStyle);
 
                 final float density = State.getInstance().getResources().getDisplayMetrics().density;
-                track = map.addPolyline(new PolylineOptions().width((int) (8 * density)).color(color).geodesic(true).zIndex(100f));
-                trackCenter = map.addPolyline(new PolylineOptions().width((int) (2 * density)).color(Color.WHITE).geodesic(true).zIndex(100f));
+                track = map.addPolyline(new PolylineOptions().width((int) (12 * density)).color(color).geodesic(true).zIndex(100f));
+                trackCenter = map.addPolyline(new PolylineOptions().width((int) (4 * density)).color(Color.WHITE).geodesic(true).zIndex(100f));
 
                 MarkerOptions markerOptions = new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("")))

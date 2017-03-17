@@ -480,7 +480,7 @@ p.bottom-desc {
     flex-direction: column;
     background-color: lightgray;
     opacity: 0.9;
-    border-radius: 10px;
+    border-radius: 5px;
     border-style: solid;
     border-width: 2px;
     z-index: 1000;
@@ -552,25 +552,24 @@ p.bottom-desc {
     width: 100%;
     text-align: center;
     background-color: beige;
-    border-radius: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    border-radius: 5px;
+    min-height: 24px;
     cursor: pointer;
     position: relative;
+    display: flex;
+    align-items: center;
 }
 .dialog-title-label {
+    flex: 1 1 auto;
 }
 .dialog-title-button {
     font-family: "Material Icons";
     position: absolute;
-    top: 0px;
-    right: 0px;
+    right: 5px;
     background: none;
     border: none;
-    font-size: 18px !important;
     cursor: pointer;
     outline: none;
-    padding: 5px;
     color: inherit;
 }
 .dialog-title-button:hover {
@@ -588,13 +587,24 @@ p.bottom-desc {
     display: flex;
     align-items: center;
 }
+.dialog-item-input {
+    width: 100%;
+}
 .dialog-item-label {
     padding-right: 5px;
+    flex: 1 0 40%;
 }
-.dialog-item-input {
+.dialog-item-input-input {
     font-size: 12px;
     padding-top: 5px;
     padding-bottom: 5px;
+    width: 100%;
+}
+.dialog-item-input-textarea {
+    font-size: 12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    height: 50px;
     width: 100%;
 }
 .dialog-item-enclosed {
@@ -794,33 +804,97 @@ p.bottom-desc {
     width: 100%;
     margin-top: 0px;
 }
-.saved-locations {
-
+.saved-location {
+    width: 500px;
 }
-.saved-locations-items {
-
+.saved-location-items {
+    display: initial !important;
 }
-.saved-locations-item {
+.saved-location-item {
     width: 100%;
     display: flex;
+    margin-bottom: 10px;
+    position: relative;
 }
-.saved-locations-item-text {
-    width: 100%;
+.saved-location-item-text {
+    order: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-self: flex-start;
+    flex: 1 0 65%;
 }
-.saved-locations-item-label {
-
+.saved-location-item-label {
+    font-weight: bold;
+    order: 1;
+    flex: 1 0 30%;
 }
-.saved-locations-item-address {
-
+.saved-location-item-timestamp {
+    order: 2;
+    flex: 1 0 30%;
+    text-align: right;
+    font-size: smaller;
+    white-space: nowrap;
 }
-.saved-locations-item-description {
-
+.saved-location-item-show {
+    order: 3;
 }
-.saved-locations-item-timestamp {
-
+.saved-location-item-navigate {
+    order: 4;
 }
-.saved-locations-item-image {
-    align-self: center;
+.saved-location-item-edit {
+    order: 5;
+}
+.saved-location-item-share {
+    order: 6;
+}
+.saved-location-item-delete {
+    order: 7;
+}
+.saved-location-item-address {
+    order: 8;
+    flex: 0 1 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.saved-location-item-description {
+    order: 9;
+    flex: 0 1 100%;
+    font-size: small;
+    font-weight: bold;
+}
+.saved-location-item-image {
+    align-self: flex-start;
+    order: 1;
+    height: 120px;
+    border-style: solid;
+    border-width: 1px;
+    flex: 1 0 30%;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Material Icons";
+    font-size: 32px;
+    object-fit: cover;
+}
+.saved-location-item-button {
+    font-family: "Material Icons";
+    font-size: 10px;
+    flex: 1 0 0%;
+    border: none;
+    outline: none;
+    min-height: 16px;
+    min-width: 16px;
+    max-height: 16px;
+    padding: 2px;
+    max-width: 16px;
+    margin-left: 2px;
+}
+.saved-location-edit {
+    width: 400px;
+}
+.saved-location-delete {
+    width: 250px;
 }
 
 /* shift zoom control */
@@ -892,7 +966,7 @@ p.bottom-desc {
         cursor: pointer;
     }
     .modal {
-        width: 60%;
+        width: 80%;
         /*left: auto !important;
         top: auto !important;*/
         /*left: 50% !important;
@@ -1105,7 +1179,7 @@ p.bottom-desc {
         font-size: 9px;
     }
     .dialog-title {
-
+        min-height: 40px !important;
     }
     .dialog-items {
 
@@ -1164,6 +1238,77 @@ p.bottom-desc {
     .help {
         width: 90%;
     }
+    .saved-location {
+        width: 90%;
+    }
+    .saved-location-items {
+    }
+    .saved-location-item {
+    }
+    .saved-location-item-text {
+        font-size: 10px;
+        flex: initial;
+    }
+    .saved-location-item-label {
+    }
+    .saved-location-item-timestamp {
+        font-size: inherit;
+    }
+    .saved-location-item-show {
+        position: absolute;
+        height: 100px;
+        max-height: initial;
+        width: 100%;
+        max-width: initial;
+        opacity: 0;
+        left: 120px;
+    }
+    .saved-location-item-navigate {
+        position: absolute;
+        left: 0px;
+        height: 100px;
+        max-height: initial;
+        width: 120px;
+        max-width: initial;
+        opacity: 0;
+    }
+    .saved-location-item-edit {
+        position: absolute;
+        right: 68px;
+        bottom: 0px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+    .saved-location-item-share {
+        position: absolute;
+        right: 34px;
+        bottom: 0px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+    .saved-location-item-delete {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+    .saved-location-item-address {
+    }
+    .saved-location-item-description {
+        margin-bottom: 36px;
+    }
+    .saved-location-item-image {
+        height: 100px;
+        flex: 0 0 120px;
+    }
+    .saved-location-item-button {
+    }
+    .saved-location-edit {
+    }
+    .saved-location-delete {
+    }
+
 
 
     /* media specific classes */

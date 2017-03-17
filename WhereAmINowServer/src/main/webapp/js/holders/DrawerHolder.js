@@ -39,10 +39,10 @@ function DrawerHolder(main) {
         u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
             try {
                 drawerLayout.classList.add("drawer-open");
-                menu.scroll(0,0);
+                menu.scrollTop = 0;
                 drawerLayout.focus();
             } catch(e) {
-                console.err(e);
+                console.error(e);
             }
         },onfocus:function(){}}, actionbar);
         var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
