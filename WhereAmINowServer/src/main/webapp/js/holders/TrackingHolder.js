@@ -98,6 +98,7 @@ function TrackingHolder(main) {
                 drawerItemShare.classList.add("disabled");
                 break;
             case EVENTS.TRACKING_ACTIVE:
+                document.title = main.appName + " - " + main.tracking.getToken();
                 if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
                     drawerItemShare.classList.remove("disabled");
                 }
@@ -107,6 +108,7 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_CONNECTING:
+                document.title = "Connecting - " + main.appName;
                 drawerItemNew.classList.add("hidden");
                 drawerItemShare.classList.remove("hidden");
                 drawerItemShare.classList.remove("disabled");
@@ -117,18 +119,20 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_RECONNECTING:
-                    drawerItemNew.classList.add("hidden");
-                    drawerItemShare.classList.remove("hidden");
-                    drawerItemShare.classList.remove("disabled");
-                    drawerItemExit.classList.remove("hidden");
+                document.title = "Connecting - " + main.appName;
+                drawerItemNew.classList.add("hidden");
+                drawerItemShare.classList.remove("hidden");
+                drawerItemShare.classList.remove("disabled");
+                drawerItemExit.classList.remove("hidden");
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
                     wakeLockEnabled = true;
                 }
                 break;
             case EVENTS.TRACKING_DISABLED:
-                    drawerItemShare.classList.add("disabled");
-                    drawerItemExit.classList.add("hidden");
+                document.title = main.appName;
+                drawerItemShare.classList.add("disabled");
+                drawerItemExit.classList.add("hidden");
                 if (wakeLockEnabled) {
                     noSleep.disable(); // let the screen turn off.
                     wakeLockEnabled = false;
@@ -153,7 +157,7 @@ function TrackingHolder(main) {
                     positive: {
                         label: "OK",
                         onclick: function() {
-                            window.open("mailto:?subject=Follow%20me%20at%20Waytogo&body="+main.tracking.getTrackingUri(),"_blank");
+                            window.open("mailto:?subject=Follow%20me%20at%20Waytogo.us&body="+main.tracking.getTrackingUri(),"_blank");
                         }
                     },
                     negative: {

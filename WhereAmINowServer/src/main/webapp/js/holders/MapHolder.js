@@ -54,7 +54,7 @@ function MapHolder(main) {
         u.label.prototype = new google.maps.OverlayView;
         main.fire(EVENTS.MAP_READY);
         main.map.addListener("zoom_changed", function() {
-            main.fire(EVENTS.CAMERA_ZOOM, map.getZoom());
+            main.fire(EVENTS.CAMERA_ZOOM, main.map.getZoom());
         });
     }
 

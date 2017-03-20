@@ -128,37 +128,35 @@ function CameraHolder(main) {
 //                menuFitToScreen.classList.remove("disabled");
                 break;
             case EVENTS.CAMERA_ZOOM:
+
                 if(main.users.getCountSelected()==1) {
-                    maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
-                        if (response.status !== google.maps.MaxZoomStatus.OK) {
-                        } else {
-                            main.users.forAllUsers(function (number, user) {
-                                if(user.properties.selected) {
-                                    if(!object) {
-                                        var z = user.views.camera.zoom;
-                                        if(z > response.zoom) z = response.zoom;
-                                        var zooms = [CAMERA_DEFAULT_ZOOM, CAMERA_DEFAULT_ZOOM + 2, CAMERA_DEFAULT_ZOOM + 4, CAMERA_DEFAULT_ZOOM - 2, CAMERA_DEFAULT_ZOOM - 4, CAMERA_DEFAULT_ZOOM];
-                                        var index = zooms.indexOf(z);
-                                        object = zooms[index+1];
-                                    }
-                                    user.views.camera.zoom = object;
-                                }
-                            });
+                    main.users.forAllUsers(function (number, user) {
+                        if(user.properties.selected) {
+                            if(!object) {
+                                var z = user.views.camera.zoom;
+                                var zooms = [CAMERA_DEFAULT_ZOOM, CAMERA_DEFAULT_ZOOM + 2, CAMERA_DEFAULT_ZOOM + 4, CAMERA_DEFAULT_ZOOM - 2, CAMERA_DEFAULT_ZOOM - 4, CAMERA_DEFAULT_ZOOM];
+                                var index = zooms.indexOf(z);
+                                object = zooms[index+1];
+                            }
+                            user.views.camera.zoom = object;
                         }
                     });
                 }
-                setTimeout(function(){
-                    maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
-                        if (response.status !== google.maps.MaxZoomStatus.OK) {
-//                            console.error('Error in MaxZoomService',response);
-                        } else {
-                            if(object && object > response.zoom) object = response.zoom;
-                            if(main.map.getZoom() != object) {
-                                main.map.setZoom(Math.round(object));
+                if(this && this.properties && this.properties.selected) {
+                    setTimeout(function(){
+                        maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
+                console.log(object);
+                            if (response.status !== google.maps.MaxZoomStatus.OK) {
+    //                            console.error('Error in MaxZoomService',response);
+                            } else {
+                                if(object && object > response.zoom) object = response.zoom;
+                                if(main.map.getZoom() != object) {
+                                    main.map.setZoom(Math.round(object));
+                                }
                             }
-                        }
-                    });
-                },0);
+                        });
+                    },0);
+                }
                 break;
             case EVENTS.CAMERA_UPDATE:
                 update()

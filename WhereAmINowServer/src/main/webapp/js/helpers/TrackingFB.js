@@ -474,6 +474,7 @@ function TrackingFB(main) {
         getTrackingUri:getTrackingUri,
         getStatus:getStatus,
         setStatus:setStatus,
+        getToken:getToken,
         sendMessage:sendMessage,
         put:put,
         sendUpdate:sendUpdate,

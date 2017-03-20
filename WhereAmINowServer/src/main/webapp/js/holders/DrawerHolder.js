@@ -46,12 +46,12 @@ function DrawerHolder(main) {
             }
         },onfocus:function(){}}, actionbar);
         var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
-        title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:"Waytogo"}, label);
+        title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:main.appName}, label);
         subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle hidden"}, label);
 
         var header = u.create(HTML.DIV, { className:"drawer-header" }, drawerLayout);
         headerName = u.create(HTML.DIV, {className:"drawer-header-name"}, header);
-        headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:"Waytogo"}, header);
+        headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, header);
         u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML:"Be always on the same way\nwith your friends"}, header);
 
         menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
@@ -80,7 +80,7 @@ function DrawerHolder(main) {
         // u.create("div", { onclick: logout, innerHTML: "Log out" }, th);*/
 
         var th = u.create(HTML.DIV, { className:"drawer-footer"}, drawerLayout);
-        u.create(HTML.DIV, "Waytogo &copy;2017 WTG", th);
+        u.create(HTML.DIV, main.appName + " &copy;2017 WTG", th);
         u.create(HTML.DIV, "Build " + data.version, th);
 
     };
@@ -137,8 +137,8 @@ function DrawerHolder(main) {
                 break;
             case EVENTS.TRACKING_ACTIVE:
             case EVENTS.TRACKING_DISABLED:
-                title.innerHTML = "Waytogo";
-                headerTitle.innerHTML = "Waytogo";
+                title.innerHTML = main.appName;
+                headerTitle.innerHTML = main.appName;
                 break;
             case EVENTS.TRACKING_CONNECTING:
             case EVENTS.TRACKING_RECONNECTING:

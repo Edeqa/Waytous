@@ -92,42 +92,42 @@ function Main() {
 
     function resume() {
         try {
-        window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
-            window.scrollTo(0, 1); }, 0);
-        });
+            window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
+                window.scrollTo(0, 1); }, 0);
+            });
 
-        var out = u.create("div", {className:"layout"}, document.body);
-        menu = u.create("div", {className:"menu", tabindex: 1, onblur: function(){
-            menu.classList.remove("menu-open");
-            return true;
-        }}, out);
-        var right = u.create("div", {className:"right"}, out);
+            var out = u.create("div", {className:"layout"}, document.body);
+            menu = u.create("div", {className:"menu", tabindex: 1, onblur: function(){
+                menu.classList.remove("menu-open");
+                return true;
+            }}, out);
+            var right = u.create("div", {className:"right"}, out);
 
-        u.create("a", { href: "/", className:"logo" }, menu);
+            u.create("a", { href: "/", className:"logo" }, menu);
 
-        for(var i in holderFiles) {
-            var x = holderFiles[i].toLowerCase();
-            if(holders[x] && holders[x].menu) {
-                var th = u.create("div", {className:"menu-item"}, menu);
-                u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
-                u.create("div", { dataStart: x, onclick: function(){
-                    menu.blur();
-                    holders[this.dataset.start].start();
-                    return false;
-                }, innerHTML: holders[x].menu}, th);
+            for(var i in holderFiles) {
+                var x = holderFiles[i].toLowerCase();
+                if(holders[x] && holders[x].menu) {
+                    var th = u.create("div", {className:"menu-item"}, menu);
+                    u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
+                    u.create("div", { dataStart: x, onclick: function(){
+                        menu.blur();
+                        holders[this.dataset.start].start();
+                        return false;
+                    }, innerHTML: holders[x].menu}, th);
+                }
             }
-        }
 
-        th = u.create("div", {className:"menu-item"}, menu);
-        u.create("i", { className:"material-icons md-14", innerHTML:"exit_to_app" }, th);
-        u.create("div", { onclick: logout, innerHTML: "Log out" }, th);
+            th = u.create("div", {className:"menu-item"}, menu);
+            u.create("i", { className:"material-icons md-14", innerHTML:"exit_to_app" }, th);
+            u.create("div", { onclick: logout, innerHTML: "Log out" }, th);
 
-        th = u.create("div", { className:"menu-bottom"}, menu);
-        u.create("div", "Waytogo &copy;2017 WTG", th);
-        u.create("div", "Build " + data.version, th);
+            th = u.create("div", { className:"menu-bottom"}, menu);
+            u.create("div", main.appName + " &copy;2017 WTG", th);
+            u.create("div", "Build " + data.version, th);
 
-        holders[data.page].start();
-//        u.create("iframe", { name: "set", src: "/admin/"+data.page, frameBorder: 0 }, content);
+            holders[data.page].start();
+    //        u.create("iframe", { name: "set", src: "/admin/"+data.page, frameBorder: 0 }, content);
 
         } catch(e) {
             console.error(e);
