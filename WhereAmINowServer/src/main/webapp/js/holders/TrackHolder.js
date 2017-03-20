@@ -36,11 +36,9 @@ function TrackHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user && user.location && !user.views.track.show) {
+                if(user && user.type == "user" && user.location && !user.views.track.show) {
                     object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_TRACK,"Show track","title",function(){
                         user.fire(EVENTS.SHOW_TRACK);
-                        menuItemShow.classList.add("hidden");
-                        menuItemHide.classList.remove("hidden");
                         drawerPopulate();
                     });
                 } else if(user.views.track.show) {
@@ -51,17 +49,10 @@ function TrackHolder(main) {
                 }
                 break;
             case EVENTS.SHOW_TRACK:
-                this.views.track.show = true;
-                u.save("track:show:" + this.number, true);
                 show.call(this);
                 break;
             case EVENTS.HIDE_TRACK:
-                this.views.track.show = false;
-                u.save("track:show:" + this.number);
-                if(this.views && this.views.track && this.views.track.track) {
-                    this.views.track.track.setMap(null);
-                    this.views.track.track = null;
-                }
+                removeView(this);
                 break;
             default:
                 break;
@@ -83,28 +74,43 @@ function TrackHolder(main) {
         // console.log("SAMPLECREATEVIEW",user);
     }
 
+    function removeView(user){
+        if(!user) return;
+        user.views.track.show = false;
+        u.save("track:show:" + user.number);
+        if(user.views && user.views.track && user.views.track.track) {
+            user.views.track.track.setMap(null);
+            user.views.track.track = null;
+        }
+    }
+
     function drawerPopulate() {
         setTimeout(function(){
             drawerItemHide.classList.add("hidden");
             drawerItemShow.classList.add("hidden");
-            main.users.forAllUsers(function (number, user) {
-                if(user.views.track) {
-                    if (user.views.track.show) {
-                        drawerItemHide.classList.remove("hidden");
-                    } else {
-                        drawerItemShow.classList.remove("hidden");
+            if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
+                main.users.forAllUsers(function (number, user) {
+                    if(user.views.track) {
+                        if (user.views.track.show) {
+                            drawerItemHide.classList.remove("hidden");
+                        } else {
+                            drawerItemShow.classList.remove("hidden");
+                        }
                     }
-                }
-            })
+                })
+            }
         },0);
     }
 
     function show() {
-
         // if(!this.views.track) {
         //     this.views.track = createView(this);
         // }
         if(!this || !this.views || !this.views.track || !this.views.track.show) return;
+
+        this.views.track.show = true;
+        u.save("track:show:" + this.number, true);
+
         if(this.locations && this.locations.length > 1) {
             if(!this.views.track.track) {
                 var points = [];
@@ -136,10 +142,9 @@ function TrackHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
+        removeView:removeView,
         onChangeLocation:onChangeLocation,
     }
 }

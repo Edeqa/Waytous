@@ -65,13 +65,13 @@ function CameraHolder(main) {
                 if(main.users.getCountSelected() == 1 && user.properties.selected) break;
 
                 var select, unselect;
-                select = object.add(MENU.SECTION_PRIMARY, type + "_1", "Select user", "select_all", function () {
+                select = object.add(MENU.SECTION_PRIMARY, type + "_1", "Select", "select_all", function () {
                     select.classList.add("hidden");
                     unselect.classList.remove("hidden");
                     user.fire(EVENTS.SELECT_USER);
                 });
                 unselect_icon = unselect_icon || u.create(HTML.PATH, unselect_path, u.create(HTML.SVG, unselect_svg)).parentNode;
-                unselect = object.add(MENU.SECTION_PRIMARY, type + "_1", "Unselect user", unselect_icon, function () {
+                unselect = object.add(MENU.SECTION_PRIMARY, type + "_1", "Unselect", unselect_icon, function () {
                     select.classList.remove("hidden");
                     unselect.classList.add("hidden");
                     user.fire(EVENTS.UNSELECT_USER);
@@ -129,15 +129,21 @@ function CameraHolder(main) {
                 break;
             case EVENTS.CAMERA_ZOOM:
                 if(main.users.getCountSelected()==1) {
-                    main.users.forAllUsers(function (number, user) {
-                        if(user.properties.selected) {
-                            if(!object) {
-                                var z = user.views.camera.zoom;
-                                var zooms = [CAMERA_DEFAULT_ZOOM, CAMERA_DEFAULT_ZOOM + 2, CAMERA_DEFAULT_ZOOM + 4, CAMERA_DEFAULT_ZOOM - 2, CAMERA_DEFAULT_ZOOM - 4, CAMERA_DEFAULT_ZOOM];
-                                var index = zooms.indexOf(z);
-                                object = zooms[index+1];
-                            }
-                            user.views.camera.zoom = object;
+                    maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
+                        if (response.status !== google.maps.MaxZoomStatus.OK) {
+                        } else {
+                            main.users.forAllUsers(function (number, user) {
+                                if(user.properties.selected) {
+                                    if(!object) {
+                                        var z = user.views.camera.zoom;
+                                        if(z > response.zoom) z = response.zoom;
+                                        var zooms = [CAMERA_DEFAULT_ZOOM, CAMERA_DEFAULT_ZOOM + 2, CAMERA_DEFAULT_ZOOM + 4, CAMERA_DEFAULT_ZOOM - 2, CAMERA_DEFAULT_ZOOM - 4, CAMERA_DEFAULT_ZOOM];
+                                        var index = zooms.indexOf(z);
+                                        object = zooms[index+1];
+                                    }
+                                    user.views.camera.zoom = object;
+                                }
+                            });
                         }
                     });
                 }
@@ -225,7 +231,7 @@ function CameraHolder(main) {
             var finalBounds = new google.maps.LatLngBounds();
             for(var i in main.users.users) {
                 var user = main.users.users[i];
-                if(user.properties && user.properties.selected && user.location && user.location.coords) {
+                if(user.properties && user.properties.selected && user.properties.active && user.location && user.location.coords) {
                     finalBounds.extend(u.latLng(user.location));
                 }
             }
@@ -254,9 +260,9 @@ function CameraHolder(main) {
             }, function(){
                 main.map.fitBounds(finalBounds);
             });*/
-        } else {
+        } else if(main.users.getCountSelected() == 1) {
             main.users.forAllUsers(function(number,user){
-                if(user.properties && user.properties.selected) {
+                if(user.properties && user.properties.selected && user.properties.active) {
                     var finalCenter = u.latLng(user.location);
                     if (finalCenter) {
                         var startCenter = main.map.getCenter();
@@ -292,6 +298,8 @@ function CameraHolder(main) {
 
                 }
             });
+        } else {
+            main.me.fire(EVENTS.SELECT_USER);
         }
     }
 
@@ -314,9 +322,7 @@ function CameraHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
         onChangeLocation:onChangeLocation,
     }

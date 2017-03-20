@@ -11,8 +11,6 @@ function HelpHolder(main) {
     var dialog;
 
     function start() {
-        console.log("SAMPLEHOLDER",this);
-
     }
 
     function onEvent(EVENT,object){
@@ -52,7 +50,7 @@ function HelpHolder(main) {
                     modules.main = main;
                     for(var i in modules) {
                         console.log(i);
-                        if(modules[i] && modules[i].help) {
+                        if(modules[i] && modules[i].help && modules[i].help.title) {
                             var help = modules[i].help;
                             dialog.addItem({
                                 type:HTML.DIV,
@@ -71,15 +69,8 @@ function HelpHolder(main) {
                             }
                         }
                     }
-
-//                items: [
-//                                                        { type: HTML.DIV, className: "streetview-placeholder", innerHTML: "Loading..." },
-//                                                        { type: HTML.DIV, className: "streetview-view hidden", id: "streetview" },
-//                                                    ],
                 }
-
                 dialog.onopen();
-                console.log("SHOWHELP",object);
                 break;
             default:
                 break;
@@ -90,7 +81,6 @@ function HelpHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
     }
 }

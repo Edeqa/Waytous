@@ -12,6 +12,7 @@ MENU = {
     SECTION_COMMUNICATION: 2,
     SECTION_VIEWS: 3,
     SECTION_NAVIGATION: 4,
+    SECTION_EDIT: 5,
     SECTION_MAP: 8,
     SECTION_LAST: 9
 }
@@ -128,10 +129,18 @@ function ButtonHolder(main) {
             case EVENTS.MAKE_ACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
+                if(main.users.getCountActive() > 1) {
+                    buttons.classList.remove("hidden");
+                } else if(!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED) {
+                    buttons.classList.add("hidden");
+                }
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
+                if(main.users.getCountActive() < 2 && (!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED)) {
+                    buttons.classList.add("hidden");
+                }
                 break;
             case EVENTS.UPDATE_ADDRESS:
                 var subtitle = this.views.button.subtitle;
@@ -167,6 +176,15 @@ function ButtonHolder(main) {
             case EVENTS.MOUSE_OUT:
                 this.views.button.button.classList.remove("user-button-hover");
                 break;
+            case EVENTS.CHANGE_COLOR:
+                var color = object|| "#0000FF";
+                color = color.replace("#","").split("");
+                var r = parseInt(color[0]+color[1],16);
+                var g = parseInt(color[2]+color[3],16);
+                var b = parseInt(color[4]+color[5],16);
+                color = "rgba("+r+", "+g+", "+b+", 0.4)";
+                this.views.button.button.style.backgroundColor = color;
+                break;
             default:
                 break;
         }
@@ -176,7 +194,7 @@ function ButtonHolder(main) {
     var clicked = false;
     function createView(user){
         if(!user || !user.properties) return;
-        var color = user.properties.color || "#0000FF";
+        var color = user.color || user.properties.color || "#0000FF";
         color = color.replace("#","").split("");
         var r = parseInt(color[0]+color[1],16);
         var g = parseInt(color[2]+color[3],16);
@@ -226,7 +244,8 @@ function ButtonHolder(main) {
                 user.fire(EVENTS.MOUSE_OUT,e);
             }
         });
-        u.create(HTML.DIV, {className:"user-button-icon", innerHTML:"person"}, b);
+        var icon = (user && user.origin && user.origin.buttonIcon) || "person";
+        u.create(HTML.DIV, {className:"user-button-icon", innerHTML:icon}, b);
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
@@ -239,7 +258,7 @@ function ButtonHolder(main) {
         for(var i =0; i < buttons.itemsLayout.children.length; i++) {
             var number = parseInt(buttons.itemsLayout.children[i].dataset.number);
             if(number != main.me.number && number >= user.number) {
-                buttons.insertBefore(b, buttons.itemsLayout.children[i]);
+                buttons.itemsLayout.insertBefore(b, buttons.itemsLayout.children[i]);
                 added = true;
                 break;
             }
@@ -254,6 +273,10 @@ function ButtonHolder(main) {
             subtitle: subtitle,
             badge:badge,
         };
+    }
+
+    function removeView(user){
+        user.views.button.button.classList.add("hidden");
     }
 
     function openContextMenu(user) {
@@ -275,6 +298,13 @@ function ButtonHolder(main) {
             } else {
                 contextMenuLayout.style.left = Math.floor(size.right + 10) + "px";
             }
+//            contextMenuLayout.style.bottom = "auto";
+            if(main.right.offsetTop + main.right.offsetHeight < contextMenuLayout.offsetTop + contextMenuLayout.offsetHeight) {
+//                contextMenuLayout.style.top = "auto";
+                contextMenuLayout.style.top = (main.right.offsetTop + main.right.offsetHeight - contextMenuLayout.offsetHeight - 5) + "px";
+
+            }
+
 
             clearTimeout(delayDismiss);
             delayDismiss = setTimeout(function(){
@@ -317,9 +347,8 @@ function ButtonHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
-        dependsOnUser:true,
         onEvent:onEvent,
         createView:createView,
+        removeView:removeView,
     }
 }

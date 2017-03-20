@@ -4,8 +4,8 @@
 DRAWER = {
     SECTION_PRIMARY: 0,
     SECTION_COMMUNICATION: 2,
-    SECTION_VIEWS: 3,
-    SECTION_NAVIGATION: 4,
+    SECTION_NAVIGATION: 3,
+    SECTION_VIEWS: 4,
     SECTION_MAP: 8,
     SECTION_LAST: 9
 };
@@ -80,8 +80,7 @@ function DrawerHolder(main) {
         // u.create("div", { onclick: logout, innerHTML: "Log out" }, th);*/
 
         var th = u.create(HTML.DIV, { className:"drawer-footer"}, drawerLayout);
-        u.create(HTML.DIV, "Waytogo", th);
-        u.create(HTML.DIV, "&copy;2017 White Tiger Group", th);
+        u.create(HTML.DIV, "Waytogo &copy;2017 WTG", th);
         u.create(HTML.DIV, "Build " + data.version, th);
 
     };
@@ -172,9 +171,7 @@ function DrawerHolder(main) {
     return {
         type:"drawer",
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
     }
 }

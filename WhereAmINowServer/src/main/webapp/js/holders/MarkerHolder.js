@@ -14,19 +14,21 @@ function MarkerHolder(main) {
     function createView(user){
         if(!user.properties) return;
 
+        var icon = (user && user.origin && user.origin.markerIcon) || {
+            path: "M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 M 20 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71 z",
+            fillColor: user.color || user.properties.color || "blue",
+            fillOpacity: 0.7,
+            scale: 1.2,
+            strokeColor: "white",
+            strokeOpacity: 0.6,
+            strokeWeight: 2,
+            anchor: new google.maps.Point(40/2, 40/2)
+        };
+
         var marker = new google.maps.Marker({
             position: u.latLng(user.location),
             title: user.properties ? user.properties.getDisplayName() : "",
-            icon:{
-                path: "M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 M 20 2 l-7.5 18.29 l0.71,0.71 l 6.79 -3 l6.79,3 0.71,-0.71 z",
-                fillColor: user.properties ? user.properties.color : "blue",
-                fillOpacity: 0.7,
-                scale: 1.2,
-                strokeColor: "white",
-                strokeOpacity: 0.6,
-                strokeWeight: 2,
-                anchor: new google.maps.Point(40/2, 40/2)
-            },
+            icon:icon,
             optimized:false,
         });
         marker.addListener(HTML.CLICK, function(e){
@@ -62,6 +64,9 @@ function MarkerHolder(main) {
         };
     }
 
+    function removeView(user){
+        user.views.marker.marker.setMap(null);
+    }
 
     function onEvent(EVENT,object){
         switch (EVENT){
@@ -141,10 +146,9 @@ function MarkerHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
-        dependsOnUser:true,
         onEvent:onEvent,
         createView:createView,
+        removeView:removeView,
         onChangeLocation:onChangeLocation,
     }
 }

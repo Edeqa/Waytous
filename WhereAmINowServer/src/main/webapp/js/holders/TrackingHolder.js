@@ -12,10 +12,24 @@ function TrackingHolder(main) {
     var progress;
     var progressTitle;
     var drawerItemShare;
+    var drawerItemNew;
+    var drawerItemExit;
     var noSleep;
     var wakeLockEnabled;
     var shareDialog;
+    var drawerItemNewIcon;
 
+    var drawerItemNewIconSvg = {
+        xmlns:"http://www.w3.org/2000/svg",
+        viewbox:"0 0 24 24",
+        version:"1.1",
+        className: "menu-item"
+    };
+    var drawerItemNewIconPath = {
+        xmlns:"http://www.w3.org/2000/svg",
+        fill:"darkslategray",
+        d: "M10,2l-6.5,15 0.5,0.5L9,15L12.29,7.45z M14,5.5l-6.5,15 0.5,0.5 6,-3l6,3 0.5,-0.5z"
+    };
 
     function start(){
 
@@ -32,12 +46,15 @@ function TrackingHolder(main) {
         var groupOld = u.load("group");
         if(group) {
             progress.onopen();
+
+            noSleep = new NoSleep();
+            wakeLockEnabled = false;
+
+            var self = this;
+            setTimeout(function(){
+                u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
+            }, 0);
         }
-
-        noSleep = new NoSleep();
-        wakeLockEnabled = false;
-
-        u.require("/js/helpers/TrackingFB.js", startTracking.bind(this));
 
     }
 
@@ -64,14 +81,20 @@ function TrackingHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
+                drawerItemNewIcon = drawerItemNewIcon || u.create(HTML.PATH, drawerItemNewIconPath, u.create(HTML.SVG, drawerItemNewIconSvg)).parentNode;
+                drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW,"Create group",drawerItemNewIcon,function(){
+                    main.fire(EVENTS.TRACKING_NEW);
+                });
+                drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
+                drawerItemExit.classList.add("hidden");
                 drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(e){
                     if(EVENTS.TRACKING_ACTIVE) {
                         main.fire(EVENTS.SHARE_LINK,e);
                     }
                 });
+                drawerItemShare.classList.add("hidden");
                 drawerItemShare.classList.add("disabled");
                 break;
             case EVENTS.TRACKING_ACTIVE:
@@ -84,27 +107,28 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_CONNECTING:
-                if(drawerItemShare) {
-                    drawerItemShare.classList.add("disabled");
-                }
+                drawerItemNew.classList.add("hidden");
+                drawerItemShare.classList.remove("hidden");
+                drawerItemShare.classList.remove("disabled");
+                drawerItemExit.classList.remove("hidden");
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
                     wakeLockEnabled = true;
                 }
                 break;
             case EVENTS.TRACKING_RECONNECTING:
-                if(drawerItemShare) {
-                    drawerItemShare.classList.add("disabled");
-                }
+                    drawerItemNew.classList.add("hidden");
+                    drawerItemShare.classList.remove("hidden");
+                    drawerItemShare.classList.remove("disabled");
+                    drawerItemExit.classList.remove("hidden");
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
                     wakeLockEnabled = true;
                 }
                 break;
             case EVENTS.TRACKING_DISABLED:
-                if(drawerItemShare) {
                     drawerItemShare.classList.add("disabled");
-                }
+                    drawerItemExit.classList.add("hidden");
                 if (wakeLockEnabled) {
                     noSleep.disable(); // let the screen turn off.
                     wakeLockEnabled = false;
@@ -138,8 +162,6 @@ function TrackingHolder(main) {
                     timeout: 20000
                 });
                 shareDialog.onopen();
-
-
                 break;
             default:
                 break;
@@ -210,11 +232,11 @@ function TrackingHolder(main) {
                         progress.onclose();
                     })
                 }
-                if (o[RESPONSE.INITIAL]) {
-                    main.users.forAllUsersExceptMe(function (number, user) {
-                        user.createViews();
-                    })
-                }
+//                if (o[RESPONSE.INITIAL]) {
+//                    main.users.forAllUsersExceptMe(function (number, user) {
+//                        user.createViews();
+//                    })
+//                }
             } catch(e) {
                 console.error(e);
             }
@@ -277,9 +299,7 @@ function TrackingHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:false,
         perform:perform,
         saveable:true,
     }

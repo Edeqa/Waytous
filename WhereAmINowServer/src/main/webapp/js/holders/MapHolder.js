@@ -168,7 +168,6 @@ function MapHolder(main) {
     return {
         type:"map",
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
         map:map,
     }

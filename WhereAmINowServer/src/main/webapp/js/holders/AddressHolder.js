@@ -67,8 +67,6 @@ function AddressHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
-        dependsOnUser:true,
         onEvent:onEvent,
         createView:createView,
         onChangeLocation:onChangeLocation,

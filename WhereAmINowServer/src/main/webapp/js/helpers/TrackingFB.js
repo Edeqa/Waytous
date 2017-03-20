@@ -112,6 +112,7 @@ function TrackingFB(main) {
                                         var old = main.me.number;
                                         main.me.number = o[RESPONSE.NUMBER];
                                         main.users.users[o[RESPONSE.NUMBER]] = main.me;
+                                        main.me.fire(EVENTS.CHANGE_NUMBER, o[RESPONSE.NUMBER]);
                                         if (old) delete main.users.users[old];
                                     }
                                     o[RESPONSE.INITIAL] = true;
@@ -376,7 +377,7 @@ function TrackingFB(main) {
                 delete o.active;
 
                 var user = main.users.addUser(o);
-                user.user = true;
+                user.type = "user";
 
                 //registers
                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_NAME), usersDataNameListener);

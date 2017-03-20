@@ -81,15 +81,17 @@ public class MyHttpTrackingHandler implements HttpHandler {
         if(parts.size() >= 3){
             tokenId = parts.get(2);
         }
-
+        System.out.println("TOKEN");
         if(tokenId == null) {
 
         } else {
 
         }
+        System.out.println("A");
         File root = new File(WEB_ROOT_DIRECTORY);
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
+        System.out.println("B");
         html.clear();
         HtmlGenerator.Tag head = html.getHead();
 //        head.add(TITLE).with("Tracking");
@@ -101,6 +103,23 @@ public class MyHttpTrackingHandler implements HttpHandler {
 //        HtmlGenerator.Tag body = html.getBody();
 //        body.with("Here will be a web version soon...");
 //        body.add(BR);
+
+        html.getHead().add(TITLE).with("Waytogo");
+
+        JSONObject o = new JSONObject();
+//                o.put("page", part);
+        o.put("request", parts);
+        o.put("version", SERVER_BUILD);
+        o.put("HTTP_PORT", HTTP_PORT);
+        o.put("HTTPS_PORT", HTTPS_PORT);
+        o.put("WS_FB_PORT", WS_FB_PORT);
+        o.put("WSS_FB_PORT", WSS_FB_PORT);
+        o.put("WS_PORT", WS_PORT);
+        o.put("WSS_PORT", WSS_PORT);
+
+        html.getHead().add(SCRIPT).with("data", o);
+
+        html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with(ONLOAD, "(window.WAIN = new Main()).start();");
 
         if(tokenId != null) {
 
@@ -118,7 +137,6 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
 //            if (parts.size() > 2 && (parts.get(1).equals("track") || parts.get(1).equals("group"))) {
 
-            html.getHead().add(TITLE).with("Waytogo");
 
 //            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(HREF, "/images/apple-touch-icon.png");
 //            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "57x57").with(HREF, "/images/apple-touch-icon-57x57.png");
@@ -140,24 +158,12 @@ public class MyHttpTrackingHandler implements HttpHandler {
 //            html.getHead().add(META).with(NAME,"msapplication-config").with(CONTENT, "/images/browserconfig.xml");
 //            html.getHead().add(META).with(NAME,"theme-color").with(CONTENT, "#ffffff");
 
-            JSONObject o = new JSONObject();
-//                o.put("page", part);
-            o.put("request", parts);
-            o.put("version", SERVER_BUILD);
-            o.put("HTTP_PORT", HTTP_PORT);
-            o.put("HTTPS_PORT", HTTPS_PORT);
-            o.put("WS_FB_PORT", WS_FB_PORT);
-            o.put("WSS_FB_PORT", WSS_FB_PORT);
-            o.put("WS_PORT", WS_PORT);
-            o.put("WSS_PORT", WSS_PORT);
-
-            html.getHead().add(SCRIPT).with("data", o);
-
-            html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with(ONLOAD, "(window.WAIN = new Main()).start();");
 
 //            } else {
             // interface for create tracking
 //            }
+
+        } else {
 
         }
 

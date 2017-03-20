@@ -95,19 +95,7 @@ function NavigationHolder(main) {
                 update.call(this);
                 break;
             case EVENTS.HIDE_NAVIGATION:
-                main.toast.hide();
-                this.views.navigation.show = false;
-                u.save("navigation:show:" + this.number);
-                if(this.views && this.views.navigation && this.views.navigation.track) {
-                    this.views.navigation.track.setMap(null);
-                    this.views.navigation.track = null;
-                    this.views.navigation.trackCenter.setMap(null);
-                    this.views.navigation.trackCenter = null;
-                    this.views.navigation.marker.setMap(null);
-                    this.views.navigation.marker = null;
-                    this.views.navigation.label.setMap(null);
-                    this.views.navigation.label = null;
-                }
+                removeView(this);
                 break;
             default:
                 break;
@@ -127,6 +115,23 @@ function NavigationHolder(main) {
         drawerPopulate();
         return view;
         // console.log("SAMPLECREATEVIEW",user);
+    }
+
+    function removeView(user){
+        if(!user) return;
+        main.toast.hide();
+        user.views.navigation.show = false;
+        u.save("navigation:show:" + user.number);
+        if(user.views && user.views.navigation && user.views.navigation.track) {
+            user.views.navigation.track.setMap(null);
+            user.views.navigation.track = null;
+            user.views.navigation.trackCenter.setMap(null);
+            user.views.navigation.trackCenter = null;
+            user.views.navigation.marker.setMap(null);
+            user.views.navigation.marker = null;
+            user.views.navigation.label.setMap(null);
+            user.views.navigation.label = null;
+        }
     }
 
     function drawerPopulate() {
@@ -262,13 +267,13 @@ function NavigationHolder(main) {
 
         if(installation) {
             main.toast.hide();
-            if(this.properties.selected && main.users.getCountSelected() == 1) {
-                main.me.fire(EVENTS.SELECT_USER);
-                panTask = setTimeout(function(){
-                    main.me.fire(EVENTS.UNSELECT_USER);
-                },2000);
-            }
             installation = false;
+//            if(this.properties.selected && main.users.getCountSelected() == 1) {
+//                main.me.fire(EVENTS.SELECT_USER);
+//                panTask = setTimeout(function(){
+//                    main.me.fire(EVENTS.UNSELECT_USER);
+//                },2000);
+//            }
         }
 
 
@@ -341,10 +346,9 @@ function NavigationHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
+        removeView:removeView,
         onChangeLocation:onChangeLocation,
     }
 }

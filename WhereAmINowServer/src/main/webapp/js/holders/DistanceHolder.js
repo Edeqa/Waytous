@@ -36,12 +36,12 @@ function DistanceHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user && user.location && !user.views.distance.show) {
+                if(user && user != main.me && user.location && !user.views.distance.show) {
                     object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_DISTANCE,"Show distance","settings_ethernet",function(){
                         user.fire(EVENTS.SHOW_DISTANCE);
                         drawerPopulate();
                     });
-                } else if(user.views.distance.show) {
+                } else if(user && user != main.me && user.views.distance.show) {
                     object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_DISTANCE,"Hide distance","code",function(){
                         user.fire(EVENTS.HIDE_DISTANCE);
                         drawerPopulate();
@@ -87,6 +87,19 @@ function DistanceHolder(main) {
         drawerPopulate();
         return view;
         // console.log("SAMPLECREATEVIEW",user);
+    }
+
+    function removeView(user) {
+        if(user && user.views && user.views.distance & user.views.distance.distance) {
+
+            user.views.distance.distance.setMap(null);
+            user.views.distance.distance = null;
+            user.views.distance.marker.setMap(null);
+            user.views.distance.marker = null;
+            user.views.distance.label.setMap(null);
+            user.views.distance.label = null;
+
+        }
     }
 
     function drawerPopulate() {
@@ -169,10 +182,9 @@ function DistanceHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
+        removeView:removeView,
         onChangeLocation:onChangeLocation,
         help:help,
     }

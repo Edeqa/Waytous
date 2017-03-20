@@ -40,6 +40,7 @@ window.HTML = {
     FORM:"form",
     NAME:"name",
     INPUT:"input",
+    TEXT:"text",
     TEXTAREA:"textarea",
     HIDDEN:"hidden",
     SUBMIT:"submit",
@@ -672,9 +673,18 @@ function Utils() {
             }
 
             dialog.focus();
-            if(items && items[0]) items[0].focus();
-            else if(dialog.positive && !options.timeout) dialog.positive.focus();
-            else if(dialog.negative && options.timeout) dialog.negative.focus();
+            var focused = false;
+            for(var i in items) {
+                if(items[i].constructor === HTMLInputElement && items[i].type == HTML.TEXT) {
+                    focused = true;
+                    items[i].focus();
+                    break;
+                }
+            }
+            if(!focused) {
+                if(dialog.positive && !options.timeout) dialog.positive.focus();
+                else if(dialog.negative && options.timeout) dialog.negative.focus();
+            }
             if(options.onopen) options.onopen.call(dialog,items);
             if(options.timeout) {
                 var atom = options.timeout / 16;
@@ -699,6 +709,12 @@ function Utils() {
 
             if(options.onclose) options.onclose.call(dialog,items);
         };
+        dialog.addEventListener("keyup", function(e) {
+            if(e.keyCode == 27) {
+                dialog.onclose();
+                if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+            }
+        });
 
         options = options || {};
         var items = [];

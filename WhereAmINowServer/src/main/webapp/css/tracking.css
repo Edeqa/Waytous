@@ -443,6 +443,9 @@ p.bottom-desc {
     padding-right: 10px;
 }
 .user-button-title {
+    max-width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .user-button-subtitle {
     font-size: 9px;
@@ -1162,8 +1165,6 @@ p.bottom-desc {
         white-space: nowrap;
         min-width: 40px;
         padding: 0px;
-        text-overflow: ellipsis;
-        overflow: hidden;
     }
     .user-button-subtitle {
         font-size: 9px;
@@ -1250,8 +1251,8 @@ p.bottom-desc {
     }
     .streetview {
         position: inherit;
-        width: 100%;
-        transform: none;
+        width: 100% !important;
+        transform: none !important;
         height: 60%;
         z-index: 0;
         max-width: 100%;

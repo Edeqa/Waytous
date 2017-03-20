@@ -123,8 +123,7 @@ function Main() {
         u.create("div", { onclick: logout, innerHTML: "Log out" }, th);
 
         th = u.create("div", { className:"menu-bottom"}, menu);
-        u.create("div", "Waytogo", th);
-        u.create("div", "&copy;2017 White Tiger Group", th);
+        u.create("div", "Waytogo &copy;2017 WTG", th);
         u.create("div", "Build " + data.version, th);
 
         holders[data.page].start();

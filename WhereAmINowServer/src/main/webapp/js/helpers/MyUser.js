@@ -7,8 +7,7 @@ function MyUser(main) {
         var self = this;
         setTimeout(function(){
             for(var i in self.views) {
-                if(main.holders[i] && main.holders[i].dependsOnUser && main.holders[i].onEvent) {
-    //                if(i == "properties") continue;
+                if(main.holders[i] && main.holders[i].onEvent) {
                     try {
                         if (!main.holders[i].onEvent.call(self, EVENT, object)) break;
                     } catch(e) {
@@ -21,30 +20,38 @@ function MyUser(main) {
 
     function createViews() {
         var user = this;
-//        setTimeout(function(){
-            if(user.number) {
-                for (var i in main.holders) {
-                    if (main.holders[i] && main.holders[i].dependsOnUser && !user.views[i] && main.holders[i].createView) {
-                        try {
-                            var view = main.holders[i].createView(user);
-                            if (view) user.views[i] = view;
-                        } catch (e) {
-                            console.error(i,e);
-                        }
+        if(user.number != undefined) {
+            for (var i in main.holders) {
+                if (main.holders[i] && main.holders[i].createView && !user.views[i]) {
+                    try {
+                        var view = main.holders[i].createView(user);
+                        if (view) user.views[i] = view;
+                    } catch (e) {
+                        console.error(i,e);
                     }
                 }
             }
-//        }, 0);
+        }
     }
 
     function removeViews() {
-        console.log("REMOVEVIEWS:"+this.number);
+        var user = this;
+        if(user.number != undefined) {
+            for (var i in main.holders) {
+                if (main.holders[i] && user.views[i] && main.holders[i].removeView) {
+                    try {
+                        main.holders[i].removeView(user);
+                    } catch (e) {
+                        console.error(i,e);
+                    }
+                }
+            }
+        }
     }
 
     function addLocation(location) {
         this.locations.push(location);
         this.location = location;
-
         this.onChangeLocation();
     }
 

@@ -4,15 +4,11 @@
 function PropertiesHolder(main) {
 
     this.type = "properties";
-    this.dependsOnEvent = true;
-    this.dependsOnUser = true;
     this.saveable = true;
 
     var dialog;
 
     this.start = function() {
-        // console.log("PROPERTIESHOLDER",this);
-
         dialog = u.dialog({
             title: "Set my name",
             items: [
@@ -34,7 +30,6 @@ function PropertiesHolder(main) {
                 label: "Cancel"
             }
         });
-
     };
 
     this.onEvent = function(EVENT,object){
@@ -115,6 +110,12 @@ function PropertiesHolder(main) {
             case EVENTS.MAKE_INACTIVE:
                 if(this.properties)this.properties.active = false;
                 break;
+            case EVENTS.MAP_READY:
+                main.me.createViews();
+                main.me.fire(EVENTS.SELECT_USER);
+                main.me.fire(EVENTS.CHANGE_COLOR, "#0000FF");
+                main.me.fire(EVENTS.MAKE_ACTIVE);
+                break;
             default:
                 break;
         }
@@ -150,7 +151,7 @@ function PropertiesHolder(main) {
             }
         }
         return name;
-    };
+    }
 
     function setMyName(name){
         if(dialog) dialog.onclose();
@@ -158,13 +159,4 @@ function PropertiesHolder(main) {
         dialog.onopen();
     }
 
-    // return {
-    //     type:type,
-    //     start:start,
-    //     dependsOnEvent:true,
-    //     onEvent:onEvent,
-    //     dependsOnUser:true,
-    //     createView:createView,
-    //     saveable:true,
-    // }
 }

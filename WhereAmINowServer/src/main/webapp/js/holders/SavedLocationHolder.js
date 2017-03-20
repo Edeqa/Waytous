@@ -6,7 +6,6 @@ EVENTS.SAVE_LOCATION = "save_location";
 EVENTS.SHOW_SAVED_LOCATION = "show_saved_location";
 EVENTS.EDIT_SAVED_LOCATION = "edit_saved_locations";
 EVENTS.HIDE_SAVED_LOCATION = "hide_saved_location";
-EVENTS.NAVIGATE_SAVED_LOCATION = "navigate_saved_location";
 EVENTS.DELETE_SAVED_LOCATION = "delete_saved_location";
 EVENTS.SHOW_SAVED_LOCATIONS = "show_saved_locations";
 EVENTS.SHARE_SAVED_LOCATION = "share_saved_locations";
@@ -22,6 +21,7 @@ function SavedLocationHolder(main) {
     var locationDeleteDialog;
     var locationsDialog;
     var drawerMenuItem;
+    var showNavigation = false;
 
     function start() {
         console.log("SAMPLEHOLDER", this);
@@ -50,12 +50,25 @@ function SavedLocationHolder(main) {
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
-                if(user && user.location && !user.saved_location) {
+                if(user && user.type == "user" && user.location && !user.saved_location) {
                     object.add(MENU.SECTION_NAVIGATION, EVENT.SAVE_LOCATION, "Save location", "pin_drop", function () {
                         user.fire(EVENTS.SAVE_LOCATION);
                     });
                 }
-
+                if(user.type == type) {
+                    object.add(MENU.SECTION_EDIT, EVENT.EDIT_SAVED_LOCATION, "Edit", "mode_edit", function () {
+                        main.fire(EVENTS.EDIT_SAVED_LOCATION, user.number - 10000);
+                    });
+                    object.add(MENU.SECTION_VIEWS, EVENT.HIDE_SAVED_LOCATION, "Hide", "pin_drop", function () {
+                        main.fire(EVENTS.HIDE_SAVED_LOCATION, user.number - 10000);
+                    });
+                    object.add(MENU.SECTION_COMMUNICATION, EVENT.SHARE_SAVED_LOCATION, "Share", "share", function () {
+                        main.fire(EVENTS.SHARE_SAVED_LOCATION, user.number - 10000);
+                    });
+                    object.add(MENU.SECTION_COMMUNICATION, EVENT.SEND_SAVED_LOCATION, "Send to group", "chat", function () {
+                        main.fire(EVENTS.SEND_SAVED_LOCATION, user.number - 10000);
+                    });
+                }
                 break;
             case EVENTS.SAVE_LOCATION:
                 var user = this;
@@ -105,16 +118,64 @@ function SavedLocationHolder(main) {
                 }
                 break;
             case EVENTS.SHOW_SAVED_LOCATION:
-                var loc = u.load("saved_location:"+parseInt(object));
-                console.log("SHOW",loc);
-                if(loc) {
-                }//TODO
+                var number = parseInt(object);
+                if(main.users.users[10000 + number]) {
+                    main.users.forUser(10000 + number, function(number, user){
+                        user.fire(EVENTS.MAKE_ACTIVE);
+                        user.fire(EVENTS.SELECT);
+                    });
+                } else {
+                    var loc = u.load("saved_location:"+number);
+                    console.log("SHOW",loc);
+                    if(loc) {
+                        var o = {};
+                        o[USER.PROVIDER] = type;
+                        o[USER.LATITUDE] = loc.la;
+                        o[USER.LONGITUDE] = loc.lo;
+                        o[USER.ALTITUDE] = 0;
+                        o[USER.ACCURACY] = 0;
+                        o[USER.BEARING] = 0;
+                        o[USER.SPEED] = 0;
+                        o[USER.NUMBER] = 10000 + number;
+                        o[USER.COLOR] = "#00AA00";
+                        o[USER.NAME] = loc.n;
+                        o[REQUEST.TIMESTAMP] = loc.t;
+    //                    o.icon = "pin_drop";
+                        o.markerIcon = {
+                            path: "M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 m26 -3c0-3.31-2.69-6-6-6s-6 2 -6 6c0 4.5 6 11 6 11s6-6.5 6-11zm-8 0c0-1.1.9-2 2-2s2 .9 2 2-.89 2-2 2c-1.1 0-2-.9-2-2z m-5 12v2h14v-2h-14.5z",
+                            fillColor: "green",
+                            fillOpacity: 0.7,
+                            scale: 1.2,
+                            strokeColor: "white",
+                            strokeOpacity: 0.6,
+                            strokeWeight: 2,
+                            anchor: new google.maps.Point(40/2, 40/2)
+                        };
+                        o.buttonIcon = "pin_drop";
+                        o.type = type;
+
+    //<path d="M18 8c0-3.31-2.69-6-6-6S6 4.69 6 8c0 4.5 6 11 6 11s6-6.5 6-11zm-8 0c0-1.1.9-2 2-2s2 .9 2 2-.89 2-2 2c-1.1 0-2-.9-2-2zM5 20v2h14v-2H5z"/>
+    //<path d="M0 0h24v24H0z" fill="none"/>
+
+                        var user = main.users.addUser(o);
+
+//                        user.createViews();
+                        main.users.forUser(10000 + number, function(number, user){
+                            user.fire(EVENTS.MAKE_ACTIVE);
+                            user.fire(EVENTS.CHANGE_COLOR, "#00AA00");
+                            main.fire(USER.JOINED, user);
+                            user.fire(EVENTS.SELECT);
+                        });
+                    }
+                }
                 break;
-            case EVENTS.NAVIGATE_SAVED_LOCATION:
-                var loc = u.load("saved_location:"+parseInt(object));
-                console.log("NAVIGATE",loc);
-                if(loc) {
-                }//TODO
+            case EVENTS.HIDE_SAVED_LOCATION:
+                var number = parseInt(object);
+                main.users.forUser(10000 + number, function(number, user){
+                    user.removeViews();
+                    user.fire(EVENTS.MAKE_INACTIVE);
+                    main.fire(EVENTS.CAMERA_UPDATE);
+                });
                 break;
             case EVENTS.EDIT_SAVED_LOCATION:
                 locationEditDialog && locationEditDialog.onclose();
@@ -133,7 +194,7 @@ function SavedLocationHolder(main) {
                     positive: {
                         label: "OK",
                         onclick: function(items) {
-                            var number = items[0].value;
+                            var number = parseInt(items[0].value);
                             var name = items[1].value || "";
                             var description = items[2].value || "";
                             var loc = u.load("saved_location:"+number);
@@ -141,6 +202,9 @@ function SavedLocationHolder(main) {
                             loc.d = description;
                             u.save("saved_location:"+number, loc);
                             if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
+                            main.users.forUser(10000 + number, function(number, user){
+                                user.fire(EVENTS.CHANGE_NAME, name);
+                            });
                         }
                     },
                     negative: {
@@ -240,7 +304,13 @@ function SavedLocationHolder(main) {
                         } }, content);
                         u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-navigate", dataNumber: i, innerHTML:"navigation", title:"Show direction to location", onclick:function(){
                             locationsDialog.onclose();
-                            main.fire(EVENTS.NAVIGATE_SAVED_LOCATION, this.dataset.number);
+                            var number = this.dataset.number;
+                            main.fire(EVENTS.SHOW_SAVED_LOCATION, number);
+                            setTimeout(function(){
+                                main.users.forUser(10000 + number, function(number, user){
+                                    user.fire(EVENTS.SHOW_NAVIGATION);
+                                });
+                            },0);
                         } }, content);
                         u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-edit", dataNumber: i, innerHTML:"mode_edit", title:"Edit location", onclick:function(){
                             main.fire(EVENTS.EDIT_SAVED_LOCATION, this.dataset.number);
@@ -306,9 +376,7 @@ function SavedLocationHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
         onChangeLocation:onChangeLocation,
     }

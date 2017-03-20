@@ -18,10 +18,12 @@ function MyUsers(main) {
                 user.name = json[USER.NAME];
             }
             if (json[USER.PROVIDER]) {
-                var location = null;
+                var location = u.jsonToLocation(json);
                 user.addLocation(location);
             }
             users[json[RESPONSE.NUMBER]] = user;
+            user.type = json.type;
+            user.origin = json;
             user.fire(EVENTS.CHANGE_NUMBER, json[RESPONSE.NUMBER]);
             user.createViews();
         } else {
@@ -65,14 +67,14 @@ function MyUsers(main) {
         }
     }
 
-    function forUser(number,callback, arguments){
-        if(users[number]) callback(number, users[number], arguments);
+    function forUser(number,callback, args){
+        if(users[number]) callback(number, users[number], args);
     }
 
     function getCountSelected(){
         var count = 0;
         for(var i in users) {
-            if(users[i] && i == users[i].number && users[i].properties && users[i].properties.selected) {
+            if(users[i] && i == users[i].number && users[i].properties && users[i].properties.active && users[i].properties.selected) {
                 count ++;
             }
         }

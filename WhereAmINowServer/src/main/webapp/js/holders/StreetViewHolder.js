@@ -138,9 +138,7 @@ function StreetViewHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
-        dependsOnUser:true,
         createView:createView,
         onChangeLocation:onChangeLocation,
     }

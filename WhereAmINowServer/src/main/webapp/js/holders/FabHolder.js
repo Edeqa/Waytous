@@ -60,7 +60,6 @@ function FabHolder(main) {
     return {
         type:type,
         start:start,
-        dependsOnEvent:true,
         onEvent:onEvent,
     }
 }
