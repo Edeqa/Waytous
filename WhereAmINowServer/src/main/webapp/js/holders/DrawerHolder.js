@@ -77,7 +77,15 @@ function DrawerHolder(main) {
                 icon:icon,
                 callback:callback
             };
-            var th = u.create(HTML.DIV, {className:"menu-item"}, sections[section]);
+            var th = u.create(HTML.DIV, {
+                className:"menu-item",
+                onclick: function (event) {
+                    setTimeout(function () {
+                        drawerLayout.blur();
+                        callback(event);
+                    }, 100);
+                }
+            }, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
                     u.create(HTML.DIV, { className:"menu-item-icon", innerHTML: icon }, th);
@@ -87,12 +95,6 @@ function DrawerHolder(main) {
             }
             if(callback) {
                 u.create(HTML.DIV, {
-                    onclick: function (event) {
-                        setTimeout(function () {
-                            drawerLayout.blur();
-                            callback(event);
-                        }, 100);
-                    },
                     className: "menu-item-label",
                     innerHTML: name
                 }, th);

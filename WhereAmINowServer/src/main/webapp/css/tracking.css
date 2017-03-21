@@ -35,7 +35,7 @@ input, textarea {
   user-select: text;
 }
 button {
-    border-radius: 5px;
+    border-radius: 3px;
     box-shadow: none;
     outline: none;
     padding-top: 5px;
@@ -89,6 +89,7 @@ button:active {
 }
 .alert-icon {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     position: fixed;
     top: 50px;
     z-index: 10000;
@@ -182,6 +183,7 @@ button:active {
 }
 .menu-item-icon, .menu-item svg {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     margin: 12px;
     padding: 0px;
@@ -311,6 +313,7 @@ button:active {
 }
 .fab {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     background-color: rgba(255, 0, 0, 0.5);
     position: fixed;
@@ -415,6 +418,7 @@ p.bottom-desc {
 }
 .user-button-icon {
     font-family: 'Material Icons';
+    font-feature-settings: "liga" 1;
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -479,6 +483,7 @@ p.bottom-desc {
 }
 .user-context-menu-item-icon {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-weight: normal;
     font-style: normal;
     font-size: 20px;
@@ -585,6 +590,7 @@ p.bottom-desc {
 }
 .dialog-title-button {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     position: absolute;
     right: 5px;
@@ -608,6 +614,7 @@ p.bottom-desc {
 .dialog-item {
     display: flex;
     align-items: center;
+    max-width: 100%;
 }
 .dialog-item-input {
     width: 100%;
@@ -645,6 +652,7 @@ p.bottom-desc {
 }
 .dialog-item-enclosed-icon {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     font-size: initial !important;
 }
@@ -679,6 +687,7 @@ p.bottom-desc {
 }
 .dialog-help-button {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     background: none;
     border: none;
@@ -693,9 +702,18 @@ p.bottom-desc {
 .dialog-help-button:hover {
     background-color: burlywood;
 }
+.dialog-resize {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    cursor: se-resize;
+}
 .chat {
     width: 500px;
     max-width: 60%;
+    height: 300px;
     top: auto;
     bottom: 10px;
     left: 260px;
@@ -711,7 +729,6 @@ p.bottom-desc {
     opacity: 1.0;
 }
 .chat-messages {
-    max-height: 200px;
     width: 100%;
     font-size: 10px;
     overflow-y: scroll;
@@ -738,12 +755,14 @@ p.bottom-desc {
     padding-top: 8px;
     align-items: stretch;
     width: 100%;
+    flex: 1 0;
 }
 .chat-reply-input {
     width: 100%;
 }
 .chat-reply-button {
     font-family: 'Material Icons';
+    font-feature-settings: "liga" 1;
     font-style: normal;
     font-size: 24px;
     -webkit-font-feature-settings: 'liga';
@@ -903,6 +922,7 @@ p.bottom-desc {
     align-items: center;
     justify-content: center;
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     font-size: 32px;
     object-fit: cover;
@@ -910,6 +930,7 @@ p.bottom-desc {
 }
 .saved-location-item-button {
     font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
     font-style: normal;
     font-size: 10px;
     flex: 1 0 0%;
@@ -1001,6 +1022,7 @@ p.bottom-desc {
     }
     .modal {
         width: 90% !important;
+        height: auto !important;
         left: 50% !important;
         top: 50% !important;
         transform: translate(-50%,-50%) !important;
@@ -1023,6 +1045,7 @@ p.bottom-desc {
     }
     .actionbar-button {
         font-family: "Material Icons";
+        font-feature-settings: "liga" 1;
         padding-left: 16px;
         font-size: 22px;
         align-self: center;
@@ -1130,6 +1153,7 @@ p.bottom-desc {
         display: flex;
         width: auto !important;
         max-width: 95%;
+        min-width: auto;
         position: absolute;
         top: 52px !important;
         right: auto;
@@ -1241,6 +1265,7 @@ p.bottom-desc {
         padding: 0px;
         max-width: 100%;
         width: 100% !important;
+        height: 40% !important;
         transform: none !important;
     }
     .chat-messages {
@@ -1337,6 +1362,7 @@ p.bottom-desc {
         flex: 0 0 120px;
     }
     .saved-location-item-button {
+        font-size: 20px;
     }
     .saved-location-edit {
     }

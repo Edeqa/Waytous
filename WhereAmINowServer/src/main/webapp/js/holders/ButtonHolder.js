@@ -48,8 +48,8 @@ function ButtonHolder(main) {
             },
             className: "user-buttons",
             tabindex: 1,
-            items: [
-            ],
+            resizeable: true,
+            items: [],
             itemsClassName: "user-buttons-items",
         });
 
@@ -100,10 +100,10 @@ function ButtonHolder(main) {
                 }*/
                 break;
             case EVENTS.TRACKING_ACTIVE:
-                buttons.classList.remove("hidden");
+                buttons.onopen();
                 break;
             case EVENTS.TRACKING_DISABLED:
-                buttons.classList.add("hidden");
+                buttons.onclose();
                 break;
             case EVENTS.SELECT_USER:
                 this.views.button.button.classList.add("user-button-selected");
@@ -133,16 +133,16 @@ function ButtonHolder(main) {
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() > 1) {
-                    buttons.classList.remove("hidden");
+                    buttons.onopen();
                 } else if(!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED) {
-                    buttons.classList.add("hidden");
+                    buttons.onclose();
                 }
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() < 2 && (!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED)) {
-                    buttons.classList.add("hidden");
+                    buttons.onclose();
                 }
                 break;
             case EVENTS.UPDATE_ADDRESS:

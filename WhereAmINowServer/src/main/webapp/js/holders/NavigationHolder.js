@@ -137,11 +137,11 @@ function NavigationHolder(main) {
     function drawerPopulate() {
 //        drawerItemShow.classList.add("hidden");
         setTimeout(function(){
-            drawerItemHide.classList.add("hidden");
+            drawerItemHide && drawerItemHide.classList.add("hidden");
             main.users.forAllUsersExceptMe(function (number, user) {
                 if(user.views.navigation) {
                     if (user.views.navigation.show) {
-                        drawerItemHide.classList.remove("hidden");
+                        drawerItemHide && drawerItemHide.classList.remove("hidden");
                     } else {
     //                    drawerItemShow.classList.remove("hidden");
                     }

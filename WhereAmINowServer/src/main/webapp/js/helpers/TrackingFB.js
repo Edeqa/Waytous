@@ -20,7 +20,7 @@ function TrackingFB(main) {
             uri = new URL(this.link);
         } else {
             newTracking = true;
-            uri = new URL(data.WSS_SERVER_HOST);
+            uri = new URL(window.location.href);
         }
 
         var path = uri.pathname.replace("/group/","/track/");

@@ -166,9 +166,9 @@ function Utils() {
             }
         }
         if(appendTo) {
-            if(appendTo.children.length > 0) {
+            if(appendTo.childNodes.length > 0) {
                 if(position == "first") {
-                    appendTo.insertBefore(el,appendTo.children[0]);
+                    appendTo.insertBefore(el,appendTo.childNodes[0]);
                 } else {
                     appendTo.appendChild(el);
                 }
@@ -656,9 +656,13 @@ function Utils() {
 
             var left = load("dialog:left:"+(options.id || (options.title && options.title.label)));
             var top = load("dialog:top:"+(options.id || (options.title && options.title.label)));
-            if(left && top) {
-                dialog.style.left = left;
-                dialog.style.top = top;
+            var width = load("dialog:width:"+(options.id || (options.title && options.title.label)));
+            var height = load("dialog:height:"+(options.id || (options.title && options.title.label)));
+            if(left || top || width || height) {
+                if(left) dialog.style.left = left;
+                if(top) dialog.style.top = top;
+                if(width) dialog.style.width = width;
+                if(height) dialog.style.height = height;
                 dialog.style.right = HTML.AUTO;
                 dialog.style.bottom = HTML.AUTO;
             } else {
@@ -668,6 +672,8 @@ function Utils() {
                 if(left >= leftMain || left == 0) {
                     dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
                     dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
+                    dialog.style.right = "auto";
+                    dialog.style.bottom = "auto";
                 }
             }
 
@@ -750,9 +756,11 @@ function Utils() {
                     function mouseup(e){
                         window.removeEventListener(HTML.MOUSEUP, mouseup, false);
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
-                        if(options.title && moved) {
-                            save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
-                            save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
+                        if((options.id || options.title.label) && moved) {
+                            if(dialog.style.left) save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
+                            if(dialog.style.top) save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
+//                            if(dialog.style.width) save("dialog:width:"+(options.id || options.title.label), dialog.style.width);
+//                            if(dialog.style.height) save("dialog:height:"+(options.id || options.title.label), dialog.style.height);
                         }
                     }
                     function mousemove(e){
@@ -769,6 +777,19 @@ function Utils() {
                     window.addEventListener(HTML.MOUSEUP, mouseup);
                     window.addEventListener(HTML.MOUSEMOVE, mousemove);
                     e.preventDefault();
+                },
+                ondblclick: function(e) {
+                    save("dialog:left:"+(options.id || options.title.label));
+                    save("dialog:top:"+(options.id || options.title.label));
+                    save("dialog:width:"+(options.id || options.title.label));
+                    save("dialog:height:"+(options.id || options.title.label));
+                    dialog.style.left = "";
+                    dialog.style.top = "";
+                    dialog.style.width = "";
+                    dialog.style.height = "";
+                    dialog.style.right = "";
+                    dialog.style.bottom = "";
+                    dialog.onopen();
                 }
             }, dialog);
             dialog.titleLayout = create(HTML.DIV, {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
@@ -807,6 +828,39 @@ function Utils() {
         }
         if(options.help) {
             create(HTML.BUTTON, {className:"dialog-help-button", onclick:options.help, innerHTML:"help_outline"}, dialog);
+        }
+        if(options.resizeable) {
+            create(HTML.DIV, {
+                className:"dialog-resize",
+                onmousedown: function(e) {
+                    if(e.button != 0) return;
+                    var position = dialog.getBoundingClientRect();
+                    var offset = [ e.clientX, e.clientY ];
+                    var moved = false;
+                    function mouseup(e){
+                        window.removeEventListener(HTML.MOUSEUP, mouseup, false);
+                        window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
+                        if((options.id || options.title.label) && moved) {
+//                            if(dialog.style.left) save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
+//                            if(dialog.style.top) save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
+                            if(dialog.style.width) save("dialog:width:"+(options.id || options.title.label), dialog.style.width);
+                            if(dialog.style.height) save("dialog:height:"+(options.id || options.title.label), dialog.style.height);
+                        }
+                    }
+                    function mousemove(e){
+                        var deltaX = e.clientX - offset[0];
+                        var deltaY = e.clientY - offset[1];
+                        if(deltaX || deltaY) {
+                            moved = true;
+                            dialog.style.width = (position.width + deltaX)+"px";
+                            dialog.style.height = (position.height + deltaY)+"px";
+                        }
+                    }
+                    window.addEventListener(HTML.MOUSEUP, mouseup);
+                    window.addEventListener(HTML.MOUSEMOVE, mousemove);
+                    e.preventDefault();
+                }
+            }, dialog);
         }
 
         if(options.timeout) {
@@ -938,6 +992,32 @@ function Utils() {
     }
 
 
+    var popupBlockerChecker = {
+        check: function(popup_window, onblocked){
+            var _scope = this;
+            if(onblocked) this._displayError = onblocked;
+            if (popup_window) {
+                if(/chrome/.test(navigator.userAgent.toLowerCase())){
+                    setTimeout(function () {
+                        _scope._is_popup_blocked(_scope, popup_window);
+                     },200);
+                }else{
+                    popup_window.onload = function () {
+                        _scope._is_popup_blocked(_scope, popup_window);
+                    };
+                }
+            }else{
+                _scope._displayError();
+            }
+        },
+        _is_popup_blocked: function(scope, popup_window){
+            if ((popup_window.innerHeight > 0)==false){ scope._displayError(); }
+        },
+        _displayError: function(){
+            console.log("Popup Blocker is enabled! Please add this site to your exception list.");
+        }
+    };
+
     return {
         create: create,
         clear: clear,
@@ -962,5 +1042,6 @@ function Utils() {
         label:label,
         findPoint:findPoint,
         reduce:reduce,
+        popupBlockerChecker:popupBlockerChecker,
     }
 }
