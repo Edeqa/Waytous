@@ -470,19 +470,23 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
                 System.out.println("SINGLE:"+dataSnapshot.getKey()+":"+dataSnapshot.getValue());
 //FIXME
-                childUpdates.put(DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY,15);
-                childUpdates.put(DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD,false);
-                childUpdates.put(DATABASE_SECTION_OPTIONS_PERSISTENT,false);
-                childUpdates.put(DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE,false);
-                childUpdates.put(DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS,300);
-                childUpdates.put(DATABASE_SECTION_OPTIONS_DATE_CREATED, ServerValue.TIMESTAMP);
-
+                if(dataSnapshot.getValue() == null) {
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put(DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY, 15);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS_PERSISTENT, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS, 300);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS_DATE_CREATED, ServerValue.TIMESTAMP);
+                    ref.child(tokenId).updateChildren(childUpdates);
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("CANCELLED:"+databaseError);
             }
+
         });
 
 

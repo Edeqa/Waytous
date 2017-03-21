@@ -20,7 +20,9 @@ function TrackingFB(main) {
             uri = new URL(this.link);
         } else {
             newTracking = true;
+            uri = new URL(data.WSS_SERVER_HOST);
         }
+
         var path = uri.pathname.replace("/group/","/track/");
         serverUri = "wss://" + uri.hostname + ":"+ data.WSS_FB_PORT + path;
         // serverUri = "ws://" + uri.hostname + ":" + data.WS_FB_PORT + path;
@@ -60,6 +62,7 @@ function TrackingFB(main) {
             opened = true;
             if(newTracking) {
                 put(REQUEST.REQUEST, REQUEST.NEW_TOKEN);
+                put(REQUEST.DEVICE_ID, u.getUuid());
             } else {
                 var parts = link.split("/");
                 var groupId = parts[parts.length-1];
@@ -109,11 +112,7 @@ function TrackingFB(main) {
                                         setToken(o[RESPONSE.TOKEN]);
                                     }
                                     if (o[RESPONSE.NUMBER]) {
-                                        var old = main.me.number;
-                                        main.me.number = o[RESPONSE.NUMBER];
-                                        main.users.users[o[RESPONSE.NUMBER]] = main.me;
-                                        main.me.fire(EVENTS.CHANGE_NUMBER, o[RESPONSE.NUMBER]);
-                                        if (old) delete main.users.users[old];
+                                        main.users.setMyNumber(o[RESPONSE.NUMBER]);
                                     }
                                     o[RESPONSE.INITIAL] = true;
 

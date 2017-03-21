@@ -58,7 +58,7 @@ function HelpHolder(main) {
                                 innerHTML: help.title || modules[i].type
                             });
                             for(var j in help) {
-                                if(j == "title") continue;
+                                if(j == "title" || help[j].ignore) continue;
                                 dialog.addItem({
                                     type:HTML.DIV,
                                     className:"help-module-item",

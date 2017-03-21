@@ -43,6 +43,7 @@ function GpsHolder(main) {
                     break;
             }
 
+            var icon;
             var alert = u.dialog({
                 className: "alert-dialog",
                 items: [
@@ -50,14 +51,23 @@ function GpsHolder(main) {
                 ],
                 positive: {
                     label: "OK",
-                    callback: function(){
+                    onclick: function(){
                         icon.classList.remove("hidden");
                         alert.onclose();
                     }
-                }
+                },
+                negative: {
+                    onclick: function(){
+                        icon.classList.remove("hidden");
+                        alert.onclose();
+                    }
+                },
+                help: function() {
+                    main.fire(EVENTS.SHOW_HELP, {module: main.holders.gps, article: 1});
+                 }
             }).onopen();
 
-            var icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
+            icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");
                 alert.classList.remove("hidden");
             }}, main.right);
@@ -121,13 +131,21 @@ function GpsHolder(main) {
 
                 return position;
             }
-
         }
     }
+
+    var help = {
+        title: "Geolocation",
+        1: {
+            title: "Allow geolocation",
+            body: "Instruction how to allow geolocation"
+        }
+    };
 
     return {
         type:type,
         start:start,
         onEvent:onEvent,
+        help:help,
     }
 }

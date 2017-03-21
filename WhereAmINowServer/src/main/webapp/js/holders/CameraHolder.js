@@ -145,7 +145,6 @@ function CameraHolder(main) {
                 if(this && this.properties && this.properties.selected) {
                     setTimeout(function(){
                         maxZoomService.getMaxZoomAtLatLng(main.map.getCenter(), function(response) {
-                console.log(object);
                             if (response.status !== google.maps.MaxZoomStatus.OK) {
     //                            console.error('Error in MaxZoomService',response);
                             } else {
@@ -302,7 +301,7 @@ function CameraHolder(main) {
     }
 
     function createView(user){
-        if(!user || !user.properties) return;
+        if(!user) return;
 
         var b = {
             bearing: CAMERA_DEFAULT_BEARING,

@@ -18,6 +18,8 @@ function SavedLocationHolder(main) {
     var locationSavedDialog;
     var locationEditDialog;
     var locationShareDialog;
+    var locationSendDialog;
+    var locationReceiveDialog;
     var locationDeleteDialog;
     var locationsDialog;
     var drawerMenuItem;
@@ -65,9 +67,11 @@ function SavedLocationHolder(main) {
                     object.add(MENU.SECTION_COMMUNICATION, EVENT.SHARE_SAVED_LOCATION, "Share", "share", function () {
                         main.fire(EVENTS.SHARE_SAVED_LOCATION, user.number - 10000);
                     });
-                    object.add(MENU.SECTION_COMMUNICATION, EVENT.SEND_SAVED_LOCATION, "Send to group", "chat", function () {
-                        main.fire(EVENTS.SEND_SAVED_LOCATION, user.number - 10000);
-                    });
+                    if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
+                        object.add(MENU.SECTION_COMMUNICATION, EVENT.SEND_SAVED_LOCATION, "Send to group", "chat", function () {
+                            main.fire(EVENTS.SEND_SAVED_LOCATION, user.number - 10000);
+                        });
+                    }
                 }
                 break;
             case EVENTS.SAVE_LOCATION:
@@ -76,11 +80,11 @@ function SavedLocationHolder(main) {
                     var loc = {
                         la:user.location.coords.latitude,
                         lo:user.location.coords.longitude,
-                        t:new Date().getTime(),
+                        t:user.timestamp || new Date().getTime(),
                         n:user.properties.getDisplayName(),
-                        a:"",
-                        d:"",
-                        k:""
+                        a:user.address || "",
+                        d:user.description || "",
+                        k:user.key || ""
                     }
                     var last = u.load("saved_location:counter") || 0;
                     last++;
@@ -154,17 +158,13 @@ function SavedLocationHolder(main) {
                         o.buttonIcon = "pin_drop";
                         o.type = type;
 
-    //<path d="M18 8c0-3.31-2.69-6-6-6S6 4.69 6 8c0 4.5 6 11 6 11s6-6.5 6-11zm-8 0c0-1.1.9-2 2-2s2 .9 2 2-.89 2-2 2c-1.1 0-2-.9-2-2zM5 20v2h14v-2H5z"/>
-    //<path d="M0 0h24v24H0z" fill="none"/>
-
                         var user = main.users.addUser(o);
 
-//                        user.createViews();
                         main.users.forUser(10000 + number, function(number, user){
                             user.fire(EVENTS.MAKE_ACTIVE);
                             user.fire(EVENTS.CHANGE_COLOR, "#00AA00");
                             main.fire(USER.JOINED, user);
-                            user.fire(EVENTS.SELECT);
+                            user.fire(EVENTS.SELECT_SINGLE_USER);
                         });
                     }
                 }
@@ -180,7 +180,9 @@ function SavedLocationHolder(main) {
             case EVENTS.EDIT_SAVED_LOCATION:
                 locationEditDialog && locationEditDialog.onclose();
                 locationShareDialog && locationShareDialog.onclose();
+                locationSendDialog && locationSendDialog.onclose();
                 locationDeleteDialog && locationDeleteDialog.onclose();
+                locationReceiveDialog && locationReceiveDialog.onclose();
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
                 locationEditDialog = locationEditDialog || u.dialog({
@@ -223,17 +225,64 @@ function SavedLocationHolder(main) {
             case EVENTS.SHARE_SAVED_LOCATION:
                 locationEditDialog && locationEditDialog.onclose();
                 locationShareDialog && locationShareDialog.onclose();
+                locationSendDialog && locationSendDialog.onclose();
                 locationDeleteDialog && locationDeleteDialog.onclose();
+                locationReceiveDialog && locationReceiveDialog.onclose();
                 var loc = u.load("saved_location:"+parseInt(object));
                 console.log("SHARE",loc);
                 if(loc) {
                 }//TODO
 
                 break;
+            case EVENTS.SEND_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.onclose();
+                locationShareDialog && locationShareDialog.onclose();
+                locationSendDialog && locationSendDialog.onclose();
+                locationDeleteDialog && locationDeleteDialog.onclose();
+                locationReceiveDialog && locationReceiveDialog.onclose();
+
+                var number = parseInt(object);
+                var loc = u.load("saved_location:"+number);
+                locationSendDialog = locationSendDialog || u.dialog({
+                    title: "Send location",
+                    items: [
+                        { type: HTML.HIDDEN },
+                        { type: HTML.DIV },
+                    ],
+                    className: "saved-location-send",
+                    positive: {
+                        label: "Yes",
+                        onclick: function(items) {
+                            var number = parseInt(items[0].value);
+                            var loc = u.load("saved_location:"+number);
+
+                            main.tracking.put(USER.LATITUDE, loc.la);
+                            main.tracking.put(USER.LONGITUDE, loc.lo);
+                            main.tracking.put(USER.ADDRESS, loc.a);
+                            main.tracking.put(USER.NAME, loc.n);
+                            main.tracking.put(USER.DESCRIPTION, loc.d);
+                            main.tracking.put(REQUEST.PUSH, true);
+                            main.tracking.put(REQUEST.DELIVERY_CONFIRMATION, true);
+                            main.tracking.send(REQUEST.SAVED_LOCATION);
+                        }
+                    },
+                    negative: {
+                        label: "No"
+                    },
+                });
+
+                if(loc) {
+                    locationSendDialog.items[0].value = number;
+                    locationSendDialog.items[1].innerHTML = "You're going to send the location " + loc.n + " to all. Continue?";
+                    locationSendDialog.onopen();
+                }
+                break;
             case EVENTS.DELETE_SAVED_LOCATION:
                 locationEditDialog && locationEditDialog.onclose();
                 locationShareDialog && locationShareDialog.onclose();
+                locationSendDialog && locationSendDialog.onclose();
                 locationDeleteDialog && locationDeleteDialog.onclose();
+                locationReceiveDialog && locationReceiveDialog.onclose();
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
                 locationDeleteDialog = locationDeleteDialog || u.dialog({
@@ -281,7 +330,7 @@ function SavedLocationHolder(main) {
                             className: "saved-location-item",
                         });
 
-                        var url = "http://maps.google.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo;
+                        var url = "https://maps.google.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo;
 
                         u.create("img", {
                             src: url,
@@ -335,14 +384,8 @@ function SavedLocationHolder(main) {
     function createView(user){
         var view = {
             user: user,
-//            show: u.load("sample:user:" + user.number)
         };
-        // console.log("SAMPLECREATEVIEW",user);
         return view;
-    }
-
-    function onChangeLocation(location) {
-        // console.log("SAMPLEONCHANGELOCATION",this,location);
     }
 
     function fetchAddressFor(number) {
@@ -373,11 +416,71 @@ function SavedLocationHolder(main) {
         }
     }
 
+    function perform(json) {
+        var number = json[USER.NUMBER];
+
+        var from = main.users.users[number];
+        var name = json[USER.NAME] || (from ? from.properties.getDisplayName() : "Point");
+        var user = new MyUser(main);
+        user.properties = {
+           getDisplayName: function(){ return name }
+        };
+        user.location = {
+           coords: {
+               latitude: json[USER.LATITUDE],
+               longitude: json[USER.LONGITUDE]
+           }
+        }
+        user.description = json[USER.DESCRIPTION] || "";
+        user.address = json[USER.ADDRESS] || "";
+        user.timestamp = json[REQUEST.TIMESTAMP];
+        user.key = json["key"] || "";
+
+        var last = u.load("saved_location:counter") || 0;
+        for(var i = 1; i <= last; i++) {
+            var saved = u.load("saved_location:"+i);
+            if(saved && saved.k == user.key) return;
+        }
+
+        locationEditDialog && locationEditDialog.onclose();
+        locationShareDialog && locationShareDialog.onclose();
+        locationSendDialog && locationSendDialog.onclose();
+        locationDeleteDialog && locationDeleteDialog.onclose();
+        locationReceiveDialog && locationReceiveDialog.onclose();
+
+        locationReceiveDialog = locationReceiveDialog || u.dialog({
+             title: "Add location",
+             items: [
+                 { type: HTML.DIV, innerHTML: "Delete this location?" },
+             ],
+             className: "saved-location-receive",
+             positive: {
+                 label: "Yes"
+             },
+             negative: {
+                 label: "No"
+             },
+         });
+        locationReceiveDialog.items[0].innerHTML = "You've got the location from  " + (from ? from.properties.getDisplayName() : number)
+            + ": " + user.properties.getDisplayName()
+            + (user.address ? ", address: " + user.address : "")
+            + (user.description ? ", description: " + user.description : "")
+            + ". Add it to your saved locations list?";
+        locationReceiveDialog.positive.onclick = function() {
+            console.log("YES",user);
+            user.views[type] = createView(user)
+            user.fire(EVENTS.SAVE_LOCATION);
+        }
+        locationReceiveDialog.onopen();
+
+    }
+
     return {
         type:type,
         start:start,
         onEvent:onEvent,
         createView:createView,
-        onChangeLocation:onChangeLocation,
+        saveable:true,
+        perform:perform,
     }
 }

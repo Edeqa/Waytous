@@ -126,6 +126,9 @@ function ButtonHolder(main) {
 */
                 this.views.button.title.innerHTML = this.properties.getDisplayName();
                 break;
+            case EVENTS.CHANGE_NUMBER:
+                this.views.button.button.dataset.number = parseInt(object);
+                break;
             case EVENTS.MAKE_ACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
@@ -177,13 +180,17 @@ function ButtonHolder(main) {
                 this.views.button.button.classList.remove("user-button-hover");
                 break;
             case EVENTS.CHANGE_COLOR:
-                var color = object|| "#0000FF";
-                color = color.replace("#","").split("");
-                var r = parseInt(color[0]+color[1],16);
-                var g = parseInt(color[2]+color[3],16);
-                var b = parseInt(color[4]+color[5],16);
-                color = "rgba("+r+", "+g+", "+b+", 0.4)";
-                this.views.button.button.style.backgroundColor = color;
+                if(!object && object.constructor === String) {
+                    var color = object || "#0000FF";
+                    color = color.replace("#","").split("");
+                    var r = parseInt(color[0]+color[1],16);
+                    var g = parseInt(color[2]+color[3],16);
+                    var b = parseInt(color[4]+color[5],16);
+                    color = "rgba("+r+", "+g+", "+b+", 0.4)";
+                    this.views.button.button.style.backgroundColor = color;
+                } else if(object && object.constructor === Number) {
+                    console.log("TODO NUMERIC")
+                }
                 break;
             default:
                 break;

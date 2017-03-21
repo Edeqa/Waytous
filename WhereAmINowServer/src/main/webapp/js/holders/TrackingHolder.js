@@ -41,21 +41,17 @@ function TrackingHolder(main) {
             ]
         });
         progressTitle = progress.items[1];
+        noSleep = new NoSleep();
+        wakeLockEnabled = false;
 
         var group = window.location.pathname.split("/")[2];
         var groupOld = u.load("group");
         if(group) {
-            progress.onopen();
-
-            noSleep = new NoSleep();
-            wakeLockEnabled = false;
-
             var self = this;
             setTimeout(function(){
                 u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
             }, 0);
         }
-
     }
 
     function perform(json){
@@ -96,6 +92,12 @@ function TrackingHolder(main) {
                 });
                 drawerItemShare.classList.add("hidden");
                 drawerItemShare.classList.add("disabled");
+                break;
+            case EVENTS.TRACKING_NEW:
+                var self = this;
+                setTimeout(function(){
+                    u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
+                }, 0);
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 document.title = main.appName + " - " + main.tracking.getToken();
@@ -175,8 +177,9 @@ function TrackingHolder(main) {
 
     function startTracking(){
 
-        this.tracking = new TrackingFB(main);
-        main.tracking = this.tracking;
+        progress.onopen();
+
+        this.tracking = main.tracking = new TrackingFB(main);
         // console.log("LOADED", tracking);
         // tracking.start();
 
@@ -185,10 +188,13 @@ function TrackingHolder(main) {
         if(group) {
             main.fire(EVENTS.TRACKING_JOIN, window.location.href);
             this.tracking.setLink(window.location.href);
-            this.tracking.setTrackingListener(onTrackingListener);
             u.save("group",group);
-            this.tracking.start();
+        } else {
+            progressTitle.innerHTML = "Creating group...";
+            console.log("NEW")
         }
+        this.tracking.setTrackingListener(onTrackingListener);
+        this.tracking.start();
 
     }
 
@@ -225,12 +231,17 @@ function TrackingHolder(main) {
                     main.fire(EVENTS.TRACKING_ACTIVE);
                 }
                 if (o[RESPONSE.TOKEN]) {
-                    main.fire(EVENTS.TOKEN_CREATED, o[RESPONSE.TOKEN]);
+                    var token = o[RESPONSE.TOKEN];
+                    main.fire(EVENTS.TOKEN_CREATED, token);
+                    u.save("group", token);
+                    window.history.pushState({}, null, "/track/" + token);
+                    main.fire(EVENTS.SHOW_HELP, {module: main.holders.tracking, article: 1});
+                    main.me.fire(EVENTS.SELECT_USER);
                 }
                 if (o[REQUEST.WELCOME_MESSAGE]) {
                     main.fire(EVENTS.WELCOME_MESSAGE, o[RESPONSE.WELCOME_MESSAGE]);
                 }
-                if (o[RESPONSE.NUMBER]) {
+                if (o[RESPONSE.NUMBER] != undefined) {
                     main.users.forMe(function (number, user) {
                         user.createViews();
                         progress.onclose();
@@ -262,13 +273,13 @@ function TrackingHolder(main) {
                 var response = o[RESPONSE.STATUS];
                 switch (response) {
                     case RESPONSE.STATUS_UPDATED:
-                        if (o[USER.DISMISSED]) {
+                        if (o[USER.DISMISSED] != undefined) {
                             var number = o[USER.DISMISSED];
                             // console.log("DISMISSED",number);
                             var user = main.users.users[number];
                             user.fire(EVENTS.MAKE_INACTIVE);
                             main.fire(USER.DISMISSED, user);
-                        } else if (o[USER.JOINED]) {
+                        } else if (o[USER.JOINED] != undefined) {
                             var number = o[USER.JOINED];
                             var user = main.users.users[number];
                             user.fire(EVENTS.MAKE_ACTIVE);
@@ -300,11 +311,22 @@ function TrackingHolder(main) {
         }
     };
 
+    var help = {
+        title: "Tracking",
+        1: {
+            title: "You have created new group",
+            ignore: true,
+            body: "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. "
+        }
+    };
+
+
     return {
         type:type,
         start:start,
         onEvent:onEvent,
         perform:perform,
         saveable:true,
+        help:help,
     }
 }

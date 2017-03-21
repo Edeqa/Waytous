@@ -62,23 +62,6 @@ function DrawerHolder(main) {
 
         main.fire(EVENTS.CREATE_DRAWER, drawer);
 
-        /*for(var i in holderFiles) {
-            var x = holderFiles[i].toLowerCase();
-            if(holders[x].menu) {
-                var th = u.create("div", {className:"menu-item"}, menu);
-                u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
-                u.create("div", { dataStart: x, onclick: function(){
-                    menu.blur();
-                    holders[this.dataset.start].start();
-                    return false;
-                }, innerHTML: holders[x].menu}, th);
-            }
-        }*/
-
-        /*var th = u.create("div", {className:"menu-item"}, menu);
-        u.create("i", { className:"material-icons md-14", innerHTML:"exit_to_app" }, th);
-        // u.create("div", { onclick: logout, innerHTML: "Log out" }, th);*/
-
         var th = u.create(HTML.DIV, { className:"drawer-footer"}, drawerLayout);
         u.create(HTML.DIV, main.appName + " &copy;2017 WTG", th);
         u.create(HTML.DIV, "Build " + data.version, th);
@@ -97,7 +80,7 @@ function DrawerHolder(main) {
             var th = u.create(HTML.DIV, {className:"menu-item"}, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.I, { className:"menu-item-icon", innerHTML: icon }, th);
+                    u.create(HTML.DIV, { className:"menu-item-icon", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }
@@ -109,7 +92,9 @@ function DrawerHolder(main) {
                             drawerLayout.blur();
                             callback(event);
                         }, 100);
-                    }, innerHTML: name
+                    },
+                    className: "menu-item-label",
+                    innerHTML: name
                 }, th);
             }
             sections[section].classList.remove("hidden");

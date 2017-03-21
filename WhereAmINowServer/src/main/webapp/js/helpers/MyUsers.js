@@ -36,6 +36,7 @@ function MyUsers(main) {
     function setMe() {
         delete users[myNumber];
         main.me.number = myNumber;
+        main.me.type = "user";
         main.me.fire(EVENTS.CHANGE_NUMBER, myNumber);
         var name = u.load("properties:name");
         if(name) {
@@ -44,6 +45,17 @@ function MyUsers(main) {
         }
         users[myNumber] = main.me;
         return main.me;
+    }
+
+    function setMyNumber(number) {
+        number = parseInt(number);
+        if(number != myNumber) {
+            main.me.number = number;
+            main.users.users[number] = main.me;
+            if (myNumber != undefined) delete main.users.users[myNumber];
+            myNumber = number;
+            main.me.fire(EVENTS.CHANGE_NUMBER, number);
+        }
     }
 
     function forAllUsers(callback){
@@ -102,6 +114,6 @@ function MyUsers(main) {
         users:users,
         getCountSelected:getCountSelected,
         getCountActive:getCountActive,
-
+        setMyNumber:setMyNumber,
     }
 }

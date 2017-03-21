@@ -89,17 +89,18 @@ button:active {
 }
 .alert-icon {
     font-family: "Material Icons";
-    font-style: normal;
     position: fixed;
     top: 50px;
     z-index: 10000;
     background-color: transparent;
-    color: white;
-    font-size: 40px !important;
+    font-size: 40px;
     border: none;
-    transform: translateX(10px);
     outline: none;
     color: red;
+    left: 250px;
+}
+.alert-icon:hover {
+    background: none;
 }
 .toast {
     position: fixed;
@@ -170,23 +171,27 @@ button:active {
 .menu-item:hover {
     background: #dddd99;
 }
-.menu-item i, .menu-item svg {
+.menu-item {
+    font-weight: bold;
+    text-decoration: none;
+    /* margin-left: 24px; */
+    cursor: pointer;
+    display: flex;
+    padding: 2px;
+    align-items: center;
+}
+.menu-item-icon, .menu-item svg {
     font-family: "Material Icons";
     font-style: normal;
     margin: 12px;
-    float: left;
+    padding: 0px;
+    /* float: left; */
     font-size: 16px;
     width: 16px;
     height: 16px;
     stroke: darkslategray;
 }
-.menu-item div {
-    font-weight: bold;
-    text-decoration: none;
-    margin-left: 24px;
-    cursor: pointer;
-    display: block;
-    padding: 12px;
+.menu-item-label {
 }
 .menu-item-social {
     display: flex;
@@ -493,7 +498,7 @@ p.bottom-desc {
     position: fixed;
     display: flex;
     flex-direction: column;
-    background-color: lightgray;
+    background-color: floralwhite;
     opacity: 0.9;
     border-radius: 5px;
     border-style: solid;
@@ -566,8 +571,9 @@ p.bottom-desc {
 .dialog-title {
     width: 100%;
     text-align: center;
-    background-color: beige;
-    border-radius: 5px;
+    background-color: #4c93af;
+    color: white;
+    border-radius: 2px;
     min-height: 24px;
     cursor: pointer;
     position: relative;
@@ -809,6 +815,8 @@ p.bottom-desc {
 .help-item {
 }
 .help-item-title {
+    font-size: larger;
+    font-weight: bold;
 }
 .help-item-body {
     align-items: initial;
@@ -898,6 +906,7 @@ p.bottom-desc {
     font-style: normal;
     font-size: 32px;
     object-fit: cover;
+    padding-top: 1px;
 }
 .saved-location-item-button {
     font-family: "Material Icons";
@@ -920,6 +929,9 @@ p.bottom-desc {
 .saved-location-delete {
     width: 250px;
     z-index: 1002;
+}
+.saved-location-receive {
+    max-width: 500px;
 }
 
 /* shift zoom control */
@@ -984,11 +996,8 @@ p.bottom-desc {
         margin: 0px;
     }
     .alert-icon {
-        position: fixed;
         right: 32px;
-        top: -4px !important;
-        color: red;
-        cursor: pointer;
+        top: -4px;
     }
     .modal {
         width: 90% !important;
@@ -1062,13 +1071,11 @@ p.bottom-desc {
     .menu-item:hover {
         background: #dddd99;
     }
-    .menu-item i, .menu-item svg {
+    .menu-item-icon, .menu-item svg {
         margin: 15px;
-        float: left;
         font-size: 16px;
     }
-    .menu-item div {
-        padding: 15px;
+    .menu-item-label {
     }
     .drawer-header {
 

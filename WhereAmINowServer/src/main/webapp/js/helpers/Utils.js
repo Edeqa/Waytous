@@ -273,7 +273,6 @@ function Utils() {
             if(onerror) {
                 onerror(ERRORS.NOT_EXISTS, this.dataset.name, e);
             }
-
         }, async:"", defer:""}, document.head);
     }
 

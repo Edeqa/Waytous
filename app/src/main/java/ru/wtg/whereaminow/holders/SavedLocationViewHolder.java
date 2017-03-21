@@ -348,13 +348,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         if(adapter != null) adapter.notifyItemRemoved(position);
                     }
                     SavedLocation.getDb().deleteByItem(saved);
-
-                    System.out.println("POSITION:"+position);
-                    System.out.println("SAVED:"+saved);
                     State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new MyUsers.Callback() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
-                    System.out.println("USER:"+myUser);
                             myUser.fire(HIDE_SAVED_LOCATION);
                         }
                     });

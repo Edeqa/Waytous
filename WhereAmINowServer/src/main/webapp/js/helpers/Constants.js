@@ -2,6 +2,7 @@
  * Created 2/9/17.
  */
 function Constants() {
+
     window.EVENTS = {
         SELECT_USER: "select",
         SELECT_SINGLE_USER: "select_single",
@@ -130,7 +131,6 @@ function Constants() {
         SECTION_OPTIONS_DATE_CREATED : "o/date-created"
 
     };
-
 
     return {
         type:"constants",
