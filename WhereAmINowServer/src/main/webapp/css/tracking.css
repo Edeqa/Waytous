@@ -9,6 +9,13 @@
 ::selection { background: transparent;color:inherit; }
 ::-moz-selection { background: transparent;color:inherit; }
 
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'), local('MaterialIcons-Regular'), url(https://fonts.gstatic.com/s/materialicons/v21/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2) format('woff2');
+}
+
 /* TAGS */
 html, body {
     height: 100%;
@@ -518,6 +525,10 @@ p.bottom-desc {
     align-items: center;
     justify-content: center;
 }
+@keyframes rotate {
+    0%    { transform: rotate(0deg); }
+    100%  { transform: rotate(360deg); }
+}
 .progress-circle {
     margin: 20px;
     height: 28px;
@@ -528,10 +539,6 @@ p.bottom-desc {
     border: 8px solid #888888;
     border-right-color: transparent;
     border-radius: 50%;
-}
-@keyframes rotate {
-    0%    { transform: rotate(0deg); }
-    100%  { transform: rotate(360deg); }
 }
 .progress-title {
     white-space: nowrap;
