@@ -52,7 +52,7 @@ function DrawerHolder(main) {
         var header = u.create(HTML.DIV, { className:"drawer-header" }, drawerLayout);
         headerName = u.create(HTML.DIV, {className:"drawer-header-name"}, header);
         headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, header);
-        u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML:"Be always on the same way\nwith your friends"}, header);
+        u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML: u.lang.be_always_on_the_same_way }, header);
 
         menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
         sections = [];
@@ -84,8 +84,52 @@ function DrawerHolder(main) {
                         drawerLayout.blur();
                         callback(event);
                     }, 100);
-                }
+                },
+                hide: function() {
+                    this.classList.add("hidden");
+                    this.fixShowing();
+                    return this;
+                },
+                show: function() {
+                    this.classList.remove("hidden");
+                    this.fixShowing();
+                    return this;
+                },
+                enable: function() {
+                    this.classList.remove("disabled");
+                    return this;
+                },
+                disable: function() {
+                    this.classList.add("disabled");
+                    return this;
+                },
+                fixShowing: function() {
+                    var parent = th.parentNode;
+                    var shown = false;
+                    for(var i in parent.childNodes) {
+                        if(parent.childNodes.hasOwnProperty(i)) {
+                            if(!parent.childNodes[i].classList.contains("hidden")) shown = true;
+                        }
+                    }
+                    if(shown) parent.classList.remove("hidden");
+                    else parent.classList.add("hidden");
+                },
+                increaseBadge: function() {
+                    var val = parseInt(this.badge.innerHTML || "0");
+                    val ++;
+                    this.badge.innerHTML = val;
+                    this.showBadge();
+                },
+                showBadge: function() {
+                    this.badge.classList.remove("hidden");
+                },
+                hideBadge: function() {
+                    this.badge.classList.add("hidden");
+                    this.badge.innerHTML = "0";
+                },
+
             }, sections[section]);
+
             if(icon) {
                 if(icon.constructor === String) {
                     u.create(HTML.DIV, { className:"menu-item-icon", innerHTML: icon }, th);
@@ -99,6 +143,7 @@ function DrawerHolder(main) {
                     innerHTML: name
                 }, th);
             }
+            th.badge = u.create(HTML.DIV, { className:"menu-item-badge hidden", innerHTML: "0" }, th);
             sections[section].classList.remove("hidden");
             return th;
         }
@@ -129,8 +174,8 @@ function DrawerHolder(main) {
                 break;
             case EVENTS.TRACKING_CONNECTING:
             case EVENTS.TRACKING_RECONNECTING:
-                title.innerHTML = "Connecting...";
-                headerTitle.innerHTML = "Connecting...";
+                u.lang.updateNode(title, u.lang.connecting);
+                u.lang.updateNode(headerTitle, u.lang.connecting);
                 break;
             case EVENTS.CHANGE_NAME:
             case USER.JOINED:
@@ -155,11 +200,17 @@ function DrawerHolder(main) {
         last_y = e.changedTouches[0].pageY;
     }*/
 
+    var resources = {
+        connecting: "Connecting...",
+        be_always_on_the_same_way: "Be always on the same way\nwith your friends"
+    }
+
     return {
         type:"drawer",
         start:start,
         onEvent:onEvent,
         createView:createView,
+        resources:resources,
     }
 }
 

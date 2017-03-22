@@ -20,13 +20,13 @@ function DistanceHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_DISTANCE,"Show distances","settings_ethernet",function(){
+                drawerItemShow = object.add(DRAWER.SECTION_VIEWS, EVENTS.SHOW_DISTANCE, u.lang.show_distances, "settings_ethernet", function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SHOW_DISTANCE);
                         drawerPopulate();
                     });
                 });
-                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_DISTANCE,"Hide distances","code",function(){
+                drawerItemHide = object.add(DRAWER.SECTION_VIEWS, EVENTS.HIDE_DISTANCE, u.lang.hide_distances, "code", function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.HIDE_DISTANCE);
                         drawerPopulate();
@@ -37,12 +37,12 @@ function DistanceHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user && user != main.me && user.location && !user.views.distance.show) {
-                    object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_DISTANCE,"Show distance","settings_ethernet",function(){
+                    object.add(MENU.SECTION_VIEWS, EVENTS.SHOW_DISTANCE, u.lang.show_distance, "settings_ethernet", function(){
                         user.fire(EVENTS.SHOW_DISTANCE);
                         drawerPopulate();
                     });
                 } else if(user && user != main.me && user.views.distance.show) {
-                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_DISTANCE,"Hide distance","code",function(){
+                    object.add(MENU.SECTION_VIEWS, EVENTS.HIDE_DISTANCE, u.lang.hide_distance, "code", function(){
                         user.fire(EVENTS.HIDE_DISTANCE);
                         drawerPopulate();
                     });
@@ -98,20 +98,19 @@ function DistanceHolder(main) {
             user.views.distance.marker = null;
             user.views.distance.label.setMap(null);
             user.views.distance.label = null;
-
         }
     }
 
     function drawerPopulate() {
         setTimeout(function(){
-            drawerItemHide.classList.add("hidden");
-            drawerItemShow.classList.add("hidden");
+            drawerItemHide.hide();
+            drawerItemShow.hide();
             main.users.forAllUsersExceptMe(function (number, user) {
                 if(user.views.distance) {
                     if (user.views.distance.show) {
-                        drawerItemHide.classList.remove("hidden");
+                        drawerItemHide.show();
                     } else {
-                        drawerItemShow.classList.remove("hidden");
+                        drawerItemShow.show();
                     }
                 }
             })
@@ -170,14 +169,26 @@ function DistanceHolder(main) {
         div.appendChild(node);
     };
 
-    var help = {
-        title: "Distances",
-        1: {
-            title: "Article 1",
-            body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pellentesque aliquam tellus, quis finibus odio faucibus sed. Nunc nec dictum ipsum, a efficitur sem. Nullam suscipit quis neque in cursus. Etiam tempus imperdiet scelerisque. Integer ut nisi at est varius rutrum quis eget urna. Morbi blandit vehicula laoreet. Curabitur tincidunt turpis dui, at venenatis risus volutpat et. Donec cursus molestie ligula eu convallis. Curabitur sed quam id ex tristique ultricies. Duis id felis eget massa venenatis vehicula. Aenean eget varius dui. "
+    function help(){
+        return {
+            title: u.lang.distance_help_title,
+            1: {
+                title: u.lang.distance_article_1_title,
+                body: u.lang.distance_article_1_body
+            },
         }
-    };
+    }
 
+    var resources = {
+        show_distances: "Show distances",
+        hide_distances: "Hide distances",
+        show_distance: "Show distance",
+        hide_distance: "Hide distance",
+
+        distance_help_title: "Distances",
+        distance_article_1_title: "Article 1",
+        distance_article_1_body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pellentesque aliquam tellus, quis finibus odio faucibus sed. Nunc nec dictum ipsum, a efficitur sem. Nullam suscipit quis neque in cursus. Etiam tempus imperdiet scelerisque. Integer ut nisi at est varius rutrum quis eget urna. Morbi blandit vehicula laoreet. Curabitur tincidunt turpis dui, at venenatis risus volutpat et. Donec cursus molestie ligula eu convallis. Curabitur sed quam id ex tristique ultricies. Duis id felis eget massa venenatis vehicula. Aenean eget varius dui. "
+    };
 
     return {
         type:type,
@@ -187,5 +198,6 @@ function DistanceHolder(main) {
         removeView:removeView,
         onChangeLocation:onChangeLocation,
         help:help,
+        resources:resources,
     }
 }

@@ -72,19 +72,19 @@ function MapHolder(main) {
         }
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRAFFIC,"Traffic","traffic",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRAFFIC,u.lang.traffic,"traffic",function(){
                     main.fire(EVENTS.REQUEST_MODE_TRAFFIC);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRANSIT,"Transit","directions_transit",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRANSIT,u.lang.transit,"directions_transit",function(){
                     main.fire(EVENTS.REQUEST_MODE_TRANSIT);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_BIKE,"Bicycle","directions_bike",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_BIKE,u.lang.bicycle,"directions_bike",function(){
                     main.fire(EVENTS.REQUEST_MODE_BIKE);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_SATELLITE,"Satellite","satellite",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_SATELLITE,u.lang.satellite,"satellite",function(){
                     main.fire(EVENTS.REQUEST_MODE_SATELLITE);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TERRAIN,"Terrain","terrain",function(){
+                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TERRAIN,u.lang.terrain,"terrain",function(){
                     main.fire(EVENTS.REQUEST_MODE_TERRAIN);
                 });
                 break;

@@ -112,6 +112,7 @@ function TrackingFB(main) {
                                         setToken(o[RESPONSE.TOKEN]);
                                     }
                                     if (o[RESPONSE.NUMBER]) {
+                                        console.warn("Joined with number",o[RESPONSE.NUMBER]);
                                         main.users.setMyNumber(o[RESPONSE.NUMBER]);
                                     }
                                     o[RESPONSE.INITIAL] = true;

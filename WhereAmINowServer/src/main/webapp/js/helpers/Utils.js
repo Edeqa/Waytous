@@ -134,7 +134,13 @@ function Utils() {
             } else if(properties.constructor === Object) {
                 for(var x in properties) {
                     if(x == HTML.INNERHTML || x == HTML.INNERTEXT) {
-                        el[x] = properties[x];
+                        if(properties[x]) {
+                            if(properties[x] instanceof HTMLElement) {
+                                el.appendChild(properties[x]);
+                            } else {
+                                el[x] = properties[x];
+                            }
+                        }
                     } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
 //                    } else if(x == "async") {
@@ -148,16 +154,20 @@ function Utils() {
                         }*/, false);
 //                        el.add
                     } else {
-                        var name = x, value = properties[x];
+                        var name = normalizeName(x), value = properties[x];
                         if(value != undefined) {
                             if(value.constructor === Object) {
                                 var v = "";
-                                for(var x in value) {
-                                    v += normalizeName(x) + ": " + value[x] + "; ";
+                                for(var y in value) {
+                                    v += normalizeName(y) + ": " + value[y] + "; ";
                                 }
                                 value = v;
                             }
-                            el.setAttribute(normalizeName(name), value);
+                            if(x in el || name.substr(0,5) == "data-") {
+                                el.setAttribute(name, value);
+                            } else {
+                                el[x] = value;
+                            }
                         }
                     }
                 }
@@ -252,7 +262,7 @@ function Utils() {
             context = onerror;
             onerror = function(){};
         }
-        if(!filename.match(/\.js$/)) {
+        if(!filename.match(/\.js$/) && parts[1] == "js") {
             needInstantiate = true;
             name += ".js";
         }
@@ -263,6 +273,7 @@ function Utils() {
                     if(window[this.dataset.name] && window[this.dataset.name].constructor === Function) {
                         a = new window[this.dataset.name](context);
                         a.moduleName = this.dataset.name;
+                        lang.overrideResources(a);
                     } else {
                         onerror(ERRORS.NOT_AN_OBJECT, this.dataset.name, e);
                     }
@@ -273,7 +284,7 @@ function Utils() {
             if(onerror) {
                 onerror(ERRORS.NOT_EXISTS, this.dataset.name, e);
             }
-        }/*, async:"", defer:""*/}, document.head);
+        }, async:"", defer:""}, document.head);
     }
 
     function save(name, value) {
@@ -599,7 +610,7 @@ function Utils() {
                         className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
                     }, dialog.itemsLayout);
                     var enclosedButton, enclosedIcon;
-                    enclosedButton = u.create(HTML.DIV, {className:"dialog-item-enclosed-button", onclick: function(){
+                    enclosedButton = create(HTML.DIV, {className:"dialog-item-enclosed-button", onclick: function(){
                         if(x.body.classList.contains("hidden")) {
                             enclosedIcon.innerHTML = "expand_less";
                             x.body.classList.remove("hidden");
@@ -608,9 +619,9 @@ function Utils() {
                             x.body.classList.add("hidden");
                         }
                     }}, x);
-                    enclosedIcon = u.create(HTML.DIV, {className:"dialog-item-enclosed-icon", innerHTML:"expand_more"}, enclosedButton);
-                    u.create(HTML.DIV, {className:"dialog-item-enclosed-label", innerHTML: item.label || "Show more information"}, enclosedButton);
-                    x.body = u.create(HTML.DIV, {className:"dialog-item-enclosed-body hidden", innerHTML:item.body || ""}, x);
+                    enclosedIcon = create(HTML.DIV, {className:"dialog-item-enclosed-icon", innerHTML:"expand_more"}, enclosedButton);
+                    create(HTML.DIV, {className:"dialog-item-enclosed-label", innerHTML: item.label || "Show more information"}, enclosedButton);
+                    x.body = create(HTML.DIV, {className:"dialog-item-enclosed-body hidden", innerHTML:item.body || ""}, x);
                 } else {
                     x = create(HTML.DIV, {
                         className: "dialog-item" + (item.className ? " " + item.className : ""),
@@ -636,10 +647,10 @@ function Utils() {
                     onclick: function() { this.focus() },
                     onkeyup:function(e){
                         if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
-                            dialog.onclose();
+                            dialog.close();
                             if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
                         } else if(e.keyCode == 27) {
-                            dialog.onclose();
+                            dialog.close();
                             if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
                         }
                     }
@@ -649,7 +660,7 @@ function Utils() {
             return x;
         }
 
-        dialog.onopen = function(){
+        dialog.open = function(){
             clearInterval(dialog.intervalTask);
             dialog.classList.remove("hidden");
             dialog.opened = true;
@@ -699,14 +710,14 @@ function Utils() {
                     progress.style.width = (current / options.timeout * 100) + "%";
                     if(current >= options.timeout) {
                         clearInterval(dialog.intervalTask);
-                        dialog.onclose();
+                        dialog.close();
                     }
                 }, 16);
             }
             return dialog;
         };
 
-        dialog.onclose = function (){
+        dialog.close = function (){
             dialog.classList.add("hidden");
             dialog.opened = false;
 
@@ -716,7 +727,7 @@ function Utils() {
         };
         dialog.addEventListener("keyup", function(e) {
             if(e.keyCode == 27) {
-                dialog.onclose();
+                dialog.close();
                 if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
             }
         });
@@ -728,7 +739,7 @@ function Utils() {
              icon: "clear",
              className: "",
              onclick: function(e){
-                 dialog.onclose();
+                 dialog.close();
                  if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
              }
          };
@@ -807,21 +818,21 @@ function Utils() {
         var buttons = create(HTML.DIV, {className:"dialog-buttons hidden"}, dialog);
         if(options.positive && options.positive.label) {
             dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(){
-                dialog.onclose();
+                dialog.close();
                 if(options.positive.onclick) options.positive.onclick.call(dialog,items);
             }, innerHTML: options.positive.label}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.negative && options.negative.label) {
             dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(){
-                dialog.onclose();
+                dialog.close();
                 if(options.negative.onclick) options.negative.onclick.call(dialog,items);
             }, innerHTML: options.negative.label}, buttons);
             buttons.classList.remove("hidden");
         }
         if(options.neutral && options.neutral.label) {
             dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(){
-                dialog.onclose();
+                dialog.close();
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items);
             }, innerHTML: options.neutral.label}, buttons);
             buttons.classList.remove("hidden");
@@ -908,7 +919,7 @@ function Utils() {
 
         // Label specific
         if(!node) {
-            node = u.create(HTML.DIV, {className:options.className});
+            node = create(HTML.DIV, {className:options.className});
             if(options.style) {
                 if(options.style.constructor !== String) {
                     var s = "";
@@ -923,7 +934,7 @@ function Utils() {
             }
         }
         this.span_ = node;
-        var div = this.div_ = u.create(HTML.DIV, {style: "position: absolute; display: none"});
+        var div = this.div_ = create(HTML.DIV, {style: "position: absolute; display: none"});
         div.appendChild(node);
 
 
@@ -1030,6 +1041,72 @@ function Utils() {
         return o;
     }
 
+    function lang(string, value) {
+        if(value) {
+            lang[string] = create(HTML.SPAN, {dataLang:string, innerHTML: value || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "")});
+        }
+        return lang[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
+    }
+
+    lang.overrideResources = function(holder) {
+        if(holder.constructor === String) {
+
+            var resourcesFile = "/locales/resources." + holder + ".json";
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", resourcesFile, true);
+            xhr.onreadystatechange = function() { // (3)
+                if (xhr.readyState != 4) return;
+                if (xhr.status != 200) {
+                    console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
+                    if(holder != "en-us"){
+                        console.warn("Switching to default resources \"en-us\".")
+                        lang.overrideResources("en-us");
+                    }
+                } else {
+                    try {
+                        var json = JSON.parse(xhr.responseText);
+                        var nodes = document.getElementsByTagName(HTML.SPAN);
+                        console.warn("Switching to resources \""+holder+"\".");
+                        for(var x in json) {
+                            if(lang[x]) {
+//                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
+                            }
+                            lang(x, json[x]);
+                            for(var i = 0; i < nodes.length; i++) {
+                                if(nodes[i].dataset && nodes[i].dataset.lang == x) {
+                                    nodes[i].parentNode.replaceChild(lang(x),nodes[i]);
+                                }
+                            }
+                        }
+                    } catch(e) {
+                        console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",e);
+                        if(holder != "en-us"){
+                            console.warn("Switching to default resources \"en-us\".")
+                            lang.overrideResources("en-us");
+                        }
+                    }
+                }
+            }
+            xhr.send();
+
+        } else if(holder.resources) {
+            for(var x in holder.resources) {
+                if(lang[x]) {
+//                    console.warn("Overrided resource: " + x + ":", holder.resources[x] ? (holder.resources[x].length > 30 ? holder.resources[x].substr(0,30)+"..." : holder.resources[x]) : "" );
+                }
+                lang(x, holder.resources[x]);
+            }
+        }
+    }
+
+    lang.updateNode = function(node, lang) {
+        if(node && lang && lang.dataset && lang.dataset.lang) {
+            node.innerHTML = lang.innerHTML;
+            node.dataset.lang = lang.dataset.lang;
+        }
+    }
+
     return {
         create: create,
         clear: clear,
@@ -1056,5 +1133,6 @@ function Utils() {
         reduce:reduce,
         popupBlockerChecker:popupBlockerChecker,
         cloneAsObject:cloneAsObject,
+        lang:lang,
     }
 }

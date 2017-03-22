@@ -202,6 +202,17 @@ button:active {
 }
 .menu-item-label {
 }
+.menu-item-badge {
+    background-color: lightgreen;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 2px;
+    position: absolute;
+    right: 10px;
+    font-size: 12px;
+    font-weight: normal;
+}
 .menu-item-social {
     display: flex;
 }
@@ -553,6 +564,7 @@ p.bottom-desc {
     font-size: 50px;
     font-weight: bold;
     font-family: Times;
+    cursor: default;
 }
 .loading {
     position: fixed;
@@ -965,7 +977,9 @@ p.bottom-desc {
 .saved-location-receive-items {
     align-items: flex-start;
 }
-
+.gps-required {
+    z-index: 9999;
+}
 /* shift zoom control */
 /*.gmnoprint:nth-child(9) {
     top: 50px !important;
@@ -1265,6 +1279,9 @@ p.bottom-desc {
     }
     .dialog-item-enclosed-button {
         height: 35px;
+    }
+    .dialog-resize {
+        display: none;
     }
     .chat {
         border-left: none;

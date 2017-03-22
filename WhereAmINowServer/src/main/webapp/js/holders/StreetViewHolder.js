@@ -19,10 +19,10 @@ function StreetViewHolder(main) {
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 drawerShow = object.add(DRAWER.SECTION_VIEWS,type+"_1","Show street view","streetview",function(){
-                    view.onopen();
+                    view.open();
                 });
                 drawerHide = object.add(DRAWER.SECTION_VIEWS,type+"_1","Hide street view","streetview",function(){
-                    view.onclose();
+                    view.close();
                 });
                 drawerShow.classList.add("hidden");
                 drawerHide.classList.add("hidden");
@@ -71,7 +71,7 @@ function StreetViewHolder(main) {
                 });
                 placeholder = view.items[0];
                 streetview = view.items[1];
-                if(show) view.onopen();
+                if(show) view.open();
                 break;
             default:
                 break;

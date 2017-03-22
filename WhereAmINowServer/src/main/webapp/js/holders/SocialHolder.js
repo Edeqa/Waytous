@@ -58,7 +58,7 @@ function SocialHolder(main) {
             case EVENTS.CREATE_DRAWER:
                 ic_facebook = ic_facebook || u.create(HTML.PATH, facebook_path, u.create(HTML.SVG, facebook_svg)).parentNode;
                 object.add(DRAWER.SECTION_COMMUNICATION,"facebook","Share to Facebook",ic_facebook,function(){
-                    if(shareDialog) shareDialog.onclose();
+                    if(shareDialog) shareDialog.close();
                     shareDialog = shareDialog || u.dialog({
                         items: [
                             {type:HTML.DIV, innerHTML:"Let Facebook share the link to this group?"},
@@ -81,7 +81,7 @@ function SocialHolder(main) {
                         },
                         timeout: 20000
                     });
-                    shareDialog.onopen();
+                    shareDialog.open();
 
 
 

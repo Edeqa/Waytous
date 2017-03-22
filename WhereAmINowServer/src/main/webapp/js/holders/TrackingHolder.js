@@ -45,14 +45,6 @@ function TrackingHolder(main) {
         noSleep = new NoSleep();
         wakeLockEnabled = false;
 
-        var group = window.location.pathname.split("/")[2];
-        var groupOld = u.load("group");
-        if(group) {
-            var self = this;
-            setTimeout(function(){
-                u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
-            }, 0);
-        }
     }
 
     function perform(json){
@@ -82,17 +74,29 @@ function TrackingHolder(main) {
                 drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW,"Create group",drawerItemNewIcon,function(){
                     main.fire(EVENTS.TRACKING_NEW);
                 });
+                drawerItemNew.hide();
                 drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
-                drawerItemExit.classList.add("hidden");
+                drawerItemExit.hide();
                 drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(e){
                     if(EVENTS.TRACKING_ACTIVE) {
                         main.fire(EVENTS.SHARE_LINK,e);
                     }
                 });
-                drawerItemShare.classList.add("hidden");
-                drawerItemShare.classList.add("disabled");
+                drawerItemShare.hide();
+                drawerItemShare.disable();
+                break;
+            case EVENTS.MAP_READY:
+                drawerItemNew.show();
+                var group = window.location.pathname.split("/")[2];
+                var groupOld = u.load("group");
+                if(group) {
+                    var self = this;
+                    setTimeout(function(){
+                        u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
+                    }, 0);
+                }
                 break;
             case EVENTS.TRACKING_NEW:
                 var self = this;
@@ -103,7 +107,7 @@ function TrackingHolder(main) {
             case EVENTS.TRACKING_ACTIVE:
                 document.title = main.appName + " - " + main.tracking.getToken();
                 if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
-                    drawerItemShare.classList.remove("disabled");
+                    drawerItemShare.enable();
                 }
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
@@ -112,10 +116,9 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.TRACKING_CONNECTING:
                 document.title = "Connecting - " + main.appName;
-                drawerItemNew.classList.add("hidden");
-                drawerItemShare.classList.remove("hidden");
-                drawerItemShare.classList.remove("disabled");
-                drawerItemExit.classList.remove("hidden");
+                drawerItemNew.hide();
+                drawerItemShare.show().enable();
+                drawerItemExit.show();
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
                     wakeLockEnabled = true;
@@ -123,10 +126,9 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.TRACKING_RECONNECTING:
                 document.title = "Connecting - " + main.appName;
-                drawerItemNew.classList.add("hidden");
-                drawerItemShare.classList.remove("hidden");
-                drawerItemShare.classList.remove("disabled");
-                drawerItemExit.classList.remove("hidden");
+                drawerItemNew.hide();
+                drawerItemShare.show().enable();
+                drawerItemExit.show();
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
                     wakeLockEnabled = true;
@@ -134,8 +136,8 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.TRACKING_DISABLED:
                 document.title = main.appName;
-                drawerItemShare.classList.add("disabled");
-                drawerItemExit.classList.add("hidden");
+                drawerItemShare.disable();
+                drawerItemExit.hide();
                 if (wakeLockEnabled) {
                     noSleep.disable(); // let the screen turn off.
                     wakeLockEnabled = false;
@@ -151,7 +153,7 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.SHARE_LINK:
-                if(shareDialog) shareDialog.onclose();
+                if(shareDialog) shareDialog.close();
                 shareDialog = shareDialog || u.dialog({
                     items: [
                         {type:HTML.DIV, innerHTML:"Let your e-mail client compose the message with link to this group?"},
@@ -175,7 +177,7 @@ function TrackingHolder(main) {
                                         label: "Close"
                                     },
                                 });
-                                shareBlockedDialog.onopen();
+                                shareBlockedDialog.open();
                             });
                         }
                     },
@@ -184,7 +186,7 @@ function TrackingHolder(main) {
                     },
                     timeout: 20000
                 });
-                shareDialog.onopen();
+                shareDialog.open();
                 break;
             default:
                 break;
@@ -194,7 +196,7 @@ function TrackingHolder(main) {
 
     function startTracking(){
 
-        progress.onopen();
+        progress.open();
 
         this.tracking = main.tracking = new TrackingFB(main);
         // console.log("LOADED", tracking);
@@ -219,20 +221,20 @@ function TrackingHolder(main) {
         onCreating: function(){
             // console.log("ONCREATING");
             progressTitle.innerHTML = "Connecting...";
-            progress.onopen();
+            progress.open();
             u.save(TRACKING_URI, null);
             main.fire(EVENTS.TRACKING_CONNECTING);
         },
         onJoining: function(){
             // console.log("ONJOINING");
             progressTitle.innerHTML = "Joining group...";
-            progress.onopen();
+            progress.open();
             main.fire(EVENTS.TRACKING_RECONNECTING, "Joining group...");
         },
         onReconnecting: function(){
             // console.log("ONRECONNECTING");
             progressTitle.innerHTML = "Reconnecting...";
-            progress.onopen();
+            progress.open();
             main.fire(EVENTS.TRACKING_RECONNECTING, "Reconnecting...");
         },
         onClose: function(){
@@ -261,7 +263,7 @@ function TrackingHolder(main) {
                 if (o[RESPONSE.NUMBER] != undefined) {
                     main.users.forMe(function (number, user) {
                         user.createViews();
-                        progress.onclose();
+                        progress.close();
                     })
                 }
 //                if (o[RESPONSE.INITIAL]) {
@@ -328,14 +330,15 @@ function TrackingHolder(main) {
         }
     };
 
-    var help = {
-        title: "Tracking",
-        1: {
-            title: "You have created new group",
-            ignore: true,
-            body: "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. "
+    function help(){
+        return {
+            title: "Tracking",
+            1: {
+                title: "You have created new group",
+                body: "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. "
+            }
         }
-    };
+    }
 
 
     return {

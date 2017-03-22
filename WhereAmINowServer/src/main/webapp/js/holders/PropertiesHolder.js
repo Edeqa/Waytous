@@ -57,7 +57,7 @@ function PropertiesHolder(main) {
                             label: "Remind me later"
                         },
                         timeout: 10000
-                    }).onopen();
+                    }).open();
                 }
                 var name = main.me.name;
                 if(!name && main.me.properties) name = main.me.properties.name;
@@ -154,9 +154,9 @@ function PropertiesHolder(main) {
     }
 
     function setMyName(name){
-        if(dialog) dialog.onclose();
+        if(dialog) dialog.close();
         dialog.items[0].value = main.me.properties.name || "";
-        dialog.onopen();
+        dialog.open();
     }
 
 }

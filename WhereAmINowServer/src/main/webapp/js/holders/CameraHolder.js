@@ -58,35 +58,35 @@ function CameraHolder(main) {
                         user.fire(EVENTS.SELECT_USER);
                     });
                 });
-                menuFitToScreen.classList.add("disabled");
+                menuFitToScreen.disable();
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(main.users.getCountSelected() == 1 && user.properties.selected) break;
 
                 var select, unselect;
-                select = object.add(MENU.SECTION_PRIMARY, type + "_1", "Select", "select_all", function () {
-                    select.classList.add("hidden");
-                    unselect.classList.remove("hidden");
+                select = object.add(MENU.SECTION_PRIMARY, EVENTS.SELECT_USER, "Select", "select_all", function () {
+                    select.hide();
+                    unselect.show();
                     user.fire(EVENTS.SELECT_USER);
                 });
                 unselect_icon = unselect_icon || u.create(HTML.PATH, unselect_path, u.create(HTML.SVG, unselect_svg)).parentNode;
-                unselect = object.add(MENU.SECTION_PRIMARY, type + "_1", "Unselect", unselect_icon, function () {
-                    select.classList.remove("hidden");
-                    unselect.classList.add("hidden");
+                unselect = object.add(MENU.SECTION_PRIMARY, EVENTS.UNSELECT_USER, "Unselect", unselect_icon, function () {
+                    select.show();
+                    unselect.hide();
                     user.fire(EVENTS.UNSELECT_USER);
                 });
                 if(user.properties.selected) {
-                    select.classList.add("hidden");
+                    select.hide();
                 } else {
-                    unselect.classList.add("hidden");
+                    unselect.hide();
                 }
                 break;
             case EVENTS.TRACKING_ACTIVE:
-                menuFitToScreen.classList.remove("disabled");
+                menuFitToScreen.enable();
                 break;
             case EVENTS.TRACKING_DISABLED:
-                menuFitToScreen.classList.add("disabled");
+                menuFitToScreen.disable();
                 break;
             case EVENTS.MAP_READY:
                 main.map.addListener("dragend", function(e){
@@ -119,7 +119,7 @@ function CameraHolder(main) {
             case EVENTS.SELECT_USER:
                 orientation = this && this.views && this.views.camera ? this.views.camera.orientation : CAMERA_ORIENTATION_NORTH;
                 onChangeLocation.call(this, this.location);
-                menuFitToScreen.classList.remove("disabled");
+                menuFitToScreen.show();
                 break;
             case EVENTS.UNSELECT_USER:
                 update();

@@ -46,6 +46,10 @@ function Constants() {
         MOUSE_OVER: "mouse_over",
         MOUSE_OUT: "mouse_out",
 
+        SHOW_BADGE: "show_badge",
+        HIDE_BADGE: "hide_badge",
+        INCREASE_BADGE: "increase_badge",
+
     };
     window.REQUEST = {
         REQUEST: "client",

@@ -1,9 +1,6 @@
 /**
  * Created 2/11/17.
  */
-EVENTS.SHOW_BADGE = "show_badge";
-EVENTS.HIDE_BADGE = "hide_badge";
-EVENTS.INCREASE_BADGE = "increase_badge";
 EVENTS.HIDE_MENU_SUBTITLE = "hide_menu_subtitle";
 EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
 
@@ -100,10 +97,10 @@ function ButtonHolder(main) {
                 }*/
                 break;
             case EVENTS.TRACKING_ACTIVE:
-                buttons.onopen();
+                buttons.open();
                 break;
             case EVENTS.TRACKING_DISABLED:
-                buttons.onclose();
+                buttons.close();
                 break;
             case EVENTS.SELECT_USER:
                 this.views.button.button.classList.add("user-button-selected");
@@ -133,16 +130,16 @@ function ButtonHolder(main) {
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() > 1) {
-                    buttons.onopen();
+                    buttons.open();
                 } else if(!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED) {
-                    buttons.onclose();
+                    buttons.close();
                 }
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
                 buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() < 2 && (!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED)) {
-                    buttons.onclose();
+                    buttons.close();
                 }
                 break;
             case EVENTS.UPDATE_ADDRESS:
@@ -249,7 +246,13 @@ function ButtonHolder(main) {
             },
             onmouseleave: function(e) {
                 user.fire(EVENTS.MOUSE_OUT,e);
-            }
+            },
+            show: function() {
+                this.classList.remove("hidden");
+            },
+            hide: function() {
+                this.classList.add("hidden");
+            },
         });
         var icon = (user && user.origin && user.origin.buttonIcon) || "person";
         u.create(HTML.DIV, {className:"user-button-icon", innerHTML:icon}, b);
@@ -323,13 +326,24 @@ function ButtonHolder(main) {
     function ContextMenu() {
 
         function add(section,id,name,icon,callback) {
-            var th = u.create(HTML.DIV, {className:"user-context-menu-item", onclick: function() {
-                setTimeout(function(){
-                    contextMenuLayout.focus();
-                    contextMenuLayout.blur();
-                    callback();
-                }, 0);
-            }}, sections[section]);
+            var th = u.create(HTML.DIV, {
+                className:"user-context-menu-item",
+                onclick: function() {
+                    setTimeout(function(){
+                        contextMenuLayout.focus();
+                        contextMenuLayout.blur();
+                        callback();
+                    }, 0);
+                },
+                show: function() {
+                    this.classList.remove("hidden");
+                    return this;
+                },
+                hide: function() {
+                    this.classList.add("hidden");
+                    return this;
+                }
+            }, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
                     u.create(HTML.DIV, { className:"user-context-menu-item-icon", innerHTML: icon }, th);

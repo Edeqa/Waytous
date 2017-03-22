@@ -1,5 +1,6 @@
 {
     "name": "Waytogo",
+    "short_name": "Waytogo",
     "icons": [
         {
             "src": "/icons/android-chrome-36x36.png",
@@ -49,7 +50,7 @@
     ],
     "theme_color": "#aaeeee",
     "background_color": "#aaeeee",
-    "start_url": "http://waytogo.us",
+    "start_url": "/",
     "display": "standalone",
     "orientation": "portrait"
 }

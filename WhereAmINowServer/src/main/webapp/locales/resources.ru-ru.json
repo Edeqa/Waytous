@@ -1,0 +1,30 @@
+{
+  "SECTION": "// MapHolder ",
+  "traffic": "Трафик",
+  "transit": "Транспорт",
+  "bicycle": "Велосипед",
+  "satellite": "Спутник",
+  "terrain": "Местность",
+
+
+  "SECTION": "// DrawerHolder ",
+  "connecting": "Соединяемся...",
+  "be_always_on_the_same_way": "Будь на одной волне с друзьями",
+
+
+  "SECTION": "// GpsHolder ",
+
+  "gps_alpha_1": "Спасибо за то, что воспользовались",
+  "gps_alpha_2": "АЛЬФА версией Waytogo.",
+  "gps_alpha_3": "&nbsp;",
+  "gps_alpha_4": "Пожалуйста, если вы обнаружите ошибки",
+  "gps_alpha_5": "или странное поведение, либо придумаете,",
+  "gps_alpha_6": "классную идею, ну или вообще просто так -",
+  "gps_alpha_7": "не стесняйтесь написать нам письмо:",
+  "gps_alpha_8": "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
+
+
+  "SECTION": "// SampleHolder ",
+  "sample_article_1": "Статья 1",
+  "sample_body_1": "Пример статьи справки, переведенной на русский язык"
+}

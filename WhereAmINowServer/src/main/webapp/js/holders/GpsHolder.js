@@ -6,6 +6,9 @@ function GpsHolder(main) {
     var type = "gps";
     var geoTrackFilter = new GeoTrackFilter();
     var locationRequiredDialog;
+    var drawerEnableGeoposition;
+    var initialized;
+    var alphaDialog;
 
     function start() {
 
@@ -15,56 +18,49 @@ function GpsHolder(main) {
             latLong = ipinfo.loc.split(",");
         });*/
 
-        var asked = u.load("gps:asked");
-
-        if(asked) {
-            startPositioning();
-        } else {
-            locationRequiredDialog = locationRequiredDialog || u.dialog({
-                items: [
-                    { type: HTML.DIV, innerHTML: "The purpose of this service is to help friends find each other." },
-                    { type: HTML.DIV, innerHTML: "To do this, send your location to your friends." },
-                    { type: HTML.DIV, innerHTML: "Now the browser should ask you about using your location information." },
-                    { type: HTML.DIV, innerHTML: "Answer him \"Allow\", otherwise your friends" },
-                    { type: HTML.DIV, innerHTML: "will not be able to see where you are." },
-                ],
-                positive: {
-                    label: "Next",
-                    onclick: function() {
-                        startPositioning();
-                    }
-                },
-            });
-            locationRequiredDialog.onopen();
-        }
-
-        u.save("gps:asked", true);
-
+//        u.save("gps:asked");
+//        u.save("gps:allowed");
 
 ////// FIXME - remove when no alpha
 
-        var alpha = u.dialog({
-            className: "alert-dialog",
-            items: [
-                { type: HTML.DIV, innerHTML:"Thank you for using the ALPHA version of Waytogo." },
-                { type: HTML.DIV, innerHTML:"Please if you found some errors, weird behaviour, new great idea" },
-                { type: HTML.DIV, innerHTML:"or just because - feel free to send us an e-mail:" },
-                { type: HTML.DIV, innerHTML:"<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>." },
-            ],
-            positive: {
-                label: "OK",
-                onclick: function(){
-                    alpha.onclose();
-                }
-            },
+        main.alpha.addEventListener("click", function(){
+            alphaDialog = alphaDialog || u.dialog({
+                className: "alert-dialog",
+                items: [
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_1 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_2 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_3 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_4 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_5 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_6 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_7 },
+                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_8 },
+                ],
+                positive: {
+                    label: u.lang.ok,
+                    onclick: function(){
+                        alphaDialog.close();
+                    }
+                },
+            });
+
+            alphaDialog.open();
         });
-        main.alpha.addEventListener("click", function(){alpha.onopen();});
 
 
     }
 
     function onEvent(EVENT,object){
         switch (EVENT){
+            case EVENTS.CREATE_DRAWER:
+                drawerEnableGeoposition = object.add(DRAWER.SECTION_PRIMARY,type+"_1",u.lang.enable_geolocation,"gps_fixed",function(){
+                    u.save("gps:asked");
+                    main.fire(EVENTS.MAP_READY);
+                });
+                if(u.load("gps:allowed")) {
+                    drawerEnableGeoposition.hide();
+                }
+                break;
             case EVENTS.TRACKING_ACTIVE:
                 if(main.me.location) {
                     var message = u.locationToJson(main.me.location);
@@ -81,6 +77,41 @@ function GpsHolder(main) {
                 console.log("LASTLOC",last);
                     main.me.addLocation(last);
                 }
+
+                if(u.load("gps:allowed") && u.load("gps:asked")) {
+                    startPositioning();
+                } else if(!u.load("gps:asked")) {
+                    locationRequiredDialog = locationRequiredDialog || u.dialog({
+                        className: "gps-required",
+                        items: [
+                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
+                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
+                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_3 },
+                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_4 },
+                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_5 },
+                        ],
+                        positive: {
+                            label: u.lang.gps_ok_go_ahead,
+                            onclick: function() {
+                                u.save("gps:asked", true);
+                                startPositioning();
+                                if(!initialized) main.fire(EVENTS.MAP_READY);
+                            }
+                        },
+                        negative: {
+                            label: u.lang.maybe_later,
+                            onclick: function() {
+                                u.save("gps:asked", true);
+                                if(!initialized) main.fire(EVENTS.MAP_READY);
+                            }
+                        },
+                    });
+                    locationRequiredDialog.open();
+                    return false;
+                } /*else if(!u.load("gps:allowed")) {
+                    return false;
+                }*/
+                initialized = true;
                 break;
             default:
                 break;
@@ -90,6 +121,8 @@ function GpsHolder(main) {
 
     function startPositioning() {
         navigator.geolocation.getCurrentPosition(function(location){
+            drawerEnableGeoposition.hide();
+            u.save("gps:allowed", true);
             locationUpdateListener(location);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
                 console.error(error);
@@ -102,19 +135,21 @@ function GpsHolder(main) {
             var message;
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    message = "You have denied geolocation.";
+                    message = u.lang.gps_you_have_denied_geolocation;
+                    u.save("gps:asked");
+                    u.save("gps:allowed");
                     break;
                 case error.PERMISSION_DENIED_TIMEOUT:
-                    message = "User took too long to grant/deny geolocation permission.";
+                    message = u.lang.gps_user_took_too_long_to_grant_deny_geolocation_permission;
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    message = "Geolocation is unavailable.";
+                    message = u.lang.gps_geolocation_is_unavailable;
                     break;
                 case error.TIMEOUT:
-                    message = "The request to geolocation timed out.";
+                    message = u.lang.gps_request_to_geolocation_is_timed_out;
                     break;
                 default:
-                    message = "An unknown error occurred while requesting geolocation.";
+                    message = u.lang.gps_unknown_error_occurred_while_requesting_geolocation;
                     break;
             }
 
@@ -122,25 +157,25 @@ function GpsHolder(main) {
             var alert = u.dialog({
                 className: "alert-dialog",
                 items: [
-                    { type: HTML.DIV, label: message + " Please resolve this problem and try again. Note that geolocation is required for working this service properly." },
+                    { type: HTML.DIV, label: message + " " + u.lang.gps.please_resolve_this_problem_and_try_again },
                 ],
                 positive: {
-                    label: "OK",
+                    label: u.lang.ok,
                     onclick: function(){
                         icon.classList.remove("hidden");
-                        alert.onclose();
+                        alert.close();
                     }
                 },
                 negative: {
                     onclick: function(){
                         icon.classList.remove("hidden");
-                        alert.onclose();
+                        alert.close();
                     }
                 },
                 help: function() {
                     main.fire(EVENTS.SHOW_HELP, {module: main.holders.gps, article: 1});
                  }
-            }).onopen();
+            }).open();
 
             icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");
@@ -194,18 +229,58 @@ function GpsHolder(main) {
     }
 
 
-    var help = {
-        title: "Geolocation",
-        1: {
-            title: "Allow geolocation",
-            body: "Instruction how to allow geolocation"
+    function help(){
+        return {
+            title: u.lang.gps_help_title,
+            1: {
+                title: u.lang.gps_help_1_title,
+                body: u.lang.gps_help_1_body
+            }
         }
-    };
+    }
+
+
+
+    var resources = {
+        enable_geolocation: "Enable geolocation",
+
+        gps_ok_go_ahead: "OK, go ahead",
+
+        gps_alpha_1: "Thank you for using the",
+        gps_alpha_2: "ALPHA version of Waytogo.",
+        gps_alpha_3: "&nbsp;",
+        gps_alpha_4: "Please if you found some errors,",
+        gps_alpha_5: "weird behaviour, new great idea",
+        gps_alpha_6: "or just because -",
+        gps_alpha_7: "feel free to send us an e-mail:",
+        gps_alpha_8: "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
+
+        gps_location_required_1: "The purpose of this service is to help friends find each other.",
+        gps_location_required_2: "To do this, send your location to your friends.",
+        gps_location_required_3: "Now the browser should ask you about using your location information.",
+        gps_location_required_4: "Answer him \"Allow\", otherwise your friends",
+        gps_location_required_5: "will not be able to see where you are.",
+
+        gps_you_have_denied_geolocation: "You have denied geolocation.",
+        gps_user_took_too_long_to_grant_deny_geolocation_permission: "User took too long to grant/deny geolocation permission.",
+        gps_geolocation_is_unavailable: "Geolocation is unavailable.",
+        gps_request_to_geolocation_is_timed_out: "The request to geolocation is timed out.",
+        gps_unknown_error_occurred_while_requesting_geolocation: "An unknown error occurred while requesting geolocation.",
+        gps_please_resolve_this_problem_and_try_again: "Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
+
+        gps_help_title: "Geolocation",
+        gps_help_1_title: "Allow geolocation",
+        gps_help_1_body: "Instruction how to allow geolocation"
+    }
+
+
+
 
     return {
         type:type,
         start:start,
         onEvent:onEvent,
         help:help,
+        resources:resources,
     }
 }

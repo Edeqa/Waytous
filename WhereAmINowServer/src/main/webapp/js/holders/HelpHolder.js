@@ -17,7 +17,7 @@ function HelpHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                var menuItem = object.add(DRAWER.SECTION_LAST,EVENTS.SHOW_HELP, "Help", "help_outline", function(){
+                object.add(DRAWER.SECTION_LAST,EVENTS.SHOW_HELP, "Help", "help_outline", function(){
                     main.fire(EVENTS.SHOW_HELP);
                 });
                 break;
@@ -30,19 +30,19 @@ function HelpHolder(main) {
                         label: "Close"
                     }
                 });
-
+                if(dialog.opened) break;
                 dialog.clearItems();
                 if(object) {
                     if(object["module"].help) {
                         dialog.addItem({
                             type:HTML.DIV,
                             className:"help-item-title",
-                            innerHTML:object["module"].help[object.article].title
+                            innerHTML:object["module"].help()[object.article].title
                         });
                         dialog.addItem({
                             type:HTML.DIV,
                             className:"help-item-body",
-                            innerHTML:object["module"].help[object.article].body
+                            innerHTML:object["module"].help()[object.article].body
                         });
                     }
                 } else {
@@ -50,27 +50,43 @@ function HelpHolder(main) {
                     modules.main = main;
                     for(var i in modules) {
                         console.log(i);
-                        if(modules[i] && modules[i].help && modules[i].help.title) {
-                            var help = modules[i].help;
+                        if(modules[i] && modules[i].help && modules[i].help().title) {
+                            var help = modules[i].help();
+                            var title = help.title;
+                            if(title && title instanceof HTMLElement) {
+                                title = title.outerHTML;
+                            }
+                            title = title || modules[i].type;
                             dialog.addItem({
                                 type:HTML.DIV,
                                 className:"help-module-title",
-                                innerHTML: help.title || modules[i].type
+                                innerHTML: title
                             });
                             for(var j in help) {
                                 if(j == "title" || help[j].ignore) continue;
+                                var title = help[j].title;
+                                if(title && title instanceof HTMLElement) {
+                                    title = title.outerHTML;
+                                }
+                                title = title || "";
+                                var body = help[j].body;
+                                if(body && body instanceof HTMLElement) {
+                                    body = body.outerHTML;
+                                }
+                                body = body || "";
+
                                 dialog.addItem({
                                     type:HTML.DIV,
                                     className:"help-module-item",
                                     enclosed:true,
-                                    label:j + ". " + (help[j].title || ""),
-                                    body:help[j].body
+                                    label:j + ". " + title,
+                                    body:body
                                 });
                             }
                         }
                     }
                 }
-                dialog.onopen();
+                dialog.open();
                 break;
             default:
                 break;

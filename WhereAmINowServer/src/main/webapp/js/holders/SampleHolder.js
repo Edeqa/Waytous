@@ -1,7 +1,7 @@
 /**
  * Created 2/10/17.
  */
-EVENT.SAMPLE_EVENT = "sample_event";
+EVENTS.SAMPLE_EVENT = "sample_event";
 
 function SampleHolder(main) {
 
@@ -15,7 +15,7 @@ function SampleHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                var menuItem = object.add(DRAWER.SECTION_PRIMARY, EVENT.SAMPLE_EVENT, "Sample item", "ac_unit", function(){
+                var menuItem = object.add(DRAWER.SECTION_PRIMARY, EVENT.SAMPLE_EVENT, u.lang.sample_item, "ac_unit", function(){
                     console.log("SAMPLEEVENTDRAWERCALLBACK", EVENT);
                 });
                 menuItem.classList.add("disabled");
@@ -23,7 +23,7 @@ function SampleHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user) {
-                    object.add(MENU.SECTION_PRIMARY, EVENT.SAMPLE_EVENT, "Sample menu", "ac_unit", function () {
+                    object.add(MENU.SECTION_PRIMARY, EVENT.SAMPLE_EVENT, u.lang.sample_menu, "ac_unit", function () {
                         u.save("sample:show:"+user.number, true);
                         console.log("SAMPLEEVENTMENUCALLBACK", user);
                     });
@@ -48,17 +48,37 @@ function SampleHolder(main) {
         // console.log("SAMPLEONCHANGELOCATION",this,location);
     }
 
-    var help = {
-        title: "Sample",
-        1: {
-            title: "Article 1",
-            body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pellentesque aliquam tellus, quis finibus odio faucibus sed. Nunc nec dictum ipsum, a efficitur sem. Nullam suscipit quis neque in cursus. Etiam tempus imperdiet scelerisque. Integer ut nisi at est varius rutrum quis eget urna. Morbi blandit vehicula laoreet. Curabitur tincidunt turpis dui, at venenatis risus volutpat et. Donec cursus molestie ligula eu convallis. Curabitur sed quam id ex tristique ultricies. Duis id felis eget massa venenatis vehicula. Aenean eget varius dui. "
-        },
-        2: {
-            title: "Article 2",
-            body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pellentesque aliquam tellus, quis finibus odio faucibus sed. Nunc nec dictum ipsum, a efficitur sem. Nullam suscipit quis neque in cursus. Etiam tempus imperdiet scelerisque. Integer ut nisi at est varius rutrum quis eget urna. Morbi blandit vehicula laoreet. Curabitur tincidunt turpis dui, at venenatis risus volutpat et. Donec cursus molestie ligula eu convallis. Curabitur sed quam id ex tristique ultricies. Duis id felis eget massa venenatis vehicula. Aenean eget varius dui. "
+    function help(){
+        return {
+            title: u.lang.sample_title,
+            1: {
+                title: u.lang.sample_article_1,
+                body: u.lang.sample_body_1
+            },
+            2: {
+                title: u.lang.sample_article_2,
+                body: u.lang.sample_body_2,
+            },
+            3: {
+                title: u.lang.sample_article_3,
+                body: u.lang.sample_body_3,
+                ignore: true,
+            }
         }
+    }
+
+    var resources = {
+        sample_item: "Sample item",
+        sample_menu: "Sample menu",
+        sample_title: "Sample",
+        sample_article_1: "Article 1",
+        sample_body_1: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        sample_article_2: "Article 2",
+        sample_body_2: "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
+        sample_article_3: "Additional article",
+        sample_body_3: "Additional body.",
     };
+
 
     return {
         type:type,
@@ -67,5 +87,6 @@ function SampleHolder(main) {
         createView:createView,
         onChangeLocation:onChangeLocation,
         help:help,
+        resources:resources,
     }
 }
