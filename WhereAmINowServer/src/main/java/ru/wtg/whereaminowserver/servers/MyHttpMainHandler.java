@@ -21,7 +21,6 @@ import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 
-
 /**
  * Created 1/19/17.
  */
@@ -35,7 +34,6 @@ public class MyHttpMainHandler implements HttpHandler {
 
         boolean gzip = false;
         String ifModifiedSince = null;
-
 
         URI uri = exchange.getRequestURI();
 
@@ -61,7 +59,6 @@ public class MyHttpMainHandler implements HttpHandler {
 
         String etag = "W/1976" + ("" + file.lastModified()).hashCode();
 
-
         if (!file.isFile()) {
             file = new File(file.getCanonicalPath() + "/index.html");
         }
@@ -79,7 +76,6 @@ public class MyHttpMainHandler implements HttpHandler {
             os.write(response.getBytes());
             os.close();
         } else if (!file.isFile()) {
-
             // Object does not exist or is not a file: reject with 404 error.
             String response = "404 Not Found\n";
             exchange.sendResponseHeaders(404, response.length());
@@ -88,7 +84,6 @@ public class MyHttpMainHandler implements HttpHandler {
             os.close();
         } else {
             // Object exists and is a file: accept with response code 200.
-
             String path = uri.getPath().toLowerCase();
 
             if(path.startsWith("/css/")) {
@@ -105,7 +100,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 String type = "image/";
                 String[] parts = file.getName().split("\\.");
                 if(parts.length>1){
-                    type += parts[parts.length-1];
+                    type += parts[parts.length-1].toLowerCase();
                 } else type += "*";
                 gzip = false;
                 exchange.getResponseHeaders().set("Content-Type", type);
@@ -156,7 +151,6 @@ public class MyHttpMainHandler implements HttpHandler {
         }
 
     }
-
 
     public AbstractWainProcessor getWainProcessor() {
         return wainProcessor;

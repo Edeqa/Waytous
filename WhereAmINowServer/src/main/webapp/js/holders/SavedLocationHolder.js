@@ -21,6 +21,7 @@ function SavedLocationHolder(main) {
     var locationSendDialog;
     var locationReceiveDialog;
     var locationDeleteDialog;
+    var shareBlockedDialog;
     var locationsDialog;
     var drawerMenuItem;
     var showNavigation = false;
@@ -88,8 +89,8 @@ function SavedLocationHolder(main) {
                     }
                     var last = u.load("saved_location:counter") || 0;
                     last++;
-                    u.save("saved_location:counter",last);
-                    u.save("saved_location:"+last, loc);
+                    u.save("saved_location:counter", last);
+                    u.save("saved_location:" + last, loc);
                     drawerMenuItem.classList.remove("hidden");
                     fetchAddressFor(last);
                     if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
@@ -231,7 +232,46 @@ function SavedLocationHolder(main) {
                 var loc = u.load("saved_location:"+parseInt(object));
                 console.log("SHARE",loc);
                 if(loc) {
+
+                    locationShareDialog = locationShareDialog || u.dialog({
+                        items: [
+                            {type:HTML.HIDDEN },
+                            {type:HTML.DIV, innerHTML:"Let your e-mail client compose the message with link to this location?"},
+                        ],
+                        positive: {
+                            label: "Yes",
+                            onclick: function() {
+                                var link = locationShareDialog.items[0].value;
+                                var popup = window.open("mailto:?subject=Here%20is%20that%20location&body="+link,"_blank");
+                                u.popupBlockerChecker.check(popup, function() {
+                                    shareBlockedDialog = shareBlockedDialog || u.dialog({
+                                        items: [
+                                            {type:HTML.DIV, innerHTML:"Perhaps, your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly."},
+                                            {type:HTML.DIV, enclosed:true, innerHTML:"Detailed information how to unblock this feature"},
+                                            {type:HTML.DIV, innerHTML:"Also, you can send the link manually. Copy it clicking on the button below."},
+                                            {type:HTML.DIV, innerHTML:locationShareDialog.items[0].value}
+                                        ],
+                                        positive: {
+                                            label: "Close"
+                                        },
+                                    });
+                                    shareBlockedDialog.onopen();
+                                });
+                            }
+                        },
+                        negative: {
+                            label: "No"
+                        },
+//                        timeout: 20000
+                    });
+
+                    locationShareDialog.items[0].value = encodeURIComponent(encodeURI("http://maps.google.com/maps?q=" + loc.n
+                        + "&z=14&ll=" + loc.la + "," + loc.lo));
+
+                    locationShareDialog.onopen();
+
                 }//TODO
+
 
                 break;
             case EVENTS.SEND_SAVED_LOCATION:
@@ -324,7 +364,7 @@ function SavedLocationHolder(main) {
                 var last = u.load("saved_location:counter") || 0;
                 for(var i = 1; i <= last; i++) {
                     var loc = u.load("saved_location:"+i);
-                    if(loc) {
+                    if(loc && loc.la && loc.lo) {
                         var div = locationsDialog.addItem({
                             type: HTML.DIV,
                             className: "saved-location-item",
@@ -451,8 +491,12 @@ function SavedLocationHolder(main) {
         locationReceiveDialog = locationReceiveDialog || u.dialog({
              title: "Add location",
              items: [
-                 { type: HTML.DIV, innerHTML: "Delete this location?" },
+                 { type: HTML.DIV },
+                 { type: HTML.DIV },
+                 { type: HTML.DIV },
+                 { type: HTML.DIV, innerHTML: "Add it to your saved locations list?" },
              ],
+             itemsClassName: "saved-location-receive-items",
              className: "saved-location-receive",
              positive: {
                  label: "Yes"
@@ -461,15 +505,29 @@ function SavedLocationHolder(main) {
                  label: "No"
              },
          });
-        locationReceiveDialog.items[0].innerHTML = "You've got the location from  " + (from ? from.properties.getDisplayName() : number)
-            + ": " + user.properties.getDisplayName()
-            + (user.address ? ", address: " + user.address : "")
-            + (user.description ? ", description: " + user.description : "")
-            + ". Add it to your saved locations list?";
+        locationReceiveDialog.items[0].innerHTML = "You've got the location from " + (from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName() + ".";
+        if(user.address) {
+            locationReceiveDialog.items[1].innerHTML = "Address: " + user.address + "."
+            locationReceiveDialog.items[1].classList.remove("hidden");
+        } else {
+            locationReceiveDialog.items[1].classList.add("hidden");
+        }
+        if(user.description) {
+            locationReceiveDialog.items[2].innerHTML = "Description: " + user.description + ".";
+            locationReceiveDialog.items[2].classList.remove("hidden");
+        } else {
+            locationReceiveDialog.items[2].classList.add("hidden");
+        }
         locationReceiveDialog.positive.onclick = function() {
             console.log("YES",user);
             user.views[type] = createView(user)
             user.fire(EVENTS.SAVE_LOCATION);
+        }
+        locationReceiveDialog.negative.onclick = function() {
+            var last = u.load("saved_location:counter") || 0;
+            last++;
+            u.save("saved_location:counter",last);
+            u.save("saved_location:"+last, {k:user.key});
         }
         locationReceiveDialog.onopen();
 

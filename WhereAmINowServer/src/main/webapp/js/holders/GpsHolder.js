@@ -5,6 +5,7 @@ function GpsHolder(main) {
 
     var type = "gps";
     var geoTrackFilter = new GeoTrackFilter();
+    var locationRequiredDialog;
 
     function start() {
 
@@ -14,6 +15,80 @@ function GpsHolder(main) {
             latLong = ipinfo.loc.split(",");
         });*/
 
+        var asked = u.load("gps:asked");
+
+        if(asked) {
+            startPositioning();
+        } else {
+            locationRequiredDialog = locationRequiredDialog || u.dialog({
+                items: [
+                    { type: HTML.DIV, innerHTML: "The purpose of this service is to help friends find each other." },
+                    { type: HTML.DIV, innerHTML: "To do this, send your location to your friends." },
+                    { type: HTML.DIV, innerHTML: "Now the browser should ask you about using your location information." },
+                    { type: HTML.DIV, innerHTML: "Answer him \"Allow\", otherwise your friends" },
+                    { type: HTML.DIV, innerHTML: "will not be able to see where you are." },
+                ],
+                positive: {
+                    label: "Next",
+                    onclick: function() {
+                        startPositioning();
+                    }
+                },
+            });
+            locationRequiredDialog.onopen();
+        }
+
+        u.save("gps:asked", true);
+
+
+////// FIXME - remove when no alpha
+
+        var alpha = u.dialog({
+            className: "alert-dialog",
+            items: [
+                { type: HTML.DIV, innerHTML:"Thank you for using the ALPHA version of Waytogo." },
+                { type: HTML.DIV, innerHTML:"Please if you found some errors, weird behaviour, new great idea" },
+                { type: HTML.DIV, innerHTML:"or just because - feel free to send us an e-mail:" },
+                { type: HTML.DIV, innerHTML:"<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>." },
+            ],
+            positive: {
+                label: "OK",
+                onclick: function(){
+                    alpha.onclose();
+                }
+            },
+        });
+        main.alpha.addEventListener("click", function(){alpha.onopen();});
+
+
+    }
+
+    function onEvent(EVENT,object){
+        switch (EVENT){
+            case EVENTS.TRACKING_ACTIVE:
+                if(main.me.location) {
+                    var message = u.locationToJson(main.me.location);
+                    main.tracking.sendMessage(REQUEST.TRACKING, message);
+                }
+                //
+                // navigator.geolocation.getCurrentPosition(function(location){
+                //     locationUpdateListener(location);
+                // });
+                break;
+            case EVENTS.MAP_READY:
+                var last = u.load("gps:last");
+                if(last && main.me && !main.me.location && last.coords && last.coords.latitude && last.coords.longitude) {
+                console.log("LASTLOC",last);
+                    main.me.addLocation(last);
+                }
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    function startPositioning() {
         navigator.geolocation.getCurrentPosition(function(location){
             locationUpdateListener(location);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
@@ -78,23 +153,6 @@ function GpsHolder(main) {
         });
     }
 
-    function onEvent(EVENT,object){
-        switch (EVENT){
-            case EVENTS.TRACKING_ACTIVE:
-                if(main.me.location) {
-                    var message = u.locationToJson(main.me.location);
-                    main.tracking.sendMessage(REQUEST.TRACKING, message);
-                }
-                //
-                // navigator.geolocation.getCurrentPosition(function(location){
-                //     locationUpdateListener(location);
-                // });
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
 
     function locationUpdateListener(position) {
 
@@ -106,6 +164,7 @@ function GpsHolder(main) {
         }
         console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
 
+        u.save("gps:last",u.cloneAsObject(position));
         var message = u.locationToJson(position);
         if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
@@ -133,6 +192,7 @@ function GpsHolder(main) {
             }
         }
     }
+
 
     var help = {
         title: "Geolocation",

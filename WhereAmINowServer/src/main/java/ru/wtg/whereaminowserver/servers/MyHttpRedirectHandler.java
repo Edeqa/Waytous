@@ -15,7 +15,6 @@ import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.SensitiveData;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTPS_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 
 /**
  * Created 10/5/16.
@@ -26,7 +25,6 @@ public class MyHttpRedirectHandler implements HttpHandler {
     public void handle(final HttpExchange exchange) throws IOException {
         try {
             URI uri = exchange.getRequestURI();
-//            Headers headers = exchange.getRequestHeaders();
             String host;
             try {
                 host = exchange.getRequestHeaders().get("Host").get(0);
@@ -60,8 +58,8 @@ public class MyHttpRedirectHandler implements HttpHandler {
                         + "&ifl=" + webRedirect
                         + "&st=Waytogo"
                         + "&sd=Waytogo+description"
-                        + "&si=https://raw.githubusercontent.com/tujger/WhereAmINow/master/WhereAmINowServer/src/main/webapp/images/logo.png"
-                        ;
+                        + "&si=https://raw.githubusercontent.com/tujger/WhereAmINow/master/WhereAmINowServer/src/main/webapp/images/logo.png";
+
                 Common.log("Redirect ->", redirectLink);
 
                 Headers responseHeaders = exchange.getResponseHeaders();
@@ -71,27 +69,6 @@ public class MyHttpRedirectHandler implements HttpHandler {
                 exchange.sendResponseHeaders(302, 0);
                 exchange.close();
 
-                /*HtmlGenerator html = new HtmlGenerator();
-
-                html.getHead().add(SCRIPT).with(
-                    "\nvar mobile = \"" + lll + "\";" +
-//                    "\nvar mobile = \"" + mobileRedirect + "\";" +
-                    "\nvar web = \"" + webRedirect + "\";" +
-                    "\nsetTimeout(function noClient(){window.location = web;},500);\n" +
-                    "\nwindow.location = mobile;\n");
-
-                Common.log("Redirect ->", mobileRedirect, "||", webRedirect);
-
-                byte[] bytes = html.build().getBytes();
-                try {
-                    exchange.getResponseHeaders().set("Content-Type", "text/html");
-                    exchange.sendResponseHeaders(200, bytes.length);
-                    OutputStream os = exchange.getResponseBody();
-                    os.write(bytes);
-                    os.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
             } else {
                 redirect(exchange, host, uri.getPath());
             }
@@ -101,21 +78,18 @@ public class MyHttpRedirectHandler implements HttpHandler {
     }
 
     public void redirect(HttpExchange exchange, String host, String path) throws IOException {
-            String newUri = "https://" + host + ":" + HTTPS_PORT + path;
-//            OutputStream os = exchange.getResponseBody();
-//            os.write(response.getBytes());
-//            os.close();
+        String newUri = "https://" + host + ":" + HTTPS_PORT + path;
 
-            Common.log("Redirect ->", newUri);
+        Common.log("Redirect ->", newUri);
 
-            String requestMethod = exchange.getRequestMethod();
-            if (requestMethod.equalsIgnoreCase("GET")) {
-                Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set("Content-Type", "text/plain");
-                responseHeaders.set("Date", new Date().toString());
-                responseHeaders.set("Location", newUri);
-                exchange.sendResponseHeaders(302, 0);
-            }
+        String requestMethod = exchange.getRequestMethod();
+        if (requestMethod.equalsIgnoreCase("GET")) {
+            Headers responseHeaders = exchange.getResponseHeaders();
+            responseHeaders.set("Content-Type", "text/plain");
+            responseHeaders.set("Date", new Date().toString());
+            responseHeaders.set("Location", newUri);
+            exchange.sendResponseHeaders(302, 0);
+        }
     }
 
 }

@@ -154,7 +154,8 @@ function TrackingHolder(main) {
                 if(shareDialog) shareDialog.onclose();
                 shareDialog = shareDialog || u.dialog({
                     items: [
-                        {type:HTML.DIV, innerHTML:"Let your e-mail client compose the message with link to this group? You can add there all your friends you'd like."},
+                        {type:HTML.DIV, innerHTML:"Let your e-mail client compose the message with link to this group?"},
+                        {type:HTML.DIV, innerHTML:"You can add there all your friends you'd like."},
 //                        {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
                     ],
                     positive: {
@@ -164,7 +165,8 @@ function TrackingHolder(main) {
                             u.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
                                     items: [
-                                        {type:HTML.DIV, innerHTML:"Perhaps, your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly."},
+                                        {type:HTML.DIV, innerHTML:"Perhaps, your browser blocks pop-ups."},
+                                        {type:HTML.DIV, innerHTML:"If so please unlock this ability for calling e-mail properly."},
                                         {type:HTML.DIV, enclosed:true, innerHTML:"Detailed information how to unblock this feature"},
                                         {type:HTML.DIV, innerHTML:"Also, you can send the link manually. Copy it clicking on the button below."},
                                         {type:HTML.DIV, innerHTML:main.tracking.getTrackingUri()}
@@ -183,8 +185,6 @@ function TrackingHolder(main) {
                     timeout: 20000
                 });
                 shareDialog.onopen();
-
-
                 break;
             default:
                 break;

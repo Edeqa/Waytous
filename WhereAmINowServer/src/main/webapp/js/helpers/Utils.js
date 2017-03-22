@@ -1018,6 +1018,18 @@ function Utils() {
         }
     };
 
+    function cloneAsObject(object) {
+        var o = {};
+        for(var x in object) {
+            if(!object[x] || object[x].constructor === String || object[x].constructor === Number) {
+                o[x] = object[x] || "";
+            } else {
+                o[x] = cloneAsObject(object[x]);
+            }
+        }
+        return o;
+    }
+
     return {
         create: create,
         clear: clear,
@@ -1043,5 +1055,6 @@ function Utils() {
         findPoint:findPoint,
         reduce:reduce,
         popupBlockerChecker:popupBlockerChecker,
+        cloneAsObject:cloneAsObject,
     }
 }

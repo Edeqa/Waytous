@@ -25,7 +25,7 @@ function TrackingFB(main) {
 
         var path = uri.pathname.replace("/group/","/track/");
         serverUri = "wss://" + uri.hostname + ":"+ data.WSS_FB_PORT + path;
-        // serverUri = "ws://" + uri.hostname + ":" + data.WS_FB_PORT + path;
+//         serverUri = "ws://" + uri.hostname + ":" + data.WS_FB_PORT + path;
 
         if(newTracking) {
             setStatus(EVENTS.TRACKING_CONNECTING);
@@ -222,7 +222,7 @@ function TrackingFB(main) {
         try {
             a = new WebSocket(link);
         } catch(e){
-            console.error(e);
+            console.warn(e);
             xhrModeStart(link);
         }
         var opened = false;

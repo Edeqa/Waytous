@@ -4,62 +4,15 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import ru.wtg.whereaminowserver.helpers.CheckReq;
 import ru.wtg.whereaminowserver.helpers.Common;
-import ru.wtg.whereaminowserver.helpers.MyToken;
-import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.helpers.Utils;
-import ru.wtg.whereaminowserver.interfaces.FlagHolder;
-import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 import ru.wtg.whereaminowserver.interfaces.WssServer;
-
-import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_HASH;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_JOIN_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_NEW_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_CONTROL;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_PRIVATE;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**
  * Created 10/5/16.

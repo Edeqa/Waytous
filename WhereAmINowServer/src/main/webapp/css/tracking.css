@@ -535,6 +535,7 @@ p.bottom-desc {
 }
 .progress-title {
     white-space: nowrap;
+    padding: 10px;
 }
 .alpha {
     position: fixed;
@@ -953,6 +954,9 @@ p.bottom-desc {
 }
 .saved-location-receive {
     max-width: 500px;
+}
+.saved-location-receive-items {
+    align-items: flex-start;
 }
 
 /* shift zoom control */
