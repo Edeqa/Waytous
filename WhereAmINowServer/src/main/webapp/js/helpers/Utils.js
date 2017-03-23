@@ -1089,7 +1089,6 @@ function Utils() {
                 }
             }
             xhr.send();
-
         } else if(holder.resources) {
             for(var x in holder.resources) {
                 if(lang[x]) {
