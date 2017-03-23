@@ -989,7 +989,6 @@ function Utils() {
             } else {
                 length -= current;
             }
-
         }
         return google.maps.geometry.spherical.interpolate(points[0], points[points.length -1], fraction);
     }
