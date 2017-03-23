@@ -1001,7 +1001,6 @@ function Utils() {
         return bounds;
     }
 
-
     var popupBlockerChecker = {
         check: function(popup_window, onblocked){
             var _scope = this;
