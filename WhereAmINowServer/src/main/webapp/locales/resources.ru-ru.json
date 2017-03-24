@@ -1,4 +1,12 @@
 {
+  "SECTION": "// Main ",
+  "ok": "Хорошо",
+  "cancel": "Отмена",
+  "yes": "Да",
+  "no": "Нет",
+  "maybe_later": "Возможно, позже",
+
+
   "SECTION": "// MapHolder ",
   "traffic": "Трафик",
   "transit": "Транспорт",

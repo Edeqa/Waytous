@@ -761,7 +761,8 @@ function Utils() {
                 className:"dialog-title" + options.title.className,
                 onmousedown: function(e) {
                     if(e.button != 0) return;
-                    var position = dialog.getBoundingClientRect();
+//                    var position = dialog.getBoundingClientRect();
+                    var position = { left: dialog.offsetLeft, top: dialog.offsetTop, width: dialog.offsetWidth, height: dialog.offsetHeight };
                     var offset = [ e.clientX, e.clientY ];
                     var moved = false;
                     function mouseup(e){
@@ -800,7 +801,7 @@ function Utils() {
                     dialog.style.height = "";
                     dialog.style.right = "";
                     dialog.style.bottom = "";
-                    dialog.onopen();
+                    dialog.open();
                 }
             }, dialog);
             dialog.titleLayout = create(HTML.DIV, {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
@@ -845,7 +846,8 @@ function Utils() {
                 className:"dialog-resize",
                 onmousedown: function(e) {
                     if(e.button != 0) return;
-                    var position = dialog.getBoundingClientRect();
+//                    var position = dialog.getBoundingClientRect();
+                    var position = { left: dialog.offsetLeft, top: dialog.offsetTop, width: dialog.offsetWidth, height: dialog.offsetHeight };
                     var offset = [ e.clientX, e.clientY ];
                     var moved = false;
                     function mouseup(e){
@@ -1041,7 +1043,15 @@ function Utils() {
 
     function lang(string, value) {
         if(value) {
-            lang[string] = create(HTML.SPAN, {dataLang:string, innerHTML: value || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "")});
+            lang.$origin = lang.$origin || {};
+            lang.$origin[string] = value;
+            if(!lang[string]) {
+                Object.defineProperty(lang, string, {
+                    get: function() {
+                        return create(HTML.SPAN, {dataLang:string, innerHTML: lang.$origin[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "")})
+                    }
+                });
+            }
         }
         return lang[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
     }
