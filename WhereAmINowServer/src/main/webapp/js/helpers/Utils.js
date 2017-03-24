@@ -989,7 +989,6 @@ function Utils() {
             } else {
                 length -= current;
             }
-
         }
         return google.maps.geometry.spherical.interpolate(points[0], points[points.length -1], fraction);
     }
@@ -1001,7 +1000,6 @@ function Utils() {
         bounds.extend(newNortheast, newSouthwest);
         return bounds;
     }
-
 
     var popupBlockerChecker = {
         check: function(popup_window, onblocked){
@@ -1089,7 +1087,6 @@ function Utils() {
                 }
             }
             xhr.send();
-
         } else if(holder.resources) {
             for(var x in holder.resources) {
                 if(lang[x]) {
