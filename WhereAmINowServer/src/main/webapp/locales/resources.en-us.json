@@ -1,4 +1,11 @@
 {
+  "SECTION": "// Main ",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "yes": "Yes",
+  "no": "No",
+  "maybe_later": "Maybe later",
+
   "SECTION": "// MapHolder ",
   "traffic": "Traffic",
   "transit": "Transit",

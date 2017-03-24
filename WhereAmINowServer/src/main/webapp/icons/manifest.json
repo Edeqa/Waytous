@@ -1,7 +1,28 @@
 {
     "name": "Waytogo",
     "short_name": "Waytogo",
+    "description": "Waytogo Web App.\nFull-duplex multiuser dynamic navigation tool.",
+    "theme_color": "#aaeeee",
+    "background_color": "#aaeeee",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "permissions": [
+        "fullscreen",
+        "geolocation"
+    ],
     "icons": [
+        {
+            "src": "/icons/favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
         {
             "src": "/icons/android-chrome-36x36.png",
             "sizes": "36x36",
@@ -48,9 +69,11 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#aaeeee",
-    "background_color": "#aaeeee",
-    "start_url": "/",
-    "display": "standalone",
-    "orientation": "portrait"
+    "related_applications": [
+        {
+            "platform": "play",
+            "id": "ru.wtg.whereaminow",
+            "url": "https://play.google.com/store/apps/details?id=ru.wtg.exgalleries"
+        }
+    ]
 }
