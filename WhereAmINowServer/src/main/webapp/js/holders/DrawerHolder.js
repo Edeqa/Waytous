@@ -19,7 +19,6 @@ function DrawerHolder(main) {
     var title;
     var headerTitle;
     var subtitle;
-    var drawerLayout;
     var menu;
 
     var target = window; // this can be any scrollable element
@@ -29,18 +28,13 @@ function DrawerHolder(main) {
 
         drawer = new Drawer();
 //        target.addEventListener("touchmove", preventPullToRefresh);
+        main.layout.insertBefore(drawer,main.layout.firstChild);
 
-        drawerLayout = u.create(HTML.DIV, {className:"drawer", tabindex: 1, onblur: function(){
-            drawerLayout.classList.remove("drawer-open");
-            return true;
-        }}, main.layout, "first");
 
         var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
         u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
             try {
-                drawerLayout.classList.add("drawer-open");
-                menu.scrollTop = 0;
-                drawerLayout.focus();
+                drawer.open();
             } catch(e) {
                 console.error(e);
             }
@@ -49,39 +43,58 @@ function DrawerHolder(main) {
         title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:main.appName}, label);
         subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle hidden"}, label);
 
-        var header = u.create(HTML.DIV, { className:"drawer-header" }, drawerLayout);
-        headerName = u.create(HTML.DIV, {className:"drawer-header-name"}, header);
-        headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, header);
-        u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML: u.lang.be_always_on_the_same_way }, header);
-
-        menu = u.create(HTML.DIV, {className:"menu"}, drawerLayout);
-        sections = [];
-        for(var i=0;i<10;i++){
-            sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, menu);
-        }
-
-        main.fire(EVENTS.CREATE_DRAWER, drawer);
-
-        var th = u.create(HTML.DIV, { className:"drawer-footer"}, drawerLayout);
-        u.create(HTML.DIV, main.appName + " &copy;2017 WTG", th);
-        u.create(HTML.DIV, "Build " + data.version, th);
+        setTimeout(function(){
+            main.fire(EVENTS.CREATE_DRAWER, drawer);
+        },0);
 
     };
 
     function Drawer() {
-        var items = {};
+        var layout = u.create(HTML.DIV, {
+            className:"drawer",
+            tabindex: -1,
+            onblur: function(){
+                 this.close();
+                 return true;
+            },
+            open: function() {
+                 drawer.classList.add("drawer-open");
+                 this.scrollTop = 0;
+                 this.menu.scrollTop = 0;
+                 this.focus();
+            },
+            close: function(){
+                 drawer.classList.remove("drawer-open");
+            },
+         });
 
-        function add(section,id,name,icon,callback) {
-            items[id] = {
+         layout.header = u.create(HTML.DIV, { className:"drawer-header" }, layout);
+         headerName = u.create(HTML.DIV, {className:"drawer-header-name"}, layout.header);
+         headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, layout.header);
+         u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML: u.lang.be_always_on_the_same_way }, layout.header);
+
+
+        layout.items = {};
+
+
+        layout.menu = u.create(HTML.DIV, {className:"drawer-menu"}, layout);
+        sections = [];
+        for(var i=0;i<10;i++){
+            sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, layout.menu);
+        }
+
+
+        layout.add = function(section,id,name,icon,callback) {
+            layout.items[id] = {
                 name:name,
                 icon:icon,
                 callback:callback
             };
             var th = u.create(HTML.DIV, {
-                className:"menu-item",
+                className:"drawer-menu-item",
                 onclick: function (event) {
                     setTimeout(function () {
-                        drawerLayout.blur();
+                        layout.close();
                         callback(event);
                     }, 100);
                 },
@@ -132,29 +145,27 @@ function DrawerHolder(main) {
 
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.DIV, { className:"menu-item-icon", innerHTML: icon }, th);
+                    u.create(HTML.DIV, { className:"drawer-menu-item-icon", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }
             }
             if(callback) {
                 u.create(HTML.DIV, {
-                    className: "menu-item-label",
+                    className: "drawer-menu-item-label",
                     innerHTML: name
                 }, th);
             }
-            th.badge = u.create(HTML.DIV, { className:"menu-item-badge hidden", innerHTML: "0" }, th);
+            th.badge = u.create(HTML.DIV, { className:"drawer-menu-item-badge hidden", innerHTML: "0" }, th);
             sections[section].classList.remove("hidden");
             return th;
         }
-        function getDrawer(){
-            console.log("GETDRAWER:",items);
-        }
 
-        return {
-            add:add,
-            getDrawer:getDrawer,
-        }
+        layout.footer = u.create(HTML.DIV, { className:"drawer-footer"}, layout);
+        u.create(HTML.DIV, main.appName + " &copy;2017 WTG", layout.footer);
+        u.create(HTML.DIV, "Build " + data.version, layout.footer);
+
+        return layout;
     }
 
     var onEvent = function(EVENT,object){

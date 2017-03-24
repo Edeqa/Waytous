@@ -49,7 +49,11 @@ function TrackHolder(main) {
                 }
                 break;
             case EVENTS.SHOW_TRACK:
-                show.call(this);
+                if(this && this.views && this.views.track) {
+                    this.views.track.show = true;
+                    u.save("track:show:" + this.number, true);
+                    show.call(this);
+                }
                 break;
             case EVENTS.HIDE_TRACK:
                 removeView(this);
@@ -61,17 +65,15 @@ function TrackHolder(main) {
     }
 
     function createView(myUser){
-        var view = {};
-        view.user = myUser;
-
-        view.show = u.load("track:show:" + myUser.number);
-
+        var view = {
+            user:myUser,
+            show:u.load("track:show:" + myUser.number)
+        };
         if(view.show) {
             show.call(myUser);
         }
         drawerPopulate();
         return view;
-        // console.log("SAMPLECREATEVIEW",user);
     }
 
     function removeView(user){
@@ -86,15 +88,15 @@ function TrackHolder(main) {
 
     function drawerPopulate() {
         setTimeout(function(){
-            drawerItemHide.classList.add("hidden");
-            drawerItemShow.classList.add("hidden");
+            drawerItemHide.hide();
+            drawerItemShow.hide();
             if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
                 main.users.forAllUsers(function (number, user) {
                     if(user.views.track) {
                         if (user.views.track.show) {
-                            drawerItemHide.classList.remove("hidden");
+                            drawerItemHide.show();
                         } else {
-                            drawerItemShow.classList.remove("hidden");
+                            drawerItemShow.show();
                         }
                     }
                 })
@@ -107,9 +109,6 @@ function TrackHolder(main) {
         //     this.views.track = createView(this);
         // }
         if(!this || !this.views || !this.views.track || !this.views.track.show) return;
-
-        this.views.track.show = true;
-        u.save("track:show:" + this.number, true);
 
         if(this.locations && this.locations.length > 1) {
             if(!this.views.track.track) {

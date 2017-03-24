@@ -48,7 +48,7 @@ function SavedLocationHolder(main) {
                         break;
                     }
                 }
-                if(!exists) drawerMenuItem.classList.add("hidden");
+                if(!exists) drawerMenuItem.hide();
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
@@ -90,7 +90,7 @@ function SavedLocationHolder(main) {
                     last++;
                     u.save("saved_location:counter", last);
                     u.save("saved_location:" + last, loc);
-                    drawerMenuItem.classList.remove("hidden");
+                    drawerMenuItem.show();
                     fetchAddressFor(last);
                     if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
 

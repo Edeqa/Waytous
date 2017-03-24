@@ -157,7 +157,7 @@ function GpsHolder(main) {
             var alert = u.dialog({
                 className: "alert-dialog",
                 items: [
-                    { type: HTML.DIV, label: message + " " + u.lang.gps.please_resolve_this_problem_and_try_again },
+                    { type: HTML.DIV, label: message + " " + u.lang.gps_please_resolve_this_problem_and_try_again },
                 ],
                 positive: {
                     label: u.lang.ok,

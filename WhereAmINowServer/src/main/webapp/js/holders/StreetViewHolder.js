@@ -18,14 +18,14 @@ function StreetViewHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerShow = object.add(DRAWER.SECTION_VIEWS,type+"_1","Show street view","streetview",function(){
+                drawerShow = object.add(DRAWER.SECTION_VIEWS,type+"_show","Show street view","streetview",function(){
                     view.open();
                 });
-                drawerHide = object.add(DRAWER.SECTION_VIEWS,type+"_1","Hide street view","streetview",function(){
+                drawerHide = object.add(DRAWER.SECTION_VIEWS,type+"_hide","Hide street view","streetview",function(){
                     view.close();
                 });
-                drawerShow.classList.add("hidden");
-                drawerHide.classList.add("hidden");
+                drawerShow.hide();
+                drawerHide.hide();
                 break;
             case EVENTS.SELECT_USER:
             case EVENTS.SELECT_SINGLE_USER:
@@ -33,9 +33,9 @@ function StreetViewHolder(main) {
                 break;
             case EVENTS.MAP_READY:
                 if(show) {
-                    drawerHide.classList.remove("hidden");
+                    drawerHide.show();
                 } else {
-                    drawerShow.classList.remove("hidden");
+                    drawerShow.show();
                 }
 
                 streetviewService = new google.maps.StreetViewService();
@@ -54,16 +54,16 @@ function StreetViewHolder(main) {
                     onclose: function(){
                         u.save("streetview:show");
                         show = false;
-                        drawerShow.classList.remove("hidden");
-                        drawerHide.classList.add("hidden");
+                        drawerShow.show();
+                        drawerHide.hide();
                         google.maps.event.trigger(main.map, 'resize');
                         main.fire(EVENTS.CAMERA_UPDATE);
                     },
                     onopen: function() {
                         u.save("streetview:show",true);
                         show = true;
-                        drawerShow.classList.add("hidden");
-                        drawerHide.classList.remove("hidden");
+                        drawerShow.hide();
+                        drawerHide.show();
                         google.maps.event.trigger(main.map, 'resize');
                         main.fire(EVENTS.CAMERA_UPDATE);
                         update();

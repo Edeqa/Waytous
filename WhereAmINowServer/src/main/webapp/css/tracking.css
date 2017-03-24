@@ -169,17 +169,20 @@ button:active {
     padding-bottom: 10px;
     white-space: pre;
 }
-.menu {
+.drawer-menu {
     position: absolute;
     top: 150px;
     bottom: 50px;
     overflow-y: auto;
     width: 100%;
 }
-.menu-item:hover {
+.drawer-menu-item:hover {
     background: #dddd99;
 }
-.menu-item {
+.drawer-menu-item:active {
+    background: burlywood;
+}
+.drawer-menu-item {
     font-weight: bold;
     text-decoration: none;
     /* margin-left: 24px; */
@@ -188,7 +191,7 @@ button:active {
     padding: 2px;
     align-items: center;
 }
-.menu-item-icon, .menu-item svg {
+.drawer-menu-item-icon, .drawer-menu-item svg {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
@@ -200,26 +203,30 @@ button:active {
     height: 16px;
     stroke: darkslategray;
 }
-.menu-item-label {
+.drawer-menu-item-label {
 }
-.menu-item-badge {
+.drawer-menu-item-badge {
     background-color: lightgreen;
     border-style: solid;
     border-width: 1px;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 2px;
     position: absolute;
-    right: 10px;
+    right: 0px;
+    top: 0px;
     font-size: 12px;
+    margin: 12px;
+    min-width: 12px;
     font-weight: normal;
+    text-align: center;
 }
-.menu-item-social {
+.drawer-menu-item-social {
     display: flex;
 }
-.menu-item-facebook {
+.drawer-menu-item-facebook {
 
 }
-.menu-item-twitter {
+.drawer-menu-item-twitter {
 
 }
 .drawer-footer {
@@ -532,9 +539,8 @@ p.bottom-desc {
 }
 .progress {
     min-width: 20%;
-    height: 20%;
-    align-items: center;
-    justify-content: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 @keyframes rotate {
     0%    { transform: rotate(0deg); }
@@ -542,8 +548,8 @@ p.bottom-desc {
 }
 .progress-circle {
     margin: 20px;
-    height: 28px;
-    width: 28px;
+    max-height: 28px;
+    max-width: 28px;
     min-height: 28px;
     min-width: 28px;
     animation: rotate 0.8s infinite linear;
@@ -613,7 +619,9 @@ p.bottom-desc {
     font-feature-settings: "liga" 1;
     font-style: normal;
     position: absolute;
-    right: 5px;
+    right: 0px;
+    top: 0px;
+    padding: 5px;
     background: none;
     border: none;
     cursor: pointer;
@@ -630,18 +638,24 @@ p.bottom-desc {
     align-items: center;
     flex-direction: column;
     overflow-y: auto;
+    flex-grow: 1;
 }
 .dialog-item {
     display: flex;
     align-items: center;
-    max-width: 100%;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
 }
 .dialog-item-input {
-    width: 100%;
+    width: 200px;
+    text-align: left;
+    height: 30px;
 }
 .dialog-item-label {
     padding-right: 5px;
     flex: 1 0 40%;
+    white-space: nowrap;
 }
 .dialog-item-input-input {
     font-size: 12px;
@@ -655,6 +669,8 @@ p.bottom-desc {
     padding-bottom: 5px;
     height: 50px;
     width: 100%;
+}
+.dialog-item-input-checkbox {
 }
 .dialog-item-enclosed {
     margin-top: 10px;
@@ -697,12 +713,12 @@ p.bottom-desc {
 .dialog-progress-bar {
     height: 5px;
     width: 90%;
-    background-color: aliceblue;
+    background-color: darkgray;
     margin-bottom: 5px;
     align-self: center;
 }
 .dialog-progress-value {
-    background-color: burlywood;
+    background-color: #4c93af;
     height: 100%;
 }
 .dialog-help-button {
@@ -753,6 +769,9 @@ p.bottom-desc {
     font-size: 10px;
     overflow-y: scroll;
     flex-direction: column;
+    text-align: left;
+    flex-grow: 1;
+    justify-content: flex-start;
 }
 .chat-message {
     width: 100%;
@@ -775,7 +794,7 @@ p.bottom-desc {
     padding-top: 8px;
     align-items: stretch;
     width: 100%;
-    flex: 1 0;
+    min-height: 40px;
 }
 .chat-reply-input {
     width: 100%;
@@ -847,6 +866,29 @@ p.bottom-desc {
     font-weight: bold;
     text-shadow: #000 0px 0px 5px;
 }
+.navigation-mode {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    bottom: 10px;
+    background-color: rgba(255, 250, 240, 0.7);
+}
+.navigation-mode-items {
+    flex-direction: row;
+    padding: 0px;
+}
+.navigation-mode-item {
+    font-size: 20px;
+    padding: 10px;
+}
+.navigation-mode-item:hover {
+    background-color: #dddd99;
+}
+.navigation-mode-item:active {
+    background-color: burlywood;
+}
+.navigation-options {
+}
 .help {
     z-index: 9000 !important;
     width: 70%;
@@ -861,12 +903,14 @@ p.bottom-desc {
     align-items: initial;
     padding-top: 10px;
     flex-direction: column;
+    text-align: left;
 }
 .help-module-title {
     width: 100%;
     margin-top: 10px;
     font-weight: bold;
     min-height: 25px;
+    justify-content: flex-start;
 }
 .help-module-item {
     width: 100%;
@@ -890,6 +934,7 @@ p.bottom-desc {
     flex-wrap: wrap;
     align-self: flex-start;
     flex: 1 0 65%;
+    text-align: left;
 }
 .saved-location-item-label {
     font-weight: bold;
@@ -1112,18 +1157,21 @@ p.bottom-desc {
     .drawer:focus {
         display: block;
     }
-    .menu-item {
+    .drawer-menu-item {
         text-decoration: none;
         font-weight: bold;
     }
-    .menu-item:hover {
+    .drawer-menu-item:hover {
         background: #dddd99;
     }
-    .menu-item-icon, .menu-item svg {
+    .drawer-menu-item-icon, .drawer-menu-item svg {
         margin: 15px;
         font-size: 16px;
     }
-    .menu-item-label {
+    .drawer-menu-item-label {
+    }
+    .drawer-menu-item-badge {
+        margin: 14px;
     }
     .drawer-header {
 
@@ -1229,28 +1277,27 @@ p.bottom-desc {
     }
     .user-context-menu {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         width: auto;
         position: absolute;
         top: 112px !important;
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%);
-        overflow-y: scroll;
         background: none;
+        box-shadow: none;
     }
     .user-context-menu-section {
         display: flex;
         background: none;
     }
     .user-context-menu-item {
-        display: flex;
         justify-content: center;
-        align-content: center;
-        border-radius: 5px;
         padding: 0px;
         margin: 1px;
         cursor: pointer;
-        background-color: rgba(211, 211, 211, 0.7);
+        background-color: rgba(211, 211, 211, 0.8);
         width: 45px;
         height: 45px;
     }
@@ -1407,6 +1454,25 @@ p.bottom-desc {
     /* shift zoom control */
     .gmnoprint:nth-child(8) {
         top: 100px !important;
+    }
+
+}
+
+@media screen and (max-height: 400px) {
+    .drawer {
+        overflow-y: auto;
+    }
+    .drawer-header {
+        position: initial;
+    }
+    .drawer-menu {
+        position: initial;
+    }
+    .drawer-footer {
+        position: initial;
+    }
+    .streetview {
+        display: none;
     }
 
 }

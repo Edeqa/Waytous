@@ -197,6 +197,11 @@ function ButtonHolder(main) {
 
     var clicked = false;
     function createView(user){
+
+//    if(buttons.itemsLayout.children.length ==1 && user != main.me){
+//    debugger;
+//    }
+
         if(!user || !user.properties) return;
         var color = user.color || user.properties.color || "#0000FF";
         color = color.replace("#","").split("");
@@ -315,7 +320,6 @@ function ButtonHolder(main) {
 
             }
 
-
             clearTimeout(delayDismiss);
             delayDismiss = setTimeout(function(){
                 contextMenuLayout.classList.add("hidden");
@@ -330,7 +334,7 @@ function ButtonHolder(main) {
                 className:"user-context-menu-item",
                 onclick: function() {
                     setTimeout(function(){
-                        contextMenuLayout.focus();
+                        contextMenuLayout.classList.add("hidden");
                         contextMenuLayout.blur();
                         callback();
                     }, 0);

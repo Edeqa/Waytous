@@ -115,9 +115,12 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_CONNECTING:
+//                window.onbeforeunload = beforeunload;
+
                 document.title = "Connecting - " + main.appName;
                 drawerItemNew.hide();
-                drawerItemShare.show().enable();
+                drawerItemShare.show();
+                drawerItemShare.enable();
                 drawerItemExit.show();
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
@@ -125,9 +128,12 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_RECONNECTING:
+//                window.onbeforeunload = beforeunload;
+
                 document.title = "Connecting - " + main.appName;
                 drawerItemNew.hide();
-                drawerItemShare.show().enable();
+                drawerItemShare.show();
+                drawerItemShare.enable();
                 drawerItemExit.show();
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
@@ -135,6 +141,8 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_DISABLED:
+                window.onbeforeunload = null;
+
                 document.title = main.appName;
                 drawerItemShare.disable();
                 drawerItemExit.hide();
@@ -330,10 +338,15 @@ function TrackingHolder(main) {
         }
     };
 
+    function beforeunload(evt) {
+        return "You are online in the group with your friends. Leaving this page you will exit the group.";
+    }
+
     function help(){
         return {
             title: "Tracking",
             1: {
+                ignore: true,
                 title: "You have created new group",
                 body: "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. "
             }

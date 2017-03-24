@@ -17,6 +17,8 @@ function NavigationHolder(main) {
     var navigation_outline_drawer, navigation_outline_menu;
     var panTask;
     var installation = false;
+    var modeButtons;
+    var modeDialog;
 
     var navigation_outline_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -64,17 +66,17 @@ function NavigationHolder(main) {
                 if(user && user != main.me && !user.views.navigation.show) {
                     var menuItemShow = object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_NAVIGATION,"Show navigation","navigation",function(){
                         user.fire(EVENTS.SHOW_NAVIGATION);
-                        menuItemShow.classList.add("hidden");
+                        menuItemShow.hide();
                         drawerPopulate();
                     });
                     navigation_outline_menu = navigation_outline_menu || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
                     if(!main.me.location || !user.location) {
-                        menuItemShow.classList.add("hidden");
+                        menuItemShow.hide();
                     }
                     if(main.me.location && user.location) {
                         var distance = google.maps.geometry.spherical.computeDistanceBetween(u.latLng(main.me.location), u.latLng(user.location))
                         if(distance < 20) {
-                            menuItemShow.classList.add("hidden");
+                            menuItemShow.hide();
                         }
                     }
                 } else if(user.views.navigation.show) {
@@ -83,9 +85,6 @@ function NavigationHolder(main) {
                         drawerPopulate();
                     });
                 }
-                // object.add(8,type+"_2","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                // object.add(8,type+"_3","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
-                // object.add(8,type+"_4","Private message","chat",function(){console.log("PRIVATEMESSAGETO",user)});
                 break;
             case EVENTS.SHOW_NAVIGATION:
                 this.views.navigation.show = true;
@@ -137,11 +136,11 @@ function NavigationHolder(main) {
     function drawerPopulate() {
 //        drawerItemShow.classList.add("hidden");
         setTimeout(function(){
-            drawerItemHide && drawerItemHide.classList.add("hidden");
+            drawerItemHide && drawerItemHide.hide();
             main.users.forAllUsersExceptMe(function (number, user) {
                 if(user.views.navigation) {
                     if (user.views.navigation.show) {
-                        drawerItemHide && drawerItemHide.classList.remove("hidden");
+                        drawerItemHide && drawerItemHide.show();
                     } else {
     //                    drawerItemShow.classList.remove("hidden");
                     }
@@ -265,7 +264,49 @@ function NavigationHolder(main) {
 
         }
 
+        if(!modeButtons) {
+
+
+            modeButtons = u.dialog({
+                className: "navigation-mode",
+                itemsClassName: "navigation-mode-items",
+                items: [
+                    { type: HTML.DIV, className: "navigation-mode-item", innerHTML: "directions_car", onclick: function(){modeDialog.open("car")} },
+                    { type: HTML.DIV, className: "navigation-mode-item", innerHTML: "directions_walk", onclick: function(){modeDialog.open("walk")} },
+                    { type: HTML.DIV, className: "navigation-mode-item", innerHTML: "directions_bike", onclick: function(){modeDialog.open("bike")} },
+                ]
+            });
+            modeButtons.open();
+
+            modeDialog = u.dialog({
+                title: "Navigation options",
+                className: "navigations-options",
+                items: [
+                    { type: HTML.CHECKBOX, label:"Avoid highways" },
+                    { type: HTML.CHECKBOX, label:"Avoid tolls" },
+                    { type: HTML.CHECKBOX, label:"Avoid ferries" }
+                ],
+                positive: {
+                    label: u.lang.ok
+                },
+                negative: {
+                    label: u.lang.cancel
+                },
+                onopen: function(items,mode) {
+                    if(mode == "car") {
+                        modeDialog.itemsLayout.childNodes[0].show();
+                        modeDialog.itemsLayout.childNodes[1].show();
+                    } else {
+                        modeDialog.itemsLayout.childNodes[0].hide();
+                        modeDialog.itemsLayout.childNodes[1].hide();
+                    }
+                }
+            });
+
+        }
+
         if(installation) {
+
             main.toast.hide();
             installation = false;
 //            if(this.properties.selected && main.users.getCountSelected() == 1) {

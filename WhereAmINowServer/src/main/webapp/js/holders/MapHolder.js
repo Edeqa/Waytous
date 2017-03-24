@@ -25,7 +25,7 @@ function MapHolder(main) {
             src: "https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap&libraries=geometry,places",
             async: "",
             defer: ""
-        }, main.right);
+        }, document.head);
     }
 
     window.initMap = function() {

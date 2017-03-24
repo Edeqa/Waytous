@@ -40,6 +40,7 @@ window.HTML = {
     FORM:"form",
     NAME:"name",
     INPUT:"input",
+    CHECKBOX:"checkbox",
     TEXT:"text",
     TEXTAREA:"textarea",
     HIDDEN:"hidden",
@@ -71,7 +72,7 @@ window.ERRORS = {
     NOT_AN_OBJECT: 2,
 };
 
-function Utils() {
+function Utils(main) {
 
     URL = function(link) {
         var href = link;
@@ -105,7 +106,7 @@ function Utils() {
     function normalizeName(name) {
         if(name == HTML.CLASSNAME){
             name = "class";
-        } else if(name.toLowerCase() == "frameborder") {
+        } else if(name in attributable) {
         } else if(name.toLowerCase() == "viewbox") {
             name = HTML.VIEWBOX;
         } else if(name != name.toLowerCase()) {
@@ -119,6 +120,25 @@ function Utils() {
         return name;
     }
 
+    var attributable = {
+        "frameBorder":1,
+        "xmlns":1,
+        "strokeWidth":1,
+        "version":1,
+        "fill":1,
+        "d":1,
+        "tabindex":1
+    };
+
+    HTMLDivElement.prototype.show = function() {
+        this.classList.remove("hidden");
+        return this;
+    }
+    HTMLDivElement.prototype.hide = function() {
+        this.classList.add("hidden");
+        return this;
+    }
+
     function create(name, properties, appendTo, position) {
         var el,namespace;
         if(properties && properties.xmlns) {
@@ -127,6 +147,16 @@ function Utils() {
         } else {
             el = document.createElement(name);
         }
+
+        /*if(name == HTML.DIV) {
+            el.show = function() {
+
+            }
+            el.hide = function() {
+                this.classList.add("hidden");
+                return this;
+            }
+        }*/
 
         if(properties) {
             if(properties instanceof HTMLElement) {
@@ -163,7 +193,7 @@ function Utils() {
                                 }
                                 value = v;
                             }
-                            if(x in el || name.substr(0,5) == "data-") {
+                            if(x in el || name in el || name.substr(0,5) == "data-" || x in attributable) {
                                 el.setAttribute(name, value);
                             } else {
                                 el[x] = value;
@@ -591,7 +621,7 @@ function Utils() {
 
     function dialog(options) {
         var dialog = create(HTML.DIV, {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
-            document.getElementsByClassName("right")[0]);
+            main.right);
 
         dialog.opened = false;
 
@@ -623,15 +653,17 @@ function Utils() {
                     create(HTML.DIV, {className:"dialog-item-enclosed-label", innerHTML: item.label || "Show more information"}, enclosedButton);
                     x.body = create(HTML.DIV, {className:"dialog-item-enclosed-body hidden", innerHTML:item.body || ""}, x);
                 } else {
-                    x = create(HTML.DIV, {
-                        className: "dialog-item" + (item.className ? " " + item.className : ""),
-                        innerHTML: item.label || item.title || item.innerHTML || ""
-                    }, dialog.itemsLayout);
+                    item.className = "dialog-item" + (item.className ? " " + item.className : "");
+                    item.innerHTML = item.label || item.title || item.innerHTML || "";
+                    delete item.label;
+                    delete item.title;
+                    delete item.type;
+                    x = create(HTML.DIV, item, dialog.itemsLayout);
                 }
             } else if(item.type == "hidden") {
                 x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""}, dialog.itemsLayout);
             } else {
-                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input"}, dialog.itemsLayout);
+                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, dialog.itemsLayout);
                 create(HTML.DIV, {
                     className:"dialog-item-label"+(item.className ? " "+item.className : ""),
                     innerHTML:item.label || ""
@@ -641,10 +673,10 @@ function Utils() {
 
                 x = create(type, {
                     type:item.type,
-                    className:"dialog-item-input-"+type,
+                    className:"dialog-item-input-"+item.type,
                     tabindex: i,
                     value:item.value || "",
-                    onclick: function() { this.focus() },
+                    onclick: function(e) { this.focus(); e.stopPropagation(); },
                     onkeyup:function(e){
                         if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
                             dialog.close();
@@ -660,7 +692,7 @@ function Utils() {
             return x;
         }
 
-        dialog.open = function(){
+        dialog.open = function(event){
             clearInterval(dialog.intervalTask);
             dialog.classList.remove("hidden");
             dialog.opened = true;
@@ -701,7 +733,7 @@ function Utils() {
                 if(dialog.positive && !options.timeout) dialog.positive.focus();
                 else if(dialog.negative && options.timeout) dialog.negative.focus();
             }
-            if(options.onopen) options.onopen.call(dialog,items);
+            if(options.onopen) options.onopen.call(dialog,items,event);
             if(options.timeout) {
                 var atom = options.timeout / 16;
                 var current = 0;
@@ -717,13 +749,13 @@ function Utils() {
             return dialog;
         };
 
-        dialog.close = function (){
+        dialog.close = function (event){
             dialog.classList.add("hidden");
             dialog.opened = false;
 
             clearInterval(dialog.intervalTask);
 
-            if(options.onclose) options.onclose.call(dialog,items);
+            if(options.onclose) options.onclose.call(dialog,items,event);
         };
         dialog.addEventListener("keyup", function(e) {
             if(e.keyCode == 27) {
@@ -800,7 +832,7 @@ function Utils() {
                     dialog.style.height = "";
                     dialog.style.right = "";
                     dialog.style.bottom = "";
-                    dialog.onopen();
+                    dialog.open();
                 }
             }, dialog);
             dialog.titleLayout = create(HTML.DIV, {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
@@ -1043,7 +1075,7 @@ function Utils() {
         if(value) {
             lang[string] = create(HTML.SPAN, {dataLang:string, innerHTML: value || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "")});
         }
-        return lang[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
+        return (lang[string] && lang[string].cloneNode()) || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
     }
 
     lang.overrideResources = function(holder) {
