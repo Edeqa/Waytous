@@ -164,56 +164,59 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     }
 
     private void update() {
-        if(cameraUpdate == null) return;
-        CameraUpdate camera;
-        MyUser user;
-//                System.out.println("PERSPECTIVE:"+((CameraUpdateView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
-        if(State.getInstance().getUsers().getCountAllSelected()>1){
-            double lat1=0f,lat2=0f,lng1=0f,lng2=0f;
-            //noinspection LoopStatementThatDoesntLoop
-            for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
-                user = entry.getValue();
-                if(user.getProperties().isSelected() && user.getLocation() != null){
-                    lat1 = user.getLocation().getLatitude();
-                    lat2 = user.getLocation().getLatitude();
-                    lng1 = user.getLocation().getLongitude();
-                    lng2 = user.getLocation().getLongitude();
-                    break;
-                }
-            }
-            for(Map.Entry<Integer,MyUser> entry: State.getInstance().getUsers().getUsers().entrySet()){
-                user = entry.getValue();
-                if(user.getProperties().isSelected() && user.getLocation() != null){
-                    lat1 = Math.min(lat1, user.getLocation().getLatitude());
-                    lat2 = Math.max(lat2, user.getLocation().getLatitude());
-                    lng1 = Math.min(lng1, user.getLocation().getLongitude());
-                    lng2 = Math.max(lng2, user.getLocation().getLongitude());
-                }
-            }
-            LatLng latLngLB = new LatLng(lat1, lng1);
-            LatLng latLngRT = new LatLng(lat2, lng2);
-
-            camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
-        } else {
-            camera = CameraUpdateFactory.newCameraPosition(cameraUpdate.getCameraPosition().build());
-        }
-        moveFromHardware = true;
-
         try {
-            if(initialStart) {
-                if(!State.getInstance().tracking_disabled() || State.getInstance().getStringPreference(TRACKING_URI, null) != null) {
-                    map.moveCamera(camera);
+            if (cameraUpdate == null) return;
+            CameraUpdate camera;
+            MyUser user;
+//                System.out.println("PERSPECTIVE:"+((CameraUpdateView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
+            if (State.getInstance().getUsers().getCountAllSelected() > 1) {
+                double lat1 = 0f, lat2 = 0f, lng1 = 0f, lng2 = 0f;
+                //noinspection LoopStatementThatDoesntLoop
+                for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
+                    user = entry.getValue();
+                    if (user.getProperties().isSelected() && user.getLocation() != null) {
+                        lat1 = user.getLocation().getLatitude();
+                        lat2 = user.getLocation().getLatitude();
+                        lng1 = user.getLocation().getLongitude();
+                        lng2 = user.getLocation().getLongitude();
+                        break;
+                    }
+                }
+                for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
+                    user = entry.getValue();
+                    if (user.getProperties().isSelected() && user.getLocation() != null) {
+                        lat1 = Math.min(lat1, user.getLocation().getLatitude());
+                        lat2 = Math.max(lat2, user.getLocation().getLatitude());
+                        lng1 = Math.min(lng1, user.getLocation().getLongitude());
+                        lng2 = Math.max(lng2, user.getLocation().getLongitude());
+                    }
+                }
+                LatLng latLngLB = new LatLng(lat1, lng1);
+                LatLng latLngRT = new LatLng(lat2, lng2);
+
+                camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
+            } else {
+                camera = CameraUpdateFactory.newCameraPosition(cameraUpdate.getCameraPosition().build());
+            }
+            moveFromHardware = true;
+
+            try {
+                if (initialStart) {
+                    if (!State.getInstance().tracking_disabled() || State.getInstance().getStringPreference(TRACKING_URI, null) != null) {
+                        map.moveCamera(camera);
+                    } else {
+                        map.animateCamera(camera, LOCATION_UPDATES_DELAY, null);
+                    }
                 } else {
                     map.animateCamera(camera, LOCATION_UPDATES_DELAY, null);
                 }
-            } else {
-                map.animateCamera(camera, LOCATION_UPDATES_DELAY, null);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
             }
-        } catch(IllegalStateException e) {
+            initialStart = false;
+        } catch(Exception e){
             e.printStackTrace();
         }
-        initialStart = false;
-
     }
 
     public void move(){

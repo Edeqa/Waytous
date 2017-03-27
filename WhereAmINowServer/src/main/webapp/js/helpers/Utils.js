@@ -5,6 +5,7 @@ window.HTML = {
     DIV: "div",
     LINK:"link",
     A:"a",
+    IMG:"img",
     META:"meta",
     STYLE:"style",
     CLASS:"className",
@@ -148,16 +149,6 @@ function Utils(main) {
             el = document.createElement(name);
         }
 
-        /*if(name == HTML.DIV) {
-            el.show = function() {
-
-            }
-            el.hide = function() {
-                this.classList.add("hidden");
-                return this;
-            }
-        }*/
-
         if(properties) {
             if(properties instanceof HTMLElement) {
                 el.appendChild(properties);
@@ -173,16 +164,12 @@ function Utils(main) {
                         }
                     } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
-//                    } else if(x == "async") {
-//                        el.appendChild(properties[x]);
                     } else if(x.indexOf("on") == 0) {
                         var action = x.substr(2).toLowerCase();
                         var call = properties[x];
-                        el.addEventListener(action, call/*function(){
-                            console.log(call);
-
-                        }*/, false);
-//                        el.add
+                        if(call) {
+                            el.addEventListener(action, call, false);
+                        }
                     } else {
                         var name = normalizeName(x), value = properties[x];
                         if(value != undefined) {
@@ -193,7 +180,9 @@ function Utils(main) {
                                 }
                                 value = v;
                             }
-                            if(x in el || name in el || name.substr(0,5) == "data-" || x in attributable) {
+                            if(x == "hide" || x == "show") {
+                                el[x] = value;
+                            } else if(x in el || name in el || name.substr(0,5) == "data-" || x in attributable) {
                                 el.setAttribute(name, value);
                             } else {
                                 el[x] = value;
@@ -279,8 +268,55 @@ function Utils(main) {
         return document.getElementById(id);
     }
 
-    function getHexColor(number){
-        return "#"+((number)>>>0).toString(16).slice(-6);
+    function getHexColor(color){
+        color >>>= 0;
+        var b = color & 0xFF,
+            g = (color & 0xFF00) >>> 8,
+            r = (color & 0xFF0000) >>> 16;
+
+        r = r.toString(16);if(r.length == 1) r = "0"+r;
+        g = g.toString(16);if(g.length == 1) g = "0"+g;
+        b = b.toString(16);if(b.length == 1) b = "0"+b;
+
+        return "#"+r+g+b;
+    }
+
+    function getRGBAColor(color, alpha) {
+            if(!color) return;
+            if(color.constructor === String) {
+                if(color.match(/^#/)) {
+                    color = color.replace("#","").split("");
+                    var r = parseInt(color[0]+color[1],16);
+                    var g = parseInt(color[2]+color[3],16);
+                    var b = parseInt(color[4]+color[5],16);
+                    color = (r*256 + g)*256 + b;
+                    if(alpha) {
+                        color = "rgba("+r+", "+g+", "+b+", "+alpha+")";
+                    } else {
+                        color = "rgb("+r+", "+g+", "+b+")";
+                    }
+                }
+            } else if (color.constructor === Number) {
+                color >>>= 0;
+                var b = color & 0xFF,
+                    g = (color & 0xFF00) >>> 8,
+                    r = (color & 0xFF0000) >>> 16,
+                    a = (( (color & 0xFF000000) >>> 24 ) / 255) || 1;
+                    if(alpha) a = alpha;
+                color = "rgba(" + [r, g, b, a].join(",") + ")";
+            }
+            return color;
+        }
+
+    function getDecimalColor(color, alpha) {
+        if(!color) return;
+        if(color.constructor === String) {
+            if(color.match(/^#/)) {
+                color = color.replace("#","");
+                color = parseInt(color,16);
+            }
+        }
+        return color;
     }
 
     function require(name, onload, onerror, context){
@@ -620,8 +656,12 @@ function Utils(main) {
     }
 
     function dialog(options) {
-        var dialog = create(HTML.DIV, {className:"modal shadow hidden"+(options.className ? " "+options.className : ""), tabindex:999},
-            main.right);
+        var dialog = create(HTML.DIV, {
+            className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
+            tabindex:-1,
+            onblur: options.onblur,
+            onfocus: options.onfocus
+        }, main.right);
 
         dialog.opened = false;
 
@@ -634,9 +674,9 @@ function Utils(main) {
             item = item || {};
 
             var x;
-            if(item.type == HTML.DIV) {
+            if(item.type == HTML.DIV || item.type == HTML.A) {
                 if(item.enclosed) {
-                    x = create(HTML.DIV, {
+                    x = create(item.type, {
                         className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
                     }, dialog.itemsLayout);
                     var enclosedButton, enclosedIcon;
@@ -657,23 +697,27 @@ function Utils(main) {
                     item.innerHTML = item.label || item.title || item.innerHTML || "";
                     delete item.label;
                     delete item.title;
+                    var type = item.type;
                     delete item.type;
-                    x = create(HTML.DIV, item, dialog.itemsLayout);
+                    x = create(type, item, dialog.itemsLayout);
                 }
             } else if(item.type == "hidden") {
                 x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""}, dialog.itemsLayout);
             } else {
                 var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, dialog.itemsLayout);
-                create(HTML.DIV, {
-                    className:"dialog-item-label"+(item.className ? " "+item.className : ""),
-                    innerHTML:item.label || ""
-                }, div);
+
+                if(item.label) {
+                    create(HTML.DIV, {
+                        className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : ""),
+                        innerHTML:item.label
+                    }, div);
+                }
                 var type = HTML.INPUT;
                 if(item.type.toLowerCase() == HTML.TEXTAREA) type = HTML.TEXTAREA;
 
                 x = create(type, {
                     type:item.type,
-                    className:"dialog-item-input-"+item.type,
+                    className:"dialog-item-input-"+item.type + (item.className ? " "+item.className : ""),
                     tabindex: i,
                     value:item.value || "",
                     onclick: function(e) { this.focus(); e.stopPropagation(); },
@@ -685,18 +729,15 @@ function Utils(main) {
                             dialog.close();
                             if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
                         }
-                    }
+                    },
+
                 }, div);
             }
             items.push(x);
             return x;
         }
 
-        dialog.open = function(event){
-            clearInterval(dialog.intervalTask);
-            dialog.classList.remove("hidden");
-            dialog.opened = true;
-
+        dialog.adjustPosition = function() {
             var left = load("dialog:left:"+(options.id || (options.title && options.title.label)));
             var top = load("dialog:top:"+(options.id || (options.title && options.title.label)));
             var width = load("dialog:width:"+(options.id || (options.title && options.title.label)));
@@ -710,11 +751,11 @@ function Utils(main) {
                 dialog.style.bottom = HTML.AUTO;
             } else {
                 left = dialog.offsetLeft;
-                var leftMain = window.innerWidth;
+                var leftMain = main.right.offsetWidth;
 
                 if(left >= leftMain || left == 0) {
-                    dialog.style.left = ((window.innerWidth - dialog.offsetWidth) /2)+"px";
-                    dialog.style.top = ((window.innerHeight - dialog.offsetHeight) /2)+"px";
+                    dialog.style.left = ((main.right.offsetWidth - dialog.offsetWidth) /2)+"px";
+                    dialog.style.top = ((main.right.offsetWidth - dialog.offsetHeight) /2)+"px";
                     dialog.style.right = "auto";
                     dialog.style.bottom = "auto";
                 }
@@ -733,6 +774,13 @@ function Utils(main) {
                 if(dialog.positive && !options.timeout) dialog.positive.focus();
                 else if(dialog.negative && options.timeout) dialog.negative.focus();
             }
+        }
+
+        dialog.open = function(event){
+            clearInterval(dialog.intervalTask);
+            dialog.show();
+            dialog.opened = true;
+            dialog.adjustPosition();
             if(options.onopen) options.onopen.call(dialog,items,event);
             if(options.timeout) {
                 var atom = options.timeout / 16;
@@ -750,7 +798,7 @@ function Utils(main) {
         };
 
         dialog.close = function (event){
-            dialog.classList.add("hidden");
+            dialog.hide();
             dialog.opened = false;
 
             clearInterval(dialog.intervalTask);
@@ -833,7 +881,7 @@ function Utils(main) {
                     dialog.style.height = "";
                     dialog.style.right = "";
                     dialog.style.bottom = "";
-                    dialog.open();
+                    dialog.adjustPosition();
                 }
             }, dialog);
             dialog.titleLayout = create(HTML.DIV, {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
@@ -854,21 +902,21 @@ function Utils(main) {
                 dialog.close();
                 if(options.positive.onclick) options.positive.onclick.call(dialog,items);
             }, innerHTML: options.positive.label}, buttons);
-            buttons.classList.remove("hidden");
+            buttons.show();
         }
         if(options.negative && options.negative.label) {
             dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(){
                 dialog.close();
                 if(options.negative.onclick) options.negative.onclick.call(dialog,items);
             }, innerHTML: options.negative.label}, buttons);
-            buttons.classList.remove("hidden");
+            buttons.show();
         }
         if(options.neutral && options.neutral.label) {
             dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(){
                 dialog.close();
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items);
             }, innerHTML: options.neutral.label}, buttons);
-            buttons.classList.remove("hidden");
+            buttons.show();
         }
         if(options.help) {
             create(HTML.BUTTON, {className:"dialog-help-button", onclick:options.help, innerHTML:"help_outline"}, dialog);
@@ -1115,7 +1163,7 @@ function Utils(main) {
                             lang(x, json[x]);
                             for(var i = 0; i < nodes.length; i++) {
                                 if(nodes[i].dataset && nodes[i].dataset.lang == x) {
-                                    nodes[i].parentNode.replaceChild(lang(x),nodes[i]);
+                                    nodes[i].parentNode.replaceChild(lang[x],nodes[i]);
                                 }
                             }
                         }
@@ -1154,6 +1202,8 @@ function Utils(main) {
         showAlert: showAlert,
         byId: byId,
         getHexColor: getHexColor,
+        getRGBAColor:getRGBAColor,
+        getDecimalColor:getDecimalColor,
         require:require,
         save:save,
         load:load,

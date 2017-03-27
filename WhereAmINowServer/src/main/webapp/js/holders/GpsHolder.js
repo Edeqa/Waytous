@@ -8,7 +8,6 @@ function GpsHolder(main) {
     var locationRequiredDialog;
     var drawerEnableGeoposition;
     var initialized;
-    var alphaDialog;
 
     function start() {
 
@@ -20,32 +19,6 @@ function GpsHolder(main) {
 
 //        u.save("gps:asked");
 //        u.save("gps:allowed");
-
-////// FIXME - remove when no alpha
-
-        main.alpha.addEventListener("click", function(){
-            alphaDialog = alphaDialog || u.dialog({
-                className: "alert-dialog",
-                items: [
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_1 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_2 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_3 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_4 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_5 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_6 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_7 },
-                    { type: HTML.DIV, innerHTML:u.lang.gps_alpha_8 },
-                ],
-                positive: {
-                    label: u.lang.ok,
-                    onclick: function(){
-                        alphaDialog.close();
-                    }
-                },
-            });
-
-            alphaDialog.open();
-        });
 
 
     }
@@ -197,7 +170,7 @@ function GpsHolder(main) {
         if(last && last.coords && last.coords.latitude == position.coords.latitude && last.coords.longitude == position.coords.longitude) {
             return;
         }
-        console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
+//        console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
 
         u.save("gps:last",u.cloneAsObject(position));
         var message = u.locationToJson(position);
@@ -245,15 +218,6 @@ function GpsHolder(main) {
         enable_geolocation: "Enable geolocation",
 
         gps_ok_go_ahead: "OK, go ahead",
-
-        gps_alpha_1: "Thank you for using the",
-        gps_alpha_2: "ALPHA version of Waytogo.",
-        gps_alpha_3: "&nbsp;",
-        gps_alpha_4: "Please if you found some errors,",
-        gps_alpha_5: "weird behaviour, new great idea",
-        gps_alpha_6: "or just because -",
-        gps_alpha_7: "feel free to send us an e-mail:",
-        gps_alpha_8: "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
 
         gps_location_required_1: "The purpose of this service is to help friends find each other.",
         gps_location_required_2: "To do this, send your location to your friends.",

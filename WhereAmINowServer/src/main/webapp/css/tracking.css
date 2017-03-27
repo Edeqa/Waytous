@@ -6,14 +6,13 @@
     -moz-user-select: -moz-none;
     -webkit-user-select: none;
 }
-::selection { background: transparent;color:inherit; }
-::-moz-selection { background: transparent;color:inherit; }
-
-@font-face {
-  font-family: 'Material Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Material Icons'), local('MaterialIcons-Regular'), url(https://fonts.gstatic.com/s/materialicons/v21/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2) format('woff2');
+::selection {
+    background-color: lightgray;
+    color: inherit;
+}
+::-moz-selection {
+    background-color: lightgray;
+    color: inherit;
 }
 
 /* TAGS */
@@ -120,7 +119,7 @@ button:active {
     border-style: solid;
     border-width: 1px;
     border-color: rgba(255, 255, 240, 0.7);
-    bottom: 20px;
+    bottom: 40px;
 }
 .drawer {
     border-right-style: solid;
@@ -151,6 +150,13 @@ button:active {
     padding-right: 10px;
     position: sticky;
 }
+.drawer-header-logo {
+    height: 50px;
+    width: 50px;
+    position: absolute;
+    top: 15px;
+    cursor: pointer;
+}
 .drawer-header-name {
     position: absolute;
     top: 10px;
@@ -158,6 +164,7 @@ button:active {
     color: white;
     font-size: x-large;
     font-weight: bold;
+    cursor: default;
 }
 .drawer-header-title {
     color: white;
@@ -195,7 +202,7 @@ button:active {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
-    margin: 12px;
+    margin: 10px;
     padding: 0px;
     /* float: left; */
     font-size: 16px;
@@ -242,7 +249,7 @@ button:active {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: static;
+    position: relative;
 }
 .version {
     position: fixed;
@@ -276,6 +283,9 @@ button:active {
     padding: 3px !important;
 }
 .hidden {
+    display: none !important;
+}
+.desktop-hidden {
     display: none !important;
 }
 .disabled {
@@ -648,9 +658,9 @@ p.bottom-desc {
     justify-content: center;
 }
 .dialog-item-input {
-    width: 200px;
     text-align: left;
-    height: 30px;
+    min-height: 30px;
+    min-width: 250px;
 }
 .dialog-item-label {
     padding-right: 5px;
@@ -752,7 +762,7 @@ p.bottom-desc {
     height: 300px;
     top: auto;
     bottom: 10px;
-    left: 260px;
+    left: 10px;
     opacity: 0.4;
 }
 .chat:hover {
@@ -870,7 +880,8 @@ p.bottom-desc {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
-    bottom: 10px;
+    top: auto !important;
+    bottom: 10px !important;
     background-color: rgba(255, 250, 240, 0.7);
 }
 .navigation-mode-items {
@@ -880,12 +891,16 @@ p.bottom-desc {
 .navigation-mode-item {
     font-size: 20px;
     padding: 10px;
+    cursor: default;
 }
 .navigation-mode-item:hover {
     background-color: #dddd99;
 }
 .navigation-mode-item:active {
     background-color: burlywood;
+}
+.navigation-mode-item-selected {
+    background-color: #a6cddc;
 }
 .navigation-options {
 }
@@ -1025,6 +1040,29 @@ p.bottom-desc {
 .gps-required {
     z-index: 9999;
 }
+.map-recenter {
+    position: absolute;
+    bottom: 30px;
+    left: 10px;
+    padding: 10px;
+    font-size: 12px;
+}
+.place-search {
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    width: 400px;
+}
+.place-search-items {
+    padding: 2px;
+}
+.place-search-input {
+}
+.place-search-label {
+    display: none;
+}
+
+
 /* shift zoom control */
 /*.gmnoprint:nth-child(9) {
     top: 50px !important;
@@ -1443,12 +1481,45 @@ p.bottom-desc {
     }
     .saved-location-delete {
     }
-
-
+    .navigation-mode {
+        width: auto !important;
+        height: 40px !important;
+        bottom: 10px;
+        position: absolute;
+        top: auto !important;
+        transform: translate(-50%) !important;
+    }
+    .map-recenter {
+        padding-left: 20px;
+        padding-right: 20px;
+        font-size: 20px;
+    }
+    .place-search {
+        top: 5px !important;
+        left: 5px !important;
+        right: 5px !important;
+        transform: none !important;
+        width: auto !important;
+    }
+    .place-search-input {
+    }
+    .place-search-label {
+        font-family: "Material Icons";
+        font-feature-settings: "liga" 1;
+        font-style: normal;
+        font-size: 20px;
+        outline: none;
+        padding: 5px;
+        max-width: 24px;
+        display: block;
+    }
 
     /* media specific classes */
-    .hideable {
-        display: none;
+    .media-hidden {
+        display: none !important;
+    }
+    .desktop-hidden {
+        display: inherit !important;
     }
 
     /* shift zoom control */

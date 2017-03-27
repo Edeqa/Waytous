@@ -18,6 +18,12 @@ function AddressHolder(main) {
             case EVENTS.SELECT_USER:
                 onChangeLocation.call(this,this.location);
                 break;
+            case EVENTS.UPDATE_MENU_SUBTITLE:
+                updateAddress.call(this, object);
+                break;
+            case EVENTS.UPDATE_ACTIONBAR_SUBTITLE:
+                updateAddress.call(this, object);
+                break;
             default:
                 break;
         }
@@ -25,6 +31,7 @@ function AddressHolder(main) {
     }
 
     function onChangeLocation(location) {
+        return;
         var user = this;
         setTimeout(function(){
             if(location) {
@@ -62,6 +69,36 @@ function AddressHolder(main) {
 
         }
         return view;
+    }
+
+    function updateAddress(node) {
+        var user = this;
+        if(user.location && user.location.coords && node) {
+            if(delayStart) {
+                if(new Date().getTime() - (delayStart||0) < delayInError) return;
+                delayStart = 0;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1", true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState != 4) return;
+                if(xhr.status == 0) {
+//                    updateAddress.call(user,node);
+//                    delayStart = new Date().getTime();
+                    return;
+                }
+
+                var address = JSON.parse(xhr.response);
+                node.innerHTML = address["display_name"];
+            };
+            try {
+                xhr.send();
+            } catch(e) {
+                console.warn(e);
+            }
+        }
     }
 
     return {

@@ -1,6 +1,8 @@
 /**
  * Created 2/8/17.
  */
+EVENTS.UPDATE_ACTIONBAR_SUBTITLE = "update_actionbar_subtitle";
+
 DRAWER = {
     SECTION_PRIMARY: 0,
     SECTION_COMMUNICATION: 2,
@@ -20,6 +22,7 @@ function DrawerHolder(main) {
     var headerTitle;
     var subtitle;
     var menu;
+    var alphaDialog;
 
     var target = window; // this can be any scrollable element
     var last_y = 0;
@@ -29,7 +32,6 @@ function DrawerHolder(main) {
         drawer = new Drawer();
 //        target.addEventListener("touchmove", preventPullToRefresh);
         main.layout.insertBefore(drawer,main.layout.firstChild);
-
 
         var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
         u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
@@ -41,11 +43,48 @@ function DrawerHolder(main) {
         },onfocus:function(){}}, actionbar);
         var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
         title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:main.appName}, label);
-        subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle hidden"}, label);
+        subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle"}, label);
 
         setTimeout(function(){
             main.fire(EVENTS.CREATE_DRAWER, drawer);
         },0);
+
+        /*window.onhashchange = function(e) {
+            console.log("HASHCHAN",e)
+            drawer.open();
+        }*/
+
+        window.history.pushState(null, document.title, location.href);
+        window.addEventListener("popstate", function (event) {
+            window.history.pushState(null, document.title, location.href);
+            drawer.open();
+        });
+
+
+////// FIXME - remove when no alpha
+        alphaDialog = alphaDialog || u.dialog({
+            className: "alert-dialog",
+            items: [
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_1 },
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_2 },
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_3 },
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_4 },
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_5 },
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_6 },
+                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_7 },
+            ],
+            positive: {
+                label: u.lang.ok,
+                onclick: function(){
+                    alphaDialog.close();
+                }
+            },
+        });
+        main.alpha.addEventListener("click", function(){
+            alphaDialog.open();
+        });
+
+
 
     };
 
@@ -58,18 +97,28 @@ function DrawerHolder(main) {
                  return true;
             },
             open: function() {
-                 drawer.classList.add("drawer-open");
+                 this.classList.add("drawer-open");
                  this.scrollTop = 0;
                  this.menu.scrollTop = 0;
                  this.focus();
             },
             close: function(){
-                 drawer.classList.remove("drawer-open");
+                 this.classList.remove("drawer-open");
             },
          });
 
          layout.header = u.create(HTML.DIV, { className:"drawer-header" }, layout);
-         headerName = u.create(HTML.DIV, {className:"drawer-header-name"}, layout.header);
+         u.create(HTML.IMG, {
+            className:"drawer-header-logo",
+            src:"/images/logo.svg",
+            onclick: function(){
+                alphaDialog.open();
+            }
+         }, layout.header);
+         headerName = u.create(HTML.DIV, {className:"drawer-header-name", onclick: function(){
+            layout.blur();
+            main.me.fire(EVENTS.SELECT_SINGLE_USER);
+        }}, layout.header);
          headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, layout.header);
          u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML: u.lang.be_always_on_the_same_way }, layout.header);
 
@@ -94,7 +143,7 @@ function DrawerHolder(main) {
                 className:"drawer-menu-item",
                 onclick: function (event) {
                     setTimeout(function () {
-                        layout.close();
+                        layout.blur();
                         callback(event);
                     }, 100);
                 },
@@ -194,12 +243,23 @@ function DrawerHolder(main) {
                     headerName.innerHTML = main.me.properties.getDisplayName();
                 }
                 break;
+            case EVENTS.SELECT_USER:
+            case EVENTS.SELECT_SINGLE_USER:
+                onChangeLocation.call(this, this.location)
+                break;
         }
         return true;
     };
 
     function createView(user) {
         return {};
+    }
+
+    function onChangeLocation(location) {
+        if(this && this.properties && this.properties.selected && main.users.getCountSelected() == 1) {
+            subtitle.show();
+            this.fire(EVENTS.UPDATE_ACTIONBAR_SUBTITLE, subtitle);
+        }
     }
 
     /*function preventPullToRefresh(e){
@@ -213,7 +273,16 @@ function DrawerHolder(main) {
 
     var resources = {
         connecting: "Connecting...",
-        be_always_on_the_same_way: "Be always on the same way\nwith your friends"
+        be_always_on_the_same_way: "Be always on the same way\nwith your friends",
+
+        gps_alpha_1: "Thank you for using the",
+        gps_alpha_2: "ALPHA version of Waytogo.",
+        gps_alpha_3: "&nbsp;",
+        gps_alpha_4: "Please if you found some errors, weird behaviour, new great idea or just because - feel free to send us an e-mail:",
+        gps_alpha_5: "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
+        gps_alpha_6: "&nbsp;",
+        gps_alpha_7: "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
+
     }
 
     return {
@@ -222,6 +291,7 @@ function DrawerHolder(main) {
         onEvent:onEvent,
         createView:createView,
         resources:resources,
+        onChangeLocation:onChangeLocation,
     }
 }
 

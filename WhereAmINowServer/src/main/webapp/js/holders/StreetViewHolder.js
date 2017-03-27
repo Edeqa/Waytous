@@ -43,7 +43,7 @@ function StreetViewHolder(main) {
                 view = u.dialog({
                     title: {
                         label: "Street view",
-                        className: "hideable"
+                        className: "mobile-hidden"
                     },
                     className: "streetview",
                     tabindex: 1,

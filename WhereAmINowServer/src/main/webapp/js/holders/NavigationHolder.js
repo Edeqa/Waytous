@@ -9,6 +9,9 @@ function NavigationHolder(main) {
     const REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
     const HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
     const SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
+    const NAVIGATION_MODE_DRIVING = "car";
+    const NAVIGATION_MODE_WALKING = "walk";
+    const NAVIGATION_MODE_BICYCLING = "bike";
 
     var type = "navigation";
     var view;
@@ -16,9 +19,9 @@ function NavigationHolder(main) {
     var drawerItemHide;
     var navigation_outline_drawer, navigation_outline_menu;
     var panTask;
-    var installation = false;
     var modeButtons;
     var modeDialog;
+    var installation;
 
     var navigation_outline_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -69,7 +72,6 @@ function NavigationHolder(main) {
                         menuItemShow.hide();
                         drawerPopulate();
                     });
-                    navigation_outline_menu = navigation_outline_menu || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
                     if(!main.me.location || !user.location) {
                         menuItemShow.hide();
                     }
@@ -80,16 +82,24 @@ function NavigationHolder(main) {
                         }
                     }
                 } else if(user.views.navigation.show) {
+                    navigation_outline_menu = navigation_outline_menu || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
                     object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_NAVIGATION,"Hide navigation",navigation_outline_menu,function(){
                         user.fire(EVENTS.HIDE_NAVIGATION);
                         drawerPopulate();
                     });
                 }
+                if(user && user != main.me && user.location && main.me.location) {
+                    object.add(MENU.SECTION_VIEWS,"gmap","Navigate with Google Maps","directions",function(){
+                        var req = "https://maps.google.com/?saddr=" + main.me.location.coords.latitude + "," + main.me.location.coords.longitude + "&daddr=" + + user.location.coords.latitude + "," + user.location.coords.longitude;
+
+                        window.open(req, "_blank");
+                    });
+                }
                 break;
             case EVENTS.SHOW_NAVIGATION:
+                installation = true;
                 this.views.navigation.show = true;
                 u.save("navigation:show:" + this.number, true);
-                installation = true;
                 main.toast.show("Setting up direction...", -1);
                 update.call(this);
                 break;
@@ -113,7 +123,6 @@ function NavigationHolder(main) {
         }
         drawerPopulate();
         return view;
-        // console.log("SAMPLECREATEVIEW",user);
     }
 
     function removeView(user){
@@ -131,16 +140,19 @@ function NavigationHolder(main) {
             user.views.navigation.label.setMap(null);
             user.views.navigation.label = null;
         }
+        drawerPopulate();
     }
 
     function drawerPopulate() {
 //        drawerItemShow.classList.add("hidden");
         setTimeout(function(){
             drawerItemHide && drawerItemHide.hide();
+            modeButtons && modeButtons.close();
             main.users.forAllUsersExceptMe(function (number, user) {
                 if(user.views.navigation) {
                     if (user.views.navigation.show) {
                         drawerItemHide && drawerItemHide.show();
+                        modeButtons && modeButtons.open();
                     } else {
     //                    drawerItemShow.classList.remove("hidden");
                     }
@@ -160,24 +172,29 @@ function NavigationHolder(main) {
             + "alternatives=false&"
             + "mode=";
 
-//        switch (mode) {
-//            case NAVIGATION_MODE_DRIVING:
-//                req += "driving";
-//                break;
-//            case NAVIGATION_MODE_WALKING:
-//                req += "walking";
-//                break;
-//            case NAVIGATION_MODE_BICYCLING:
-//                req += "bicycling";
-//                break;
-//        }
+        var mode = u.load("navigation:mode") || NAVIGATION_MODE_DRIVING;
 
-//        if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_HIGHWAYS, false))
-//            req += "&avoid=highways";
-//        if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false))
-//            req += "&avoid=tolls";
-//        if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false))
-//            req += "&avoid=ferries";
+        switch (mode) {
+            case NAVIGATION_MODE_DRIVING:
+                req += "driving";
+                break;
+            case NAVIGATION_MODE_WALKING:
+                req += "walking";
+                break;
+            case NAVIGATION_MODE_BICYCLING:
+                req += "bicycling";
+                break;
+        }
+
+        if(u.load("navigation:avoid_highways")) {
+            req += "&avoid=highways";
+        }
+        if(u.load("navigation:avoid_tolls")) {
+            req += "&avoid=tolls";
+        }
+        if(u.load("navigation:avoid_ferries")) {
+            req += "&avoid=ferries";
+        }
 
         console.log(type,req);
 
@@ -186,11 +203,17 @@ function NavigationHolder(main) {
         xhr.onreadystatechange = function() { //
             if(xhr.readyState != 4) return;
             if(xhr.status == 200) {
+                installation = false;
                 var res = JSON.parse(xhr.response);
                 updateTrack.call(user,res);
             } else {
-                console.log(xhr);
-                console.error("error")
+                console.error(xhr);
+                if(installation) {
+                    user.fire(EVENTS.HIDE_NAVIGATION);
+                    setTimeout(function(){
+                        main.toast.show("Sorry, direction request was failed.");
+                    },0);
+                }
             }
         };
         xhr.send();
@@ -198,7 +221,7 @@ function NavigationHolder(main) {
     }
 
     function updateTrack(o) {
-
+        var user = this;
         if(!this || !this.views || !this.views.navigation || !this.views.navigation.show) return;
 
         if(!this.views.navigation.track) {
@@ -265,58 +288,190 @@ function NavigationHolder(main) {
         }
 
         if(!modeButtons) {
-
-
             modeButtons = u.dialog({
                 className: "navigation-mode",
                 itemsClassName: "navigation-mode-items",
                 items: [
-                    { type: HTML.DIV, className: "navigation-mode-item", innerHTML: "directions_car", onclick: function(){modeDialog.open("car")} },
-                    { type: HTML.DIV, className: "navigation-mode-item", innerHTML: "directions_walk", onclick: function(){modeDialog.open("walk")} },
-                    { type: HTML.DIV, className: "navigation-mode-item", innerHTML: "directions_bike", onclick: function(){modeDialog.open("bike")} },
+                    {
+                        type: HTML.DIV,
+                        className: "navigation-mode-item",
+                        innerHTML: "directions_car",
+                        ondblclick: function(){modeDialog.open(NAVIGATION_MODE_DRIVING)},
+                        onclick: function(){
+                            if(modeDialog.preventClick) {
+                                modeDialog.preventClick = false;
+                            } else {
+                                u.save("navigation:mode", NAVIGATION_MODE_DRIVING);
+                                main.toast.show("Setting up direction...", -1);
+                                update.call(user);
+                            }
+                        },
+                        onmousedown: function() {
+                            this.longTapTask = setTimeout(function(){
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_DRIVING);
+                            }, 500);
+                        },
+                        onmouseup: function() {
+                            clearTimeout(this.longTapTask);
+                        },
+                        ontouchstart: function() {
+                            this.longTapTask = setTimeout(function(){
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_DRIVING);
+                            }, 500);
+                        },
+                        ontouchend: function() {
+                            clearTimeout(this.longTapTask);
+                        }
+                    },
+                    {
+                        type: HTML.DIV,
+                        className: "navigation-mode-item",
+                        innerHTML: "directions_walk",
+                        ondblclick: function(){modeDialog.open(NAVIGATION_MODE_WALKING)},
+                        onclick: function(){
+                            if(modeDialog.preventClick) {
+                                modeDialog.preventClick = false;
+                            } else {
+                                u.save("navigation:mode", NAVIGATION_MODE_WALKING);
+                                main.toast.show("Setting up direction...", -1);
+                                update.call(user);
+                            }
+                        },
+                        onmousedown: function() {
+                            this.longTapTask = setTimeout(function(){
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_WALKING);
+                            }, 500);
+                        },
+                        onmouseup: function() {
+                            clearTimeout(this.longTapTask);
+                        },
+                        ontouchstart: function() {
+                            this.longTapTask = setTimeout(function(){
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_WALKING);
+                            }, 500);
+                        },
+                        ontouchend: function() {
+                            clearTimeout(this.longTapTask);
+                        }
+                    },
+                    {
+                        type: HTML.DIV,
+                        className: "navigation-mode-item",
+                        innerHTML: "directions_bike",
+                        ondblclick: function(){modeDialog.open(NAVIGATION_MODE_BICYCLING)},
+                        onclick: function(){
+                            if(modeDialog.preventClick) {
+                                modeDialog.preventClick = false;
+                            } else {
+                                u.save("navigation:mode", NAVIGATION_MODE_BICYCLING);
+                                main.toast.show("Setting up direction...", -1);
+                                update.call(user);
+                            }
+                        },
+                         onmousedown: function() {
+                             this.longTapTask = setTimeout(function(){
+                                modeDialog.preventClick = true;
+                                 modeDialog.open(NAVIGATION_MODE_BICYCLING);
+                             }, 500);
+                         },
+                         onmouseup: function() {
+                             clearTimeout(this.longTapTask);
+                         },
+                         ontouchstart: function() {
+                             this.longTapTask = setTimeout(function(){
+                                modeDialog.preventClick = true;
+                                 modeDialog.open(NAVIGATION_MODE_BICYCLING);
+                             }, 500);
+                         },
+                         ontouchend: function() {
+                             clearTimeout(this.longTapTask);
+                         }
+                   },
                 ]
             });
-            modeButtons.open();
 
             modeDialog = u.dialog({
                 title: "Navigation options",
                 className: "navigations-options",
                 items: [
+                    { type: HTML.HIDDEN },
                     { type: HTML.CHECKBOX, label:"Avoid highways" },
                     { type: HTML.CHECKBOX, label:"Avoid tolls" },
                     { type: HTML.CHECKBOX, label:"Avoid ferries" }
                 ],
                 positive: {
-                    label: u.lang.ok
+                    label: u.lang.ok,
+                    onclick: function(items) {
+                        u.save("navigation:mode", items[0].value);
+                        switch(items[0].value) {
+                            case NAVIGATION_MODE_DRIVING:
+                                u.save("navigation:avoid_highways", items[1].checked);
+                                u.save("navigation:avoid_tolls", items[2].checked);
+                                u.save("navigation:avoid_ferries", items[3].checked);
+                                break;
+                            case NAVIGATION_MODE_WALKING:
+                                u.save("navigation:avoid_ferries", items[3].checked);
+                                break;
+                            case NAVIGATION_MODE_BICYCLING:
+                                u.save("navigation:avoid_ferries", items[3].checked);
+                                break;
+                        }
+                        main.toast.show("Setting up direction...", -1);
+                        update.call(user);
+                    }
                 },
                 negative: {
                     label: u.lang.cancel
                 },
                 onopen: function(items,mode) {
-                    if(mode == "car") {
-                        modeDialog.itemsLayout.childNodes[0].show();
-                        modeDialog.itemsLayout.childNodes[1].show();
-                    } else {
-                        modeDialog.itemsLayout.childNodes[0].hide();
-                        modeDialog.itemsLayout.childNodes[1].hide();
+                    items[0].value = mode;
+                    switch(mode) {
+                        case NAVIGATION_MODE_DRIVING:
+                            items[1].checked = u.load("navigation:avoid_highways");
+                            items[2].checked = u.load("navigation:avoid_tolls");
+                            items[3].checked = u.load("navigation:avoid_ferries");
+                            modeDialog.itemsLayout.childNodes[1].show();
+                            modeDialog.itemsLayout.childNodes[2].show();
+                            break;
+                        case NAVIGATION_MODE_WALKING:
+                            items[3].checked = u.load("navigation:avoid_ferries");
+                            modeDialog.itemsLayout.childNodes[1].hide();
+                            modeDialog.itemsLayout.childNodes[2].hide();
+                            break;
+                        case NAVIGATION_MODE_BICYCLING:
+                            items[3].checked = u.load("navigation:avoid_ferries");
+                            modeDialog.itemsLayout.childNodes[1].hide();
+                            modeDialog.itemsLayout.childNodes[2].hide();
+                            break;
                     }
                 }
             });
 
         }
 
-        if(installation) {
+        main.toast.hide();
 
-            main.toast.hide();
-            installation = false;
-//            if(this.properties.selected && main.users.getCountSelected() == 1) {
-//                main.me.fire(EVENTS.SELECT_USER);
-//                panTask = setTimeout(function(){
-//                    main.me.fire(EVENTS.UNSELECT_USER);
-//                },2000);
-//            }
+        modeButtons.open();
+
+        modeButtons.itemsLayout.childNodes[0].classList.remove("navigation-mode-item-selected");
+        modeButtons.itemsLayout.childNodes[1].classList.remove("navigation-mode-item-selected");
+        modeButtons.itemsLayout.childNodes[2].classList.remove("navigation-mode-item-selected");
+        var mode = u.load("navigation:mode") || NAVIGATION_MODE_DRIVING;
+        switch (mode) {
+            case NAVIGATION_MODE_DRIVING:
+                modeButtons.itemsLayout.childNodes[0].classList.add("navigation-mode-item-selected");
+                break;
+            case NAVIGATION_MODE_WALKING:
+                modeButtons.itemsLayout.childNodes[1].classList.add("navigation-mode-item-selected");
+                break;
+            case NAVIGATION_MODE_BICYCLING:
+                modeButtons.itemsLayout.childNodes[2].classList.add("navigation-mode-item-selected");
+                break;
         }
-
 
         /*
                 if(this.locations && this.locations.length > 1) {
@@ -343,6 +498,7 @@ function NavigationHolder(main) {
     function createTrack() {
 
         var points = [u.latLng(main.me.location), u.latLng(this.location)];
+
         this.views.navigation.track = new google.maps.Polyline({
             geodesic: true,
             strokeColor: this.properties.color,

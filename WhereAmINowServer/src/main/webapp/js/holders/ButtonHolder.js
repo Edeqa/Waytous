@@ -3,6 +3,7 @@
  */
 EVENTS.HIDE_MENU_SUBTITLE = "hide_menu_subtitle";
 EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
+EVENTS.UPDATE_MENU_SUBTITLE = "update_menu_subtitle";
 
 MENU = {
     SECTION_PRIMARY: 0,
@@ -25,7 +26,6 @@ function ButtonHolder(main) {
     var startTime;
 
     function start() {
-        // console.log("BUTTONHOLDER",this);
         buttons = u.dialog({
             id: "button",
             title: {
@@ -38,7 +38,8 @@ function ButtonHolder(main) {
                         var mininized = u.load("button:minimized");
                         u.save("button:minimized", !mininized);
                         main.users.forAllUsers(function(number,user){
-                            user.views.button.subtitle.classList[mininized ? "remove" : "add"]("hidden");
+                            user.views.button.subtitle[u.load("button:minimized") ? "hide" : "show"]();
+                            updateSubtitle.call(user);
                         });
                     }
                 }
@@ -50,7 +51,6 @@ function ButtonHolder(main) {
             itemsClassName: "user-buttons-items",
         });
 
-//        buttons = u.create(HTML.DIV, {className:"user-buttons shadow hidden"}, main.right);
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
                 contextMenuLayout.classList.add("hidden");
             }, onmouseleave: function(){
@@ -63,39 +63,7 @@ function ButtonHolder(main) {
     }
 
     function onEvent(EVENT,object){
-        // console.log(EVENT)
         switch (EVENT){
-            case EVENTS.CREATE_CONTEXT_MENU:
-                /*var user = this;
-                if(user.number == main.me.number) {
-                    var itemMinimize = contextMenu.add(MENU.SECTION_LAST, type + "_1", "Minimize menu", "view_headline", function () {
-                        u.save("button:minimized", true);
-                        main.users.forAllUsers(function(number,user){
-                            user.views.button.subtitle.classList.add("hidden");
-                            itemMinimize.classList.add("hidden");
-                            itemMaximize.classList.remove("hidden");
-                        });
-                    });
-                    itemMinimize.classList.add("hideable");
-
-                    var itemMaximize = contextMenu.add(MENU.SECTION_LAST, type + "_1", "Restore menu", "view_stream", function () {
-                        u.save("button:minimized");
-                        main.users.forAllUsers(function(number,user){
-                            user.views.button.subtitle.classList.remove("hidden");
-                            itemMinimize.classList.remove("hidden");
-                            itemMaximize.classList.add("hidden");
-                        });
-                    });
-                    itemMaximize.classList.add("hideable");
-
-                    itemMaximize.classList.add("hideable");
-                    if(u.load("button:minimized")) {
-                        itemMinimize.classList.add("hidden");
-                    } else {
-                        itemMaximize.classList.add("hidden");
-                    }
-                }*/
-                break;
             case EVENTS.TRACKING_ACTIVE:
                 buttons.open();
                 break;
@@ -103,24 +71,13 @@ function ButtonHolder(main) {
                 buttons.close();
                 break;
             case EVENTS.SELECT_USER:
+                this.views.button.button.scrollIntoView();
                 this.views.button.button.classList.add("user-button-selected");
                 break;
             case EVENTS.UNSELECT_USER:
                 this.views.button.button.classList.remove("user-button-selected");
                 break;
             case EVENTS.CHANGE_NAME:
-/*
-                var name;
-                if(object){
-                    name = object;
-                } else {
-                    if(this.number == main.me.number) {
-                        name = "Me";
-                    } else {
-                        name = "Friend "+this.number;
-                    }
-                }
-*/
                 this.views.button.title.innerHTML = this.properties.getDisplayName();
                 break;
             case EVENTS.CHANGE_NUMBER:
@@ -142,23 +99,24 @@ function ButtonHolder(main) {
                     buttons.close();
                 }
                 break;
-            case EVENTS.UPDATE_ADDRESS:
-                var subtitle = this.views.button.subtitle;
-                if(object) {
-                    subtitle.innerHTML = object;
-                    if(!u.load("button:minimized")) {
-                        subtitle.classList.remove("hidden");
-                    }
-                } else {
-                    subtitle.classList.add("hidden");
-                }
-                break;
+//            case EVENTS.UPDATE_ADDRESS:
+//                var subtitle = this.views.button.subtitle;
+//                if(object) {
+//                    subtitle.innerHTML = object;
+//                    if(!u.load("button:minimized")) {
+//                        subtitle.show();
+//                        updateSubtitle.call(this);
+//                    }
+//                } else {
+//                    subtitle.hide();
+//                }
+//                break;
             case EVENTS.SHOW_BADGE:
                 if(object == EVENTS.INCREASE_BADGE) {
                     var value = parseInt(this.views.button.badge.innerHTML);
                     value = value || 0;
                     this.views.button.badge.innerHTML = ""+(++value);
-                    this.views.button.badge.scrollIntoView();
+                    this.views.button.button.scrollIntoView();
                 } else {
                     this.views.button.badge.innerHTML = object || "";
                 }
@@ -179,11 +137,7 @@ function ButtonHolder(main) {
             case EVENTS.CHANGE_COLOR:
                 if(!object && object.constructor === String) {
                     var color = object || "#0000FF";
-                    color = color.replace("#","").split("");
-                    var r = parseInt(color[0]+color[1],16);
-                    var g = parseInt(color[2]+color[3],16);
-                    var b = parseInt(color[4]+color[5],16);
-                    color = "rgba("+r+", "+g+", "+b+", 0.4)";
+                    color = u.getRGBAColor(color, 0.4)
                     this.views.button.button.style.backgroundColor = color;
                 } else if(object && object.constructor === Number) {
                     console.log("TODO NUMERIC")
@@ -204,11 +158,7 @@ function ButtonHolder(main) {
 
         if(!user || !user.properties) return;
         var color = user.color || user.properties.color || "#0000FF";
-        color = color.replace("#","").split("");
-        var r = parseInt(color[0]+color[1],16);
-        var g = parseInt(color[2]+color[3],16);
-        var b = parseInt(color[4]+color[5],16);
-        color = "rgba("+r+", "+g+", "+b+", 0.4)";
+        color = u.getRGBAColor(color, 0.4);
 
         var task;
         var onlyTouch,clicked;
@@ -251,13 +201,7 @@ function ButtonHolder(main) {
             },
             onmouseleave: function(e) {
                 user.fire(EVENTS.MOUSE_OUT,e);
-            },
-            show: function() {
-                this.classList.remove("hidden");
-            },
-            hide: function() {
-                this.classList.add("hidden");
-            },
+            }
         });
         var icon = (user && user.origin && user.origin.buttonIcon) || "person";
         u.create(HTML.DIV, {className:"user-button-icon", innerHTML:icon}, b);
@@ -266,6 +210,11 @@ function ButtonHolder(main) {
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
         var title = u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, div);
         var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden",innerHTML:""}, div);
+
+        if(!u.load("button:minimized")) {
+            subtitle.show();
+            updateSubtitle.call(user);
+        }
 
         buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
 
@@ -339,14 +288,6 @@ function ButtonHolder(main) {
                         callback();
                     }, 0);
                 },
-                show: function() {
-                    this.classList.remove("hidden");
-                    return this;
-                },
-                hide: function() {
-                    this.classList.add("hidden");
-                    return this;
-                }
             }, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
@@ -369,11 +310,22 @@ function ButtonHolder(main) {
         }
     }
 
+    function onChangeLocation(location) {
+        updateSubtitle.call(this);
+    }
+
+    function updateSubtitle() {
+        if(this.location && this.views.button && !this.views.button.subtitle.classList.contains("hidden")) {
+            this.fire(EVENTS.UPDATE_MENU_SUBTITLE, this.views.button.subtitle);
+        }
+    }
+
     return {
         type:type,
         start:start,
         onEvent:onEvent,
         createView:createView,
         removeView:removeView,
+        onChangeLocation:onChangeLocation,
     }
 }

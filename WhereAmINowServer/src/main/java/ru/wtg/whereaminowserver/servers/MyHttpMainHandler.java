@@ -101,6 +101,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 String[] parts = file.getName().split("\\.");
                 if(parts.length>1){
                     type += parts[parts.length-1].toLowerCase();
+                    if("svg".equals(parts[parts.length-1].toLowerCase())) type += "+xml";
                 } else type += "*";
                 gzip = false;
                 exchange.getResponseHeaders().set("Content-Type", type);

@@ -1,7 +1,6 @@
 /**
  * Created 2/9/17.
  */
-EVENTS.MAP_READY = "map_ready";
 EVENTS.REQUEST_MODE_DAY = "request_mode_day";
 EVENTS.REQUEST_MODE_NIGHT = "request_mode_night";
 EVENTS.REQUEST_MODE_NORMAL = "request_mode_normal";
@@ -17,6 +16,7 @@ function MapHolder(main) {
     var trafficLayer;
     var transitLayer;
     var bikeLayer;
+    var buttonRecenter;
 
     u.create("div", {id: "map"}, main.right);
 
@@ -26,6 +26,17 @@ function MapHolder(main) {
             async: "",
             defer: ""
         }, document.head);
+        buttonRecenter = u.create(HTML.BUTTON, {
+            className: "map-recenter hidden",
+            innerHTML: "Re-center",
+            onclick: function() {
+                main.users.forAllUsers(function(number,user){
+                    if(user.views.properties.selected) user.fire(EVENTS.SELECT_USER);
+                });
+                this.classList.add("hidden");
+                return false;
+            }
+        }, main.right);
     }
 
     window.initMap = function() {
@@ -58,6 +69,9 @@ function MapHolder(main) {
         main.fire(EVENTS.MAP_READY);
         main.map.addListener("zoom_changed", function() {
             main.fire(EVENTS.CAMERA_ZOOM, main.map.getZoom());
+        });
+        main.map.addListener("dragstart", function() {
+            buttonRecenter.classList.remove("hidden");
         });
     }
 
@@ -162,16 +176,24 @@ function MapHolder(main) {
                     main.fire(EVENTS.REQUEST_MODE_NORMAL);
                 }
                 break;
+            case EVENTS.SELECT_USER:
+                buttonRecenter && buttonRecenter.classList.add("hidden");
+                break;
             default:
                 break;
         }
         return true;
     }
 
+    function createView() {
+        return {};
+    }
+
     return {
         type:"map",
         start:start,
         onEvent:onEvent,
+        createView:createView,
         map:map,
     }
 }

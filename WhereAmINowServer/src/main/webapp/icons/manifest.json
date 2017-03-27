@@ -4,7 +4,6 @@
     "description": "Waytogo Web App.\nFull-duplex multiuser dynamic navigation tool.",
     "theme_color": "#aaeeee",
     "background_color": "#aaeeee",
-    "start_url": "/",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait",
