@@ -15,7 +15,7 @@ function PropertiesHolder(main) {
                 { type: HTML.INPUT, label: "Name" }
             ],
             positive: {
-                label: "OK",
+                label: u.lang.ok,
                 onclick: function(args) {
                     if(args[0].value) {
                         var name = args[0].value;

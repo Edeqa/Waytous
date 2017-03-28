@@ -60,9 +60,7 @@ function GpsHolder(main) {
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_3 },
-                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_4 },
-                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_5 },
-                            { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_6, body: u.lang.gps_location_required_7 },
+                            { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_4, body: u.lang.gps_location_required_5 },
                         ],
                         positive: {
                             label: u.lang.gps_ok_go_ahead,
@@ -227,11 +225,9 @@ function GpsHolder(main) {
 
         gps_location_required_1: "The purpose of this service is to help friends find each other.",
         gps_location_required_2: "To do this, send your location to your friends.",
-        gps_location_required_3: "Now the browser should ask you about using your location information.",
-        gps_location_required_4: "Answer him \"Allow\", otherwise your friends",
-        gps_location_required_5: "will not be able to see where you are.",
-        gps_location_required_6: "If you already disallowed",
-        gps_location_required_7: "If you already disallowed the geolocation then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner to get the detailed instruction.",
+        gps_location_required_3: "Now the browser should ask you about using your location information. Answer him \"Allow\", otherwise your friends will not be able to see where you are.",
+        gps_location_required_4: "If you already disallowed",
+        gps_location_required_5: "If you already disallowed the geolocation then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner to get the detailed instruction.",
 
         gps_you_have_denied_geolocation: "You have denied geolocation.",
         gps_user_took_too_long_to_grant_deny_geolocation_permission: "User took too long to grant/deny geolocation permission.",
@@ -253,6 +249,6 @@ function GpsHolder(main) {
         start:start,
         onEvent:onEvent,
         help:help,
-        resources:resources,
+        //resources:resources,
     }
 }

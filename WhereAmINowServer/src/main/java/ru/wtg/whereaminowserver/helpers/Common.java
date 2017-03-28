@@ -2,6 +2,12 @@ package ru.wtg.whereaminowserver.helpers;
 
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -22,6 +28,11 @@ import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
 public class Common {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
+    volatile private static PrintWriter out;
+
+    public Common() throws FileNotFoundException {
+    }
+
 
     public static JSONObject fetchGeneralInfo() {
         JSONObject o = new JSONObject();
@@ -41,6 +52,21 @@ public class Common {
             str += text[i] + " ";
         }
         System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
+        try {
+            if(out == null) {
+                File log = new File("WhereAmINowServer/WAIN.log");
+                System.out.println("Log file: "+log.getAbsolutePath());
+//            out = new PrintWriter(new BufferedWriter(new FileWriter("WhereAmINowServer/WAIN.log", true)));
+                out = new PrintWriter(log);
+            }
+
+            out.println(Common.dateFormat.format(new Date()) + "/" + str);
+            out.flush();
+//            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
