@@ -62,6 +62,7 @@ function GpsHolder(main) {
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_3 },
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_4 },
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_5 },
+                            { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_6, body: u.lang.gps_location_required_7 },
                         ],
                         positive: {
                             label: u.lang.gps_ok_go_ahead,
@@ -78,6 +79,10 @@ function GpsHolder(main) {
                                 if(!initialized) main.fire(EVENTS.MAP_READY);
                             }
                         },
+                        help: function() {
+                            locationRequiredDialog.close();
+                            main.fire(EVENTS.SHOW_HELP, {module:main.holders.gps, article:1})
+                        }
                     });
                     locationRequiredDialog.open();
                     return false;
@@ -95,6 +100,7 @@ function GpsHolder(main) {
     function startPositioning() {
         navigator.geolocation.getCurrentPosition(function(location){
             drawerEnableGeoposition.hide();
+            u.save("gps:asked", true);
             u.save("gps:allowed", true);
             locationUpdateListener(location);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
@@ -130,7 +136,7 @@ function GpsHolder(main) {
             var alert = u.dialog({
                 className: "alert-dialog",
                 items: [
-                    { type: HTML.DIV, label: message + " " + u.lang.gps_please_resolve_this_problem_and_try_again },
+                    { type: HTML.DIV, label: u.lang.gps_please_resolve_this_problem_and_try_again.format(message) },
                 ],
                 positive: {
                     label: u.lang.ok,
@@ -224,13 +230,15 @@ function GpsHolder(main) {
         gps_location_required_3: "Now the browser should ask you about using your location information.",
         gps_location_required_4: "Answer him \"Allow\", otherwise your friends",
         gps_location_required_5: "will not be able to see where you are.",
+        gps_location_required_6: "If you already disallowed",
+        gps_location_required_7: "If you already disallowed the geolocation then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner to get the detailed instruction.",
 
         gps_you_have_denied_geolocation: "You have denied geolocation.",
         gps_user_took_too_long_to_grant_deny_geolocation_permission: "User took too long to grant/deny geolocation permission.",
         gps_geolocation_is_unavailable: "Geolocation is unavailable.",
         gps_request_to_geolocation_is_timed_out: "The request to geolocation is timed out.",
         gps_unknown_error_occurred_while_requesting_geolocation: "An unknown error occurred while requesting geolocation.",
-        gps_please_resolve_this_problem_and_try_again: "Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
+        gps_please_resolve_this_problem_and_try_again: "%s Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
 
         gps_help_title: "Geolocation",
         gps_help_1_title: "Allow geolocation",

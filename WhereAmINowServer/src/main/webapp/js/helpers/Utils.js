@@ -990,7 +990,10 @@ function Utils(main) {
     function sprintf() {
         var a = this, b;
         for(b in arguments){
-            a = a.replace(/%[a-z]/,arguments[b]);
+            a = a.replace(/%[a-z]/,arguments[b][0].constructor === HTMLSpanElement ?
+                (arguments[b][0].dataset && arguments[b][0].dataset.lang
+                    && lang.$origin[arguments[b][0].dataset.lang] ? lang[arguments[b][0].dataset.lang].outerText : arguments[b][0].outerText)
+                : arguments[b][0]);
         }
         return a; // Make chainable
     }
@@ -1123,18 +1126,39 @@ function Utils(main) {
 
     function lang(string, value) {
         if(value) {
-            lang.$origin = lang.$origin || {};
+            var prev = lang.$origin[string];
             lang.$origin[string] = value;
-            if(!lang[string]) {
+            lang.$origin[string] = value;
+            if(!prev) {
                 Object.defineProperty(lang, string, {
                     get: function() {
-                        return create(HTML.SPAN, {dataLang:string, innerHTML: lang.$origin[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "")})
+                        lang.$nodes[string] = lang.$nodes[string] || create(HTML.SPAN, {
+                            dataLang:string,
+                        });
+                        var a = lang.$nodes[string].cloneNode();
+                        a.format = function() {
+                              lang.$arguments[this.dataset.lang] = arguments;
+                              this.innerHTML = sprintf.call(this.innerHTML, arguments);
+                              return this;
+                          }
+                        a.innerHTML = lang.$origin[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
+
+                        if(lang.$arguments[string]){
+                            a.innerHTML = sprintf.call(a.innerHTML, lang.$arguments[string]);
+                        }
+                        return a;
                     }
                 });
             }
         }
-        return (lang[string] && lang[string].cloneNode()) || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
+        var res = (lang.$origin[string] && lang[string]) || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
+        return res;
     }
+
+    lang.$nodes = lang.$nodes || {};
+    lang.$origin = lang.$origin || {};
+    lang.$arguments = lang.$arguments || {};
+
 
     lang.overrideResources = function(holder) {
         if(holder.constructor === String) {
@@ -1157,14 +1181,14 @@ function Utils(main) {
                         var nodes = document.getElementsByTagName(HTML.SPAN);
                         console.warn("Switching to resources \""+holder+"\".");
                         for(var x in json) {
-                            if(lang[x]) {
+//                            if(lang.$origin[x]) {
 //                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
-                            }
+//                            }
                             lang(x, json[x]);
-                            for(var i = 0; i < nodes.length; i++) {
-                                if(nodes[i].dataset && nodes[i].dataset.lang == x) {
-                                    nodes[i].parentNode.replaceChild(lang[x],nodes[i]);
-                                }
+                        }
+                        for(var i = 0; i < nodes.length; i++) {
+                            if(nodes[i].dataset && nodes[i].dataset.lang) {
+                                nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
                             }
                         }
                     } catch(e) {

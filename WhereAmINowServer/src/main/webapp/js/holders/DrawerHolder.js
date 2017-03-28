@@ -65,13 +65,13 @@ function DrawerHolder(main) {
         alphaDialog = alphaDialog || u.dialog({
             className: "alert-dialog",
             items: [
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_1 },
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_2 },
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_3 },
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_4 },
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_5 },
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_6 },
-                { type: HTML.DIV, innerHTML:u.lang.gps_alpha_7 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_1 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_2 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_3 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_4 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_5 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_6 },
+                { type: HTML.DIV, innerHTML:u.lang.alpha_7 },
             ],
             positive: {
                 label: u.lang.ok,
@@ -275,13 +275,13 @@ function DrawerHolder(main) {
         connecting: "Connecting...",
         be_always_on_the_same_way: "Be always on the same way\nwith your friends",
 
-        gps_alpha_1: "Thank you for using the",
-        gps_alpha_2: "ALPHA version of Waytogo.",
-        gps_alpha_3: "&nbsp;",
-        gps_alpha_4: "Please if you found some errors, weird behaviour, new great idea or just because - feel free to send us an e-mail:",
-        gps_alpha_5: "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
-        gps_alpha_6: "&nbsp;",
-        gps_alpha_7: "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
+        alpha_1: "Thank you for using the",
+        alpha_2: "ALPHA version of Waytogo.",
+        alpha_3: "&nbsp;",
+        alpha_4: "Please if you found some errors, weird behaviour, new great idea or just because - feel free to send us an e-mail:",
+        alpha_5: "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
+        alpha_6: "&nbsp;",
+        alpha_7: "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
 
     }
 

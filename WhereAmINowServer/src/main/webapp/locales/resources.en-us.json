@@ -18,6 +18,23 @@
   "connecting": "Connecting...",
   "be_always_on_the_same_way": "Be always on the same way\nwith your friends",
 
+  "alpha_1": "Thank you for using the",
+  "alpha_2": "ALPHA version of Waytogo.",
+  "alpha_3": "&nbsp;",
+  "alpha_4": "Please if you found some errors, weird behaviour, new great idea or just because - feel free to send us an e-mail:",
+  "alpha_5": "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
+  "alpha_6": "&nbsp;",
+  "alpha_7": "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
+
+
+  "SECTION": "// GpsHolder ",
+  "gps_you_have_denied_geolocation": "You have denied geolocation.",
+  "gps_user_took_too_long_to_grant_deny_geolocation_permission": "User took too long to grant/deny geolocation permission.",
+  "gps_geolocation_is_unavailable": "Geolocation is unavailable.",
+  "gps_request_to_geolocation_is_timed_out": "The request to geolocation is timed out.",
+  "gps_unknown_error_occurred_while_requesting_geolocation": "An unknown error occurred while requesting geolocation.",
+  "gps_please_resolve_this_problem_and_try_again": "%s Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
+
 
   "SECTION": "// SampleHolder ",
   "sample_article_1": "Article 1",
