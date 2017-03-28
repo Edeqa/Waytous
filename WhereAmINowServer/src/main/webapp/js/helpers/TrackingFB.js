@@ -104,37 +104,36 @@ function TrackingFB(main) {
 
                         // console.log("SIGN WITH",authToken);
                         try {
-                            firebase.auth().signInWithCustomToken(authToken)
-                                .then(function (e) {
+                            firebase.auth().signInWithCustomToken(authToken).then(function (e) {
 
-                                    // setStatus(EVENTS.TRACKING_ACTIVE);
-                                    if (o[RESPONSE.TOKEN]) {
-                                        setToken(o[RESPONSE.TOKEN]);
-                                    }
-                                    if (o[RESPONSE.NUMBER]) {
-                                        console.warn("Joined with number",o[RESPONSE.NUMBER]);
-                                        main.users.setMyNumber(o[RESPONSE.NUMBER]);
-                                    }
-                                    o[RESPONSE.INITIAL] = true;
+                                // setStatus(EVENTS.TRACKING_ACTIVE);
+                                if (o[RESPONSE.TOKEN]) {
+                                    setToken(o[RESPONSE.TOKEN]);
+                                }
+                                if (o[RESPONSE.NUMBER]) {
+                                    console.warn("Joined with number",o[RESPONSE.NUMBER]);
+                                    main.users.setMyNumber(o[RESPONSE.NUMBER]);
+                                }
+                                o[RESPONSE.INITIAL] = true;
 
-                                    ref = database.ref().child(getToken());
+                                ref = database.ref().child(getToken());
 
-                                    registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
-                                    for (var i in main.holders) {
-                                        if (main.holders[i] && main.holders[i].saveable) {
-                                            try {
-                                                registerChildListener(ref.child(DATABASE.SECTION_PRIVATE).child(i).child(main.me.number), userPrivateDataListener, -1);
-                                            } catch (e) {
-                                                console.error(e.message);
-                                            }
+                                registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
+                                for (var i in main.holders) {
+                                    if (main.holders[i] && main.holders[i].saveable) {
+                                        try {
+                                            registerChildListener(ref.child(DATABASE.SECTION_PRIVATE).child(i).child(main.me.number), userPrivateDataListener, -1);
+                                        } catch (e) {
+                                            console.error(e.message);
                                         }
                                     }
-                                    try {
-                                        trackingListener.onAccept(o);
-                                    } catch (e) {
-                                        console.error(e.message);
-                                    }
-                                }).catch(function (error) {
+                                }
+                                try {
+                                    trackingListener.onAccept(o);
+                                } catch (e) {
+                                    console.error(e.message);
+                                }
+                            }).catch(function (error) {
                                 setStatus(EVENTS.TRACKING_DISABLED);
                                 trackingListener.onReject(error.message);
                             });
@@ -222,6 +221,11 @@ function TrackingFB(main) {
         var a = {};
         try {
             a = new WebSocket(link);
+            setTimeout(function(){
+                if(a instanceof WebSocket && a.readyState != WebSocket.OPEN) {
+                    a.close();
+                }
+            }, 15000);
         } catch(e){
             console.warn(e);
             xhrModeStart(link);

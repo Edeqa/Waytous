@@ -71,15 +71,15 @@ function TrackingHolder(main) {
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 drawerItemNewIcon = drawerItemNewIcon || u.create(HTML.PATH, drawerItemNewIconPath, u.create(HTML.SVG, drawerItemNewIconSvg)).parentNode;
-                drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW,"Create group",drawerItemNewIcon,function(){
+                drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW, u.lang.tracking_create_group, drawerItemNewIcon,function(){
                     main.fire(EVENTS.TRACKING_NEW);
                 });
                 drawerItemNew.hide();
-                drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP,"Exit group","clear",function(){
+                drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP, u.lang.tracking_exit_group,"clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
                 drawerItemExit.hide();
-                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK,"Share group","share",function(e){
+                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK, u.lang.tracking_share_group, "share",function(e){
                     if(EVENTS.TRACKING_ACTIVE) {
                         main.fire(EVENTS.SHARE_LINK,e);
                     }
@@ -117,7 +117,7 @@ function TrackingHolder(main) {
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;
 
-                document.title = "Connecting - " + main.appName;
+                document.title = u.lang.tracking_connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
                 drawerItemShare.show();
                 drawerItemShare.enable();
@@ -130,7 +130,7 @@ function TrackingHolder(main) {
             case EVENTS.TRACKING_RECONNECTING:
 //                window.onbeforeunload = beforeunload;
 
-                document.title = "Connecting - " + main.appName;
+                document.title = u.lang.tracking_connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
                 drawerItemShare.show();
                 drawerItemShare.enable();
@@ -164,8 +164,8 @@ function TrackingHolder(main) {
                 if(shareDialog) shareDialog.close();
                 shareDialog = shareDialog || u.dialog({
                     items: [
-                        {type:HTML.DIV, innerHTML:"Let your e-mail client compose the message with link to this group?"},
-                        {type:HTML.DIV, innerHTML:"You can add there all your friends you'd like."},
+                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_1 },
+                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_2 },
 //                        {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
                     ],
                     positive: {
@@ -175,11 +175,10 @@ function TrackingHolder(main) {
                             u.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
                                     items: [
-                                        {type:HTML.DIV, innerHTML:"Perhaps, your browser blocks pop-ups."},
-                                        {type:HTML.DIV, innerHTML:"If so please unlock this ability for calling e-mail properly."},
-                                        {type:HTML.DIV, enclosed:true, innerHTML:"Detailed information how to unblock this feature"},
-                                        {type:HTML.DIV, innerHTML:"Also, you can send the link manually. Copy it clicking on the button below."},
-                                        {type:HTML.DIV, innerHTML:main.tracking.getTrackingUri()}
+                                        {type:HTML.DIV, innerHTML: u.lang.tracking_popup_blocked_dialog_1 },
+                                        {type:HTML.DIV, enclosed:true, innerHTML: u.lang.tracking_popup_blocked_dialog_2 },
+                                        {type:HTML.DIV, innerHTML: u.lang.tracking_popup_blocked_dialog_3 },
+                                        {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
                                     ],
                                     positive: {
                                         label: "Close"
@@ -190,7 +189,7 @@ function TrackingHolder(main) {
                         }
                     },
                     negative: {
-                        label: "Cancel"
+                        label: u.lang.cancel
                     },
                     timeout: 20000
                 });
@@ -217,7 +216,7 @@ function TrackingHolder(main) {
             this.tracking.setLink(window.location.href);
             u.save("group",group);
         } else {
-            progressTitle.innerHTML = "Creating group...";
+            progressTitle.innerHTML = u.lang.tracking_creating_group;
             console.log("NEW")
         }
         this.tracking.setTrackingListener(onTrackingListener);
@@ -228,22 +227,26 @@ function TrackingHolder(main) {
     var onTrackingListener = {
         onCreating: function(){
             // console.log("ONCREATING");
-            progressTitle.innerHTML = "Connecting...";
+            u.lang.updateNode(progressTitle, u.lang.tracking_connecting);
+            //progressTitle.innerHTML = u.lang.tracking_connecting;
             progress.open();
+
             u.save(TRACKING_URI, null);
             main.fire(EVENTS.TRACKING_CONNECTING);
         },
         onJoining: function(){
             // console.log("ONJOINING");
-            progressTitle.innerHTML = "Joining group...";
+            u.lang.updateNode(progressTitle, u.lang.tracking_joining_group);
+//            progressTitle.innerHTML = u.lang.tracking_joining_group;
             progress.open();
-            main.fire(EVENTS.TRACKING_RECONNECTING, "Joining group...");
+            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.tracking_joining_group);
         },
         onReconnecting: function(){
             // console.log("ONRECONNECTING");
-            progressTitle.innerHTML = "Reconnecting...";
+            u.lang.updateNode(progressTitle, u.lang.tracking_reconnecting);
+//            progressTitle.innerHTML = u.lang.tracking_reconnecting;
             progress.open();
-            main.fire(EVENTS.TRACKING_RECONNECTING, "Reconnecting...");
+            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.tracking_reconnecting);
         },
         onClose: function(){
             console.log("ONCLOSE");
@@ -339,16 +342,16 @@ function TrackingHolder(main) {
     };
 
     function beforeunload(evt) {
-        return "You are online in the group with your friends. Leaving this page you will exit the group.";
+        return u.lang.tracking_beforeunload;
     }
 
     function help(){
         return {
-            title: "Tracking",
+            title: u.lang.tracking_help_title,
             1: {
                 ignore: true,
-                title: "You have created new group",
-                body: "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. "
+                title: u.lang.tracking_help_title_1,
+                body: u.lang.tracking_help_body_1
             }
         }
     }

@@ -1,20 +1,12 @@
 {
-  "SECTION": "// Main ",
+  "SECTION Main": "// Main ",
   "ok": "OK",
   "cancel": "Cancel",
   "yes": "Yes",
   "no": "No",
   "maybe_later": "Maybe later",
 
-  "SECTION": "// MapHolder ",
-  "traffic": "Traffic",
-  "transit": "Transit",
-  "bicycle": "Bicycle",
-  "satellite": "Satellite",
-  "terrain": "Terrain",
-
-
-  "SECTION": "// DrawerHolder ",
+  "SECTION DrawerHolder": "// DrawerHolder ",
   "connecting": "Connecting...",
   "be_always_on_the_same_way": "Be always on the same way\nwith your friends",
 
@@ -27,7 +19,7 @@
   "alpha_7": "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
 
 
-  "SECTION": "// GpsHolder ",
+  "SECTION GpsHolder": "// GpsHolder ",
   "enable_geolocation": "Enable geolocation",
 
   "gps_ok_go_ahead": "OK, go ahead",
@@ -50,7 +42,38 @@
   "gps_help_1_body": "Instruction how to allow geolocation",
 
 
+  "SECTION MapHolder": "// MapHolder ",
+  "traffic": "Traffic",
+  "transit": "Transit",
+  "bicycle": "Bicycle",
+  "satellite": "Satellite",
+  "terrain": "Terrain",
+
+
+  "SECTION TrackingHolder": "// TrackingHolder ",
+
+  "tracking_create_group": "Create group",
+  "tracking_exit_group": "Exit group",
+  "tracking_share_group": "Share group",
+  "tracking_connecting_s": "Connecting - %s",
+
+  "tracking_share_link_dialog_1": "Let your e-mail client compose the message with link to this group?",
+  "tracking_share_link_dialog_2": "You can add there all your friends you'd like.",
+  "tracking_popup_blocked_dialog_1": "Looks like your browser is blocking pop-ups. If so please unlock this ability for calling e-mail properly.",
+  "tracking_popup_blocked_dialog_2": "Detailed information how to unblock this feature",
+  "tracking_popup_blocked_dialog_3": "Also, you can send the link manually. Copy it clicking on the button below.",
+  "tracking_creating_group": "Creating group...",
+  "tracking_connecting": "Connecting...",
+  "tracking_joining_group": "Joining group...",
+  "tracking_reconnecting": "Reconnecting...",
+  "tracking_beforeunload": "You are online in the group with your friends. Leaving this page you will exit the group.",
+
+  "tracking_help_title": "Tracking",
+  "tracking_help_title_1": "You have created new group",
+  "tracking_help_body_1": "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. ",
+
+
   "SECTION": "// SampleHolder ",
-  "sample_article_1": "Article 1",
+  "sample_title_1": "Article 1",
   "sample_body_1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 }
