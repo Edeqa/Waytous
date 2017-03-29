@@ -14,20 +14,19 @@ function HelpHolder(main) {
     }
 
     function onEvent(EVENT,object){
-        // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(DRAWER.SECTION_LAST,EVENTS.SHOW_HELP, "Help", "help_outline", function(){
+                object.add(DRAWER.SECTION_MISCELLANEOUS, EVENTS.SHOW_HELP, u.lang.help, "help_outline", function(){
                     main.fire(EVENTS.SHOW_HELP);
                 });
                 break;
             case EVENTS.SHOW_HELP:
 
                 dialog = dialog || u.dialog({
-                    title: "Help",
+                    title: u.lang.help,
                     className: "help",
                     negative: {
-                        label: "Close"
+                        label: u.lang.close
                     }
                 });
                 if(dialog.opened) break;
@@ -35,14 +34,14 @@ function HelpHolder(main) {
                 if(object) {
                     if(object["module"].help) {
                         dialog.addItem({
-                            type:HTML.DIV,
-                            className:"help-item-title",
-                            innerHTML:object["module"].help()[object.article].title
+                            type: HTML.DIV,
+                            className: "help-item-title",
+                            innerHTML: object["module"].help()[object.article].title
                         });
                         dialog.addItem({
-                            type:HTML.DIV,
-                            className:"help-item-body",
-                            innerHTML:object["module"].help()[object.article].body
+                            type: HTML.DIV,
+                            className: "help-item-body",
+                            innerHTML: object["module"].help()[object.article].body
                         });
                     }
                 } else {

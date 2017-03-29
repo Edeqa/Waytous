@@ -10,9 +10,9 @@ function PropertiesHolder(main) {
 
     this.start = function() {
         dialog = u.dialog({
-            title: "Set my name",
+            title: u.lang.set_my_name,
             items: [
-                { type: HTML.INPUT, label: "Name" }
+                { type: HTML.INPUT, label: u.lang.name }
             ],
             positive: {
                 label: u.lang.ok,
@@ -39,22 +39,22 @@ function PropertiesHolder(main) {
                 if(!u.load("properties:name") && !u.load("properties:name_asked")) {
                     var askIfNameNotDefinedDialog = u.dialog({
                         items: [
-                            { type: HTML.DIV, label: "Your name is not defined. Set up your name now?" }
+                            { type: HTML.DIV, label: u.lang.your_name_is_not_defined }
                         ],
                         positive: {
-                            label: "Yes",
+                            label: u.lang.yes,
                             onclick: function(args) {
                                 setMyName.call(main.me);
                             }
                         },
                         negative: {
-                            label: "No",
+                            label: u.lang.no,
                             onclick: function(){
                                 u.save("properties:name_asked", true);
                             }
                         },
                         neutral: {
-                            label: "Remind me later"
+                            label: u.lang.maybe_later
                         },
                         timeout: 10000
                     }).open();
@@ -68,7 +68,7 @@ function PropertiesHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user.number == main.me.number) {
-                    object.add(MENU.SECTION_PRIMARY, self.type + "_1", "Set my name", "face", function () {
+                    object.add(MENU.SECTION_PRIMARY, self.type + "_set_my_name", u.lang.set_my_name, "face", function () {
                         setMyName.call(user);
                     });
                 }

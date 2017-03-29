@@ -1,12 +1,37 @@
 {
-  "SECTION Main": "// Main ",
+  "SECTION Common": "// Main ",
   "ok": "OK",
   "cancel": "Cancel",
   "yes": "Yes",
   "no": "No",
+  "close": "Close",
   "maybe_later": "Maybe later",
+  "hide": "Hide",
+  "edit": "Edit",
+  "name": "Name",
+  "delete": "Delete",
 
-  "SECTION DrawerHolder": "// DrawerHolder ",
+
+  "SECTION ButtonHolder": "// ",
+
+  "users_d": "Users (%d)",
+
+
+  "SECTION CameraHolder": "// ",
+
+  "select": "Select",
+  "unselect": "Unselect",
+
+
+  "SECTION DistanceHolder": "// ",
+
+  "show_distances": "Show distances",
+  "hide_distances": "Hide distances",
+  "show_distance": "Show distance",
+  "hide_distance": "Hide distance",
+
+
+  "SECTION DrawerHolder": "// ",
   "connecting": "Connecting...",
   "be_always_on_the_same_way": "Be always on the same way\nwith your friends",
 
@@ -19,10 +44,10 @@
   "alpha_7": "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
 
 
-  "SECTION GpsHolder": "// GpsHolder ",
+  "SECTION GpsHolder": "// ",
   "enable_geolocation": "Enable geolocation",
 
-  "gps_ok_go_ahead": "OK, go ahead",
+  "ok_go_ahead": "OK, go ahead",
 
   "gps_location_required_1": "The purpose of this service is to help friends find each other.",
   "gps_location_required_2": "To do this, send your location to your friends.",
@@ -30,27 +55,119 @@
   "gps_location_required_4": "If you already disallowed",
   "gps_location_required_5": "If you already disallowed the geolocation then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner to get the detailed instruction.",
 
-  "gps_user_took_too_long_to_grant_deny_geolocation_permission": "User took too long to grant/deny geolocation permission.",
-  "gps_geolocation_is_unavailable": "Geolocation is unavailable.",
-  "gps_request_to_geolocation_is_timed_out": "The request to geolocation is timed out.",
-  "gps_unknown_error_occurred_while_requesting_geolocation": "An unknown error occurred while requesting geolocation.",
-  "gps_please_resolve_this_problem_and_try_again": "%s Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
-  "gps_you_have_denied_geolocation": "You have denied geolocation.",
+  "user_took_too_long_to_grant_deny_geolocation_permission": "User took too long to grant/deny geolocation permission.",
+  "geolocation_is_unavailable": "Geolocation is unavailable.",
+  "request_to_geolocation_is_timed_out": "The request to geolocation is timed out.",
+  "unknown_error_occurred_while_requesting_geolocation": "An unknown error occurred while requesting geolocation.",
+  "please_resolve_this_problem_and_try_again": "%s Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
+  "you_have_denied_geolocation": "You have denied geolocation.",
 
   "gps_help_title": "Geolocation",
   "gps_help_1_title": "Allow geolocation",
   "gps_help_1_body": "Instruction how to allow geolocation",
 
 
-  "SECTION MapHolder": "// MapHolder ",
+  "SECTION HelpHolder": "// ",
+
+  "help": "Help",
+
+
+  "SECTION MapHolder": "// ",
   "traffic": "Traffic",
   "transit": "Transit",
   "bicycle": "Bicycle",
   "satellite": "Satellite",
   "terrain": "Terrain",
+  "re_center": "Re-center",
 
 
-  "SECTION TrackingHolder": "// TrackingHolder ",
+  "SECTION MessagesHolder": "// ",
+
+  "chat": "Chat",
+  "private_message": "Private message",
+
+
+  "SECTION NavigationHolder": "// ",
+
+  "hide_navigations": "Hide navigations",
+  "show_navigation": "Show navigation",
+  "hide_navigation": "Hide navigation",
+  "navigate_with_google_maps": "Navigate with Google Maps",
+  "setting_up_direction": "Setting up direction...",
+  "sorry_direction_request_was_failed": "Sorry, direction request was failed.",
+  "navigation_options": "Navigation options",
+  "avoid_highways": "Avoid highways",
+  "avoid_tolls": "Avoid tolls",
+  "avoid_ferries": "Avoid ferries",
+
+
+  "SECTION OptionHolder": "// ",
+
+  "options": "Options",
+
+
+  "SECTION PlaceHolder": "// ",
+
+  "search": "Search",
+  "sorry_incorrect_place_has_returned": "Sorry, incorrect place has returned.",
+  "hide_place": "Hide place",
+  "description": "Description",
+
+
+  "SECTION PropertiesHolder": "// ",
+
+  "your_name_is_not_defined": "Your name is not defined. Set up your name now?",
+  "set_my_name": "Set my name",
+
+
+  "SECTION SavedLocationHolder": "// ",
+
+  "save_location": "Save location",
+  "send_to_group": "Send to group",
+  "share": "Share",
+  "you_have_added_location": "You have added location. It can be found under \"Saved locations\" menu. Would you like to do something else?",
+  "show": "Show",
+  "edit_location": "Edit location",
+  "let_your_email_client_compose_the_message_with_link_to_this_location": "Let your e-mail client compose the message with link to this location?",
+  "send_location": "Send location",
+  "you_re_going_to_send_the_location_s_to_all_continue": "You're going to send the location %s to all. Continue?",
+  "delete_location": "Delete location",
+  "delete_this_location": "Delete this location?",
+  "saved_locations": "Saved locations",
+  "show_location": "Show location",
+  "show_direction_to_location": "Show direction to location",
+  "share_location": "Share location",
+  "add_it_to_your_saved_locations_list": "Add it to your saved locations list?",
+  "add_location": "Add location",
+  "you_ve_got_the_location_from_s": "You've got the location from %s.",
+  "address_s": "Address: %s.",
+  "description_s": "Description: %s.",
+
+  "saved_location_popup_blocked_1": "Perhaps, your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly.",
+  "saved_location_popup_blocked_2": "Detailed information how to unblock this feature",
+  "saved_location_popup_blocked_3": "Also, you can send the link manually. Copy it clicking on the button below.",
+
+
+  "SECTION StreetViewHolder": "// ",
+
+  "show_street_view": "Show street view",
+  "hide_street_view": "Hide street view",
+  "street_view": "Street view",
+  "loading": "Loading...",
+  "street_view_is_still_not_available_for_this_place": "Street view is still not available for this place.",
+  "street_view_available_only_for_one_point": "Street view available only for one point.",
+
+
+  "SECTION TrackHolder": "// ",
+
+  "show_tracks": "Show tracks",
+  "hide_tracks": "Hide tracks",
+  "show_track": "Show track",
+  "hide_track": "Hide track",
+
+
+
+  "SECTION TrackingHolder": "// ",
 
   "tracking_create_group": "Create group",
   "tracking_exit_group": "Exit group",
@@ -73,7 +190,10 @@
   "tracking_help_body_1": "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. ",
 
 
-  "SECTION": "// SampleHolder ",
+  "SECTION": "// ",
+
+  "sample_item": "Sample item",
+  "sample_menu": "Sample menu",
   "sample_title_1": "Article 1",
   "sample_body_1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 }

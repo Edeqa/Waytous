@@ -1,11 +1,13 @@
 /**
  * Created 2/10/17.
  */
+
+EVENTS.UPDATE_ADDRESS = "update_address";
+
 function AddressHolder(main) {
 
     var type = "address";
 
-    EVENTS.UPDATE_ADDRESS = "update_address";
 
     const delayInError = 10000;
     var delayStart;

@@ -85,7 +85,9 @@ function ButtonHolder(main) {
                 break;
             case EVENTS.MAKE_ACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
-                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
+                u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()))
+
+//                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() > 1) {
                     buttons.open();
                 } else if(!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED) {
@@ -94,7 +96,8 @@ function ButtonHolder(main) {
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
-                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
+                u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()))
+//                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() < 2 && (!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED)) {
                     buttons.close();
                 }

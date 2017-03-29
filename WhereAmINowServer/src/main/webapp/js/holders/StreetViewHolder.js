@@ -18,10 +18,10 @@ function StreetViewHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerShow = object.add(DRAWER.SECTION_VIEWS,type+"_show","Show street view","streetview",function(){
+                drawerShow = object.add(DRAWER.SECTION_VIEWS, type+"_show", u.lang.show_street_view, "streetview", function(){
                     view.open();
                 });
-                drawerHide = object.add(DRAWER.SECTION_VIEWS,type+"_hide","Hide street view","streetview",function(){
+                drawerHide = object.add(DRAWER.SECTION_VIEWS, type+"_hide", u.lang.hide_street_view, "streetview", function(){
                     view.close();
                 });
                 drawerShow.hide();
@@ -42,13 +42,13 @@ function StreetViewHolder(main) {
 
                 view = u.dialog({
                     title: {
-                        label: "Street view",
+                        label: u.lang.street_view,
                         className: "mobile-hidden"
                     },
                     className: "streetview",
                     tabindex: 1,
                     items: [
-                        { type: HTML.DIV, className: "streetview-placeholder", innerHTML: "Loading..." },
+                        { type: HTML.DIV, className: "streetview-placeholder", innerHTML: u.lang.loading },
                         { type: HTML.DIV, className: "streetview-view hidden", id: "streetview" },
                     ],
                     onclose: function(){
@@ -119,19 +119,19 @@ function StreetViewHolder(main) {
                             pitch: 0
                         });
                         panorama.setVisible(true);
-                        placeholder.classList.add("hidden");
-                        streetview.classList.remove("hidden");
+                        placeholder.hide();
+                        streetview.show();
                     } else {
-                        placeholder.innerHTML = "Street view is still not available for this place.";
-                        placeholder.classList.remove("hidden");
-                        streetview.classList.add("hidden");
+                        placeholder.innerHTML = u.lang.street_view_is_still_not_available_for_this_place.outerHTML;
+                        placeholder.show();
+                        streetview.hide();
                     }
                 });
             });
         } else if (show) {
-            placeholder.innerHTML = "Street view available only for one point.";
-            placeholder.classList.remove("hidden");
-            streetview.classList.add("hidden");
+            placeholder.innerHTML = u.lang.street_view_available_only_for_one_point.outerHTML;
+            placeholder.show();
+            streetview.hide();
         }
     }
 

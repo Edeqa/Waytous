@@ -20,13 +20,13 @@ function TrackHolder(main) {
         // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_TRACK,"Show tracks","title",function(){
+                drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_TRACK, u.lang.show_tracks,"title",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SHOW_TRACK);
                         drawerPopulate();
                     });
                 });
-                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_TRACK,"Hide tracks","format_strikethrough",function(){
+                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_TRACK, u.lang.hide_tracks,"format_strikethrough",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.HIDE_TRACK);
                         drawerPopulate();
@@ -37,12 +37,12 @@ function TrackHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user && user.type == "user" && user.location && !user.views.track.show) {
-                    object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_TRACK,"Show track","title",function(){
+                    object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_TRACK, u.lang.show_track,"title",function(){
                         user.fire(EVENTS.SHOW_TRACK);
                         drawerPopulate();
                     });
                 } else if(user.views.track.show) {
-                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_TRACK,"Hide track","format_strikethrough",function(){
+                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_TRACK,u.lang.hide_track,"format_strikethrough",function(){
                         user.fire(EVENTS.HIDE_TRACK);
                         drawerPopulate();
                     });

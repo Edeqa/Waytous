@@ -1061,6 +1061,20 @@ p.bottom-desc {
 .place-search-label {
     display: none;
 }
+.option {
+    min-width: 400px;
+}
+.option-title {
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+    min-height: 25px;
+    justify-content: flex-start;
+}
+.option-item {
+    width: 100%;
+    margin-top: 0px;
+}
 
 
 /* shift zoom control */

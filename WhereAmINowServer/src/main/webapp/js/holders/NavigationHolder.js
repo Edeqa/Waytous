@@ -1,6 +1,7 @@
 /**
  * Created 3/9/17.
  */
+EVENTS.HIDE_NAVIGATIONS = "hide_navigations";
 EVENTS.SHOW_NAVIGATION = "show_navigation";
 EVENTS.HIDE_NAVIGATION = "hide_navigation";
 
@@ -56,7 +57,7 @@ function NavigationHolder(main) {
                     });
                 });*/
                 navigation_outline_drawer = navigation_outline_drawer || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
-                drawerItemHide = object.add(DRAWER.SECTION_VIEWS,EVENTS.HIDE_NAVIGATION,"Hide navigations",navigation_outline_drawer,function(){
+                drawerItemHide = object.add(DRAWER.SECTION_VIEWS, EVENTS.HIDE_NAVIGATIONS, u.lang.hide_navigations, navigation_outline_drawer, function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.HIDE_NAVIGATION);
                         drawerPopulate();
@@ -67,7 +68,7 @@ function NavigationHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user && user != main.me && !user.views.navigation.show) {
-                    var menuItemShow = object.add(MENU.SECTION_VIEWS,EVENTS.SHOW_NAVIGATION,"Show navigation","navigation",function(){
+                    var menuItemShow = object.add(MENU.SECTION_VIEWS, EVENTS.SHOW_NAVIGATION, u.lang.show_navigation, "navigation", function(){
                         user.fire(EVENTS.SHOW_NAVIGATION);
                         menuItemShow.hide();
                         drawerPopulate();
@@ -83,13 +84,13 @@ function NavigationHolder(main) {
                     }
                 } else if(user.views.navigation.show) {
                     navigation_outline_menu = navigation_outline_menu || u.create(HTML.PATH, navigation_outline_path, u.create(HTML.SVG, navigation_outline_svg)).parentNode;
-                    object.add(MENU.SECTION_VIEWS,EVENTS.HIDE_NAVIGATION,"Hide navigation",navigation_outline_menu,function(){
+                    object.add(MENU.SECTION_VIEWS, EVENTS.HIDE_NAVIGATION, u.lang.hide_navigation, navigation_outline_menu, function(){
                         user.fire(EVENTS.HIDE_NAVIGATION);
                         drawerPopulate();
                     });
                 }
                 if(user && user != main.me && user.location && main.me.location) {
-                    object.add(MENU.SECTION_VIEWS,"gmap","Navigate with Google Maps","directions",function(){
+                    object.add(MENU.SECTION_VIEWS, "gmap", u.lang.navigate_with_google_maps, "directions", function(){
                         var req = "https://maps.google.com/?saddr=" + main.me.location.coords.latitude + "," + main.me.location.coords.longitude + "&daddr=" + + user.location.coords.latitude + "," + user.location.coords.longitude;
 
                         window.open(req, "_blank");
@@ -99,8 +100,8 @@ function NavigationHolder(main) {
             case EVENTS.SHOW_NAVIGATION:
                 installation = true;
                 this.views.navigation.show = true;
-                u.save("navigation:show:" + this.number, true);
-                main.toast.show("Setting up direction...", -1);
+                u.saveWith(main.tracking ? main.tracking.getToken() : null, "navigation:show:" + this.number, true);
+                main.toast.show(u.lang.setting_up_direction, -1);
                 update.call(this);
                 break;
             case EVENTS.HIDE_NAVIGATION:
@@ -116,7 +117,7 @@ function NavigationHolder(main) {
         var view = {};
         view.user = user;
 
-        view.show = u.load("navigation:show:" + user.number);
+        view.show = u.loadWith(main.tracking ? main.tracking.getToken() : null, "navigation:show:" + user.number);
 
         if(view.show) {
             update.call(user);
@@ -129,7 +130,7 @@ function NavigationHolder(main) {
         if(!user) return;
         main.toast.hide();
         user.views.navigation.show = false;
-        u.save("navigation:show:" + user.number);
+        u.saveWith(main.tracking.getToken(), "navigation:show:" + user.number);
         if(user.views && user.views.navigation && user.views.navigation.track) {
             user.views.navigation.track.setMap(null);
             user.views.navigation.track = null;
@@ -211,7 +212,7 @@ function NavigationHolder(main) {
                 if(installation) {
                     user.fire(EVENTS.HIDE_NAVIGATION);
                     setTimeout(function(){
-                        main.toast.show("Sorry, direction request was failed.");
+                        main.toast.show(u.lang.sorry_direction_request_was_failed);
                     },0);
                 }
             }
@@ -302,7 +303,7 @@ function NavigationHolder(main) {
                                 modeDialog.preventClick = false;
                             } else {
                                 u.save("navigation:mode", NAVIGATION_MODE_DRIVING);
-                                main.toast.show("Setting up direction...", -1);
+                                main.toast.show(u.lang.setting_up_direction, -1);
                                 update.call(user);
                             }
                         },
@@ -335,7 +336,7 @@ function NavigationHolder(main) {
                                 modeDialog.preventClick = false;
                             } else {
                                 u.save("navigation:mode", NAVIGATION_MODE_WALKING);
-                                main.toast.show("Setting up direction...", -1);
+                                main.toast.show(u.lang.setting_up_direction, -1);
                                 update.call(user);
                             }
                         },
@@ -368,7 +369,7 @@ function NavigationHolder(main) {
                                 modeDialog.preventClick = false;
                             } else {
                                 u.save("navigation:mode", NAVIGATION_MODE_BICYCLING);
-                                main.toast.show("Setting up direction...", -1);
+                                main.toast.show(u.lang.setting_up_direction, -1);
                                 update.call(user);
                             }
                         },
@@ -395,13 +396,13 @@ function NavigationHolder(main) {
             });
 
             modeDialog = u.dialog({
-                title: "Navigation options",
+                title: u.lang.navigation_options,
                 className: "navigations-options",
                 items: [
                     { type: HTML.HIDDEN },
-                    { type: HTML.CHECKBOX, label:"Avoid highways" },
-                    { type: HTML.CHECKBOX, label:"Avoid tolls" },
-                    { type: HTML.CHECKBOX, label:"Avoid ferries" }
+                    { type: HTML.CHECKBOX, label: u.lang.avoid_highways },
+                    { type: HTML.CHECKBOX, label: u.lang.avoid_tolls },
+                    { type: HTML.CHECKBOX, label: u.lang.avoid_ferries }
                 ],
                 positive: {
                     label: u.lang.ok,
@@ -420,7 +421,7 @@ function NavigationHolder(main) {
                                 u.save("navigation:avoid_ferries", items[3].checked);
                                 break;
                         }
-                        main.toast.show("Setting up direction...", -1);
+                        main.toast.show(u.lang.setting_up_direction, -1);
                         update.call(user);
                     }
                 },

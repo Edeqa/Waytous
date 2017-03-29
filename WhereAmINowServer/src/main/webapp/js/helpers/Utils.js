@@ -197,7 +197,8 @@ function Utils(main) {
         if(appendTo) {
             if(appendTo.childNodes.length > 0) {
                 if(position == "first") {
-                    appendTo.insertBefore(el,appendTo.childNodes[0]);
+                    appendTo.insertBefore(el,appendTo.firstChild);
+//                    appendTo.insertBefore(el,appendTo.childNodes[0]);
                 } else {
                     appendTo.appendChild(el);
                 }
@@ -363,6 +364,30 @@ function Utils(main) {
 
     function load(name) {
         var value = localStorage["WAIN:"+name];
+        if(value) {
+            return JSON.parse(value);
+        } else {
+            return null;
+        }
+    }
+
+    function saveWith(token, name, value) {
+        if(!token) {
+            save(name, value);
+            return;
+        }
+        if(value) {
+            localStorage["WAIN$" + token +":" + name] = JSON.stringify(value);
+        } else {
+            delete localStorage["WAIN$" + token +":" + name];
+        }
+    }
+
+    function loadWith(token, name) {
+        if(!token) {
+            return load(name);
+        }
+        var value = localStorage["WAIN$" + token +":"+name];
         if(value) {
             return JSON.parse(value);
         } else {
@@ -824,7 +849,7 @@ function Utils(main) {
              }
          };
         if(options.title) {
-            if(options.title.constructor === String) {
+            if(options.title.constructor === String || options.title instanceof HTMLElement) {
                 options.title = {
                     label: options.title,
                     className: "",
@@ -1231,6 +1256,8 @@ function Utils(main) {
         require:require,
         save:save,
         load:load,
+        saveWith:saveWith,
+        loadWith:loadWith,
         getUuid:getUuid,
         getEncryptedHash:getEncryptedHash,
         latLng:latLng,

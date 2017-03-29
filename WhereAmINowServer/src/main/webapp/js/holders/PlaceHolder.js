@@ -28,7 +28,7 @@ function PlaceHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemSearch = object.add(DRAWER.SECTION_NAVIGATION, EVENTS.SHOW_PLACE, "Search", "search", function(){
+                drawerItemSearch = object.add(DRAWER.SECTION_NAVIGATION, EVENTS.SHOW_PLACE, u.lang.search, "search", function(){
                     if(!searchDialog) {
                         searchDialog = u.dialog({
                             className: "place-search",
@@ -47,7 +47,7 @@ function PlaceHolder(main) {
                             searchDialog.close();
                             var place = autocomplete.getPlace();
                             if (!place.geometry) {
-                                main.toast.show("Sorry, incorrect place has returned.");
+                                main.toast.show(u.lang.sorry_incorrect_place_has_returned);
                                 return;
                             }
                             searchDialog.items[0].value = "";
@@ -95,10 +95,10 @@ function PlaceHolder(main) {
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
                 if(user.type == type) {
-                    object.add(MENU.SECTION_VIEWS, EVENT.HIDE_PLACE, "Hide place", "location_off", function () {
+                    object.add(MENU.SECTION_VIEWS, EVENT.HIDE_PLACE, u.lang.hide_place, "location_off", function () {
                         user.fire(EVENTS.HIDE_PLACE);
                     });
-                    object.add(MENU.SECTION_VIEWS, EVENT.HIDE_PLACE, "Edit", "mode_edit", function () {
+                    object.add(MENU.SECTION_VIEWS, EVENT.HIDE_PLACE, u.lang.edit, "mode_edit", function () {
                         user.fire(EVENTS.EDIT_PLACE);
                     });
                     /*if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
@@ -170,8 +170,8 @@ function PlaceHolder(main) {
                         title: "Edit place",
                         items: [
                             { type: HTML.HIDDEN },
-                            { type: HTML.INPUT, label: "Name" },
-                            { type: "textarea", label: "Description" },
+                            { type: HTML.INPUT, label: u.lang.name },
+                            { type: "textarea", label: u.lang.description },
                         ],
                         className: "place-edit",
                         positive: {
@@ -188,7 +188,7 @@ function PlaceHolder(main) {
                             }
                         },
                         negative: {
-                            label: "Cancel"
+                            label: u.lang.cancel
                         },
                     });
                     placeEditDialog.items[0].value = place.number;

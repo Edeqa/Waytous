@@ -28,7 +28,7 @@ function MapHolder(main) {
         }, document.head);
         buttonRecenter = u.create(HTML.BUTTON, {
             className: "map-recenter hidden",
-            innerHTML: "Re-center",
+            innerHTML: u.lang.re_center,
             onclick: function() {
                 main.users.forAllUsers(function(number,user){
                     if(user.views.properties.selected) user.fire(EVENTS.SELECT_USER);
@@ -86,19 +86,19 @@ function MapHolder(main) {
         }
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRAFFIC,u.lang.traffic,"traffic",function(){
+                object.add(DRAWER.SECTION_MAP, EVENTS.REQUEST_MODE_TRAFFIC, u.lang.traffic, "traffic", function(){
                     main.fire(EVENTS.REQUEST_MODE_TRAFFIC);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TRANSIT,u.lang.transit,"directions_transit",function(){
+                object.add(DRAWER.SECTION_MAP, EVENTS.REQUEST_MODE_TRANSIT, u.lang.transit, "directions_transit", function(){
                     main.fire(EVENTS.REQUEST_MODE_TRANSIT);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_BIKE,u.lang.bicycle,"directions_bike",function(){
+                object.add(DRAWER.SECTION_MAP, EVENTS.REQUEST_MODE_BIKE, u.lang.bicycle, "directions_bike", function(){
                     main.fire(EVENTS.REQUEST_MODE_BIKE);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_SATELLITE,u.lang.satellite,"satellite",function(){
+                object.add(DRAWER.SECTION_MAP, EVENTS.REQUEST_MODE_SATELLITE, u.lang.satellite, "satellite", function(){
                     main.fire(EVENTS.REQUEST_MODE_SATELLITE);
                 });
-                object.add(DRAWER.SECTION_MAP,EVENTS.REQUEST_MODE_TERRAIN,u.lang.terrain,"terrain",function(){
+                object.add(DRAWER.SECTION_MAP, EVENTS.REQUEST_MODE_TERRAIN, u.lang.terrain, "terrain", function(){
                     main.fire(EVENTS.REQUEST_MODE_TERRAIN);
                 });
                 break;
@@ -158,12 +158,10 @@ function MapHolder(main) {
                 if(map){
                     map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
                 }
-                // State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
                 break;
             case EVENTS.REQUEST_MODE_SATELLITE:
                 if(map && map.getMapTypeId() != google.maps.MapTypeId.SATELLITE){
                     map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-                    // State.getInstance().getPropertiesHolder().saveFor(TYPE, GoogleMap.MAP_TYPE_SATELLITE);
                 } else {
                     main.fire(EVENTS.REQUEST_MODE_NORMAL);
                 }
@@ -171,7 +169,6 @@ function MapHolder(main) {
             case EVENTS.REQUEST_MODE_TERRAIN:
                 if(map && map.getMapTypeId() != google.maps.MapTypeId.TERRAIN){
                     map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-                    // State.getInstance().getPropertiesHolder().saveFor(TYPE, GoogleMap.MAP_TYPE_SATELLITE);
                 } else {
                     main.fire(EVENTS.REQUEST_MODE_NORMAL);
                 }

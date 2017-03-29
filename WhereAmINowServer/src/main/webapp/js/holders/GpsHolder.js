@@ -63,7 +63,7 @@ function GpsHolder(main) {
                             { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_4, body: u.lang.gps_location_required_5 },
                         ],
                         positive: {
-                            label: u.lang.gps_ok_go_ahead,
+                            label: u.lang.ok_go_ahead,
                             onclick: function() {
                                 u.save("gps:asked", true);
                                 startPositioning();
@@ -112,21 +112,21 @@ function GpsHolder(main) {
             var message;
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    message = u.lang.gps_you_have_denied_geolocation;
+                    message = u.lang.you_have_denied_geolocation;
                     u.save("gps:asked");
                     u.save("gps:allowed");
                     break;
                 case error.PERMISSION_DENIED_TIMEOUT:
-                    message = u.lang.gps_user_took_too_long_to_grant_deny_geolocation_permission;
+                    message = u.lang.user_took_too_long_to_grant_deny_geolocation_permission;
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    message = u.lang.gps_geolocation_is_unavailable;
+                    message = u.lang.geolocation_is_unavailable;
                     break;
                 case error.TIMEOUT:
-                    message = u.lang.gps_request_to_geolocation_is_timed_out;
+                    message = u.lang.request_to_geolocation_is_timed_out;
                     break;
                 default:
-                    message = u.lang.gps_unknown_error_occurred_while_requesting_geolocation;
+                    message = u.lang.unknown_error_occurred_while_requesting_geolocation;
                     break;
             }
 
@@ -134,7 +134,7 @@ function GpsHolder(main) {
             var alert = u.dialog({
                 className: "alert-dialog",
                 items: [
-                    { type: HTML.DIV, label: u.lang.gps_please_resolve_this_problem_and_try_again.format(message) },
+                    { type: HTML.DIV, label: u.lang.please_resolve_this_problem_and_try_again.format(message) },
                 ],
                 positive: {
                     label: u.lang.ok,
@@ -215,33 +215,6 @@ function GpsHolder(main) {
             }
         }
     }
-
-
-
-    var resources = {
-        enable_geolocation: "Enable geolocation",
-
-        gps_ok_go_ahead: "OK, go ahead",
-
-        gps_location_required_1: "The purpose of this service is to help friends find each other.",
-        gps_location_required_2: "To do this, send your location to your friends.",
-        gps_location_required_3: "Now the browser should ask you about using your location information. Answer him \"Allow\", otherwise your friends will not be able to see where you are.",
-        gps_location_required_4: "If you already disallowed",
-        gps_location_required_5: "If you already disallowed the geolocation then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner to get the detailed instruction.",
-
-        gps_you_have_denied_geolocation: "You have denied geolocation.",
-        gps_user_took_too_long_to_grant_deny_geolocation_permission: "User took too long to grant/deny geolocation permission.",
-        gps_geolocation_is_unavailable: "Geolocation is unavailable.",
-        gps_request_to_geolocation_is_timed_out: "The request to geolocation is timed out.",
-        gps_unknown_error_occurred_while_requesting_geolocation: "An unknown error occurred while requesting geolocation.",
-        gps_please_resolve_this_problem_and_try_again: "%s Please resolve this problem and try again. Note that geolocation is required for working this service properly.",
-
-        gps_help_title: "Geolocation",
-        gps_help_1_title: "Allow geolocation",
-        gps_help_1_body: "Instruction how to allow geolocation"
-    }
-
-
 
 
     return {

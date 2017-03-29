@@ -8,12 +8,12 @@ DRAWER = {
     SECTION_COMMUNICATION: 2,
     SECTION_NAVIGATION: 3,
     SECTION_VIEWS: 4,
-    SECTION_MAP: 8,
+    SECTION_MAP: 7,
+    SECTION_MISCELLANEOUS: 8,
     SECTION_LAST: 9
 };
 
 function DrawerHolder(main) {
-
 
     var drawer;
     var headerName;
@@ -30,7 +30,6 @@ function DrawerHolder(main) {
     var start = function() {
 
         drawer = new Drawer();
-//        target.addEventListener("touchmove", preventPullToRefresh);
         main.layout.insertBefore(drawer,main.layout.firstChild);
 
         var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
@@ -49,15 +48,10 @@ function DrawerHolder(main) {
             main.fire(EVENTS.CREATE_DRAWER, drawer);
         },0);
 
-        /*window.onhashchange = function(e) {
-            console.log("HASHCHAN",e)
-            drawer.open();
-        }*/
-
         window.history.pushState(null, document.title, location.href);
         window.addEventListener("popstate", function (event) {
             window.history.pushState(null, document.title, location.href);
-            drawer.open();
+            drawer.toggle();
         });
 
 
@@ -65,13 +59,13 @@ function DrawerHolder(main) {
         alphaDialog = alphaDialog || u.dialog({
             className: "alert-dialog",
             items: [
-                { type: HTML.DIV, innerHTML:u.lang.alpha_1 },
-                { type: HTML.DIV, innerHTML:u.lang.alpha_2 },
-                { type: HTML.DIV, innerHTML:u.lang.alpha_3 },
-                { type: HTML.DIV, innerHTML:u.lang.alpha_4 },
-                { type: HTML.DIV, innerHTML:u.lang.alpha_5 },
-                { type: HTML.DIV, innerHTML:u.lang.alpha_6 },
-                { type: HTML.DIV, innerHTML:u.lang.alpha_7 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_1 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_2 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_3 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_4 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_5 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_6 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_7 },
             ],
             positive: {
                 label: u.lang.ok,
@@ -105,6 +99,13 @@ function DrawerHolder(main) {
             close: function(){
                  this.classList.remove("drawer-open");
             },
+            toggle: function() {
+                if(this.classList.contains("drawer-open")) {
+                    this.blur();
+                } else {
+                    this.open();
+                }
+            }
          });
 
          layout.header = u.create(HTML.DIV, { className:"drawer-header" }, layout);
@@ -173,8 +174,8 @@ function DrawerHolder(main) {
                             if(!parent.childNodes[i].classList.contains("hidden")) shown = true;
                         }
                     }
-                    if(shown) parent.classList.remove("hidden");
-                    else parent.classList.add("hidden");
+                    if(shown) parent.show();
+                    else parent.hide();
                 },
                 increaseBadge: function() {
                     var val = parseInt(this.badge.innerHTML || "0");
@@ -183,10 +184,10 @@ function DrawerHolder(main) {
                     this.showBadge();
                 },
                 showBadge: function() {
-                    this.badge.classList.remove("hidden");
+                    this.badge.show();
                 },
                 hideBadge: function() {
-                    this.badge.classList.add("hidden");
+                    this.badge.hide();
                     this.badge.innerHTML = "0";
                 },
 
@@ -206,7 +207,7 @@ function DrawerHolder(main) {
                 }, th);
             }
             th.badge = u.create(HTML.DIV, { className:"drawer-menu-item-badge hidden", innerHTML: "0" }, th);
-            sections[section].classList.remove("hidden");
+            sections[section].show();
             return th;
         }
 
@@ -222,9 +223,9 @@ function DrawerHolder(main) {
             case EVENTS.UPDATE_ADDRESS:
                 if(main.users.getCountSelected() == 1 && this.properties.selected) {
                     subtitle.innerHTML = object;
-                    subtitle.classList.remove("hidden");
+                    subtitle.show();
                 } else {
-                    subtitle.classList.add("hidden");
+                    subtitle.hide();
                 }
                 break;
             case EVENTS.TRACKING_ACTIVE:
@@ -262,35 +263,11 @@ function DrawerHolder(main) {
         }
     }
 
-    /*function preventPullToRefresh(e){
-        var scrolly = target.pageYOffset || target.scrollTop || 0;
-        var direction = e.changedTouches[0].pageY > last_y ? 1 : -1;
-        if(direction>0 && scrolly===0){
-           e.preventDefault();
-        }
-        last_y = e.changedTouches[0].pageY;
-    }*/
-
-    var resources = {
-        connecting: "Connecting...",
-        be_always_on_the_same_way: "Be always on the same way\nwith your friends",
-
-        alpha_1: "Thank you for using the",
-        alpha_2: "ALPHA version of Waytogo.",
-        alpha_3: "&nbsp;",
-        alpha_4: "Please if you found some errors, weird behaviour, new great idea or just because - feel free to send us an e-mail:",
-        alpha_5: "<a href=\"mailto:support@waytogo.us\">support@waytogo.us</a>.",
-        alpha_6: "&nbsp;",
-        alpha_7: "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
-
-    }
-
     return {
         type:"drawer",
         start:start,
         onEvent:onEvent,
         createView:createView,
-        resources:resources,
         onChangeLocation:onChangeLocation,
     }
 }

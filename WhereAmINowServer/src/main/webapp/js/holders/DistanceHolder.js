@@ -1,6 +1,7 @@
 /**
  * Created 3/9/17.
  */
+
 EVENTS.SHOW_DISTANCE = "show_distance";
 EVENTS.HIDE_DISTANCE = "hide_distance";
 
@@ -51,13 +52,13 @@ function DistanceHolder(main) {
             case EVENTS.SHOW_DISTANCE:
                 if(this != main.me) {
                     this.views.distance.show = true;
-                    u.save("distance:show:" + this.number, true);
+                    u.saveWith(main.tracking.getToken(), "distance:show:" + this.number, true);
                     show.call(this);
                 }
                 break;
             case EVENTS.HIDE_DISTANCE:
                 this.views.distance.show = false;
-                u.save("distance:show:" + this.number);
+                u.saveWith(main.tracking.getToken(), "distance:show:" + this.number);
                 if(this.views && this.views.distance && this.views.distance.distance) {
                     this.views.distance.distance.setMap(null);
                     this.views.distance.distance = null;
@@ -79,7 +80,7 @@ function DistanceHolder(main) {
         var view = {};
         view.user = myUser;
 
-        view.show = u.load("distance:show:" + myUser.number);
+        view.show = u.loadWith(main.tracking ? main.tracking.getToken() : null, "distance:show:" + myUser.number);
 
         if(view.show) {
             show.call(myUser);
@@ -179,17 +180,6 @@ function DistanceHolder(main) {
         }
     }
 
-    var resources = {
-        show_distances: "Show distances",
-        hide_distances: "Hide distances",
-        show_distance: "Show distance",
-        hide_distance: "Hide distance",
-
-        distance_help_title: "Distances",
-        distance_article_1_title: "Article 1",
-        distance_article_1_body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pellentesque aliquam tellus, quis finibus odio faucibus sed. Nunc nec dictum ipsum, a efficitur sem. Nullam suscipit quis neque in cursus. Etiam tempus imperdiet scelerisque. Integer ut nisi at est varius rutrum quis eget urna. Morbi blandit vehicula laoreet. Curabitur tincidunt turpis dui, at venenatis risus volutpat et. Donec cursus molestie ligula eu convallis. Curabitur sed quam id ex tristique ultricies. Duis id felis eget massa venenatis vehicula. Aenean eget varius dui. "
-    };
-
     return {
         type:type,
         start:start,
@@ -198,6 +188,5 @@ function DistanceHolder(main) {
         removeView:removeView,
         onChangeLocation:onChangeLocation,
         help:help,
-        resources:resources,
     }
 }
