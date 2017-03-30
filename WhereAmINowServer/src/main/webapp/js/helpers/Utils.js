@@ -45,6 +45,7 @@ window.HTML = {
     TEXT:"text",
     TEXTAREA:"textarea",
     HIDDEN:"hidden",
+    SELECT:"select",
     SUBMIT:"submit",
     TEXT:"text",
     VALUE:"value",
@@ -695,15 +696,16 @@ function Utils(main) {
             dialog.items = [];
         };
 
-        dialog.addItem = function(item) {
+        dialog.addItem = function(item, appendTo) {
             item = item || {};
+            appendTo = appendTo || dialog.itemsLayout;
 
             var x;
             if(item.type == HTML.DIV || item.type == HTML.A) {
                 if(item.enclosed) {
                     x = create(item.type, {
                         className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
-                    }, dialog.itemsLayout);
+                    }, appendTo);
                     var enclosedButton, enclosedIcon;
                     enclosedButton = create(HTML.DIV, {className:"dialog-item-enclosed-button", onclick: function(){
                         if(x.body.classList.contains("hidden")) {
@@ -724,12 +726,43 @@ function Utils(main) {
                     delete item.title;
                     var type = item.type;
                     delete item.type;
-                    x = create(type, item, dialog.itemsLayout);
+                    x = create(type, item, appendTo);
                 }
-            } else if(item.type == "hidden") {
-                x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""}, dialog.itemsLayout);
+            } else if(item.type == HTML.HIDDEN) {
+                x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""}, appendTo);
+            } else if(item.type == HTML.SELECT) {
+                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, appendTo);
+
+                if(item.label) {
+                    create(HTML.DIV, {
+                        className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : ""),
+                        innerHTML:item.label
+                    }, div);
+                }
+
+                x = create(HTML.SELECT, {
+                    type:item.type,
+                    className:"dialog-item-input-select" + (item.className ? " "+item.className : ""),
+                    tabindex: i,
+                    value:item.value || "",
+//                    onclick: function(e) { this.focus(); e.stopPropagation(); },
+//                    onkeyup:function(e){
+//                        if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
+//                            dialog.close();
+//                            if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
+//                        } else if(e.keyCode == 27) {
+//                            dialog.close();
+//                            if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+//                        }
+//                    },
+
+                }, div);
+                for(var y in item.values) {
+                    u.create("option", {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
+                }
+
             } else {
-                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, dialog.itemsLayout);
+                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, appendTo);
 
                 if(item.label) {
                     create(HTML.DIV, {
@@ -923,24 +956,24 @@ function Utils(main) {
         dialog.items = items;
         var buttons = create(HTML.DIV, {className:"dialog-buttons hidden"}, dialog);
         if(options.positive && options.positive.label) {
-            dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(){
+            dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(event){
                 dialog.close();
-                if(options.positive.onclick) options.positive.onclick.call(dialog,items);
+                if(options.positive.onclick) options.positive.onclick.call(dialog,items,event);
             }, innerHTML: options.positive.label}, buttons);
             buttons.show();
         }
-        if(options.negative && options.negative.label) {
-            dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(){
+        if(options.neutral && options.neutral.label) {
+            dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(event){
                 dialog.close();
-                if(options.negative.onclick) options.negative.onclick.call(dialog,items);
-            }, innerHTML: options.negative.label}, buttons);
+                if(options.neutral.onclick) options.neutral.onclick.call(dialog,items,event);
+            }, innerHTML: options.neutral.label}, buttons);
             buttons.show();
         }
-        if(options.neutral && options.neutral.label) {
-            dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(){
+        if(options.negative && options.negative.label) {
+            dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(event){
                 dialog.close();
-                if(options.neutral.onclick) options.neutral.onclick.call(dialog,items);
-            }, innerHTML: options.neutral.label}, buttons);
+                if(options.negative.onclick) options.negative.onclick.call(dialog,items,event);
+            }, innerHTML: options.negative.label}, buttons);
             buttons.show();
         }
         if(options.help) {

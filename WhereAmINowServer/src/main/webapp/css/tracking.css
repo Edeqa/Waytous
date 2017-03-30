@@ -1379,6 +1379,11 @@ p.bottom-desc {
     .dialog-item-enclosed-button {
         height: 35px;
     }
+    .dialog-item-input-select {
+        background-color: antiquewhite;
+        height: 30px;
+        width: 50%;
+    }
     .dialog-resize {
         display: none;
     }
@@ -1527,6 +1532,10 @@ p.bottom-desc {
         max-width: 24px;
         display: block;
     }
+    .option {
+        min-width: auto;
+    }
+
 
     /* media specific classes */
     .media-hidden {

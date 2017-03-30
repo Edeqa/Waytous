@@ -7,6 +7,7 @@ function OptionHolder(main) {
 
     var type = "options";
     var optionsDialog;
+    var options;
 
     function start() {
     }
@@ -37,12 +38,22 @@ function OptionHolder(main) {
             title: "Options",
             className: "option",
             positive: {
-                label: u.lang.ok
+                label: u.lang.ok,
+                onclick: function(e, event) {
+                    for(var i in options) {
+                        options[i].accept(e, event);
+                    }
+                }
+            },
+            neutral: {
+                label: u.lang.apply
             },
             negative: {
                 label: u.lang.cancel
             }
         });
+
+        options = {};
 
         var modules = main.holders;
         modules.main = main;
@@ -68,18 +79,21 @@ function OptionHolder(main) {
                     }
                     title = title || "";
 
-                    optionsDialog.addItem({
+                    var cat = optionsDialog.addItem({
                         type: HTML.DIV,
-                        dataCategory: ""+j,
                         className: "option-item",
                         enclosed: true,
                         label: title,
                     });
+                    for(var k in option.categories[j].items) {
+                        var item = option.categories[j].items[k];
+                        var id = item.id;
+                        options[id] = optionsDialog.addItem(item, cat.lastChild);
+                        options[id].accept = item.onaccept;
+                    }
                 }
             }
         }
-
-
     }
 
     function populateOptionsDialog() {
