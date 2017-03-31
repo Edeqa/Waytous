@@ -8,6 +8,7 @@ import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
@@ -45,7 +46,15 @@ public class AdminMainPageHolder implements PageHolder {
         JSONObject o = new JSONObject();
         o.put("page", part);
         o.put("request", request);
+//        o.put("request", parts);
         o.put("version", SERVER_BUILD);
+        o.put("HTTP_PORT", SENSITIVE.getHttpServerPort());
+        o.put("HTTPS_PORT", SENSITIVE.getHttpsServerPort());
+        o.put("WS_FB_PORT", SENSITIVE.getWsServerPortFB());
+        o.put("WSS_FB_PORT", SENSITIVE.getWssServerPortFB());
+        o.put("WS_PORT", SENSITIVE.getWsServerPortDedicated());
+        o.put("WSS_PORT", SENSITIVE.getWssServerPortDedicated());
+        o.put("firebase_config", SENSITIVE.getFirebaseConfig());
 
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");

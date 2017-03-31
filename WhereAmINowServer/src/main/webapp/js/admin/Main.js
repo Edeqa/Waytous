@@ -64,14 +64,7 @@ function Main() {
         u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons"}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css"}, document.head);
 
-        var config = {
-            apiKey: "AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q",
-            authDomain: "where-am-i-now-1373.firebaseapp.com",
-            databaseURL: "https://where-am-i-now-1373.firebaseio.com",
-            storageBucket: "where-am-i-now-1373.appspot.com",
-            messagingSenderId: "365115596478"
-        };
-        firebase.initializeApp(config);
+        firebase.initializeApp(data.firebase_config);
         database = firebase.database();
 
         firebase.auth().signInWithCustomToken(sign.token)

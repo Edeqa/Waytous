@@ -134,10 +134,12 @@ function Utils(main) {
 
     HTMLDivElement.prototype.show = function() {
         this.classList.remove("hidden");
+        this.hidden = false;
         return this;
     }
     HTMLDivElement.prototype.hide = function() {
         this.classList.add("hidden");
+        this.hidden = true;
         return this;
     }
 
@@ -372,7 +374,8 @@ function Utils(main) {
         }
     }
 
-    function saveWith(token, name, value) {
+    function saveForGroup(name, value) {
+        var token = main.tracking && main.tracking.getToken();
         if(!token) {
             save(name, value);
             return;
@@ -384,7 +387,8 @@ function Utils(main) {
         }
     }
 
-    function loadWith(token, name) {
+    function loadForGroup(name) {
+        var token = main.tracking && main.tracking.getToken();
         if(!token) {
             return load(name);
         }
@@ -957,21 +961,21 @@ function Utils(main) {
         var buttons = create(HTML.DIV, {className:"dialog-buttons hidden"}, dialog);
         if(options.positive && options.positive.label) {
             dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(event){
-                dialog.close();
+                if(options.positive.dismiss == undefined || options.positive.dismiss) dialog.close();
                 if(options.positive.onclick) options.positive.onclick.call(dialog,items,event);
             }, innerHTML: options.positive.label}, buttons);
             buttons.show();
         }
         if(options.neutral && options.neutral.label) {
             dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(event){
-                dialog.close();
+                if(options.neutral.dismiss == undefined || options.neutral.dismiss) dialog.close();
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items,event);
             }, innerHTML: options.neutral.label}, buttons);
             buttons.show();
         }
         if(options.negative && options.negative.label) {
             dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(event){
-                dialog.close();
+                if(options.negative.dismiss == undefined || options.negative.dismiss) dialog.close();
                 if(options.negative.onclick) options.negative.onclick.call(dialog,items,event);
             }, innerHTML: options.negative.label}, buttons);
             buttons.show();
@@ -1289,8 +1293,8 @@ function Utils(main) {
         require:require,
         save:save,
         load:load,
-        saveWith:saveWith,
-        loadWith:loadWith,
+        saveForGroup:saveForGroup,
+        loadForGroup:loadForGroup,
         getUuid:getUuid,
         getEncryptedHash:getEncryptedHash,
         latLng:latLng,

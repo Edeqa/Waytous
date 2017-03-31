@@ -24,6 +24,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_WELCOME_MESSAGE
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
@@ -40,9 +41,12 @@ public class MyToken {
     private String owner;
     private String welcomeMessage;
     private int count;
+
     private ArrayList<Color> colors = new ArrayList<Color>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
             Color.CYAN, Color.YELLOW
     ));
+
+
     public MyToken(){
 
         String token = Utils.getUnique();
@@ -244,7 +248,7 @@ public class MyToken {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "key=" + new SensitiveData().getFCMServerKey());
+            conn.setRequestProperty("Authorization", "key=" + SENSITIVE.getFCMServerKey());
             conn.setRequestMethod("POST");
 
             conn.setDoOutput(true);

@@ -1,17 +1,23 @@
 package ru.wtg.whereaminowserver.helpers;
 
+import ru.wtg.whereaminowserver.interfaces.SensitiveDataInterface;
+
 /**
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 22;
+    public final static int SERVER_BUILD = 29;
+
+    //    public final static SensitiveDataInterface SENSITIVE = new SensitiveDataInternetDebug();
+//    public final static SensitiveDataInterface SENSITIVE = new SensitiveDataInternetRelease();
+    public final static SensitiveDataInterface SENSITIVE = new SensitiveDataDeveloper();
 
 // debug local version
-    public final static String WSS_SERVER_HOST = "https://10.0.0.96";
-    public final static boolean DEBUGGING = true;
-    public final static String HTTP_SERVER_HOST = "10.0.0.96";
-    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/src/main/webapp";
-    public final static String KEYSTORE = "debug.jks";
+//    public final static String WSS_SERVER_HOST = "https://10.0.0.96";
+//    public final static boolean DEBUGGING = true;
+//    public final static String HTTP_SERVER_HOST = "10.0.0.96";
+//    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/src/main/webapp";
+//    public final static String KEYSTORE = "debug.jks";
 // public internet version
 /*
     public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
@@ -21,22 +27,28 @@ public class Constants {
     public final static String WEB_ROOT_DIRECTORY = "../..";
     public final static String KEYSTORE = "../../inchem.jks";
 */
-
-
+// debug internet version
+/*
+    public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
+    public final static boolean DEBUGGING = true;
+    public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
+//    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/build/exploded-app";
+    public final static String WEB_ROOT_DIRECTORY = "../..";
+    public final static String KEYSTORE = "../../inchem.jks";
+*/
 
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
     public final static String BROADCAST_MESSAGE = "message";
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
-    public final static int INACTIVE_USER_DISMISS_DELAY = 600;
 
 
-    public final static int HTTP_PORT = 8080;
-    public final static int HTTPS_PORT = 8000;
-    public final static int WS_FB_PORT = 8081;
-    public final static int WSS_FB_PORT = 8001;
-    public final static int WS_PORT = 8082;
-    public final static int WSS_PORT = 8002;
+//    public final static int HTTP_PORT = 8080;
+//    public final static int HTTPS_PORT = 8100;
+//    public final static int WS_FB_PORT = 8081;
+//    public final static int WSS_FB_PORT = 8001;
+//    public final static int WS_PORT = 8082;
+//    public final static int WSS_PORT = 8002;
 //    public final static int WSS_PORT = 443;
 
     // client constants
@@ -122,9 +134,11 @@ public class Constants {
     public static final String DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD = "o/requires-password";
     public static final String DATABASE_SECTION_OPTIONS_WELCOME_MESSAGE = "o/welcome-message";
     public static final String DATABASE_SECTION_OPTIONS_DATE_CREATED = "o/date-created";
+    public static final String DATABASE_SECTION_OPTIONS_DATE_CHANGED = "o/date-changed";
 
 
-    public static final int LIFETIME_INACTIVE_TOKEN = 600;
+    public static final int LIFETIME_INACTIVE_TOKEN = 30;
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
+    public final static int LIFETIME_INACTIVE_USER = 600;
 
 }

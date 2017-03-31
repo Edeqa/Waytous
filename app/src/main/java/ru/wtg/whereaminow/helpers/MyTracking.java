@@ -38,7 +38,7 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -61,9 +61,9 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTE
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_SERVER_HOST;
 
 /**
  * Created 10/8/16.
@@ -236,7 +236,7 @@ public class MyTracking implements Tracking {
     };
 
     public MyTracking() {
-        this(WSS_SERVER_HOST, true);
+        this(SENSITIVE.getWssServerHost(), true);
     }
 
     public MyTracking(String host) {
@@ -266,7 +266,7 @@ public class MyTracking implements Tracking {
 
             webSocket.addListener(webSocketListener);
 
-            webSocket.setPingInterval(INACTIVE_USER_DISMISS_DELAY / 2 * 1000);
+            webSocket.setPingInterval(LIFETIME_INACTIVE_USER / 2 * 1000);
             webSocket.setPingPayloadGenerator(new PayloadGenerator() {
                 @Override
                 public byte[] generate() {

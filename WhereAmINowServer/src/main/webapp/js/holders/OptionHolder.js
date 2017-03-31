@@ -7,6 +7,9 @@ function OptionHolder(main) {
 
     var type = "options";
     var optionsDialog;
+    var modules;
+    var sections;
+    var categories;
     var options;
 
     function start() {
@@ -33,7 +36,6 @@ function OptionHolder(main) {
     function initOptionsDialog() {
         if(optionsDialog) return;
 
-
         optionsDialog = u.dialog({
             title: "Options",
             className: "option",
@@ -41,18 +43,26 @@ function OptionHolder(main) {
                 label: u.lang.ok,
                 onclick: function(e, event) {
                     for(var i in options) {
-                        options[i].accept(e, event);
+                        options[i].onaccept(e, event);
                     }
                 }
             },
             neutral: {
-                label: u.lang.apply
+                dismiss: false,
+                label: u.lang.apply,
+                onclick: function(e, event) {
+                    for(var i in options) {
+                        options[i].onaccept(e, event);
+                    }
+                }
             },
             negative: {
                 label: u.lang.cancel
             }
         });
 
+        sections = {};
+        categories = {};
         options = {};
 
         var modules = main.holders;
@@ -66,30 +76,37 @@ function OptionHolder(main) {
                     title = title.outerHTML;
                 }
                 title = title || modules[i].type;
-                optionsDialog.addItem({
-                    type:HTML.DIV,
-                    className:"option-title",
-                    innerHTML: title
-                });
+
+                if(!option.id || !sections[option.id]) {
+                    sections[option.id] = optionsDialog.addItem({
+                        id: option.id || "",
+                        type:HTML.DIV,
+                        className:"option-title",
+                        innerHTML: title
+                    });
+                }
                 for(var j in option.categories) {
                     if(j == "title" || option.categories[j].ignore) continue;
-                    var title = option.categories[j].title;
+                    var category = option.categories[j];
+                    var title = category.title;
                     if(title && title instanceof HTMLElement) {
                         title = title.outerHTML;
                     }
                     title = title || "";
 
                     var cat = optionsDialog.addItem({
+                        id: category.id || "",
                         type: HTML.DIV,
                         className: "option-item",
                         enclosed: true,
                         label: title,
                     });
-                    for(var k in option.categories[j].items) {
-                        var item = option.categories[j].items[k];
-                        var id = item.id;
+                    for(var k in category.items) {
+                        var item = category.items[k];
+                        var id = i + ":" + j + ":" + k;
                         options[id] = optionsDialog.addItem(item, cat.lastChild);
-                        options[id].accept = item.onaccept;
+//                        delete options[id].accept;
+                        options[id].onaccept = item.onaccept;
                     }
                 }
             }
@@ -97,6 +114,35 @@ function OptionHolder(main) {
     }
 
     function populateOptionsDialog() {
+
+        var modules = main.holders;
+        modules.main = main;
+        for(var i in options) {
+            var path = i.split(":");
+            var o = modules[path[0]].options();
+            var item = o.categories[path[1]].items[path[2]];
+
+            switch(item.type) {
+                case HTML.SELECT:
+                    if(item.default != undefined) {
+                        for(var j = 0; j < options[i].options.length; j++) {
+                            if(options[i].options[j].value == item.default) {
+                                options[i].options[j].selected = true;
+                            } else {
+                                options[i].options[j].selected = false;
+                            }
+                        }
+                    }
+                    break;
+                case HTML.INPUT:
+                    if(item.default != undefined) {
+                        options[i].value = item.default;
+                    }
+                    break;
+            }
+
+        }
+
     }
 
     return {

@@ -100,7 +100,7 @@ function NavigationHolder(main) {
             case EVENTS.SHOW_NAVIGATION:
                 installation = true;
                 this.views.navigation.show = true;
-                u.saveWith(main.tracking ? main.tracking.getToken() : null, "navigation:show:" + this.number, true);
+                u.saveForGroup("navigation:show:" + this.number, true);
                 main.toast.show(u.lang.setting_up_direction, -1);
                 update.call(this);
                 break;
@@ -117,7 +117,7 @@ function NavigationHolder(main) {
         var view = {};
         view.user = user;
 
-        view.show = u.loadWith(main.tracking ? main.tracking.getToken() : null, "navigation:show:" + user.number);
+        view.show = u.loadForGroup("navigation:show:" + user.number);
 
         if(view.show) {
             update.call(user);
@@ -130,7 +130,7 @@ function NavigationHolder(main) {
         if(!user) return;
         main.toast.hide();
         user.views.navigation.show = false;
-        u.saveWith(main.tracking.getToken(), "navigation:show:" + user.number);
+        u.saveForGroup("navigation:show:" + user.number);
         if(user.views && user.views.navigation && user.views.navigation.track) {
             user.views.navigation.track.setMap(null);
             user.views.navigation.track = null;
@@ -145,7 +145,6 @@ function NavigationHolder(main) {
     }
 
     function drawerPopulate() {
-//        drawerItemShow.classList.add("hidden");
         setTimeout(function(){
             drawerItemHide && drawerItemHide.hide();
             modeButtons && modeButtons.close();
@@ -155,7 +154,7 @@ function NavigationHolder(main) {
                         drawerItemHide && drawerItemHide.show();
                         modeButtons && modeButtons.open();
                     } else {
-    //                    drawerItemShow.classList.remove("hidden");
+    //                    drawerItemShow.show();
                     }
                 }
             })

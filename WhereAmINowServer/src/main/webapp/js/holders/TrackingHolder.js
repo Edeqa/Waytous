@@ -90,7 +90,7 @@ function TrackingHolder(main) {
             case EVENTS.MAP_READY:
                 drawerItemNew.show();
                 var group = window.location.pathname.split("/")[2];
-                var groupOld = u.load("group");
+                var groupOld = u.loadForGroup("group");
                 if(group) {
                     var self = this;
                     setTimeout(function(){
@@ -157,7 +157,7 @@ function TrackingHolder(main) {
                         user.removeViews();
                     });
                     main.tracking && main.tracking.stop();
-                    u.save("group");
+                    u.saveForGroup("group");
                 }
                 break;
             case EVENTS.SHARE_LINK:
@@ -210,11 +210,11 @@ function TrackingHolder(main) {
         // tracking.start();
 
         var group = window.location.pathname.split("/")[2];
-        var groupOld = u.load("group");
+        var groupOld = u.loadForGroup("group");
         if(group) {
             main.fire(EVENTS.TRACKING_JOIN, window.location.href);
             this.tracking.setLink(window.location.href);
-            u.save("group",group);
+            u.saveForGroup("group",group);
         } else {
             progressTitle.innerHTML = u.lang.tracking_creating_group;
             console.log("NEW")
@@ -231,7 +231,7 @@ function TrackingHolder(main) {
             //progressTitle.innerHTML = u.lang.tracking_connecting;
             progress.open();
 
-            u.save(TRACKING_URI, null);
+            u.saveForGroup(TRACKING_URI, null);
             main.fire(EVENTS.TRACKING_CONNECTING);
         },
         onJoining: function(){
@@ -254,7 +254,7 @@ function TrackingHolder(main) {
         onAccept: function(o){
             // console.log("ONACCEPT",o);
             //FIXME
-//            u.save(TRACKING_URI, this.tracking.getTrackingUri());
+//            u.saveForGroup(TRACKING_URI, this.tracking.getTrackingUri());
             try {
                 if(main.tracking.getStatus() != EVENTS.TRACKING_ACTIVE) {
                     main.tracking.setStatus(EVENTS.TRACKING_ACTIVE);
@@ -263,7 +263,7 @@ function TrackingHolder(main) {
                 if (o[RESPONSE.TOKEN]) {
                     var token = o[RESPONSE.TOKEN];
                     main.fire(EVENTS.TOKEN_CREATED, token);
-                    u.save("group", token);
+                    u.saveForGroup("group", token);
                     window.history.pushState({}, null, "/track/" + token);
                     main.fire(EVENTS.SHOW_HELP, {module: main.holders.tracking, article: 1});
                     main.me.fire(EVENTS.SELECT_USER);
@@ -288,13 +288,13 @@ function TrackingHolder(main) {
         },
         onReject: function(reason){
             console.error("ONREJECT",reason);
-            u.save(TRACKING_URI);
+            u.saveForGroup(TRACKING_URI);
             main.fire(EVENTS.TRACKING_DISABLED);
             main.fire(EVENTS.TRACKING_ERROR, reason);
         },
         onStop: function(){
             console.log("ONSTOP");
-            u.save(TRACKING_URI);
+            u.saveForGroup(TRACKING_URI);
             main.fire(EVENTS.TRACKING_DISABLED);
         },
         onMessage: function(o){

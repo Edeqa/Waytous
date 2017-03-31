@@ -1,6 +1,5 @@
 package ru.wtg.whereaminowserver.servers;
 
-import org.java_websocket.WebSocket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +18,7 @@ import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.helpers.Utils;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -60,10 +59,10 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
 //    }
 
     @Override
-    public void dismissInactiveUsers() {
+    public void validateGroups() {
         while(true) {
             try {
-                Thread.sleep(INACTIVE_USER_DISMISS_DELAY * 1000);
+                Thread.sleep(LIFETIME_INACTIVE_USER * 1000);
 
                 MyUser user;
                 long currentDate = new Date().getTime();
@@ -74,7 +73,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
 
                         System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
 
-                        if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
+                        if (currentDate - user.getChanged() > LIFETIME_INACTIVE_USER * 1000) {
                             // dismiss user
                             JSONObject o = new JSONObject();
                             if(ipToToken.containsKey(entry.getKey())) {
@@ -100,6 +99,11 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void validateUsers() {
+
     }
 
     @Override

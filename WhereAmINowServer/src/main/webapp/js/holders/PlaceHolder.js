@@ -67,7 +67,7 @@ function PlaceHolder(main) {
                             o["key"] = place.place_id;
                             o[REQUEST.TIMESTAMP] = new Date().getTime();
 
-                            var last = u.load("place:last") || 0;
+                            var last = u.loadForGroup("place:last") || 0;
 
                             for(var i = 1; i <= last; i++) {
                                 var l = u.load("place:"+i);
@@ -80,10 +80,10 @@ function PlaceHolder(main) {
                             }
 
                             last ++;
-                            u.save("place:last", last);
+                            u.saveForGroup("place:last", last);
 
                             o[USER.NUMBER] = REQUEST.CODE_AUTOCOMPLETE_PLACE * 10000 + last;
-                            u.save("place:"+last, o);
+                            u.saveForGroup("place:"+last, o);
                             main.fire(EVENTS.SHOW_PLACE, o);
                         });
                         searchDialog.items[0].addEventListener("blur", function(){ searchDialog.close() });
@@ -113,12 +113,12 @@ function PlaceHolder(main) {
                 break;
             case EVENTS.MAP_READY:
                 drawerItemSearch.enable();
-                for(var i = 1; i <= (u.load("place:last") || 0); i++) {
+                for(var i = 1; i <= (u.loadForGroup("place:last") || 0); i++) {
                     var place = u.load("place:" + i);
                     if(place && place.number) {
                         main.fire(EVENTS.SHOW_PLACE, place);
                     } else {
-                        u.save("place:" + i);
+                        u.saveForGroup("place:" + i);
                     }
                 }
                 break;
@@ -156,7 +156,7 @@ function PlaceHolder(main) {
                 user.removeViews();
                 user.fire(EVENTS.MAKE_INACTIVE);
                 main.fire(EVENTS.CAMERA_UPDATE);
-                u.save("place:" + (user.origin.number - REQUEST.CODE_AUTOCOMPLETE_PLACE * 10000));
+                u.saveForGroup("place:" + (user.origin.number - REQUEST.CODE_AUTOCOMPLETE_PLACE * 10000));
 
                 break;
             case EVENTS.EDIT_PLACE:
@@ -182,7 +182,7 @@ function PlaceHolder(main) {
                                 var description = items[2].value || "";
                                 place.origin.name = name;
                                 place.origin.description = description;
-                                u.save("place:"+(place.origin.number - REQUEST.CODE_AUTOCOMPLETE_PLACE * 10000), place.origin);
+                                u.saveForGroup("place:"+(place.origin.number - REQUEST.CODE_AUTOCOMPLETE_PLACE * 10000), place.origin);
 
                                 place.fire(EVENTS.CHANGE_NAME, name);
                             }
@@ -217,7 +217,7 @@ function PlaceHolder(main) {
                             label: "Yes",
                             onclick: function(items) {
                                 var number = parseInt(items[0].value);
-                                var loc = u.load("saved_location:"+number);
+                                var loc = u.loadForGroup("saved_location:"+number);
 
                                 main.tracking.put(USER.LATITUDE, loc.la);
                                 main.tracking.put(USER.LONGITUDE, loc.lo);

@@ -15,14 +15,8 @@ import java.util.Arrays;
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTPS_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
-import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_FB_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.WS_FB_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.WS_PORT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ONLOAD;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
@@ -57,18 +51,20 @@ public class MyHttpTrackingHandler implements HttpHandler {
         ArrayList<String> parts = new ArrayList<String>();
         parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
-        File root = new File(WEB_ROOT_DIRECTORY);
+        File root = new File(SENSITIVE.getWebRootDirectory());
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
         JSONObject o = new JSONObject();
         o.put("request", parts);
         o.put("version", SERVER_BUILD);
-        o.put("HTTP_PORT", HTTP_PORT);
-        o.put("HTTPS_PORT", HTTPS_PORT);
-        o.put("WS_FB_PORT", WS_FB_PORT);
-        o.put("WSS_FB_PORT", WSS_FB_PORT);
-        o.put("WS_PORT", WS_PORT);
-        o.put("WSS_PORT", WSS_PORT);
+        o.put("HTTP_PORT", SENSITIVE.getHttpServerPort());
+        o.put("HTTPS_PORT", SENSITIVE.getHttpsServerPort());
+        o.put("WS_FB_PORT", SENSITIVE.getWsServerPortFB());
+        o.put("WSS_FB_PORT", SENSITIVE.getWssServerPortFB());
+        o.put("WS_PORT", SENSITIVE.getWsServerPortDedicated());
+        o.put("WSS_PORT", SENSITIVE.getWssServerPortDedicated());
+        o.put("firebase_config", SENSITIVE.getFirebaseConfig());
+
 
         html.clear();
         html.getHead().add(TITLE).with("Waytogo");

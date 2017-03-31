@@ -18,8 +18,8 @@ import java.util.zip.GZIPOutputStream;
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
-import static ru.wtg.whereaminowserver.helpers.Constants.WEB_ROOT_DIRECTORY;
 
 /**
  * Created 1/19/17.
@@ -52,7 +52,7 @@ public class MyHttpMainHandler implements HttpHandler {
             }
         }
 
-        File root = new File(WEB_ROOT_DIRECTORY);
+        File root = new File(SENSITIVE.getWebRootDirectory());
         File file = new File(root + uri.getPath()).getCanonicalFile();
 
         Common.log("Main",uri.getPath(),"(" + (file.exists() ? file.length() +" byte(s)" : "not found") + ")" );

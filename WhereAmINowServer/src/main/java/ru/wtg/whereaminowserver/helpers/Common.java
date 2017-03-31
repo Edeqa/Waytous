@@ -2,11 +2,8 @@ package ru.wtg.whereaminowserver.helpers;
 
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -14,12 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SRC;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 
 /**
  * Created 1/23/2017.
@@ -38,7 +30,7 @@ public class Common {
         JSONObject o = new JSONObject();
 
         try {
-            String wss = "ws://" + InetAddress.getLocalHost().getHostAddress() + ":" + WSS_PORT;
+            String wss = "ws://" + InetAddress.getLocalHost().getHostAddress() + ":" + SENSITIVE.getWssServerPortDedicated();
             o.put("uri", wss);
         } catch (UnknownHostException e) {
             e.printStackTrace();

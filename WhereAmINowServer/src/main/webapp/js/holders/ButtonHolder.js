@@ -52,9 +52,9 @@ function ButtonHolder(main) {
         });
 
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
-                contextMenuLayout.classList.add("hidden");
+                contextMenuLayout.hide();
             }, onmouseleave: function(){
-                contextMenuLayout.classList.add("hidden");
+                contextMenuLayout.hide();
             }, onmouseenter: function(){
                 clearTimeout(delayDismiss);
             }
@@ -84,7 +84,7 @@ function ButtonHolder(main) {
                 this.views.button.button.dataset.number = parseInt(object);
                 break;
             case EVENTS.MAKE_ACTIVE:
-                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.remove("hidden");
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.show();
                 u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()))
 
 //                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
@@ -95,7 +95,7 @@ function ButtonHolder(main) {
                 }
                 break;
             case EVENTS.MAKE_INACTIVE:
-                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.classList.add("hidden");
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.hide();
                 u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()))
 //                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() < 2 && (!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED)) {
@@ -124,11 +124,11 @@ function ButtonHolder(main) {
                     this.views.button.badge.innerHTML = object || "";
                 }
                 if(this.views.button.badge.innerHTML) {
-                    this.views.button.badge.classList.remove("hidden");
+                    this.views.button.badge.show();
                 }
                 break;
             case EVENTS.HIDE_BADGE:
-                this.views.button.badge.classList.add("hidden");
+                this.views.button.badge.hide();
                 this.views.button.badge.innerHTML = "";
                 break;
             case EVENTS.MOUSE_OVER:
@@ -186,7 +186,7 @@ function ButtonHolder(main) {
                 if(delay < 500) {
                     if(clicked) {
                         user.fire(EVENTS.CAMERA_ZOOM);
-                        contextMenuLayout.classList.add("hidden");
+                        contextMenuLayout.hide();
                         clicked = false;
                     } else {
                         user.fire(EVENTS.SELECT_SINGLE_USER);
@@ -243,11 +243,10 @@ function ButtonHolder(main) {
     }
 
     function removeView(user){
-        user.views.button.button.classList.add("hidden");
+        user.views.button.button.hide();
     }
 
     function openContextMenu(user) {
-        // console.log(user);
         u.clear(contextMenuLayout);
         sections = [];
         for(var i = 0; i < 10; i ++) {
@@ -257,24 +256,20 @@ function ButtonHolder(main) {
 
         setTimeout(function(){
             var size = user.views.button.button.getBoundingClientRect();
-            contextMenuLayout.classList.remove("hidden");
+            contextMenuLayout.show();
             contextMenuLayout.style.top = Math.floor(size.top) + "px";
             if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
                 contextMenuLayout.style.left = Math.floor(size.left - contextMenuLayout.offsetWidth -10) + "px";
-    //            contextMenuLayout.style.right = Math.floor(document.body.offsetWidth - size.left + 10) + "px";
             } else {
                 contextMenuLayout.style.left = Math.floor(size.right + 10) + "px";
             }
-//            contextMenuLayout.style.bottom = "auto";
             if(main.right.offsetTop + main.right.offsetHeight < contextMenuLayout.offsetTop + contextMenuLayout.offsetHeight) {
-//                contextMenuLayout.style.top = "auto";
                 contextMenuLayout.style.top = (main.right.offsetTop + main.right.offsetHeight - contextMenuLayout.offsetHeight - 5) + "px";
-
             }
 
             clearTimeout(delayDismiss);
             delayDismiss = setTimeout(function(){
-                contextMenuLayout.classList.add("hidden");
+                contextMenuLayout.hide();
             },2000);
         },0);
     }
@@ -286,7 +281,7 @@ function ButtonHolder(main) {
                 className:"user-context-menu-item",
                 onclick: function() {
                     setTimeout(function(){
-                        contextMenuLayout.classList.add("hidden");
+                        contextMenuLayout.hide();
                         contextMenuLayout.blur();
                         callback();
                     }, 0);
@@ -300,7 +295,7 @@ function ButtonHolder(main) {
                 }
             }
             u.create(HTML.DIV, { className:"user-context-menu-item-title", innerHTML: name}, th);
-            sections[section].classList.remove("hidden");
+            sections[section].show();
             return th;
         }
         function getContextMenu(){

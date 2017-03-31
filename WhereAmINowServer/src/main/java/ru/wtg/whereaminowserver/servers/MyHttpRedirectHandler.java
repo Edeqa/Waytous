@@ -12,9 +12,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import ru.wtg.whereaminowserver.helpers.Common;
-import ru.wtg.whereaminowserver.helpers.SensitiveData;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTPS_PORT;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 
 /**
  * Created 10/5/16.
@@ -47,10 +46,10 @@ public class MyHttpRedirectHandler implements HttpHandler {
 
             if(uri.getPath().startsWith("/track/") && tokenId != null) {
                 String mobileRedirect = "wain://" + host + "/track/" + tokenId;
-                String webRedirect = "https://" + host + ":" + HTTPS_PORT + "/group/" + tokenId;
-                String mainLink = "https://" + host + ":" + HTTPS_PORT + "/track/" + tokenId;
+                String webRedirect = "https://" + host + ":" + SENSITIVE.getHttpsServerPort() + "/group/" + tokenId;
+                String mainLink = "https://" + host + ":" + SENSITIVE.getHttpsServerPort() + "/track/" + tokenId;
 
-                String redirectLink = "http://"+new SensitiveData().getFCMServerName()+"/?"
+                String redirectLink = "http://"+ SENSITIVE.getFCMServerName()+"/?"
                         + "link=" + mainLink
                         + "&apn=ru.wtg.whereaminow"
                         + "&al=" + mobileRedirect
@@ -78,7 +77,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
     }
 
     public void redirect(HttpExchange exchange, String host, String path) throws IOException {
-        String newUri = "https://" + host + ":" + HTTPS_PORT + path;
+        String newUri = "https://" + host + ":" + SENSITIVE.getHttpsServerPort() + path;
 
         Common.log("Redirect ->", newUri);
 

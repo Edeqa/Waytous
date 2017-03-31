@@ -10,9 +10,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.interfaces.WssServer;
+
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
 
 /**
  * Created 10/5/16.
@@ -21,18 +26,22 @@ import ru.wtg.whereaminowserver.interfaces.WssServer;
 public class MyWsServer extends WebSocketServer implements WssServer {
 
     private final AbstractWainProcessor processor;
+    private static boolean validationStarted = false;
 
     public MyWsServer(int port, final AbstractWainProcessor processor) throws UnknownHostException {
         super(new InetSocketAddress(port));
         this.processor = processor;
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                processor.dismissInactiveUsers();
-            }
-        }).start();
-
+        if(!validationStarted) {
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+            executor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    processor.validateGroups();
+                }
+            }, 0/*LIFETIME_INACTIVE_TOKEN*/, LIFETIME_INACTIVE_TOKEN, TimeUnit.SECONDS);
+            validationStarted = true;
+        }
     }
 
     /*   @Override

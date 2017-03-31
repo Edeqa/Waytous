@@ -31,7 +31,9 @@ abstract public class AbstractWainProcessor {
     protected HashMap<String,RequestHolder> requestHolders;
     protected HashMap<String,FlagHolder> flagHolders;
 
-    abstract public void dismissInactiveUsers();
+    abstract public void validateGroups();
+
+    abstract public void validateUsers();
 
     public AbstractWainProcessor() {
         tokens = new ConcurrentHashMap<String, MyToken>();

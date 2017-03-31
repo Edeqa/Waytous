@@ -52,13 +52,13 @@ function DistanceHolder(main) {
             case EVENTS.SHOW_DISTANCE:
                 if(this != main.me) {
                     this.views.distance.show = true;
-                    u.saveWith(main.tracking.getToken(), "distance:show:" + this.number, true);
+                    u.saveForGroup("distance:show:" + this.number, true);
                     show.call(this);
                 }
                 break;
             case EVENTS.HIDE_DISTANCE:
                 this.views.distance.show = false;
-                u.saveWith(main.tracking.getToken(), "distance:show:" + this.number);
+                u.saveForGroup("distance:show:" + this.number);
                 if(this.views && this.views.distance && this.views.distance.distance) {
                     this.views.distance.distance.setMap(null);
                     this.views.distance.distance = null;
@@ -80,7 +80,7 @@ function DistanceHolder(main) {
         var view = {};
         view.user = myUser;
 
-        view.show = u.loadWith(main.tracking ? main.tracking.getToken() : null, "distance:show:" + myUser.number);
+        view.show = u.loadForGroup("distance:show:" + myUser.number);
 
         if(view.show) {
             show.call(myUser);

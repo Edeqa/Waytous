@@ -1,6 +1,7 @@
 package ru.wtg.whereaminowserver.servers;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +27,6 @@ import ru.wtg.whereaminowserver.helpers.CheckReq;
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
-import ru.wtg.whereaminowserver.helpers.SensitiveData;
 import ru.wtg.whereaminowserver.helpers.Utils;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
@@ -47,7 +47,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CHANGED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CREATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -67,9 +67,8 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
@@ -84,7 +83,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
     public WainProcessorFirebase() {
         super();
 
-        File f = new File(new SensitiveData().getFBPrivateKeyFile());
+        File f = new File(SENSITIVE.getFBPrivateKeyFile());
         try {
             System.out.println(f.getCanonicalPath().toString());
         } catch (IOException e) {
@@ -572,10 +571,93 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
         }
     }
 
-    public void dismissInactiveUsers() {
-        while(true) {
+    public void validateGroups() {
+        if(true) return;
+        ChildEventListener groupsList = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Common.log("Group:", dataSnapshot.getKey(), "leader id:", dataSnapshot.getValue().toString());
+
+                final String group = dataSnapshot.getKey();
+
+                ChildEventListener usersInGroupValidation = new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                        Map props = (Map) dataSnapshot.getValue();
+
+                        String name = (String) props.get(DATABASE_USER_NAME);
+                        Long changed = (Long) props.get(DATABASE_USER_CHANGED);
+                        boolean active = (Boolean) props.get(DATABASE_USER_ACTIVE);
+
+                        if(!active) return;
+
+                        Long current = new Date().getTime();
+                        if(changed == null) {
+                            System.out.println("USER:" + name +" is NULL ");
+                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
+                        } else if(current - LIFETIME_INACTIVE_USER*1000 > changed) {
+                            System.out.println("USER:" + name +" is EXPIRED"+":"+(current - LIFETIME_INACTIVE_USER*1000)+":"+changed);
+                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
+                        } else {
+//                            ref.child(DATABASE_SECTION_OPTIONS).child(DATABASE_SECTION_OPTIONS_DATE_CHANGED).setValue(changed);
+                            System.out.println("USER:" + name +" is OK");
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                };
+
+                ref.child(group).child(DATABASE_SECTION_USERS_DATA).removeEventListener(usersInGroupValidation);
+                ref.child(group).child(DATABASE_SECTION_USERS_DATA).addChildEventListener(usersInGroupValidation);
+
+                System.out.println("GROUP:" + dataSnapshot.getKey() + ":" + dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        Common.log("Groups validation starting...");
+        ref.child(DATABASE_SECTION_GROUPS).removeEventListener(groupsList);
+        ref.child(DATABASE_SECTION_GROUPS).addChildEventListener(groupsList);
+
+/*        while(true) {
             try {
-                Thread.sleep(INACTIVE_USER_DISMISS_DELAY * 1000);
+                Thread.sleep(LIFETIME_INACTIVE_USER * 1000);
 
                 MyUser user;
                 long currentDate = new Date().getTime();
@@ -586,7 +668,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
                         System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
 
-                        if (currentDate - user.getChanged() > INACTIVE_USER_DISMISS_DELAY * 1000) {
+                        if (currentDate - user.getChanged() > LIFETIME_INACTIVE_USER * 1000) {
                             // dismiss user
                             JSONObject o = new JSONObject();
                             if(ipToToken.containsKey(entry.getKey())) {
@@ -611,7 +693,12 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
             } catch(Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
+    }
+
+    @Override
+    public void validateUsers() {
+
     }
 
 }

@@ -59,7 +59,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_ACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CHANGED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.INACTIVE_USER_DISMISS_DELAY;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHANGE_NAME;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -87,11 +87,10 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_FB_PORT;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_SERVER_HOST;
 import static ru.wtg.whereaminowserver.helpers.Constants.WS_FB_PORT;
 
 /**
@@ -122,7 +121,7 @@ public class MyTrackingFB implements Tracking {
     private boolean newTracking;
 
     public MyTrackingFB() {
-        this(WSS_SERVER_HOST, true);
+        this(SENSITIVE.getWssServerHost(), true);
     }
 
     public MyTrackingFB(String host) {
@@ -164,8 +163,8 @@ public class MyTrackingFB implements Tracking {
 
 //            String STORETYPE = "JKS";
 //            String KEYSTORE = "../../keystore.jks";
-//            String STOREPASSWORD = new SensitiveData().getSSLCertificatePassword();
-//            String KEYPASSWORD = new SensitiveData().getSSLCertificatePassword();
+//            String STOREPASSWORD = WAINServer.getSensitive().getSSLCertificatePassword();
+//            String KEYPASSWORD = WAINServer.getSensitive().getSSLCertificatePassword();
 //
 //            KeyStore ks = KeyStore.getInstance(STORETYPE);
 //            File kf = new File(KEYSTORE);
@@ -200,7 +199,7 @@ public class MyTrackingFB implements Tracking {
             Log.i("MyTrackingFB","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
             webSocket.addListener(webSocketListener);
 
-            webSocket.setPingInterval(INACTIVE_USER_DISMISS_DELAY / 2 * 1000);
+            webSocket.setPingInterval(LIFETIME_INACTIVE_USER / 2 * 1000);
             webSocket.setPingPayloadGenerator(new PayloadGenerator() {
                 @Override
                 public byte[] generate() {

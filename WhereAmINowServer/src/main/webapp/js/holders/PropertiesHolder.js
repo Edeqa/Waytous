@@ -159,4 +159,33 @@ function PropertiesHolder(main) {
         dialog.open();
     }
 
+    this.options = function(){
+        return {
+            id: "general",
+            title: "General",
+            categories: [
+                {
+                    id: "general:properties",
+                    title: "Properties",
+                    items: [
+                        {
+                            id:"properties:name",
+                            type: HTML.INPUT,
+                            label: "Name",
+                            default: u.load("properties:name") || "",
+                            onaccept: function(e, event) {
+                                u.save("properties:name", this.value);
+                                u.save("properties:name_asked", true);
+                                main.me.fire(EVENTS.CHANGE_NAME, this.value);
+                                console.log("NAME:",this.value);
+                            },
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+
+
 }

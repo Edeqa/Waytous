@@ -51,7 +51,7 @@ function TrackHolder(main) {
             case EVENTS.SHOW_TRACK:
                 if(this && this.views && this.views.track) {
                     this.views.track.show = true;
-                    u.save("track:show:" + this.number, true);
+                    u.saveForGroup("track:show:" + this.number, true);
                     show.call(this);
                 }
                 break;
@@ -67,7 +67,7 @@ function TrackHolder(main) {
     function createView(myUser){
         var view = {
             user:myUser,
-            show:u.load("track:show:" + myUser.number)
+            show:u.loadForGroup("track:show:" + myUser.number)
         };
         if(view.show) {
             show.call(myUser);
@@ -79,7 +79,7 @@ function TrackHolder(main) {
     function removeView(user){
         if(!user) return;
         user.views.track.show = false;
-        u.save("track:show:" + user.number);
+        u.saveForGroup("track:show:" + user.number);
         if(user.views && user.views.track && user.views.track.track) {
             user.views.track.track.setMap(null);
             user.views.track.track = null;
