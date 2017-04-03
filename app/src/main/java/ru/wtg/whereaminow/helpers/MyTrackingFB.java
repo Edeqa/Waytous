@@ -51,14 +51,13 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
 import static ru.wtg.whereaminow.holders.MessagesHolder.PRIVATE_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_WELCOME_MESSAGE;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_WELCOME_MESSAGE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PRIVATE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_ACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CHANGED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHANGE_NAME;
@@ -91,7 +90,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.WS_FB_PORT;
 
 /**
  * Created 1/29/17.
@@ -121,7 +119,7 @@ public class MyTrackingFB implements Tracking {
     private boolean newTracking;
 
     public MyTrackingFB() {
-        this(SENSITIVE.getWssServerHost(), true);
+        this("https://" + SENSITIVE.getServerHost(), true);
     }
 
     public MyTrackingFB(String host) {
@@ -133,7 +131,7 @@ public class MyTrackingFB implements Tracking {
 
         try {
             URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + WS_FB_PORT + uri.getPath());
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + SENSITIVE.getWsPortFirebase() + uri.getPath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -345,7 +343,7 @@ public class MyTrackingFB implements Tracking {
                     return;
                 } else if(REQUEST_WELCOME_MESSAGE.equals(type)) {
                     if(state.getMe().getProperties().getNumber() == 0) {
-                        ref.child(DATABASE_SECTION_OPTIONS_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
+                        ref.child(DATABASE_OPTION_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
                     }
                     return;
                 }
@@ -475,7 +473,7 @@ public class MyTrackingFB implements Tracking {
 
     @Override
     public String getTrackingUri() {
-        return "http://" + serverUri.getHost() + ":" + HTTP_PORT + "/track/" + getToken();
+        return "http://" + serverUri.getHost() + ":" + SENSITIVE.getHttpPort() + "/track/" + getToken();
     }
 
     private DatabaseReference registerChildListener(DatabaseReference ref, ChildEventListener listener, int limit) {

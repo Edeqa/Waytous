@@ -68,6 +68,7 @@ window.HTML = {
     INNERTEXT:"innerText",
     BLOCK:"block",
     AUTO:"auto",
+    AUDIO:"audio",
 };
 window.ERRORS = {
     NOT_EXISTS: 1,

@@ -26,6 +26,7 @@ function MyUsers(main) {
             user.origin = json;
             user.fire(EVENTS.CHANGE_NUMBER, json[RESPONSE.NUMBER]);
             user.createViews();
+
         } else {
             user = users[json[RESPONSE.NUMBER]];
             if (json[USER.COLOR]) user.fire(EVENTS.CHANGE_COLOR, json[USER.COLOR]);

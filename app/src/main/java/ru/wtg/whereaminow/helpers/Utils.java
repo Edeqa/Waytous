@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -39,10 +38,8 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
 
-import ru.wtg.whereaminow.State;
-
-import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TIMESTAMP;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ACCURACY;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_ALTITUDE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_BEARING;
@@ -245,7 +242,7 @@ public class Utils {
         double[] latlng = filter.get_lat_long();
         location.setLatitude(latlng[0]);
         location.setLongitude(latlng[1]);
-        if(DEBUGGING) location.setBearing((float) filter.get_bearing());
+        if(SENSITIVE.isDebugMode()) location.setBearing((float) filter.get_bearing());
         location.setSpeed((float) filter.get_speed(location.getAltitude()));
         return location;
 

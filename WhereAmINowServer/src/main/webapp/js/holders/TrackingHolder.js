@@ -19,6 +19,7 @@ function TrackingHolder(main) {
     var shareDialog;
     var shareBlockedDialog;
     var drawerItemNewIcon;
+    var sound;
 
     var drawerItemNewIconSvg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -314,6 +315,13 @@ function TrackingHolder(main) {
                             var user = main.users.users[number];
                             user.fire(EVENTS.MAKE_ACTIVE);
                             main.fire(USER.JOINED, user);
+
+                            var soundFile = u.load("tracking:sound_on_join") || "oringz-w427.mp3";
+                            sound = sound || u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, onload:function(){sound.play();}}, main.right);
+
+                            if(soundFile != "none" && !user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
+                                sound.play();
+                            }
                             // console.log("JOINED",number);
                         }
                         break;
@@ -357,6 +365,34 @@ function TrackingHolder(main) {
     }
 
 
+    function options(){
+        return {
+            id: "general",
+            title: u.lang.general,
+            categories: [
+                {
+                    id: "general:main",
+                    title: u.lang.main,
+                    items: [
+                        {
+                            id:"tracking:sound_on_join",
+                            type: HTML.SELECT,
+                            label: u.lang.sound_on_join,
+                            default: u.load("tracking:sound_on_join") || "oringz-w427.mp3",
+                            onaccept: function(e, event) {
+                                u.save("tracking:sound_on_join", this.value);
+                                sound.src = "/sounds/" + this.value;
+                                console.log("LANGUAGE:",this.value);
+                            },
+                            values: {"none.mp3": u.lang.none, "arpeggio.mp3": "Arpeggio", "job-done.mp3": "Job done", "oringz-w427.mp3":"Oringz", "wet.mp3":"Wet" }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+
     return {
         type:type,
         start:start,
@@ -364,5 +400,6 @@ function TrackingHolder(main) {
         perform:perform,
         saveable:true,
         help:help,
+        options:options,
     }
 }

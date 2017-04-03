@@ -1,5 +1,5 @@
 {
-  "SECTION Common": "// Main ",
+  "SECTION Common": "// Common ",
   "ok": "OK",
   "cancel": "Cancel",
   "yes": "Yes",
@@ -11,6 +11,16 @@
   "name": "Name",
   "delete": "Delete",
   "apply": "Apply",
+
+
+  "SECTION Main": "// ",
+
+  "general": "General",
+  "main": "Main",
+  "language": "Language",
+  "default": "Default",
+  "english": "English (US)",
+  "russian": "Russian",
 
 
   "SECTION ButtonHolder": "// ",
@@ -64,8 +74,35 @@
   "you_have_denied_geolocation": "You have denied geolocation.",
 
   "gps_help_title": "Geolocation",
-  "gps_help_1_title": "Allow geolocation",
+  "gps_help_1_title": "How geolocation is using in application",
   "gps_help_1_body": "Instruction how to allow geolocation",
+
+  "gps_help_2_title": "Allow geolocation - Safari (iOS)",
+  "gps_help_2_body": "<ul><li>Close all tabs in safari with the domain in question open. <li>Close Safari (hold home button and cross off). <li>Settings -> General -> Reset -> Reset Location Warnings / Reset Location & Privacy. <li>Open Safari and try again.</ul>",
+
+  "gps_help_3_title": "Allow geolocation - iPhone or iPad (iOS 8)",
+  "gps_help_3_body": "To turn on Location Services on an iPhone or iPad (iOS 8) <ul><li>Tap the Settings application <li>Tap Privacy <li>Tap Location Services <li>Toggle the switch to On</ul>",
+
+  "gps_help_4_title": "Allow geolocation - iPhone or iPad (iOS 9)",
+  "gps_help_4_body": "To turn on Location Services on an iPhone or iPad (iOS 9) <ul><li>Tap the Settings appliction <li>Go to Chrome (or whatever browser you are using to access Buddy Punch) <li>Make sure the GPS setting states allow while using the app. </ul>",
+
+  "gps_help_5_title": "Allow geolocation - OS X (Mountain, Lion or later)",
+  "gps_help_5_body": "<ul><li>Choose System Preferences from the Apple menu. <li>Click the Security & Privacy icon in the System Preferences window. <li>Click the Privacy tab. <li>If the padlock icon in the lower left is locked, click it and enter an admin name and password to unlock it. <li>Select Location Services. <li>Check the \"Enable Location Services\" checkbox.</ul>",
+
+  "gps_help_6_title": "Allow geolocation - Safari 6 or later",
+  "gps_help_6_body": "When you visit a geolocation-enabled website in Safari, you are asked if you want to share your location with the site. In the box that appears, select the option \"Remember my decision for one day\" if you want to allow or disable authorization for the next 24 hours.  You can reset all website authorizations in Safari by choosing Reset Safari from the Safari menu. Select the \"Reset all location warnings\" option in the Reset Safari window. (Don't select the other checkboxes unless you are sure you want to reset those items as well.)",
+
+  "gps_help_7_title": "Allow geolocation - Android devices",
+  "gps_help_7_body": "<ul><li>Tap the Settings application <li>Tap Location <li>Tap Google Location Reporting <li>Tap Location Reporting <li>Toggle the switch to On</ul>",
+
+  "gps_help_8_title": "Allow geolocation - Android devices (4.4 Kitkat to 5.0)",
+  "gps_help_8_body": "<ul><li>Open the Settings app. <li>Touch Location. <li>Make sure \"Location\" is turned on.</ul>",
+
+  "gps_help_9_title": "Allow geolocation - Chrome (Android)",
+  "gps_help_9_body": "<ul><li>Touch the menu at the upper right corner of the screen. <li>Touch Settings > Site Settings > Location. <li>Make sure Location is enabled on the top of the screen (not blocked). <li>Find http://waytogo.us in the list & click it. <li>To grant access to your location, turn on Location access or click to allow.</ul>",
+
+  "gps_help_10_title": "Allow geolocation - Chrome (Windows)",
+  "gps_help_10_body": "<ul><li>Open Chrome. <li>In the top right, click the Chrome menu. <li>Click Settings > Show advanced settings. <li>In the \"Privacy\" section, click Content settings. <li>In the dialog that appears, scroll down to the \"Location\" section. Select your default permission for future location requests: <ul><li>Allow all sites to track your physical location - select this option to let all sites automatically see your location. <li>Ask when a site tries to track your physical location - select this option if you want Google Chrome to alert you whenever a site wants to see your location. <li>Do not allow any site to track your physical location - select this option to automatically deny requests for your location.</ul> <li>Click Manage exceptions if you want to remove permissions you gave before to specific sites.</ul>",
 
 
   "SECTION HelpHolder": "// ",
@@ -119,6 +156,7 @@
 
   "your_name_is_not_defined": "Your name is not defined. Set up your name now?",
   "set_my_name": "Set my name",
+  "properties": "Properties",
 
 
   "SECTION SavedLocationHolder": "// ",
@@ -190,6 +228,8 @@
   "tracking_help_title_1": "You have created new group",
   "tracking_help_body_1": "You have created the new tracking group. Now, you may invite your friends to follow you using their Waytogo client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. ",
 
+  "sound_on_join": "Sound on join",
+  "none": "None",
 
   "SECTION": "// ",
 

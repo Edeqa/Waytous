@@ -25,6 +25,8 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
+import ru.wtg.whereaminowserver.helpers.Constants;
+import ru.wtg.whereaminowserver.helpers.SensitiveData;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
 import ru.wtg.whereaminowserver.servers.MyHttpJoinHandler;
 import ru.wtg.whereaminowserver.servers.MyHttpMainHandler;
@@ -49,24 +51,26 @@ public class WAINServer {
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
 
+        Constants.SENSITIVE = new SensitiveData(args[0]);
 
-        System.out.println("Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
-
-        System.out.println("Server \t\t\t| Port \t| Path");
-        System.out.println("----------------------------------------------");
 
         try {
             FirebaseApp.initializeApp(new FirebaseOptions.Builder()
-                    .setServiceAccount(new FileInputStream(SENSITIVE.getFBPrivateKeyFile()))
-                    .setDatabaseUrl(SENSITIVE.getFBDatabaseUrl())
+                    .setServiceAccount(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()))
+                    .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
                     .build());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         wainProcessorFirebase = new WainProcessorFirebase();
-        wsServer = new MyWsServer(SENSITIVE.getWsServerPortFB(), wainProcessorFirebase);
-        wssServer = new MyWsServer(SENSITIVE.getWssServerPortFB(), wainProcessorFirebase);
+        wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), wainProcessorFirebase);
+        wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), wainProcessorFirebase);
+
+        System.out.println("Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
+
+        System.out.println("Server \t\t\t\t| Port \t| Path");
+        System.out.println("----------------------------------------------");
 
         try {
             String STORETYPE = "JKS";
@@ -156,9 +160,9 @@ public class WAINServer {
                 public void run() {
                     try {
                         WebSocketImpl.DEBUG = false;
-                        System.out.println("WS FB\t\t\t\t| " + SENSITIVE.getWsServerPortFB() + "\t|");
+                        System.out.println("WS FB\t\t\t\t| " + SENSITIVE.getWsPortFirebase() + "\t|");
                         wsServer.start();
-                        System.out.println("WSS FB\t\t\t\t| " + SENSITIVE.getWssServerPortFB() + "\t|");
+                        System.out.println("WSS FB\t\t\t\t| " + SENSITIVE.getWssPortFirebase() + "\t|");
                         wssServer.start();
 
                             /*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
@@ -207,10 +211,10 @@ public class WAINServer {
         }.start();*/
 
         server = HttpServer.create();
-        server.bind(new InetSocketAddress(SENSITIVE.getHttpServerPort()), 0);
+        server.bind(new InetSocketAddress(SENSITIVE.getHttpPort()), 0);
 
         MyHttpRedirectHandler redirectServer = new MyHttpRedirectHandler();
-        System.out.println("Redirect HTTP\t\t| " + SENSITIVE.getHttpServerPort() + "\t| " + "/");
+        System.out.println("Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
         server.createContext("/", redirectServer);
 
 //        server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
@@ -248,7 +252,7 @@ public class WAINServer {
 
 
         try {
-            sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsServerPort()), 0);
+            sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsPort()), 0);
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -290,19 +294,19 @@ public class WAINServer {
             });
 
             sslServer.createContext("/", mainServer);
-            System.out.println("Main HTTPS\t\t| " + SENSITIVE.getHttpsServerPort() + "\t| /, /*");
+            System.out.println("Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
 
             sslServer.createContext("/track", trackingServer);
-            System.out.println("Tracking HTTPS\t| " + SENSITIVE.getHttpsServerPort() + "\t| " + "/track");
+            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track");
 
             sslServer.createContext("/group", trackingServer);
-            System.out.println("Tracking HTTPS\t| " + SENSITIVE.getHttpsServerPort() + "\t| " + "/group");
+            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group");
 
             sslServer.createContext("/join", joinServer);
-            System.out.println("Join HTTPS\t| " + SENSITIVE.getHttpsServerPort() + "\t| " + "/join");
+            System.out.println("Join HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/join");
 
             sslServer.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
-            System.out.println("Admin HTTPS\t\t| " + SENSITIVE.getHttpsServerPort() + "\t| " + "/admin");
+            System.out.println("Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin");
 
             sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
 

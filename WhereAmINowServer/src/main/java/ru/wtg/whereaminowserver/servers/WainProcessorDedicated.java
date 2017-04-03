@@ -19,7 +19,7 @@ import ru.wtg.whereaminowserver.helpers.Utils;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
-import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -150,11 +150,11 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
             executor.schedule(new Runnable() {
                 @Override
                 public void run() {
-                    if(token.isEmpty() && new Date().getTime() - token.getChanged() >= LIFETIME_INACTIVE_TOKEN) {
+                    if(token.isEmpty() && new Date().getTime() - token.getChanged() >= LIFETIME_INACTIVE_GROUP) {
                         tokens.remove(token.getId());
                     }
                 }
-            }, LIFETIME_INACTIVE_TOKEN+10, TimeUnit.SECONDS);
+            }, LIFETIME_INACTIVE_GROUP +10, TimeUnit.SECONDS);
 
         }
         if(ipToUser.containsKey(ip)) ipToUser.remove(ip);

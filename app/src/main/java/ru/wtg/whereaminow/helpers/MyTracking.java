@@ -37,7 +37,6 @@ import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_CONNECTING;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_DISABLED;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_RECONNECTING;
-import static ru.wtg.whereaminowserver.helpers.Constants.HTTP_PORT;
 import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
@@ -63,7 +62,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_TOKEN;
 import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.WSS_PORT;
 
 /**
  * Created 10/8/16.
@@ -236,7 +234,7 @@ public class MyTracking implements Tracking {
     };
 
     public MyTracking() {
-        this(SENSITIVE.getWssServerHost(), true);
+        this("https://" + SENSITIVE.getServerHost(), true);
     }
 
     public MyTracking(String host) {
@@ -248,7 +246,7 @@ public class MyTracking implements Tracking {
 
         try {
             URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + WSS_PORT + uri.getPath());
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + SENSITIVE.getWssPortDedicated() + uri.getPath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -477,7 +475,7 @@ public class MyTracking implements Tracking {
     }
 
     public String getTrackingUri() {
-        return "http://" + serverUri.getHost() + ":" + HTTP_PORT + "/track/" + getToken();
+        return "http://" + serverUri.getHost() + ":" + SENSITIVE.getHttpPort() + "/track/" + getToken();
     }
 
     private class ReconnectRunnable implements Runnable {

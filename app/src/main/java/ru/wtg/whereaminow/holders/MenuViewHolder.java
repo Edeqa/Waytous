@@ -22,11 +22,12 @@ import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
-import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 
 /**
  * Created 11/18/16.
  */
+@SuppressWarnings("unused")
 public class MenuViewHolder extends AbstractViewHolder {
     private static final String TYPE = "menu";
 
@@ -57,7 +58,7 @@ public class MenuViewHolder extends AbstractViewHolder {
         switch(event){
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
-                if(DEBUGGING) {
+                if(SENSITIVE.isDebugMode()) {
                     optionsMenu.add("Switch day/night mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {

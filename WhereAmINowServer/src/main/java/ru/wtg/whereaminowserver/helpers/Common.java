@@ -2,7 +2,6 @@ package ru.wtg.whereaminowserver.helpers;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -30,7 +29,7 @@ public class Common {
         JSONObject o = new JSONObject();
 
         try {
-            String wss = "ws://" + InetAddress.getLocalHost().getHostAddress() + ":" + SENSITIVE.getWssServerPortDedicated();
+            String wss = "ws://" + InetAddress.getLocalHost().getHostAddress() + ":" + SENSITIVE.getWssPortDedicated();
             o.put("uri", wss);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -38,13 +37,13 @@ public class Common {
         return o;
     }
 
-    public static void log(String... text) {
+    public static void log(Object... text) {
         String str = "";
         for(int i = 0; i < text.length; i++){
             str += text[i] + " ";
         }
         System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
-        try {
+        /*try {
             if(out == null) {
                 File log = new File("WhereAmINowServer/WAIN.log");
                 System.out.println("Log file: "+log.getAbsolutePath());
@@ -57,7 +56,7 @@ public class Common {
 //            out.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 

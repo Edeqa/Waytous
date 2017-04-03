@@ -212,6 +212,42 @@ function GpsHolder(main) {
             1: {
                 title: u.lang.gps_help_1_title,
                 body: u.lang.gps_help_1_body
+            },
+            2: {
+                title: u.lang.gps_help_2_title,
+                body: u.lang.gps_help_2_body
+            },
+            3: {
+                title: u.lang.gps_help_3_title,
+                body: u.lang.gps_help_3_body
+            },
+            4: {
+                title: u.lang.gps_help_4_title,
+                body: u.lang.gps_help_4_body
+            },
+            5: {
+                title: u.lang.gps_help_5_title,
+                body: u.lang.gps_help_5_body
+            },
+            6: {
+                title: u.lang.gps_help_6_title,
+                body: u.lang.gps_help_6_body
+            },
+            7: {
+                title: u.lang.gps_help_7_title,
+                body: u.lang.gps_help_7_body
+            },
+            8: {
+                title: u.lang.gps_help_8_title,
+                body: u.lang.gps_help_8_body
+            },
+            9: {
+                title: u.lang.gps_help_9_title,
+                body: u.lang.gps_help_9_body
+            },
+            10: {
+                title: u.lang.gps_help_10_title,
+                body: u.lang.gps_help_10_body
             }
         }
     }

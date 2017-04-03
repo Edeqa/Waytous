@@ -57,6 +57,7 @@ function MyUser(main) {
 
     function onChangeLocation() {
         var user = this;
+        user.changed = new Date().getTime();
         setTimeout(function(){
             for(var i in user.views) {
                 if(main.holders[i] && main.holders[i].onChangeLocation) {

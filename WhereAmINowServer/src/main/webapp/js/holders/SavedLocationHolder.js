@@ -104,13 +104,13 @@ function SavedLocationHolder(main) {
                                 main.fire(EVENTS.SHOW_SAVED_LOCATION, items[0].value);
                             }
                         },
-                        negative: {
+                        neutral: {
                             label: u.lang.edit,
                             onclick: function(items) {
                                 main.fire(EVENTS.EDIT_SAVED_LOCATION, items[0].value);
                             }
                         },
-                        neutral: {
+                        negative: {
                             label: u.lang.maybe_later
                         },
                         timeout: 5000

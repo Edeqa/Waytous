@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.interfaces.WssServer;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
 
 /**
  * Created 10/5/16.
@@ -39,7 +39,7 @@ public class MyWsServer extends WebSocketServer implements WssServer {
                 public void run() {
                     processor.validateGroups();
                 }
-            }, 0/*LIFETIME_INACTIVE_TOKEN*/, LIFETIME_INACTIVE_TOKEN, TimeUnit.SECONDS);
+            }, 0/*LIFETIME_INACTIVE_GROUP*/, LIFETIME_INACTIVE_GROUP, TimeUnit.SECONDS);
             validationStarted = true;
         }
     }

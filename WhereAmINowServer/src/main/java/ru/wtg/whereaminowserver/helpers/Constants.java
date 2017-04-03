@@ -1,55 +1,17 @@
 package ru.wtg.whereaminowserver.helpers;
 
-import ru.wtg.whereaminowserver.interfaces.SensitiveDataInterface;
-
 /**
  * Created 10/14/16.
  */
 public class Constants {
     public final static int SERVER_BUILD = 29;
 
-    //    public final static SensitiveDataInterface SENSITIVE = new SensitiveDataInternetDebug();
-//    public final static SensitiveDataInterface SENSITIVE = new SensitiveDataInternetRelease();
-    public final static SensitiveDataInterface SENSITIVE = new SensitiveDataDeveloper();
-
-// debug local version
-//    public final static String WSS_SERVER_HOST = "https://10.0.0.96";
-//    public final static boolean DEBUGGING = true;
-//    public final static String HTTP_SERVER_HOST = "10.0.0.96";
-//    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/src/main/webapp";
-//    public final static String KEYSTORE = "debug.jks";
-// public internet version
-/*
-    public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
-    public final static boolean DEBUGGING = false;
-    public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
-//    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/build/exploded-app";
-    public final static String WEB_ROOT_DIRECTORY = "../..";
-    public final static String KEYSTORE = "../../inchem.jks";
-*/
-// debug internet version
-/*
-    public final static String WSS_SERVER_HOST = "https://inchem.kstu.ru";
-    public final static boolean DEBUGGING = true;
-    public final static String HTTP_SERVER_HOST = "inchem.kstu.ru";
-//    public final static String WEB_ROOT_DIRECTORY = "WhereAmINowServer/build/exploded-app";
-    public final static String WEB_ROOT_DIRECTORY = "../..";
-    public final static String KEYSTORE = "../../inchem.jks";
-*/
+    public static SensitiveData SENSITIVE;
 
     public final static String BROADCAST = "ru.wtg.whereaminow.whereaminowservice";
     public final static String BROADCAST_MESSAGE = "message";
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
-
-
-//    public final static int HTTP_PORT = 8080;
-//    public final static int HTTPS_PORT = 8100;
-//    public final static int WS_FB_PORT = 8081;
-//    public final static int WSS_FB_PORT = 8001;
-//    public final static int WS_PORT = 8082;
-//    public final static int WSS_PORT = 8002;
-//    public final static int WSS_PORT = 443;
 
     // client constants
     public static final String REQUEST = "client";
@@ -127,18 +89,18 @@ public class Constants {
     public static final String DATABASE_SECTION_USERS_DATA_PRIVATE = "u/p"; // users/data-private
     public static final String DATABASE_SECTION_USERS_KEYS = "u/k"; // users/keys
     public static final String DATABASE_SECTION_OPTIONS = "o"; // options
-    public static final String DATABASE_SECTION_OPTIONS_PERSISTENT = "o/persistent";
-    public static final String DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY = "o/time-to-live-if-empty";
-    public static final String DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS = "o/delay-to-dismiss";
-    public static final String DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE = "o/dismiss-inactive";
-    public static final String DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD = "o/requires-password";
-    public static final String DATABASE_SECTION_OPTIONS_WELCOME_MESSAGE = "o/welcome-message";
-    public static final String DATABASE_SECTION_OPTIONS_DATE_CREATED = "o/date-created";
-    public static final String DATABASE_SECTION_OPTIONS_DATE_CHANGED = "o/date-changed";
+    public static final String DATABASE_OPTION_PERSISTENT = "persistent";
+    public static final String DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY = "time-to-live-if-empty";
+    public static final String DATABASE_OPTION_DELAY_TO_DISMISS = "delay-to-dismiss";
+    public static final String DATABASE_OPTION_DISMISS_INACTIVE = "dismiss-inactive";
+    public static final String DATABASE_OPTION_REQUIRES_PASSWORD = "requires-password";
+    public static final String DATABASE_OPTION_WELCOME_MESSAGE = "welcome-message";
+    public static final String DATABASE_OPTION_DATE_CREATED = "date-created";
+    public static final String DATABASE_OPTION_DATE_CHANGED = "date-changed";
 
 
-    public static final int LIFETIME_INACTIVE_TOKEN = 30;
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
+    public static final int LIFETIME_INACTIVE_GROUP = 30;
     public final static int LIFETIME_INACTIVE_USER = 600;
 
 }

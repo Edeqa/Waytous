@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
+import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.ContinueDialog;
 import ru.wtg.whereaminow.helpers.MyUser;
 import ru.wtg.whereaminow.helpers.MyUsers;
-import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.holders.CameraViewHolder;
 import ru.wtg.whereaminow.holders.DrawerViewHolder;
 import ru.wtg.whereaminow.holders.FabViewHolder;
@@ -54,13 +54,13 @@ import static ru.wtg.whereaminow.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static ru.wtg.whereaminow.interfaces.Tracking.TRACKING_URI;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST;
 import static ru.wtg.whereaminowserver.helpers.Constants.BROADCAST_MESSAGE;
-import static ru.wtg.whereaminowserver.helpers.Constants.DEBUGGING;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_INITIAL;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
+import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_DISMISSED;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_JOINED;
 
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         state = State.getInstance();
 
-        if(DEBUGGING){
+        if(SENSITIVE.isDebugMode()){
 //            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
 //            state.setPreference("intro",false);
         }
@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if(!DEBUGGING) return;
+                if(!SENSITIVE.isDebugMode()) return;
                 try {
                     Location location = state.getMe().getLocation();
                     Location loc = new Location("touch");

@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,14 +31,14 @@ import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.helpers.Utils;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DATE_CREATED;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DELAY_TO_DISMISS;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DISMISS_INACTIVE;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_PERSISTENT;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_REQUIRES_PASSWORD;
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_GROUPS;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_DATE_CREATED;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_PERSISTENT;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD;
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA_PRIVATE;
@@ -47,7 +48,6 @@ import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CHANGED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_CREATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_USER_NAME;
-import static ru.wtg.whereaminowserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -83,9 +83,9 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
     public WainProcessorFirebase() {
         super();
 
-        File f = new File(SENSITIVE.getFBPrivateKeyFile());
+        File f = new File(SENSITIVE.getFirebasePrivateKeyFile());
         try {
-            System.out.println(f.getCanonicalPath().toString());
+            System.out.println("Firebase config file: "+f.getCanonicalPath().toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -471,12 +471,12 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 //FIXME
                 if(dataSnapshot.getValue() == null) {
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(DATABASE_SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY, 15);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS_REQUIRES_PASSWORD, false);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS_PERSISTENT, false);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS_DISMISS_INACTIVE, false);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS_DELAY_TO_DISMISS, 300);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS_DATE_CREATED, ServerValue.TIMESTAMP);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY, 15);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_REQUIRES_PASSWORD, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_PERSISTENT, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DISMISS_INACTIVE, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DELAY_TO_DISMISS, 300);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
                     ref.child(tokenId).updateChildren(childUpdates);
                 }
             }
@@ -573,62 +573,125 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
     public void validateGroups() {
         if(true) return;
+        Common.log("WPF","Groups validation scheduled is performing, checking online users");
         ChildEventListener groupsList = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Common.log("Group:", dataSnapshot.getKey(), "leader id:", dataSnapshot.getValue().toString());
 
                 final String group = dataSnapshot.getKey();
+                final String leader = dataSnapshot.getValue().toString();
 
-                ChildEventListener usersInGroupValidation = new ChildEventListener() {
+                ValueEventListener groupValidation = new ValueEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Map value = (Map) dataSnapshot.getValue();
 
-                        Map props = (Map) dataSnapshot.getValue();
+                        Common.log("WPF","Group validation:", group + ", leader id:", leader, dataSnapshot.getValue());
 
-                        String name = (String) props.get(DATABASE_USER_NAME);
-                        Long changed = (Long) props.get(DATABASE_USER_CHANGED);
-                        boolean active = (Boolean) props.get(DATABASE_USER_ACTIVE);
-
-                        if(!active) return;
-
-                        Long current = new Date().getTime();
-                        if(changed == null) {
-                            System.out.println("USER:" + name +" is NULL ");
-                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
-                        } else if(current - LIFETIME_INACTIVE_USER*1000 > changed) {
-                            System.out.println("USER:" + name +" is EXPIRED"+":"+(current - LIFETIME_INACTIVE_USER*1000)+":"+changed);
-                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
-                        } else {
-//                            ref.child(DATABASE_SECTION_OPTIONS).child(DATABASE_SECTION_OPTIONS_DATE_CHANGED).setValue(changed);
-                            System.out.println("USER:" + name +" is OK");
+                        if(value == null) {
+                            Common.log("WPF","--- group corrupted detected, removing failed information"); //TODO
+                            return;
                         }
-                    }
 
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        final boolean requiresPassword;
+                        final boolean dismissInactive;
+                        final boolean persistent;
+                        final long delayToDismiss;
+                        final long timeToLiveIfEmpty;
 
-                    }
 
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                        Object object = value.get(DATABASE_OPTION_REQUIRES_PASSWORD);
+                        if(object != null) requiresPassword = (boolean) object;
+                        else requiresPassword = false;
 
-                    }
+                        object = value.get(DATABASE_OPTION_DISMISS_INACTIVE);
+                        if(object != null) dismissInactive = (boolean) object;
+                        else dismissInactive = false;
 
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                        object = value.get(DATABASE_OPTION_PERSISTENT);
+                        if(object != null) persistent = (boolean) object;
+                        else persistent = false;
+
+                        object = value.get(DATABASE_OPTION_DELAY_TO_DISMISS);
+                        if(object != null) delayToDismiss = Long.parseLong("0"+object.toString());
+                        else delayToDismiss = 0;
+
+                        object = value.get(DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY);
+                        if(object != null) timeToLiveIfEmpty = Long.parseLong("0"+object.toString());
+                        else timeToLiveIfEmpty = 0;
+
+                        ValueEventListener usersValidation = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Common.log("WPF","Users validation for:", group);
+
+                                ArrayList<Map> users = (ArrayList<Map>) dataSnapshot.getValue();
+                                if(users == null) {
+                                    Common.log("WPF","--- group corrupted detected, removing failed information"); //TODO
+                                    return;
+                                }
+                                long groupChanged = 0;
+
+                                for(int i = 0; i < users.size(); i++) {
+                                    Map user = users.get(i);
+                                    if(user == null) continue;
+
+                                    String name = (String) user.get(DATABASE_USER_NAME);
+                                    Long changed = (Long) user.get(DATABASE_USER_CHANGED);
+                                    if(changed != null && changed > groupChanged) groupChanged = changed;
+                                    boolean active = false;
+                                    Object object = user.get(DATABASE_USER_ACTIVE);
+                                    if(object != null) {
+                                        active = (Boolean) object;
+                                    }
+
+                                    if(!active) continue;
+
+                                    if(dismissInactive) {
+                                        Long current = new Date().getTime();
+                                        if (changed == null) {
+                                            Common.log("WPF", "--- user:", i, "name:", name, "is NULL");
+//                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
+                                        } else if (current - delayToDismiss * 1000 > changed) {
+                                            Common.log("WPF", "--- user:", i, "name:", name, "is EXPIRED for", ((current - delayToDismiss * 1000 - changed) / 1000), "seconds");
+//                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
+                                        } else {
+//                            ref.child(DATABASE_SECTION_OPTIONS).child(DATABASE_SECTION_OPTIONS_DATE_CHANGED).setValue(changed);
+                                            Common.log("WPF", "--- user:", i, "name:", name, "is OK");
+                                        }
+                                    }
+                                }
+
+                                if(!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000 ) {
+
+                                    Common.log("WPF","--- removing expired group for:", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000)/1000/60, "minutes");
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        };
+
+                        ref.child(group).child(DATABASE_SECTION_USERS_DATA).removeEventListener(usersValidation);
+                        ref.child(group).child(DATABASE_SECTION_USERS_DATA).addListenerForSingleValueEvent(usersValidation);
 
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
+
                     }
                 };
 
-                ref.child(group).child(DATABASE_SECTION_USERS_DATA).removeEventListener(usersInGroupValidation);
-                ref.child(group).child(DATABASE_SECTION_USERS_DATA).addChildEventListener(usersInGroupValidation);
 
-                System.out.println("GROUP:" + dataSnapshot.getKey() + ":" + dataSnapshot.getValue());
+                ref.child(group).child(DATABASE_SECTION_OPTIONS).removeEventListener(groupValidation);
+                ref.child(group).child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(groupValidation);
+
+
+
             }
 
             @Override
@@ -651,7 +714,6 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
             }
         };
 
-        Common.log("Groups validation starting...");
         ref.child(DATABASE_SECTION_GROUPS).removeEventListener(groupsList);
         ref.child(DATABASE_SECTION_GROUPS).addChildEventListener(groupsList);
 

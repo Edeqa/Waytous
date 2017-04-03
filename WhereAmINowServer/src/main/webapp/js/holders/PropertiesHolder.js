@@ -162,16 +162,16 @@ function PropertiesHolder(main) {
     this.options = function(){
         return {
             id: "general",
-            title: "General",
+            title: u.lang.general,
             categories: [
                 {
                     id: "general:properties",
-                    title: "Properties",
+                    title: u.lang.properties,
                     items: [
                         {
                             id:"properties:name",
                             type: HTML.INPUT,
-                            label: "Name",
+                            label: u.lang.name,
                             default: u.load("properties:name") || "",
                             onaccept: function(e, event) {
                                 u.save("properties:name", this.value);

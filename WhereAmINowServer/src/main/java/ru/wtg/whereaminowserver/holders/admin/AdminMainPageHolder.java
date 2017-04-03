@@ -48,12 +48,12 @@ public class AdminMainPageHolder implements PageHolder {
         o.put("request", request);
 //        o.put("request", parts);
         o.put("version", SERVER_BUILD);
-        o.put("HTTP_PORT", SENSITIVE.getHttpServerPort());
-        o.put("HTTPS_PORT", SENSITIVE.getHttpsServerPort());
-        o.put("WS_FB_PORT", SENSITIVE.getWsServerPortFB());
-        o.put("WSS_FB_PORT", SENSITIVE.getWssServerPortFB());
-        o.put("WS_PORT", SENSITIVE.getWsServerPortDedicated());
-        o.put("WSS_PORT", SENSITIVE.getWssServerPortDedicated());
+        o.put("HTTP_PORT", SENSITIVE.getHttpPort());
+        o.put("HTTPS_PORT", SENSITIVE.getHttpsPort());
+        o.put("WS_FB_PORT", SENSITIVE.getWsPortFirebase());
+        o.put("WSS_FB_PORT", SENSITIVE.getWssPortFirebase());
+        o.put("WS_PORT", SENSITIVE.getWsPortDedicated());
+        o.put("WSS_PORT", SENSITIVE.getWssPortDedicated());
         o.put("firebase_config", SENSITIVE.getFirebaseConfig());
 
         html.getHead().add(SCRIPT).with("data", o);
