@@ -85,7 +85,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
         File f = new File(SENSITIVE.getFirebasePrivateKeyFile());
         try {
-            System.out.println("Firebase config file: "+f.getCanonicalPath().toString());
+            Common.log("WPF","Firebase config file: "+f.getCanonicalPath().toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,7 +114,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
     /*   @Override
         public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
-            System.out.println("HANDSHAKE:"+conn+":"+draft+":"+request);
+            Common.log("Main","HANDSHAKE:"+conn+":"+draft+":"+request);
 
             return super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
         }
@@ -130,13 +130,13 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
             try {
                 request = new JSONObject(message);
             } catch(JSONException e) {
-                System.err.println("WSS:error in request message: "+e.getMessage());
+                Common.err("WPF","Error in request message: "+e.getMessage());
                 return;
             }
             if (request == null || !request.has(REQUEST_TIMESTAMP)) return;
 //            long timestamp = request.getLong(REQUEST_TIMESTAMP);
         /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
-            System.out.println("WSS:ignore request because of timeout");
+            Common.log("Main","WSS:ignore request because of timeout");
 //            conn.close(CloseFrame.GOING_AWAY, "Request timeout");
             return;
         }*/
@@ -161,7 +161,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                     response.put(RESPONSE_MESSAGE, "Your device id is not defined");
                     conn.send(response.toString());
                     conn.close();
-                    System.err.println("NEW:RESPONSE_STATUS_ERROR:" + response);
+                    Common.err("WPF","Response status error:",response);
                 }
 
             } else if (REQUEST_JOIN_TOKEN.equals(req)) {

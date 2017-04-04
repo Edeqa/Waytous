@@ -220,6 +220,7 @@ function TrackingFB(main) {
 
         var a = {};
         try {
+            link = link.replace(/#.*/,"");
             a = new WebSocket(link);
             setTimeout(function(){
                 if(a instanceof WebSocket && a.readyState != WebSocket.OPEN) {

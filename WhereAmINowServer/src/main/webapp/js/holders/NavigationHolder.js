@@ -198,25 +198,18 @@ function NavigationHolder(main) {
 
         console.log(type,req);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", req, true);
-        xhr.onreadystatechange = function() { //
-            if(xhr.readyState != 4) return;
-            if(xhr.status == 200) {
-                installation = false;
-                var res = JSON.parse(xhr.response);
-                updateTrack.call(user,res);
-            } else {
-                console.error(xhr);
-                if(installation) {
-                    user.fire(EVENTS.HIDE_NAVIGATION);
-                    setTimeout(function(){
-                        main.toast.show(u.lang.sorry_direction_request_was_failed);
-                    },0);
-                }
+        u.getJSON(req, function(json){
+            installation = false;
+            updateTrack.call(user,json);
+        }, function(code,xhr){
+            console.error(xhr);
+            if(installation) {
+                user.fire(EVENTS.HIDE_NAVIGATION);
+                setTimeout(function(){
+                    main.toast.show(u.lang.sorry_direction_request_was_failed);
+                },0);
             }
-        };
-        xhr.send();
+        });
 
     }
 
@@ -540,6 +533,52 @@ function NavigationHolder(main) {
         }
     }
 
+
+    function options(){
+        return {
+            id: "navigation",
+            title: u.lang.navigation,
+            categories: [
+                {
+                    id: "navigation:options",
+                    title: u.lang.navigation_options,
+                    items: [
+                        {
+                            id:"navigation:avoid_highways",
+                            type: HTML.CHECKBOX,
+                            label: u.lang.avoid_highways,
+                            default: u.load("navigation:avoid_highways") || "",
+                            onaccept: function(e, event) {
+//                                u.save("navigation:avoid_highways", this.value);
+                                console.log("navigation:avoid_highways:",this.value);
+                            },
+                        },
+                        {
+                            id:"navigation:avoid_tolls",
+                            type: HTML.CHECKBOX,
+                            label: u.lang.avoid_tolls,
+                            default: u.load("navigation:avoid_tolls") || "",
+                            onaccept: function(e, event) {
+//                                u.save("navigation:avoid_tolls", this.value);
+                                console.log("navigation:avoid_tolls:",this.value);
+                            },
+                        },
+                        {
+                            id:"navigation:avoid_ferries",
+                            type: HTML.CHECKBOX,
+                            label: u.lang.avoid_ferries,
+                            default: u.load("navigation:avoid_ferries") || "",
+                            onaccept: function(e, event) {
+//                                u.save("navigation:avoid_ferries", this.value);
+                                console.log("navigation:avoid_ferries:",this.value);
+                            },
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
     return {
         type:type,
         start:start,
@@ -547,5 +586,6 @@ function NavigationHolder(main) {
         createView:createView,
         removeView:removeView,
         onChangeLocation:onChangeLocation,
+        options:options,
     }
 }

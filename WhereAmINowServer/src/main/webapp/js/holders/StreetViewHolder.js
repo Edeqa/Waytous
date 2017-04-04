@@ -118,9 +118,9 @@ function StreetViewHolder(main) {
                             heading: user.location.coords.heading || 0,
                             pitch: 0
                         });
-                        panorama.setVisible(true);
                         placeholder.hide();
                         streetview.show();
+                        panorama.setVisible(true);
                     } else {
                         placeholder.innerHTML = u.lang.street_view_is_still_not_available_for_this_place.outerHTML;
                         placeholder.show();

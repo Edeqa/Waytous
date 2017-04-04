@@ -295,6 +295,27 @@ function TrackingHolder(main) {
             u.saveForGroup(TRACKING_URI);
             main.fire(EVENTS.TRACKING_DISABLED);
             main.fire(EVENTS.TRACKING_ERROR, reason);
+
+            progress.close();
+            u.saveForGroup("group");
+
+             u.dialog({
+                className: "alert-dialog",
+                modal: true,
+                items: [
+                    { type: HTML.DIV, innerHTML: u.lang.sorry_you_have_requested_the_expired_group },
+                    { type: HTML.DIV, enclosed:true, body: u.lang.expired_explanation },
+                ],
+                positive: {
+                    label: u.lang.ok,
+                },
+                onclose: function() {
+                    window.location = "/track/";
+                }
+            }).open();
+
+//            window.history.pushState({}, null, "/track/" );
+
         },
         onStop: function(){
             console.log("ONSTOP");

@@ -11,12 +11,6 @@ function GpsHolder(main) {
 
     function start() {
 
-        /*var latLong;
-        $.getJSON("https://ipinfo.io", function(ipinfo){
-            console.log("Found location ["+ipinfo.loc+"] by ipinfo.io");
-            latLong = ipinfo.loc.split(",");
-        });*/
-
 //        u.save("gps:asked");
 //        u.save("gps:allowed");
 
@@ -100,8 +94,8 @@ function GpsHolder(main) {
             drawerEnableGeoposition.hide();
             u.save("gps:asked", true);
             u.save("gps:allowed", true);
-            main.me.location = null;
-            locationUpdateListener(location);
+//            main.me.location = null;
+            locationUpdateListener(location, true);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
                 console.error(error);
             }, {
@@ -130,6 +124,10 @@ function GpsHolder(main) {
                     message = u.lang.unknown_error_occurred_while_requesting_geolocation;
                     break;
             }
+
+            u.getJSON("https://ipinfo.io/json", function(json) {
+                console.log("Found location ["+json.loc+"] by ipinfo.io",json);
+            }, function(xhr){console.error(xhr)});
 
             var icon;
             var alert = u.dialog({
@@ -167,11 +165,11 @@ function GpsHolder(main) {
     }
 
 
-    function locationUpdateListener(position) {
+    function locationUpdateListener(position, force) {
 
         if(!position || !position.coords) return;
         // position = geoTrackFilter.normalizeLocation(position);
-        var last = main.me && main.me.location;
+        var last = force ? null : (main.me && main.me.location);
         if(last
             && last.coords
             && last.coords.latitude == position.coords.latitude

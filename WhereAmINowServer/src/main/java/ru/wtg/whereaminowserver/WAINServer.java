@@ -25,6 +25,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
+import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.Constants;
 import ru.wtg.whereaminowserver.helpers.SensitiveData;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
@@ -45,13 +46,10 @@ public class WAINServer {
 
     private static MyWsServer wsServer;
     private static MyWsServer wssServer;
-    private static HttpServer server;
-    private static HttpsServer sslServer;
-    private static WainProcessorFirebase wainProcessorFirebase;
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
 
-        Constants.SENSITIVE = new SensitiveData(args[0]);
+        Constants.SENSITIVE = new SensitiveData(args);
 
 
         try {
@@ -63,11 +61,11 @@ public class WAINServer {
             e.printStackTrace();
         }
 
-        wainProcessorFirebase = new WainProcessorFirebase();
+        WainProcessorFirebase wainProcessorFirebase = new WainProcessorFirebase();
         wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), wainProcessorFirebase);
         wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), wainProcessorFirebase);
 
-        System.out.println("Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
+        Common.log("Main","Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
 
         System.out.println("Server \t\t\t\t| Port \t| Path");
         System.out.println("----------------------------------------------");
@@ -210,7 +208,7 @@ public class WAINServer {
             }
         }.start();*/
 
-        server = HttpServer.create();
+        HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(SENSITIVE.getHttpPort()), 0);
 
         MyHttpRedirectHandler redirectServer = new MyHttpRedirectHandler();
@@ -252,7 +250,7 @@ public class WAINServer {
 
 
         try {
-            sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsPort()), 0);
+            HttpsServer sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsPort()), 0);
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -288,7 +286,7 @@ public class WAINServer {
                         params.setSSLParameters(defaultSSLParameters);
 
                     } catch (Exception ex) {
-                        System.out.println("Failed to create HTTPS port");
+                        Common.log("Main","Failed to create HTTPS port");
                     }
                 }
             });
@@ -296,16 +294,16 @@ public class WAINServer {
             sslServer.createContext("/", mainServer);
             System.out.println("Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
 
-            sslServer.createContext("/track", trackingServer);
+            sslServer.createContext("/track/", trackingServer);
             System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track");
 
-            sslServer.createContext("/group", trackingServer);
+            sslServer.createContext("/group/", trackingServer);
             System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group");
 
-            sslServer.createContext("/join", joinServer);
+            sslServer.createContext("/join/", joinServer);
             System.out.println("Join HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/join");
 
-            sslServer.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
+            sslServer.createContext("/admin/", adminServer).setAuthenticator(new Authenticator("get"));
             System.out.println("Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin");
 
             sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor

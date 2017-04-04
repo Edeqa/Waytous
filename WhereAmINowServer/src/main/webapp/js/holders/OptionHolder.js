@@ -104,7 +104,7 @@ function OptionHolder(main) {
                         className: "option-item",
                         enclosed: true,
                         label: title,
-                    });
+                    }, sections[option.id]);
                     for(var k in category.items) {
                         var item = category.items[k];
                         var id = i + ":" + j + ":" + k;
@@ -119,7 +119,6 @@ function OptionHolder(main) {
     }
 
     function populateOptionsDialog() {
-
         var modules = main.holders;
         modules.main = main;
         for(var i in options) {
@@ -145,9 +144,7 @@ function OptionHolder(main) {
                     }
                     break;
             }
-
         }
-
     }
 
     return {

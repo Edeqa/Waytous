@@ -31,6 +31,8 @@ import ru.wtg.whereaminow.holders.PropertiesHolder;
 import ru.wtg.whereaminow.holders.TrackingHolder;
 import ru.wtg.whereaminow.interfaces.EntityHolder;
 import ru.wtg.whereaminow.interfaces.Tracking;
+import ru.wtg.whereaminowserver.helpers.Constants;
+import ru.wtg.whereaminowserver.helpers.SensitiveData;
 
 import static ru.wtg.whereaminow.ExceptionActivity.EXCEPTION;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_COLOR;
@@ -78,6 +80,11 @@ public class State extends MultiDexApplication {
 
     @Override
     public void onCreate() {
+
+//        Constants.SENSITIVE = new SensitiveData(new String[]{""+BuildConfig.DEBUG});
+        Constants.SENSITIVE = new SensitiveData(new String[]{"file:///android_asset/options.json"});
+
+
         super.onCreate();
         instance = this;
 

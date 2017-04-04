@@ -73,6 +73,8 @@ window.HTML = {
 window.ERRORS = {
     NOT_EXISTS: 1,
     NOT_AN_OBJECT: 2,
+    INCORRECT_JSON: 4,
+    ERROR_LOADING: 8
 };
 
 function Utils(main) {
@@ -718,6 +720,7 @@ function Utils(main) {
         return i.toLowerCase()
     }
 
+    var modalBackground;
     function dialog(options) {
         var dialog = create(HTML.DIV, {
             className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
@@ -871,8 +874,14 @@ function Utils(main) {
             }
         }
 
+        if(options.modal) {
+            modalBackground = modalBackground || u.create(HTML.DIV, {className:"dim"}, main.right);
+            dialog.modal = modalBackground;
+        }
+
         dialog.open = function(event){
             clearInterval(dialog.intervalTask);
+            dialog.modal && dialog.modal.show();
             dialog.show();
             dialog.opened = true;
             dialog.adjustPosition();
@@ -894,6 +903,7 @@ function Utils(main) {
 
         dialog.close = function (event){
             dialog.hide();
+            dialog.modal && dialog.modal.hide();
             dialog.opened = false;
 
             clearInterval(dialog.intervalTask);
@@ -1088,7 +1098,7 @@ function Utils(main) {
             a = a.replace(/%[a-z]/,arguments[b][0].constructor === HTMLSpanElement ?
                 (arguments[b][0].dataset && arguments[b][0].dataset.lang
                     && lang.$origin[arguments[b][0].dataset.lang] ? lang[arguments[b][0].dataset.lang].outerText : arguments[b][0].outerText)
-                : arguments[b][0]);
+                : (arguments[b].constructor === Array ? arguments[b][0] : (arguments[b].constructor === Object ? arguments[b][0] : arguments[b])));
         }
         return a; // Make chainable
     }
@@ -1116,7 +1126,6 @@ function Utils(main) {
         this.span_ = node;
         var div = this.div_ = create(HTML.DIV, {style: "position: absolute; display: none"});
         div.appendChild(node);
-
 
         this.onAdd = function() {
              var pane = this.getPanes().overlayLayer;
@@ -1260,42 +1269,40 @@ function Utils(main) {
 
             var resourcesFile = "/locales/resources." + holder + ".json";
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", resourcesFile, true);
-            xhr.onreadystatechange = function() { // (3)
-                if (xhr.readyState != 4) return;
-                if (xhr.status != 200) {
-                    console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
-                    if(holder != "en-us"){
-                        console.warn("Switching to default resources \"en-us\".")
-                        lang.overrideResources("en-us");
-                    }
-                } else {
-                    try {
-                        var json = JSON.parse(xhr.responseText);
-                        var nodes = document.getElementsByTagName(HTML.SPAN);
-                        console.warn("Switching to resources \""+holder+"\".");
-                        for(var x in json) {
+            getJSON(resourcesFile, function(json){
+                var nodes = document.getElementsByTagName(HTML.SPAN);
+                console.warn("Switching to resources \""+holder+"\".");
+                for(var x in json) {
 //                            if(lang.$origin[x]) {
 //                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
 //                            }
-                            lang(x, json[x]);
+                    lang(x, json[x]);
+                }
+                for(var i = 0; i < nodes.length; i++) {
+                    if(nodes[i].dataset && nodes[i].dataset.lang) {
+                        nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
+                    }
+                }
+
+            }, function(code, xhr){
+                switch(code) {
+                    case ERRORS.ERROR_LOADING:
+                        console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
+                        if(holder != "en-us"){
+                            console.warn("Switching to default resources \"en-us\".")
+                            lang.overrideResources("en-us");
                         }
-                        for(var i = 0; i < nodes.length; i++) {
-                            if(nodes[i].dataset && nodes[i].dataset.lang) {
-                                nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
-                            }
-                        }
-                    } catch(e) {
+                        break;
+                    case ERRORS.INCORRECT_JSON:
                         console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",e);
                         if(holder != "en-us"){
                             console.warn("Switching to default resources \"en-us\".")
                             lang.overrideResources("en-us");
                         }
-                    }
+                        break;
                 }
-            }
-            xhr.send();
+            });
+
         } else if(holder.resources) {
             for(var x in holder.resources) {
                 if(lang[x]) {
@@ -1310,6 +1317,36 @@ function Utils(main) {
         if(node && lang && lang.dataset && lang.dataset.lang) {
             node.innerHTML = lang.innerHTML;
             node.dataset.lang = lang.dataset.lang;
+        }
+    }
+
+    function getJSON(url, callback, fallback) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function() { // (3)
+            if (xhr.readyState != 4) return;
+            if (xhr.status != 200) {
+                if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
+                else console.error("Error loading resource",xhr);
+            } else {
+                if(callback) {
+                    try {
+                        var json = JSON.parse(xhr.responseText);
+                        callback(json, xhr);
+                    } catch(e) {
+                        if(fallback) fallback(ERRORS.INCORRECT_JSON, xhr);
+                        else console.error(e);
+                    }
+                }
+            }
+        }
+        try {
+            xhr.send();
+        } catch(e) {
+//            if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
+//            else console.error("Error loading resource",xhr);
+            console.error("Error sending request",xhr);
         }
     }
 
@@ -1344,5 +1381,6 @@ function Utils(main) {
         popupBlockerChecker:popupBlockerChecker,
         cloneAsObject:cloneAsObject,
         lang:lang,
+        getJSON:getJSON,
     }
 }

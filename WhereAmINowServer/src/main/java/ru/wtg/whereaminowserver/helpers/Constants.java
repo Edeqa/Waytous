@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 29;
+    public final static int SERVER_BUILD = 30;
 
     public static SensitiveData SENSITIVE;
 
@@ -13,7 +13,7 @@ public class Constants {
 
     public final static int LOCATION_UPDATES_DELAY = 1000;
 
-    // client constants
+// client constants
     public static final String REQUEST = "client";
     public static final String REQUEST_TIMESTAMP = "timestamp";
     public static final String REQUEST_UPDATE = "update";

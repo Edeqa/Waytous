@@ -21,6 +21,7 @@
   "default": "Default",
   "english": "English (US)",
   "russian": "Russian",
+  "error_while_loading_service": "We are sorry but some error occurred while loading the service. Please wait a few minutes and try again.",
 
 
   "SECTION ButtonHolder": "// ",
@@ -127,6 +128,7 @@
 
   "SECTION NavigationHolder": "// ",
 
+  "navigation": "Navigation",
   "hide_navigations": "Hide navigations",
   "show_navigation": "Show navigation",
   "hide_navigation": "Hide navigation",
@@ -231,6 +233,9 @@
   "sound_on_join": "Sound on join",
   "none": "None",
   "user_s_has_joined": "User %s has joined.",
+
+  "sorry_you_have_requested_the_expired_group": "Sorry, you have requested the expired group.",
+  "expired_explanation": "Somebody has created this group to meet with his friends. Perhaps that goal was succeded because the group was removed. <p>You can create your own group and send the link to your friends. Note that the group expires soon if nobody will be online. If you'd like to create the permanent group please ask the administration.",
 
   "SECTION": "// ",
 

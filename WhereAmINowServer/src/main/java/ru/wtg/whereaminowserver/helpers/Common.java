@@ -59,5 +59,27 @@ public class Common {
         }*/
 
     }
+    public static void err(Object... text) {
+        String str = "";
+        for(int i = 0; i < text.length; i++){
+            str += text[i] + " ";
+        }
+        System.err.println(Common.dateFormat.format(new Date()) + "/" + str);
+        /*try {
+            if(out == null) {
+                File log = new File("WhereAmINowServer/WAIN.log");
+                System.out.println("Log file: "+log.getAbsolutePath());
+//            out = new PrintWriter(new BufferedWriter(new FileWriter("WhereAmINowServer/WAIN.log", true)));
+                out = new PrintWriter(log);
+            }
+
+            out.println(Common.dateFormat.format(new Date()) + "/" + str);
+            out.flush();
+//            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+    }
 
 }

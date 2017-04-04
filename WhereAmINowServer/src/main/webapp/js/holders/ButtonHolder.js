@@ -164,7 +164,7 @@ function ButtonHolder(main) {
         color = u.getRGBAColor(color, 0.4);
 
         var task;
-        var onlyTouch,clicked;
+        var onlyTouch,clicked,firstClick;
         var b = u.create(HTML.DIV, {
             className:"user-button" +(user.properties.active ? "" : " hidden"),
             dataNumber:user.number,
@@ -172,7 +172,15 @@ function ButtonHolder(main) {
             onclick: function() {
                 user.fire(EVENTS.SELECT_SINGLE_USER);
                 openContextMenu(user, false);
-
+                var thisClick = new Date().getTime();
+                firstClick = firstClick || 0;
+                if(thisClick - firstClick < 500) {
+                    setTimeout(function(){
+                        user.fire(EVENTS.CAMERA_ZOOM);
+                        contextMenuLayout.hide();
+                    },0);
+                }
+                firstClick = thisClick;
             },
             onlongclick: function() {
                 openContextMenu(user, true);

@@ -91,7 +91,7 @@ button:active {
     text-align: center;
     width: 500px;
     max-width: 80%;
-    z-index: 6000 !important;
+    z-index: 20000 !important;
 }
 .alert-icon {
     font-family: "Material Icons";
@@ -534,6 +534,15 @@ p.bottom-desc {
     padding-left: 10px;
     padding-right: 10px;
 }
+.dim {
+    position: fixed;
+    z-index: 11000;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(128, 128, 128, 0.4);
+}
 .modal {
     position: absolute;
     display: flex;
@@ -684,8 +693,6 @@ p.bottom-desc {
 }
 .dialog-item-enclosed {
     margin-top: 10px;
-    outline-style: dashed;
-    outline-width: 1px;
     font-size: smaller;
 }
 .dialog-item-enclosed-button {
@@ -709,6 +716,8 @@ p.bottom-desc {
     text-align: left;
     padding: 2px;
     padding-top: 10px;
+    outline-style: dashed;
+    outline-width: 1px;
 }
 .dialog-buttons {
     align-self: center;
@@ -833,7 +842,7 @@ p.bottom-desc {
     max-width: 60%;
     top: auto;
     top: 10px;
-    left: 260px;
+    left: 10px;
     outline: none;
 }
 .streetview-placeholder {
@@ -1070,6 +1079,7 @@ p.bottom-desc {
     font-weight: bold;
     min-height: 25px;
     justify-content: flex-start;
+    flex-direction: column;
 }
 .option-item {
     width: 100%;
