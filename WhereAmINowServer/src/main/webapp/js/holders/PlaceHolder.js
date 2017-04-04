@@ -70,7 +70,7 @@ function PlaceHolder(main) {
                             var last = u.loadForGroup("place:last") || 0;
 
                             for(var i = 1; i <= last; i++) {
-                                var l = u.load("place:"+i);
+                                var l = u.loadForGroup("place:"+i);
                                 if(l && l.key && l.key == o.key) {
                                     main.users.forUser(l.number, function(number,user){
                                         user.fire(EVENTS.SELECT_SINGLE_USER);
@@ -114,7 +114,7 @@ function PlaceHolder(main) {
             case EVENTS.MAP_READY:
                 drawerItemSearch.enable();
                 for(var i = 1; i <= (u.loadForGroup("place:last") || 0); i++) {
-                    var place = u.load("place:" + i);
+                    var place = u.loadForGroup("place:" + i);
                     if(place && place.number) {
                         main.fire(EVENTS.SHOW_PLACE, place);
                     } else {

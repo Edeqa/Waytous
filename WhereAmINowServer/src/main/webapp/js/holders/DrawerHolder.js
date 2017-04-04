@@ -116,10 +116,10 @@ function DrawerHolder(main) {
                 alphaDialog.open();
             }
          }, layout.header);
-         headerName = u.create(HTML.DIV, {className:"drawer-header-name", onclick: function(){
-            layout.blur();
-            main.me.fire(EVENTS.SELECT_SINGLE_USER);
-        }}, layout.header);
+         headerName = u.create(HTML.DIV, {className:"drawer-header-name", onclick: function(evt){
+                layout.blur();
+                main.me.fire(EVENTS.SELECT_SINGLE_USER);
+            }}, layout.header);
          headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, layout.header);
          u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML: u.lang.be_always_on_the_same_way }, layout.header);
 

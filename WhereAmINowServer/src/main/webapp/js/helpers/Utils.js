@@ -135,12 +135,12 @@ function Utils(main) {
 
     HTMLDivElement.prototype.show = function() {
         this.classList.remove("hidden");
-        this.hidden = false;
+        this.isHidden = false;
         return this;
     }
     HTMLDivElement.prototype.hide = function() {
         this.classList.add("hidden");
-        this.hidden = true;
+        this.isHidden = true;
         return this;
     }
 
@@ -168,6 +168,38 @@ function Utils(main) {
                         }
                     } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
+                    } else if(x.toLowerCase() == "onlongclick" && properties[x]) {
+                        var mousedown,mouseup;
+                        el.longclickFunction = properties[x];
+                        mousedown = function(evt){
+                            clearTimeout(el.longTask);
+                            el.addEventListener("mouseup", mouseup);
+                            el.addEventListener("touchend", mouseup);
+                            el.longTask = setTimeout(function(){
+                                el.removeEventListener("mouseup", mouseup);
+                                el.removeEventListener("touchend", mouseup);
+                                el.longTask = -1;
+                                el.longclickFunction(evt);
+                            }, 500);
+                        };
+                        mouseup = function(){
+                            clearTimeout(el.longTask);
+                        }
+                        el.addEventListener("mousedown", mousedown, false);
+                        el.addEventListener("touchstart", mousedown, false);
+                        el.addEventListener("contextmenu", function(evt){
+                            evt.preventDefault();
+                            evt.stopPropagation();
+                        }, false);
+                    } else if(x.toLowerCase() == "onclick") {
+                        el.clickFunction = properties[x];
+                        if(el.clickFunction) {
+                            var call = function(evt) {
+                                if(el.longTask && el.longTask < 0) return;
+                                el.clickFunction(evt);
+                            }
+                            el.addEventListener("click", call, false);
+                        }
                     } else if(x.indexOf("on") == 0) {
                         var action = x.substr(2).toLowerCase();
                         var call = properties[x];
@@ -452,7 +484,7 @@ function Utils(main) {
         json[USER.ACCURACY] = location.coords.accuracy || 50;
         json[USER.BEARING] = location.coords.heading || 0;
         json[USER.SPEED] = location.coords.speed || 0;
-        json[REQUEST.TIMESTAMP] = location.timestamp;
+        json[REQUEST.TIMESTAMP] = location.timestamp || new Date().getTime();
         return json;
     }
 

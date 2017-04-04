@@ -42,6 +42,9 @@ function TrackingHolder(main) {
                 { type: HTML.DIV, className: "progress-title" },
             ]
         });
+
+        var soundFile = u.load("tracking:sound_on_join") || "oringz-w427.mp3";
+        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile}, main.right);
         progressTitle = progress.items[1];
         noSleep = new NoSleep();
         wakeLockEnabled = false;
@@ -316,10 +319,8 @@ function TrackingHolder(main) {
                             user.fire(EVENTS.MAKE_ACTIVE);
                             main.fire(USER.JOINED, user);
 
-                            var soundFile = u.load("tracking:sound_on_join") || "oringz-w427.mp3";
-                            sound = sound || u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, onload:function(){sound.play();}}, main.right);
-
-                            if(soundFile != "none" && !user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
+                            if(!user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
+                                main.toast.show(u.lang.user_s_has_joined.format(user.properties.getDisplayName()), 10000);
                                 sound.play();
                             }
                             // console.log("JOINED",number);
@@ -382,7 +383,13 @@ function TrackingHolder(main) {
                             onaccept: function(e, event) {
                                 u.save("tracking:sound_on_join", this.value);
                                 sound.src = "/sounds/" + this.value;
-                                console.log("LANGUAGE:",this.value);
+                            },
+                            onchange: function(e, event) {
+                                var sample = u.create(HTML.AUDIO, {className:"hidden", preload:true, src:"/sounds/"+this.value}, main.right);
+                                sample.addEventListener("load", function() {
+                                    sample.play();
+                                }, true);
+                                sample.play();
                             },
                             values: {"none.mp3": u.lang.none, "arpeggio.mp3": "Arpeggio", "job-done.mp3": "Job done", "oringz-w427.mp3":"Oringz", "wet.mp3":"Wet" }
                         }

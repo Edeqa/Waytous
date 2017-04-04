@@ -52,7 +52,11 @@ function OptionHolder(main) {
                 label: u.lang.apply,
                 onclick: function(e, event) {
                     for(var i in options) {
-                        options[i].onaccept(e, event);
+                        try {
+                            options[i].onaccept(e, event);
+                        } catch(e) {
+                            console.error(e);
+                        }
                     }
                 }
             },
@@ -94,7 +98,7 @@ function OptionHolder(main) {
                     }
                     title = title || "";
 
-                    var cat = optionsDialog.addItem({
+                    categories[category.id || ""] = categories[category.id || ""] || optionsDialog.addItem({
                         id: category.id || "",
                         type: HTML.DIV,
                         className: "option-item",
@@ -104,9 +108,10 @@ function OptionHolder(main) {
                     for(var k in category.items) {
                         var item = category.items[k];
                         var id = i + ":" + j + ":" + k;
-                        options[id] = optionsDialog.addItem(item, cat.lastChild);
+                        options[id] = optionsDialog.addItem(item, categories[category.id || ""].lastChild);
 //                        delete options[id].accept;
                         options[id].onaccept = item.onaccept;
+                        if(item.onchange) options[id].addEventListener("change", item.onchange);
                     }
                 }
             }

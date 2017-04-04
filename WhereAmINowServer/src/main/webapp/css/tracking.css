@@ -1352,9 +1352,11 @@ p.bottom-desc {
         background-color: rgba(211, 211, 211, 0.8);
         width: 45px;
         height: 45px;
+        flex-direction: column;
     }
     .user-context-menu-item-title {
-        display: none;
+        font-size: 6px;
+        white-space: nowrap;
     }
     .console {
         left: 0;

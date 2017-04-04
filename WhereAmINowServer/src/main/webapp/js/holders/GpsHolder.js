@@ -100,6 +100,7 @@ function GpsHolder(main) {
             drawerEnableGeoposition.hide();
             u.save("gps:asked", true);
             u.save("gps:allowed", true);
+            main.me.location = null;
             locationUpdateListener(location);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
                 console.error(error);
@@ -168,13 +169,18 @@ function GpsHolder(main) {
 
     function locationUpdateListener(position) {
 
-        if(!position) return;
+        if(!position || !position.coords) return;
         // position = geoTrackFilter.normalizeLocation(position);
-        var last = main.me.location;
-        if(last && last.coords && last.coords.latitude == position.coords.latitude && last.coords.longitude == position.coords.longitude) {
+        var last = main.me && main.me.location;
+        if(last
+            && last.coords
+            && last.coords.latitude == position.coords.latitude
+            && last.coords.longitude == position.coords.longitude) {
+                return;
+        }
+        if(!(position.coords.accuracy && last && last.coords && last.coords.accuracy && position.coords.accuracy > last.coords.accuracy && google.maps.geometry.spherical.computeDistanceBetween(u.latLng(last), u.latLng(position)) < position.coords.accuracy)) {
             return;
         }
-//        console.log("POSITION",position.coords.latitude, position.coords.longitude, position);
 
         u.save("gps:last",u.cloneAsObject(position));
         var message = u.locationToJson(position);

@@ -130,7 +130,7 @@
   "hide_navigations": "Hide navigations",
   "show_navigation": "Show navigation",
   "hide_navigation": "Hide navigation",
-  "navigate_with_google_maps": "Navigate with Google Maps",
+  "navigate_with_google_maps": "Google Maps",
   "setting_up_direction": "Setting up direction...",
   "sorry_direction_request_was_failed": "Sorry, direction request was failed.",
   "navigation_options": "Navigation options",
@@ -230,6 +230,7 @@
 
   "sound_on_join": "Sound on join",
   "none": "None",
+  "user_s_has_joined": "User %s has joined.",
 
   "SECTION": "// ",
 

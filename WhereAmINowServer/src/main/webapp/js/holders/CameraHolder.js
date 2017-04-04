@@ -76,11 +76,17 @@ function CameraHolder(main) {
                     unselect.hide();
                     user.fire(EVENTS.UNSELECT_USER);
                 });
-                if(user.properties.selected) {
-                    select.hide();
-                } else {
-                    unselect.hide();
-                }
+                select.hide();
+                unselect.hide();
+                setTimeout(function(){
+                    if(user.properties.selected) {
+                        if(main.users.getCountSelected() > 1) {
+                            unselect.show();
+                        }
+                    } else {
+                        select.show();
+                    }
+                }, 0);
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 menuFitToScreen.enable();

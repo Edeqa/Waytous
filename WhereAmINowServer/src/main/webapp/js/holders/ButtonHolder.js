@@ -169,6 +169,15 @@ function ButtonHolder(main) {
             className:"user-button" +(user.properties.active ? "" : " hidden"),
             dataNumber:user.number,
             style:{backgroundColor:color},
+            onclick: function() {
+                user.fire(EVENTS.SELECT_SINGLE_USER);
+                openContextMenu(user, false);
+
+            },
+            onlongclick: function() {
+                openContextMenu(user, true);
+            },
+/*
             onmousedown: function(){
                 onlyTouch = true;
                 startTime = new Date().getTime();
@@ -198,7 +207,7 @@ function ButtonHolder(main) {
                     }
                 }
                 clearTimeout(task);
-            },
+            },*/
             onmouseenter: function(e) {
                 user.fire(EVENTS.MOUSE_OVER,e);
             },
@@ -286,6 +295,9 @@ function ButtonHolder(main) {
                         callback();
                     }, 0);
                 },
+                onlongclick: function(){
+                    main.toast.show(name);
+                }
             }, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
