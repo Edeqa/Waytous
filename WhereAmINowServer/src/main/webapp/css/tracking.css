@@ -218,14 +218,14 @@ button:active {
     border-width: 1px;
     border-radius: 10px;
     padding: 2px;
-    position: absolute;
-    right: 0px;
+    position: relative;
+    right: 10px;
     top: 0px;
     font-size: 12px;
-    margin: 12px;
     min-width: 12px;
     font-weight: normal;
     text-align: center;
+    margin-left: auto;
 }
 .drawer-menu-item-social {
     display: flex;
@@ -1078,7 +1078,8 @@ p.bottom-desc {
     margin-top: 10px;
     font-weight: bold;
     min-height: 25px;
-    justify-content: flex-start;
+}
+.option-section {
     flex-direction: column;
 }
 .option-item {

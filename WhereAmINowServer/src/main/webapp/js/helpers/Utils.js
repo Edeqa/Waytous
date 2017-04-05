@@ -108,6 +108,30 @@ function Utils(main) {
         }
     };
 
+    HTMLDivElement.prototype.show = function() {
+        this.classList.remove("hidden");
+        this.isHidden = false;
+        return this;
+    }
+    HTMLDivElement.prototype.hide = function() {
+        this.classList.add("hidden");
+        this.isHidden = true;
+        return this;
+    }
+
+    Object.defineProperty(Object.prototype, "assign", {
+        enumerable: false,
+        value: function(target, first, second) {
+            for(var x in first) {
+                if(first.hasOwnProperty(x)) target[x] = first[x];
+            }
+            for(var x in second) {
+                if(second.hasOwnProperty(x)) target[x] = first[x];
+            }
+            return target;
+        }
+    });
+
     function normalizeName(name) {
         if(name == HTML.CLASSNAME){
             name = "class";
@@ -134,17 +158,6 @@ function Utils(main) {
         "d":1,
         "tabindex":1
     };
-
-    HTMLDivElement.prototype.show = function() {
-        this.classList.remove("hidden");
-        this.isHidden = false;
-        return this;
-    }
-    HTMLDivElement.prototype.hide = function() {
-        this.classList.add("hidden");
-        this.isHidden = true;
-        return this;
-    }
 
     function create(name, properties, appendTo, position) {
         var el,namespace;
@@ -836,10 +849,14 @@ function Utils(main) {
         }
 
         dialog.adjustPosition = function() {
-            var left = load("dialog:left:"+(options.id || (options.title && options.title.label)));
-            var top = load("dialog:top:"+(options.id || (options.title && options.title.label)));
-            var width = load("dialog:width:"+(options.id || (options.title && options.title.label)));
-            var height = load("dialog:height:"+(options.id || (options.title && options.title.label)));
+            var left,top,width,height;
+            var id = options.id || (options.title && options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+            if(id) {
+                left = load("dialog:left:"+id);
+                top = load("dialog:top:"+id);
+                width = load("dialog:width:"+id);
+                height = load("dialog:height:"+id);
+            }
             if(left || top || width || height) {
                 if(left) dialog.style.left = left;
                 if(top) dialog.style.top = top;
@@ -858,7 +875,6 @@ function Utils(main) {
                     dialog.style.bottom = "auto";
                 }
             }
-
             dialog.focus();
             var focused = false;
             for(var i in items) {
@@ -953,9 +969,10 @@ function Utils(main) {
                     function mouseup(e){
                         window.removeEventListener(HTML.MOUSEUP, mouseup, false);
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
-                        if((options.id || options.title.label) && moved) {
-                            if(dialog.style.left) save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
-                            if(dialog.style.top) save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
+                        var id = options.id || (options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+                        if(id && moved) {
+                            if(dialog.style.left) save("dialog:left:"+id, dialog.style.left);
+                            if(dialog.style.top) save("dialog:top:"+id, dialog.style.top);
 //                            if(dialog.style.width) save("dialog:width:"+(options.id || options.title.label), dialog.style.width);
 //                            if(dialog.style.height) save("dialog:height:"+(options.id || options.title.label), dialog.style.height);
                         }
@@ -976,10 +993,11 @@ function Utils(main) {
                     e.preventDefault();
                 },
                 ondblclick: function(e) {
-                    save("dialog:left:"+(options.id || options.title.label));
-                    save("dialog:top:"+(options.id || options.title.label));
-                    save("dialog:width:"+(options.id || options.title.label));
-                    save("dialog:height:"+(options.id || options.title.label));
+                    var id = options.id || (options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+                    save("dialog:left:"+id);
+                    save("dialog:top:"+id);
+                    save("dialog:width:"+id);
+                    save("dialog:height:"+id);
                     dialog.style.left = "";
                     dialog.style.top = "";
                     dialog.style.width = "";
@@ -1041,8 +1059,9 @@ function Utils(main) {
                         if((options.id || options.title.label) && moved) {
 //                            if(dialog.style.left) save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
 //                            if(dialog.style.top) save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
-                            if(dialog.style.width) save("dialog:width:"+(options.id || options.title.label), dialog.style.width);
-                            if(dialog.style.height) save("dialog:height:"+(options.id || options.title.label), dialog.style.height);
+                            var id = options.id || (options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+                            if(dialog.style.width) save("dialog:width:"+id, dialog.style.width);
+                            if(dialog.style.height) save("dialog:height:"+id, dialog.style.height);
                         }
                     }
                     function mousemove(e){

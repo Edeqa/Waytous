@@ -69,8 +69,7 @@ function OptionHolder(main) {
         categories = {};
         options = {};
 
-        var modules = main.holders;
-        modules.main = main;
+        var modules = Object.assign({}, {main:main}, main.holders);
 
         for(var i in modules) {
             if(modules[i] && modules[i].options && modules[i].options().title) {
@@ -82,11 +81,17 @@ function OptionHolder(main) {
                 title = title || modules[i].type;
 
                 if(!option.id || !sections[option.id]) {
-                    sections[option.id] = optionsDialog.addItem({
+                    optionsDialog.addItem({
                         id: option.id || "",
                         type:HTML.DIV,
                         className:"option-title",
                         innerHTML: title
+                    });
+                    sections[option.id] = optionsDialog.addItem({
+                        id: option.id || "",
+                        type:HTML.DIV,
+                        className:"option-section",
+//                        innerHTML: title
                     });
                 }
                 for(var j in option.categories) {

@@ -40,38 +40,8 @@ function StreetViewHolder(main) {
 
                 streetviewService = new google.maps.StreetViewService();
 
-                view = u.dialog({
-                    title: {
-                        label: u.lang.street_view,
-                        className: "mobile-hidden"
-                    },
-                    className: "streetview",
-                    tabindex: 1,
-                    items: [
-                        { type: HTML.DIV, className: "streetview-placeholder", innerHTML: u.lang.loading },
-                        { type: HTML.DIV, className: "streetview-view hidden", id: "streetview" },
-                    ],
-                    onclose: function(){
-                        u.save("streetview:show");
-                        show = false;
-                        drawerShow.show();
-                        drawerHide.hide();
-                        google.maps.event.trigger(main.map, 'resize');
-                        main.fire(EVENTS.CAMERA_UPDATE);
-                    },
-                    onopen: function() {
-                        u.save("streetview:show",true);
-                        show = true;
-                        drawerShow.hide();
-                        drawerHide.show();
-                        google.maps.event.trigger(main.map, 'resize');
-                        main.fire(EVENTS.CAMERA_UPDATE);
-                        update();
-                    }
-                });
-                placeholder = view.items[0];
-                streetview = view.items[1];
-                if(show) view.open();
+
+                if(show) update();
                 break;
             default:
                 break;
@@ -95,7 +65,42 @@ function StreetViewHolder(main) {
     }
 
     function update() {
-        if(show && main.users.getCountSelected() == 1) {
+
+        if(!view) {
+            view = u.dialog({
+                title: {
+                    label: u.lang.street_view,
+                    className: "mobile-hidden"
+                },
+                className: "streetview",
+                tabindex: 1,
+                items: [
+                    { type: HTML.DIV, className: "streetview-placeholder", innerHTML: u.lang.loading },
+                    { type: HTML.DIV, className: "streetview-view hidden", id: "streetview" },
+                ],
+                onclose: function(){
+                    u.save("streetview:show");
+                    show = false;
+                    drawerShow.show();
+                    drawerHide.hide();
+                    google.maps.event.trigger(main.map, 'resize');
+                    main.fire(EVENTS.CAMERA_UPDATE);
+                },
+                onopen: function() {
+                    u.save("streetview:show",true);
+                    show = true;
+                    drawerShow.hide();
+                    drawerHide.show();
+                    google.maps.event.trigger(main.map, 'resize');
+                    main.fire(EVENTS.CAMERA_UPDATE);
+                    update();
+                }
+            });
+            placeholder = view.items[0];
+            streetview = view.items[1];
+            if(show) view.open();
+        }
+        if(streetviewService && show && main.users.getCountSelected() == 1) {
             main.users.forAllUsers(function(number, user){
                 if(!user.properties.selected || !user.location) return;
 

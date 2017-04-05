@@ -94,7 +94,7 @@ function TrackingHolder(main) {
             case EVENTS.MAP_READY:
                 drawerItemNew.show();
                 var group = window.location.pathname.split("/")[2];
-                var groupOld = u.loadForGroup("group");
+//                var groupOld = u.loadForGroup("group");
                 if(group) {
                     var self = this;
                     setTimeout(function(){
@@ -213,12 +213,17 @@ function TrackingHolder(main) {
         // console.log("LOADED", tracking);
         // tracking.start();
 
-        var group = window.location.pathname.split("/")[2];
-        var groupOld = u.loadForGroup("group");
-        if(group) {
+        var a = window.location.pathname.split("/");
+        if(a[2]) {
+            a[2] = a[2].toUpperCase();
+
+//            var groupOld = u.loadForGroup("group");
+            window.history.pushState({}, null, a.join("/"));
+//            window.history.pushState({}, null, "/track/" + token);
+
             main.fire(EVENTS.TRACKING_JOIN, window.location.href);
             this.tracking.setLink(window.location.href);
-            u.saveForGroup("group",group);
+            u.saveForGroup("group",a[2]);
         } else {
             progressTitle.innerHTML = u.lang.tracking_creating_group;
             console.log("NEW")

@@ -53,8 +53,7 @@ function GpsHolder(main) {
                         items: [
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
-                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_3 },
-                            { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_4, body: u.lang.gps_location_required_5 },
+                            { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_3, body: u.lang.gps_location_required_4 },
                         ],
                         positive: {
                             label: u.lang.ok_go_ahead,
@@ -98,6 +97,7 @@ function GpsHolder(main) {
             locationUpdateListener(location, true);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
                 console.error(error);
+                alternativeGeolocation();
             }, {
                 enableHighAccuracy: true,
                 maximumAge: 1000,
@@ -125,9 +125,8 @@ function GpsHolder(main) {
                     break;
             }
 
-            u.getJSON("https://ipinfo.io/json", function(json) {
-                console.log("Found location ["+json.loc+"] by ipinfo.io",json);
-            }, function(xhr){console.error(xhr)});
+            drawerEnableGeoposition.show();
+            alternativeGeolocation();
 
             var icon;
             var alert = u.dialog({
@@ -184,6 +183,27 @@ function GpsHolder(main) {
         var message = u.locationToJson(position);
         if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
+    }
+
+    function alternativeGeolocation() {
+return;
+        u.getJSON("https://ipinfo.io/json", function(json) {
+
+            console.log("Alternative geolocation applied",json);
+            var latlng = json.loc.split(",");
+            var position = {
+                coords: {
+                    provider: "ipinfo.io",
+                    latitude: latlng[0],
+                    longitude: latlng[1],
+                    accuracy: 10000
+                },
+                timestamp: new Date().getTime()
+            }
+            locationUpdateListener(position);
+
+        }, function(xhr){console.error(xhr)});
+
     }
 
     function GeoTrackFilter() {

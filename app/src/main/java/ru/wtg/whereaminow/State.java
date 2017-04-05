@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,6 +16,11 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,6 +71,8 @@ public class State extends MultiDexApplication {
     private boolean gpsAccessAllowed;
     private boolean gpsAccessRequested;
     private boolean serviceBound;
+
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder binder) {
             serviceBound = true;
@@ -82,8 +90,14 @@ public class State extends MultiDexApplication {
     public void onCreate() {
 
 //        Constants.SENSITIVE = new SensitiveData(new String[]{""+BuildConfig.DEBUG});
-        Constants.SENSITIVE = new SensitiveData(new String[]{"file:///android_asset/options.json"});
+        try {
+            InputStream stream = getAssets().open("options.json");
 
+            Reader reader = new InputStreamReader(stream);
+            Constants.SENSITIVE = new SensitiveData(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         super.onCreate();
         instance = this;
