@@ -7,12 +7,12 @@ EVENTS.HIDE_NAVIGATION = "hide_navigation";
 
 function NavigationHolder(main) {
 
-    const REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
-    const HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
-    const SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
-    const NAVIGATION_MODE_DRIVING = "car";
-    const NAVIGATION_MODE_WALKING = "walk";
-    const NAVIGATION_MODE_BICYCLING = "bike";
+    var REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
+    var HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
+    var SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
+    var NAVIGATION_MODE_DRIVING = "car";
+    var NAVIGATION_MODE_WALKING = "walk";
+    var NAVIGATION_MODE_BICYCLING = "bike";
 
     var type = "navigation";
     var view;

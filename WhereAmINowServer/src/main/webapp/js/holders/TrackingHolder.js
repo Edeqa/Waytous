@@ -7,7 +7,7 @@ function TrackingHolder(main) {
 
     var type ="tracking";
 
-    const TRACKING_URI = "uri";
+    var TRACKING_URI = "uri";
 //    var tracking;
     var progress;
     var progressTitle;

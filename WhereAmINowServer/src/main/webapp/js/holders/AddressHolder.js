@@ -8,7 +8,7 @@ function AddressHolder(main) {
 
     var type = "address";
 
-    const delayInError = 10000;
+    var delayInError = 10000;
     var delayStart;
 
     function start() {

@@ -384,16 +384,16 @@ function Utils(main) {
             needInstantiate = true;
             name += ".js";
         }
-        create(HTML.SCRIPT, {src: name, dataName: needInstantiate ? onlyname : null, onload: function(e) {
+        create(HTML.SCRIPT, {src: name, instantiate: needInstantiate ? onlyname : null, onload: function(e) {
             if (onload) {
                 var a;
                 if(needInstantiate) {
-                    if(window[this.dataset.name] && window[this.dataset.name].constructor === Function) {
-                        a = new window[this.dataset.name](context);
-                        a.moduleName = this.dataset.name;
+                    if(this.instantiate && window[this.instantiate] && window[this.instantiate].constructor === Function) {
+                        a = new window[this.instantiate](context);
+                        a.moduleName = this.instantiate;
                         lang.overrideResources(a);
                     } else {
-                        onerror(ERRORS.NOT_AN_OBJECT, this.dataset.name, e);
+                        onerror(ERRORS.NOT_AN_OBJECT, this.instantiate, e);
                     }
                 }
                 onload(a);
@@ -865,12 +865,12 @@ function Utils(main) {
                 dialog.style.right = HTML.AUTO;
                 dialog.style.bottom = HTML.AUTO;
             } else {
-                left = dialog.offsetLeft;
-                var leftMain = main.right.offsetWidth;
+//                left = dialog.offsetLeft;
+                var outWidth = main.right.offsetWidth;
 
-                if(left >= leftMain || left == 0) {
-                    dialog.style.left = ((main.right.offsetWidth - dialog.offsetWidth) /2)+"px";
-                    dialog.style.top = ((main.right.offsetWidth - dialog.offsetHeight) /2)+"px";
+                if((dialog.offsetLeft + dialog.offsetWidth) >= outWidth || left == 0) {
+                    dialog.style.left = ((outWidth - dialog.offsetWidth) /2)+"px";
+                    dialog.style.top = ((main.right.offsetHeight - dialog.offsetHeight) /2)+"px";
                     dialog.style.right = "auto";
                     dialog.style.bottom = "auto";
                 }
