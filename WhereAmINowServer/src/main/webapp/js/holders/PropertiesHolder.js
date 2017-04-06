@@ -80,16 +80,20 @@ function PropertiesHolder(main) {
                 this.properties.selected = false;
                 break;
             case EVENTS.SELECT_SINGLE_USER:
-                main.users.forAllUsers(function(number,user){
-                    user.properties.selected = false;
-                });
                 var myUser = this;
-                myUser.fire(EVENTS.SELECT_USER);
                 main.users.forAllUsers(function(number,user){
-                    if(myUser != user) {
+                    if(user == myUser) {
+                        user.properties.selected = true;
+                        myUser.fire(EVENTS.SELECT_USER);
+                    } else {
+                        user.properties.selected = false;
                         user.fire(EVENTS.UNSELECT_USER);
                     }
                 });
+//                main.users.forAllUsers(function(number,user){
+//                    if(myUser != user) {
+//                    }
+//                });
                 break;
             case EVENTS.CHANGE_NAME:
                 if(this.properties)this.properties.name = object;

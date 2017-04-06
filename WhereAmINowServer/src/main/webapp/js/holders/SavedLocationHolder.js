@@ -347,12 +347,18 @@ function SavedLocationHolder(main) {
                 break;
             case EVENTS.SHOW_SAVED_LOCATIONS:
                 locationsDialog = locationsDialog || u.dialog({
-                    title: u.lang.saved_locations,
+                    title: {
+                        label: u.lang.saved_locations,
+                        filter: true,
+                    },
                     items: [],
                     className: "saved-location",
                     itemsClassName: "saved-location-items",
                     onopen: function(){},
                     onclose: function(){},
+                    negative: {
+                        onclick: function() {}
+                    }
                 });
                 locationsDialog.clearItems();
                 var last = u.load("saved_location:counter") || 0;

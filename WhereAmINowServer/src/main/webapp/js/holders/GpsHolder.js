@@ -100,7 +100,7 @@ function GpsHolder(main) {
                 alternativeGeolocation();
             }, {
                 enableHighAccuracy: true,
-                maximumAge: 1000,
+                maximumAge: 10000,
                 timeout: 30000
             });
         },function(error){
@@ -175,10 +175,15 @@ function GpsHolder(main) {
             && last.coords.longitude == position.coords.longitude) {
                 return;
         }
-        if(!(position.coords.accuracy && last && last.coords && last.coords.accuracy && position.coords.accuracy > last.coords.accuracy && google.maps.geometry.spherical.computeDistanceBetween(u.latLng(last), u.latLng(position)) < position.coords.accuracy)) {
-            return;
+        if(position.coords.accuracy
+            && last
+            && last.coords
+            && last.coords.accuracy
+            && position.coords.accuracy > last.coords.accuracy
+            && google.maps.geometry.spherical.computeDistanceBetween(u.latLng(last), u.latLng(position)) < position.coords.accuracy) {
+                return;
         }
-
+console.log("POSITION",position);
         u.save("gps:last",u.cloneAsObject(position));
         var message = u.locationToJson(position);
         if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);

@@ -37,7 +37,10 @@ function OptionHolder(main) {
         if(optionsDialog) return;
 
         optionsDialog = u.dialog({
-            title: "Options",
+            title: {
+                label: u.lang.options,
+                filter: true
+            },
             className: "option",
             positive: {
                 label: u.lang.ok,
@@ -61,7 +64,8 @@ function OptionHolder(main) {
                 }
             },
             negative: {
-                label: u.lang.cancel
+                label: u.lang.cancel,
+                onclick: function(){}
             }
         });
 
@@ -82,7 +86,6 @@ function OptionHolder(main) {
 
                 if(!option.id || !sections[option.id]) {
                     optionsDialog.addItem({
-                        id: option.id || "",
                         type:HTML.DIV,
                         className:"option-title",
                         innerHTML: title

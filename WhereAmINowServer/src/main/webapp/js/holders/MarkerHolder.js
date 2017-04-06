@@ -19,7 +19,7 @@ function MarkerHolder(main) {
             fillColor: user.color || user.properties.color || "blue",
             fillOpacity: 0.7,
             scale: 1.2,
-            strokeColor: "white",
+            strokeColor: user == main.me ? "darkorange" : "white",
             strokeOpacity: 0.6,
             strokeWeight: 2,
             anchor: new google.maps.Point(40/2, 40/2)
@@ -90,7 +90,7 @@ function MarkerHolder(main) {
             case EVENTS.MOUSE_OUT:
                 if(this.views.marker.marker) {
                     var icon = this.views.marker.marker.getIcon();
-                    icon.strokeColor = "white";
+                    icon.strokeColor = this == main.me ? "darkorange" : "white";
                     icon.strokeWidth = 2;
                     this.views.marker.marker.setIcon(icon);
                 }

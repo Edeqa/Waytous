@@ -119,18 +119,20 @@ function Utils(main) {
         return this;
     }
 
-    Object.defineProperty(Object.prototype, "assign", {
-        enumerable: false,
-        value: function(target, first, second) {
-            for(var x in first) {
-                if(first.hasOwnProperty(x)) target[x] = first[x];
+    if(!Object.assign) {
+        Object.defineProperty(Object.prototype, "assign", {
+            enumerable: false,
+            value: function(target, first, second) {
+                for(var x in first) {
+                    if(first.hasOwnProperty(x)) target[x] = first[x];
+                }
+                for(var x in second) {
+                    if(second.hasOwnProperty(x)) target[x] = first[x];
+                }
+                return target;
             }
-            for(var x in second) {
-                if(second.hasOwnProperty(x)) target[x] = first[x];
-            }
-            return target;
-        }
-    });
+        });
+    }
 
     function normalizeName(name) {
         if(name == HTML.CLASSNAME){
@@ -384,23 +386,23 @@ function Utils(main) {
             needInstantiate = true;
             name += ".js";
         }
-        create(HTML.SCRIPT, {src: name, instantiate: needInstantiate ? onlyname : null, onload: function(e) {
+        create(HTML.SCRIPT, {src: name, instance: needInstantiate ? onlyname : null, onload: function(e) {
             if (onload) {
                 var a;
                 if(needInstantiate) {
-                    if(this.instantiate && window[this.instantiate] && window[this.instantiate].constructor === Function) {
-                        a = new window[this.instantiate](context);
-                        a.moduleName = this.instantiate;
+                    if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
+                        a = new window[this.instance](context);
+                        a.moduleName = this.instance;
                         lang.overrideResources(a);
                     } else {
-                        onerror(ERRORS.NOT_AN_OBJECT, this.instantiate, e);
+                        onerror(ERRORS.NOT_AN_OBJECT, this.instance, e);
                     }
                 }
                 onload(a);
             }
         }, onerror: function(e) {
             if(onerror) {
-                onerror(ERRORS.NOT_EXISTS, this.dataset.name, e);
+                onerror(ERRORS.NOT_EXISTS, this.instance, e);
             }
         }, async:"", defer:""}, document.head);
     }
@@ -753,12 +755,12 @@ function Utils(main) {
             item = item || {};
             appendTo = appendTo || dialog.itemsLayout;
 
-            var x;
+            var div,x;
             if(item.type == HTML.DIV || item.type == HTML.A) {
                 if(item.enclosed) {
-                    x = create(item.type, {
+                    div = x = create(item.type, {
                         className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
-                    }, appendTo);
+                    });
                     var enclosedButton, enclosedIcon;
                     enclosedButton = create(HTML.DIV, {className:"dialog-item-enclosed-button", onclick: function(){
                         if(x.body.classList.contains("hidden")) {
@@ -779,12 +781,12 @@ function Utils(main) {
                     delete item.title;
                     var type = item.type;
                     delete item.type;
-                    x = create(type, item, appendTo);
+                    div = x = create(type, item);
                 }
             } else if(item.type == HTML.HIDDEN) {
-                x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""}, appendTo);
+                div = x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""});
             } else if(item.type == HTML.SELECT) {
-                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, appendTo);
+                div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
                     create(HTML.DIV, {
@@ -815,7 +817,7 @@ function Utils(main) {
                 }
 
             } else {
-                var div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}}, appendTo);
+                div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
                     create(HTML.DIV, {
@@ -845,12 +847,29 @@ function Utils(main) {
                 }, div);
             }
             items.push(x);
+
+            if(item.order) {
+                var appended = false;
+                for(var i in appendTo.childNodes) {
+                    if(!appendTo.childNodes.hasOwnProperty(i)) continue;
+                    if(appendTo.childNodes[i].order > item.order) {
+                        appendTo.insertBefore(div, appendTo.childNodes[i]);
+                        appended = true;
+                        break;
+                    }
+                }
+                if(!appended) appendTo.appendChild(div);
+
+            } else {
+                appendTo.appendChild(div);
+            }
+
             return x;
         }
 
         dialog.adjustPosition = function() {
             var left,top,width,height;
-            var id = options.id || (options.title && options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+            var id = options.id || (options.title && options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
             if(id) {
                 left = load("dialog:left:"+id);
                 top = load("dialog:top:"+id);
@@ -928,8 +947,10 @@ function Utils(main) {
         };
         dialog.addEventListener("keyup", function(e) {
             if(e.keyCode == 27) {
-                dialog.close();
-                if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+                if(options.negative && options.negative.onclick) {
+                    dialog.close();
+                    options.negative.onclick.call(dialog,items);
+                }
             }
         });
 
@@ -959,7 +980,7 @@ function Utils(main) {
 
             }
             var titleLayout = create(HTML.DIV, {
-                className:"dialog-title" + options.title.className,
+                className:"dialog-title" + (options.title.className || ""),
                 onmousedown: function(e) {
                     if(e.button != 0) return;
 //                    var position = dialog.getBoundingClientRect();
@@ -969,7 +990,7 @@ function Utils(main) {
                     function mouseup(e){
                         window.removeEventListener(HTML.MOUSEUP, mouseup, false);
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
-                        var id = options.id || (options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+                        var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
                         if(id && moved) {
                             if(dialog.style.left) save("dialog:left:"+id, dialog.style.left);
                             if(dialog.style.top) save("dialog:top:"+id, dialog.style.top);
@@ -993,7 +1014,7 @@ function Utils(main) {
                     e.preventDefault();
                 },
                 ondblclick: function(e) {
-                    var id = options.id || (options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+                    var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
                     save("dialog:left:"+id);
                     save("dialog:top:"+id);
                     save("dialog:width:"+id);
@@ -1012,13 +1033,112 @@ function Utils(main) {
             if(options.title.button && options.title.button.icon) {
                 create(HTML.DIV, {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
+
+            if(options.title.filter) {
+                dialog.filterPlaceholder = u.create(HTML.DIV, {className:"dialog-items hidden", innerHTML:"Nothing found"}, dialog);
+                dialog.filterLayout = u.create(HTML.DIV, {
+                    className: "dialog-filter"
+                }, dialog.titleLayout);
+                dialog.filterButton = u.create(HTML.DIV, {
+                    className: "dialog-filter-button",
+                    innerHTML: "search",
+                    onclick: function() {
+                        dialog.filterButton.hide();
+                        dialog.filterInput.classList.remove("hidden");
+                        dialog.filterInput.focus();
+                    }
+                }, dialog.filterLayout);
+                dialog.filterInput = u.create(HTML.INPUT, {
+                    className: "dialog-filter-input hidden",
+                    tabindex: -1,
+                    onkeyup: function(evt) {
+                        if(evt.keyCode == 27) {
+                            evt.preventDefault();
+                            evt.stopPropagation();
+                            if(this.value) {
+                                this.value = "";
+                            } else {
+                                dialog.focus();
+                            }
+                        }
+                        this.apply();
+                    },
+                    onblur: function() {
+                        if(!this.value) {
+                            dialog.filterInput.classList.add("hidden");
+                            dialog.filterButton.show();
+                        }
+                    },
+                    onclick: function() {
+                        this.focus();
+                    },
+                    apply: function() {
+                        if(this.value) {
+                            dialog.filterClear.show();
+                        } else {
+                            dialog.filterClear.hide();
+                        }
+                        var counter = 0;
+                        for(var i in dialog.itemsLayout.childNodes) {
+                            if(!dialog.itemsLayout.childNodes.hasOwnProperty(i)) continue;
+                            if(!this.value || (dialog.itemsLayout.childNodes[i].innerText && dialog.itemsLayout.childNodes[i].innerText.toLowerCase().match(this.value.toLowerCase()))) {
+                                dialog.itemsLayout.childNodes[i].show();
+                                counter++;
+                            } else {
+                                dialog.itemsLayout.childNodes[i].hide();
+                            }
+                        }
+                        if(counter) {
+                            dialog.filterPlaceholder.hide();
+                            dialog.itemsLayout.show();
+                        } else {
+                            dialog.filterPlaceholder.show();
+                            dialog.itemsLayout.hide();
+                        }
+                    }
+                }, dialog.filterLayout);
+                dialog.filterClear = u.create(HTML.DIV, {
+                    className: "dialog-filter-clear hidden",
+                    innerHTML: "clear",
+                    onclick: function() {
+                        dialog.filterInput.value = "";
+                        dialog.filterInput.focus();
+                        dialog.filterInput.apply();
+                    }
+                }, dialog.filterLayout);
+            }
+
         }
+
+        if(options.header) {
+            var item = options.header;
+            item.className = "dialog-header" + (item.className ? " " + item.className : "");
+            item.innerHTML = item.label || item.title || item.innerHTML || "";
+            delete item.label;
+            delete item.title;
+            var type = item.type;
+            delete item.type;
+            dialog.header = create(type, item, dialog);
+        }
+
         dialog.itemsLayout = create(HTML.DIV, {className:"dialog-items" +(options.itemsClassName ? " "+options.itemsClassName : "")}, dialog);
         for(var i in options.items) {
             var item = options.items[i];
             dialog.addItem(item);
         }
         dialog.items = items;
+
+        if(options.footer) {
+            var item = options.footer;
+            item.className = "dialog-footer" + (item.className ? " " + item.className : "");
+            item.innerHTML = item.label || item.title || item.innerHTML || "";
+            delete item.label;
+            delete item.title;
+            var type = item.type;
+            delete item.type;
+            dialog.footer = create(type, item, dialog);
+        }
+
         var buttons = create(HTML.DIV, {className:"dialog-buttons hidden"}, dialog);
         if(options.positive && options.positive.label) {
             dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(event){
@@ -1059,7 +1179,7 @@ function Utils(main) {
                         if((options.id || options.title.label) && moved) {
 //                            if(dialog.style.left) save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
 //                            if(dialog.style.top) save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
-                            var id = options.id || (options.title.label && (options.title.label.dataset ? options.title.label.dataset.lang : options.title.label));
+                            var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
                             if(dialog.style.width) save("dialog:width:"+id, dialog.style.width);
                             if(dialog.style.height) save("dialog:height:"+id, dialog.style.height);
                         }
@@ -1115,8 +1235,8 @@ function Utils(main) {
         var a = this, b;
         for(b in arguments){
             a = a.replace(/%[a-z]/,arguments[b][0].constructor === HTMLSpanElement ?
-                (arguments[b][0].dataset && arguments[b][0].dataset.lang
-                    && lang.$origin[arguments[b][0].dataset.lang] ? lang[arguments[b][0].dataset.lang].outerText : arguments[b][0].outerText)
+                (arguments[b][0].lang
+                    && lang.$origin[arguments[b][0].lang] ? lang[arguments[b][0].lang].outerText : arguments[b][0].outerText)
                 : (arguments[b].constructor === Array ? arguments[b][0] : (arguments[b].constructor === Object ? arguments[b][0] : arguments[b])));
         }
         return a; // Make chainable
@@ -1256,11 +1376,11 @@ function Utils(main) {
                 Object.defineProperty(lang, string, {
                     get: function() {
                         lang.$nodes[string] = lang.$nodes[string] || create(HTML.SPAN, {
-                            dataLang:string,
+                            lang:string,
                         });
                         var a = lang.$nodes[string].cloneNode();
                         a.format = function() {
-                              lang.$arguments[this.dataset.lang] = arguments;
+                              lang.$arguments[this.lang] = arguments;
                               this.innerHTML = sprintf.call(this.innerHTML, arguments);
                               return this;
                           }
@@ -1298,8 +1418,8 @@ function Utils(main) {
                     lang(x, json[x]);
                 }
                 for(var i = 0; i < nodes.length; i++) {
-                    if(nodes[i].dataset && nodes[i].dataset.lang) {
-                        nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
+                    if(nodes[i].lang) {
+                        nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
                     }
                 }
 
@@ -1333,9 +1453,9 @@ function Utils(main) {
     }
 
     lang.updateNode = function(node, lang) {
-        if(node && lang && lang.dataset && lang.dataset.lang) {
+        if(node && lang && lang.lang) {
             node.innerHTML = lang.innerHTML;
-            node.dataset.lang = lang.dataset.lang;
+            node.lang = lang.lang;
         }
     }
 

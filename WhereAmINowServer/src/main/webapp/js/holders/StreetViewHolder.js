@@ -94,6 +94,9 @@ function StreetViewHolder(main) {
                     google.maps.event.trigger(main.map, 'resize');
                     main.fire(EVENTS.CAMERA_UPDATE);
                     update();
+                },
+                negative: {
+                    onclick: function() {}
                 }
             });
             placeholder = view.items[0];

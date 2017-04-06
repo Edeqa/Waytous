@@ -103,9 +103,9 @@ function Main() {
                 if(holders[x] && holders[x].menu) {
                     var th = u.create("div", {className:"menu-item"}, menu);
                     u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
-                    u.create("div", { dataStart: x, onclick: function(){
+                    u.create("div", { instance: x, onclick: function(){
                         menu.blur();
-                        holders[this.dataset.start].start();
+                        holders[this.instance].start();
                         return false;
                     }, innerHTML: holders[x].menu}, th);
                 }

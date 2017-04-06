@@ -23,10 +23,14 @@ function HelpHolder(main) {
             case EVENTS.SHOW_HELP:
 
                 dialog = dialog || u.dialog({
-                    title: u.lang.help,
+                    title: {
+                        label: u.lang.help,
+                        filter: true,
+                    },
                     className: "help",
                     negative: {
-                        label: u.lang.close
+                        label: u.lang.close,
+                        onclick: function(){}
                     }
                 });
                 if(dialog.opened) break;
@@ -45,8 +49,7 @@ function HelpHolder(main) {
                         });
                     }
                 } else {
-                    var modules = main.holders;
-                    modules.main = main;
+                    var modules = Object.assign({}, {main:main}, main.holders);
                     for(var i in modules) {
                         console.log(i);
                         if(modules[i] && modules[i].help && modules[i].help().title) {
