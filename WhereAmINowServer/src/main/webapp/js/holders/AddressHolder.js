@@ -41,7 +41,7 @@ function AddressHolder(main) {
                     delayStart = 0;
                 }
 
-                u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1", function(json){
+                u.getRemoteJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1", function(json){
                     user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
                 }, function(code, xhr) {
                     user.fire(EVENTS.UPDATE_ADDRESS);
@@ -64,7 +64,7 @@ function AddressHolder(main) {
                 delayStart = 0;
             }
 
-            u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1", function(json){
+            u.getRemoteJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1", function(json){
                 node.innerHTML = json["display_name"];
             }, function(code, xhr) {
 //                    updateAddress.call(user,node);

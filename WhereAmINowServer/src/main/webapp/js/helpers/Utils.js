@@ -127,7 +127,7 @@ function Utils(main) {
                     if(first.hasOwnProperty(x)) target[x] = first[x];
                 }
                 for(var x in second) {
-                    if(second.hasOwnProperty(x)) target[x] = first[x];
+                    if(second.hasOwnProperty(x)) target[x] = second[x];
                 }
                 return target;
             }
@@ -373,7 +373,7 @@ function Utils(main) {
         return color;
     }
 
-    function require(name, onload, onerror, context){
+    function require(name, onload, onerror, context, viaXhr){
         var parts = name.split("/");
         var filename = parts[parts.length-1];
         var onlyname = filename.split(".")[0];
@@ -386,25 +386,51 @@ function Utils(main) {
             needInstantiate = true;
             name += ".js";
         }
-        create(HTML.SCRIPT, {src: name, instance: needInstantiate ? onlyname : null, onload: function(e) {
-            if (onload) {
-                var a;
-                if(needInstantiate) {
-                    if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
-                        a = new window[this.instance](context);
-                        a.moduleName = this.instance;
-                        lang.overrideResources(a);
-                    } else {
-                        onerror(ERRORS.NOT_AN_OBJECT, this.instance, e);
+        if(viaXhr) {
+            getRemote(name, function(xhr){
+                create(HTML.SCRIPT, {innerHTML: xhr.responseText }, document.head);
+                if (onload) {
+                    var a;
+                    console.log(needInstantiate,onlyname,filename)
+                    if(needInstantiate) {
+                        if(onlyname && window[onlyname] && window[onlyname].constructor === Function) {
+                            a = new window[onlyname](context);
+                            a.moduleName = onlyname;
+                            lang.overrideResources(a);
+                        } else {
+                            onerror(ERRORS.NOT_AN_OBJECT, onlyname, xhr);
+                        }
                     }
+                    onload(a);
                 }
-                onload(a);
-            }
-        }, onerror: function(e) {
-            if(onerror) {
-                onerror(ERRORS.NOT_EXISTS, this.instance, e);
-            }
-        }, async:"", defer:""}, document.head);
+            }, function(code,xhr){
+                if(onerror) {
+                    onerror(ERRORS.NOT_EXISTS, onlyname, xhr);
+                }
+            });
+        } else {
+            create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
+                if (onload) {
+                    var a;
+                    if(needInstantiate) {
+                        if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
+                            a = new window[this.instance](context);
+                            a.moduleName = this.instance;
+                            lang.overrideResources(a);
+                        } else {
+                            onerror(ERRORS.NOT_AN_OBJECT, this.instance, e);
+                        }
+                    }
+                    onload(a);
+                }
+            }, onerror: function(e) {
+                if(onerror) {
+                    onerror(ERRORS.NOT_EXISTS, this.instance, e);
+                }
+            }, async:"", defer:""}, document.head);
+        }
+
+
     }
 
     function save(name, value) {
@@ -1408,7 +1434,7 @@ function Utils(main) {
 
             var resourcesFile = "/locales/resources." + holder + ".json";
 
-            getJSON(resourcesFile, function(json){
+            getRemoteJSON(resourcesFile, function(json){
                 var nodes = document.getElementsByTagName(HTML.SPAN);
                 console.warn("Switching to resources \""+holder+"\".");
                 for(var x in json) {
@@ -1433,7 +1459,7 @@ function Utils(main) {
                         }
                         break;
                     case ERRORS.INCORRECT_JSON:
-                        console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",e);
+                        console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",xhr);
                         if(holder != "en-us"){
                             console.warn("Switching to default resources \"en-us\".")
                             lang.overrideResources("en-us");
@@ -1459,9 +1485,46 @@ function Utils(main) {
         }
     }
 
-    function getJSON(url, callback, fallback) {
-
+    function getRemote(url, callback, fallback) {
         var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+//        xhr.overrideMimeType("text/plain; charset=x-user-defined");
+        xhr.onreadystatechange = function() { // (3)
+            if (xhr.readyState != 4) return;
+            if (xhr.status != 200) {
+                if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
+                else console.error("Error loading resource",xhr);
+            } else {
+                if(callback) callback(xhr);
+                else console.warn("Resource loaded, define callback",xhr);
+            }
+        }
+        try {
+            xhr.send();
+        } catch(e) {
+//            if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
+//            else console.error("Error loading resource",xhr);
+            console.error("Error sending request",xhr);
+        }
+    }
+
+    function getRemoteJSON(url, callback, fallback) {
+        fallback = fallback || function(code, xhr) {
+            console.error(code,xhr);
+        }
+        getRemote(url, function(xhr){
+            if(callback) {
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    callback(json, xhr);
+                } catch(e) {
+                    if(fallback) fallback(ERRORS.INCORRECT_JSON, xhr);
+                    else console.error(e);
+                }
+            }
+        }, fallback);
+
+        /*var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
         xhr.onreadystatechange = function() { // (3)
             if (xhr.readyState != 4) return;
@@ -1486,7 +1549,7 @@ function Utils(main) {
 //            if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
 //            else console.error("Error loading resource",xhr);
             console.error("Error sending request",xhr);
-        }
+        }*/
     }
 
     return {
@@ -1520,6 +1583,6 @@ function Utils(main) {
         popupBlockerChecker:popupBlockerChecker,
         cloneAsObject:cloneAsObject,
         lang:lang,
-        getJSON:getJSON,
+        getRemoteJSON:getRemoteJSON,
     }
 }

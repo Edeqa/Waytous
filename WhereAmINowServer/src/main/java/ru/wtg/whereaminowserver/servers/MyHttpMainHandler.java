@@ -121,6 +121,7 @@ public class MyHttpMainHandler implements HttpHandler {
             String lastModified = dateFormat.format(file.lastModified());
 
             exchange.getResponseHeaders().set("Last-Modified", lastModified);
+            exchange.getResponseHeaders().set("Cache-Control", SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
             exchange.getResponseHeaders().set("ETag", etag);
             exchange.getResponseHeaders().set("Server", "WAIN/"+SERVER_BUILD);
             exchange.getResponseHeaders().set("Accept-Ranges", "bytes");

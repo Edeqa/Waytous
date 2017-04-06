@@ -198,7 +198,7 @@ function NavigationHolder(main) {
 
         console.log(type,req);
 
-        u.getJSON(req, function(json){
+        u.getRemoteJSON(req, function(json){
             installation = false;
             updateTrack.call(user,json);
         }, function(code,xhr){
