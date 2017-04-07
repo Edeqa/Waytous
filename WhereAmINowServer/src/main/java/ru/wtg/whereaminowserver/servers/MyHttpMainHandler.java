@@ -59,6 +59,7 @@ public class MyHttpMainHandler implements HttpHandler {
 
         String etag = "W/1976" + ("" + file.lastModified()).hashCode();
 
+        String path = uri.getPath().toLowerCase();
         if (!file.isFile()) {
             file = new File(file.getCanonicalPath() + "/index.html");
         }
@@ -75,7 +76,7 @@ public class MyHttpMainHandler implements HttpHandler {
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             os.close();
-        } else if (!file.isFile()) {
+        } else if (!file.isFile() || path.startsWith("/WEB-INF") || path.startsWith("/META-INF") || path.startsWith("/.idea")) {
             // Object does not exist or is not a file: reject with 404 error.
             String response = "404 Not Found\n";
             exchange.sendResponseHeaders(404, response.length());
@@ -84,7 +85,6 @@ public class MyHttpMainHandler implements HttpHandler {
             os.close();
         } else {
             // Object exists and is a file: accept with response code 200.
-            String path = uri.getPath().toLowerCase();
 
             if(path.startsWith("/css/")) {
                 exchange.getResponseHeaders().set("Content-Type", "text/css");

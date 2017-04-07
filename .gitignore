@@ -13,9 +13,7 @@ libs/
 /app/app-release.apk
 /app/google-services.json
 /WhereAmINowServer1/
-/WhereAmINowServer/src/main/java/ru/wtg/whereaminowserver/helpers/SensitiveData.java
 /projectFilesBackup/
-/WhereAmINowServer/build/
 /WhereAmINowServer/where-am-i-now-1373-firebase-adminsdk-4dqzv-07038c93b9.json
 /WhereAmINowServer/src/main/webapp/firebase-messaging-sw1.js
 /inchem.jks
@@ -26,3 +24,12 @@ libs/
 /temp.jks
 /cacerts
 /WhereAmINowServer/src/main/webapp/inchem.jks
+/options_developer.json
+/options_inchem.json
+WhereAmINowServer/WAIN.log
+WhereAmINowServer/src/main/webapp/.idea/deployment.xml
+WhereAmINowServer/src/main/webapp/.idea/modules.xml
+WhereAmINowServer/src/main/webapp/.idea/vcs.xml
+WhereAmINowServer/src/main/webapp/.idea/webServers.xml
+WhereAmINowServer/src/main/webapp/.idea/workspace.xml
+app/src/test/

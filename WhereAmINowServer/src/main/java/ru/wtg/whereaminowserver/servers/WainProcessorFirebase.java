@@ -31,6 +31,7 @@ import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.helpers.Utils;
 import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
+import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DATE_CHANGED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DATE_CREATED;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DELAY_TO_DISMISS;
 import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_OPTION_DISMISS_INACTIVE;
@@ -572,7 +573,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
     }
 
     public void validateGroups() {
-        if(true) return;
+        if(SENSITIVE.isDebugMode()) return;
         Common.log("WPF","Groups validation scheduled is performing, checking online users");
         ChildEventListener groupsList = new ChildEventListener() {
             @Override
@@ -586,10 +587,12 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Map value = (Map) dataSnapshot.getValue();
 
-                        Common.log("WPF","Group validation:", group + ", leader id:", leader, dataSnapshot.getValue());
+                        Common.log("WPF","Group:", group + ", leader id:", leader, dataSnapshot.getValue());
 
                         if(value == null) {
-                            Common.log("WPF","--- group corrupted detected, removing failed information"); //TODO
+                            Common.log("WPF","--- corrupted group detected, removing"); //TODO
+                            ref.child(DATABASE_SECTION_GROUPS).child(group).removeValue();
+                            ref.child(group).removeValue();
                             return;
                         }
 
@@ -623,11 +626,17 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                         ValueEventListener usersValidation = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                Common.log("WPF","Users validation for:", group);
+                                Common.log("WPF","Users validation for", group);
 
-                                ArrayList<Map> users = (ArrayList<Map>) dataSnapshot.getValue();
+                                ArrayList<Map> users = null;
+//                                try {
+                                    users = (ArrayList<Map>) dataSnapshot.getValue();
+//                                } catch(Exception e) {
+//                                    e.printStackTrace();
+//                                }
                                 if(users == null) {
-                                    Common.log("WPF","--- group corrupted detected, removing failed information"); //TODO
+                                    Common.log("WPF","--- corrupted group detected, removing ----- 2"); //TODO
+                                    Common.log(ref.child(DATABASE_SECTION_GROUPS).child(group), ref.child(group));
                                     return;
                                 }
                                 long groupChanged = 0;
@@ -648,23 +657,26 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                                     if(!active) continue;
 
                                     if(dismissInactive) {
+
                                         Long current = new Date().getTime();
                                         if (changed == null) {
                                             Common.log("WPF", "--- user:", i, "name:", name, "is NULL");
-//                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
+//                                            dataSnapshot.getRef().child(""+i).child(DATABASE_USER_ACTIVE).setValue(false);
                                         } else if (current - delayToDismiss * 1000 > changed) {
                                             Common.log("WPF", "--- user:", i, "name:", name, "is EXPIRED for", ((current - delayToDismiss * 1000 - changed) / 1000), "seconds");
-//                            dataSnapshot.child(DATABASE_USER_ACTIVE).getRef().setValue(false);
+//                                            dataSnapshot.getRef().child(""+i).child(DATABASE_USER_ACTIVE).setValue(false);
                                         } else {
-//                            ref.child(DATABASE_SECTION_OPTIONS).child(DATABASE_SECTION_OPTIONS_DATE_CHANGED).setValue(changed);
+                                            dataSnapshot.getRef().getParent().getParent().child(DATABASE_SECTION_OPTIONS).child(DATABASE_OPTION_DATE_CHANGED).setValue(changed);
                                             Common.log("WPF", "--- user:", i, "name:", name, "is OK");
                                         }
                                     }
                                 }
 
                                 if(!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000 ) {
+//TODO
+                                    Common.log("WPF","--- removing expired group "+group+" for:", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000)/1000/60, "minutes");
+                                    Common.log(ref.child(DATABASE_SECTION_GROUPS).child(group), ref.child(group));
 
-                                    Common.log("WPF","--- removing expired group for:", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000)/1000/60, "minutes");
                                 }
 
                             }
@@ -689,8 +701,6 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
                 ref.child(group).child(DATABASE_SECTION_OPTIONS).removeEventListener(groupValidation);
                 ref.child(group).child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(groupValidation);
-
-
 
             }
 

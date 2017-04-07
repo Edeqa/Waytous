@@ -183,6 +183,7 @@ button:active {
     bottom: 50px;
     overflow-y: auto;
     width: 100%;
+    -webkit-overflow-scrolling: touch;
 }
 .drawer-menu-item:hover {
     background: #dddd99;
@@ -413,6 +414,7 @@ p.bottom-desc {
     top: 12px;
     right: 52px;
     min-width: 120px;
+    -webkit-overflow-scrolling: touch;
 }
 .user-buttons-title {
 }

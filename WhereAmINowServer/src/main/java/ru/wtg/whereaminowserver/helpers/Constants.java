@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 30;
+    public final static int SERVER_BUILD = 31;
 
     public static SensitiveData SENSITIVE;
 
@@ -100,7 +100,7 @@ public class Constants {
 
 
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
-    public static final int LIFETIME_INACTIVE_GROUP = 30;
+    public static final int LIFETIME_INACTIVE_GROUP = 300;
     public final static int LIFETIME_INACTIVE_USER = 600;
 
 }

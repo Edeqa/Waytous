@@ -46,7 +46,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
             e.printStackTrace();
         }
 
-        Common.log("Tracking",host + uri.getPath() );
+        Common.log("Tracking",exchange.getRemoteAddress(),host + uri.getPath() );
 
         ArrayList<String> parts = new ArrayList<String>();
         parts.addAll(Arrays.asList(uri.getPath().split("/")));

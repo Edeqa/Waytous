@@ -33,7 +33,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
                 host = InetAddress.getLocalHost().getHostAddress();
             }
 
-            Common.log("Redirect",host + uri.getPath());
+            Common.log("Redirect",exchange.getRemoteAddress(),host + uri.getPath());
 
             ArrayList<String> parts = new ArrayList<String>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
