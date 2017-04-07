@@ -61,14 +61,14 @@ public class WAINServer {
             e.printStackTrace();
         }
 
+        System.out.println("Server \t\t\t\t| Port \t| Path");
+        System.out.println("----------------------------------------------");
+
         WainProcessorFirebase wainProcessorFirebase = new WainProcessorFirebase();
         wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), wainProcessorFirebase);
         wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), wainProcessorFirebase);
 
         Common.log("Main","Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
-
-        System.out.println("Server \t\t\t\t| Port \t| Path");
-        System.out.println("----------------------------------------------");
 
         try {
             String STORETYPE = "JKS";
@@ -77,6 +77,7 @@ public class WAINServer {
 
             KeyStore ks = KeyStore.getInstance(STORETYPE);
             File kf = new File(SENSITIVE.getKeystoreFilename());
+            Common.log("Main","Keystore file: "+kf.getCanonicalPath());
             ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
 
         //    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -148,6 +149,7 @@ public class WAINServer {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, wrappedTrustManagers, null);
         */
+
 
             DefaultSSLWebSocketServerFactory socket = new DefaultSSLWebSocketServerFactory(sslContext);
         //    socket.setEnabledCipherSuites(sc.getServerSocketFactory().getSupportedCipherSuites());

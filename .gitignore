@@ -33,3 +33,7 @@ WhereAmINowServer/src/main/webapp/.idea/vcs.xml
 WhereAmINowServer/src/main/webapp/.idea/webServers.xml
 WhereAmINowServer/src/main/webapp/.idea/workspace.xml
 app/src/test/
+/debug.jks
+/deploy.sh
+/deploy_debug.sh
+/where-am-i-now-1373-firebase-adminsdk-4dqzv-07038c93b9.json
