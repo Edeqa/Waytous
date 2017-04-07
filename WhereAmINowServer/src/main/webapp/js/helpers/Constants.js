@@ -40,6 +40,7 @@ function Constants() {
         TRACKING_ERROR: "tracking_error",
         TOKEN_CREATED: "token_created",
 
+
         MAP_READY: "map_ready",
 
         MOVING_CLOSE_TO: "moving_close_to",
@@ -50,7 +51,7 @@ function Constants() {
 
         SHOW_BADGE: "show_badge",
         HIDE_BADGE: "hide_badge",
-        INCREASE_BADGE: "increase_badge",
+        INCREASE_BADGE: "increase_badge"
 
     };
     window.REQUEST = {

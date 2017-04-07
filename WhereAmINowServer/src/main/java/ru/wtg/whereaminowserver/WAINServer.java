@@ -61,9 +61,6 @@ public class WAINServer {
             e.printStackTrace();
         }
 
-        System.out.println("Server \t\t\t\t| Port \t| Path");
-        System.out.println("----------------------------------------------");
-
         WainProcessorFirebase wainProcessorFirebase = new WainProcessorFirebase();
         wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), wainProcessorFirebase);
         wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), wainProcessorFirebase);
@@ -80,7 +77,10 @@ public class WAINServer {
             Common.log("Main","Keystore file: "+kf.getCanonicalPath());
             ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
 
-        //    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            System.out.println("Server \t\t\t\t| Port \t| Path");
+            System.out.println("----------------------------------------------");
+
+            //    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
         //    kmf.init(ks, KEYPASSWORD.toCharArray());
         //    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         //    tmf.init(ks);

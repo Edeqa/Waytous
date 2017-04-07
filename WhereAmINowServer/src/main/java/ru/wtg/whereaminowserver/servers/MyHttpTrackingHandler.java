@@ -69,7 +69,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
         html.clear();
         html.getHead().add(TITLE).with("Waytogo");
         html.getHead().add(SCRIPT).with("data", o);
-        html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with(ONLOAD, "(window.WAIN = new Main()).start();");
+        html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WAIN = new Main()).start();");
 
 //            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(HREF, "/icons/apple-touch-icon.png");
 //            html.getHead().add(LINK).with(REL,"apple-touch-icon").with(SIZES, "57x57").with(HREF, "/icons/apple-touch-icon-57x57.png");
