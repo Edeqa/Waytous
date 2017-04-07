@@ -37,3 +37,6 @@ app/src/test/
 /deploy.sh
 /deploy_debug.sh
 /where-am-i-now-1373-firebase-adminsdk-4dqzv-07038c93b9.json
+/WhereAmINowServer/WhereAmINowServer.iml.backup
+/WhereAmINowServer/build.gradle.backup
+/app/src/debug/
