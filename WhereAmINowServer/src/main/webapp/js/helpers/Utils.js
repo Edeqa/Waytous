@@ -940,6 +940,13 @@ function Utils(main) {
             dialog.modal = modalBackground;
         }
 
+        var backButtonAction = function(event) {
+            window.history.pushState(null, document.title, location.href);
+            event.preventDefault();
+            event.stopPropagation();
+            dialog.close();
+        }
+
         dialog.open = function(event){
             clearInterval(dialog.intervalTask);
             dialog.modal && dialog.modal.show();
@@ -959,6 +966,12 @@ function Utils(main) {
                     }
                 }, 16);
             }
+
+//            window.history.pushState(null, document.title, location.href);
+            if(options.title && options.title.button == defaultCloseButton) {
+                window.addEventListener("popstate", backButtonAction);
+            }
+
             return dialog;
         };
 
@@ -966,6 +979,8 @@ function Utils(main) {
             dialog.hide();
             dialog.modal && dialog.modal.hide();
             dialog.opened = false;
+
+            window.removeEventListener("popstate", backButtonAction);
 
             clearInterval(dialog.intervalTask);
 
@@ -984,7 +999,7 @@ function Utils(main) {
         var items = [];
 
         var defaultCloseButton = {
-             icon: "clear",
+             icon: " ",
              className: "",
              onclick: function(e){
                  dialog.close();
@@ -996,7 +1011,7 @@ function Utils(main) {
                 options.title = {
                     label: options.title,
                     className: "",
-                    button: defaultCloseButton
+                    button: defaultCloseButton,
                 }
             } else {
                 if(options.title.className) options.title.className = " " + options.title.className;
@@ -1064,7 +1079,7 @@ function Utils(main) {
                 dialog.filterPlaceholder = u.create(HTML.DIV, {className:"dialog-items hidden", innerHTML:"Nothing found"}, dialog);
                 dialog.filterLayout = u.create(HTML.DIV, {
                     className: "dialog-filter"
-                }, dialog.titleLayout);
+                }, titleLayout);
                 dialog.filterButton = u.create(HTML.DIV, {
                     className: "dialog-filter-button",
                     innerHTML: "search",
@@ -1165,7 +1180,7 @@ function Utils(main) {
             dialog.footer = create(type, item, dialog);
         }
 
-        var buttons = create(HTML.DIV, {className:"dialog-buttons hidden"}, dialog);
+        var buttons = create(HTML.DIV, {className:"dialog-buttons hidden" + (options.buttonsClassName ? " " + options.buttonsClassName : "")}, dialog);
         if(options.positive && options.positive.label) {
             dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(event){
                 if(options.positive.dismiss == undefined || options.positive.dismiss) dialog.close();

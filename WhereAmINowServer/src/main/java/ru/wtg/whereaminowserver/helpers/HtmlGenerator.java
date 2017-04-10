@@ -62,11 +62,11 @@ public class HtmlGenerator {
 
 
 
-    ArrayList<String> notClosableTags = new ArrayList<String>(Arrays.asList(new String[]{BR,META,INPUT}));
+    ArrayList<String> notClosableTags = new ArrayList<>(Arrays.asList(new String[]{BR,META,INPUT}));
     private Tag body;
     private Tag head;
     private int level = 0;
-    Map<String,String> properties = new HashMap<String,String>();
+    Map<String,String> properties = new HashMap<>();
 
     public HtmlGenerator() {
         head = new Tag("head");
@@ -115,8 +115,8 @@ public class HtmlGenerator {
         String tag;
         String text;
 
-        ArrayList<Object> inner = new ArrayList<Object>();
-        Map<String,String> properties = new HashMap<String,String>();
+        ArrayList<Object> inner = new ArrayList<>();
+        Map<String,String> properties = new HashMap<>();
 
         public Tag(String tag){
             this.tag = tag;

@@ -206,13 +206,13 @@ function SavedLocationHolder(main) {
                         }
                     },
                     neutral: {
-                        label: u.lang.cancel
-                    },
-                    negative: {
                         label: u.lang.delete,
                         onclick: function(items) {
                             main.fire(EVENTS.DELETE_SAVED_LOCATION, items[0].value)
                         }
+                    },
+                    negative: {
+                        label: u.lang.cancel
                     },
                 });
 

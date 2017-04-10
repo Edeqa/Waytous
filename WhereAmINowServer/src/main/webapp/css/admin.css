@@ -47,13 +47,14 @@ h2 {
     display: none;
 }
 .logo {
-    background-color: #438d71;
     display: block;
     height: 150px;
+    /*background-color: #438d71;
     background-image: url(/images/logo.png);
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center center;*/
+    background: linear-gradient(135deg, #2e5d7d 0%,#4c93af 54%,#819bc7 100%);
 }
 .menu-button {
     display: none;
@@ -65,7 +66,7 @@ h2 {
     min-width:250px;
     border-width: 1px;
     height: 100%;
-    background-color: floralwhite;
+    background-color: azure;
     z-index: 100;
     position: fixed;
 }
@@ -98,6 +99,14 @@ h2 {
     width: 250px;
     text-align: center;
     font-size: 10px;
+}
+.drawer-header-logo {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    cursor: pointer;
 }
 .right {
     padding-left: 250px;

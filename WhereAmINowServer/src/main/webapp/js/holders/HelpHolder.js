@@ -28,6 +28,7 @@ function HelpHolder(main) {
                         filter: true,
                     },
                     className: "help",
+                    buttonsClassName: "help-buttons",
                     negative: {
                         label: u.lang.close,
                         onclick: function(){}

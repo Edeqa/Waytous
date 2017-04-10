@@ -15,7 +15,6 @@ import ru.wtg.whereaminow.State;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_COLOR;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NAME;
 import static ru.wtg.whereaminow.State.EVENTS.CHANGE_NUMBER;
-import static ru.wtg.whereaminow.State.EVENTS.MAKE_ACTIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.RESPONSE_NUMBER;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;

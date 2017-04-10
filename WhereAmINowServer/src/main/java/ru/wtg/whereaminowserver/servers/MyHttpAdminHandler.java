@@ -24,23 +24,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 import ru.wtg.whereaminowserver.holders.admin.AdminMainPageHolder;
 import ru.wtg.whereaminowserver.interfaces.PageHolder;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CLASS;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.CONTENT;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.HREF;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.ID;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.LINK;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.META;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.NAME;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.REL;
 import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.SCRIPT;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.STYLESHEET;
-import static ru.wtg.whereaminowserver.helpers.HtmlGenerator.TYPE;
 
 /**
  * Created 10/5/16.
@@ -54,9 +45,9 @@ public class MyHttpAdminHandler implements HttpHandler {
 
     public MyHttpAdminHandler(){
 
-        holders = new LinkedHashMap<String, PageHolder>();
+        holders = new LinkedHashMap<>();
 
-        LinkedList<String> classes = new LinkedList<String>();
+        LinkedList<String> classes = new LinkedList<>();
         classes.add("AdminHomePageHolder");
         classes.add("AdminCreatePageHolder");
         classes.add("AdminGroupsPageHolder");
@@ -90,7 +81,7 @@ public class MyHttpAdminHandler implements HttpHandler {
 
             URI uri = exchange.getRequestURI();
 
-            ArrayList<String> parts = new ArrayList<String>();
+            ArrayList<String> parts = new ArrayList<>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
             html = new HtmlGenerator();

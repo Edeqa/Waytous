@@ -28,43 +28,43 @@ dependencies {
     closureCompiler 'com.google.javascript:closure-compiler:v20150609'
 }
 
-minifyJs {
-    source = file("${projectDir}/src/main/webapp/js/helpers/Constants.js")
-    dest = file("${buildDir}/exploded-app/js/helpers/Constants.js")
-    closure {
-        warningLevel = 'QUIET'
-        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
-        compilerOptions.languageIn = 'ECMASCRIPT5'
-    }
-}
-
-javascript.source {
-    def sourceDir = "${projectDir}/src/main/webapp/js"
-    dev {
-        js {
-            srcDir sourceDir
-            include "**/*.js"
-            exclude "**/*.min.js"
-        }
-    }
-}
-
-javascript.source.dev.js.files.eachWithIndex { jsFile, i ->
-    tasks.create(name: "minifyJs${i}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-        source  = jsFile.getAbsolutePath()
-        dest    = "${buildDir}/exploded-app/js/" + jsFile.getParentFile().getName() + "/" + jsFile.getName()
-        closure {
-            warningLevel = 'QUIET'
-            compilationLevel = 'SIMPLE_OPTIMIZATIONS'
-            compilerOptions.languageIn = 'ECMASCRIPT5'
-        }
-    }
-}
-task allMinifyJs(dependsOn: tasks.matching
-    { Task task ->
-            task.name.startsWith("minifyJs")
-    }
-)
+//minifyJs {
+//    source = file("${projectDir}/src/main/webapp/js/helpers/Constants.js")
+//    dest = file("${buildDir}/exploded-app/js/helpers/Constants.js")
+//    closure {
+//        warningLevel = 'QUIET'
+//        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+//        compilerOptions.languageIn = 'ECMASCRIPT5'
+//    }
+//}
+//
+//javascript.source {
+//    def sourceDir = "${projectDir}/src/main/webapp/js"
+//    dev {
+//        js {
+//            srcDir sourceDir
+//            include "**/*.js"
+//            exclude "**/*.min.js"
+//        }
+//    }
+//}
+//
+//javascript.source.dev.js.files.eachWithIndex { jsFile, i ->
+//    tasks.create(name: "minifyJs${i}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+//        source  = jsFile.getAbsolutePath()
+//        dest    = "${buildDir}/exploded-app/js/" + jsFile.getParentFile().getName() + "/" + jsFile.getName()
+//        closure {
+//            warningLevel = 'QUIET'
+//            compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+//            compilerOptions.languageIn = 'ECMASCRIPT5'
+//        }
+//    }
+//}
+//task allMinifyJs(dependsOn: tasks.matching
+//    { Task task ->
+//            task.name.startsWith("minifyJs")
+//    }
+//)
 
 
 
@@ -89,9 +89,9 @@ dependencies {
     sourceCompatibility = '1.7'
 }
 
-war {
-    webAppDirName = "${buildDir}/exploded-app/"
-}
+//war {
+//    webAppDirName = "${buildDir}/exploded-app/"
+//}
 
 appengine {
     downloadSdk = true

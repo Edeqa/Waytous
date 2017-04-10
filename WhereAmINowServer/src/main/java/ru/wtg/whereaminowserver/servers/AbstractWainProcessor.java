@@ -1,6 +1,5 @@
 package ru.wtg.whereaminowserver.servers;
 
-import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 
@@ -12,7 +11,6 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.wtg.whereaminowserver.helpers.CheckReq;
-import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
@@ -36,10 +34,10 @@ abstract public class AbstractWainProcessor {
     abstract public void validateUsers();
 
     public AbstractWainProcessor() {
-        tokens = new ConcurrentHashMap<String, MyToken>();
-        ipToToken = new ConcurrentHashMap<String, MyToken>();
-        ipToUser = new ConcurrentHashMap<String, MyUser>();
-        ipToCheck = new ConcurrentHashMap<String, CheckReq>();
+        tokens = new ConcurrentHashMap<>();
+        ipToToken = new ConcurrentHashMap<>();
+        ipToUser = new ConcurrentHashMap<>();
+        ipToCheck = new ConcurrentHashMap<>();
 
         requestHolders = new LinkedHashMap<>();
 

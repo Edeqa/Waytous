@@ -276,7 +276,7 @@ function Main() {
     function initialize() {
 
         loading.classList.add("hidden");
-        main.alpha = u.create("div", {className:"alpha", innerHTML:"?"}, main.layout);
+        main.alpha = u.create("div", {className:"alpha", innerHTML:"&alpha;"}, main.layout);
 
         if(!firebase || !firebase.database || !firebase.auth) {
             console.error("Failed firebase loading, trying again...");

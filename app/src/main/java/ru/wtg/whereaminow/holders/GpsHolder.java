@@ -25,7 +25,6 @@ import ru.wtg.whereaminow.helpers.Utils;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.TRACKING_ACTIVE;
-import static ru.wtg.whereaminow.holders.InfoViewHolder.SHOW_INFO;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_TRACKING;
 
 /**

@@ -108,7 +108,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
 
     @Override
     public LinkedList<String> getRequestHoldersList() {
-        LinkedList<String> classes = new LinkedList<String>();
+        LinkedList<String> classes = new LinkedList<>();
         classes.add("TrackingRequestHolder");
         classes.add("MessageRequestHolder");
         classes.add("ChangeNameRequestHolder");
@@ -120,7 +120,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
 
     @Override
     public LinkedList<String> getFlagsHoldersList() {
-        LinkedList<String> classes = new LinkedList<String>();
+        LinkedList<String> classes = new LinkedList<>();
         classes.add("PushFlagHolder");
         classes.add("DeliveryFlagHolder");
         classes.add("ProviderFlagHolder");
@@ -388,7 +388,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
                         if(requestHolders.get(req).perform(token, user, request, o)) {
                             token.setChanged();
 
-                            Set<String> keys = new LinkedHashSet<String>(request.keySet());
+                            Set<String> keys = new LinkedHashSet<>(request.keySet());
                             keys.retainAll(flagHolders.keySet());
                             for(String flag: keys){
                                 flagHolders.get(flag).perform(token, user, request, o);

@@ -12,6 +12,7 @@ function TrackingFB(main) {
     var status;
     var serverUri;
     var ref;
+    var updateTask;
 
     function start() {
         status = EVENTS.TRACKING_DISABLED;
@@ -42,6 +43,7 @@ function TrackingFB(main) {
         status = EVENTS.TRACKING_DISABLED;
 
         var updates = {};
+        clearInterval(updateTask);
         updates[DATABASE.USER_ACTIVE] = false;
         updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
@@ -52,7 +54,7 @@ function TrackingFB(main) {
         trackingListener.onStop();
 
         var uri = new URL(this.link);
-        window.location.href = "https://" + uri.hostname + ":"+ data.HTTPS_PORT + "/";
+        window.location.href = "https://" + uri.hostname + ":"+ data.HTTPS_PORT + "/track/";
     }
 
     function webSocketListener(link) {
@@ -118,6 +120,7 @@ function TrackingFB(main) {
 
                                 ref = database.ref().child(getToken());
 
+                                updateTask = setInterval(updateActive, 60000);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
                                 for (var i in main.holders) {
                                     if (main.holders[i] && main.holders[i].saveable) {
@@ -463,6 +466,16 @@ function TrackingFB(main) {
                 o[active ? USER.JOINED : USER.DISMISSED] = number;
                 o[RESPONSE.NUMBER] = number;
                 trackingListener.onMessage(o);
+            }
+        } catch(e) {
+            console.error(e.message);
+        }
+    }
+
+    function updateActive() {
+        try {
+            if(main.me && main.me.number != undefined) {
+                ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_CHANGED).set(firebase.database.ServerValue.TIMESTAMP);
             }
         } catch(e) {
             console.error(e.message);

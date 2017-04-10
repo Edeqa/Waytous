@@ -6,7 +6,6 @@ import android.support.design.widget.Snackbar;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.holders.SnackbarViewHolder;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
-import ru.wtg.whereaminowserver.helpers.*;
 
 /**
  * Created 12/4/16.

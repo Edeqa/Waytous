@@ -6,7 +6,6 @@ import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
-import ru.wtg.whereaminowserver.servers.MyWsServer;
 
 /**
  * Created 1/19/17.

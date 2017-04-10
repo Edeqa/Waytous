@@ -3,21 +3,17 @@ package ru.wtg.whereaminowserver.helpers;
 import org.json.JSONObject;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
 
-import static ru.wtg.whereaminowserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_OS;
-import static ru.wtg.whereaminowserver.helpers.Constants.USER_COLOR;
 import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
 
 /**
- * Created by tujger on 2/2/17.
+ * Created 2/2/17.
  */
 public class CheckReq {
 

@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow.holders;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Typeface;

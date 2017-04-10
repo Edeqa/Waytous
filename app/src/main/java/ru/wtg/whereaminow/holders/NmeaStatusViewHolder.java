@@ -16,14 +16,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
-import ru.wtg.whereaminow.abstracts.AbstractProperty;
-import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
 import ru.wtg.whereaminow.abstracts.AbstractView;
 import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
 import ru.wtg.whereaminow.helpers.MyUser;
@@ -33,8 +30,6 @@ import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_PAUSE;
 import static ru.wtg.whereaminow.State.EVENTS.ACTIVITY_RESUME;
 import static ru.wtg.whereaminow.State.EVENTS.CREATE_OPTIONS_MENU;
 import static ru.wtg.whereaminow.State.EVENTS.PREPARE_OPTIONS_MENU;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_DAY;
-import static ru.wtg.whereaminow.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 
 /**
  * Created 01/13/17.

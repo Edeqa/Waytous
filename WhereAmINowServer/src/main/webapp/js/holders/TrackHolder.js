@@ -49,7 +49,7 @@ function TrackHolder(main) {
                 }
                 break;
             case EVENTS.SHOW_TRACK:
-                if(this && this.views && this.views.track) {
+                if(this && this.views && this.views.track && this.properties && this.properties.active) {
                     this.views.track.show = true;
                     u.saveForGroup("track:show:" + this.number, true);
                     show.call(this);

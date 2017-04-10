@@ -23,6 +23,7 @@ function DrawerHolder(main) {
     var subtitle;
     var menu;
     var alphaDialog;
+    var backButtonAction;
 
     var target = window; // this can be any scrollable element
     var last_y = 0;
@@ -49,10 +50,10 @@ function DrawerHolder(main) {
         },0);
 
         window.history.pushState(null, document.title, location.href);
-        window.addEventListener("popstate", function (event) {
-            window.history.pushState(null, document.title, location.href);
-            drawer.toggle();
-        });
+        backButtonAction = function (event) {
+           window.history.pushState(null, document.title, location.href);
+           drawer.toggle();
+       }
 
 
 ////// FIXME - remove when no alpha
@@ -229,14 +230,19 @@ function DrawerHolder(main) {
                 }
                 break;
             case EVENTS.TRACKING_ACTIVE:
+                title.innerHTML = main.appName;
+                headerTitle.innerHTML = main.appName;
+                break;
             case EVENTS.TRACKING_DISABLED:
                 title.innerHTML = main.appName;
                 headerTitle.innerHTML = main.appName;
+                window.removeEventListener("popstate", backButtonAction);
                 break;
             case EVENTS.TRACKING_CONNECTING:
             case EVENTS.TRACKING_RECONNECTING:
                 u.lang.updateNode(title, u.lang.connecting);
                 u.lang.updateNode(headerTitle, u.lang.connecting);
+                window.addEventListener("popstate", backButtonAction);
                 break;
             case EVENTS.CHANGE_NAME:
             case USER.JOINED:

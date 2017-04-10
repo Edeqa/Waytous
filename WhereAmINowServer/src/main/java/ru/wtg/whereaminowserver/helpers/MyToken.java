@@ -34,7 +34,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NUMBER;
  */
 
 public class MyToken {
-    public Map<String,MyUser> users = new HashMap<String,MyUser>();
+    public Map<String,MyUser> users = new HashMap<>();
     private Long created;
     private Long changed;
     private String id;
@@ -42,7 +42,7 @@ public class MyToken {
     private String welcomeMessage;
     private int count;
 
-    private ArrayList<Color> colors = new ArrayList<Color>(Arrays.asList(Color.GREEN,Color.RED,Color.MAGENTA,Color.PINK,Color.ORANGE,
+    private ArrayList<Color> colors = new ArrayList<>(Arrays.asList(Color.GREEN, Color.RED, Color.MAGENTA, Color.PINK, Color.ORANGE,
             Color.CYAN, Color.YELLOW
     ));
 
@@ -140,7 +140,7 @@ public class MyToken {
     }
 
     public ArrayList<MyUser> fetchDestinations(JSONObject o, MyUser fromUser){
-        ArrayList<MyUser> dest = new ArrayList<MyUser>();
+        ArrayList<MyUser> dest = new ArrayList<>();
         o.put(USER_NUMBER,fromUser.getNumber());
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue() != fromUser){
@@ -158,7 +158,7 @@ public class MyToken {
     }
 
     private ArrayList<MyUser> ooo(JSONObject o, int toUserNumber, MyUser fromUser) {
-        ArrayList<MyUser> dest = new ArrayList<MyUser>();
+        ArrayList<MyUser> dest = new ArrayList<>();
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue().getNumber() == toUserNumber){
                 dest.add(x.getValue());
@@ -170,7 +170,7 @@ public class MyToken {
     }
 
     public void sendToFrom(JSONObject o, MyUser toUser, MyUser fromUser) {
-        ArrayList<MyUser> dest = new ArrayList<MyUser>();
+        ArrayList<MyUser> dest = new ArrayList<>();
         dest.add(toUser);
         o.put(USER_NUMBER,fromUser.getNumber());
         System.out.println("SEND:to user:"+toUser.getName()+":"+o);
@@ -288,7 +288,7 @@ public class MyToken {
     }
 
     public void sendInitialTo(JSONObject initial, MyUser user) {
-        ArrayList<JSONObject> initialUsers = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> initialUsers = new ArrayList<>();
         for(Map.Entry<String,MyUser> x:users.entrySet()){
             if(x.getValue() == user) continue;
             MyUser.MyPosition p = x.getValue().getPosition();

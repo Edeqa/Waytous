@@ -1,5 +1,6 @@
 package ru.wtg.whereaminowserver.servers;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +62,7 @@ public class MyHttpMainHandler implements HttpHandler {
         String etag = "W/1976" + ("" + file.lastModified()).hashCode();
 
         String path = uri.getPath().toLowerCase();
-        if (!file.isFile()) {
+        if (file.isDirectory()) {
             file = new File(file.getCanonicalPath() + "/index.html");
         }
         if(etag.equals(ifModifiedSince)) {
@@ -76,6 +78,13 @@ public class MyHttpMainHandler implements HttpHandler {
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             os.close();
+        } else if(!uri.getPath().endsWith("/") && !file.exists()) {
+            Headers responseHeaders = exchange.getResponseHeaders();
+            responseHeaders.set("Content-Type", "text/plain");
+            responseHeaders.set("Date", new Date().toString());
+            responseHeaders.set("Location", uri.getPath() + "/");
+            exchange.sendResponseHeaders(302, 0);
+            exchange.close();
         } else if (!file.isFile() || path.startsWith("/WEB-INF") || path.startsWith("/META-INF") || path.startsWith("/.idea")) {
             // Object does not exist or is not a file: reject with 404 error.
             String response = "404 Not Found\n";
@@ -144,7 +153,7 @@ public class MyHttpMainHandler implements HttpHandler {
 
             FileInputStream fs = new FileInputStream(file);
             final byte[] buffer = new byte[0x10000];
-            int count = 0;
+            int count;
             while ((count = fs.read(buffer)) >= 0) {
                 os.write(buffer,0,count);
             }

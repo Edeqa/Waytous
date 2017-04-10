@@ -420,6 +420,9 @@ p.bottom-desc {
 }
 .user-buttons-title-button {
 }
+.user-buttons-title-button::before {
+    content: "" !important;
+}
 .user-buttons-items {
     position: initial;
     border-radius: 5px;
@@ -650,6 +653,9 @@ p.bottom-desc {
     outline: none;
     color: inherit;
 }
+.dialog-title-button::before {
+    content: "clear";
+}
 .dialog-title-button:hover {
     color: red;
     background-color: initial;
@@ -669,6 +675,10 @@ p.bottom-desc {
     font-feature-settings: "liga" 1;
     font-style: normal;
     padding: 5px;
+}
+.dialog-filter-button:hover {
+    color: red;
+    background-color: initial;
 }
 .dialog-filter-input {
     padding: 3px;
@@ -1146,7 +1156,7 @@ p.bottom-desc {
     }*/
     body {
         font-family: sans-serif;
-        font-size: 14px;
+        font-size: 16px;
         margin: 0px;
         zoom: 1;
         color: darkslategray;
@@ -1243,6 +1253,8 @@ p.bottom-desc {
     .alpha {
         left: auto;
         right: 10px;
+        bottom: 30px;
+        top: auto;
     }
     .drawer {
         left: 0px;
@@ -1406,9 +1418,12 @@ p.bottom-desc {
         margin: 1px;
         cursor: pointer;
         background-color: rgba(211, 211, 211, 0.8);
-        width: 45px;
-        height: 45px;
+        width: 50px;
+        height: 50px;
         flex-direction: column;
+    }
+    .user-context-menu-item-icon {
+        font-size: 25px;
     }
     .user-context-menu-item-title {
         font-size: 6px;
@@ -1419,49 +1434,58 @@ p.bottom-desc {
         font-size: 9px;
     }
     .dialog-title {
-        min-height: 40px !important;
+        min-height: 50px !important;
     }
     .dialog-filter {
         font-size: 20px;
-        right: 40px;
+        right: 0px;
+        position: absolute;
+        left: 50px;
+        height: 50px;
     }
     .dialog-filter-button {
-        padding: 10px;
-    }
-    .dialog-filter-button:hover {
-        background-color: burlywood;
+        padding: 15px;
+        position: absolute;
+        right: 0px;
     }
     .dialog-filter-input {
-        width: 50%;
-        height: 20px;
-        padding: 7px;
-        outline-style: solid;
-        outline-width: 2px;
-        position: fixed;
-        right: 40px;
+        height: 30px;
+        padding: 8px;
+        outline: none;
+        position: relative;
+        font-size: 16px;
+        width: 100%;
+        border-style: solid;
+        border-width: 2px;
     }
     .dialog-filter-clear {
-        padding: 10px;
+        padding: 15px;
     }
     .dialog-items {
 
     }
     .dialog-item {
-        font-size: 14px;
     }
     .dialog-buttons {
         text-align: center;
     }
     .dialog-title-button {
-        min-width: inherit;
-        padding: 10px;
+        padding: 15px;
+        right: auto;
+        left: 0px;
+    }
+    .dialog-title-button::before {
+        content: "arrow_back" !important;
         font-size: 20px;
     }
     .dialog-item-enclosed-button {
-        height: 35px;
+        padding-top: 5px;
     }
     .dialog-item-enclosed-label {
-        font-size: 14px !important;
+        font-size: initial;
+    }
+    .dialog-item-enclosed-body {
+        font-size: initial;
     }
     .dialog-item-input-select {
         background-color: antiquewhite;
@@ -1472,20 +1496,20 @@ p.bottom-desc {
         display: none;
     }
     .chat {
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        left: 0px !important;
-        bottom: 0px !important;
-        top: auto !important;
-        padding: 0px;
         max-width: 100%;
-        width: 100% !important;
-        height: 40% !important;
+        left: 0px !important;
+        right: 0px !important;
+        top: 0px !important;
+        bottom: 0px !important;
         transform: none !important;
+        width: 100% !important;
+        max-height: 100%;
+        border: none;
+        opacity: 1;
     }
     .chat-messages {
         padding: 8px;
+        font-size: 14px;
     }
     .chat-reply {
         padding: 8px;
@@ -1511,17 +1535,34 @@ p.bottom-desc {
         padding: 10px;
     }
     .help {
-        width: 90%;
+        left: 0px !important;
+        right: 0px !important;
+        top: 0px !important;
+        bottom: 0px !important;
+        transform: none !important;
+        width: 100% !important;
+        max-height: 100%;
+        border: none;
+    }
+    .help-buttons {
+        display: none;
     }
     .saved-location {
-        width: 90%;
+        left: 0px !important;
+        right: 0px !important;
+        top: 0px !important;
+        bottom: 0px !important;
+        transform: none !important;
+        width: 100% !important;
+        max-height: 100%;
+        border: none;
     }
     .saved-location-items {
     }
     .saved-location-item {
     }
     .saved-location-item-text {
-        font-size: 10px;
+        font-size: 14px;
         flex: initial;
     }
     .saved-location-item-label {
@@ -1630,7 +1671,7 @@ p.bottom-desc {
     }
 
     /* shift zoom control */
-    .gmnoprint:nth-child(8) {
+    .gm-bundled-control {
         top: 100px !important;
     }
 

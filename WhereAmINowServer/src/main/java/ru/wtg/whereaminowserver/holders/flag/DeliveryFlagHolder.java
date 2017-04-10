@@ -6,7 +6,6 @@ import ru.wtg.whereaminowserver.helpers.MyToken;
 import ru.wtg.whereaminowserver.helpers.MyUser;
 import ru.wtg.whereaminowserver.interfaces.FlagHolder;
 import ru.wtg.whereaminowserver.servers.AbstractWainProcessor;
-import ru.wtg.whereaminowserver.servers.MyWsServer;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;

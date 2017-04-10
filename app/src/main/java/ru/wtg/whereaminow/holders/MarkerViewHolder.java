@@ -1,6 +1,5 @@
 package ru.wtg.whereaminow.holders;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;

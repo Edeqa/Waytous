@@ -35,7 +35,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
 
             Common.log("Redirect",exchange.getRemoteAddress(),host + uri.getPath());
 
-            ArrayList<String> parts = new ArrayList<String>();
+            ArrayList<String> parts = new ArrayList<>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
             String tokenId = null;

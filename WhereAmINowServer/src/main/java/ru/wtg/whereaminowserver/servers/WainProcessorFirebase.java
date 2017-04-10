@@ -86,7 +86,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
         File f = new File(SENSITIVE.getFirebasePrivateKeyFile());
         try {
-            Common.log("WPF","Firebase config file: "+f.getCanonicalPath().toString());
+            Common.log("WPF","Firebase config file: "+f.getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,7 +98,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
     @Override
     public LinkedList<String> getRequestHoldersList() {
-        LinkedList<String> classes = new LinkedList<String>();
+        LinkedList<String> classes = new LinkedList<>();
         classes.add("TrackingRequestHolder");
         classes.add("MessageRequestHolder");
         classes.add("ChangeNameRequestHolder");

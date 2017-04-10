@@ -23,7 +23,7 @@ public class AdminRequestHolder implements RequestHolder {
 
 
     public AdminRequestHolder(AbstractWainProcessor context) {
-        admins = new HashMap<String, MyUser>();
+        admins = new HashMap<>();
     }
 
 

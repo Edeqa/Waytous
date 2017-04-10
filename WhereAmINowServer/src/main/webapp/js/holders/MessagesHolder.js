@@ -117,7 +117,7 @@ function MessagesHolder(main) {
                 u.create(HTML.DIV, {
                     className:"chat-message-name",
                     style: {color: this.properties.color},
-                    innerHTML:this.properties.getDisplayName() + (object.private ? " ? " + toUser.properties.getDisplayName() : "") + ":"}, div);
+                    innerHTML:this.properties.getDisplayName() + (object.private ? " &rarr; " + toUser.properties.getDisplayName() : "") + ":"}, div);
                 u.create(HTML.DIV, {className:"chat-message-body", innerHTML: object.body}, div);
 
                 div.scrollIntoView();

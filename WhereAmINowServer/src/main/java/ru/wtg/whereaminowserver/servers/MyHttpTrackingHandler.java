@@ -48,7 +48,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
         Common.log("Tracking",exchange.getRemoteAddress(),host + uri.getPath() );
 
-        ArrayList<String> parts = new ArrayList<String>();
+        ArrayList<String> parts = new ArrayList<>();
         parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
         File root = new File(SENSITIVE.getWebRootDirectory());

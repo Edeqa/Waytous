@@ -2,28 +2,20 @@ package ru.wtg.whereaminowserver.helpers;
 
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.net.ssl.HttpsURLConnection;
-
-import static com.google.common.net.HttpHeaders.USER_AGENT;
 
 /**
  * Created 10/8/16.

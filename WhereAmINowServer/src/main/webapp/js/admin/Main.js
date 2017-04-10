@@ -96,7 +96,12 @@ function Main() {
             }}, out);
             var right = u.create("div", {className:"right"}, out);
 
-            u.create("a", { href: "/", className:"logo" }, menu);
+            var logo = u.create("a", { href: "/", className:"logo" }, menu);
+            u.create(HTML.IMG, {
+                className:"drawer-header-logo",
+                src:"/images/logo.svg",
+             }, logo);
+
 
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();

@@ -11,10 +11,7 @@ import android.hardware.TriggerEventListener;
 import android.os.Build;
 import android.util.Log;
 
-import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.interfaces.SimpleCallback;
-
-import static ru.wtg.whereaminow.holders.InfoViewHolder.SHOW_INFO;
 
 /**
  * Created 11/26/16.

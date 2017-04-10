@@ -213,7 +213,7 @@
                     android:text="65-96 - GLONASS"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textView15"
+                    android:id="@+id/textView16"
                     android:layout_weight="1"
                     android:textSize="10sp" />
 
@@ -221,7 +221,7 @@
                     android:text="193-200 - QZSS"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textView16"
+                    android:id="@+id/textView17"
                     android:layout_weight="1"
                     android:textSize="10sp" />
 
@@ -229,7 +229,7 @@
                     android:text="201-235 - Beidou"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textView17"
+                    android:id="@+id/textView18"
                     android:layout_weight="1"
                     android:textSize="10sp" />
 
@@ -284,7 +284,7 @@
                     android:text="fix "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textView18"
+                    android:id="@+id/textView20"
                     android:textSize="10sp"
                     android:textColor="#0000FF"
                     android:textStyle="normal|bold" />
@@ -293,7 +293,7 @@
                     android:text="inactive"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textView20"
+                    android:id="@+id/textView22"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="10sp"
                     android:textStyle="normal|bold" />

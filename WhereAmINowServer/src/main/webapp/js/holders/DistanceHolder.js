@@ -50,7 +50,7 @@ function DistanceHolder(main) {
                 }
                 break;
             case EVENTS.SHOW_DISTANCE:
-                if(this != main.me) {
+                if(this != main.me && this.properties && this.properties.active) {
                     this.views.distance.show = true;
                     u.saveForGroup("distance:show:" + this.number, true);
                     show.call(this);

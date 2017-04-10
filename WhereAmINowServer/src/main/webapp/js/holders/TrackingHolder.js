@@ -44,7 +44,13 @@ function TrackingHolder(main) {
         });
 
         var soundFile = u.load("tracking:sound_on_join") || "oringz-w427.mp3";
-        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile}, main.right);
+        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, last:0, playButLast:function(){
+            var current = new Date().getTime();
+            if(current - this.last > 10) {
+                this.last = current;
+                this.play();
+            }
+        }}, main.right);
         progressTitle = progress.items[1];
         noSleep = new NoSleep();
         wakeLockEnabled = false;
@@ -342,13 +348,17 @@ function TrackingHolder(main) {
                         } else if (o[USER.JOINED] != undefined) {
                             var number = o[USER.JOINED];
                             var user = main.users.users[number];
+
+                            if(user.properties && !user.properties.active) {
+                                if(!user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
+                                    main.toast.show(u.lang.user_s_has_joined.format(user.properties.getDisplayName()), 10000);
+                                    sound.playButLast();
+                                }
+                            }
+
                             user.fire(EVENTS.MAKE_ACTIVE);
                             main.fire(USER.JOINED, user);
 
-                            if(!user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
-                                main.toast.show(u.lang.user_s_has_joined.format(user.properties.getDisplayName()), 10000);
-                                sound.play();
-                            }
                             // console.log("JOINED",number);
                         }
                         break;

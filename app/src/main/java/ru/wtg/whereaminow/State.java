@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,7 +15,6 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
