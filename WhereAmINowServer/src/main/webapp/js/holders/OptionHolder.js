@@ -120,6 +120,7 @@ function OptionHolder(main) {
 //                        delete options[id].accept;
                         options[id].onaccept = item.onaccept;
                         if(item.onchange) options[id].addEventListener("change", item.onchange);
+                        if(item.onshow) item.onshow(options[id]);
                     }
                 }
             }

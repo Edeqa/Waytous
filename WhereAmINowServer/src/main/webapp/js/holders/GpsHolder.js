@@ -8,6 +8,7 @@ function GpsHolder(main) {
     var locationRequiredDialog;
     var drawerEnableGeoposition;
     var initialized;
+    var icon;
 
     function start() {
 
@@ -129,7 +130,6 @@ function GpsHolder(main) {
             drawerEnableGeoposition.show();
             alternativeGeolocation();
 
-            var icon;
             var alert = u.dialog({
                 className: "alert-dialog",
                 items: [

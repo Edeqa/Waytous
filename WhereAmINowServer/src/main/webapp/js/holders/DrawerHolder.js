@@ -24,13 +24,48 @@ function DrawerHolder(main) {
     var menu;
     var alphaDialog;
     var backButtonAction;
+    var footerButton;
+    var collapsed;
+    var footerButtonCollapseDiv;
+    var footerButtonExpandDiv;
+
+
+    var footerButtonSvg = {
+        xmlns:"http://www.w3.org/2000/svg",
+        viewbox:"2 2 14 14",
+        fit: "",
+        version:"1.1",
+        width: 24,
+        height: 24,
+        preserveAspectRatio: "xMidYMid meet",
+        className: "drawer-menu-item-icon drawer-footer-button",
+        onclick: function(e) {
+            u.save("drawer:collapsed", !collapsed);
+            this.replaceChild(collapsed ? footerButtonExpandDiv : footerButtonCollapseDiv, this.firstChild);
+            if(collapsed) {
+                console.log("EXP", this)
+            } else {
+                console.log("COLL", this)
+            }
+        }
+    };
+    var footerButtonCollapsePath = {
+        xmlns:"http://www.w3.org/2000/svg",
+        d: "M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z",
+    };
+    var footerButtonExpandPath = {
+        xmlns:"http://www.w3.org/2000/svg",
+        d: "M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z"
+    };
+
 
     var target = window; // this can be any scrollable element
     var last_y = 0;
 
     var start = function() {
 
-        drawer = new Drawer();
+        collapsed = u.load("drawer:collapsed");
+        drawer = new Drawer({collapsed: collapsed});
         main.layout.insertBefore(drawer,main.layout.firstChild);
 
         var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
@@ -83,9 +118,10 @@ function DrawerHolder(main) {
 
     };
 
-    function Drawer() {
+    function Drawer(options) {
+        collapsed = options.collapsed;
         var layout = u.create(HTML.DIV, {
-            className:"drawer",
+            className:"drawer changeable" + (collapsed ? " drawer-collapsed" : ""),
             tabindex: -1,
             onblur: function(){
                  this.close();
@@ -108,32 +144,35 @@ function DrawerHolder(main) {
                 }
             }
          });
+//         var frame = u.create("iframe", {width:"100%",height:"1%", style:"position:absolute;z-index:-1"}, layout);
+//         frame.addEventListener("resize",function(){
+//           console.log("rezised");
+//        });
 
-         layout.header = u.create(HTML.DIV, { className:"drawer-header" }, layout);
+         layout.header = u.create(HTML.DIV, { className:"drawer-header changeable" }, layout);
          u.create(HTML.IMG, {
-            className:"drawer-header-logo",
+            className:"drawer-header-logo changeable",
             src:"/images/logo.svg",
             onclick: function(){
                 alphaDialog.open();
             }
          }, layout.header);
-         headerName = u.create(HTML.DIV, {className:"drawer-header-name", onclick: function(evt){
+         headerName = u.create(HTML.DIV, {className:"drawer-header-name changeable", onclick: function(evt){
                 layout.blur();
                 main.me.fire(EVENTS.SELECT_SINGLE_USER);
             }}, layout.header);
-         headerTitle = u.create(HTML.DIV, {className:"drawer-header-title", innerHTML:main.appName}, layout.header);
-         u.create(HTML.DIV, {className:"drawer-header-subtitle", innerHTML: u.lang.be_always_on_the_same_way }, layout.header);
+         headerTitle = u.create(HTML.DIV, {className:"drawer-header-title changeable", innerHTML:main.appName}, layout.header);
+         u.create(HTML.DIV, {className:"drawer-header-subtitle changeable", innerHTML: u.lang.be_always_on_the_same_way }, layout.header);
 
 
         layout.items = {};
 
 
-        layout.menu = u.create(HTML.DIV, {className:"drawer-menu"}, layout);
+        layout.menu = u.create(HTML.DIV, {className:"drawer-menu changeable"}, layout);
         sections = [];
         for(var i=0;i<10;i++){
-            sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, layout.menu);
+            sections[i] = u.create(HTML.DIV, {className:"changeable hidden" + (i==9 ? "" : " divider")}, layout.menu);
         }
-
 
         layout.add = function(section,id,name,icon,callback) {
             layout.items[id] = {
@@ -212,7 +251,24 @@ function DrawerHolder(main) {
             return th;
         }
 
+        layout.toggleCollapse = function(force) {
+            collapsed = !collapsed;
+            if(force != undefined) collapsed = force;
+            u.save("drawer:collapsed", collapsed);
+            layout.toggleButton.innerHTML = collapsed ? "last_page" : "first_page";
+            layout.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
+            main.fire(EVENTS.CAMERA_UPDATE);
+        }
+
         layout.footer = u.create(HTML.DIV, { className:"drawer-footer"}, layout);
+
+        footerButtonCollapseDiv = u.create(HTML.PATH, footerButtonCollapsePath);
+        footerButtonExpandDiv = u.create(HTML.PATH, footerButtonExpandPath);
+//        footerButton = u.create(HTML.SVG, footerButtonSvg, layout.footer);
+
+        layout.toggleButton = u.create(HTML.DIV, {className: "drawer-menu-item-icon drawer-footer-button", innerHTML: collapsed ? "last_page" : "first_page", onclick: function(e){
+            layout.toggleCollapse();
+        }}, layout.footer);
         u.create(HTML.DIV, main.appName + " &copy;2017 WTG", layout.footer);
         u.create(HTML.DIV, "Build " + data.version, layout.footer);
 
@@ -269,12 +325,39 @@ function DrawerHolder(main) {
         }
     }
 
+
+    function options(){
+        return {
+            id: "general",
+            title: u.lang.general,
+            categories: [
+                {
+                    id: "general:main",
+                    title: u.lang.main,
+                    items: [
+                        {
+                            id:"drawer:collapsed",
+                            type: HTML.CHECKBOX,
+                            label: "Collapsed drawer",
+                            default: u.load("drawer:collapsed"),
+                            onaccept: function(e, event) {
+                                drawer.toggleCollapse(this.checked);
+                            },
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+
     return {
         type:"drawer",
         start:start,
         onEvent:onEvent,
         createView:createView,
         onChangeLocation:onChangeLocation,
+        options:options,
     }
 }
 

@@ -29,7 +29,7 @@ import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.Constants;
 import ru.wtg.whereaminowserver.helpers.SensitiveData;
 import ru.wtg.whereaminowserver.servers.MyHttpAdminHandler;
-import ru.wtg.whereaminowserver.servers.MyHttpJoinHandler;
+import ru.wtg.whereaminowserver.servers.MyHttpXhrHandler;
 import ru.wtg.whereaminowserver.servers.MyHttpMainHandler;
 import ru.wtg.whereaminowserver.servers.MyHttpRedirectHandler;
 import ru.wtg.whereaminowserver.servers.MyHttpTrackingHandler;
@@ -229,7 +229,7 @@ public class WAINServer {
 //        server.createContext("/", mainServer);
 //        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
-        MyHttpJoinHandler joinServer = new MyHttpJoinHandler();
+        MyHttpXhrHandler joinServer = new MyHttpXhrHandler();
         joinServer.setWainProcessor(wainProcessorFirebase);
 //        server.createContext("/", mainServer);
 //        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
@@ -297,16 +297,19 @@ public class WAINServer {
             System.out.println("Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
 
             sslServer.createContext("/track/", trackingServer);
-            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track");
+            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track/");
 
             sslServer.createContext("/group/", trackingServer);
-            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group");
+            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
 
-            sslServer.createContext("/join/", joinServer);
-            System.out.println("Join HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/join");
+//            sslServer.createContext("/join/", joinServer);
+//            System.out.println("Join HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/join/");
+
+            sslServer.createContext("/xhr/", joinServer);
+            System.out.println("Xhr HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/xhr/");
 
             sslServer.createContext("/admin/", adminServer).setAuthenticator(new Authenticator("get"));
-            System.out.println("Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin");
+            System.out.println("Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/");
 
             sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
 

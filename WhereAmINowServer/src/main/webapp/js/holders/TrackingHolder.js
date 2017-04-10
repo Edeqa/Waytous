@@ -20,6 +20,8 @@ function TrackingHolder(main) {
     var shareBlockedDialog;
     var drawerItemNewIcon;
     var sound;
+    var sounds;
+    var defaultSound = "oringz-w427.mp3";
 
     var drawerItemNewIconSvg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -43,7 +45,7 @@ function TrackingHolder(main) {
             ]
         });
 
-        var soundFile = u.load("tracking:sound_on_join") || "oringz-w427.mp3";
+        var soundFile = u.load("tracking:sound_on_join") || defaultSound;
         sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, last:0, playButLast:function(){
             var current = new Date().getTime();
             if(current - this.last > 10) {
@@ -58,7 +60,6 @@ function TrackingHolder(main) {
     }
 
     function perform(json){
-//        console.log("JSON",json);
         var loc = u.jsonToLocation(json);
         var number = json[USER.NUMBER];
         main.users.forUser(number, function(number,user){
@@ -415,7 +416,7 @@ function TrackingHolder(main) {
                             id:"tracking:sound_on_join",
                             type: HTML.SELECT,
                             label: u.lang.sound_on_join,
-                            default: u.load("tracking:sound_on_join") || "oringz-w427.mp3",
+                            default: u.load("tracking:sound_on_join") || defaultSound,
                             onaccept: function(e, event) {
                                 u.save("tracking:sound_on_join", this.value);
                                 sound.src = "/sounds/" + this.value;
@@ -427,7 +428,24 @@ function TrackingHolder(main) {
                                 }, true);
                                 sample.play();
                             },
-                            values: {"none.mp3": u.lang.none, "arpeggio.mp3": "Arpeggio", "job-done.mp3": "Job done", "oringz-w427.mp3":"Oringz", "wet.mp3":"Wet" }
+                            onshow: function(e) {
+                                if(sounds) {
+                                } else {
+                                    u.getRemoteJSON("/xhr/getSounds",function(json){
+                                        sounds = {};
+                                        u.clear(e);
+                                        for(var i in json.files) {
+                                            var file = json.files[i];
+                                            var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
+                                            sounds[file] = name;
+                                            u.create(HTML.OPTION, {value:file, innerHTML:name, selected: (u.load("tracking:sound_on_join") || defaultIncomingMessageSound) == file}, e);
+                                        }
+                                    }, function(code,xhr){
+                                        console.error(code,xhr)
+                                    });
+                                }
+                            },
+                            values: {"":"Loading..."}
                         }
                     ]
                 }

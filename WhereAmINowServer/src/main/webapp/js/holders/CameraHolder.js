@@ -164,7 +164,8 @@ function CameraHolder(main) {
                 }
                 break;
             case EVENTS.CAMERA_UPDATE:
-                update()
+                google.maps.event.trigger(map, "resize");
+                update();
                 break;
             default:
                 break;

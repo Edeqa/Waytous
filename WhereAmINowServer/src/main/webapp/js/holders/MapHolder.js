@@ -30,6 +30,8 @@ function MapHolder(main) {
             className: "map-recenter hidden",
             innerHTML: u.lang.re_center,
             onclick: function() {
+                main.fire(EVENTS.CAMERA_UPDATE);
+                google.maps.event.trigger(map, "resize");
                 main.users.forAllUsers(function(number,user){
                     if(user.views.properties.selected) user.fire(EVENTS.SELECT_USER);
                 });

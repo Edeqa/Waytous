@@ -18,6 +18,10 @@ function MessagesHolder(main) {
     var replyButton;
     var lastReadTimestamp;
     var drawerItemChat;
+    var incomingMessageSounds;
+    var incomingMessageSound;
+    var defaultIncomingMessageSound = "oringz-w427.mp3";
+    var sound;
 
     function start() {
         // console.log("MESSAGESHOLDER",main);
@@ -59,6 +63,15 @@ function MessagesHolder(main) {
             this.focus();
         }}, reply);
         replyButton = u.create(HTML.BUTTON, {className: "chat-reply-button", innerHTML:"send", onclick:sendUserMessage}, reply);
+
+        var soundFile = u.load("messages:incoming") || defaultIncomingMessageSound;
+        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, last:0, playButLast:function(){
+            var current = new Date().getTime();
+            if(current - this.last > 10) {
+                this.last = current;
+                this.play();
+            }
+        }}, main.right);
 
         if(u.loadForGroup("message:chat")) chat.open();
         lastReadTimestamp = u.loadForGroup("message:lastread");
@@ -175,6 +188,57 @@ function MessagesHolder(main) {
         });
     }
 
+
+    function options(){
+        return {
+            id: "general",
+            title: u.lang.general,
+            categories: [
+                {
+                    id: "general:main",
+                    title: u.lang.main,
+                    items: [
+                        {
+                            id:"messages:incoming",
+                            type: HTML.SELECT,
+                            label: "Incoming message",
+                            default: u.load("messages:incoming") || defaultIncomingMessageSound,
+                            onaccept: function(e, event) {
+                                u.save("messages:incoming", this.value);
+                                sound.src = "/sounds/" + this.value;
+                            },
+                            onchange: function(e, event) {
+                                var sample = u.create(HTML.AUDIO, {className:"hidden", preload:true, src:"/sounds/"+this.value}, main.right);
+                                sample.addEventListener("load", function() {
+                                    sample.play();
+                                }, true);
+                                sample.play();
+                            },
+                            onshow: function(e) {
+                                if(incomingMessageSounds) {
+                                } else {
+                                    u.getRemoteJSON("/xhr/getSounds",function(json){
+                                        incomingMessageSounds = {};
+                                        u.clear(e);
+                                        for(var i in json.files) {
+                                            var file = json.files[i];
+                                            var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
+                                            incomingMessageSounds[file] = name;
+                                            u.create(HTML.OPTION, {value:file, innerHTML:name, selected: (u.load("messages:incoming") || defaultIncomingMessageSound) == file}, e);
+                                        }
+                                    }, function(code,xhr){
+                                        console.error(code,xhr)
+                                    });
+                                }
+                            },
+                            values: {"":"Loading..."}
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
     return {
         type:type,
         start:start,
@@ -183,5 +247,6 @@ function MessagesHolder(main) {
         perform:perform,
         saveable:true,
         loadsaved:-1,
+        options:options,
     }
 }

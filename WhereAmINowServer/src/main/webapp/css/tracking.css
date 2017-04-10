@@ -135,6 +135,15 @@ button:active {
     bottom: 0px;
     z-index: 10000;
 }
+.drawer-collapsed {
+    max-width: 40px;
+    min-width: 40px;
+    overflow-x: hidden;
+}
+.drawer-collapsed:hover {
+    max-width: 250px;
+    min-width: 250px;
+}
 .drawer-open {
     display: block;
 }
@@ -142,7 +151,7 @@ button:active {
     outline: none;
 }
 .drawer-header {
-    background: linear-gradient(135deg, #2e5d7d 0%,#4c93af 54%,#819bc7 100%);
+    background: linear-gradient(135deg, #2e5d7d 0%,#32667b 54%,#819bc7 100%);
     display: flex;
     height: 150px;
     flex-direction: column;
@@ -150,15 +159,26 @@ button:active {
     padding-left: 10px;
     padding-right: 10px;
     position: sticky;
+    overflow: hidden;
+}
+.drawer-collapsed .drawer-header {
+    height: 50px;
 }
 .drawer-header-logo {
     height: 50px;
     width: 50px;
     position: absolute;
     top: 15px;
+    left: 10px;
     cursor: pointer;
 }
-.drawer-header-name {
+.drawer-collapsed .drawer-header-logo {
+    height: 24px;
+    width: 24px;
+    left: 6px;
+}
+.drawer-header-name, .drawer-collapsed:hover .drawer-header-name {
+    display: block;
     position: absolute;
     top: 10px;
     right: 10px;
@@ -167,23 +187,39 @@ button:active {
     font-weight: bold;
     cursor: default;
 }
+.drawer-collapsed .drawer-header-name {
+    font-size: 0px;
+}
 .drawer-header-title {
+    display: block;
     color: white;
     font-weight: bold;
     font-size: larger;
 }
+.drawer-collapsed .drawer-header-title {
+    font-size: 0px;
+}
 .drawer-header-subtitle {
+    font-size: inherit;
+    display: block;
     color: white;
     padding-bottom: 10px;
     white-space: pre;
+}
+.drawer-collapsed .drawer-header-subtitle {
+    font-size: 0px;
 }
 .drawer-menu {
     position: absolute;
     top: 150px;
     bottom: 50px;
+    overflow-x: hidden;
     overflow-y: auto;
     width: 100%;
     -webkit-overflow-scrolling: touch;
+}
+.drawer-collapsed .drawer-menu {
+    top: 50px;
 }
 .drawer-menu-item:hover {
     background: #dddd99;
@@ -213,8 +249,10 @@ button:active {
     stroke: darkslategray;
 }
 .drawer-menu-item-label {
+    padding-left: 3px;
+    white-space: nowrap;
 }
-.drawer-menu-item-badge {
+.drawer-menu-item-badge, .drawer-collapsed:hover .drawer-menu-item-badge {
     background-color: lightgreen;
     border-style: solid;
     border-width: 1px;
@@ -229,6 +267,12 @@ button:active {
     text-align: center;
     margin-left: auto;
 }
+.drawer-collapsed .drawer-menu-item-badge {
+    right: 1px;
+    top: 1px;
+    position: absolute;
+    font-size: 10px;
+}
 .drawer-menu-item-social {
     display: flex;
 }
@@ -239,11 +283,27 @@ button:active {
 
 }
 .drawer-footer {
-    position: fixed;
+    position: absolute;
     bottom: 10px;
     width: 250px;
     text-align: center;
     font-size: 10px;
+}
+.drawer-footer-button {
+   position: absolute;
+   bottom: -10px;
+   font-size: 16px;
+   font-weight: bold;
+   cursor: default;
+   margin: 5px;
+   border-radius: 20px;
+   padding: 7px;
+}
+.drawer-footer-button:hover {
+    background-color: #dddd99;
+}
+.drawer-footer-button:active {
+    background-color: burlywood;
 }
 .right {
     width: 100%;
@@ -267,7 +327,7 @@ button:active {
     color: darkgray;
 }
 .changeable {
-    transition: 0.7s ease-in-out all;
+    transition: 0.5s ease-in-out all;
 }
 .changed {
     color: chocolate;
@@ -1256,7 +1316,7 @@ p.bottom-desc {
         bottom: 30px;
         top: auto;
     }
-    .drawer {
+    .drawer, .drawer-collapsed {
         left: 0px;
         width: 70%;
         max-width:300px;
@@ -1275,6 +1335,26 @@ p.bottom-desc {
     .drawer:focus {
         display: block;
     }
+    .drawer-collapsed .drawer-header {
+        height: 150px;
+    }
+    .drawer-collapsed .drawer-menu {
+        top: 150px;
+    }
+    .drawer-collapsed .drawer-header-logo {
+        height: 50px;
+        width: 50px;
+        left: 10px;
+    }
+    .drawer-collapsed .drawer-header-name {
+        font-size: x-large;
+    }
+    .drawer-collapsed .drawer-header-title {
+        font-size: larger;
+    }
+    .drawer-collapsed .drawer-header-subtitle {
+        font-size: inherit;
+    }
     .drawer-menu-item {
         text-decoration: none;
         font-weight: bold;
@@ -1288,9 +1368,10 @@ p.bottom-desc {
     }
     .drawer-menu-item-label {
     }
-    .drawer-menu-item-badge {
+    .drawer-menu-item-badge, .drawer-collapsed .drawer-menu-item-badge, .drawer-collapsed:hover .drawer-menu-item-badge {
         margin: 14px;
         position: absolute;
+        top: 0px;
         right: 0px;
     }
     .drawer-header {
@@ -1304,6 +1385,9 @@ p.bottom-desc {
         width: auto;
         text-align: center;
         font-size: 10px;
+    }
+    .drawer-footer-button {
+        display: none;
     }
     .version {
         position: fixed;

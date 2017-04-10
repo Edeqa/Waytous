@@ -46,6 +46,7 @@ window.HTML = {
     TEXTAREA:"textarea",
     HIDDEN:"hidden",
     SELECT:"select",
+    OPTION:"option",
     SUBMIT:"submit",
     TEXT:"text",
     VALUE:"value",
@@ -839,7 +840,7 @@ function Utils(main) {
 
                 }, div);
                 for(var y in item.values) {
-                    u.create("option", {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
+                    u.create(HTML.OPTION, {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
                 }
 
             } else {
@@ -1567,6 +1568,10 @@ function Utils(main) {
         }*/
     }
 
+    function toUpperCaseFirst(string) {
+        return string.substring(0,1).toUpperCase() + string.substring(1);
+    }
+
     return {
         create: create,
         clear: clear,
@@ -1599,5 +1604,6 @@ function Utils(main) {
         cloneAsObject:cloneAsObject,
         lang:lang,
         getRemoteJSON:getRemoteJSON,
+        toUpperCaseFirst:toUpperCaseFirst,
     }
 }
