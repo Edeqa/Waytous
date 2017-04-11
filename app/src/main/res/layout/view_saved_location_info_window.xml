@@ -35,19 +35,19 @@
         android:textAlignment="textEnd" />
 
     <Button
-        android:text="Navigate"
+        android:text="@string/navigate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_navigate" />
 
     <Button
-        android:text="Edit"
+        android:text="@string/edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_edit" />
 
     <Button
-        android:text="Hide"
+        android:text="@string/hide"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_hide" />

@@ -205,7 +205,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
         if (toUser == null) {
-            dialog.setTitle("Send message");
+            dialog.setTitle(context.getString(R.string.send_message));
         } else {
             dialog.setTitle((privateMessage ? "Private message to " : "Reply to ") + toUser.getProperties().getDisplayName());
         }
@@ -256,7 +256,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         }
                         reloadCursor();
                     } else {
-                        new SystemMessage(context).setText("Cannot send message because of network not available.").showSnack();
+                        new SystemMessage(context).setText(context.getString(R.string.cannot_send_message_because_of_network_is_unavailable)).showSnack();
                     }
                 }
             }
@@ -268,7 +268,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             }
         });
         if(toUser != null && !privateMessage) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Private", new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.private_string), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     newMessage(toUser, true, etMessage.getText().toString());
@@ -276,7 +276,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             });
         }
         if(privateMessage) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Not private", new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.not_private), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     newMessage(toUser, false, etMessage.getText().toString());
@@ -344,7 +344,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
                 System.out.println("SHARE "+item);
 
-                new ShareSender(context).send("Share the message", item.getFrom(), item.getFrom() + ":\n" + item.getBody());
+                new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
             }
         });
         adapter.setOnItemReplyListener(new SimpleCallback<Integer>() {
@@ -504,7 +504,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
                         reloadCursor();
                     } else {
-                        new SystemMessage(context).setText("Cannot send message because of network not available.").showSnack();
+                        new SystemMessage(context).setText(context.getString(R.string.cannot_send_message_because_of_network_is_unavailable)).showSnack();
                     }
                 }
                 et.setText("");
@@ -607,7 +607,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         UserMessage m = (UserMessage) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction("Reply",new SimpleCallback() {
+                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction(context.getString(R.string.reply),new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, false,"");
@@ -629,7 +629,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction("Reply",new SimpleCallback() {
+                        new SystemMessage(context).setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction(context.getString(R.string.reply),new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, true, "");
@@ -694,7 +694,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             final AlertDialog dialog = new AlertDialog.Builder(context).create();
-            dialog.setTitle("Set welcome message");
+            dialog.setTitle(context.getString(R.string.set_welcome_message));
 
             View view = context.getLayoutInflater().inflate(R.layout.dialog_welcome_message, null);
 
@@ -772,7 +772,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                     break;
                 case R.id.clear_messages:
                     AlertDialog dialog = new AlertDialog.Builder(context).create();
-                    dialog.setTitle("Clear all messages?");
+                    dialog.setTitle(context.getString(R.string.clear_all_messages));
                     dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {

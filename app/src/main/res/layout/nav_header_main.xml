@@ -23,6 +23,6 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Be always on the same way\nwith your friends" />
+        android:text="@string/be_always_on_the_same_way_with_your_friends" />
 
 </LinearLayout>

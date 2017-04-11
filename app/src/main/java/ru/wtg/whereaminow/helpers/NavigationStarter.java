@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
+import ru.wtg.whereaminow.R;
+
 /**
  * Created 12/11/16.
  */
@@ -37,7 +39,7 @@ public class NavigationStarter {
 
                 context.startActivity(unrestrictedIntent);
             } catch (ActivityNotFoundException innerEx) {
-                Toast.makeText(context.getApplicationContext(), "Please install a navigation application.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context.getApplicationContext(), R.string.please_install_a_navigation_application, Toast.LENGTH_LONG).show();
             }
         }
     }

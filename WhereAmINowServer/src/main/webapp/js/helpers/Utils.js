@@ -798,7 +798,7 @@ function Utils(main) {
                             x.body.classList.add("hidden");
                         }
                     }}, x);
-                    enclosedIcon = create(HTML.DIV, {className:"dialog-item-enclosed-icon", innerHTML:"expand_more"}, enclosedButton);
+                    enclosedIcon = create(HTML.DIV, {className:"dialog-item-enclosed-icon notranslate", innerHTML:"expand_more"}, enclosedButton);
                     create(HTML.DIV, {className:"dialog-item-enclosed-label", innerHTML: item.label || "Show more information"}, enclosedButton);
                     x.body = create(HTML.DIV, {className:"dialog-item-enclosed-body hidden", innerHTML:item.body || ""}, x);
                 } else {
@@ -1073,7 +1073,7 @@ function Utils(main) {
             dialog.titleLayout = create(HTML.DIV, {className:"dialog-title-label", innerHTML: options.title.label }, titleLayout);
 
             if(options.title.button && options.title.button.icon) {
-                create(HTML.DIV, {className:"dialog-title-button"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
+                create(HTML.DIV, {className:"dialog-title-button notranslate"+ options.title.button.className, innerHTML:options.title.button.icon, onclick:options.title.button.onclick}, titleLayout);
             }
 
             if(options.title.filter) {
@@ -1082,7 +1082,7 @@ function Utils(main) {
                     className: "dialog-filter"
                 }, titleLayout);
                 dialog.filterButton = u.create(HTML.DIV, {
-                    className: "dialog-filter-button",
+                    className: "dialog-filter-button notranslate",
                     innerHTML: "search",
                     onclick: function() {
                         dialog.filterButton.hide();

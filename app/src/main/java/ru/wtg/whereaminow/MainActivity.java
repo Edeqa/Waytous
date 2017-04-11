@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (permissions.size() > 0) {
             Thread.dumpStack();
-            new ContinueDialog(this).setMessage("Application must continuously get the locations. It seems using the GPS-sensor. Please grant application to access your location.").setCallback(new SimpleCallback<Void>() {
+            new ContinueDialog(this).setMessage(getString(R.string.application_must_continuously_get_your_locations)).setCallback(new SimpleCallback<Void>() {
                 @Override
                 public void call(Void arg) {
                     ActivityCompat.requestPermissions(MainActivity.this,
@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     onMapReadyPermitted();
                 } else {
                     state.setGpsAccessAllowed(false);
-                    Toast.makeText(getApplicationContext(), "GPS access is not granted.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.gps_access_is_not_granted, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 break;
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(map == null) return;
 
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()){
-            new ContinueDialog(this).setMessage("Application needs the enabled location services. Please enable it on the next screen.").setCallback(new SimpleCallback() {
+            new ContinueDialog(this).setMessage(getString(R.string.application_needs_the_enabled_location_services)).setCallback(new SimpleCallback() {
                 @Override
                 public void call(Object arg) {
                     Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);

@@ -11,19 +11,19 @@
     android:paddingTop="@dimen/material_dialog_content_area_padding_vertical">
 
     <CheckBox
-        android:text="Avoid highways"
+        android:text="@string/avoid_highways"
         android:layout_width="match_parent"
         android:layout_height="@dimen/material_dialog_actions_stacked_button_height"
         android:id="@+id/cb_navigation_avoid_highways" />
 
     <CheckBox
-        android:text="Avoid tolls"
+        android:text="@string/avoid_tolls"
         android:layout_width="match_parent"
         android:layout_height="@dimen/material_dialog_actions_stacked_button_height"
         android:id="@+id/cb_navigation_avoid_tolls" />
 
     <CheckBox
-        android:text="Avoid ferries"
+        android:text="@string/avoid_ferries"
         android:layout_width="match_parent"
         android:layout_height="@dimen/material_dialog_actions_stacked_button_height"
         android:id="@+id/cb_navigation_avoid_ferries" />

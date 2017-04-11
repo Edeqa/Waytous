@@ -18,7 +18,8 @@
         android:layout_marginTop="3dp"
         android:layout_weight="1"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_pin_drop_black_24dp"/>
+        app:srcCompat="@drawable/ic_pin_drop_black_24dp"
+        android:contentDescription="@string/location"/>
 
     <RelativeLayout
         android:layout_width="0px"
@@ -35,7 +36,9 @@
             android:layout_alignParentTop="true"
             android:background="@android:color/transparent"
             android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_expand_more_black_24dp" />
+            app:srcCompat="@drawable/ic_expand_more_black_24dp"
+            android:contentDescription="@string/expand"
+            tools:ignore="SmallSp" />
 
         <ImageButton
             android:id="@+id/ib_collapse_address"
@@ -47,7 +50,9 @@
             android:background="@android:color/transparent"
             android:tint="@android:color/darker_gray"
             android:visibility="invisible"
-            app:srcCompat="@drawable/ic_expand_less_black_24dp"/>
+            app:srcCompat="@drawable/ic_expand_less_black_24dp"
+            android:contentDescription="@string/collapse"
+            tools:ignore="SmallSp" />
 
         <TextView
             android:id="@+id/tv_saved_location_username"
@@ -60,7 +65,8 @@
             android:clickable="true"
             android:textSize="10sp"
             android:textStyle="normal|bold"
-            tools:text="Username" />
+            tools:text="Username"
+            tools:ignore="SmallSp" />
 
         <LinearLayout
             android:id="@+id/layout_address"
@@ -120,7 +126,8 @@
             android:paddingTop="@dimen/material_list_normal_padding_vertical"
             android:textAlignment="textEnd"
             android:textSize="10sp"
-            tools:text="10/12/2016 10:00 AM" />
+            tools:text="10/12/2016 10:00 AM"
+            tools:ignore="SmallSp" />
 
     </RelativeLayout>
 

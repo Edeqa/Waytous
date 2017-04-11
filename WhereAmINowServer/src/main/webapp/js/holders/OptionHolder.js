@@ -152,6 +152,9 @@ function OptionHolder(main) {
                         options[i].value = item.default;
                     }
                     break;
+                case HTML.CHECKBOX:
+                    options[i].checked = item.checked || false;
+                    break;
             }
         }
     }

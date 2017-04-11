@@ -20,7 +20,7 @@ function MessagesHolder(main) {
     var drawerItemChat;
     var incomingMessageSounds;
     var incomingMessageSound;
-    var defaultIncomingMessageSound = "oringz-w427.mp3";
+    var defaultIncomingMessageSound = "youve-been-informed.mp3";
     var sound;
 
     function start() {

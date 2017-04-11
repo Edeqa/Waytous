@@ -143,6 +143,7 @@ button:active {
 .drawer-collapsed:hover {
     max-width: 250px;
     min-width: 250px;
+    transition-delay: 1s;
 }
 .drawer-open {
     display: block;
@@ -186,6 +187,7 @@ button:active {
     font-size: x-large;
     font-weight: bold;
     cursor: default;
+    transition-delay: 1s;
 }
 .drawer-collapsed .drawer-header-name {
     font-size: 0px;

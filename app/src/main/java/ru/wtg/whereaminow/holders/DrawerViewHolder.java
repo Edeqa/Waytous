@@ -125,7 +125,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
             case TRACKING_CONNECTING:
             case TRACKING_RECONNECTING:
                 if(actionBar != null) {
-                    actionBar.setTitle("Connecting...");
+                    actionBar.setTitle(R.string.connecting);
                 }
                 break;
         }

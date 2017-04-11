@@ -24,6 +24,7 @@
         android:layout_gravity="right"
         android:layout_weight="0"
         android:background="@color/transparent"
-        app:srcCompat="@drawable/ic_send_black_24dp" />
+        app:srcCompat="@drawable/ic_send_black_24dp"
+        android:contentDescription="@string/send"/>
 
 </LinearLayout>

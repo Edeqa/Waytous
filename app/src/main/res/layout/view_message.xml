@@ -34,7 +34,8 @@
             android:paddingRight="2dp"
             android:textSize="10sp"
             android:textStyle="bold"
-            tools:text="Username" />
+            tools:text="Username"
+            tools:ignore="SmallSp" />
 
         <ImageView
             android:id="@+id/iv_message_delivered"
@@ -43,7 +44,9 @@
             android:layout_weight="1"
             android:background="@color/transparent"
             android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_done_black_24dp"/>
+            app:srcCompat="@drawable/ic_done_black_24dp"
+            android:contentDescription="@string/delivered"
+            tools:ignore="SmallSp" />
     </LinearLayout>
 
     <TextView
@@ -60,11 +63,12 @@
         android:id="@+id/tvTimestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:gravity="end"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:textSize="10sp"
-        tools:text="10/12/2016 10:00 AM"/>
+        tools:text="10/12/2016 10:00 AM"
+        tools:ignore="SmallSp" />
 
     <LinearLayout
         android:id="@+id/layout_message_buttons"
@@ -80,7 +84,8 @@
             android:layout_weight="1"
             android:minHeight="@android:dimen/app_icon_size"
             android:minWidth="@android:dimen/app_icon_size"
-            app:srcCompat="@drawable/ic_share_black_24dp" />
+            app:srcCompat="@drawable/ic_share_black_24dp"
+            android:contentDescription="@string/share"/>
 
         <ImageButton
             android:id="@+id/ib_message_reply"
@@ -89,7 +94,8 @@
             android:layout_weight="1"
             android:minHeight="@android:dimen/app_icon_size"
             android:minWidth="@android:dimen/app_icon_size"
-            app:srcCompat="@drawable/ic_reply_black_24dp" />
+            app:srcCompat="@drawable/ic_reply_black_24dp"
+            android:contentDescription="@string/reply"/>
 
         <ImageButton
             android:id="@+id/ib_message_delete"
@@ -99,7 +105,7 @@
             android:minHeight="@android:dimen/app_icon_size"
             android:minWidth="@android:dimen/app_icon_size"
             app:srcCompat="@drawable/ic_clear_black_24dp"
-            />
+            android:contentDescription="@string/delete"/>
 
         <TextView
             android:id="@+id/textView2"

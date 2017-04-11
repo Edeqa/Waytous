@@ -39,7 +39,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:minHeight="200dp"
-        android:text="No data"
+        android:text="@string/no_data"
         android:visibility="gone"
         tools:visibility="visible" />
 

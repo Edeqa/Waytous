@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
             android:inputType="textCapWords"
-            android:hint="Title"
+            android:hint="@string/title"
             android:maxLength="10"
             android:maxLines="1" />
     </android.support.design.widget.TextInputLayout>
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
-            android:hint="Description"
+            android:hint="@string/description"
             android:maxLines="5" />
     </android.support.design.widget.TextInputLayout>
 

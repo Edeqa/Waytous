@@ -188,7 +188,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 user = (MyUser) object;
                 if(!user.isUser()) return true;
                 m = new UserMessage(context);
-                m.setBody("User has joined the group.");
+                m.setBody(context.getString(R.string.user_has_joined_the_group));
                 m.setFrom(user);
                 m.setType(TYPE_USER_JOINED);
                 m.save(null);
@@ -198,7 +198,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 user = (MyUser) object;
                 if(!user.isUser()) return true;
                 m = new UserMessage(context);
-                m.setBody("User left the group.");
+                m.setBody(context.getString(R.string.user_left_the_group));
                 m.setFrom(user);
                 m.setType(TYPE_USER_DISMISSED);
                 m.save(null);
@@ -252,8 +252,8 @@ public class MessagesHolder extends AbstractPropertyHolder {
                         PendingIntent pendingReplyIntent = PendingIntent.getActivity(context, 1979, replyIntent, 0);
 
                         notification.mActions.clear();
-                        notification.addAction(R.drawable.ic_notification_message, "View", pendingViewIntent);
-                        notification.addAction(R.drawable.ic_notification_reply, "Reply", pendingReplyIntent);
+                        notification.addAction(R.drawable.ic_notification_message, context.getString(R.string.view), pendingViewIntent);
+                        notification.addAction(R.drawable.ic_notification_reply, context.getString(R.string.reply), pendingReplyIntent);
 
                         notification.setContentTitle(myUser.getProperties().getDisplayName())
                                 .setContentText(m.getBody())

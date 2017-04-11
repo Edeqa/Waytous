@@ -17,7 +17,8 @@
         app:srcCompat="@drawable/ic_place_black_24dp"
         android:id="@+id/iv_button_image"
         android:tint="?attr/buttonTextColor"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:contentDescription="@string/place"/>
 
     <TextView
         tools:text="PlaceName"
@@ -31,6 +32,7 @@
         android:textAllCaps="false"
         android:textSize="10sp"
         android:typeface="sans"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        tools:ignore="SmallSp" />
 
 </LinearLayout>

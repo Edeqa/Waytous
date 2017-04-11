@@ -18,7 +18,7 @@ abstract public class AbstractViewHolder<T extends AbstractView> implements Enti
 
     protected MainActivity context;
 
-    public AbstractViewHolder(MainActivity context) {
+    protected AbstractViewHolder(MainActivity context) {
         this.context = context;
     }
 

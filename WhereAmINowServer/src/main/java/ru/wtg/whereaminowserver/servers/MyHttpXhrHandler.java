@@ -36,11 +36,6 @@ public class MyHttpXhrHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
 
         URI uri = exchange.getRequestURI();
-
-        InputStreamReader isr =  new InputStreamReader(exchange.getRequestBody(),"utf-8");
-        BufferedReader br = new BufferedReader(isr);
-        String body = br.readLine();
-
         String host = null;
         try {
             host = exchange.getRequestHeaders().get("Host").get(0);
@@ -48,35 +43,40 @@ public class MyHttpXhrHandler implements HttpHandler {
         } catch(Exception e){
             e.printStackTrace();
         }
+        Common.log("Xhr",host + uri.getPath(),exchange.getRemoteAddress().toString());
 
+        List<String> parts = Arrays.asList(uri.getPath().split("/"));
+        JSONObject json = new JSONObject();
+        boolean printRes;
+        switch(parts.get(2)) {
+            case "getApiVersion":
+                printRes = getApiVersion(json);
+                break;
+            case "getSounds":
+                printRes = getSounds(json);
+                break;
+            case "join":
+                printRes = join(json, exchange);
+                break;
+            default:
+                printRes = noAction(json);
+                break;
+        }
 
-        if(body != null) {
-            Common.log("Xhr-request",host + uri.getPath(),exchange.getRemoteAddress().toString(), body);
-            getWainProcessor().onMessage(new HttpConnection(exchange), body);
-        } else {
-            Common.log("Xhr-API",host + uri.getPath(),exchange.getRemoteAddress().toString());
-            List<String> parts = Arrays.asList(uri.getPath().split("/"));
-            JSONObject json = new JSONObject();
-            switch(parts.get(2)) {
-                case "getApiVersion":
-                    getApiVersion(json);
-                    break;
-                case "getSounds":
-                    getSounds(json);
-                    break;
-            }
+        if(printRes) printResult(json.toString().getBytes(),exchange);
 
-            byte[] bytes = json.toString().getBytes();
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            try {
-                exchange.sendResponseHeaders(200, bytes.length);
-                OutputStream os = exchange.getResponseBody();
-                os.write(bytes);
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    }
+
+    private void printResult(byte[] bytes, HttpExchange exchange) {
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        try {
+            exchange.sendResponseHeaders(200, bytes.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(bytes);
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -109,19 +109,7 @@ public class MyHttpXhrHandler implements HttpHandler {
 
         @Override
         public void send(String string) {
-
-            byte[] bytes = string.getBytes();
-
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            try {
-                exchange.sendResponseHeaders(200, bytes.length);
-                OutputStream os = exchange.getResponseBody();
-                os.write(bytes);
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            printResult(string.getBytes(), exchange);
         }
 
         @Override
@@ -130,11 +118,17 @@ public class MyHttpXhrHandler implements HttpHandler {
         }
     }
 
-    private void getApiVersion(JSONObject json) {
+    private boolean getApiVersion(JSONObject json) {
         json.put("apiVersion", Constants.SERVER_BUILD);
+        return true;
     }
 
-    private void getSounds(JSONObject json) {
+    private boolean noAction(JSONObject json) {
+        json.put("status", "Action not defined");
+        return true;
+    }
+
+    private boolean getSounds(JSONObject json) {
         File dir = new File(SENSITIVE.getWebRootDirectory() + "/sounds");
         File[] files = dir.listFiles(new FilenameFilter() {
             @Override
@@ -150,6 +144,22 @@ public class MyHttpXhrHandler implements HttpHandler {
             }
         }
         json.put("files", list);
+        return true;
     }
 
+    private boolean join(JSONObject json, HttpExchange exchange) {
+        try {
+            InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(),"utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            String body = br.readLine();
+
+            Common.log("Xhr-join",exchange.getRemoteAddress().toString(), body);
+            getWainProcessor().onMessage(new HttpConnection(exchange), body);
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("status", "Action failed");
+            printResult(json.toString().getBytes(), exchange);
+        }
+        return false;
+    }
 }

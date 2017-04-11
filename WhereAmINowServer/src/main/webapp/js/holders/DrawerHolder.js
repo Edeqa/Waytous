@@ -235,7 +235,7 @@ function DrawerHolder(main) {
 
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.DIV, { className:"drawer-menu-item-icon", innerHTML: icon }, th);
+                    u.create(HTML.DIV, { className:"drawer-menu-item-icon notranslate", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }
@@ -266,7 +266,7 @@ function DrawerHolder(main) {
         footerButtonExpandDiv = u.create(HTML.PATH, footerButtonExpandPath);
 //        footerButton = u.create(HTML.SVG, footerButtonSvg, layout.footer);
 
-        layout.toggleButton = u.create(HTML.DIV, {className: "drawer-menu-item-icon drawer-footer-button", innerHTML: collapsed ? "last_page" : "first_page", onclick: function(e){
+        layout.toggleButton = u.create(HTML.DIV, {className: "drawer-menu-item-icon drawer-footer-button notranslate", innerHTML: collapsed ? "last_page" : "first_page", onclick: function(e){
             layout.toggleCollapse();
         }}, layout.footer);
         u.create(HTML.DIV, main.appName + " &copy;2017 WTG", layout.footer);
@@ -339,7 +339,7 @@ function DrawerHolder(main) {
                             id:"drawer:collapsed",
                             type: HTML.CHECKBOX,
                             label: u.lang.collapsed_drawer,
-                            default: u.load("drawer:collapsed"),
+                            checked: u.load("drawer:collapsed"),
                             onaccept: function(e, event) {
                                 drawer.toggleCollapse(this.checked);
                             },

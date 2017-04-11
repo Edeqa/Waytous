@@ -419,7 +419,9 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                 conn.send(response.toString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Common.log("WpFB", "onMessage:error:"+e.getMessage(),"req:"+message);
+//            e.printStackTrace();
+            conn.send("{\"status\":\"Request failed\"}");
         }
         if(disconnect) {
             conn.close();

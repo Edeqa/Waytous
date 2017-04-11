@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Street view is still not available for this place"
+            android:text="@string/street_view_is_still_not_available_for_this_place"
             android:textColor="@color/material_color_white"
             android:visibility="invisible"/>
 

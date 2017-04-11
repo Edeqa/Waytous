@@ -32,11 +32,11 @@ public class ContinueDialog {
     public void show(){
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
-        dialog.setTitle("Alert");
+        dialog.setTitle(context.getString(R.string.alert));
         dialog.setIcon(R.drawable.ic_warning_black_24dp);
         dialog.setMessage(message);
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.continue_string), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //noinspection unchecked

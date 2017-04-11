@@ -177,7 +177,7 @@ function TrackingFB(main) {
 
         var xhrModeStart = function(link) {
             var uri = new URL(link);
-            link = "https://" + uri.hostname + ":" + data.HTTPS_PORT + "/xhr" + uri.pathname;
+            link = "https://" + uri.hostname + ":" + data.HTTPS_PORT + "/xhr/join"/* + uri.pathname*/;
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //

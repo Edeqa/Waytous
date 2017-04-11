@@ -33,7 +33,7 @@ function ButtonHolder(main) {
                 className: "user-buttons-title",
                 button: {
                     icon: "view_headline",
-                    className: "user-buttons-title-button",
+                    className: "user-buttons-title-button notranslate",
                     onclick: function() {
                         var mininized = u.load("button:minimized");
                         u.save("button:minimized", !mininized);
@@ -224,7 +224,7 @@ function ButtonHolder(main) {
             }
         });
         var icon = (user && user.origin && user.origin.buttonIcon) || "person";
-        u.create(HTML.DIV, {className:"user-button-icon", innerHTML:icon}, b);
+        u.create(HTML.DIV, {className:"user-button-icon notranslate", innerHTML:icon}, b);
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
@@ -309,7 +309,7 @@ function ButtonHolder(main) {
             }, sections[section]);
             if(icon) {
                 if(icon.constructor === String) {
-                    u.create(HTML.DIV, { className:"user-context-menu-item-icon", innerHTML: icon }, th);
+                    u.create(HTML.DIV, { className:"user-context-menu-item-icon notranslate", innerHTML: icon }, th);
                 } else {
                     th.appendChild(icon);
                 }
