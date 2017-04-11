@@ -16,6 +16,7 @@ function Main() {
     var progress;
     var alert;
     var toast;
+    var defaultLang = "en-us";
 
     if (false && "serviceWorkers" in navigator) {
         window.addEventListener("load", function() {
@@ -366,9 +367,9 @@ function Main() {
     }
 
     function loadResources() {
-        u.lang.overrideResources("en-us");
-        var lang = (u.load("lang") || navigator.language || "en-us").toLowerCase();
-        if(lang != "en-us") u.lang.overrideResources(lang);
+        u.lang.overrideResources(defaultLang);
+        var lang = (u.load("lang") || navigator.language || defaultLang).toLowerCase();
+        if(lang != defaultLang) u.lang.overrideResources(lang);
     }
 
     function help(){
@@ -396,8 +397,9 @@ function Main() {
                             label: u.lang.language,
                             default: u.load("lang") || "",
                             onaccept: function(e, event) {
-                                u.save("lang", this.value);
-                                u.lang.overrideResources(this.value);
+                                var res = (this.value || navigator.language || defaultLang).toLowerCase();
+                                u.save("lang", res);
+                                u.lang.overrideResources(res);
                             },
                             values: {"": u.lang.default, "en-us": u.lang.english, "ru-ru": u.lang.russian }
                         }

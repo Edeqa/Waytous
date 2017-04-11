@@ -11,6 +11,7 @@
   "name": "Name",
   "delete": "Delete",
   "apply": "Apply",
+  "loading":"Loading...",
 
 
   "SECTION Main": "// ",
@@ -46,6 +47,7 @@
   "SECTION DrawerHolder": "// ",
   "connecting": "Connecting...",
   "be_always_on_the_same_way": "Be always on the same way\nwith your friends",
+  "collapsed_drawer": "Collapsed drawer",
 
   "alpha_1": "Thank you for using the",
   "alpha_2": "ALPHA version of Waytogo.",
@@ -193,7 +195,6 @@
   "show_street_view": "Show street view",
   "hide_street_view": "Hide street view",
   "street_view": "Street view",
-  "loading": "Loading...",
   "street_view_is_still_not_available_for_this_place": "Street view is still not available for this place.",
   "street_view_available_only_for_one_point": "Street view available only for one point.",
 

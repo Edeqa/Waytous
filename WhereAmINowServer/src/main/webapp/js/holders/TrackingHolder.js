@@ -21,6 +21,7 @@ function TrackingHolder(main) {
     var drawerItemNewIcon;
     var sound;
     var sounds;
+    var joinSound;
     var defaultSound = "oringz-w427.mp3";
 
     var drawerItemNewIconSvg = {
@@ -45,8 +46,8 @@ function TrackingHolder(main) {
             ]
         });
 
-        var soundFile = u.load("tracking:sound_on_join") || defaultSound;
-        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, last:0, playButLast:function(){
+        joinSound = u.load("tracking:sound_on_join") || defaultSound;
+        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+joinSound, last:0, playButLast:function(){
             var current = new Date().getTime();
             if(current - this.last > 10) {
                 this.last = current;
@@ -434,18 +435,21 @@ function TrackingHolder(main) {
                                     u.getRemoteJSON("/xhr/getSounds",function(json){
                                         sounds = {};
                                         u.clear(e);
+                                        var selected = 0;
                                         for(var i in json.files) {
                                             var file = json.files[i];
                                             var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
                                             sounds[file] = name;
-                                            u.create(HTML.OPTION, {value:file, innerHTML:name, selected: (u.load("tracking:sound_on_join") || defaultIncomingMessageSound) == file}, e);
+                                            u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
+                                            if((joinSound || defaultSound) == file) selected = i;
                                         }
+                                        e.selectedIndex = selected;
                                     }, function(code,xhr){
                                         console.error(code,xhr)
                                     });
                                 }
                             },
-                            values: {"":"Loading..."}
+                            values: {"":u.lang.loading.innerText}
                         }
                     ]
                 }

@@ -42,11 +42,6 @@ function DrawerHolder(main) {
         onclick: function(e) {
             u.save("drawer:collapsed", !collapsed);
             this.replaceChild(collapsed ? footerButtonExpandDiv : footerButtonCollapseDiv, this.firstChild);
-            if(collapsed) {
-                console.log("EXP", this)
-            } else {
-                console.log("COLL", this)
-            }
         }
     };
     var footerButtonCollapsePath = {
@@ -65,8 +60,7 @@ function DrawerHolder(main) {
     var start = function() {
 
         collapsed = u.load("drawer:collapsed");
-        drawer = new Drawer({collapsed: collapsed});
-        main.layout.insertBefore(drawer,main.layout.firstChild);
+        drawer = new Drawer({collapsed: collapsed}, main.layout);
 
         var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
         u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
@@ -118,7 +112,7 @@ function DrawerHolder(main) {
 
     };
 
-    function Drawer(options) {
+    function Drawer(options, insertTo) {
         collapsed = options.collapsed;
         var layout = u.create(HTML.DIV, {
             className:"drawer changeable" + (collapsed ? " drawer-collapsed" : ""),
@@ -144,10 +138,16 @@ function DrawerHolder(main) {
                 }
             }
          });
-//         var frame = u.create("iframe", {width:"100%",height:"1%", style:"position:absolute;z-index:-1"}, layout);
-//         frame.addEventListener("resize",function(){
-//           console.log("rezised");
-//        });
+         insertTo.insertBefore(layout,insertTo.firstChild);
+
+
+         layout.frame = u.create("iframe", {width:"100%",height:"1%", style:"position:absolute;z-index:-1"}, layout);
+         layout.frame.contentWindow.addEventListener("resize",function(){
+            if(!layout.resizeTask) layout.resizeTask = setTimeout(function(){
+                main.fire(EVENTS.CAMERA_UPDATE);
+                delete layout.resizeTask;
+            }, 500);
+         });
 
          layout.header = u.create(HTML.DIV, { className:"drawer-header changeable" }, layout);
          u.create(HTML.IMG, {
@@ -338,7 +338,7 @@ function DrawerHolder(main) {
                         {
                             id:"drawer:collapsed",
                             type: HTML.CHECKBOX,
-                            label: "Collapsed drawer",
+                            label: u.lang.collapsed_drawer,
                             default: u.load("drawer:collapsed"),
                             onaccept: function(e, event) {
                                 drawer.toggleCollapse(this.checked);

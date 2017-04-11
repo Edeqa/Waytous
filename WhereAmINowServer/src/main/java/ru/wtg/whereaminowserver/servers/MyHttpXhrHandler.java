@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ru.wtg.whereaminowserver.helpers.Common;
+import ru.wtg.whereaminowserver.helpers.Constants;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 
@@ -50,29 +51,18 @@ public class MyHttpXhrHandler implements HttpHandler {
 
 
         if(body != null) {
-            Common.log("Xhr","Request",host + uri.getPath(),exchange.getRemoteAddress().toString(), body);
+            Common.log("Xhr-request",host + uri.getPath(),exchange.getRemoteAddress().toString(), body);
             getWainProcessor().onMessage(new HttpConnection(exchange), body);
         } else {
-            Common.log("Xhr","Internal",host + uri.getPath(),exchange.getRemoteAddress().toString());
+            Common.log("Xhr-API",host + uri.getPath(),exchange.getRemoteAddress().toString());
             List<String> parts = Arrays.asList(uri.getPath().split("/"));
             JSONObject json = new JSONObject();
             switch(parts.get(2)) {
+                case "getApiVersion":
+                    getApiVersion(json);
+                    break;
                 case "getSounds":
-                    File dir = new File(SENSITIVE.getWebRootDirectory() + "/sounds");
-                    File[] files = dir.listFiles(new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return name.endsWith(".mp3");
-                        }
-                    });
-                    ArrayList<String> list = new ArrayList<>();
-                    list.add("none.mp3");
-                    if(files != null) {
-                        for(File file: files) {
-                            if(!list.contains(file.getName())) list.add(file.getName());
-                        }
-                    }
-                    json.put("files", list);
+                    getSounds(json);
                     break;
             }
 
@@ -140,5 +130,26 @@ public class MyHttpXhrHandler implements HttpHandler {
         }
     }
 
+    private void getApiVersion(JSONObject json) {
+        json.put("apiVersion", Constants.SERVER_BUILD);
+    }
+
+    private void getSounds(JSONObject json) {
+        File dir = new File(SENSITIVE.getWebRootDirectory() + "/sounds");
+        File[] files = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".mp3");
+            }
+        });
+        ArrayList<String> list = new ArrayList<>();
+        list.add("none.mp3");
+        if(files != null) {
+            for(File file: files) {
+                if(!list.contains(file.getName())) list.add(file.getName());
+            }
+        }
+        json.put("files", list);
+    }
 
 }

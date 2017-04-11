@@ -4,7 +4,7 @@ package ru.wtg.whereaminowserver.helpers;
  * Created 10/14/16.
  */
 public class Constants {
-    public final static int SERVER_BUILD = 31;
+    public final static int SERVER_BUILD = 32;
 
     public static SensitiveData SENSITIVE;
 

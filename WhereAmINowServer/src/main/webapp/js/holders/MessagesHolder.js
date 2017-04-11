@@ -64,17 +64,14 @@ function MessagesHolder(main) {
         }}, reply);
         replyButton = u.create(HTML.BUTTON, {className: "chat-reply-button", innerHTML:"send", onclick:sendUserMessage}, reply);
 
-        var soundFile = u.load("messages:incoming") || defaultIncomingMessageSound;
-        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+soundFile, last:0, playButLast:function(){
+        incomingMessageSound = u.load("messages:incoming") || defaultIncomingMessageSound;
+        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+incomingMessageSound, last:0, playButLast:function(){
             var current = new Date().getTime();
             if(current - this.last > 10) {
                 this.last = current;
                 this.play();
             }
         }}, main.right);
-
-        if(u.loadForGroup("message:chat")) chat.open();
-        lastReadTimestamp = u.loadForGroup("message:lastread");
 
     }
 
@@ -100,6 +97,9 @@ function MessagesHolder(main) {
                 drawerItemChat.hide();
                 break;
             case EVENTS.TRACKING_ACTIVE:
+                if(u.loadForGroup("message:chat")) chat.open();
+                lastReadTimestamp = u.loadForGroup("message:lastread");
+
                 drawerItemChat.show();
                 break;
             case EVENTS.TRACKING_DISABLED:
@@ -135,9 +135,14 @@ function MessagesHolder(main) {
 
                 div.scrollIntoView();
 
-                if(object.timestamp > lastReadTimestamp && chat.classList.contains("hidden")) {
-                    this.fire(EVENTS.SHOW_BADGE, EVENTS.INCREASE_BADGE);
-                    drawerItemChat && drawerItemChat.increaseBadge();
+                if(object.timestamp > lastReadTimestamp) {
+                    sound.playButLast();
+                    if(chat.classList.contains("hidden")) {
+                        this.fire(EVENTS.SHOW_BADGE, EVENTS.INCREASE_BADGE);
+                        drawerItemChat && drawerItemChat.increaseBadge();
+                    } else {
+                        u.saveForGroup("message:lastread", object.timestamp);
+                    }
                 }
                 break;
             default:
@@ -220,18 +225,21 @@ function MessagesHolder(main) {
                                     u.getRemoteJSON("/xhr/getSounds",function(json){
                                         incomingMessageSounds = {};
                                         u.clear(e);
+                                        var selected = 0;
                                         for(var i in json.files) {
                                             var file = json.files[i];
                                             var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
                                             incomingMessageSounds[file] = name;
-                                            u.create(HTML.OPTION, {value:file, innerHTML:name, selected: (u.load("messages:incoming") || defaultIncomingMessageSound) == file}, e);
+                                            u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
+                                            if((incomingMessageSound || defaultIncomingMessageSound) == file) selected = i;
                                         }
+                                        e.selectedIndex = selected;
                                     }, function(code,xhr){
                                         console.error(code,xhr)
                                     });
                                 }
                             },
-                            values: {"":"Loading..."}
+                            values: {"": u.lang.loading.innerText}
                         }
                     ]
                 }
