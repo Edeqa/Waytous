@@ -41,11 +41,15 @@ function AddressHolder(main) {
                     delayStart = 0;
                 }
 
-                u.getRemoteJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1", function(json){
-                    user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
-                }, function(code, xhr) {
-                    user.fire(EVENTS.UPDATE_ADDRESS);
-                    delayStart = new Date().getTime();
+                u.getRemoteJSON({
+                    url: "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1",
+                    onsuccess: function(json){
+                        user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
+                    },
+                    onerror: function(code, xhr) {
+                        user.fire(EVENTS.UPDATE_ADDRESS);
+                        delayStart = new Date().getTime();
+                    }
                 });
 
             }
@@ -64,11 +68,15 @@ function AddressHolder(main) {
                 delayStart = 0;
             }
 
-            u.getRemoteJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1", function(json){
-                node.innerHTML = json["display_name"];
-            }, function(code, xhr) {
+            u.getRemoteJSON({
+                url: "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1",
+                onsuccess: function(json){
+                    node.innerHTML = json["display_name"];
+                },
+                onerror: function(code, xhr) {
 //                    updateAddress.call(user,node);
 //                    delayStart = new Date().getTime();
+                }
             });
         }
     }

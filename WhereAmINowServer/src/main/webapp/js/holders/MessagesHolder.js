@@ -222,20 +222,24 @@ function MessagesHolder(main) {
                             onshow: function(e) {
                                 if(incomingMessageSounds) {
                                 } else {
-                                    u.getRemoteJSON("/xhr/getSounds",function(json){
-                                        incomingMessageSounds = {};
-                                        u.clear(e);
-                                        var selected = 0;
-                                        for(var i in json.files) {
-                                            var file = json.files[i];
-                                            var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
-                                            incomingMessageSounds[file] = name;
-                                            u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
-                                            if((incomingMessageSound || defaultIncomingMessageSound) == file) selected = i;
+                                    u.getRemoteJSON({
+                                        url: "/xhr/getSounds",
+                                        onsuccess: function(json){
+                                            incomingMessageSounds = {};
+                                            u.clear(e);
+                                            var selected = 0;
+                                            for(var i in json.files) {
+                                                var file = json.files[i];
+                                                var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
+                                                incomingMessageSounds[file] = name;
+                                                u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
+                                                if((incomingMessageSound || defaultIncomingMessageSound) == file) selected = i;
+                                            }
+                                            e.selectedIndex = selected;
+                                        },
+                                        onerror: function(code,xhr){
+                                            console.error(code,xhr)
                                         }
-                                        e.selectedIndex = selected;
-                                    }, function(code,xhr){
-                                        console.error(code,xhr)
                                     });
                                 }
                             },
