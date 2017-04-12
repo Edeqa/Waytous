@@ -198,16 +198,20 @@ function NavigationHolder(main) {
 
         console.log(type,req);
 
-        u.getRemoteJSON(req, function(json){
-            installation = false;
-            updateTrack.call(user,json);
-        }, function(code,xhr){
-            console.error(xhr);
-            if(installation) {
-                user.fire(EVENTS.HIDE_NAVIGATION);
-                setTimeout(function(){
-                    main.toast.show(u.lang.sorry_direction_request_was_failed);
-                },0);
+        u.getRemoteJSON({
+            url: req,
+            onsuccess: function(json){
+                installation = false;
+                updateTrack.call(user,json);
+            },
+            onerror: function(code,xhr){
+                console.error(xhr);
+                if(installation) {
+                    user.fire(EVENTS.HIDE_NAVIGATION);
+                    setTimeout(function(){
+                        main.toast.show(u.lang.sorry_direction_request_was_failed);
+                    },0);
+                }
             }
         });
 

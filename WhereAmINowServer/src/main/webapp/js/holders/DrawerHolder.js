@@ -337,6 +337,7 @@ function DrawerHolder(main) {
                     items: [
                         {
                             id:"drawer:collapsed",
+                            itemClassName: "media-hidden",
                             type: HTML.CHECKBOX,
                             label: u.lang.collapsed_drawer,
                             checked: u.load("drawer:collapsed"),

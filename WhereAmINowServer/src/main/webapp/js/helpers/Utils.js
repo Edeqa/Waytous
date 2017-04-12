@@ -844,7 +844,7 @@ function Utils(main) {
                 }
 
             } else {
-                div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}});
+                div = create(HTML.DIV, {className:"dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : ""), onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
                     create(HTML.DIV, {
@@ -1450,37 +1450,41 @@ function Utils(main) {
 
             var resourcesFile = "/locales/resources." + holder + ".json";
 
-            getRemoteJSON(resourcesFile, function(json){
-                var nodes = document.getElementsByTagName(HTML.SPAN);
-                console.warn("Switching to resources \""+holder+"\".");
-                for(var x in json) {
-//                            if(lang.$origin[x]) {
-//                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
-//                            }
-                    lang(x, json[x]);
-                }
-                for(var i = 0; i < nodes.length; i++) {
-                    if(nodes[i].lang) {
-                        nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
+            getRemoteJSON({
+                url: resourcesFile,
+                onsuccess: function(json){
+                    var nodes = document.getElementsByTagName(HTML.SPAN);
+                    console.warn("Switching to resources \""+holder+"\".");
+                    for(var x in json) {
+    //                            if(lang.$origin[x]) {
+    //                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
+    //                            }
+                        lang(x, json[x]);
                     }
-                }
+                    for(var i = 0; i < nodes.length; i++) {
+                        if(nodes[i].lang) {
+                            nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
+                        }
+                    }
 
-            }, function(code, xhr){
-                switch(code) {
-                    case ERRORS.ERROR_LOADING:
-                        console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
-                        if(holder != "en-us"){
-                            console.warn("Switching to default resources \"en-us\".")
-                            lang.overrideResources("en-us");
-                        }
-                        break;
-                    case ERRORS.INCORRECT_JSON:
-                        console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",xhr);
-                        if(holder != "en-us"){
-                            console.warn("Switching to default resources \"en-us\".")
-                            lang.overrideResources("en-us");
-                        }
-                        break;
+                },
+                onerror: function(code, xhr){
+                    switch(code) {
+                        case ERRORS.ERROR_LOADING:
+                            console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
+                            if(holder != "en-us"){
+                                console.warn("Switching to default resources \"en-us\".")
+                                lang.overrideResources("en-us");
+                            }
+                            break;
+                        case ERRORS.INCORRECT_JSON:
+                            console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",xhr);
+                            if(holder != "en-us"){
+                                console.warn("Switching to default resources \"en-us\".")
+                                lang.overrideResources("en-us");
+                            }
+                            break;
+                    }
                 }
             });
 
@@ -1501,44 +1505,57 @@ function Utils(main) {
         }
     }
 
-    function getRemote(url, callback, fallback) {
+    /**
+        options:
+            url,
+            post - for send as body (optional),
+            onsuccess - function,
+            onerror - function (optional)
+    */
+    function getRemote(options) {
+        options = options || {};
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
+        xhr.open("GET", options.url, true);
 //        xhr.overrideMimeType("text/plain; charset=x-user-defined");
         xhr.onreadystatechange = function() { // (3)
             if (xhr.readyState != 4) return;
             if (xhr.status != 200) {
-                if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
+                if(options.onerror) options.onerror(ERRORS.ERROR_LOADING, xhr);
                 else console.error("Error loading resource",xhr);
             } else {
-                if(callback) callback(xhr);
-                else console.warn("Resource loaded, define callback",xhr);
+                if(options.onsuccess) options.onsuccess(xhr);
+                else console.warn("Resource loaded, define onsuccess",xhr);
             }
         }
         try {
-            xhr.send();
+            xhr.send(options.post);
         } catch(e) {
-//            if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
-//            else console.error("Error loading resource",xhr);
             console.error("Error sending request",xhr);
         }
     }
 
-    function getRemoteJSON(url, callback, fallback) {
-        fallback = fallback || function(code, xhr) {
-            console.error(code,xhr);
-        }
-        getRemote(url, function(xhr){
-            if(callback) {
+    /**
+        options:
+            url,
+            post - for send as body (optional),
+            onsuccess - function,
+            onerror - function (optional)
+    */
+    function getRemoteJSON(options) {
+        var args = options || {};
+        var onsuccess = options.onsuccess;
+        options.onsuccess = function(xhr){
+            if(onsuccess) {
                 try {
                     var json = JSON.parse(xhr.responseText);
-                    callback(json, xhr);
+                    onsuccess(json, xhr);
                 } catch(e) {
-                    if(fallback) fallback(ERRORS.INCORRECT_JSON, xhr);
+                    if(options.onerror) options.onerror(ERRORS.INCORRECT_JSON, xhr);
                     else console.error(e);
                 }
             }
-        }, fallback);
+        };
+        getRemote(options);
 
         /*var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
