@@ -28,11 +28,6 @@ body {
     color: darkslategray;
     margin: 0px;
 }
-/*
-h2 {
-    font-size: 14px;
-}
-*/
 input, textarea {
   -webkit-user-select: text;
   -khtml-user-select: text;
