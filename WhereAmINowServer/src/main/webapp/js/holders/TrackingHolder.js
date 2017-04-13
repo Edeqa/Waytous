@@ -83,15 +83,15 @@ function TrackingHolder(main) {
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 drawerItemNewIcon = drawerItemNewIcon || u.create(HTML.PATH, drawerItemNewIconPath, u.create(HTML.SVG, drawerItemNewIconSvg)).parentNode;
-                drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW, u.lang.tracking_create_group, drawerItemNewIcon,function(){
+                drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW, u.lang.create_group, drawerItemNewIcon,function(){
                     main.fire(EVENTS.TRACKING_NEW);
                 });
                 drawerItemNew.hide();
-                drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP, u.lang.tracking_exit_group,"clear",function(){
+                drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP, u.lang.exit_group,"clear",function(){
                     main.fire(EVENTS.TRACKING_STOP);
                 });
                 drawerItemExit.hide();
-                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK, u.lang.tracking_share_group, "share",function(e){
+                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK, u.lang.share_group, "share",function(e){
                     if(EVENTS.TRACKING_ACTIVE) {
                         main.fire(EVENTS.SHARE_LINK,e);
                     }
@@ -139,7 +139,7 @@ function TrackingHolder(main) {
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;
 
-                document.title = u.lang.tracking_connecting_s.format(main.appName).innerHTML;
+                document.title = u.lang.connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
                 drawerItemShare.show();
                 drawerItemShare.enable();
@@ -152,7 +152,7 @@ function TrackingHolder(main) {
             case EVENTS.TRACKING_RECONNECTING:
 //                window.onbeforeunload = beforeunload;
 
-                document.title = u.lang.tracking_connecting_s.format(main.appName).innerHTML;
+                document.title = u.lang.connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
                 drawerItemShare.show();
                 drawerItemShare.enable();
@@ -197,9 +197,9 @@ function TrackingHolder(main) {
                             u.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
                                     items: [
-                                        {type:HTML.DIV, innerHTML: u.lang.tracking_popup_blocked_dialog_1 },
-                                        {type:HTML.DIV, enclosed:true, innerHTML: u.lang.tracking_popup_blocked_dialog_2 },
-                                        {type:HTML.DIV, innerHTML: u.lang.tracking_popup_blocked_dialog_3 },
+                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
+                                        {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
+                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
                                         {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
                                     ],
                                     positive: {
@@ -243,7 +243,7 @@ function TrackingHolder(main) {
             this.tracking.setLink(window.location.href);
             u.saveForGroup("group",a[2]);
         } else {
-            progressTitle.innerHTML = u.lang.tracking_creating_group;
+            progressTitle.innerHTML = u.lang.creating_group;
             console.log("NEW")
         }
         this.tracking.setTrackingListener(onTrackingListener);
@@ -254,8 +254,8 @@ function TrackingHolder(main) {
     var onTrackingListener = {
         onCreating: function(){
             // console.log("ONCREATING");
-            u.lang.updateNode(progressTitle, u.lang.tracking_connecting);
-            //progressTitle.innerHTML = u.lang.tracking_connecting;
+            u.lang.updateNode(progressTitle, u.lang.connecting);
+            //progressTitle.innerHTML = u.lang.connecting;
             progress.open();
 
             u.saveForGroup(TRACKING_URI, null);
@@ -263,17 +263,17 @@ function TrackingHolder(main) {
         },
         onJoining: function(){
             // console.log("ONJOINING");
-            u.lang.updateNode(progressTitle, u.lang.tracking_joining_group);
-//            progressTitle.innerHTML = u.lang.tracking_joining_group;
+            u.lang.updateNode(progressTitle, u.lang.joining_group);
+//            progressTitle.innerHTML = u.lang.joining_group;
             progress.open();
-            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.tracking_joining_group);
+            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.joining_group);
         },
         onReconnecting: function(){
             // console.log("ONRECONNECTING");
-            u.lang.updateNode(progressTitle, u.lang.tracking_reconnecting);
-//            progressTitle.innerHTML = u.lang.tracking_reconnecting;
+            u.lang.updateNode(progressTitle, u.lang.reconnecting);
+//            progressTitle.innerHTML = u.lang.reconnecting;
             progress.open();
-            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.tracking_reconnecting);
+            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.reconnecting);
         },
         onClose: function(){
             console.log("ONCLOSE");
@@ -399,7 +399,7 @@ function TrackingHolder(main) {
     };
 
     function beforeunload(evt) {
-        return u.lang.tracking_beforeunload;
+        return u.lang.beforeunload;
     }
 
     function help(){
@@ -420,8 +420,8 @@ function TrackingHolder(main) {
             title: u.lang.general,
             categories: [
                 {
-                    id: "general:main",
-                    title: u.lang.main,
+                    id: "general:notifications",
+                    title: u.lang.notifications,
                     items: [
                         {
                             id:"tracking:sound_on_join",

@@ -13,6 +13,10 @@
   "apply": "Apply",
   "loading":"Loading...",
 
+  "popup_blocked_dialog_1": "Looks like your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly.",
+  "popup_blocked_dialog_2": "Detailed information how to unblock this feature",
+  "popup_blocked_dialog_3": "Also, you can send the link manually. Copy it clicking on the button below.",
+
 
   "SECTION Main": "// ",
 
@@ -26,6 +30,7 @@
   "error_while_loading_s_code_s": "Error while loading %s: code %s",
   "error_while_initializing_s": "Error while initializing %s",
   "notifications": "Notifications",
+  "onscreen_notifications": "Onscreen notifications",
 
   "SECTION ButtonHolder": "// ",
 
@@ -36,6 +41,7 @@
 
   "select": "Select",
   "unselect": "Unselect",
+  "fit_to_screen": "Fit to screen",
 
 
   "SECTION DistanceHolder": "// ",
@@ -187,10 +193,6 @@
   "address_s": "Address: %s.",
   "description_s": "Description: %s.",
 
-  "saved_location_popup_blocked_1": "Perhaps, your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly.",
-  "saved_location_popup_blocked_2": "Detailed information how to unblock this feature",
-  "saved_location_popup_blocked_3": "Also, you can send the link manually. Copy it clicking on the button below.",
-
 
   "SECTION StreetViewHolder": "// ",
 
@@ -212,21 +214,17 @@
 
   "SECTION TrackingHolder": "// ",
 
-  "tracking_create_group": "Create group",
-  "tracking_exit_group": "Exit group",
-  "tracking_share_group": "Share group",
-  "tracking_connecting_s": "Connecting - %s",
+  "create_group": "Create group",
+  "exit_group": "Exit group",
+  "share_group": "Share group",
+  "connecting_s": "Connecting - %s",
+  "reconnecting": "Reconnecting...",
+  "creating_group": "Creating group...",
+  "joining_group": "Joining group...",
+  "beforeunload": "You are online in the group with your friends. Leaving this page you will exit the group.",
 
   "tracking_share_link_dialog_1": "Let your e-mail client compose the message with link to this group?",
   "tracking_share_link_dialog_2": "You can add there all your friends you'd like.",
-  "tracking_popup_blocked_dialog_1": "Looks like your browser is blocking pop-ups. If so please unlock this ability for calling e-mail properly.",
-  "tracking_popup_blocked_dialog_2": "Detailed information how to unblock this feature",
-  "tracking_popup_blocked_dialog_3": "Also, you can send the link manually. Copy it clicking on the button below.",
-  "tracking_creating_group": "Creating group...",
-  "tracking_connecting": "Connecting...",
-  "tracking_joining_group": "Joining group...",
-  "tracking_reconnecting": "Reconnecting...",
-  "tracking_beforeunload": "You are online in the group with your friends. Leaving this page you will exit the group.",
 
   "tracking_help_title": "Tracking",
   "tracking_help_title_1": "You have created new group",
@@ -238,6 +236,7 @@
 
   "sorry_you_have_requested_the_expired_group": "Sorry, you have requested the expired group.",
   "expired_explanation": "Somebody has created this group to meet with his friends. Perhaps that goal was succeded because the group was removed. <p>You can create your own group and send the link to your friends. Note that the group expires soon if nobody will be online. If you'd like to create the permanent group please ask the administration.",
+
 
   "SECTION": "// ",
 

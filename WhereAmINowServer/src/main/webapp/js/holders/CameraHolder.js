@@ -53,7 +53,7 @@ function CameraHolder(main) {
         // if(!this || !this.views || !this.views.camera) return true;
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                menuFitToScreen = object.add(DRAWER.SECTION_VIEWS,type+"_1","Fit to screen","fullscreen",function(){
+                menuFitToScreen = object.add(DRAWER.SECTION_VIEWS,type+"_1", u.lang.fit_to_screen, "fullscreen",function(){
                     main.users.forAllUsers(function (number, user) {
                         user.fire(EVENTS.SELECT_USER);
                     });

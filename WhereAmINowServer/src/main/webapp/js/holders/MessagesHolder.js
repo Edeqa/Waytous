@@ -214,8 +214,8 @@ function MessagesHolder(main) {
             title: u.lang.general,
             categories: [
                 {
-                    id: "general:main",
-                    title: u.lang.main,
+                    id: "general:notifications",
+                    title: u.lang.notifications,
                     items: [
                         {
                             id:"messages:incoming",

@@ -40,6 +40,7 @@ window.HTML = {
     BR:"br",
     FORM:"form",
     NAME:"name",
+    LABEL:"label",
     INPUT:"input",
     CHECKBOX:"checkbox",
     TEXT:"text",
@@ -816,10 +817,16 @@ function Utils(main) {
                 div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
-                    create(HTML.DIV, {
+                    var labelOptions = {
                         className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : ""),
                         innerHTML:item.label
-                    }, div);
+                    };
+                    if(item.id){
+                        labelOptions["for"] = item.id;
+//                    } else {
+//                        create(HTML.DIV, labelOptions , div);
+                    }
+                    create(HTML.LABEL, labelOptions , div);
                 }
 
                 x = create(HTML.SELECT, {
@@ -847,11 +854,18 @@ function Utils(main) {
                 div = create(HTML.DIV, {className:"dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : ""), onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
-                    create(HTML.DIV, {
+                    var labelOptions = {
                         className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : ""),
                         innerHTML:item.label
-                    }, div);
+                    };
+                    if(item.id){
+                        labelOptions["for"] = item.id;
+    //                    } else {
+    //                        create(HTML.DIV, labelOptions , div);
+                    }
+                    create(HTML.LABEL, labelOptions , div);
                 }
+
                 var type = HTML.INPUT;
                 if(item.type.toLowerCase() == HTML.TEXTAREA) type = HTML.TEXTAREA;
 
@@ -1814,6 +1828,7 @@ function Utils(main) {
 
     function notification(options) {
         if(!options.persistent && !document.hidden) return;
+        if(u.load("main:disable_notification")) return;
         if (!("Notification" in window)) {
             console.error("This browser does not support desktop notification");
             return;

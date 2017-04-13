@@ -394,13 +394,19 @@ function Main() {
                             },
                             values: {"": u.lang.default, "en-us": u.lang.english, "ru-ru": u.lang.russian }
                         },
+                    ]
+                },
+                {
+                    id: "general:notifications",
+                    title: u.lang.notifications,
+                    items: [
                         {
                             id:"main:notification",
                             type: HTML.CHECKBOX,
-                            label: u.lang.notifications,
-                            checked: !u.load("main:notification"),
+                            label: u.lang.onscreen_notifications,
+                            checked: !u.load("main:disable_notification"),
                             onaccept: function(e, event) {
-                                drawer.toggleCollapse(this.checked);
+                                u.save("main:disable_notification", !this.checked);
                             },
                             onshow: function(e) {
                                 if (!("Notification" in window) || Notification.permission.toLowerCase() === 'denied') {

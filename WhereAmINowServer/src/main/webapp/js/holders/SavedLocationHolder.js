@@ -32,7 +32,7 @@ function SavedLocationHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerMenuItem = object.add(DRAWER.SECTION_NAVIGATION, EVENT.SHOW_SAVED_LOCATIONS, "Saved locations", "pin_drop", function(){
+                drawerMenuItem = object.add(DRAWER.SECTION_NAVIGATION, EVENT.SHOW_SAVED_LOCATIONS, u.lang.saved_locations, "pin_drop", function(){
                     if(locationsDialog && locationsDialog.opened) {
                         locationsDialog.close();
                     } else {
@@ -244,9 +244,9 @@ function SavedLocationHolder(main) {
                                 u.popupBlockerChecker.check(popup, function() {
                                     shareBlockedDialog = shareBlockedDialog || u.dialog({
                                         items: [
-                                            {type:HTML.DIV, innerHTML:u.lang.saved_location_popup_blocked_1 },
-                                            {type:HTML.DIV, enclosed:true, innerHTML:u.lang.saved_location_popup_blocked_2 },
-                                            {type:HTML.DIV, innerHTML:u.lang.saved_location_popup_blocked_3 },
+                                            {type:HTML.DIV, innerHTML:u.lang.popup_blocked_dialog_1 },
+                                            {type:HTML.DIV, enclosed:true, innerHTML:u.lang.popup_blocked_dialog_2 },
+                                            {type:HTML.DIV, innerHTML:u.lang.popup_blocked_dialog_3 },
                                             {type:HTML.DIV, innerHTML:locationShareDialog.items[0].value}
                                         ],
                                         positive: {
