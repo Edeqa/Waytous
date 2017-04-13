@@ -47,7 +47,7 @@
 
   "SECTION DistanceHolder": "// ",
 
-  "show_distances": "Show distances",
+  "show_distances": "Distances",
   "hide_distances": "Hide distances",
   "show_distance": "Show distance",
   "hide_distance": "Hide distance",
@@ -197,7 +197,7 @@
 
   "SECTION StreetViewHolder": "// ",
 
-  "show_street_view": "Show street view",
+  "show_street_view": "Street view",
   "hide_street_view": "Hide street view",
   "street_view": "Street view",
   "street_view_is_still_not_available_for_this_place": "Street view is still not available for this place.",
@@ -206,7 +206,7 @@
 
   "SECTION TrackHolder": "// ",
 
-  "show_tracks": "Show tracks",
+  "show_tracks": "Tracks",
   "hide_tracks": "Hide tracks",
   "show_track": "Show track",
   "hide_track": "Hide track",

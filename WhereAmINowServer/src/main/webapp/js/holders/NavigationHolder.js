@@ -553,8 +553,9 @@ function NavigationHolder(main) {
                             label: u.lang.avoid_highways,
                             default: u.load("navigation:avoid_highways") || "",
                             onaccept: function(e, event) {
-//                                u.save("navigation:avoid_highways", this.value);
-                                console.log("navigation:avoid_highways:",this.value);
+                                u.save("navigation:avoid_highways", this.checked);
+                                main.me.onChangeLocation(main.me.location);
+//                                console.log("navigation:avoid_highways:",this.value);
                             },
                         },
                         {
@@ -563,8 +564,9 @@ function NavigationHolder(main) {
                             label: u.lang.avoid_tolls,
                             default: u.load("navigation:avoid_tolls") || "",
                             onaccept: function(e, event) {
-//                                u.save("navigation:avoid_tolls", this.value);
-                                console.log("navigation:avoid_tolls:",this.value);
+                                u.save("navigation:avoid_tolls", this.checked);
+                                main.me.onChangeLocation(main.me.location);
+//                                console.log("navigation:avoid_tolls:",this.value);
                             },
                         },
                         {
@@ -573,8 +575,9 @@ function NavigationHolder(main) {
                             label: u.lang.avoid_ferries,
                             default: u.load("navigation:avoid_ferries") || "",
                             onaccept: function(e, event) {
-//                                u.save("navigation:avoid_ferries", this.value);
-                                console.log("navigation:avoid_ferries:",this.value);
+                                u.save("navigation:avoid_ferries", this.checked);
+                                main.me.onChangeLocation(main.me.location);
+//                                console.log("navigation:avoid_ferries:",this.value);
                             },
                         }
                     ]

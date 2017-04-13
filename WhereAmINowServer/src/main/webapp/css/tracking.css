@@ -99,7 +99,7 @@ button:active {
     border: none;
     outline: none;
     color: red;
-    left: 250px;
+    left: 240px;
 }
 .alert-icon:hover {
     background: none;
@@ -119,8 +119,8 @@ button:active {
 }
 .drawer {
     border-right-style: solid;
-    width: 250px;
-    min-width: 250px;
+    min-width: 240px;
+    max-width: 240px;
     border-width: 1px;
     background-color: azure;
     left: 0px;
@@ -136,8 +136,8 @@ button:active {
     overflow-x: hidden;
 }
 .drawer-collapsed:hover {
-    max-width: 250px;
-    min-width: 250px;
+    max-width: 240px;
+    min-width: 240px;
     transition-delay: 1s;
 }
 .drawer-open {
@@ -282,7 +282,7 @@ button:active {
 .drawer-footer {
     position: absolute;
     bottom: 10px;
-    width: 250px;
+    width: 240px;
     text-align: center;
     font-size: 10px;
 }

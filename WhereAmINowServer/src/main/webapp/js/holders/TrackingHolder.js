@@ -424,7 +424,6 @@ function TrackingHolder(main) {
         }
     }
 
-
     function options(){
         return {
             id: "general",
@@ -453,7 +452,7 @@ function TrackingHolder(main) {
                             onshow: function(e) {
                                 if(sounds) {
                                 } else {
-                                    u.getRemoteJSON({
+                                    u.getJSON({
                                         url: "/xhr/getSounds",
                                         onsuccess: function(json){
                                             sounds = {};
