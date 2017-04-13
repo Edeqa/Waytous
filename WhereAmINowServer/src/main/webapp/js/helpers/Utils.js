@@ -1483,7 +1483,7 @@ function Utils(main) {
 
             var resourcesFile = "/locales/resources." + holder + ".json";
 
-            getRemoteJSON({
+            getJSON({
                 url: resourcesFile,
                 onsuccess: function(json){
                     var nodes = document.getElementsByTagName(HTML.SPAN);
@@ -1574,7 +1574,7 @@ function Utils(main) {
             onsuccess - function,
             onerror - function (optional)
     */
-    function getRemoteJSON(options) {
+    function getJSON(options) {
         var args = options || {};
         var onsuccess = options.onsuccess;
         options.onsuccess = function(xhr){
@@ -1899,7 +1899,7 @@ function Utils(main) {
         popupBlockerChecker:popupBlockerChecker,
         cloneAsObject:cloneAsObject,
         lang:lang,
-        getRemoteJSON:getRemoteJSON,
+        getJSON:getJSON,
         toUpperCaseFirst:toUpperCaseFirst,
         drawer:drawer,
         toast:new toast(),

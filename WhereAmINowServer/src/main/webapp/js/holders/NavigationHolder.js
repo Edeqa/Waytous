@@ -198,7 +198,7 @@ function NavigationHolder(main) {
 
         console.log(type,req);
 
-        u.getRemoteJSON({
+        u.getJSON({
             url: req,
             onsuccess: function(json){
                 installation = false;

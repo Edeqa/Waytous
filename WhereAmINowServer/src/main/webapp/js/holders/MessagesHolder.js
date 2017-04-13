@@ -236,7 +236,7 @@ function MessagesHolder(main) {
                             onshow: function(e) {
                                 if(incomingMessageSounds) {
                                 } else {
-                                    u.getRemoteJSON({
+                                    u.getJSON({
                                         url: "/xhr/getSounds",
                                         onsuccess: function(json){
                                             incomingMessageSounds = {};

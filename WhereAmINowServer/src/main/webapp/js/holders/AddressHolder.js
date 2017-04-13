@@ -41,7 +41,7 @@ function AddressHolder(main) {
                     delayStart = 0;
                 }
 
-                u.getRemoteJSON({
+                u.getJSON({
                     url: "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1",
                     onsuccess: function(json){
                         user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
@@ -68,7 +68,7 @@ function AddressHolder(main) {
                 delayStart = 0;
             }
 
-            u.getRemoteJSON({
+            u.getJSON({
                 url: "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1",
                 onsuccess: function(json){
                     node.innerHTML = json["display_name"];

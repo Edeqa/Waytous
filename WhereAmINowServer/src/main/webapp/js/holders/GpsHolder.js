@@ -193,7 +193,7 @@ console.log("POSITION",position);
 
     function alternativeGeolocation() {
 return;
-        u.getRemoteJSON({
+        u.getJSON({
             url: "https://ipinfo.io/json",
             onsuccess: function(json) {
                 console.log("Alternative geolocation applied",json);
