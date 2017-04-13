@@ -5,6 +5,7 @@ EVENTS.NEW_MESSAGE = "new_message";
 EVENTS.SEND_MESSAGE = "send_message";
 EVENTS.PRIVATE_MESSAGE = "private";
 EVENTS.USER_MESSAGE = "user_message";
+EVENTS.SHOW_MESSAGES = "show_messages";
 EVENTS.WELCOME_MESSAGE = "welcome_message";
 
 function MessagesHolder(main) {
@@ -80,15 +81,7 @@ function MessagesHolder(main) {
             case EVENTS.CREATE_DRAWER:
                 drawerItemChat = object.add(DRAWER.SECTION_COMMUNICATION, type+"_1", u.lang.chat, "chat", function(){
                     if(chat.classList.contains("hidden")) {
-                        u.saveForGroup("message:chat", true);
-                        chat.open();
-                        chat.focus();
-                        replyInput.focus();
-                        main.users.forAllUsers(function(number,user){
-                            user.fire(EVENTS.HIDE_BADGE);
-                            drawerItemChat && drawerItemChat.hideBadge();
-                        });
-
+                        main.fire(EVENTS.SHOW_MESSAGES);
                     } else {
                         u.saveForGroup("message:chat");
                         chat.close();
@@ -114,6 +107,16 @@ function MessagesHolder(main) {
                     });
                 }
                 break;
+            case EVENTS.SHOW_MESSAGES:
+                u.saveForGroup("message:chat", true);
+                chat.open();
+                chat.focus();
+                replyInput.focus();
+                main.users.forAllUsers(function(number,user){
+                    user.fire(EVENTS.HIDE_BADGE);
+                    drawerItemChat && drawerItemChat.hideBadge();
+                });
+                break;
             case EVENTS.USER_MESSAGE:
                 var div = chat.addItem({
                     type:HTML.DIV,
@@ -127,7 +130,7 @@ function MessagesHolder(main) {
                     toUser = main.users.users[object.to] || main.me;
                 }
 
-                u.create(HTML.DIV, {
+                var divName = u.create(HTML.DIV, {
                     className:"chat-message-name",
                     style: {color: this.properties.color},
                     innerHTML:this.properties.getDisplayName() + (object.private ? " &rarr; " + toUser.properties.getDisplayName() : "") + ":"}, div);
@@ -137,6 +140,17 @@ function MessagesHolder(main) {
 
                 if(object.timestamp > lastReadTimestamp) {
                     sound.playButLast();
+
+                    u.notification({
+                        title: divName.innerHTML,
+                        body: object.body,
+                        icon: "/icons/android-chrome-512x512.png",
+                        duration: 5000,
+                        onclick: function(e){
+                            main.fire(EVENTS.SHOW_MESSAGES);
+                        }
+                    });
+
                     if(chat.classList.contains("hidden")) {
                         this.fire(EVENTS.SHOW_BADGE, EVENTS.INCREASE_BADGE);
                         drawerItemChat && drawerItemChat.increaseBadge();

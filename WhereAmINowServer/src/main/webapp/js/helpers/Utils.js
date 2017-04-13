@@ -1812,6 +1812,34 @@ function Utils(main) {
         return toast;
     }
 
+    function notification(options) {
+        if(!options.persistent && !document.hidden) return;
+        if (!("Notification" in window)) {
+            console.error("This browser does not support desktop notification");
+            return;
+        } else if (Notification.permission.toLowerCase() === "granted") { // check if notifications are allowed
+            var title = options.title;
+            delete options.title;
+            var notification = new Notification(title, options);
+            notification.onclick = function(e){
+                notification.close();
+                window.focus();
+                if(options.onclick) options.onclick(e);
+                else {console.warn("Redefine onclick.")}
+            }
+            if(options.duration) {
+                setTimeout(function(){
+                    notification.close();
+                }, options.duration);
+            }
+        } else if (Notification.permission.toLowerCase() !== 'denied') { // request for notifications granted
+            Notification.requestPermission(function (permission) {
+                if (permission.toLowerCase() === "granted") {
+                    notification(options);
+                }
+            });
+        }
+    }
 
     return {
         create: create,
@@ -1848,5 +1876,6 @@ function Utils(main) {
         toUpperCaseFirst:toUpperCaseFirst,
         drawer:drawer,
         toast:new toast(),
+        notification:notification,
     }
 }

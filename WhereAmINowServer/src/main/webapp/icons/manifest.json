@@ -1,7 +1,10 @@
 {
     "name": "Waytogo",
     "short_name": "Waytogo",
+    "version": "1.32",
+    "version_name": "Build 32",
     "description": "Waytogo Web App.\nFull-duplex multiuser dynamic navigation tool.",
+
     "theme_color": "#aaeeee",
     "background_color": "#aaeeee",
     "scope": "/",
@@ -9,7 +12,8 @@
     "orientation": "portrait",
     "permissions": [
         "fullscreen",
-        "geolocation"
+        "geolocation",
+        "notifications"
     ],
     "icons": [
         {

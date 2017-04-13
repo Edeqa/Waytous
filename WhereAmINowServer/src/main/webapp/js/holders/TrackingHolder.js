@@ -121,6 +121,16 @@ function TrackingHolder(main) {
                 if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
                     drawerItemShare.enable();
                 }
+                u.notification({
+                    title: "Tracking is active",
+                    body: "You have joined to the group " + main.tracking.getToken(),
+                    icon: "/icons/android-chrome-512x512.png",
+                    duration: 10000,
+                    onclick: function(e){
+                        console.log(this,e)
+                    }
+                });
+
                 if (!wakeLockEnabled) {
                     noSleep.enable(); // keep the screen on!
                     wakeLockEnabled = true;
