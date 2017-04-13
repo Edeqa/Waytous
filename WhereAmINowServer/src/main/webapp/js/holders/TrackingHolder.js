@@ -1,232 +1,432 @@
 /**
- * Created 2/9/17.
+ * Created 3/16/17.
  */
-EVENTS.SHARE_LINK = "share_link";
 
-function TrackingHolder(main) {
+EVENTS.SAVE_LOCATION = "save_location";
+EVENTS.SHOW_SAVED_LOCATION = "show_saved_location";
+EVENTS.EDIT_SAVED_LOCATION = "edit_saved_locations";
+EVENTS.HIDE_SAVED_LOCATION = "hide_saved_location";
+EVENTS.DELETE_SAVED_LOCATION = "delete_saved_location";
+EVENTS.SHOW_SAVED_LOCATIONS = "show_saved_locations";
+EVENTS.SHARE_SAVED_LOCATION = "share_saved_locations";
+EVENTS.SEND_SAVED_LOCATION = "send_saved_locations";
 
-    var type ="tracking";
+function SavedLocationHolder(main) {
 
-    var TRACKING_URI = "uri";
-//    var tracking;
-    var progress;
-    var progressTitle;
-    var drawerItemShare;
-    var drawerItemNew;
-    var drawerItemExit;
-    var noSleep;
-    var wakeLockEnabled;
-    var shareDialog;
+    var type = "saved_location";
+
+    var locationSavedDialog;
+    var locationEditDialog;
+    var locationShareDialog;
+    var locationSendDialog;
+    var locationReceiveDialog;
+    var locationDeleteDialog;
     var shareBlockedDialog;
-    var drawerItemNewIcon;
-    var sound;
-    var sounds;
-    var joinSound;
-    var defaultSound = "oringz-w427.mp3";
+    var locationsDialog;
+    var drawerMenuItem;
+    var showNavigation = false;
 
-    var drawerItemNewIconSvg = {
-        xmlns:"http://www.w3.org/2000/svg",
-        viewbox:"0 0 24 24",
-        version:"1.1",
-        className: "menu-item"
-    };
-    var drawerItemNewIconPath = {
-        xmlns:"http://www.w3.org/2000/svg",
-        fill:"darkslategray",
-        d: "M10,2l-6.5,15 0.5,0.5L9,15L12.29,7.45z M14,5.5l-6.5,15 0.5,0.5 6,-3l6,3 0.5,-0.5z"
-    };
-
-    function start(){
-
-        progress = u.dialog({
-            className: "progress",
-            items: [
-                { type: HTML.DIV, className: "progress-circle" },
-                { type: HTML.DIV, className: "progress-title" },
-            ]
-        });
-
-        joinSound = u.load("tracking:sound_on_join") || defaultSound;
-        sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+joinSound, last:0, playButLast:function(){
-            var current = new Date().getTime();
-            if(current - this.last > 10) {
-                this.last = current;
-                this.play();
-            }
-        }}, main.right);
-        progressTitle = progress.items[1];
-        noSleep = new NoSleep();
-        wakeLockEnabled = false;
-
-    }
-
-    function perform(json){
-        var loc = u.jsonToLocation(json);
-        var number = json[USER.NUMBER];
-        main.users.forUser(number, function(number,user){
-            user.addLocation(loc);
-        });
-
-        // final Location location = Utils.jsonToLocation(o);
-        // int number = o.getInt(USER_NUMBER);
-        //
-        // State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
-        // @Override
-        //     public void call(Integer number, MyUser myUser) {
-        //         myUser.addLocation(location);
-        //     }
-        // });
-
+    function start() {
     }
 
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
-                drawerItemNewIcon = drawerItemNewIcon || u.create(HTML.PATH, drawerItemNewIconPath, u.create(HTML.SVG, drawerItemNewIconSvg)).parentNode;
-                drawerItemNew = object.add(DRAWER.SECTION_PRIMARY,EVENTS.TRACKING_NEW, u.lang.create_group, drawerItemNewIcon,function(){
-                    main.fire(EVENTS.TRACKING_NEW);
-                });
-                drawerItemNew.hide();
-                drawerItemExit = object.add(DRAWER.SECTION_LAST,EVENTS.TRACKING_STOP, u.lang.exit_group,"clear",function(){
-                    main.fire(EVENTS.TRACKING_STOP);
-                });
-                drawerItemExit.hide();
-                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,EVENTS.SHARE_LINK, u.lang.share_group, "share",function(e){
-                    if(EVENTS.TRACKING_ACTIVE) {
-                        main.fire(EVENTS.SHARE_LINK,e);
+                drawerMenuItem = object.add(DRAWER.SECTION_NAVIGATION, EVENT.SHOW_SAVED_LOCATIONS, u.lang.saved_locations, "pin_drop", function(){
+                    if(locationsDialog && locationsDialog.opened) {
+                        locationsDialog.close();
+                    } else {
+                        main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
                     }
                 });
-                drawerItemShare.hide();
-                drawerItemShare.disable();
-                break;
-            case EVENTS.MAP_READY:
-                drawerItemNew.show();
-                var group = window.location.pathname.split("/")[2];
-//                var groupOld = u.loadForGroup("group");
-                if(group) {
-                    var self = this;
-                    setTimeout(function(){
-                        u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
-                    }, 0);
-                }
-                break;
-            case EVENTS.TRACKING_NEW:
-                var self = this;
-                setTimeout(function(){
-                    u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
-                }, 0);
-                break;
-            case EVENTS.TRACKING_ACTIVE:
-                document.title = main.appName + " - " + main.tracking.getToken();
-                if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
-                    drawerItemShare.enable();
-                }
-                u.notification({
-                    title: "Tracking is active",
-                    body: "You have joined to the group " + main.tracking.getToken(),
-                    icon: "/icons/android-chrome-256x256.png",
-                    duration: 10000,
-                    onclick: function(e){
-                        console.log(this,e)
+                var last = u.load("saved_location:counter") || 0;
+                var exists = false;
+                for(var i = 0; i <= last; i++) {
+                    if(u.load("saved_location:"+i)) {
+                        exists = true;
+                        break;
                     }
-                });
-
-                if (!wakeLockEnabled) {
-                    noSleep.enable(); // keep the screen on!
-                    wakeLockEnabled = true;
                 }
+                if(!exists) drawerMenuItem.hide();
                 break;
-            case EVENTS.TRACKING_CONNECTING:
-//                window.onbeforeunload = beforeunload;
-
-                document.title = u.lang.connecting_s.format(main.appName).innerHTML;
-                drawerItemNew.hide();
-                drawerItemShare.show();
-                drawerItemShare.enable();
-                drawerItemExit.show();
-                if (!wakeLockEnabled) {
-                    noSleep.enable(); // keep the screen on!
-                    wakeLockEnabled = true;
-                }
-                break;
-            case EVENTS.TRACKING_RECONNECTING:
-//                window.onbeforeunload = beforeunload;
-
-                document.title = u.lang.connecting_s.format(main.appName).innerHTML;
-                drawerItemNew.hide();
-                drawerItemShare.show();
-                drawerItemShare.enable();
-                drawerItemExit.show();
-                if (!wakeLockEnabled) {
-                    noSleep.enable(); // keep the screen on!
-                    wakeLockEnabled = true;
-                }
-                break;
-            case EVENTS.TRACKING_DISABLED:
-                window.onbeforeunload = null;
-
-                document.title = main.appName;
-                drawerItemShare.disable();
-                drawerItemExit.hide();
-                if (wakeLockEnabled) {
-                    noSleep.disable(); // let the screen turn off.
-                    wakeLockEnabled = false;
-                }
-                break;
-            case EVENTS.TRACKING_STOP:
-                if(main.tracking.getStatus() != EVENTS.TRACKING_DISABLED) {
-                    main.users.forAllUsersExceptMe(function (number, user) {
-                        user.removeViews();
+            case EVENTS.CREATE_CONTEXT_MENU:
+                var user = this;
+                if(user && (user.type == "user" || user.saveable) && user.location && !user.saved_location) {
+                    object.add(MENU.SECTION_NAVIGATION, EVENT.SAVE_LOCATION, u.lang.save_location, "pin_drop", function () {
+                        user.fire(EVENTS.SAVE_LOCATION);
                     });
-                    main.tracking && main.tracking.stop();
-                    u.saveForGroup("group");
+                }
+                if(user.type == type) {
+                    object.add(MENU.SECTION_EDIT, EVENT.EDIT_SAVED_LOCATION, u.lang.edit, "mode_edit", function () {
+                        main.fire(EVENTS.EDIT_SAVED_LOCATION, user.number - 10000);
+                    });
+                    object.add(MENU.SECTION_VIEWS, EVENT.HIDE_SAVED_LOCATION, u.lang.hide, "pin_drop", function () {
+                        main.fire(EVENTS.HIDE_SAVED_LOCATION, user.number - 10000);
+                    });
+                    if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
+                        object.add(MENU.SECTION_COMMUNICATION, EVENT.SEND_SAVED_LOCATION, u.lang.send_to_group, "chat", function () {
+                            main.fire(EVENTS.SEND_SAVED_LOCATION, user.number - 10000);
+                        });
+                    }
+                    object.add(MENU.SECTION_COMMUNICATION, EVENT.SHARE_SAVED_LOCATION, u.lang.share, "share", function () {
+                        main.fire(EVENTS.SHARE_SAVED_LOCATION, user.number - 10000);
+                    });
                 }
                 break;
-            case EVENTS.SHARE_LINK:
-                if(shareDialog) shareDialog.close();
-                shareDialog = shareDialog || u.dialog({
+            case EVENTS.SAVE_LOCATION:
+                var user = this;
+                if(user) {
+                    var loc = {
+                        la:user.location.coords.latitude,
+                        lo:user.location.coords.longitude,
+                        t:user.timestamp || new Date().getTime(),
+                        n:user.properties.getDisplayName(),
+                        a:user.address || "",
+                        d:user.description || "",
+                        k:user.key || ""
+                    }
+                    var last = u.load("saved_location:counter") || 0;
+                    last++;
+                    u.save("saved_location:counter", last);
+                    u.save("saved_location:" + last, loc);
+                    drawerMenuItem.show();
+                    fetchAddressFor(last);
+                    if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
+
+                    locationSavedDialog = locationSavedDialog || u.dialog({
+                        items: [
+                            { type: HTML.HIDDEN },
+                            { type: HTML.DIV, innerHTML: u.lang.you_have_added_location }
+                        ],
+                        positive: {
+                            label: u.lang.show,
+                            onclick: function(items) {
+                                main.fire(EVENTS.SHOW_SAVED_LOCATION, items[0].value);
+                            }
+                        },
+                        neutral: {
+                            label: u.lang.edit,
+                            onclick: function(items) {
+                                main.fire(EVENTS.EDIT_SAVED_LOCATION, items[0].value);
+                            }
+                        },
+                        negative: {
+                            label: u.lang.maybe_later
+                        },
+                        timeout: 5000
+                    });
+                    locationSavedDialog.items[0].value = last;
+                    locationSavedDialog.open();
+                }
+                break;
+            case EVENTS.SHOW_SAVED_LOCATION:
+                var number = parseInt(object);
+                if(main.users.users[10000 + number]) {
+                    main.users.forUser(10000 + number, function(number, user){
+                        user.fire(EVENTS.MAKE_ACTIVE);
+                        user.fire(EVENTS.SELECT);
+                    });
+                } else {
+                    var loc = u.load("saved_location:"+number);
+                    if(loc) {
+                        var o = {};
+                        o[USER.PROVIDER] = type;
+                        o[USER.LATITUDE] = loc.la;
+                        o[USER.LONGITUDE] = loc.lo;
+                        o[USER.ALTITUDE] = 0;
+                        o[USER.ACCURACY] = 0;
+                        o[USER.BEARING] = 0;
+                        o[USER.SPEED] = 0;
+                        o[USER.NUMBER] = 10000 + number;
+                        o[USER.COLOR] = u.getDecimalColor("#00AA00");
+                        o[USER.NAME] = loc.n;
+                        o[REQUEST.TIMESTAMP] = loc.t;
+                        o.markerIcon = {
+                            path: "M0 12 c 0 -11 9 -20 20 -20 c 11 0 20 9 20 20 c 0 11 -9 20 -20 20 c -11 0 -20 -9 -20 -20 m26 -3c0-3.31-2.69-6-6-6s-6 2 -6 6c0 4.5 6 11 6 11s6-6.5 6-11zm-8 0c0-1.1.9-2 2-2s2 .9 2 2-.89 2-2 2c-1.1 0-2-.9-2-2z m-5 12v2h14v-2h-14.5z",
+                            fillColor: "green",
+                            fillOpacity: 0.7,
+                            scale: 1.2,
+                            strokeColor: "white",
+                            strokeOpacity: 0.6,
+                            strokeWeight: 2,
+                            anchor: new google.maps.Point(40/2, 40/2)
+                        };
+                        o.buttonIcon = "pin_drop";
+                        o.type = type;
+
+                        var user = main.users.addUser(o);
+
+                        main.users.forUser(10000 + number, function(number, user){
+                            user.fire(EVENTS.MAKE_ACTIVE);
+                            user.fire(EVENTS.CHANGE_COLOR, "#00AA00");
+                            main.fire(USER.JOINED, user);
+                            user.fire(EVENTS.SELECT_SINGLE_USER);
+                        });
+                    }
+                }
+                break;
+            case EVENTS.HIDE_SAVED_LOCATION:
+                var number = parseInt(object);
+                main.users.forUser(10000 + number, function(number, user){
+                    user.removeViews();
+                    user.fire(EVENTS.MAKE_INACTIVE);
+                    main.fire(EVENTS.CAMERA_UPDATE);
+                });
+                break;
+            case EVENTS.EDIT_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.close();
+                locationShareDialog && locationShareDialog.close();
+                locationSendDialog && locationSendDialog.close();
+                locationDeleteDialog && locationDeleteDialog.close();
+                locationReceiveDialog && locationReceiveDialog.close();
+                var number = parseInt(object);
+                var loc = u.load("saved_location:"+number);
+                locationEditDialog = locationEditDialog || u.dialog({
+                    title: u.lang.edit_location,
                     items: [
-                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_1 },
-                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_2 },
-                        {type:HTML.INPUT, value: main.tracking.getTrackingUri() },
-//                        {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
+                        { type: HTML.HIDDEN },
+                        { type: HTML.INPUT, label: u.lang.name },
+                        { type: HTML.TEXTAREA, label: u.lang.description },
                     ],
+                    className: "saved-location-edit",
                     positive: {
-                        label: "OK",
-                        onclick: function() {
-                            var popup = window.open("mailto:?subject=Follow%20me%20at%20Waytogo.us&body="+main.tracking.getTrackingUri(),"_blank");
-                            u.popupBlockerChecker.check(popup, function() {
-                                shareBlockedDialog = shareBlockedDialog || u.dialog({
-                                    items: [
-                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
-                                        {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
-                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
-                                        {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
-                                    ],
-                                    positive: {
-                                        label: "Close"
-                                    },
-                                });
-                                shareBlockedDialog.open();
+                        label: u.lang.ok,
+                        onclick: function(items) {
+                            var number = parseInt(items[0].value);
+                            var name = items[1].value || "";
+                            var description = items[2].value || "";
+                            var loc = u.load("saved_location:"+number);
+                            loc.n = name;
+                            loc.d = description;
+                            u.save("saved_location:"+number, loc);
+                            if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
+                            main.users.forUser(10000 + number, function(number, user){
+                                user.fire(EVENTS.CHANGE_NAME, name);
                             });
                         }
                     },
                     neutral: {
-                        label: u.lang.copy,
-                        dismiss: false,
+                        label: u.lang.delete,
                         onclick: function(items) {
-                            if(u.copyToClipboard(items[2])) {
-                                main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
-                            }
-                            shareDialog.close();
+                            main.fire(EVENTS.DELETE_SAVED_LOCATION, items[0].value)
                         }
                     },
                     negative: {
                         label: u.lang.cancel
                     },
-                    timeout: 20000
                 });
-                shareDialog.open();
+
+                if(loc) {
+                    locationEditDialog.items[0].value = number;
+                    locationEditDialog.items[1].value = loc.n;
+                    locationEditDialog.items[2].value = loc.d;
+                    locationEditDialog.open();
+                }
+                break;
+            case EVENTS.SHARE_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.close();
+                locationShareDialog && locationShareDialog.close();
+                locationSendDialog && locationSendDialog.close();
+                locationDeleteDialog && locationDeleteDialog.close();
+                locationReceiveDialog && locationReceiveDialog.close();
+                var loc = u.load("saved_location:"+parseInt(object));
+                if(loc) {
+                    locationShareDialog = locationShareDialog || u.dialog({
+                        items: [
+//                            {type:HTML.HIDDEN },
+                            {type:HTML.DIV, innerHTML: u.lang.let_your_email_client_compose_the_message_with_link_to_this_location },
+                            {type:HTML.INPUT },
+                        ],
+                        positive: {
+                            label: u.lang.yes,
+                            onclick: function() {
+                                var link = locationShareDialog.items[1].value;
+                                var popup = window.open("mailto:?subject=Here%20is%20that%20location&body="+encodeURIComponent(encodeURI(link)),"_blank");
+                                u.popupBlockerChecker.check(popup, function() {
+                                    shareBlockedDialog = shareBlockedDialog || u.dialog({
+                                        items: [
+                                            {type:HTML.DIV, innerHTML:u.lang.popup_blocked_dialog_1 },
+                                            {type:HTML.DIV, enclosed:true, innerHTML:u.lang.popup_blocked_dialog_2 },
+                                            {type:HTML.DIV, innerHTML:u.lang.popup_blocked_dialog_3 },
+                                            {type:HTML.DIV, innerHTML:locationShareDialog.items[1].value}
+                                        ],
+                                        positive: {
+                                            label: u.lang.close
+                                        },
+                                    });
+                                    shareBlockedDialog.open();
+                                });
+                            }
+                        },
+                        neutral: {
+                            label: u.lang.copy,
+                            dismiss: false,
+                            onclick: function(items) {
+                                if(u.copyToClipboard(locationShareDialog.items[1])) {
+                                    main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                                }
+                                locationShareDialog.close();
+                            }
+                        },
+                        negative: {
+                            label: u.lang.no
+                        },
+//                        timeout: 20000
+                    });
+
+                    locationShareDialog.items[1].value = "http://maps.google.com/maps?q=" + loc.n + "&z=14&ll=" + loc.la + "," + loc.lo;
+
+                    locationShareDialog.open();
+                }
+                break;
+            case EVENTS.SEND_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.close();
+                locationShareDialog && locationShareDialog.close();
+                locationSendDialog && locationSendDialog.close();
+                locationDeleteDialog && locationDeleteDialog.close();
+                locationReceiveDialog && locationReceiveDialog.close();
+
+                var number = parseInt(object);
+                var loc = u.load("saved_location:"+number);
+                locationSendDialog = locationSendDialog || u.dialog({
+                    title: u.lang.send_location,
+                    items: [
+                        { type: HTML.HIDDEN },
+                        { type: HTML.DIV },
+                    ],
+                    className: "saved-location-send",
+                    positive: {
+                        label: u.lang.yes,
+                        onclick: function(items) {
+                            var number = parseInt(items[0].value);
+                            var loc = u.load("saved_location:"+number);
+
+                            main.tracking.put(USER.LATITUDE, loc.la);
+                            main.tracking.put(USER.LONGITUDE, loc.lo);
+                            main.tracking.put(USER.ADDRESS, loc.a);
+                            main.tracking.put(USER.NAME, loc.n);
+                            main.tracking.put(USER.DESCRIPTION, loc.d);
+                            main.tracking.put(REQUEST.PUSH, true);
+                            main.tracking.put(REQUEST.DELIVERY_CONFIRMATION, true);
+                            main.tracking.send(REQUEST.SAVED_LOCATION);
+                        }
+                    },
+                    negative: {
+                        label: u.lang.no
+                    },
+                });
+
+                if(loc) {
+                    locationSendDialog.items[0].value = number;
+                    u.lang.updateNode(locationSendDialog.items[1], u.lang.you_re_going_to_send_the_location_s_to_all_continue.format(loc.n));
+                    locationSendDialog.open();
+                }
+                break;
+            case EVENTS.DELETE_SAVED_LOCATION:
+                locationEditDialog && locationEditDialog.close();
+                locationShareDialog && locationShareDialog.close();
+                locationSendDialog && locationSendDialog.close();
+                locationDeleteDialog && locationDeleteDialog.close();
+                locationReceiveDialog && locationReceiveDialog.close();
+                var number = parseInt(object);
+                var loc = u.load("saved_location:"+number);
+                locationDeleteDialog = locationDeleteDialog || u.dialog({
+                    title: u.lang.delete_location,
+                    items: [
+                        { type: HTML.HIDDEN },
+                        { type: HTML.DIV, innerHTML: u.lang.delete_this_location },
+                    ],
+                    className: "saved-location-delete",
+                    positive: {
+                        label: u.lang.yes,
+                        onclick: function(items) {
+                            var number = items[0].value;
+                            main.fire(EVENTS.HIDE_SAVED_LOCATION, number);
+                            u.save("saved_location:"+number);
+                            if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
+                        }
+                    },
+                    negative: {
+                        label: u.lang.no
+                    },
+                });
+
+                if(loc) {
+                    locationDeleteDialog.items[0].value = number;
+                    locationDeleteDialog.open();
+                }
+                break;
+            case EVENTS.SHOW_SAVED_LOCATIONS:
+                locationsDialog = locationsDialog || u.dialog({
+                    title: {
+                        label: u.lang.saved_locations,
+                        filter: true,
+                    },
+                    items: [],
+                    className: "saved-location",
+                    itemsClassName: "saved-location-items",
+                    onopen: function(){},
+                    onclose: function(){},
+                    negative: {
+                        onclick: function() {}
+                    }
+                });
+                locationsDialog.clearItems();
+                var last = u.load("saved_location:counter") || 0;
+                for(var i = 1; i <= last; i++) {
+                    var loc = u.load("saved_location:"+i);
+                    if(loc && loc.la && loc.lo) {
+                        var div = locationsDialog.addItem({
+                            type: HTML.DIV,
+                            className: "saved-location-item",
+                        });
+
+                        var url = "https://maps.google.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo;
+
+                        u.create(HTML.IMG, {
+                            src: url,
+                            className: "saved-location-item-image",
+                            onload: function(e) {
+//                                console.log(e);
+                            },
+                            onerror: function(e) {
+                                console.error(e);
+                            },
+                            innerHTML:"update",
+                        }, div);
+
+                        var content = u.create(HTML.DIV, { className: "saved-location-item-text" }, div);
+                        u.create(HTML.DIV, { className: "saved-location-item-label", innerHTML:loc.n }, content);
+                        u.create(HTML.DIV, { className: "saved-location-item-timestamp", innerHTML:new Date(loc.t).toLocaleString() }, content);
+                        u.create(HTML.DIV, { className: "saved-location-item-address", innerHTML:loc.a }, content);
+                        if(!loc.a) fetchAddressFor(i);
+                        u.create(HTML.DIV, { className: "saved-location-item-description", innerHTML:loc.d }, content);
+                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-show notranslate", dataNumber: i, innerHTML:"remove_red_eye", title: u.lang.show_location.innerText, onclick:function(){
+                            locationsDialog.close();
+                            main.fire(EVENTS.SHOW_SAVED_LOCATION, this.dataset.number);
+                        } }, content);
+                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-navigate notranslate", dataNumber: i, innerHTML:"navigation", title:u.lang.show_direction_to_location.innerText, onclick:function(){
+                            locationsDialog.close();
+                            var number = this.dataset.number;
+                            main.fire(EVENTS.SHOW_SAVED_LOCATION, number);
+                            setTimeout(function(){
+                                main.users.forUser(10000 + number, function(number, user){
+                                    user.fire(EVENTS.SHOW_NAVIGATION);
+                                });
+                            },0);
+                        } }, content);
+                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-edit notranslate", dataNumber: i, innerHTML:"mode_edit", title:u.lang.edit_location.innerText, onclick:function(){
+                            main.fire(EVENTS.EDIT_SAVED_LOCATION, this.dataset.number);
+                        } }, content);
+                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-share notranslate", dataNumber: i, innerHTML:"share", title:u.lang.share_location.innerText, onclick:function(){
+                            main.fire(EVENTS.SHARE_SAVED_LOCATION, this.dataset.number);
+                        } }, content);
+                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-delete notranslate", dataNumber: i, innerHTML:"clear", title:u.lang.delete_location.innerText, onclick:function(){
+                            main.fire(EVENTS.DELETE_SAVED_LOCATION, this.dataset.number);
+                        } }, content);
+                    }
+                }
+                locationsDialog.open();
                 break;
             default:
                 break;
@@ -234,262 +434,123 @@ function TrackingHolder(main) {
         return true;
     }
 
-    function startTracking(){
+    function createView(user){
+        var view = {
+            user: user,
+        };
+        return view;
+    }
 
-        progress.open();
+    function fetchAddressFor(number) {
+        var loc = u.load("saved_location:"+number);
+        if(!loc || loc.a || !loc.la || !loc.lo) return;
 
-        this.tracking = main.tracking = new TrackingFB(main);
-        // console.log("LOADED", tracking);
-        // tracking.start();
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + loc.la + "&lon=" + loc.lo + "&zoom=18&addressdetails=1", true);
 
-        var a = window.location.pathname.split("/");
-        if(a[2]) {
-            a[2] = a[2].toUpperCase();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState != 4) return;
+            try {
+                var address = JSON.parse(xhr.response);
+                if(address["display_name"]) {
+                    loc.a = address["display_name"];
+                    u.save("saved_location:"+number, loc);
+                    console.log("Address was resolved for",loc.n,loc.a);
+                    if(locationsDialog && locationsDialog.opened) main.fire(EVENTS.SHOW_SAVED_LOCATIONS);
+                }
+            } catch(e) {
+                console.log("Address was not resolved for",loc.n);
+            }
+        };
+        try {
+            xhr.send();
+        } catch(e) {
+            console.warn(e);
+        }
+    }
 
-//            var groupOld = u.loadForGroup("group");
-            window.history.pushState({}, null, a.join("/"));
-//            window.history.pushState({}, null, "/track/" + token);
+    function perform(json) {
+        var number = json[USER.NUMBER];
 
-            main.fire(EVENTS.TRACKING_JOIN, window.location.href);
-            this.tracking.setLink(window.location.href);
-            u.saveForGroup("group",a[2]);
+        var from = main.users.users[number];
+        var name = json[USER.NAME] || (from ? from.properties.getDisplayName() : "Point");
+        var user = new MyUser(main);
+        user.properties = {
+           getDisplayName: function(){ return name }
+        };
+        user.location = {
+           coords: {
+               latitude: json[USER.LATITUDE],
+               longitude: json[USER.LONGITUDE]
+           }
+        }
+        user.description = json[USER.DESCRIPTION] || "";
+        user.address = json[USER.ADDRESS] || "";
+        user.timestamp = json[REQUEST.TIMESTAMP];
+        user.key = json["key"] || "";
+
+        var last = u.load("saved_location:counter") || 0;
+        for(var i = 1; i <= last; i++) {
+            var saved = u.load("saved_location:"+i);
+            if(saved && saved.k == user.key) return;
+        }
+
+        locationEditDialog && locationEditDialog.close();
+        locationShareDialog && locationShareDialog.close();
+        locationSendDialog && locationSendDialog.close();
+        locationDeleteDialog && locationDeleteDialog.close();
+        locationReceiveDialog && locationReceiveDialog.close();
+
+        locationReceiveDialog = locationReceiveDialog || u.dialog({
+             title: u.lang.add_location,
+             items: [
+                 { type: HTML.DIV },
+                 { type: HTML.DIV },
+                 { type: HTML.DIV },
+                 { type: HTML.DIV, innerHTML: u.lang.add_it_to_your_saved_locations_list },
+             ],
+             itemsClassName: "saved-location-receive-items",
+             className: "saved-location-receive",
+             positive: {
+                 label: u.lang.yes
+             },
+             negative: {
+                 label: u.lang.no
+             },
+         });
+        locationReceiveDialog.items[0].innerHTML = u.lang.you_ve_got_the_location_from_s.format((from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName()).outerHTML;
+        if(user.address) {
+            locationReceiveDialog.items[1].innerHTML = u.lang.address_s.format(user.address).outerHTML;
+            locationReceiveDialog.items[1].show();
         } else {
-            progressTitle.innerHTML = u.lang.creating_group;
-            console.log("NEW")
+            locationReceiveDialog.items[1].hide();
         }
-        this.tracking.setTrackingListener(onTrackingListener);
-        this.tracking.start();
+        if(user.description) {
+            locationReceiveDialog.items[2].innerHTML = u.lang.description_s.format(user.description).outerHTML;
+            locationReceiveDialog.items[2].show();
+        } else {
+            locationReceiveDialog.items[2].hide();
+        }
+        locationReceiveDialog.positive.onclick = function() {
+            user.views[type] = createView(user)
+            user.fire(EVENTS.SAVE_LOCATION);
+        }
+        locationReceiveDialog.negative.onclick = function() {
+            var last = u.load("saved_location:counter") || 0;
+            last++;
+            u.save("saved_location:counter",last);
+            u.save("saved_location:"+last, {k:user.key});
+        }
+        locationReceiveDialog.open();
 
     }
-
-    var onTrackingListener = {
-        onCreating: function(){
-            // console.log("ONCREATING");
-            u.lang.updateNode(progressTitle, u.lang.connecting);
-            //progressTitle.innerHTML = u.lang.connecting;
-            progress.open();
-
-            u.saveForGroup(TRACKING_URI, null);
-            main.fire(EVENTS.TRACKING_CONNECTING);
-        },
-        onJoining: function(){
-            // console.log("ONJOINING");
-            u.lang.updateNode(progressTitle, u.lang.joining_group);
-//            progressTitle.innerHTML = u.lang.joining_group;
-            progress.open();
-            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.joining_group);
-        },
-        onReconnecting: function(){
-            // console.log("ONRECONNECTING");
-            u.lang.updateNode(progressTitle, u.lang.reconnecting);
-//            progressTitle.innerHTML = u.lang.reconnecting;
-            progress.open();
-            main.fire(EVENTS.TRACKING_RECONNECTING, u.lang.reconnecting);
-        },
-        onClose: function(){
-            console.log("ONCLOSE");
-        },
-        onAccept: function(o){
-            // console.log("ONACCEPT",o);
-            //FIXME
-//            u.saveForGroup(TRACKING_URI, this.tracking.getTrackingUri());
-            try {
-                if(main.tracking.getStatus() != EVENTS.TRACKING_ACTIVE) {
-                    main.tracking.setStatus(EVENTS.TRACKING_ACTIVE);
-                    main.fire(EVENTS.TRACKING_ACTIVE);
-                }
-                if (o[RESPONSE.TOKEN]) {
-                    var token = o[RESPONSE.TOKEN];
-                    main.fire(EVENTS.TOKEN_CREATED, token);
-                    u.saveForGroup("group", token);
-                    window.history.pushState({}, null, "/track/" + token);
-                    main.fire(EVENTS.SHOW_HELP, {module: main.holders.tracking, article: 1});
-                    main.me.fire(EVENTS.SELECT_USER);
-                }
-                if (o[REQUEST.WELCOME_MESSAGE]) {
-                    main.fire(EVENTS.WELCOME_MESSAGE, o[RESPONSE.WELCOME_MESSAGE]);
-                }
-                if (o[RESPONSE.NUMBER] != undefined) {
-                    main.users.forMe(function (number, user) {
-                        user.createViews();
-                        progress.close();
-                    })
-                }
-//                if (o[RESPONSE.INITIAL]) {
-//                    main.users.forAllUsersExceptMe(function (number, user) {
-//                        user.createViews();
-//                    })
-//                }
-            } catch(e) {
-                console.error(e);
-            }
-        },
-        onReject: function(reason){
-            console.error("ONREJECT",reason);
-            u.saveForGroup(TRACKING_URI);
-            main.fire(EVENTS.TRACKING_DISABLED);
-            main.fire(EVENTS.TRACKING_ERROR, reason);
-
-            progress.close();
-            u.saveForGroup("group");
-
-             u.dialog({
-                className: "alert-dialog",
-                modal: true,
-                items: [
-                    { type: HTML.DIV, innerHTML: u.lang.sorry_you_have_requested_the_expired_group },
-                    { type: HTML.DIV, enclosed:true, body: u.lang.expired_explanation },
-                ],
-                positive: {
-                    label: u.lang.ok,
-                },
-                onclose: function() {
-                    window.location = "/track/";
-                }
-            }).open();
-
-//            window.history.pushState({}, null, "/track/" );
-
-        },
-        onStop: function(){
-            console.log("ONSTOP");
-            u.saveForGroup(TRACKING_URI);
-            main.fire(EVENTS.TRACKING_DISABLED);
-        },
-        onMessage: function(o){
-            // console.log("ONMESSAGE",o);
-            try {
-                var response = o[RESPONSE.STATUS];
-                switch (response) {
-                    case RESPONSE.STATUS_UPDATED:
-                        if (o[USER.DISMISSED] != undefined) {
-                            var number = o[USER.DISMISSED];
-                            // console.log("DISMISSED",number);
-                            var user = main.users.users[number];
-                            user.fire(EVENTS.MAKE_INACTIVE);
-                            main.fire(USER.DISMISSED, user);
-                        } else if (o[USER.JOINED] != undefined) {
-                            var number = o[USER.JOINED];
-                            var user = main.users.users[number];
-
-                            if(user.properties && !user.properties.active) {
-                                if(!user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
-                                    main.toast.show(u.lang.user_s_has_joined.format(user.properties.getDisplayName()), 10000);
-                                    sound.playButLast();
-                                }
-                            }
-
-                            user.fire(EVENTS.MAKE_ACTIVE);
-                            main.fire(USER.JOINED, user);
-
-                            // console.log("JOINED",number);
-                        }
-                        break;
-                    case RESPONSE.LEAVE:
-                        if (o[USER.NUMBER]) {
-                            console.log("LEAVE", o[USER.NUMBER]);
-                        }
-                        break;
-                    case RESPONSE.CHANGE_NAME:
-                        if (o[USER.NAME]) {
-                            console.log("CHANGENAME", o[USER.NUMBER], o[USER.NAME]);
-                        }
-                        break;
-                    default:
-                        // console.log(type,response,o);
-                        var holder = main.holders[response];
-                        if (holder && holder.perform) {
-                            holder.perform(o);
-                        }
-                        break;
-                }
-            } catch(e) {
-                console.error(e);
-            }
-        }
-    };
-
-    function beforeunload(evt) {
-        return u.lang.beforeunload;
-    }
-
-    function help(){
-        return {
-            title: u.lang.tracking_help_title,
-            1: {
-                ignore: true,
-                title: u.lang.tracking_help_title_1,
-                body: u.lang.tracking_help_body_1
-            }
-        }
-    }
-
-
-    function options(){
-        return {
-            id: "general",
-            title: u.lang.general,
-            categories: [
-                {
-                    id: "general:notifications",
-                    title: u.lang.notifications,
-                    items: [
-                        {
-                            id:"tracking:sound_on_join",
-                            type: HTML.SELECT,
-                            label: u.lang.sound_on_join,
-                            default: u.load("tracking:sound_on_join") || defaultSound,
-                            onaccept: function(e, event) {
-                                u.save("tracking:sound_on_join", this.value);
-                                sound.src = "/sounds/" + this.value;
-                            },
-                            onchange: function(e, event) {
-                                var sample = u.create(HTML.AUDIO, {className:"hidden", preload:true, src:"/sounds/"+this.value}, main.right);
-                                sample.addEventListener("load", function() {
-                                    sample.play();
-                                }, true);
-                                sample.play();
-                            },
-                            onshow: function(e) {
-                                if(sounds) {
-                                } else {
-                                    u.getRemoteJSON({
-                                        url: "/xhr/getSounds",
-                                        onsuccess: function(json){
-                                            sounds = {};
-                                            u.clear(e);
-                                            var selected = 0;
-                                            for(var i in json.files) {
-                                                var file = json.files[i];
-                                                var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
-                                                sounds[file] = name;
-                                                u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
-                                                if((joinSound || defaultSound) == file) selected = i;
-                                            }
-                                            e.selectedIndex = selected;
-                                        },
-                                        onerror: function(code,xhr){
-                                            console.error(code,xhr)
-                                        }
-                                    });
-                                }
-                            },
-                            values: {"":u.lang.loading.innerText}
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
 
     return {
         type:type,
         start:start,
         onEvent:onEvent,
-        perform:perform,
+        createView:createView,
         saveable:true,
-        help:help,
-        options:options,
+        perform:perform,
     }
 }
