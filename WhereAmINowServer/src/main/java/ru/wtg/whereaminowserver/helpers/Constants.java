@@ -3,8 +3,9 @@ package ru.wtg.whereaminowserver.helpers;
 /**
  * Created 10/14/16.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class Constants {
-    public final static int SERVER_BUILD = 32;
+    public final static int SERVER_BUILD = 33;
 
     public static SensitiveData SENSITIVE;
 

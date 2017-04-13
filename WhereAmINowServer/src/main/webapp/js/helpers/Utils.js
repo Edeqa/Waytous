@@ -1275,11 +1275,30 @@ function Utils(main) {
 
     function sprintf() {
         var a = this, b;
-        for(b in arguments){
-            a = a.replace(/%[a-z]/,arguments[b][0].constructor === HTMLSpanElement ?
-                (arguments[b][0].lang
-                    && lang.$origin[arguments[b][0].lang] ? lang[arguments[b][0].lang].outerText : arguments[b][0].outerText)
-                : (arguments[b].constructor === Array ? arguments[b][0] : (arguments[b].constructor === Object ? arguments[b][0] : arguments[b])));
+        var args = arguments;
+        if(arguments[0].constructor === Array || arguments[0].constructor === Object) {
+            args = arguments[0];
+        }
+
+        for(b in args){
+            var value = args[b];
+            var replace = "";
+            if (value.constructor === String || value.constructor === Number) {
+                replace = value;
+            } else if(value.constructor === HTMLSpanElement) {
+                if(value.lang && lang.$origin[value.lang]) {
+                    replace = lang[value.lang].outerText;
+                } else {
+                    replace = value.outerText;
+                }
+            } else if (value.constructor === Array) {
+                replace = value;
+            } else if (value.constructor === Object) {
+                replace = value;
+            } else {
+                console.error("Replace failed.")
+            }
+            a = a.replace(/%[a-z]/,replace);
         }
         return a; // Make chainable
     }
@@ -1589,6 +1608,211 @@ function Utils(main) {
         return string.substring(0,1).toUpperCase() + string.substring(1);
     }
 
+    function drawer(options, insertTo) {
+        collapsed = options.collapsed;
+
+        var footerButton;
+        var footerButtonCollapseDiv;
+        var footerButtonExpandDiv;
+
+        var footerButtonSvg = {
+            xmlns:"http://www.w3.org/2000/svg",
+            viewbox:"2 2 14 14",
+            fit: "",
+            version:"1.1",
+            width: 24,
+            height: 24,
+            preserveAspectRatio: "xMidYMid meet",
+            className: "drawer-menu-item-icon drawer-footer-button",
+            onclick: function(e) {
+                u.save("drawer:collapsed", !collapsed);
+                this.replaceChild(collapsed ? footerButtonExpandDiv : footerButtonCollapseDiv, this.firstChild);
+            }
+        };
+        var footerButtonCollapsePath = {
+            xmlns:"http://www.w3.org/2000/svg",
+            d: "M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z",
+        };
+        var footerButtonExpandPath = {
+            xmlns:"http://www.w3.org/2000/svg",
+            d: "M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z"
+        };
+
+        var layout = u.create(HTML.DIV, {
+            className:"drawer changeable" + (collapsed ? " drawer-collapsed" : ""),
+            tabindex: -1,
+            onblur: function(){
+                 this.close();
+                 return true;
+            },
+            open: function() {
+                 this.classList.add("drawer-open");
+                 this.scrollTop = 0;
+                 this.menu.scrollTop = 0;
+                 this.focus();
+            },
+            close: function(){
+                 this.classList.remove("drawer-open");
+            },
+            toggle: function() {
+                if(this.classList.contains("drawer-open")) {
+                    this.blur();
+                } else {
+                    this.open();
+                }
+            },
+            items: {},
+            sections: [],
+            toggleCollapse: function(force) {
+                collapsed = !collapsed;
+                if(force != undefined) collapsed = force;
+                u.save("drawer:collapsed", collapsed);
+                layout.toggleButton.innerHTML = collapsed ? "last_page" : "first_page";
+                layout.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
+                if(options.ontoggle) options.ontoggle();
+            }
+         });
+         insertTo.insertBefore(layout,insertTo.firstChild);
+
+
+         layout.frame = u.create("iframe", {width:"100%",height:"1%", style:"position:absolute;z-index:-1"}, layout);
+         layout.frame.contentWindow.addEventListener("resize",function(){
+            if(!layout.resizeTask) layout.resizeTask = setTimeout(function(){
+                if(options.ontoggle) options.ontoggle();
+                delete layout.resizeTask;
+            }, 500);
+         });
+
+         layout.header = u.create(HTML.DIV, { className:"drawer-header changeable" }, layout);
+         if(options.logo) {
+             u.create(HTML.IMG, {
+                className:"drawer-header-logo changeable",
+                src:options.logo.src,
+                onclick: options.logo.onclick
+             }, layout.header);
+         }
+         layout.headerName = u.create(HTML.DIV, {className:"drawer-header-name changeable", onclick: function(evt){
+                layout.blur();
+                if(options.onprimaryclick) options.onprimaryclick();
+            }}, layout.header);
+         layout.headerTitle = u.create(HTML.DIV, {className:"drawer-header-title changeable", innerHTML:options.title}, layout.header);
+         u.create(HTML.DIV, {className:"drawer-header-subtitle changeable", innerHTML: options.subtitle }, layout.header);
+
+
+        layout.menu = u.create(HTML.DIV, {className:"drawer-menu changeable"}, layout);
+        for(var i=0;i<10;i++){
+            layout.sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, layout.menu);
+        }
+
+        layout.add = function(section,id,name,icon,callback) {
+            layout.items[id] = {
+                name:name,
+                icon:icon,
+                callback:callback
+            };
+            var th = u.create(HTML.DIV, {
+                className:"drawer-menu-item",
+                onclick: function (event) {
+                    setTimeout(function () {
+                        layout.blur();
+                        callback(event);
+                    }, 100);
+                },
+                hide: function() {
+                    this.classList.add("hidden");
+                    this.fixShowing();
+                    return this;
+                },
+                show: function() {
+                    this.classList.remove("hidden");
+                    this.fixShowing();
+                    return this;
+                },
+                enable: function() {
+                    this.classList.remove("disabled");
+                    return this;
+                },
+                disable: function() {
+                    this.classList.add("disabled");
+                    return this;
+                },
+                fixShowing: function() {
+                    var parent = th.parentNode;
+                    var shown = false;
+                    for(var i in parent.childNodes) {
+                        if(parent.childNodes.hasOwnProperty(i)) {
+                            if(!parent.childNodes[i].classList.contains("hidden")) shown = true;
+                        }
+                    }
+                    if(shown) parent.show();
+                    else parent.hide();
+                },
+                increaseBadge: function() {
+                    var val = parseInt(this.badge.innerHTML || "0");
+                    val ++;
+                    this.badge.innerHTML = val;
+                    this.showBadge();
+                },
+                showBadge: function() {
+                    this.badge.show();
+                },
+                hideBadge: function() {
+                    this.badge.hide();
+                    this.badge.innerHTML = "0";
+                },
+
+            }, layout.sections[section]);
+
+            if(icon) {
+                if(icon.constructor === String) {
+                    u.create(HTML.DIV, { className:"drawer-menu-item-icon notranslate", innerHTML: icon }, th);
+                } else {
+                    th.appendChild(icon);
+                }
+            }
+            if(callback) {
+                u.create(HTML.DIV, {
+                    className: "drawer-menu-item-label",
+                    innerHTML: name
+                }, th);
+            }
+            th.badge = u.create(HTML.DIV, { className:"drawer-menu-item-badge hidden", innerHTML: "0" }, th);
+            layout.sections[section].show();
+            return th;
+        }
+
+        layout.footer = u.create(HTML.DIV, { className:"drawer-footer"}, layout);
+
+        footerButtonCollapseDiv = u.create(HTML.PATH, footerButtonCollapsePath);
+        footerButtonExpandDiv = u.create(HTML.PATH, footerButtonExpandPath);
+
+        layout.toggleButton = u.create(HTML.DIV, {className: "drawer-menu-item-icon drawer-footer-button notranslate", innerHTML: collapsed ? "last_page" : "first_page", onclick: function(e){
+            layout.toggleCollapse();
+        }}, layout.footer);
+        if(options.footer) {
+            u.create(HTML.DIV, options.footer, layout.footer);
+        }
+
+        return layout;
+    }
+
+    function toast() {
+        var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(); }});
+        toast.show = function(text,delay){
+           clearTimeout(toast.hideTask);
+           lang.updateNode(toast, text);
+           toast.classList.remove("hidden");
+           delay = delay || 5000;
+           if(delay > 0) {
+               toast.hideTask = setTimeout(function(){
+                   toast.hide();
+               },delay);
+           }
+       };
+        return toast;
+    }
+
+
     return {
         create: create,
         clear: clear,
@@ -1622,5 +1846,7 @@ function Utils(main) {
         lang:lang,
         getRemoteJSON:getRemoteJSON,
         toUpperCaseFirst:toUpperCaseFirst,
+        drawer:drawer,
+        toast:new toast(),
     }
 }

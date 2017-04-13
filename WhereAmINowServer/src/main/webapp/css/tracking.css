@@ -302,6 +302,9 @@ button:active {
 .drawer-footer-button:active {
     background-color: burlywood;
 }
+.drawer-footer-label {
+    white-space: pre;
+}
 .right {
     width: 100%;
     height: 100%;
@@ -1603,7 +1606,7 @@ p.bottom-desc {
         padding: 0px;
     }
     .streetview {
-        position: inherit;
+        position: initial;
         width: 100% !important;
         transform: none !important;
         height: 60%;

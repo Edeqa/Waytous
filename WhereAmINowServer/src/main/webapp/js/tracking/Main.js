@@ -15,7 +15,6 @@ function Main() {
     var main = w = this;
     var progress;
     var alert;
-    var toast;
     var defaultLang = "en-us";
 
     if (false && "serviceWorkers" in navigator) {
@@ -170,21 +169,8 @@ function Main() {
                 main.fire(EVENTS.SHOW_HELP, {module: main, article: 1});
              }
          });
-        main.toast = u.create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(); }}, main.right);
-        main.toast.show = function(text,delay){
-           clearTimeout(main.toast.hideTask);
-           u.lang.updateNode(main.toast, text);
-           main.toast.classList.remove("hidden");
-           delay = delay || 5000;
-           if(delay > 0) {
-               main.toast.hideTask = setTimeout(function(){
-                   main.toast.hide();
-               },delay);
-           }
-       };
-//       main.toast.hide = function(){
-//           main.toast.classList.add("hidden");
-//       }
+        main.toast = u.toast;
+        main.right.appendChild(main.toast);
 
         var files = [
             "https://www.gstatic.com/firebasejs/3.7.4/firebase-app.js", // https://firebase.google.com/docs/web/setup
@@ -226,43 +212,44 @@ function Main() {
         }
 
         try{
-                var loaded = 0;
-                var failed = false;
-                var inordered = {};
-                for(var i in files) {
-                    var file = files[i];
-                    if(!file.match(/^(https?:)|\//i)) file = "/js/holders/"+file;
-                    var viaXhr = false;// ! file.match(/^https?:/i);
+            var loaded = 0;
+            var failed = false;
+            var inordered = {};
+            for(var i in files) {
+                var file = files[i];
+                if(!file.match(/^(https?:)|\//i)) file = "/js/holders/"+file;
+                var viaXhr = false;// ! file.match(/^https?:/i);
 
-                    u.require(file, function(e) {
-                        if(failed) return;
-                        loaded++;
-                        if(e && e.type) {
-                            inordered[e.moduleName] = e;
+                u.require(file, function(e) {
+                    if(failed) return;
+                    loaded++;
+                    if(e && e.type) {
+                        inordered[e.moduleName] = e;
+                    }
+                    progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
+                    if(loaded == u.keys(files).length) {
+                        console.warn("Preload finished: "+loaded+" files done.");
+
+                        for(var i in ordered) {
+                            holders[inordered[ordered[i]].type] = inordered[ordered[i]];
                         }
-                        progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
-                        if(loaded == u.keys(files).length) {
-                            console.warn("Preload finished: "+loaded+" files done.");
 
-                            for(var i in ordered) {
-                                holders[inordered[ordered[i]].type] = inordered[ordered[i]];
-                            }
+                        u.getUuid(initialize.bind(main));
+                    }
+                },function(code, moduleName, event) {
+                    console.log(code, moduleName, event.srcElement.src);
+                    if(failed) return;
+                    failed = true;
+                    loading.hide();
 
-                            u.getUuid(initialize.bind(main));
-                        }
-                    },function(code, moduleName, event) {
-                        console.log(code, moduleName, event.srcElement.src);
-                        if(failed) return;
-                        failed = true;
-                        loading.hide();
+                    u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(moduleName,code));
+//                    main.alert.items[1].body.innerHTML = u.lang.error_while_loading_s_code_d.format(moduleName,code);
+                    main.alert.open();
 
-                        main.alert.items[1].body.innerHTML = "Error with loading "+moduleName+": code " + code;
-                        main.alert.open();
-
-                    }, main, viaXhr);
-                }
+                }, main, viaXhr);
+            }
         } catch(e) {
-            main.alert.items[1].body.innerHTML = "Error with initializing "+e.message;
+            u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s.format(e.message));
             main.alert.open();
         }
         // main.right.webkitRequestFullScreen();
@@ -303,7 +290,7 @@ function Main() {
                     if(failed) return;
                     failed = true;
 
-                    main.alert.items[1].body.innerHTML = "Error with loading "+moduleName+": code " + code;
+                    u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(moduleName,code));
                     main.alert.open();
                 }, main);
             }
@@ -315,7 +302,13 @@ function Main() {
 //throw new Error("A");
 
         for(var x in holders){
-            if(holders[x] && holders[x].start) holders[x].start();
+            try {
+                if(holders[x] && holders[x].start) holders[x].start();
+            } catch (e) {
+                u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s.format(x));
+                main.alert.open();
+                return;
+            }
         }
 
         setTimeout(function(){
