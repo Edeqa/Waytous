@@ -188,6 +188,7 @@ function TrackingHolder(main) {
                     items: [
                         {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_1 },
                         {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_2 },
+                        {type:HTML.INPUT, value: main.tracking.getTrackingUri() },
 //                        {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
                     ],
                     positive: {
@@ -208,6 +209,16 @@ function TrackingHolder(main) {
                                 });
                                 shareBlockedDialog.open();
                             });
+                        }
+                    },
+                    neutral: {
+                        label: u.lang.copy,
+                        dismiss: false,
+                        onclick: function(items) {
+                            if(u.copyToClipboard(items[2])) {
+                                main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                            }
+                            shareDialog.close();
                         }
                     },
                     negative: {
