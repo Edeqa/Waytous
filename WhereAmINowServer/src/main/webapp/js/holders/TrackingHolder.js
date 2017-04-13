@@ -124,7 +124,7 @@ function TrackingHolder(main) {
                 u.notification({
                     title: "Tracking is active",
                     body: "You have joined to the group " + main.tracking.getToken(),
-                    icon: "/icons/android-chrome-512x512.png",
+                    icon: "/icons/android-chrome-256x256.png",
                     duration: 10000,
                     onclick: function(e){
                         console.log(this,e)

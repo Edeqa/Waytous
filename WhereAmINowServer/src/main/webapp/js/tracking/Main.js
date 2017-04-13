@@ -21,11 +21,9 @@ function Main() {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("/ServiceWorker.js")
             .then(function(registration) {
-                // ??????????? ???????
                 console.log("ServiceWorker registration successful with scope:", registration);
             })
             .catch(function(err) {
-                // ??????????? ?? ???????
                 console.error("ServiceWorker registration failed:", err);
                 throw new Error("ServiceWorker error:",err);
             });
@@ -395,6 +393,20 @@ function Main() {
                                 u.lang.overrideResources(res);
                             },
                             values: {"": u.lang.default, "en-us": u.lang.english, "ru-ru": u.lang.russian }
+                        },
+                        {
+                            id:"main:notification",
+                            type: HTML.CHECKBOX,
+                            label: u.lang.notifications,
+                            checked: !u.load("main:notification"),
+                            onaccept: function(e, event) {
+                                drawer.toggleCollapse(this.checked);
+                            },
+                            onshow: function(e) {
+                                if (!("Notification" in window) || Notification.permission.toLowerCase() === 'denied') {
+                                    e.parentNode.hide();
+                                }
+                            }
                         }
                     ]
                 }

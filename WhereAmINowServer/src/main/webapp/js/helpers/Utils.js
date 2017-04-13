@@ -1820,16 +1820,16 @@ function Utils(main) {
         } else if (Notification.permission.toLowerCase() === "granted") { // check if notifications are allowed
             var title = options.title;
             delete options.title;
-            var notification = new Notification(title, options);
-            notification.onclick = function(e){
-                notification.close();
+            var notif = new Notification(title, options);
+            notif.onclick = function(e){
+                notif.close();
                 window.focus();
                 if(options.onclick) options.onclick(e);
                 else {console.warn("Redefine onclick.")}
             }
             if(options.duration) {
                 setTimeout(function(){
-                    notification.close();
+                    notif.close();
                 }, options.duration);
             }
         } else if (Notification.permission.toLowerCase() !== 'denied') { // request for notifications granted

@@ -25,6 +25,7 @@
   "error_while_loading_service": "We are sorry but some error occurred while loading the service. Please wait a few minutes and try again.",
   "error_while_loading_s_code_s": "Error while loading %s: code %s",
   "error_while_initializing_s": "Error while initializing %s",
+  "notifications": "Notifications",
 
   "SECTION ButtonHolder": "// ",
 

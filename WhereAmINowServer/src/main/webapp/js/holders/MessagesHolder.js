@@ -144,7 +144,7 @@ function MessagesHolder(main) {
                     u.notification({
                         title: divName.innerHTML,
                         body: object.body,
-                        icon: "/icons/android-chrome-512x512.png",
+                        icon: "/icons/android-chrome-256x256.png",
                         duration: 5000,
                         onclick: function(e){
                             main.fire(EVENTS.SHOW_MESSAGES);
