@@ -1856,6 +1856,18 @@ function Utils(main) {
         }
     }
 
+    function copyToClipboard(input) {
+        if(!input) return false;
+        input.focus();
+        input.select();
+
+        try {
+            return document.execCommand('copy');
+        } catch(err) {
+            return false;
+        }
+    }
+
     return {
         create: create,
         clear: clear,
@@ -1892,5 +1904,6 @@ function Utils(main) {
         drawer:drawer,
         toast:new toast(),
         notification:notification,
+        copyToClipboard:copyToClipboard,
     }
 }
