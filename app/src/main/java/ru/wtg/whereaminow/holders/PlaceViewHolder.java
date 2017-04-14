@@ -392,7 +392,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 } catch (GooglePlayServicesRepairableException e) {
                     GoogleApiAvailability.getInstance().getErrorDialog(context, e.getConnectionStatusCode(), 0 /* requestCode */).show();
                 } catch (GooglePlayServicesNotAvailableException e) {
-                    String message = "Google Play Services is not available: " + GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+                    String message = context.getString(R.string.google_play_services_is_not_available_s, GoogleApiAvailability.getInstance().getErrorString(e.errorCode));
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 }
 

@@ -217,7 +217,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         cbAvoidTolls.setChecked(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false));
         cbAvoidFerries.setChecked(State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false));
 
-        dialog.setTitle("Options");
+        dialog.setTitle(context.getString(R.string.options));
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -390,7 +390,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("")))
                         .position(SphericalUtil.interpolate(Utils.latLng(State.getInstance().getMe().getLocation()), Utils.latLng(myUser.getLocation()), .5))
                         .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV())
-                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Setting up...")));
+                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(context.getString(R.string.setting_up))));
 
                 marker = map.addMarker(markerOptions);
                 marker.setVisible(false);

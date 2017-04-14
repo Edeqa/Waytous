@@ -26,6 +26,7 @@ abstract public class AbstractView implements Entity {
 
     @Override
     public void onChangeLocation(Location location){
+        //noinspection HardCodedStringLiteral
         System.out.println("onChangeLocation:"+(this.getClass().getSimpleName()));
     }
 

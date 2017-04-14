@@ -67,10 +67,10 @@ public class SnackbarViewHolder extends AbstractViewHolder {
 
     public void setLayout(final View layout) {
 
-        snackbar = Snackbar.make(layout, "Starting...", Snackbar.LENGTH_INDEFINITE);
+        snackbar = Snackbar.make(layout, R.string.starting, Snackbar.LENGTH_INDEFINITE);
 
         snackbar.getView().setAlpha(.8f);
-        snackbar.setAction("Action", new View.OnClickListener() {
+        snackbar.setAction(R.string.action, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("SNACKBAR ACTION");
@@ -90,7 +90,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
         final MyUser user;
         switch(event){
             case TRACKING_NEW:
-                snackbar.setText("Creating group...").setAction("Cancel", new View.OnClickListener() {
+                snackbar.setText(context.getString(R.string.creating_group)).setAction(R.string.cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(TRACKING_STOP);
@@ -98,7 +98,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 }).show();
                 break;
             case TRACKING_JOIN:
-                snackbar.setText("Joining group...").setAction("Cancel", new View.OnClickListener() {
+                snackbar.setText(context.getString(R.string.joining_group)).setAction(context.getString(R.string.cancel), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(TRACKING_STOP);
@@ -107,7 +107,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 break;
             case TOKEN_CREATED:
                 tokenCreatedShown = true;
-                snackbar.setText("You have created the group").setDuration(10000).setAction("Set welcome message", new View.OnClickListener() {
+                snackbar.setText(R.string.you_have_created_the_group).setDuration(10000).setAction(context.getString(R.string.set_welcome_message), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(SETUP_WELCOME_MESSAGE);
@@ -118,7 +118,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 if(tokenCreatedShown && State.getInstance().getMe().getProperties().getNumber() == 0) {
                     tokenCreatedShown = false;
                 } else {
-                    snackbar.setText("You are joined to the group").setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(android.R.string.ok), new View.OnClickListener() {
+                    snackbar.setText(R.string.you_are_joined_to_the_group).setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(android.R.string.ok), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
@@ -131,7 +131,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 break;
             case WELCOME_MESSAGE:
                 String message = (String) object;
-                snackbar.setText(message).setDuration(Snackbar.LENGTH_LONG).setAction("Show", new View.OnClickListener() {
+                snackbar.setText(message).setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(R.string.show), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(SHOW_MESSAGES);
@@ -141,7 +141,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
             case TRACKING_RECONNECTING:
 //                tokenCreatedShown = true;
                 message = (String) object;
-                snackbar.setText((message != null && message.length() > 0) ? message : "Disconnected. Trying to reconnect").setAction("Cancel", new View.OnClickListener() {
+                snackbar.setText((message != null && message.length() > 0) ? message : context.getString(R.string.disconnected_trying_to_reconnect)).setAction(context.getString(R.string.cancel), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         State.getInstance().fire(TRACKING_STOP);
@@ -150,7 +150,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 break;
             case TRACKING_ERROR:
                 message = (String) object;
-                snackbar.setText(message).setAction("New group", new View.OnClickListener() {
+                snackbar.setText(message).setAction(R.string.new_group, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         snackbar.dismiss();
@@ -161,7 +161,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
             case USER_JOINED:
                 user = (MyUser) object;
                 if(user.isUser()) {
-                    snackbar.setText(user.getProperties().getDisplayName() + " has joined the group.").setDuration(Snackbar.LENGTH_LONG).setAction("Send message", new View.OnClickListener() {
+                    snackbar.setText(context.getString(R.string.s_has_joined, user.getProperties().getDisplayName())).setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(R.string.send_message), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             user.fire(NEW_MESSAGE);
@@ -172,7 +172,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
             case USER_DISMISSED:
                 user = (MyUser) object;
                 if(user.isUser()) {
-                    snackbar.setText(user.getProperties().getDisplayName() + " left the group.").setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(android.R.string.ok), new View.OnClickListener() {
+                    snackbar.setText(context.getString(R.string.s_has_left, user.getProperties().getDisplayName())).setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(android.R.string.ok), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                         }

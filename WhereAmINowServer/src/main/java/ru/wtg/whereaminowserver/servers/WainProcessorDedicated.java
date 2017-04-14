@@ -60,6 +60,7 @@ public class WainProcessorDedicated extends AbstractWainProcessor {
 
     @Override
     public void validateGroups() {
+        //noinspection InfiniteLoopStatement
         while(true) {
             try {
                 Thread.sleep(LIFETIME_INACTIVE_USER * 1000);

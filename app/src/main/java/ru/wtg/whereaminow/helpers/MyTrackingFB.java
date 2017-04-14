@@ -355,7 +355,7 @@ public class MyTrackingFB implements Tracking {
                 Map<String, Object> updates = new HashMap<>();
 
                 String key = ref.push().getKey();
-                Map<String,Object> data = new HashMap();
+                Map<String,Object> data = new HashMap<>();
                 Iterator<String> keys = o.keys();
                 while(keys.hasNext()) {
                     String k = keys.next();

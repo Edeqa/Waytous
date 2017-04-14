@@ -280,9 +280,7 @@ public class MyToken {
             System.out.println("--- body: "+o.toString(3));
             System.out.println("--- response: "+resp.toString());
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
     }

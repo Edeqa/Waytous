@@ -22,12 +22,12 @@ import ru.wtg.whereaminowserver.interfaces.RequestHolder;
 
 abstract public class AbstractWainProcessor {
 
-    ConcurrentHashMap<String, MyToken> tokens;
-    ConcurrentHashMap<String, MyToken> ipToToken;
-    ConcurrentHashMap<String, MyUser> ipToUser;
-    ConcurrentHashMap<String, CheckReq> ipToCheck;
-    HashMap<String,RequestHolder> requestHolders;
-    protected HashMap<String,FlagHolder> flagHolders;
+    final ConcurrentHashMap<String, MyToken> tokens;
+    final ConcurrentHashMap<String, MyToken> ipToToken;
+    final ConcurrentHashMap<String, MyUser> ipToUser;
+    final ConcurrentHashMap<String, CheckReq> ipToCheck;
+    final HashMap<String,RequestHolder> requestHolders;
+    protected final HashMap<String,FlagHolder> flagHolders;
 
     abstract public void validateGroups();
 

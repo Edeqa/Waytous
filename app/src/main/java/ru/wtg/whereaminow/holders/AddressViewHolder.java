@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import ru.wtg.whereaminow.MainActivity;
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.abstracts.AbstractView;
 import ru.wtg.whereaminow.abstracts.AbstractViewHolder;
@@ -105,7 +106,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 @Override
                 public void run() {
                     try {
-                        String req = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&zoom=18&addressdetails=1";
+                        String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
                         final String res = Utils.getUrl(req);
                         try {
                             JSONObject address = new JSONObject(res);

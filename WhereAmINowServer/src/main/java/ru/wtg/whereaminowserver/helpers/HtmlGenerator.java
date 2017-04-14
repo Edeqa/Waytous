@@ -83,7 +83,7 @@ public class HtmlGenerator {
 
     public String build(){
         String res = "<!DOCTYPE html>\n";
-        ArrayList<String> parts = new ArrayList();
+        ArrayList<String> parts = new ArrayList<>();
         parts.add("html");
         for(Map.Entry<String,String> entry: properties.entrySet()){
             if(entry.getValue() != null && entry.getValue().length() > 0) {

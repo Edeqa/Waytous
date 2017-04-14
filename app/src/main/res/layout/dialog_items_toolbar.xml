@@ -5,8 +5,10 @@
     android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingStart="@dimen/material_list_text_first_position_margin_start"
     android:paddingLeft="@dimen/material_list_text_first_position_margin_start"
     android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal"
+    android:paddingEnd="@dimen/material_dialog_content_area_padding_horizontal"
     android:paddingTop="@dimen/material_list_text_last_position_margin_end"
     android:paddingBottom="0dp"
     android:layout_margin="0dp">
@@ -26,7 +28,8 @@
         app:srcCompat="@drawable/ic_more_vert_black_24dp"
         android:id="@+id/ib_dialog_items_menu"
         android:background="@android:color/transparent"
-        android:layout_gravity="right|center_vertical|end"
+        android:layout_gravity="end|center_vertical"
+        android:paddingStart="40dp"
         android:paddingLeft="40dp"
         android:contentDescription="@string/menu"/>
 </LinearLayout>

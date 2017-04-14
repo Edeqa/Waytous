@@ -71,7 +71,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 .setSmallIcon(R.drawable.ic_notification_twinks)
 //                .setAutoCancel(true)
 //                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
-                .addAction(R.drawable.ic_notification_clear, "Stop", pendingStopIntent)
+                .addAction(R.drawable.ic_notification_clear, state.getString(R.string.stop), pendingStopIntent)
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_HIGH);
 
@@ -100,10 +100,10 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public boolean onEvent(String event, Object object) {
         switch (event){
             case TRACKING_NEW:
-                update("Creating group...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update(state.getString(R.string.creating_group), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case TRACKING_JOIN:
-                update("Joining group...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update(state.getString(R.string.joining_group), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case TRACKING_DISABLED:
 //                state.setNotification(null);
@@ -111,18 +111,18 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 break;
             case TRACKING_ACTIVE:
                 updateIcon(R.drawable.ic_notification_twinks);
-                update("You have joined.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case USER_JOINED:
                 MyUser user = (MyUser) object;
                 if(user != null && user.isUser()) {
-                    update(user.getProperties().getDisplayName() + " has joined.", DEFAULT_LIGHTS, PRIORITY_HIGH);
+                    update(state.getString(R.string.s_has_joined, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_HIGH);
                 }
                 break;
             case USER_DISMISSED:
                 user = (MyUser) object;
                 if(user != null && user.isUser()) {
-                    update(user.getProperties().getDisplayName() + " has left.", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                    update(state.getString(R.string.s_has_left, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 }
                 break;
             case ACTIVITY_RESUME:
@@ -134,7 +134,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case TRACKING_RECONNECTING:
                 String message = (String) object;
                 updateIcon(R.drawable.ic_notification_twinks_pause);
-                update((message != null && message.length() > 0) ? message : "Reconnecting...", DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update((message != null && message.length() > 0) ? message : state.getString(R.string.reconnecting), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                 break;
             case SHOW_CUSTOM_NOTIFICATION:
                 final Notification notification = (Notification) object;
@@ -172,9 +172,9 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
         if(text != null) {
             notification.setContentTitle(text);
-            notification.setContentText(state.getUsers().getCountActive() + " user(s) online.");
+            notification.setContentText(state.getString(R.string.d_users_online, state.getUsers().getCountActive()));
         } else {
-            notification.setContentTitle(state.getUsers().getCountActive() + " user(s) online.");
+            notification.setContentTitle(state.getString(R.string.d_users_online, state.getUsers().getCountActive()));
             notification.setContentText(null);
         }
         notification.setWhen(new Date().getTime());
@@ -221,14 +221,14 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 case MOVING_CLOSE_TO:
                     long currentTime = new Date().getTime();
                     if(currentTime - lastCloseNotifyTime > MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS * 1000) {
-                        update("Close to " + myUser.getProperties().getDisplayName(), DEFAULT_ALL, PRIORITY_HIGH);
+                        update(state.getString(R.string.close_to_s, myUser.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH);
                     }
                     lastCloseNotifyTime = currentTime;
                     break;
                 case MOVING_AWAY_FROM:
                     currentTime = new Date().getTime();
                     if(currentTime - lastAwayNotifyTime > MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS * 1000) {
-                        update("Away from " + myUser.getProperties().getDisplayName(), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                        update(state.getString(R.string.away_from_s, myUser.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
                     }
                     lastAwayNotifyTime = currentTime;
                     break;

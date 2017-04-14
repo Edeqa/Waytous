@@ -19,7 +19,7 @@ public class AdminRequestHolder implements RequestHolder {
 
     public static final String TYPE = REQUEST_LEAVE;
 
-    private HashMap<String,MyUser> admins;
+    private final HashMap<String,MyUser> admins;
 
 
     public AdminRequestHolder(AbstractWainProcessor context) {

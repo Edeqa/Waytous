@@ -101,16 +101,16 @@ public class FacebookViewHolder extends AbstractViewHolder {
         public void onClick(View view) {
             fab.close(true);
             if (ShareDialog.canShow(ShareLinkContent.class)) {
-                String message = "Click here to follow me\nusing " + context.getString(R.string.app_name) +".";
+                String message = String.format(context.getString(R.string.click_here_to_follow_me_using_s), context.getString(R.string.app_name));
                 if(welcomeMessage != null && welcomeMessage.length() > 0){
                     message = welcomeMessage;
                 }
 
                 ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                        .setContentTitle("Follow me with " + context.getString(R.string.app_name))
+                        .setContentTitle(String.format(context.getString(R.string.follow_me_with_s), context.getString(R.string.app_name)))
                         .setContentDescription(message)
                         .setContentUrl(Uri.parse(State.getInstance().getTracking().getTrackingUri()))
-                        .setImageUrl(Uri.parse("https://github.com/tujger/WhereAmINow/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true"))
+                        .setImageUrl(Uri.parse(context.getString(R.string.logo_link)))
                         .build();
 
                 ShareDialog shareDialog = new ShareDialog(context);

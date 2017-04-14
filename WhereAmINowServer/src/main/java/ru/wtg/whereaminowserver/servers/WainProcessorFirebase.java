@@ -441,14 +441,14 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
         final Map<String, Object> childUpdates = new HashMap<>();
 
-        Map<String,Object> o = new HashMap();
+        Map<String,Object> o = new HashMap<>();
         o.put(DATABASE_USER_COLOR, user.getColor());
         o.put(DATABASE_USER_NAME, user.getName());
         o.put(DATABASE_USER_ACTIVE, true);
         o.put(DATABASE_USER_CREATED, user.getCreated());
         childUpdates.put(DATABASE_SECTION_USERS_DATA + "/" + user.getNumber(),o);
 
-        o = new HashMap();
+        o = new HashMap<>();
 
 //                    o.put(RESPONSE_CONTROL,user.getControl());
         o.put(REQUEST_MODEL,user.getModel());

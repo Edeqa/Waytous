@@ -64,7 +64,7 @@ public class GpsHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public boolean onEvent(String event, Object object) throws URISyntaxException {
+    public boolean onEvent(String event, Object object) {
         switch (event) {
             case REQUEST_LOCATION_SINGLE:
                 smartLocation.stop();

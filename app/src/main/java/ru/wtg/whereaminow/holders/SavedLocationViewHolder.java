@@ -166,7 +166,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             public void run() {
 
                 final AlertDialog dialog = new AlertDialog.Builder(context).create();
-                dialog.setTitle("Add location");
+                dialog.setTitle(context.getString(R.string.add_location));
                 dialog.setMessage("You've got the location from " + State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName()
                         + ": " + (finalName == null ? "" : finalName) + (finalAddress == null ? "" : ", address: " + finalAddress) + (finalDescription == null ? "" : ", description: " + finalDescription) + ". Add it to your saved locations list?");
 
@@ -185,7 +185,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         reloadCursor();
                         //noinspection unchecked
-                        new SystemMessage(context).setText("Location saved").setAction("Show", new SimpleCallback() {
+                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
@@ -314,7 +314,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 //noinspection unchecked
                                 new SystemMessage(context).setText(savedLocation.getUsername() + (
                                         savedLocation.getTitle() != null && savedLocation.getTitle().length() > 0 ? ": "+savedLocation.getTitle() : ""
-                                        )).setAction("Edit", new SimpleCallback() {
+                                        )).setAction(context.getString(R.string.edit), new SimpleCallback() {
                                     @Override
                                     public void call(Object arg) {
                                         editLocation(savedLocation);
@@ -413,7 +413,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             @Override
             public void call(Cursor cursor) {
                 if(toolbar != null) {
-                    toolbar.setTitle("Locations (" + cursor.getCount() + ")" + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
+                    toolbar.setTitle(context.getString(R.string.locations_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
 //                    toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
                 }
             }
@@ -449,8 +449,8 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         });
 
 
-        toolbar.setTitle("Locations (" + adapter.getItemCount() + ")");
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Show all", new DialogInterface.OnClickListener() {
+        toolbar.setTitle(context.getString(R.string.locations_d, adapter.getItemCount()));
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.show_all), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 for(int j=0; j < SavedLocation.getCount(); j++){
@@ -459,7 +459,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 }
             }
         });
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Hide all", new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(R.string.hide_all), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
@@ -470,7 +470,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 });
             }
         });
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Close", new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.close), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
             }
@@ -573,7 +573,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         etTitle.setText(savedLocation.getUsername());
         etComment.setText(savedLocation.getTitle());
 
-        dialog.setTitle("Saved Location");
+        dialog.setTitle(context.getString(R.string.saved_location));
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -599,7 +599,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 reloadCursor();
             }
         });
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Delete", new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 State.getInstance().fire(DELETE_SAVED_LOCATION, savedLocation);
@@ -777,7 +777,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         final SavedLocation savedLocation = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
 
                         final AlertDialog dialog = new AlertDialog.Builder(context).create();
-                        dialog.setTitle("Send location");
+                        dialog.setTitle(context.getString(R.string.send_location));
                         dialog.setMessage("You're going to send the location " + myUser.getProperties().getDisplayName()
                                 + " to " + (user == null ? "all" : user.getProperties().getDisplayName()) + ". Continue?");
 
@@ -834,7 +834,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         loc.save(context);
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText("Location saved").setAction("Show", new SimpleCallback() {
+                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new SimpleCallback() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);

@@ -9,6 +9,7 @@ import com.google.maps.android.SphericalUtil;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.abstracts.AbstractProperty;
 import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
@@ -45,9 +46,11 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     private static final int DISTANCE_MOVING_CLOSE = 50;
     private static final int DISTANCE_MOVING_AWAY = 100;
     private final SharedPreferences sharedPreferences;
+    private final Context context;
     private HashMap<String, Serializable> external = new HashMap<>();
 
     public PropertiesHolder(Context context){
+        this.context = context;
         sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE);
     }
 
@@ -250,11 +253,11 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             String res = name;
             if(name == null || name.length()==0 || "null".equals(name)){
                 if(myUser == State.getInstance().getMe()){
-                    res = "Me";
+                    res = context.getString(R.string.me);
                 } else if (getNumber() == 0) {
-                    res = "Leader";
+                    res = context.getString(R.string.leader);
                 } else {
-                    res = "Friend "+getNumber();
+                    res = context.getString(R.string.friend_d, getNumber());
                 }
             }
             return res;

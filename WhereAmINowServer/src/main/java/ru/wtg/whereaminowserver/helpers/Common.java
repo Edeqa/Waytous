@@ -21,10 +21,6 @@ public class Common {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
     volatile private static PrintWriter out;
 
-    public Common() throws FileNotFoundException {
-    }
-
-
     public static JSONObject fetchGeneralInfo() {
         JSONObject o = new JSONObject();
 
@@ -39,8 +35,8 @@ public class Common {
 
     public static void log(Object... text) {
         String str = "";
-        for(int i = 0; i < text.length; i++){
-            str += text[i] + " ";
+        for (Object aText : text) {
+            str += aText + " ";
         }
         System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
         /*try {
@@ -61,8 +57,8 @@ public class Common {
     }
     public static void err(Object... text) {
         String str = "";
-        for(int i = 0; i < text.length; i++){
-            str += text[i] + " ";
+        for (Object aText : text) {
+            str += aText + " ";
         }
         System.err.println(Common.dateFormat.format(new Date()) + "/" + str);
         /*try {

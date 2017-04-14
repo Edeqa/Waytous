@@ -141,6 +141,7 @@
                 android:layout_centerInParent="false"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -265,6 +266,7 @@
                 android:layout_centerHorizontal="false"
                 android:textStyle="normal|bold"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_below="@+id/layout11"
                 tools:ignore="SmallSp" />
 
@@ -285,15 +287,15 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/layout12"
                 android:layout_below="@+id/textView4"
-                android:layout_toRightOf="@+id/textView4">
-
+                android:layout_toRightOf="@+id/textView4"
+                android:layout_toEndOf="@+id/textView4">
                 <TextView
                     android:text=" - "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView21"
                     android:textSize="10sp"
-                    tools:ignore="SmallSp" />
+                    tools:ignore="HardcodedText,SmallSp" />
 
                 <TextView
                     android:text="@string/active_nmea"
@@ -337,10 +339,11 @@
                 android:max="35"
                 android:progress="35"
                 android:progressDrawable="@drawable/progress_vertical"
-                android:layout_weight="1"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_above="@+id/textView4"
                 android:layout_below="@+id/textView2" />
 

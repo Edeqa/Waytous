@@ -21,7 +21,7 @@ public interface EntityHolder<T extends Entity> {
 
     T create(MyUser myUser);
 
-    boolean onEvent(String event, Object object) throws URISyntaxException;
+    boolean onEvent(String event, Object object);
 
     void perform(JSONObject o) throws JSONException;
 

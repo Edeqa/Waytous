@@ -160,15 +160,15 @@
     <string name="snr">SNR</string>
     <string name="signal_to_noise_ratio_db">- signal to noise ratio, dB</string>
     <string name="gt_40_db_excellent_signal"><![CDATA[>40 dB - excellent signal]]></string>
-    <string name="_25_40_db_very_good_signal">25-40 dB - very good signal</string>
-    <string name="_15_25_db_low_signal">15-25 dB - low signal</string>
-    <string name="_10_15_db_very_low_signal">10-15 dB - very low signal</string>
+    <string name="_25_40_db_very_good_signal">25–40 dB - very good signal</string>
+    <string name="_15_25_db_low_signal">15–25 dB - low signal</string>
+    <string name="_10_15_db_very_low_signal">10–15 dB - very low signal</string>
     <string name="lt_10_db_no_signal"><![CDATA[<10 dB - no signal]]></string>
-    <string name="_1_32_gps">1-32 - GPS</string>
-    <string name="_33_64_sbas">33-64 - SBAS</string>
-    <string name="_65_96_glonass">65-96 - GLONASS</string>
-    <string name="_193_200_qzss">193-200 - QZSS</string>
-    <string name="_201_235_beidou">201-235 - Beidou</string>
+    <string name="_1_32_gps">1–32 - GPS</string>
+    <string name="_33_64_sbas">33–64 - SBAS</string>
+    <string name="_65_96_glonass">65–96 - GLONASS</string>
+    <string name="_193_200_qzss">193–200 - QZSS</string>
+    <string name="_201_235_beidou">201–235 - Beidou</string>
     <string name="prn">PRN</string>
     <string name="satellite_number">- satellite number</string>
     <string name="active_nmea">active</string>
@@ -180,7 +180,7 @@
     <string name="navigate">Navigate</string>
     <string name="alert">Alert</string>
     <string name="continue_string">Continue</string>
-    <string name="connecting">Connecting...</string>
+    <string name="connecting">Connecting…</string>
     <string name="application_must_continuously_get_your_locations">Application must continuously get your locations. It seems using the GPS-sensor. Please grant application to access your location.</string>
     <string name="gps_access_is_not_granted">GPS access is not granted.</string>
     <string name="application_needs_the_enabled_location_services">Application needs the enabled location services. Please enable it on the next screen.</string>
@@ -194,6 +194,47 @@
     <string name="share_the_message">Share the message</string>
     <string name="clear_all_messages">Clear all messages?</string>
     <string name="please_install_a_navigation_application">Please install a navigation application.</string>
+    <string name="address_request_template"><![CDATA[http://nominatim.openstreetmap.org/reverse?format=json&lat=%10.5f&lon=%10.5f&zoom=18&addressdetails=1]]></string>
+    <string name="logo_link">https://github.com/tujger/WhereAmINow/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true</string>
+    <string name="click_here_to_follow_me_using_s">Click here to follow me using %s.</string>
+    <string name="follow_me_with_s">Follow me with %s</string>
+    <string name="private_message_to_s">Private message to %s</string>
+    <string name="reply_to_s">Reply to %s</string>
+    <string name="chat_d">Chat (%d)</string>
+    <string name="options">Options</string>
+    <string name="setting_up">Setting up...</string>
+    <string name="creating_group">Creating group...</string>
+    <string name="joining_group">Joining group...</string>
+    <string name="you_have_joined">You have joined.</string>
+    <string name="s_has_joined">%s has joined.</string>
+    <string name="s_has_left">%s has left.</string>
+    <string name="stop">Stop</string>
+    <string name="reconnecting">Reconnecting...</string>
+    <string name="d_users_online">%d user(s) online.</string>
+    <string name="close_to_s">Close to %s</string>
+    <string name="away_from_s">Away from %s</string>
+    <string name="google_play_services_is_not_available_s">Google Play Services is not available: %s</string>
+    <string name="me">Me</string>
+    <string name="leader">Leader</string>
+    <string name="friend_d">Friend %d</string>
+    <string name="add_location">Add location</string>
+    <string name="location_saved">Location saved</string>
+    <string name="show">Show</string>
+    <string name="locations_d">Locations (%d)</string>
+    <string name="show_all">Show all</string>
+    <string name="hide_all">Hide all</string>
+    <string name="saved_location">Saved Location</string>
+    <string name="send_location">Send location</string>
+    <string name="link_to_the_group">Link to the group</string>
+    <string name="follow_me_at_s">Follow me at %s</string>
+    <string name="invite_a_friend">Invite a friend</string>
+    <string name="starting">Starting...</string>
+    <string name="action">Action</string>
+    <string name="cancel">Cancel</string>
+    <string name="you_have_created_the_group">You have created the group</string>
+    <string name="you_are_joined_to_the_group">You are joined to the group</string>
+    <string name="disconnected_trying_to_reconnect">Disconnected. Trying to reconnect</string>
+    <string name="new_group">New group</string>
 
 
 </resources>

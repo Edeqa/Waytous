@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,7 +26,6 @@ import java.util.zip.GZIPOutputStream;
 
 import ru.wtg.whereaminowserver.helpers.Common;
 import ru.wtg.whereaminowserver.helpers.Constants;
-import ru.wtg.whereaminowserver.helpers.HtmlGenerator;
 
 import static ru.wtg.whereaminowserver.helpers.Constants.SENSITIVE;
 import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
@@ -33,10 +33,22 @@ import static ru.wtg.whereaminowserver.helpers.Constants.SERVER_BUILD;
 /**
  * Created 1/19/17.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class MyHttpMainHandler implements HttpHandler {
 
-    private HtmlGenerator html = new HtmlGenerator();
     private volatile AbstractWainProcessor wainProcessor;
+    private Map<String, String> substitutions;
+
+    @SuppressWarnings("HardCodedStringLiteral")
+    public MyHttpMainHandler() {
+
+        substitutions = new LinkedHashMap<>();
+        substitutions.put("\\$\\{SERVER_BUILD\\}", ""+Constants.SERVER_BUILD);
+        substitutions.put("\\$\\{TEST_PARAM\\}", "test param");
+
+    }
+
+
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -105,13 +117,12 @@ public class MyHttpMainHandler implements HttpHandler {
                 }
 
                 boolean text = false;
-                String type = "application/unknown";
+                String type = "application/octet-stream";
                 JSONArray types = SENSITIVE.getTypes();
                 types.put(new JSONObject("{\"type\":\"\",\"mime\":\"application:unknown\"}"));
                 JSONObject json = null;
                 for (int i = 0; i < types.length(); i++) {
                     json = types.getJSONObject(i);
-
                     if (json.has("name") && file.getName().toLowerCase().equals(json.getString("name"))) {
                         type = json.getString("mime");
                         break;
@@ -120,6 +131,7 @@ public class MyHttpMainHandler implements HttpHandler {
                         break;
                     }
                 }
+                assert json != null;
                 if(type.startsWith("text") || (json.has("text") && json.getBoolean("text"))) text = true;
                 if (json.has("gzip") && !json.getBoolean("gzip")) gzip = false;
 
@@ -141,8 +153,19 @@ public class MyHttpMainHandler implements HttpHandler {
                 }
 
                 if (text) {
+                    byte[] bytes = Files.readAllBytes(file.toPath());
+                    Charset charset = StandardCharsets.ISO_8859_1;
+                    if(bytes[0] == -1 && bytes[1] == -2) charset = StandardCharsets.UTF_16;
+                    else if(bytes[0] == -2 && bytes[1] == -1) charset = StandardCharsets.UTF_16;
+
+
+                    String string = new String(bytes, charset);
+                    for(Map.Entry<String,String> x: substitutions.entrySet()) {
+                        string = string.replaceAll(x.getKey(), x.getValue());
+                    }
+
                     exchange.getResponseHeaders().set("Content-Type", type );
-//                    exchange.getResponseHeaders().set("Content-Length", String.valueOf(file.length()));
+                    exchange.getResponseHeaders().set("Content-Length", String.valueOf(string.length()));
                     exchange.sendResponseHeaders(200, 0);
                     OutputStream os;
                     if(gzip) {
@@ -150,16 +173,6 @@ public class MyHttpMainHandler implements HttpHandler {
                     } else {
                         os = exchange.getResponseBody();
                     }
-
-                    byte[] bytes = Files.readAllBytes(file.toPath());
-                    Charset charset = StandardCharsets.ISO_8859_1;
-                    if(bytes[0] == -1 && bytes[1] == -2) charset = StandardCharsets.UTF_16;
-
-                    String search = "\\$\\{SERVER_BUILD\\}";
-                    String replace = ""+Constants.SERVER_BUILD;
-
-                    String string = new String(bytes, charset);
-                    string = string.replaceAll(search.toString(),replace);
 
                     os.write(string.getBytes(charset));
                     os.close();
@@ -175,7 +188,7 @@ public class MyHttpMainHandler implements HttpHandler {
 
                     FileInputStream fs = new FileInputStream(file);
                     final byte[] buffer = new byte[0x10000];
-                    int count = 0;
+                    int count;
                     while ((count = fs.read(buffer)) >= 0) {
                         os.write(buffer, 0, count);
                     }
@@ -190,6 +203,7 @@ public class MyHttpMainHandler implements HttpHandler {
         }
     }
 
+    @SuppressWarnings("unused")
     public AbstractWainProcessor getWainProcessor() {
         return wainProcessor;
     }

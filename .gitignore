@@ -5,9 +5,7 @@
 /.idea/libraries
 .DS_Store
 /build
-/captures
 /app/src/release/
-libs/
 /WhereAmINowServer/build
 /app/build/
 /app/app-release.apk

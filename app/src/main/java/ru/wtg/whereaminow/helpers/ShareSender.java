@@ -3,6 +3,8 @@ package ru.wtg.whereaminow.helpers;
 import android.content.Context;
 import android.content.Intent;
 
+import ru.wtg.whereaminow.R;
+
 /**
  * Created 10/12/16.
  */
@@ -23,10 +25,10 @@ public class ShareSender {
 
     public void sendLink(String link) {
 
-        share.putExtra(Intent.EXTRA_SUBJECT, "Link to the tracking_active");
-        share.putExtra(Intent.EXTRA_TEXT, "Follow me at " + link );
+        share.putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.link_to_the_group));
+        share.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.follow_me_at_s, link));
 
-        Intent chooser = Intent.createChooser(share, "Invite a friend");
+        Intent chooser = Intent.createChooser(share, context.getString(R.string.invite_a_friend));
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         context.startActivity(chooser);

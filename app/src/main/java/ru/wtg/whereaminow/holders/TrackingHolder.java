@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
+import ru.wtg.whereaminow.R;
 import ru.wtg.whereaminow.State;
 import ru.wtg.whereaminow.abstracts.AbstractProperty;
 import ru.wtg.whereaminow.abstracts.AbstractPropertyHolder;
@@ -103,7 +104,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public boolean onEvent(String event, Object object) throws URISyntaxException {
+    public boolean onEvent(String event, Object object) {
         switch (event) {
             case TRACKING_NEW:
                 tracking = new MyTrackingFB();
@@ -187,12 +188,12 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
         @Override
         public void onJoining(String tokenId) {
-            State.getInstance().fire(TRACKING_RECONNECTING, "Joining group...");
+            State.getInstance().fire(TRACKING_RECONNECTING, context.getString(R.string.joining_group));
         }
 
         @Override
         public void onReconnecting() {
-            State.getInstance().fire(TRACKING_RECONNECTING, "Reconnecting...");
+            State.getInstance().fire(TRACKING_RECONNECTING, context.getString(R.string.reconnecting));
         }
 
         @Override

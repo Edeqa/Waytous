@@ -10,11 +10,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created 1/13/17.
  */
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class SensitiveData {
 
     private JSONObject json;
@@ -82,6 +85,8 @@ public class SensitiveData {
             string.append((char)c);
         }
 
+        Matcher m = Pattern.compile("\\/\\* [\\s\\S]*?\\*\\/").matcher(string);
+        string.replace(0, string.length(), m.replaceAll(""));
         json = new JSONObject(string.toString());
 
     }
@@ -124,6 +129,78 @@ public class SensitiveData {
             jsonSample.put("ssl_certificate_password","SAMPL");
             jsonSample.put("keystore_filename","SAMPL");
             jsonSample.put("debug_mode",false);
+
+            JSONArray jsonMimeTypes = new JSONArray();
+            JSONObject jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","js");
+            jsonMimeType.put("mime","text/javascript");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","css");
+            jsonMimeType.put("mime","text/css");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","xml");
+            jsonMimeType.put("mime","application/xml");
+            jsonMimeType.put("text",true);
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("name","manifest.json");
+            jsonMimeType.put("mime","application/x-web-app-manifest+json");
+            jsonMimeType.put("text",true);
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","json");
+            jsonMimeType.put("mime","application/json");
+            jsonMimeType.put("text",true);
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","gif");
+            jsonMimeType.put("mime","image/gif");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","jpg");
+            jsonMimeType.put("mime","image/jpg");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","png");
+            jsonMimeType.put("mime","image/png");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","ico");
+            jsonMimeType.put("mime","image/ico");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","svg");
+            jsonMimeType.put("mime","image/svg+xml");
+            jsonMimeType.put("text",true);
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","mp3");
+            jsonMimeType.put("mime","audio/mp3");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","ogg");
+            jsonMimeType.put("mime","audio/ogg");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonMimeType = new JSONObject();
+            jsonMimeType.put("type","m4r");
+            jsonMimeType.put("mime","audio/aac");
+            jsonMimeTypes.put(jsonMimeType);
+
+            jsonSample.put("types",jsonMimeTypes);
 
             writer.write(jsonSample.toString(4));
             writer.close();

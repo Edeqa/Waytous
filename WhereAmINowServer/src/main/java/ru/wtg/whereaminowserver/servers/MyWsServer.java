@@ -28,7 +28,7 @@ public class MyWsServer extends WebSocketServer implements WssServer {
     private final AbstractWainProcessor processor;
     private static boolean validationStarted = false;
 
-    public MyWsServer(int port, final AbstractWainProcessor processor) throws UnknownHostException {
+    public MyWsServer(int port, final AbstractWainProcessor processor) {
         super(new InetSocketAddress(port));
         this.processor = processor;
 

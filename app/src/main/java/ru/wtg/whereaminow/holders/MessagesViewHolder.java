@@ -207,7 +207,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         if (toUser == null) {
             dialog.setTitle(context.getString(R.string.send_message));
         } else {
-            dialog.setTitle((privateMessage ? "Private message to " : "Reply to ") + toUser.getProperties().getDisplayName());
+            dialog.setTitle(context.getString(privateMessage ? R.string.private_message_to_s : R.string.reply_to_s, toUser.getProperties().getDisplayName()));
         }
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null);
@@ -381,7 +381,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             @Override
             public void call(Cursor cursor) {
                 if(toolbar != null) {
-                    toolbar.setTitle("Chat (" + cursor.getCount() + ")" + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
+                    toolbar.setTitle(context.getString(R.string.chat_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
                     if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
                     donotscroll = false;
                 }

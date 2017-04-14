@@ -10,7 +10,7 @@ import ru.wtg.whereaminow.interfaces.Entity;
  */
 
 abstract public class AbstractProperty implements Entity {
-    protected MyUser myUser;
+    protected final MyUser myUser;
 
     protected AbstractProperty(MyUser myUser){
         this.myUser = myUser;

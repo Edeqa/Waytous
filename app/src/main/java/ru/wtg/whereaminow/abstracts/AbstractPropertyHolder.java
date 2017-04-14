@@ -19,7 +19,7 @@ abstract public class AbstractPropertyHolder implements EntityHolder<AbstractPro
     }
 
     @Override
-    public boolean onEvent(String event, Object object) throws URISyntaxException {
+    public boolean onEvent(String event, Object object) {
         return true;
     }
 
