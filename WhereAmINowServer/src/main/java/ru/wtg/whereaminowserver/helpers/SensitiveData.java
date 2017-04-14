@@ -1,5 +1,6 @@
 package ru.wtg.whereaminowserver.helpers;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -211,6 +212,10 @@ public class SensitiveData {
 
     public boolean isDebugMode() {
         return json.getBoolean("debug_mode");
+    }
+
+    public JSONArray getTypes() {
+        return json.getJSONArray("types");
     }
 
 }
