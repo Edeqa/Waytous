@@ -140,6 +140,11 @@ button:active {
     min-width: 240px;
     transition-delay: 1s;
 }
+.drawer-iframe {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
 .drawer-open {
     display: block;
 }

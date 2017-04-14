@@ -130,10 +130,14 @@ h2 {
     color: darkgray;
 }
 .changeable {
-    transition: 0.7s ease-in-out all;
+    transition: 0.4s ease-in-out all;
+}
+.changeable:hover {
+    transition: 0.1s ease-in-out all;
 }
 .changed {
-    color: chocolate;
+    color: indianred;
+    background-color: cornsilk;
 }
 .clickable {
     cursor: pointer;

@@ -351,6 +351,7 @@ function SavedLocationHolder(main) {
                         label: u.lang.saved_locations,
                         filter: true,
                     },
+                    resizeable: true,
                     items: [],
                     className: "saved-location",
                     itemsClassName: "saved-location-items",
