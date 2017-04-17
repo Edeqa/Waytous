@@ -34,7 +34,8 @@ function Groups() {
                     { label: "Created", className: "media-hidden" },
                     { label: "Updated" }
                 ]
-            }
+            },
+            placeholder: "No data, try to refresh page."
         }, div);
 
     }
@@ -43,7 +44,11 @@ function Groups() {
     function updateData(){
 
         var ref = database.ref();
-        u.clear(table.body);
+        var initial = true;
+        setTimeout(function(){initial = false;}, 3000);
+
+        table.placeholder.show();
+
         ref.child(DATABASE.SECTION_GROUPS).on("child_added", function(data) {
             ref.child(data.key).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
                 if(!snapshot || !snapshot.val()) return;
@@ -61,8 +66,8 @@ function Groups() {
                         { className: "media-hidden", innerHTML:snapshot.val().persistent ? "&#150;" : snapshot.val()["time-to-live-if-empty"] },
                         { className: "media-hidden", innerHTML:snapshot.val()["dismiss-inactive"] ? snapshot.val()["delay-to-dismiss"] : "&#150;" },
                         { innerHTML:"..." },
-                        { className: "media-hidden", innerHTML:snapshot.val()["date-created"] ? new Date(snapshot.val()["date-created"]).toLocaleString() : "&#150;" },
-                        { innerHTML:"..." }
+                        { className: "media-hidden", sort: snapshot.val()["date-created"], innerHTML:snapshot.val()["date-created"] ? new Date(snapshot.val()["date-created"]).toLocaleString() : "&#150;" },
+                        { sort: 0, innerHTML:"..." }
                     ]
                 });
                 var usersNode = row.cells[5]
@@ -76,14 +81,14 @@ function Groups() {
                         var c = parseInt(snapshot.val()[i].changed);
                         if(c > changed) changed = c;
                     }
+                    changedNode.sort = changed;
                     changedNode.innerHTML = new Date(changed).toLocaleString();
-                    row.classList.add("changed");
-                    setTimeout(function(){row.classList.remove("changed")}, 2000);
+                    if(!initial) row.classList.add("changed");
+                    setTimeout(function(){row.classList.remove("changed")}, 5000);
                 });
             }).catch(function(error){
-                table.placeholder.show("Error loading data, try to refresh page.");
+                table.placeholder.show();
             });
-
         });
     }
 

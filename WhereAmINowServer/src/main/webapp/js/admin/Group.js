@@ -31,6 +31,7 @@ function Group() {
         u.create("h2", "Users", div);
 
         tableUsers = u.table({
+            id: "admin:users",
             caption: {
                 items: [
                     { label: "#", width: "5%" },
@@ -53,6 +54,7 @@ function Group() {
 
     function updateSummary() {
         var ref = database.ref();
+        tableSummary.placeholder.show();
 
         ref.child(groupId).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
@@ -62,33 +64,25 @@ function Group() {
                 .place(HTML.SPAN, " ")
                 .place(HTML.A, { href:"/group/"+groupId, innerHTML:"(Open forced in browser)", target:"_blank"});
 
-             tableSummary.add({
-                cells: [
+             tableSummary.add({ cells: [
                     { className: "th", innerHTML: "ID" },
                     { className: "option", content: td }
-                ]
-            });
+            ]});
 
-            tableSummary.add({
-                cells: [
+            tableSummary.add({ cells: [
                     { className: "th", innerHTML: "Requires password" },
                     { className: "option", innerHTML: snapshot.val()["requires-password"] ? "Yes" : "No" }
-                ]
-            });
+            ]});
 
-            tableSummary.add({
-                cells: [
+            tableSummary.add({ cells: [
                     { className: "th", innerHTML: "Welcome message" },
                     { className: "option", innerHTML: snapshot.val()["welcome-message"] }
-                ]
-            });
+            ]});
 
-            tableSummary.add({
-                cells: [
+            tableSummary.add({ cells: [
                     { className: "th", innerHTML: "Persistent group" },
                     { className: "option", innerHTML: snapshot.val().persistent ? "Yes" : "No" }
-                ]
-            });
+            ]});
 
              tableSummary.add({
                 style: { display: (snapshot.val().persistent ? "none" : "")},
@@ -98,41 +92,41 @@ function Group() {
                 ]
             });
 
-            tableSummary.add({
-                cells: [
+            tableSummary.add({ cells: [
                     { className: "th", innerHTML: "Dismiss inactive after, sec" },
                     { className: "option", innerHTML: snapshot.val()["dismiss-inactive"] ? snapshot.val()["delay-to-dismiss"] : "&#150;" }
-                ]
-            });
+            ]});
 
-            tableSummary.add({
-                cells: [
+            tableSummary.add({ cells: [
                     { className: "th", innerHTML: "Created" },
                     { className: "option", innerHTML: snapshot.val()["date-created"] ? new Date(snapshot.val()["date-created"]).toLocaleString() : "&#150;" }
-                ]
-            });
+            ]});
 
-            var changedNode = tableSummary.add({
-                cells: [
+            var changedNode = tableSummary.add({ cells: [
                     { className: "th", innerHTML: "Changed" },
-                    { className: "option", innerHTML: "..." }
-                ]
-            });
+                    { className: "option highlight", innerHTML: "..." }
+            ]});
 
+            var filterActive = function(row){
+               return !row.classList.contains("inactive");
+           };
             var usersNode = tableSummary.add({
+                onclick: function(e){
+                    tableUsers.filter.clear();
+                },
                 cells: [
                     { className: "th", innerHTML: "Users total" },
-                    { className: "option", innerHTML: "..." }
-                ]
-            });
+                    { className: "option highlight", innerHTML: "..." }
+            ]});
 
             var activeUsersNode = tableSummary.add({
+                onclick: function(e){
+                    tableUsers.filter.add(filterActive);
+                },
                 cells: [
                     { className: "th", innerHTML: "&#150; online" },
-                    { className: "option", innerHTML: "..." }
-                ]
-            });
-
+                    { className: "option highlight", innerHTML: "..." }
+            ]});
 
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("value", function(snapshot){
                 if(!snapshot.val()) return;
@@ -147,7 +141,7 @@ function Group() {
                 activeUsersNode.lastChild.innerHTML = active;
             });
         }).catch(function(error){
-            tableSummary.placeholder.show("Error loading data, try to refresh page.");
+            WAIN.resign(updateSummary);
         });
 
     }
@@ -155,9 +149,14 @@ function Group() {
     function updateData(){
 
         var ref = database.ref();
+        tableUsers.placeholder.show();
+        var reload = false;
+        var initial = true;
+        setTimeout(function(){initial = false;}, 3000);
 
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("child_added", function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
+            reload = false;
 
             var row = tableUsers.add({
                 className: "highlight" + (snapshot.val().active ? "" : " inactive"),
@@ -169,8 +168,8 @@ function Group() {
                     { innerHTML: snapshot.key },
                     { innerHTML: snapshot.val().name },
                     { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } },
-                    { className: "media-hidden", innerHTML: snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;" },
-                    { innerHTML: "..." },
+                    { className: "media-hidden", sort: snapshot.val().created, innerHTML: snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;" },
+                    { sort: 0, innerHTML: "..." },
                     { className: "media-hidden", innerHTML: "..." },
                     { className: "media-hidden", innerHTML: "..." }
                 ]
@@ -182,9 +181,10 @@ function Group() {
 
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("changed").on("value", function(snapshot){
                 if(!snapshot.val()) return;
+                userChanged.sort = snapshot.val();
                 userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
-                row.classList.add("changed");
-                setTimeout(function(){row.classList.remove("changed")}, 2000);
+                if(!initial) row.classList.add("changed");
+                setTimeout(function(){row.classList.remove("changed")}, 5000);
             });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("active").on("value", function(snapshot){
                 if(snapshot.val()) {
@@ -192,6 +192,7 @@ function Group() {
                 } else {
                     row.classList.add("inactive");
                 }
+                tableUsers.filter();
             });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("name").on("value", function(snapshot){
                 if(snapshot.val()) {
@@ -204,7 +205,15 @@ function Group() {
                 if(!snapshot.val()) return;
                 userOs.innerHTML = snapshot.val().os;
                 userDevice.innerHTML = snapshot.val().model;
-            });
+            }).catch(function(error){
+                if(!reload) {
+                    reload = true;
+                    console.error("PERMISSION ERROR, RESIGNING",error);
+                    WAIN.resign(updateData);
+                } else {
+//                    console.error("ERROR, ALREADY RESIGNING");
+                }
+             });
         });
 
     }

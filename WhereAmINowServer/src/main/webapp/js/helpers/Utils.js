@@ -427,7 +427,12 @@ function Utils(main) {
 
     function save(name, value) {
         if(value) {
-            localStorage["WAIN:" + name] = JSON.stringify(value);
+            localStorage["WAIN:" + name] = JSON.stringify(value/*, function(key, value) {
+                if (value && value.constructor === Function) {
+                    return "f$"+value.toString();
+                }
+                return value;
+            }*/);
         } else {
             delete localStorage["WAIN:" + name];
         }
@@ -436,7 +441,12 @@ function Utils(main) {
     function load(name) {
         var value = localStorage["WAIN:"+name];
         if(value) {
-            return JSON.parse(value);
+            return JSON.parse(value/*, function(key,value){
+                if(value && value.constructor === String && (value = value.match("^f\\$function\\s*\\((.*?)\\)\\s*\\{([\\s\\S]*)\\}"))) {
+                    value = Function(value[1],value[2]);
+                }
+                return value;
+            }*/);
         } else {
             return null;
         }
@@ -1669,13 +1679,13 @@ function Utils(main) {
             },
             items: {},
             sections: [],
-            toggleCollapse: function(force) {
+            toggleWidth: function(force) {
                 collapsed = !collapsed;
                 if(force != undefined) collapsed = force;
                 u.save("drawer:collapsed", collapsed);
                 layout.toggleButton.innerHTML = collapsed ? "last_page" : "first_page";
                 layout.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
-                if(options.ontoggle) options.ontoggle();
+                if(options.onwidthtoggle) options.onwidthtoggle();
             }
          });
          appendTo.insertBefore(layout,appendTo.firstChild);
@@ -1794,7 +1804,7 @@ function Utils(main) {
         footerButtonExpandDiv = u.create(HTML.PATH, footerButtonExpandPath);
 
         layout.toggleButton = u.create(HTML.DIV, {className: "drawer-menu-item-icon drawer-footer-button notranslate", innerHTML: collapsed ? "last_page" : "first_page", onclick: function(e){
-            layout.toggleCollapse();
+            layout.toggleWidth();
         }}, layout.footer);
         if(options.footer) {
             u.create(HTML.DIV, options.footer, layout.footer);
@@ -1887,20 +1897,120 @@ function Utils(main) {
                 var item = options.caption.items[i];
                 item.className = "th"+(item.className ? " "+item.className : "");
                 item.innerHTML = item.innerHTML || item.label;
-                table.head.items.push(create(HTML.DIV, item, table.head));
+                item.index = i;
+                item.sort = 0;
+                item.onclick = function() {
+                    this.sort ++;
+                    if(this.sort == 0) this.sort ++;
+                    else if(this.sort > 1) this.sort = -1;
+                    table.sort(this.index);
+                    this.firstChild.show();
+                    this.firstChild.classList[this.sort > 0 ? "add" : "remove"]("table-sort-descend");
+
+                };
+                var cell = create(HTML.DIV, item, table.head);
+                table.head.items.push(cell);
+                cell.insertBefore(create(HTML.DIV,{className:"table-sort hidden", innerHTML:"sort"}),cell.firstChild);
             }
         }
-        table.placeholder = create(HTML.DIV, {className:"tr", show: function(text){
-            clear(table.body);
-            if(text) table.placeholder.firstChild.innerHTML = text;
-            table.body.appendChild(table.placeholder);
-            table.placeholder.classList.remove("hidden");
-        }}, table);
-        create(HTML.DIV, {className:"td", colspan: table.head ? table.head.childElementCount : 1, innerHTML: options.placeholder || "No data"}, table.placeholder);
+        table.placeholder = create(HTML.DIV, {
+            className:"table-placeholder",
+            innerHTML: options.placeholder || "No data",
+            show: function(text){
+                clear(table.body);
+                if(text) table.placeholder.innerHTML = text;
+                table.placeholder.classList.remove("hidden");
+            }
+        }, table);
+
+        table.filter = function() {
+            for(var i in table.rows) {
+                var valid = true;
+                for(var j in table.filter.options) {
+                    if(table.filter.options[j]) {
+                        valid = table.filter.options[j](table.rows[i]);
+                    }
+                    if(!valid) break;
+                }
+                if(valid) table.rows[i].show();
+                else table.rows[i].hide();
+            }
+        };
+        table.filter.set = function(filterOption) {
+            if(filterOption) {
+                table.filter.options = [filterOption];
+            } else {
+                table.filter.options = null;
+            }
+            table.saveOption("filter",table.filter.options);
+            table.filter();
+        }
+        table.filter.add = function(filterOption) {
+            table.filter.options = table.filter.options || [];
+            if(table.filter.options.indexOf(filterOption) < 0) {
+                table.filter.options.push(filterOption);
+            }
+            table.saveOption("filter",table.filter.options);
+            table.filter();
+        }
+        table.filter.remove = function(filterOption) {
+            table.filter.options = table.filter.options || [];
+            var index = table.filter.options.indexOf(filterOption)
+            if(index >= 0) {
+                table.filter.options.splice(index,1);
+            }
+            table.saveOption("filter",table.filter.options);
+            table.filter();
+        }
+        table.filter.clear = function() {
+            table.filter.options = null;
+            table.saveOption("filter",table.filter.options);
+            table.filter();
+        }
+        table.sort = function(index) {
+            if(!options.caption.items) return;
+            var sort = table.head.items[index].sort;
+            for(var i = 0; i < table.body.childNodes.length-1; i++) {
+                var icrit = i;
+                var crit = table.body.childNodes[i];
+                var textCrit = ""+(crit.cells[index].sort == undefined ? crit.cells[index].innerText : crit.cells[index].sort);
+                var parsedCrit = parseInt(textCrit);
+                for(var j = i + 1; j < table.body.childNodes.length; j++) {
+                    var b = table.body.childNodes[j];
+                    var textB = ""+(b.cells[index].sort == undefined ? b.cells[index].innerText : b.cells[index].sort);
+                    var parsedB = parseInt(textB);
+                    var cmp;
+                    if(""+parsedCrit == textCrit && ""+parsedB == textB){
+                        cmp = (parsedCrit > parsedB ? 1 : (parsedCrit < parsedB ? -1 : 0));
+                    } else {
+                        cmp = textCrit.toLocaleLowerCase().localeCompare(textB.toLocaleLowerCase());
+                    }
+                    if(sort == cmp) {
+                        crit = b;
+                        textCrit = ""+(crit.cells[index].sort == undefined ? crit.cells[index].innerText : crit.cells[index].sort);
+                        parsedCrit = parseInt(textCrit);
+                        icrit = j;
+                    }
+                }
+                if(icrit != i) {
+                    table.body.appendChild(table.body.replaceChild(table.body.childNodes[icrit], table.body.childNodes[i]));
+                }
+            }
+        }
+
+        if(options.id) {
+            var savedOptions = load("table:" + options.id) || {};
+            table.filter.options = savedOptions.filter;
+        }
+        table.saveOption = function(name,value) {
+            if(options.id) {
+                savedOptions[name] = value;
+                save("table:" + options.id, savedOptions);
+            }
+        }
 
         table.body = create(HTML.DIV, {className:"tbody"}, table);
         table.rows = [];
-
         table.add = function(row) {
             var cells;
             var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);

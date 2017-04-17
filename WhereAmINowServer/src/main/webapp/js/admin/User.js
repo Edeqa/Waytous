@@ -57,6 +57,7 @@ function User() {
 
     function updateSummary() {
         var ref = database.ref();
+        tableSummary.placeholder.show();
 
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
@@ -73,13 +74,13 @@ function User() {
 
             var userActiveNode = tableSummary.add({ cells: [
                 { className: "th", innerHTML: "Active" },
-                { className: "option", innerHTML: "..." }
+                { className: "option highlight", innerHTML: "..." }
             ] });
 
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("active").on("value", function(snapshot){
                 userActiveNode.lastChild.innerHTML = snapshot.val() ? "Yes" : "No";
                 userActiveNode.lastChild.classList.add("changed");
-                setTimeout(function(){userActiveNode.lastChild.classList.remove("changed")}, 2000);
+                setTimeout(function(){userActiveNode.lastChild.classList.remove("changed")}, 5000);
             });
 
             tableSummary.add({
@@ -112,14 +113,14 @@ function User() {
                 style: { display: (snapshot.val().persistent ? "none" : "")},
                 cells: [
                     { className: "th", innerHTML: "Updated" },
-                    { className: "option", innerHTML: "..." }
+                    { className: "highlight option", innerHTML: "..." }
                 ]
             });
 
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("changed").on("value", function(snapshot){
                 userUpdatedNode.lastChild.innerHTML = new Date(snapshot.val()).toLocaleString();
                 userUpdatedNode.lastChild.classList.add("changed");
-                setTimeout(function(){userUpdatedNode.lastChild.classList.remove("changed")}, 2000);
+                setTimeout(function(){userUpdatedNode.lastChild.classList.remove("changed")}, 5000);
             });
 
             var userOs = tableSummary.add({ cells: [
@@ -136,10 +137,13 @@ function User() {
                 userOs.lastChild.innerHTML = snapshot.val().os;
                 userDevice.lastChild.innerHTML = snapshot.val().model;
                 userKey.lastChild.innerHTML = snapshot.val().key;
+            }).catch(function(error){
+                console.error("ERROR, RESIGNING",error);
+                WAIN.resign(updateSummary);
             });
 
         }).catch(function(error){
-            tableSummary.placeholder.show("Error loading data, try to refresh page.");
+            tableSummary.placeholder.show("No data, try to refresh page.");
         });
 
     }
@@ -151,7 +155,7 @@ function User() {
 
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("child_added", function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
-            var tr = u.create("tr", { className: "changeable " + ((snapshot.val().active ? "" : "inactive"))}, tbody);
+            var tr = u.create("tr", { className: "highlight " + ((snapshot.val().active ? "" : "inactive"))}, tbody);
 
             u.create(HTML.A, { href:"#", onclick: function(){
                 WAIN.switchTo("/admin/user/"+groupId+"/"+snapshot.key);
@@ -191,16 +195,25 @@ function User() {
         u.clear(buttons);
 
         u.create(HTML.BUTTON,{innerHTML:"Active", onclick: function(){
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("active").set(true);
+            switchActive(userNumber, true);
             renderButtons(buttons);
         }}, buttons);
         u.create(HTML.BUTTON,{innerHTML:"Inactive", onclick: function(){
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("active").set(false);
+            switchActive(userNumber, false);
             renderButtons(buttons);
         }}, buttons);
         u.create(HTML.BUTTON,{innerHTML:"Cancel", onclick: function(){
             renderButtons(buttons);
         }}, buttons);
+    }
+
+    function switchActive(number, active) {
+        var ref = database.ref();
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(number).child("active").set(active).catch(function(e){
+            WAIN.resign(function(){
+                switchActive(number, active);
+            })
+        });
     }
 
     function removeUserQuestion(e) {

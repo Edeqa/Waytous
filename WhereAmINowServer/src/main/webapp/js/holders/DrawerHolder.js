@@ -27,7 +27,7 @@ function DrawerHolder(main) {
                     alphaDialog.open();
                 }
             },
-            ontoggle: function() {
+            onwidthtoggle: function() {
                 main.fire(EVENTS.CAMERA_UPDATE);
             },
             onprimaryclick: function(){

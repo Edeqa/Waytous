@@ -66,20 +66,23 @@ function Main() {
         firebase.initializeApp(data.firebase_config);
         database = firebase.database();
 
-        firebase.auth().signInWithCustomToken(sign.token)
-        .then(function(e){
-            resume();
-//            console.log("AAA",e)
+        resign(resume);
+
+        var a = u.byId("sign");
+        a.parentNode.removeChild(a);
+
+    }
+
+    function resign(callback){
+        firebase.auth().signInWithCustomToken(sign.token).then(function(e){
+            callback();
+        //            console.log("AAA",e)
         }).catch(function(error) {
                           // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
           // ...
         });
-
-        var a = u.byId("sign");
-        a.parentNode.removeChild(a);
-
     }
 
     function resume() {
@@ -97,8 +100,8 @@ function Main() {
                 logo: {
                     src:"/images/logo.svg",
                 },
-                ontoggle: function() {
-                    console.log("ontoggle");
+                onwidthtoggle: function() {
+                    console.log("onwidthtoggle");
                 },
                 onprimaryclick: function(){
                     console.log("onprimaryclick");
@@ -184,6 +187,7 @@ function Main() {
     return {
         start: start,
         switchTo: switchTo,
+        resign: resign,
     }
 }
 //document.addEventListener("DOMContentLoaded", (window.WAIN = new Main()).start);
