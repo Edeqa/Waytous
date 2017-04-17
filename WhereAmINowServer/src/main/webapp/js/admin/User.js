@@ -10,43 +10,7 @@ function User() {
     var div;
     var groupId;
     var userNumber;
-    var summary;
-
-
-    /*var start = function() {
-        if(!data || !data.user || !data.user.created) {
-            window.location.href = "/admin/summary";
-            return;
-        }
-        div = u.createPage(this);
-
-        renderInterface();
-
-        messaging.getToken().then(function(currentToken) {
-            if (currentToken) {
-                firebaseToken = currentToken;
-                console.log(currentToken);
-                connectWss();
-            } else {
-                messaging.requestPermission()
-                    .then(function(){
-                        start();
-                        console.log('Notification permission granted.')
-                })
-                .catch(function(err){
-                    start();
-                    console.log('Unable to get permission to notify. ', err)
-                });
-            }
-          })
-          .catch(function(err) {
-            console.log('An error occurred while retrieving token. ', err);
-            window.location.href = "/admin/summary" + (window.name == "content" ? "/set" : "");
-          });
-
-
-
-    }*/
+    var tableSummary;
 
     var u = new Utils();
 
@@ -54,22 +18,12 @@ function User() {
 
 //        div.appendChild(renderAlertArea());
 
-        div.appendChild(renderInterfaceHeader());
-
-        updateSummary();
-
-    }
-
-    var renderInterfaceHeader = function () {
-
-        var div = u.create("div", {className:"summary"});
-
         u.create("h2", "Summary", div);
 
-        var table = u.create("div", {className:"table option"}, div);
-
-        summary = u.create("div", {className:"tbody"}, table);
-        u.create("div", {className:"th", align: "center", innerHTML: "Loading..."}, u.create("div", {className:"tr"}, summary));
+        tableSummary = u.table({
+            className: "option",
+            placeholder: "Loading..."
+        }, div);
 
         /*u.create("h2", "Positions", div);
 
@@ -104,74 +58,88 @@ function User() {
     function updateSummary() {
         var ref = database.ref();
 
-        ref.child(groupId).child("u/b").child(userNumber).once("value").then(function(snapshot) {
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
-            u.clear(summary);
 
-            var tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Number"}, tr);
-            u.create("div", {className: "td option", innerHTML:userNumber}, tr);
+            tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Number" },
+                { className: "option", innerHTML: userNumber }
+            ] });
 
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Name"}, tr);
-            u.create("div", {className: "td option", innerHTML:snapshot.val().name}, tr);
+            tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Name" },
+                { className: "option", innerHTML: snapshot.val().name }
+            ] });
 
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Active"}, tr);
-            var userActiveNode = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+            var userActiveNode = tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Active" },
+                { className: "option", innerHTML: "..." }
+            ] });
 
-            ref.child(groupId).child("u/b").child(userNumber).child("active").on("value", function(snapshot){
-                userActiveNode.innerHTML = snapshot.val() ? "Yes" : "No";
-                userActiveNode.classList.add("changed");
-                setTimeout(function(){userActiveNode.classList.remove("changed")}, 2000);
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("active").on("value", function(snapshot){
+                userActiveNode.lastChild.innerHTML = snapshot.val() ? "Yes" : "No";
+                userActiveNode.lastChild.classList.add("changed");
+                setTimeout(function(){userActiveNode.lastChild.classList.remove("changed")}, 2000);
             });
 
-            tr = u.create("div", {className:"tr clickable", onclick:function(){
-                WAIN.switchTo("/admin/group/"+groupId);
-                return false;
-            }}, summary);
-            u.create("div", {className: "th option", innerHTML:"Group"}, tr);
-            u.create("div", {className:"td option", innerHTML:groupId}, tr);
-
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Key"}, tr);
-            var userKey = u.create("div", {className: "td option", innerHTML:"..."}, tr);
-
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Color"}, tr);
-            u.create("td", { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
-
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Created"}, tr);
-            u.create("div", {className: "td option", innerHTML:snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;"}, tr);
-
-            tr = u.create("div", {className:"tr", style: { display: (snapshot.val().persistent ? "none" : "")}}, summary);
-            u.create("div", {className: "th option", innerHTML:"Updated"}, tr);
-            var userUpdatedNode = u.create("div", {className: "td option", innerHTML:"..."}, tr);
-
-            ref.child(groupId).child("u/b").child(userNumber).child("changed").on("value", function(snapshot){
-                userUpdatedNode.innerHTML = new Date(snapshot.val()).toLocaleString();
-                userUpdatedNode.classList.add("changed");
-                setTimeout(function(){userUpdatedNode.classList.remove("changed")}, 2000);
+            tableSummary.add({
+                onclick: function(){
+                     WAIN.switchTo("/admin/group/"+groupId);
+                     return false;
+                 },
+                cells: [
+                    { className: "th", innerHTML: "Group" },
+                    { className: "option", innerHTML: groupId }
+                ]
             });
 
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Platform"}, tr);
-            var userOs = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+            var userKey = tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Key" },
+                { className: "option", innerHTML: "..." }
+            ] });
 
-            tr = u.create("div", {className:"tr"}, summary);
-            u.create("div", {className: "th option", innerHTML:"Device"}, tr);
-            var userDevice = u.create("div", {className: "td option", innerHTML:"..."}, tr);
+            tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Color" },
+                { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }
+            ]});
 
-            ref.child(groupId).child("u/p").child(userNumber).once("value").then(function(snapshot){
-                userOs.innerHTML = snapshot.val().os;
-                userDevice.innerHTML = snapshot.val().model;
-                userKey.innerHTML = snapshot.val().key;
+            tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Created" },
+                { className: "option", innerHTML: snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;" }
+            ]});
+
+            var userUpdatedNode = tableSummary.add({
+                style: { display: (snapshot.val().persistent ? "none" : "")},
+                cells: [
+                    { className: "th", innerHTML: "Updated" },
+                    { className: "option", innerHTML: "..." }
+                ]
+            });
+
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("changed").on("value", function(snapshot){
+                userUpdatedNode.lastChild.innerHTML = new Date(snapshot.val()).toLocaleString();
+                userUpdatedNode.lastChild.classList.add("changed");
+                setTimeout(function(){userUpdatedNode.lastChild.classList.remove("changed")}, 2000);
+            });
+
+            var userOs = tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Platform" },
+                { className: "option", innerHTML: "..." }
+            ]});
+
+            var userDevice = tableSummary.add({ cells: [
+                { className: "th", innerHTML: "Device" },
+                { className: "option", innerHTML: "..." }
+            ]});
+
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(userNumber).once("value").then(function(snapshot){
+                userOs.lastChild.innerHTML = snapshot.val().os;
+                userDevice.lastChild.innerHTML = snapshot.val().model;
+                userKey.lastChild.innerHTML = snapshot.val().key;
             });
 
         }).catch(function(error){
-            u.clear(summary);
-            u.create("div", {className:"th", align: "center", innerHTML: "Error loading data, try to refresh page."}, u.create("div", {className:"tr"}, summary));
+            tableSummary.placeholder.show("Error loading data, try to refresh page.");
         });
 
     }
@@ -181,11 +149,11 @@ function User() {
         var ref = database.ref();
         u.clear(tbody);
 
-        ref.child(groupId).child("u/b").on("child_added", function(snapshot) {
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("child_added", function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
             var tr = u.create("tr", { className: "changeable " + ((snapshot.val().active ? "" : "inactive"))}, tbody);
 
-            u.create("a", { href:"#", onclick: function(){
+            u.create(HTML.A, { href:"#", onclick: function(){
                 WAIN.switchTo("/admin/user/"+groupId+"/"+snapshot.key);
                 return false;
             }, innerHTML:snapshot.key, style:{
@@ -199,56 +167,48 @@ function User() {
             var userOs = u.create("td", "...", tr);
             var userDevice = u.create("td", "...", tr);
 
-            ref.child(groupId).child("u/b").child(snapshot.key).child("changed").on("value", function(snapshot){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("changed").on("value", function(snapshot){
                 userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
                 tr.classList.add("changed");
                 setTimeout(function(){tr.classList.remove("changed")}, 2000);
             });
-            ref.child(groupId).child("u/p").child(snapshot.key).once("value").then(function(snapshot){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(snapshot.key).once("value").then(function(snapshot){
                 userOs.innerHTML = snapshot.val().os;
                 userDevice.innerHTML = snapshot.val().model;
             });
         });
 
-//        r.on("value").then(function(snapshot) {
-//          snapshot.forEach(function(childSnapshot) {
-//            var childKey = childSnapshot.key;
-//            var childData = childSnapshot.val();
-//            console.log(this,childSnapshot);
-//          });
-//        });
-
     }
 
     function renderButtons(div) {
         u.clear(div);
-        u.create("button", { type: "button", innerHTML:"Switch activity", onclick: switchActivity}, div);
-        u.create("button", { type: "button", innerHTML:"Remove", onclick: removeUserQuestion}, div);
+        u.create(HTML.BUTTON, { innerHTML:"Switch activity", onclick: switchActivity}, div);
+        u.create(HTML.BUTTON, { innerHTML:"Remove", onclick: removeUserQuestion}, div);
     }
 
     function switchActivity(e){
         var ref = database.ref();
         u.clear(buttons);
 
-        u.create("button",{type: "button", innerHTML:"Active", onclick: function(){
-            ref.child(groupId).child("u/b").child(userNumber).child("active").set(true);
+        u.create(HTML.BUTTON,{innerHTML:"Active", onclick: function(){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("active").set(true);
             renderButtons(buttons);
         }}, buttons);
-        u.create("button",{type: "button", innerHTML:"Inactive", onclick: function(){
-            ref.child(groupId).child("u/b").child(userNumber).child("active").set(false);
+        u.create(HTML.BUTTON,{innerHTML:"Inactive", onclick: function(){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child("active").set(false);
             renderButtons(buttons);
         }}, buttons);
-        u.create("button",{type: "button", innerHTML:"Cancel", onclick: function(){
+        u.create(HTML.BUTTON,{innerHTML:"Cancel", onclick: function(){
             renderButtons(buttons);
         }}, buttons);
     }
 
     function removeUserQuestion(e) {
         u.clear(buttons);
-        u.create("div",{className:"question", innerHTML: "Are you sure you want to remove user "+userNumber+" from group "+groupId+"?"}, buttons);
-        u.create("button",{className:"question", type: "button", innerHTML:"Yes", onclick: removeUser}, buttons);
+        u.create(HTML.DIV,{className:"question", innerHTML: "Are you sure you want to remove user "+userNumber+" from group "+groupId+"?"}, buttons);
+        u.create(HTML.BUTTON,{className:"question",innerHTML:"Yes", onclick: removeUser}, buttons);
 
-        u.create("button",{ type: "button", innerHTML:"No", onclick: function(){
+        u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){
             renderButtons(buttons);
         }}, buttons);
     }
@@ -258,15 +218,15 @@ function User() {
         // database.ref("_groups").child(groupId).remove();
 
         var ref = database.ref();
-        ref.child(groupId).child("u/p").child(userNumber).remove();
-        ref.child(groupId).child("u/b").child(userNumber).remove();
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(userNumber).remove();
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).remove();
 
-        ref.child(groupId).child("u/k").once("value").then(function(snapshot){
+        ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS).once("value").then(function(snapshot){
             var val = snapshot.val();
             if(!val) return;
             for(var i in val) {
                 if(""+val[i] == ""+userNumber) {
-                    ref.child(groupId).child("u/k").child(i).remove();
+                    ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS).child(i).remove();
                 }
             }
         });
@@ -284,10 +244,10 @@ function User() {
                userNumber = data.request[4];
            }
            this.page = "user" + "/" + groupId + "/" + userNumber;
-           div = u.createPage(this);
+           div = document.getElementsByClassName("content")[0];
 
            renderInterface();
-
+            updateSummary();
 //           updateData();
         },
         page: "user",

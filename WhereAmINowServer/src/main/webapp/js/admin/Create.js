@@ -11,7 +11,7 @@ function Create() {
 
     var start = function() {
 
-        div = u.createPage(this);
+        div = document.getElementsByClassName("content")[0];
 
         var form = u.create("form", null, div);
 

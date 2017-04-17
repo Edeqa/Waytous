@@ -7,7 +7,7 @@ function Groups() {
 
     var alertArea;
     var trhead;
-    var tbody;
+    var table;
     var user;
     var firebaseToken;
     var div;
@@ -17,40 +17,25 @@ function Groups() {
 
     var renderInterface = function() {
 
-//        div.appendChild(renderAlertArea());
+        div = document.getElementsByClassName("content")[0];
 
-        div.appendChild(renderInterfaceHeader());
-
-    }
-
-    var renderInterfaceHeader = function () {
-
-        var div = u.create("div", {className:"summary"});
+//        u.create("div", {className:"summary"}, div);
 //        u.create("h2", "Groups", div);
 
-        var table = u.create("div", {id:"groups", className:"summary table"}, div);
-
-        var thead = u.create("div", { className:"thead"}, table);
-        trhead = u.create("div", {className:"tr"}, thead);
-
-        u.create("div", {className:"th", innerHTML:"ID"}, trhead);
-        u.create("div", {className:"th hideable", innerHTML:"Requires password"}, trhead);
-        u.create("div", {className:"th hideable", innerHTML:"Persistent"}, trhead);
-        u.create("div", {className:"th hideable", innerHTML:"Time to live, min"}, trhead);
-        u.create("div", {className:"th hideable", innerHTML:"Dismiss inactive, sec"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Users"}, trhead);
-        u.create("div", {className:"th hideable", innerHTML:"Created"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Updated"}, trhead);
-
-        tbody = u.create("div", {className:"tbody"}, table);
-        u.create("div", {
-            className:"td",
-            colspan: trhead.childElementCount,
-            align: "center",
-            innerHTML: "Loading..."
-        }, u.create("tr", {}, tbody));
-
-        return div;
+        table = u.table({
+            caption: {
+                items: [
+                    { label: "ID" },
+                    { label: "Requires password", className: "media-hidden" },
+                    { label: "Persistent", className: "media-hidden" },
+                    { label: "Time to live, min", className: "media-hidden" },
+                    { label: "Dismiss inactive, sec", className: "media-hidden" },
+                    { label: "Users" },
+                    { label: "Created", className: "media-hidden" },
+                    { label: "Updated" }
+                ]
+            }
+        }, div);
 
     }
 
@@ -58,25 +43,32 @@ function Groups() {
     function updateData(){
 
         var ref = database.ref();
-        u.clear(tbody);
-        ref.child("_groups").on("child_added", function(data) {
-            ref.child(data.key).child("o").once("value").then(function(snapshot) {
+        u.clear(table.body);
+        ref.child(DATABASE.SECTION_GROUPS).on("child_added", function(data) {
+            ref.child(data.key).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
                 if(!snapshot || !snapshot.val()) return;
-                var tr = u.create("div", { className: "tr clickable changeable", onclick: function(){
-                   WAIN.switchTo("/admin/group/"+data.key);
-                   return false;
-                }}, tbody);
 
-                u.create("div", {className: "td", innerHTML:data.key}, tr);
-                u.create("div", {className: "td hideable", innerHTML:snapshot.val()["requires-password"] ? "Yes" : "No"}, tr);
-                u.create("div", {className: "td hideable", innerHTML:snapshot.val().persistent ? "Yes" : "No"}, tr);
-                u.create("div", {className: "td hideable", innerHTML:snapshot.val().persistent ? "&#150;" : snapshot.val()["time-to-live-if-empty"]}, tr);
-                u.create("div", {className: "td hideable", innerHTML:snapshot.val()["dismiss-inactive"] ? snapshot.val()["delay-to-dismiss"] : "&#150;"}, tr);
-                var usersNode = u.create("div", {className: "td", innerHTML:"..."}, tr);
-                u.create("div", {className: "td hideable", innerHTML:snapshot.val()["date-created"] ? new Date(snapshot.val()["date-created"]).toLocaleString() : "&#150;"}, tr);
-                var changedNode = u.create("div", {className: "td", innerHTML:"..."}, tr);
+                var row = table.add({
+                    className: "highlight",
+                    onclick: function(){
+                        WAIN.switchTo("/admin/group/"+data.key);
+                        return false;
+                     },
+                    cells: [
+                        { innerHTML: data.key },
+                        { className: "media-hidden", innerHTML:snapshot.val()["requires-password"] ? "Yes" : "No" },
+                        { className: "media-hidden", innerHTML:snapshot.val().persistent ? "Yes" : "No" },
+                        { className: "media-hidden", innerHTML:snapshot.val().persistent ? "&#150;" : snapshot.val()["time-to-live-if-empty"] },
+                        { className: "media-hidden", innerHTML:snapshot.val()["dismiss-inactive"] ? snapshot.val()["delay-to-dismiss"] : "&#150;" },
+                        { innerHTML:"..." },
+                        { className: "media-hidden", innerHTML:snapshot.val()["date-created"] ? new Date(snapshot.val()["date-created"]).toLocaleString() : "&#150;" },
+                        { innerHTML:"..." }
+                    ]
+                });
+                var usersNode = row.cells[5]
+                var changedNode = row.cells[7]
 
-                ref.child(data.key).child("u/b").on("value", function(snapshot){
+                ref.child(data.key).child(DATABASE.SECTION_USERS_DATA).on("value", function(snapshot){
                     if(!snapshot.val()) return;
                     usersNode.innerHTML = snapshot.val().length;
                     var changed = 0;
@@ -85,12 +77,11 @@ function Groups() {
                         if(c > changed) changed = c;
                     }
                     changedNode.innerHTML = new Date(changed).toLocaleString();
-                    tr.classList.add("changed");
-                    setTimeout(function(){tr.classList.remove("changed")}, 2000);
+                    row.classList.add("changed");
+                    setTimeout(function(){row.classList.remove("changed")}, 2000);
                 });
             }).catch(function(error){
-                u.clear(tbody);
-                u.create("div", {className: "td", colspan: trhead.childElementCount, innerHTML: "Error loading data, try to refresh page."}, u.create("tr", {}, tbody));
+                table.placeholder.show("Error loading data, try to refresh page.");
             });
 
         });
@@ -99,10 +90,7 @@ function Groups() {
 
     return {
         start: function() {
-            div = u.createPage(this);
-
             renderInterface();
-
             updateData();
         },
         page: "groups",

@@ -2,122 +2,16 @@
  * Created 1/19/17.
  */
 
-/* TAGS */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-body {
-    font-family: sans-serif;
-    font-size: 12px;
-    margin: 0px;
-}
-h2 {
-    font-size: 14px;
-}
-
-
-/* CLASSES */
-.layout {
-    width: 100%;
-    height: 100%;
-    display: flex;
-}
-.actionbar {
-    font-size: 18px;
-    width: 30%;
-    border-bottom: 1px solid #000;
-    padding: 5px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-.title {
-    padding: 5px;
-}
-.alert {
-    background-color: rgba(244, 67, 54, 0.7);
-    color: white;
-    padding: 5px;
-    margin: 5px;
-    font-size: 16px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: black;
-    display: none;
-}
-.logo {
-    display: block;
-    height: 150px;
-    /*background-color: #438d71;
-    background-image: url(/images/logo.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center center;*/
-    background: linear-gradient(135deg, #2e5d7d 0%,#4c93af 54%,#819bc7 100%);
-}
-.menu-button {
-    display: none;
-}
-.menu {
-    border-right-style: solid;
-    float: left;
-    width: 250px;
-    min-width:250px;
-    border-width: 1px;
-    height: 100%;
-    background-color: azure;
-    z-index: 100;
-    position: fixed;
-}
-.menu-open {
-    display: block;
-}
-.menu:focus {
-    outline: none;
-}
-.menu-item:hover {
-    background: #dddd99;
-}
-.menu-item i {
-    margin: 10px;
-    float: left;
-    font-size: 14px;
-}
-.menu-item div {
-    font-weight: bold;
-    text-decoration: none;
-    color: black;
-    margin-left: 24px;
-    cursor: pointer;
-    display: block;
-    padding: 10px;
-}
-.menu-bottom {
-    position: fixed;
-    bottom: 10px;
-    width: 250px;
-    text-align: center;
-    font-size: 10px;
-}
-.drawer-header-logo {
-    height: 100px;
-    width: 100px;
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    cursor: pointer;
-}
 .right {
-    padding-left: 250px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow: scroll;
     width: 100%;
-}
-.version {
-    position: fixed;
-    font-size: 10px;
 }
 .content {
-    padding:5px;
+    padding: 5px;
+    width: calc(100% - 10px);
 }
 .two_tables {
     display:flex;
@@ -129,10 +23,10 @@ h2 {
 .inactive {
     color: darkgray;
 }
-.changeable {
+.highlight {
     transition: 0.4s ease-in-out all;
 }
-.changeable:hover {
+.highlight:hover {
     transition: 0.1s ease-in-out all;
 }
 .changed {
@@ -145,47 +39,11 @@ h2 {
 .clickable:hover {
     background-color: lightcyan;
 }
-.table {
-    display: table;
-    width: 100%;
-    border-style: solid;
-    border-width: 1px;
-    border-spacing:0px;
-    border-collapse: collapse;
-    font-family: sans-serif;
-    font-size:12px;
-}
-.thead {
-    display: table-header-group;
-}
-.tbody {
-    display: table-row-group;
-}
-.th {
-    display: table-cell;
-    text-align: center;
-    background: #ffffdd;
-    padding: 2px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border: 1px solid black;
-    font-weight: bold;
-}
-.tr {
-    display: table-row;
-}
-.td {
-    display: table-cell;
-    padding: 2px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border: 1px solid black;
-    vertical-align:top;
-}
-.table.option {
-    border: none;
-}
 .th.option {
+    text-align: left;
+    width: 250px;
+}
+.td.th {
     text-align: left;
     width: 250px;
 }
@@ -203,35 +61,7 @@ h2 {
 
 
 
-
 @media screen and (max-width: 1000px) {
-    * {
-         user-select: none;
-        -khtml-user-select: none;
-        -o-user-select: none;
-        -moz-user-select: -moz-none;
-        -webkit-user-select: none;
-    }
-    ::selection { background: transparent;color:inherit; }
-    ::-moz-selection { background: transparent;color:inherit; }
-    body {
-        font-family: sans-serif;
-        font-size: 16px;
-        margin: 0px;
-        zoom: 1;
-        color: darkslategray;
-    }
-    right {
-        width: 100%;
-        height: 100%;
-        margin: 0px;
-    }
-    h2 {
-        padding: 5px;
-        font-size: 18px;
-        width: 100%;
-        //border-bottom: 1px solid #000;
-    }
     button {
         font-size: 16px;
         min-width: 100px;
@@ -242,93 +72,13 @@ h2 {
     }
 
     /* CLASSES */
-    .right {
-        padding-left: 0px;
-    }
-    .layout {
-        width: 100%;
-        height: 100%;
-        display: flex;
-    }
-    .actionbar {
-        padding: 0px;
-        position: fixed;
-        left: 0px;
-        right: 0px;
-        border: none;
-        background-color: darkcyan;
-        color: white;
-        width: auto;
-        height: 50px;
-    }
-    .title {
-        position: absolute;
-        padding-top:15px;
-        padding-left: 52px;
-    }
     .alert {
         margin: 0px;
-    }
-    .menu-button {
-        font-family: "Material Icons";
-        position: absolute;
-        padding-left: 16px;
-        padding-top: 14px;
-        font-size: 22px;
-        display: block;
-        z-index: 10;
-    }
-    .menu {
-        float: left;
-        width: 70%;
-        min-width:300px;
-        position: fixed;
-        background-color: white;
-        display:none;
-    }
-    .menu-open {
-        display: block;
-        outline: none;
-        box-shadow: 20px 0px 60px 10px rgba(0,0,0,0.75);
-    }
-    .menu:focus {
-        display: block;
-    }
-    .menu-item {
-        text-decoration: none;
-        font-weight: bold;
-    }
-    .menu-item:hover {
-        background: #dddd99;
-    }
-    .menu-item i {
-        margin: 15px;
-        float: left;
-        font-size: 18px;
-    }
-    .menu-item div {
-        text-decoration: none;
-        margin-left: 24px;
-        cursor: pointer;
-        display: block;
-        padding: 15px;
-        color: darkslategray;
-    }
-    .menu-bottom {
-        position: fixed;
-        bottom: 10px;
-        width: 80%;
-        min-width:320px;
-        text-align: center;
-        font-size: 10px;
-    }
-    .version {
-        position: fixed;
-        font-size: 10px;
     }
     .content {
         padding:0px;
         margin-top: 64px;
+        width: 100%;
     }
     .two_tables_one {
         width:100%
@@ -339,17 +89,6 @@ h2 {
     }
     .buttons {
         text-align: center;
-    }
-    .table {
-        font-size:14px;
-    }
-    .th {
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
-    .td {
-        padding-top: 8px;
-        padding-bottom: 8px;
     }
     .th.option {
         text-align: left;

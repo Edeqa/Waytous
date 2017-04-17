@@ -78,6 +78,16 @@ window.ERRORS = {
     INCORRECT_JSON: 4,
     ERROR_LOADING: 8
 };
+window.DRAWER = {
+    SECTION_PRIMARY: 0,
+    SECTION_COMMUNICATION: 2,
+    SECTION_NAVIGATION: 3,
+    SECTION_VIEWS: 4,
+    SECTION_MAP: 7,
+    SECTION_MISCELLANEOUS: 8,
+    SECTION_LAST: 9
+};
+
 
 function Utils(main) {
 
@@ -118,6 +128,10 @@ function Utils(main) {
     HTMLDivElement.prototype.hide = function() {
         this.classList.add("hidden");
         this.isHidden = true;
+        return this;
+    }
+    HTMLDivElement.prototype.place = function(type, args) {
+        create(type, args, this);
         return this;
     }
 
@@ -288,30 +302,6 @@ function Utils(main) {
             keys.push(x);
         }
         return keys;
-    }
-
-    function createPage(holder) {
-        window.history.pushState({}, null, "/admin/" + holder.page);
-
-        var div = document.getElementsByClassName("right")[0];
-        clear(div);
-
-        var menu = document.getElementsByClassName("menu")[0];
-        var h1 = create(HTML.DIV,{className:"actionbar"}, div);
-        create(HTML.SPAN, {innerHTML:"menu", className:"menu-button", onclick: function(){
-            try {
-                menu.classList.add("menu-open");
-                menu.focus();
-            } catch(e) {
-                console.err(e);
-            }
-        }}, h1);
-        create(HTML.SPAN, {innerHTML:holder.title, className:"title"}, h1);
-
-        create(HTML.DIV, {className:"alert"}, div);
-
-        div = create(HTML.DIV, {className:HTML.CONTENT}, div);
-        return div;
     }
 
     function showAlert(text) {
@@ -1622,8 +1612,10 @@ function Utils(main) {
         return string.substring(0,1).toUpperCase() + string.substring(1);
     }
 
-    function drawer(options, insertTo) {
-        collapsed = options.collapsed;
+    function drawer(options, appendTo) {
+//        collapsed = options.collapsed;
+        options.collapsed = options.collapsed || "drawer:collapsed";
+        var collapsed = load(options.collapsed);
 
         var footerButton;
         var footerButtonCollapseDiv;
@@ -1639,7 +1631,7 @@ function Utils(main) {
             preserveAspectRatio: "xMidYMid meet",
             className: "drawer-menu-item-icon drawer-footer-button",
             onclick: function(e) {
-                u.save("drawer:collapsed", !collapsed);
+                u.save(options.collapsed, !collapsed);
                 this.replaceChild(collapsed ? footerButtonExpandDiv : footerButtonCollapseDiv, this.firstChild);
             }
         };
@@ -1686,7 +1678,7 @@ function Utils(main) {
                 if(options.ontoggle) options.ontoggle();
             }
          });
-         insertTo.insertBefore(layout,insertTo.firstChild);
+         appendTo.insertBefore(layout,appendTo.firstChild);
 
 
          layout.frame = u.create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
@@ -1727,9 +1719,10 @@ function Utils(main) {
             var th = u.create(HTML.DIV, {
                 className:"drawer-menu-item",
                 onclick: function (event) {
+                    var self = this;
                     setTimeout(function () {
                         layout.blur();
-                        callback(event);
+                        callback.call(self,event);
                     }, 100);
                 },
                 hide: function() {
@@ -1856,6 +1849,18 @@ function Utils(main) {
         }
     }
 
+    function actionBar(options, appendTo) {
+
+        var actionbar = create(HTML.DIV, {className:"actionbar" + (options.className ? " " + options.className : "")});
+        create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: options.onbuttonclick, onfocus:function(){}}, actionbar);
+        var label = create(HTML.DIV, {className:"actionbar-label"}, actionbar);
+        actionbar.titleNode = create(HTML.DIV, {className:"actionbar-label-title", innerHTML: options.title || ""}, label);
+        actionbar.subtitle = create(HTML.DIV, {className:"actionbar-label-subtitle", innerHTML: options.subtitle || ""}, label);
+
+        if(appendTo) appendTo.appendChild(actionbar);
+        return actionbar;
+    }
+
     function copyToClipboard(input) {
         if(!input) return false;
         input.focus();
@@ -1868,11 +1873,55 @@ function Utils(main) {
         }
     }
 
+    function table(options, appendTo) {
+        options.className = "table" + (options.className ? " " + options.className : "");
+        var table = create(HTML.DIV, {className:options.className});
+        if(appendTo) appendTo.appendChild(table);
+
+        options.caption = options.caption || {};
+        options.caption.className = "thead" + (options.caption.className ? " "+options.caption.className : "");
+        if(options.caption.items) {
+            table.head = create(HTML.DIV, {className:options.caption.className}, table);
+            table.head.items = [];
+            for(var i in options.caption.items) {
+                var item = options.caption.items[i];
+                item.className = "th"+(item.className ? " "+item.className : "");
+                item.innerHTML = item.innerHTML || item.label;
+                table.head.items.push(create(HTML.DIV, item, table.head));
+            }
+        }
+        table.placeholder = create(HTML.DIV, {className:"tr", show: function(text){
+            clear(table.body);
+            if(text) table.placeholder.firstChild.innerHTML = text;
+            table.body.appendChild(table.placeholder);
+            table.placeholder.classList.remove("hidden");
+        }}, table);
+        create(HTML.DIV, {className:"td", colspan: table.head ? table.head.childElementCount : 1, innerHTML: options.placeholder || "No data"}, table.placeholder);
+
+        table.body = create(HTML.DIV, {className:"tbody"}, table);
+        table.rows = [];
+
+        table.add = function(row) {
+            var cells;
+            var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);
+            for(var i in row.cells) {
+                var item = row.cells[i];
+                item.className = "td" + (item.className ? " " + item.className : "");
+                item.innerHTML = item.innerHTML || item.label;
+                res.cells.push(create(HTML.DIV, item, res));
+            }
+            table.rows.push(res);
+            table.placeholder.hide();
+            return res;
+        }
+
+        return table;
+    }
+
     return {
         create: create,
         clear: clear,
         keys: keys,
-        createPage: createPage,
         showAlert: showAlert,
         byId: byId,
         getHexColor: getHexColor,
@@ -1902,8 +1951,10 @@ function Utils(main) {
         getJSON:getJSON,
         toUpperCaseFirst:toUpperCaseFirst,
         drawer:drawer,
+        actionBar:actionBar,
         toast:new toast(),
         notification:notification,
         copyToClipboard:copyToClipboard,
+        table:table,
     }
 }

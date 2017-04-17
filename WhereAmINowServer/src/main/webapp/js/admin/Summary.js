@@ -17,7 +17,7 @@ function Summary() {
     var u = new Utils();
 
     var start = function() {
-        div = u.createPage(this);
+        div = document.getElementsByClassName("content")[0];
 
         renderInterface();
 //        start();

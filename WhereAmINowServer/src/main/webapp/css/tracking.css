@@ -383,6 +383,7 @@ button:active {
     padding-bottom: 5px;
     border: 1px solid black;
     font-weight: bold;
+    cursor: default;
 }
 .tr {
     display: table-row;

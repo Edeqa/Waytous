@@ -3,7 +3,8 @@
  */
 
 function Main() {
-    var menu;
+    var drawer;
+    var content;
 
     var holders = {};
     var holderFiles = [
@@ -23,12 +24,10 @@ function Main() {
 
 
     function start() {
-    //        if(window.location.href == origin){
         var a = document.createElement("script");
         a.setAttribute("src","/js/helpers/Utils.js");
         a.setAttribute("onload","preloaded()");
         document.head.appendChild(a);
-    //        }
     }
 
 
@@ -55,13 +54,13 @@ function Main() {
                 }
             });
         }
-
     }
 
     function initializeFirebase() {
 
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons"}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/tracking.css"}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css"}, document.head);
 
         firebase.initializeApp(data.firebase_config);
@@ -90,42 +89,65 @@ function Main() {
             });
 
             var out = u.create("div", {className:"layout"}, document.body);
-            menu = u.create("div", {className:"menu", tabindex: 1, onblur: function(){
-                menu.classList.remove("menu-open");
-                return true;
-            }}, out);
+
+            drawer = new u.drawer({
+                title: "Waytogo",
+                subtitle: "Admin",
+                collapsed: "admin:drawer:collapsed",
+                logo: {
+                    src:"/images/logo.svg",
+                },
+                ontoggle: function() {
+                    console.log("ontoggle");
+                },
+                onprimaryclick: function(){
+                    console.log("onprimaryclick");
+                },
+                footer: {
+                    className: "drawer-footer-label",
+                    innerHTML: "Waytogo" + " &copy;2017 WTG\nBuild " + data.version
+                }
+            }, out);
+
             var right = u.create("div", {className:"right"}, out);
-
-            var logo = u.create("a", { href: "/", className:"logo" }, menu);
-            u.create(HTML.IMG, {
-                className:"drawer-header-logo",
-                src:"/images/logo.svg",
-             }, logo);
-
+            actionbar = u.actionBar({
+                title: holders[data.page].title,
+                onbuttonclick: function(){
+                     try {
+                         drawer.open();
+                     } catch(e) {
+                         console.error(e);
+                     }
+                 }
+            }, right);
+            content = u.create(HTML.DIV, {className: "content"}, right);
+          u.create(HTML.DIV, {className:"alert"}, right);
 
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();
                 if(holders[x] && holders[x].menu) {
-                    var th = u.create("div", {className:"menu-item"}, menu);
-                    u.create("i", { className:"material-icons md-14", innerHTML: holders[x].icon }, th);
-                    u.create("div", { instance: x, onclick: function(){
-                        menu.blur();
-                        holders[this.instance].start();
-                        return false;
-                    }, innerHTML: holders[x].menu}, th);
+
+                    var item = drawer.add(DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
+                        var holder = holders[this.instance];
+                      u.clear(content);
+
+                      window.history.pushState({}, null, "/admin/" + holder.page);
+
+                      actionbar.titleNode.innerHTML = holder.title;
+                      drawer.headerName.innerHTML = holder.title;
+
+                      holder.start();
+                      return false;
+                  });
+                  item.instance = x;
                 }
             }
 
-            th = u.create("div", {className:"menu-item"}, menu);
-            u.create("i", { className:"material-icons md-14", innerHTML:"exit_to_app" }, th);
-            u.create("div", { onclick: logout, innerHTML: "Log out" }, th);
+            drawer.add(DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
 
-            th = u.create("div", { className:"menu-bottom"}, menu);
-            u.create("div", "Waytogo &copy;2017 WTG", th);
-            u.create("div", "Build " + data.version, th);
-
+            actionbar.titleNode.innerHTML = holders[data.page].title;
+            drawer.headerName.innerHTML = holders[data.page].title;
             holders[data.page].start();
-    //        u.create("iframe", { name: "set", src: "/admin/"+data.page, frameBorder: 0 }, content);
 
         } catch(e) {
             console.error(e);
@@ -151,7 +173,11 @@ function Main() {
     var switchTo = function(to) {
         var parts = to.split("/");
         if(parts[1] == "admin") {
+            u.clear(content);
+            actionbar.titleNode.innerHTML = holders[parts[2]].title;
+            drawer.headerName.innerHTML = holders[parts[2]].title;
             holders[parts[2]].start(parts);
+            window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
         }
     }
 

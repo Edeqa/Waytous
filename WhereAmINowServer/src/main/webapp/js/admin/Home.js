@@ -8,7 +8,7 @@ function Home() {
     var u = new Utils();
 
     var start = function() {
-        div = u.createPage(this);
+        div = document.getElementsByClassName("content")[0];
 
         u.create("p", "To be implemented soon...", div);
 

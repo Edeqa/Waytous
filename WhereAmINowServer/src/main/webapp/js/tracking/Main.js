@@ -303,7 +303,7 @@ function Main() {
             try {
                 if(holders[x] && holders[x].start) holders[x].start();
             } catch (e) {
-                u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s.format(x));
+                u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s_s.format(x,e.stack));
                 main.alert.open();
                 return;
             }

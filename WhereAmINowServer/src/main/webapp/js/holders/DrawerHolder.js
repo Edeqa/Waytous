@@ -3,16 +3,6 @@
  */
 EVENTS.UPDATE_ACTIONBAR_SUBTITLE = "update_actionbar_subtitle";
 
-DRAWER = {
-    SECTION_PRIMARY: 0,
-    SECTION_COMMUNICATION: 2,
-    SECTION_NAVIGATION: 3,
-    SECTION_VIEWS: 4,
-    SECTION_MAP: 7,
-    SECTION_MISCELLANEOUS: 8,
-    SECTION_LAST: 9
-};
-
 function DrawerHolder(main) {
 
     var drawer;
@@ -20,6 +10,7 @@ function DrawerHolder(main) {
     var subtitle;
     var alphaDialog;
     var backButtonAction;
+    var actionbar;
 
 
     var target = window; // this can be any scrollable element
@@ -30,7 +21,6 @@ function DrawerHolder(main) {
         drawer = new u.drawer({
             title: main.appName,
             subtitle: u.lang.be_always_on_the_same_way,
-            collapsed: u.load("drawer:collapsed") || false,
             logo: {
                 src:"/images/logo.svg",
                 onclick: function(){
@@ -49,17 +39,16 @@ function DrawerHolder(main) {
             }
         }, main.layout);
 
-        var actionbar = u.create(HTML.DIV, {className:"actionbar"}, main.right);
-        u.create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: function(){
-            try {
-                drawer.open();
-            } catch(e) {
-                console.error(e);
-            }
-        },onfocus:function(){}}, actionbar);
-        var label = u.create(HTML.DIV, {className:"actionbar-label"}, actionbar);
-        title = u.create(HTML.DIV, {className:"actionbar-label-title", innerHTML:main.appName}, label);
-        subtitle = u.create(HTML.DIV, {className:"actionbar-label-subtitle"}, label);
+        actionbar = u.actionBar({
+            title: main.appName,
+            onbuttonclick: function(){
+                 try {
+                     drawer.open();
+                 } catch(e) {
+                     console.error(e);
+                 }
+             }
+        }, main.right);
 
         setTimeout(function(){
             main.fire(EVENTS.CREATE_DRAWER, drawer);
@@ -95,32 +84,30 @@ function DrawerHolder(main) {
             alphaDialog.open();
         });
 
-
-
     };
 
     var onEvent = function(EVENT,object){
         switch (EVENT){
             case EVENTS.UPDATE_ADDRESS:
                 if(main.users.getCountSelected() == 1 && this.properties.selected) {
-                    subtitle.innerHTML = object;
-                    subtitle.show();
+                    actionbar.subtitle.innerHTML = object;
+                    actionbar.subtitle.show();
                 } else {
-                    subtitle.hide();
+                    actionbar.subtitle.hide();
                 }
                 break;
             case EVENTS.TRACKING_ACTIVE:
-                title.innerHTML = main.appName;
+                actionbar.titleNode.innerHTML = main.appName;
                 drawer.headerTitle.innerHTML = main.appName;
                 break;
             case EVENTS.TRACKING_DISABLED:
-                title.innerHTML = main.appName;
+                actionbar.titleNode.innerHTML = main.appName;
                 drawer.headerTitle.innerHTML = main.appName;
                 window.removeEventListener("popstate", backButtonAction);
                 break;
             case EVENTS.TRACKING_CONNECTING:
             case EVENTS.TRACKING_RECONNECTING:
-                u.lang.updateNode(title, u.lang.connecting);
+                u.lang.updateNode(actionbar.titleNode, u.lang.connecting);
                 u.lang.updateNode(drawer.headerTitle, u.lang.connecting);
                 window.addEventListener("popstate", backButtonAction);
                 break;
@@ -144,8 +131,8 @@ function DrawerHolder(main) {
 
     function onChangeLocation(location) {
         if(this && this.properties && this.properties.selected && main.users.getCountSelected() == 1) {
-            subtitle.show();
-            this.fire(EVENTS.UPDATE_ACTIONBAR_SUBTITLE, subtitle);
+            actionbar.subtitle.show();
+            this.fire(EVENTS.UPDATE_ACTIONBAR_SUBTITLE, actionbar.subtitle);
         }
     }
 
