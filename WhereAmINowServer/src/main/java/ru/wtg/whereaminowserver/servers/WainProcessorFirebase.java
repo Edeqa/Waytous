@@ -54,6 +54,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_CHECK_USER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_HASH;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_JOIN_TOKEN;
+import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_KEY;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_MODEL;
 import static ru.wtg.whereaminowserver.helpers.Constants.REQUEST_NEW_TOKEN;
@@ -77,6 +78,7 @@ import static ru.wtg.whereaminowserver.helpers.Constants.USER_NAME;
  * Created 10/5/16.
  */
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class WainProcessorFirebase extends AbstractWainProcessor {
 
     private DatabaseReference ref;
@@ -131,10 +133,10 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
             try {
                 request = new JSONObject(message);
             } catch(JSONException e) {
-                Common.err("WPF","Error in request message: "+e.getMessage());
+                Common.err("WPF","onMessage:request"+e.getMessage());
                 return;
             }
-            if (request == null || !request.has(REQUEST_TIMESTAMP)) return;
+            if (!request.has(REQUEST_TIMESTAMP)) return;
 //            long timestamp = request.getLong(REQUEST_TIMESTAMP);
         /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
             Common.log("Main","WSS:ignore request because of timeout");
@@ -159,10 +161,10 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                     Common.log("WpFB","onMessage:newToken:"+conn.getRemoteSocketAddress(),"token:"+token);
                 } else {
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                    response.put(RESPONSE_MESSAGE, "Your device id is not defined");
+                    response.put(RESPONSE_MESSAGE, "Cannot create group (code 15).");
                     conn.send(response.toString());
                     conn.close();
-                    Common.err("WPF","Response status error:",response);
+                    Common.err("WPF","onMessage:newToken:",response);
                 }
 
             } else if (REQUEST_JOIN_TOKEN.equals(req)) {
@@ -170,7 +172,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
                     final String tokenId = request.getString(REQUEST_TOKEN);
 
-                    final DatabaseReference refToken = ref.child(tokenId);
+                    final DatabaseReference refGroup = ref.child(tokenId);
 
                     final ValueEventListener userDataListener = new ValueEventListener() {
                         @Override
@@ -239,15 +241,15 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                                 }
 
 //                                long number = (long) dataSnapshot.getValue();
-//                                refToken.child("/users/data-private/" + number+"/control").setValue(check.control);
+//                                refGroup.child("/users/data-private/" + number+"/control").setValue(check.control);
 
                             } else { // join as new member
 
-                                refToken.child(DATABASE_SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
+                                refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
 
 //                                System.out.println("ASNEW:"+dataSnapshot.getValue());
 //                                long number = (long) dataSnapshot.getValue();
-//                                refToken.child(DATABASE_SECTION_USERS_DATA_PRIVATE + "/" + number).addListenerForSingleValueEvent(userDataListener);
+//                                refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE + "/" + number).addListenerForSingleValueEvent(userDataListener);
                             }
 
                         }
@@ -265,7 +267,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                             if(dataSnapshot.getValue() != null) {
                                 String deviceId = request.getString(REQUEST_DEVICE_ID);
                                 final String uid = Utils.getEncryptedHash(deviceId);
-                                refToken.child(DATABASE_SECTION_USERS_KEYS + "/" + uid).addListenerForSingleValueEvent(numberForKeyListener);
+                                refGroup.child(DATABASE_SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
                             } else {
                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                 response.put(RESPONSE_MESSAGE, "This group is expired.");
@@ -281,7 +283,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                     };
 
                     if (request.has(REQUEST_DEVICE_ID)) {
-                        refToken.child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(tokenOptionsListener);
+                        refGroup.child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(tokenOptionsListener);
                     } else {
                         CheckReq check = new CheckReq();
                         check.setControl(Utils.getUnique());
@@ -302,76 +304,79 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                 System.out.println("JOIN:response:" + response);
             } else if (REQUEST_CHECK_USER.equals(req)) {
                 if (request.has(REQUEST_HASH)) {
-                    String hash = request.getString((REQUEST_HASH));
+                    final String hash = request.getString((REQUEST_HASH));
                     Common.log("WpFB","onMessage:checkResponse:"+conn.getRemoteSocketAddress(),"hash:"+hash);
                     if (ipToCheck.containsKey(ip)) {
                         final CheckReq check = ipToCheck.get(ip);
+                        ipToCheck.remove(ip);
+
                         Common.log("WpFB","onMessage:checkFound:"+conn.getRemoteSocketAddress(),"{ name:"+check.getName(), "token:"+check.getTokenId(), "control:"+check.getControl() +" }");
 
-                        final DatabaseReference refToken = ref.child(check.getTokenId());
+                        final DatabaseReference refGroup = ref.child(check.getTokenId());
 
-                        final ValueEventListener userDataListener = new ValueEventListener() {
+                        final ValueEventListener userCheckListener = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                System.out.println("DATASNAPSHOT:"+dataSnapshot);
                                 if(dataSnapshot.getValue() != null) { //join as existing member
-                                    Common.log("WpFB", "onMessage:joinAsExisting:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
-/*
-                                    check.uid = dataSnapshot.getKey();
-                                    if (request.has(USER_NAME))
-                                        check.name = request.getString(USER_NAME);
+                                    try{
+                                        String calculatedHash = Utils.getEncryptedHash(check.getControl() + ":" + ((HashMap) dataSnapshot.getValue()).get("device_id"));
 
-                                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
-                                    response.put(RESPONSE_CONTROL, check.control);
-                                    ipToCheck.put(ip, check);
-                                    conn.send(response.toString());
-*/
-                                    FirebaseAuth.getInstance().createCustomToken(check.getUid()).addOnSuccessListener(new OnSuccessListener<String>() {
-                                        @Override
-                                        public void onSuccess(final String customToken) {
+                                        if(calculatedHash.equals(hash)) {
+                                            Common.log("WpFB", "onMessage:joinAsExisting:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"user:{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue()," }");
 
-                                            Map<String,Object> update = new HashMap<>();
-                                            update.put(DATABASE_USER_ACTIVE, true);
-                                            update.put(DATABASE_USER_COLOR,Utils.selectColor((int) check.getNumber()));
-                                            update.put(DATABASE_USER_CHANGED, new Date().getTime());
-                                            if (check.getName() != null && check.getName().length() > 0) {
-                                                update.put(USER_NAME,check.getName());
-                                            }
-
-                                            refToken.child(DATABASE_SECTION_USERS_DATA + "/"+check.getNumber()).updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            FirebaseAuth.getInstance().createCustomToken(check.getUid()).addOnSuccessListener(new OnSuccessListener<String>() {
                                                 @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                                                    response.put(RESPONSE_NUMBER, check.getNumber());
-                                                    response.put(RESPONSE_SIGN, customToken);
-                                                    conn.send(response.toString());
-                                                    conn.close();
-//                                            conn.close();
-                                                    Common.log("WpFB", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken:"+customToken);
+                                                public void onSuccess(final String customToken) {
+
+                                                    Map<String,Object> update = new HashMap<>();
+                                                    update.put(DATABASE_USER_ACTIVE, true);
+                                                    update.put(DATABASE_USER_COLOR,Utils.selectColor((int) check.getNumber()));
+                                                    update.put(DATABASE_USER_CHANGED, new Date().getTime());
+                                                    if (check.getName() != null && check.getName().length() > 0) {
+                                                        update.put(USER_NAME,check.getName());
+                                                    }
+
+                                                    refGroup.child(DATABASE_SECTION_USERS_DATA).child(""+check.getNumber()).updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                                                            response.put(RESPONSE_NUMBER, check.getNumber());
+                                                            response.put(RESPONSE_SIGN, customToken);
+                                                            conn.send(response.toString());
+                                                            conn.close();
+                                                            Common.log("WpFB", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken:"+customToken);
+                                                        }
+                                                    });
+
+                                                    // Send token back to client
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    System.out.println("FAIL7:"+e.getMessage());
                                                 }
                                             });
 
-                                            // Send token back to client
+                                        } else {
+                                            Common.log("WpFB", "onMessage:joinNotAuthenticated:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
+                                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                                            response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            System.out.println("FAIL7:"+e.getMessage());
-                                        }
-                                    });
 
-//                                    long number = (long) dataSnapshot.getValue();
-//                                    refToken.child("/users/data-private/" + number+"/control").setValue(check.control);
+                                    } catch(Exception e) {
+                                        Common.log("WpFB", "onMessage:joinHashFailed:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
+                                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                                        response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
+                                        e.printStackTrace();
+
+                                    }
+                                    conn.send(response.toString());
 
                                 } else { // join as new member
 
-//                                    final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-//                                    user.number = (int) check.getNumber();
                                     check.getUser().setNumber((int) check.getNumber());
                                     registerUser(check.getTokenId(), check.getUser(), request);
-                                    Common.log("WpFB", "onMessage:joinedAsNew:"+check.getUser().connection.getRemoteSocketAddress());
-//                                    long number = (long) dataSnapshot.getValue();
-//                                    refToken.child("/users/data-private/" + number).addListenerForSingleValueEvent(userDataListener);
+                                    Common.log("WpFB", "onMessage:joinAsNew:"+check.getUser().connection.getRemoteSocketAddress());
                                 }
 
                             }
@@ -387,7 +392,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue() != null) {
-                                    refToken.child(DATABASE_SECTION_USERS_DATA_PRIVATE + "/" + check.getNumber()).addListenerForSingleValueEvent(userDataListener);
+                                    refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE).child(""+check.getNumber()).addListenerForSingleValueEvent(userCheckListener);
                                 } else {
                                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                     response.put(RESPONSE_MESSAGE, "This group is expired.");
@@ -402,14 +407,18 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
                             }
                         };
 
-                        refToken.child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(tokenOptionsListener);
+                        refGroup.child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(tokenOptionsListener);
+
+
                         return;
                     } else {
+                        Common.log("WpFB", "onMessage:joinNotAuthorized:"+conn.getRemoteSocketAddress());
                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                         response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authorized).");
                         disconnect = true;
                     }
                 } else {
+                    Common.log("WpFB", "onMessage:joinNotDefined:"+conn.getRemoteSocketAddress());
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                     response.put(RESPONSE_MESSAGE, "Cannot join to group (hash not defined).");
                     disconnect = true;
@@ -454,7 +463,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
         o.put(REQUEST_MODEL,user.getModel());
         o.put(REQUEST_DEVICE_ID,user.getDeviceId());
         o.put(REQUEST_OS,user.getOs());
-        o.put("key",uid);
+        o.put(REQUEST_KEY,uid);
         childUpdates.put(DATABASE_SECTION_USERS_DATA_PRIVATE + "/" + user.getNumber(),o);
 
         for(Map.Entry<String,RequestHolder> entry: requestHolders.entrySet()) {
@@ -632,7 +641,7 @@ public class WainProcessorFirebase extends AbstractWainProcessor {
 
                                 ArrayList<Map> users = null;
 //                                try {
-                                    users = (ArrayList<Map>) dataSnapshot.getValue();
+                                users = (ArrayList<Map>) dataSnapshot.getValue();
 //                                } catch(Exception e) {
 //                                    e.printStackTrace();
 //                                }

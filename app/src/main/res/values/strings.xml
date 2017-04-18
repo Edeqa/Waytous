@@ -194,7 +194,7 @@
     <string name="share_the_message">Share the message</string>
     <string name="clear_all_messages">Clear all messages?</string>
     <string name="please_install_a_navigation_application">Please install a navigation application.</string>
-    <string name="address_request_template"><![CDATA[http://nominatim.openstreetmap.org/reverse?format=json&lat=%10.5f&lon=%10.5f&zoom=18&addressdetails=1]]></string>
+    <string name="address_request_template" formatted="false"><![CDATA[http://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f&zoom=18&addressdetails=1]]></string>
     <string name="logo_link">https://github.com/tujger/WhereAmINow/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true</string>
     <string name="click_here_to_follow_me_using_s">Click here to follow me using %s.</string>
     <string name="follow_me_with_s">Follow me with %s</string>

@@ -337,7 +337,7 @@ function TrackingHolder(main) {
                 className: "alert-dialog",
                 modal: true,
                 items: [
-                    { type: HTML.DIV, innerHTML: u.lang.sorry_you_have_requested_the_expired_group },
+                    { type: HTML.DIV, innerHTML: reason || u.lang.sorry_you_have_requested_the_expired_group },
                     { type: HTML.DIV, enclosed:true, body: u.lang.expired_explanation },
                 ],
                 positive: {

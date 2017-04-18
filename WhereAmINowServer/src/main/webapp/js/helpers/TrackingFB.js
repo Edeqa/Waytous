@@ -94,7 +94,7 @@ function TrackingFB(main) {
                         var deviceId = u.getUuid();
                         var hash = u.getEncryptedHash(control +":"+ deviceId);
                         put(REQUEST.REQUEST, REQUEST.CHECK_USER);
-                        put(REQUEST.HASH, hash + 1);
+                        put(REQUEST.HASH, hash);
                         send();
                     }
                     break;

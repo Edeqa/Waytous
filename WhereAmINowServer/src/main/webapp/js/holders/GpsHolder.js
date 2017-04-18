@@ -92,7 +92,7 @@ function GpsHolder(main) {
     function startPositioning() {
         navigator.geolocation.getCurrentPosition(function(location){
             drawerEnableGeoposition.hide();
-            icon && icon.hide();
+            icon && icon.classList.add("hidden");
             u.save("gps:asked", true);
             u.save("gps:allowed", true);
 //            main.me.location = null;

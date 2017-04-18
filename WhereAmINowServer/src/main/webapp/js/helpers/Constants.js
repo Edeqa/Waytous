@@ -70,6 +70,7 @@ function Constants() {
         MODEL : "model",
         MANUFACTURER : "manufacturer",
         OS : "os",
+        KEY : "key",
 
         TRACKING : "tracking",
         MESSAGE : "message",
