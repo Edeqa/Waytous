@@ -359,6 +359,7 @@ button:active {
     color: darkgray;
 }
 .table {
+    position: relative;
     display: table;
     width: 100%;
     border-style: solid;
@@ -367,6 +368,7 @@ button:active {
     border-collapse: collapse;
     font-family: sans-serif;
     font-size:12px;
+    margin-top: 16px;
 }
 .table-placeholder {
     display: table-caption;
@@ -377,6 +379,42 @@ button:active {
     border: 1px solid black;
     border-top: none;
     font-weight: bold;
+}
+.table-reset-button {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    position: absolute;
+    top: -15px;
+    right: 2px;
+    cursor: default;
+}
+.table-filter {
+    position: absolute;
+    top: -25px;
+    right: 16px;
+}
+.table-filter-button {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    padding-top: 10px;
+    cursor: default;
+}
+.table-filter-input {
+    padding: 3px;
+    width: 200px;
+}
+.table-filter-clear {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    padding: 6px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    color: gray;
+    cursor: default;
 }
 .table-sort {
     font-family: "Material Icons";
@@ -1771,6 +1809,12 @@ p.bottom-desc {
     }
     .option {
         min-width: auto;
+    }
+    .table-filter {
+        display: none;
+    }
+    .table-reset-button {
+        display: none;
     }
 
 

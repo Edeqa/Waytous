@@ -90,6 +90,9 @@
     .buttons {
         text-align: center;
     }
+    .td.th {
+        width: 50%;
+    }
     .th.option {
         text-align: left;
         width: 40%;

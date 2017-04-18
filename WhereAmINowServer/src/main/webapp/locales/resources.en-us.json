@@ -18,6 +18,8 @@
   "popup_blocked_dialog_2": "Detailed information how to unblock this feature",
   "popup_blocked_dialog_3": "Also, you can send the link manually. Copy it clicking on the button below.",
   "link_was_copied_into_clipboard": "Link was copied into clipboard.",
+  "reset_customizations": "Reset customizations",
+  "filter": "Filter",
 
   "SECTION Main": "// ",
 

@@ -21,7 +21,7 @@ function Group() {
 
 //        div.appendChild(renderAlertArea());
 
-        u.create("h2", "Summary", div);
+//        u.create("h2", "Summary", div);
 
         tableSummary = u.table({
             className: "option",
@@ -107,17 +107,18 @@ function Group() {
                     { className: "option highlight", innerHTML: "..." }
             ]});
 
-            var filterActive = function(row){
+            function filterActive(row){
                return !row.classList.contains("inactive");
            };
             var usersNode = tableSummary.add({
                 onclick: function(e){
-                    tableUsers.filter.clear();
+                    tableUsers.filter.remove(filterActive);
                 },
                 cells: [
                     { className: "th", innerHTML: "Users total" },
                     { className: "option highlight", innerHTML: "..." }
             ]});
+
 
             var activeUsersNode = tableSummary.add({
                 onclick: function(e){
@@ -185,6 +186,7 @@ function Group() {
                 userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
                 if(!initial) row.classList.add("changed");
                 setTimeout(function(){row.classList.remove("changed")}, 5000);
+                tableUsers.update();
             });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("active").on("value", function(snapshot){
                 if(snapshot.val()) {
@@ -192,7 +194,7 @@ function Group() {
                 } else {
                     row.classList.add("inactive");
                 }
-                tableUsers.filter();
+                tableUsers.update();
             });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("name").on("value", function(snapshot){
                 if(snapshot.val()) {
@@ -200,11 +202,13 @@ function Group() {
                 } else {
                     userName.innerHTML = "undefined";
                 }
+                tableUsers.update();
             });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(snapshot.key).once("value").then(function(snapshot){
                 if(!snapshot.val()) return;
                 userOs.innerHTML = snapshot.val().os;
                 userDevice.innerHTML = snapshot.val().model;
+                tableUsers.update();
             }).catch(function(error){
                 if(!reload) {
                     reload = true;

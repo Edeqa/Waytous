@@ -23,6 +23,7 @@ function Groups() {
 //        u.create("h2", "Groups", div);
 
         table = u.table({
+            id: "groups",
             caption: {
                 items: [
                     { label: "ID" },
@@ -85,6 +86,7 @@ function Groups() {
                     changedNode.innerHTML = new Date(changed).toLocaleString();
                     if(!initial) row.classList.add("changed");
                     setTimeout(function(){row.classList.remove("changed")}, 5000);
+                    table.update();
                 });
             }).catch(function(error){
                 table.placeholder.show();

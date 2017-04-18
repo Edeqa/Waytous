@@ -114,7 +114,7 @@ function DrawerHolder(main) {
             case EVENTS.CHANGE_NAME:
             case USER.JOINED:
                 if(main.me.properties && main.me.properties.getDisplayName) {
-                    drawer.headerName.innerHTML = main.me.properties.getDisplayName();
+                    drawer.headerPrimary.innerHTML = main.me.properties.getDisplayName();
                 }
                 break;
             case EVENTS.SELECT_USER:
@@ -152,7 +152,7 @@ function DrawerHolder(main) {
                             label: u.lang.collapsed_drawer,
                             checked: u.load("drawer:collapsed"),
                             onaccept: function(e, event) {
-                                drawer.toggleCollapse(this.checked);
+                                drawer.toggleWidth(this.checked);
                             },
                         }
                     ]

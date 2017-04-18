@@ -100,9 +100,6 @@ function Main() {
                 logo: {
                     src:"/images/logo.svg",
                 },
-                onwidthtoggle: function() {
-                    console.log("onwidthtoggle");
-                },
                 onprimaryclick: function(){
                     console.log("onprimaryclick");
                 },
@@ -137,7 +134,7 @@ function Main() {
                       window.history.pushState({}, null, "/admin/" + holder.page);
 
                       actionbar.titleNode.innerHTML = holder.title;
-                      drawer.headerName.innerHTML = holder.title;
+                      drawer.headerPrimary.innerHTML = holder.title;
 
                       holder.start();
                       return false;
@@ -149,7 +146,7 @@ function Main() {
             drawer.add(DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
 
             actionbar.titleNode.innerHTML = holders[data.page].title;
-            drawer.headerName.innerHTML = holders[data.page].title;
+            drawer.headerPrimary.innerHTML = holders[data.page].title;
             holders[data.page].start();
 
         } catch(e) {
@@ -178,7 +175,7 @@ function Main() {
         if(parts[1] == "admin") {
             u.clear(content);
             actionbar.titleNode.innerHTML = holders[parts[2]].title;
-            drawer.headerName.innerHTML = holders[parts[2]].title;
+            drawer.headerPrimary.innerHTML = holders[parts[2]].title;
             holders[parts[2]].start(parts);
             window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
         }

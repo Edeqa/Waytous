@@ -201,6 +201,9 @@ function Utils(main) {
                         }
                     } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
+                    } else if(properties[x] instanceof HTMLElement) {
+                        el.appendChild(properties[x]);
+                        el[x] = properties[x];
                     } else if(x.toLowerCase() == "onlongclick" && properties[x]) {
                         var mousedown,mouseup;
                         el.longclickFunction = properties[x];
@@ -427,12 +430,11 @@ function Utils(main) {
 
     function save(name, value) {
         if(value) {
-            localStorage["WAIN:" + name] = JSON.stringify(value/*, function(key, value) {
-                if (value && value.constructor === Function) {
-                    return "f$"+value.toString();
+            localStorage["WAIN:" + name] = JSON.stringify(value,
+                function(key, value) {
+                    return typeof value === "function" ? value.toString() : value;
                 }
-                return value;
-            }*/);
+            );
         } else {
             delete localStorage["WAIN:" + name];
         }
@@ -441,16 +443,26 @@ function Utils(main) {
     function load(name) {
         var value = localStorage["WAIN:"+name];
         if(value) {
-            return JSON.parse(value/*, function(key,value){
-                if(value && value.constructor === String && (value = value.match("^f\\$function\\s*\\((.*?)\\)\\s*\\{([\\s\\S]*)\\}"))) {
-                    value = Function(value[1],value[2]);
+            return JSON.parse(value,
+                function(key, value) {
+                    if (typeof value === "string" && /^function.*?\([\s\S]*?\)\s*\{[\s\S]*\}[\s\S]*$/.test(value)) {
+                        var args = value
+                            .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
+                            .match(/\([\s\S]*?\)/m)[0]                      //find argument list
+                            .replace(/^\(|\)$/g, "")                    //remove parens
+                            .match(/[^\s(),]+/g) || [],                //find arguments
+                            body = value.replace(/\n/mg, "").match(/\{([\s\S]*)\}/)[1]          //extract body between curlies
+                        return Function.apply(0, args.concat(body));
+                    } else {
+                        return value;
+                    }
                 }
-                return value;
-            }*/);
+            );
         } else {
             return null;
         }
     }
+
 
     function saveForGroup(name, value) {
         var token = main.tracking && main.tracking.getToken();
@@ -1154,7 +1166,7 @@ function Utils(main) {
                     }
                 }, dialog.filterLayout);
                 dialog.filterClear = u.create(HTML.DIV, {
-                    className: "dialog-filter-clear hidden",
+                    className: "dialog-filter-clear hidden notranslate",
                     innerHTML: "clear",
                     onclick: function() {
                         dialog.filterInput.value = "";
@@ -1707,7 +1719,7 @@ function Utils(main) {
                 onclick: options.logo.onclick
              }, layout.header);
          }
-         layout.headerName = u.create(HTML.DIV, {className:"drawer-header-name changeable", onclick: function(evt){
+         layout.headerPrimary = u.create(HTML.DIV, {className:"drawer-header-name changeable", onclick: function(evt){
                 layout.blur();
                 if(options.onprimaryclick) options.onprimaryclick();
             }}, layout.header);
@@ -1885,14 +1897,121 @@ function Utils(main) {
 
     function table(options, appendTo) {
         options.className = "table" + (options.className ? " " + options.className : "");
-        var table = create(HTML.DIV, {className:options.className});
+        var table = create(HTML.DIV, {
+            className:options.className,
+            filter: function() {
+                if(!options.caption.items) return;
+                for(var i in table.rows) {
+                    var valid = true;
+                    for(var j in table.filter.options) {
+                        if(table.filter.options[j]) {
+                            valid = table.filter.options[j].call(table,table.rows[i]);
+                        }
+                        if(!valid) break;
+                    }
+                    if(valid) table.rows[i].show();
+                    else table.rows[i].hide();
+                }
+            },
+            rows: [],
+            saveOption: function(name,value) {
+                if(options.id) {
+                    delete savedOptions[name];
+                    savedOptions[name] = value;
+                    save("table:" + options.id, savedOptions);
+                }
+            },
+            add: function(row) {
+                 var cells;
+                 var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);
+                 for(var i in row.cells) {
+                     var item = row.cells[i];
+                     item.className = "td" + (item.className ? " " + item.className : "");
+                     item.innerHTML = item.innerHTML || item.label;
+                     res.cells.push(create(HTML.DIV, item, res));
+                 }
+                 table.rows.push(res);
+                 table.placeholder.hide();
+                table.update();
+                 return res;
+            },
+            update: function() {
+                if(!options.caption.items) return;
+
+                clearTimeout(table.updateTask);
+                table.updateTask = setTimeout(function(){
+                    table.filter();
+                    for(var i in table._sorts) {
+                         try{
+                             var index = table._sorts[i].index;
+                             table.head.cells[index].sort = table._sorts[i].mode;
+                             table.sort(index);
+                         } catch(e) {
+                             console.error(e);
+                         }
+                    }
+                }, 0);
+
+            },
+            sort: function(index) {
+               if(!options.caption.items) return;
+
+               var sort = table.head.cells[index].sort;
+
+               table.head.cells[index].firstChild.show();
+               table.head.cells[index].firstChild.classList[sort > 0 ? "add" : "remove"]("table-sort-descend");
+
+               for(var i = 0; i < table.body.childNodes.length-1; i++) {
+                   var icrit = i;
+                   var crit = table.body.childNodes[i];
+                   var sortCrit = crit.cells[index].sort;
+                   var textCrit = crit.cells[index].innerText;
+
+                   textCrit = ""+(sortCrit == undefined ? textCrit : sortCrit);
+                   var parsedCrit = parseInt(textCrit);
+                   for(var j = i + 1; j < table.body.childNodes.length; j++) {
+                       var b = table.body.childNodes[j];
+                       var textB = ""+(b.cells[index].sort == undefined ? b.cells[index].innerText : b.cells[index].sort);
+                       var parsedB = parseInt(textB);
+                       var cmp;
+                       if(""+parsedCrit == textCrit && ""+parsedB == textB){
+                           cmp = (parsedCrit > parsedB ? 1 : (parsedCrit < parsedB ? -1 : 0));
+                       } else {
+                           cmp = textCrit.toLocaleLowerCase().localeCompare(textB.toLocaleLowerCase());
+                       }
+                       if(sort == cmp) {
+                           crit = b;
+                           textCrit = ""+(crit.cells[index].sort == undefined ? crit.cells[index].innerText : crit.cells[index].sort);
+                           parsedCrit = parseInt(textCrit);
+                           icrit = j;
+                       }
+                   }
+                   if(icrit != i) {
+                       table.body.appendChild(table.body.replaceChild(table.body.childNodes[icrit], table.body.childNodes[i]));
+                   }
+               }
+            },
+            _sorts: [],
+            sorts: function(options) {
+                if(!options) return table._sorts;
+                for(var i in table._sorts) {
+                    if(table._sorts[i].index == options.index) {
+                        table._sorts.splice(i,1);
+                        break;
+                    }
+                }
+                if(options.mode) table._sorts.push(options);
+                table.saveOption("sorts",table._sorts);
+            },
+        });
+
         if(appendTo) appendTo.appendChild(table);
 
         options.caption = options.caption || {};
         options.caption.className = "thead" + (options.caption.className ? " "+options.caption.className : "");
         if(options.caption.items) {
             table.head = create(HTML.DIV, {className:options.caption.className}, table);
-            table.head.items = [];
+            table.head.cells = [];
             for(var i in options.caption.items) {
                 var item = options.caption.items[i];
                 item.className = "th"+(item.className ? " "+item.className : "");
@@ -1903,16 +2022,179 @@ function Utils(main) {
                     this.sort ++;
                     if(this.sort == 0) this.sort ++;
                     else if(this.sort > 1) this.sort = -1;
+
+                    table.sorts({ index: this.index, mode: this.sort });
                     table.sort(this.index);
-                    this.firstChild.show();
-                    this.firstChild.classList[this.sort > 0 ? "add" : "remove"]("table-sort-descend");
 
                 };
+                item.ondblclick = function() {
+                    this.sort = 0;
+                    table.sorts({ index: this.index });
+                   table.head.cells[this.index].firstChild.hide();
+                    table.update();
+                }
                 var cell = create(HTML.DIV, item, table.head);
-                table.head.items.push(cell);
+                table.head.cells.push(cell);
                 cell.insertBefore(create(HTML.DIV,{className:"table-sort hidden", innerHTML:"sort"}),cell.firstChild);
             }
+
+            table.resetButton = u.create(HTML.DIV, {
+                className: "table-reset-button notranslate",
+                innerHTML: "clear_all",
+                title: "Reset customizations",
+                onclick: function() {
+                    table._sorts = [];
+                    table.saveOption("sorts");
+                    for(var i in table.head.cells) {
+                        table.head.cells[i].sort = 0;
+                        table.head.cells[i].firstChild.hide();
+                    }
+                    table.filter.clear();
+                    table.filterInput.value = "";
+                    table.filterInput.focus();
+                    table.filterInput.apply();
+                    table.filterInput.blur();
+                    table.update();
+                }
+            }, table);
+
+            table.filterLayout = u.create(HTML.DIV, {
+                className: "table-filter"
+            }, table);
+
+            table.filterButton = u.create(HTML.DIV, {
+                className: "table-filter-button notranslate",
+                innerHTML: "search",
+                title: "Filter",
+                onclick: function() {
+                    table.filterButton.hide();
+                    table.filterInput.classList.remove("hidden");
+                    table.filterInput.focus();
+                }
+            }, table.filterLayout);
+
+            table.filterInput = create(HTML.INPUT, {
+                className: "table-filter-input hidden",
+                tabindex: -1,
+                onkeyup: function(evt) {
+                    if(evt.keyCode == 27) {
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                        if(this.value) {
+                            this.value = "";
+                        } else {
+                            this.blur();
+                        }
+                    }
+                    this.apply();
+                },
+                onblur: function() {
+                    if(!this.value) {
+                        table.filterInput.classList.add("hidden");
+                        table.filterButton.show();
+                    }
+                },
+                onclick: function() {
+                    this.focus();
+                },
+                _filter: function(row) {
+                    var contains = false;
+                    for(var i in row.cells) {
+                        if(row.cells[i].innerText.toLowerCase().indexOf(this.filterInput.value.toLowerCase()) >= 0) return true;
+                    }
+                    return false;
+                },
+                apply: function() {
+                    if(this.value) {
+                        table.filterClear.show();
+                    } else {
+                        table.filterClear.hide();
+                    }
+                    var counter = 0;
+                    table.filter.add(table.filterInput._filter);
+                    table.filter();
+    //                    for(var i in dialog.itemsLayout.childNodes) {
+    //                        if(!dialog.itemsLayout.childNodes.hasOwnProperty(i)) continue;
+    //                        if(!this.value || (dialog.itemsLayout.childNodes[i].innerText && dialog.itemsLayout.childNodes[i].innerText.toLowerCase().match(this.value.toLowerCase()))) {
+    //                            dialog.itemsLayout.childNodes[i].show();
+    //                            counter++;
+    //                        } else {
+    //                            dialog.itemsLayout.childNodes[i].hide();
+    //                        }
+    //                    }
+    //                    if(counter) {
+    //                        dialog.filterPlaceholder.hide();
+    //                        dialog.itemsLayout.show();
+    //                    } else {
+    //                        dialog.filterPlaceholder.show();
+    //                        dialog.itemsLayout.hide();
+    //                    }
+                }
+            }, table.filterLayout);
+            table.filterClear = create(HTML.DIV, {
+                className: "table-filter-clear hidden notranslate",
+                innerHTML: "clear",
+                onclick: function() {
+                    table.filterInput.value = "";
+                    table.filterInput.focus();
+                    table.filterInput.apply();
+                }
+            }, table.filterLayout);
+
+            function normalizeFunction(func) {
+                if(!func) return null;
+                save(":functemp", func);
+                func = load(":functemp");
+                save(":functemp");
+                return func;
+            }
+            function checkIfFilterInList(filter) {
+                if(!filter) return true;
+                for(var i in table.filter.options) {
+                    if(table.filter.options[i].toString() == filter.toString()) return i;
+                }
+                return -1;
+            }
+
+            table.filter.set = function(filterOption) {
+                if(filterOption) {
+                    table.filter.options = [normalizeFunction(filterOption)];
+                } else {
+                    table.filter.options = null;
+                }
+                table.saveOption("filter",table.filter.options);
+                table.filter();
+            }
+            table.filter.add = function(filterOption) {
+                table.filter.options = table.filter.options || [];
+                var newFilterOption = normalizeFunction(filterOption);
+                if(checkIfFilterInList(newFilterOption) < 0) {
+                    table.filter.options.push(newFilterOption);
+                }
+                table.saveOption("filter",table.filter.options);
+                table.filter();
+            }
+
+            table.filter.remove = function(filterOption) {
+                table.filter.options = table.filter.options || [];
+                var newFilterOption = normalizeFunction(filterOption);
+                var index = checkIfFilterInList(newFilterOption);
+                if(index >= 0) {
+                    table.filter.options.splice(index,1);
+                }
+                table.saveOption("filter",table.filter.options);
+                table.filter();
+            }
+            table.filter.clear = function() {
+                table.filter.options = null;
+                table.saveOption("filter",table.filter.options);
+                table.filter();
+            }
         }
+
+        table.body = create(HTML.DIV, {className:"tbody"}, table);
+
+
         table.placeholder = create(HTML.DIV, {
             className:"table-placeholder",
             innerHTML: options.placeholder || "No data",
@@ -1923,106 +2205,12 @@ function Utils(main) {
             }
         }, table);
 
-        table.filter = function() {
-            for(var i in table.rows) {
-                var valid = true;
-                for(var j in table.filter.options) {
-                    if(table.filter.options[j]) {
-                        valid = table.filter.options[j](table.rows[i]);
-                    }
-                    if(!valid) break;
-                }
-                if(valid) table.rows[i].show();
-                else table.rows[i].hide();
-            }
-        };
-        table.filter.set = function(filterOption) {
-            if(filterOption) {
-                table.filter.options = [filterOption];
-            } else {
-                table.filter.options = null;
-            }
-            table.saveOption("filter",table.filter.options);
-            table.filter();
-        }
-        table.filter.add = function(filterOption) {
-            table.filter.options = table.filter.options || [];
-            if(table.filter.options.indexOf(filterOption) < 0) {
-                table.filter.options.push(filterOption);
-            }
-            table.saveOption("filter",table.filter.options);
-            table.filter();
-        }
-        table.filter.remove = function(filterOption) {
-            table.filter.options = table.filter.options || [];
-            var index = table.filter.options.indexOf(filterOption)
-            if(index >= 0) {
-                table.filter.options.splice(index,1);
-            }
-            table.saveOption("filter",table.filter.options);
-            table.filter();
-        }
-        table.filter.clear = function() {
-            table.filter.options = null;
-            table.saveOption("filter",table.filter.options);
-            table.filter();
-        }
-        table.sort = function(index) {
-            if(!options.caption.items) return;
-            var sort = table.head.items[index].sort;
-            for(var i = 0; i < table.body.childNodes.length-1; i++) {
-                var icrit = i;
-                var crit = table.body.childNodes[i];
-                var textCrit = ""+(crit.cells[index].sort == undefined ? crit.cells[index].innerText : crit.cells[index].sort);
-                var parsedCrit = parseInt(textCrit);
-                for(var j = i + 1; j < table.body.childNodes.length; j++) {
-                    var b = table.body.childNodes[j];
-                    var textB = ""+(b.cells[index].sort == undefined ? b.cells[index].innerText : b.cells[index].sort);
-                    var parsedB = parseInt(textB);
-                    var cmp;
-                    if(""+parsedCrit == textCrit && ""+parsedB == textB){
-                        cmp = (parsedCrit > parsedB ? 1 : (parsedCrit < parsedB ? -1 : 0));
-                    } else {
-                        cmp = textCrit.toLocaleLowerCase().localeCompare(textB.toLocaleLowerCase());
-                    }
-                    if(sort == cmp) {
-                        crit = b;
-                        textCrit = ""+(crit.cells[index].sort == undefined ? crit.cells[index].innerText : crit.cells[index].sort);
-                        parsedCrit = parseInt(textCrit);
-                        icrit = j;
-                    }
-                }
-                if(icrit != i) {
-                    table.body.appendChild(table.body.replaceChild(table.body.childNodes[icrit], table.body.childNodes[i]));
-                }
-            }
-        }
-
         if(options.id) {
             var savedOptions = load("table:" + options.id) || {};
             table.filter.options = savedOptions.filter;
-        }
-        table.saveOption = function(name,value) {
-            if(options.id) {
-                savedOptions[name] = value;
-                save("table:" + options.id, savedOptions);
-            }
-        }
+            table._sorts = savedOptions.sorts || [];
 
-        table.body = create(HTML.DIV, {className:"tbody"}, table);
-        table.rows = [];
-        table.add = function(row) {
-            var cells;
-            var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);
-            for(var i in row.cells) {
-                var item = row.cells[i];
-                item.className = "td" + (item.className ? " " + item.className : "");
-                item.innerHTML = item.innerHTML || item.label;
-                res.cells.push(create(HTML.DIV, item, res));
-            }
-            table.rows.push(res);
-            table.placeholder.hide();
-            return res;
+            table.filter();
         }
 
         return table;
