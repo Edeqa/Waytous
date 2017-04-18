@@ -167,6 +167,7 @@ public class SensitiveData {
             jsonMimeType = new JSONObject();
             jsonMimeType.put("type","jpg");
             jsonMimeType.put("mime","image/jpg");
+            jsonMimeType.put("gzip",false);
             jsonMimeTypes.put(jsonMimeType);
 
             jsonMimeType = new JSONObject();
@@ -188,16 +189,19 @@ public class SensitiveData {
             jsonMimeType = new JSONObject();
             jsonMimeType.put("type","mp3");
             jsonMimeType.put("mime","audio/mp3");
+            jsonMimeType.put("gzip",false);
             jsonMimeTypes.put(jsonMimeType);
 
             jsonMimeType = new JSONObject();
             jsonMimeType.put("type","ogg");
             jsonMimeType.put("mime","audio/ogg");
+            jsonMimeType.put("gzip",false);
             jsonMimeTypes.put(jsonMimeType);
 
             jsonMimeType = new JSONObject();
             jsonMimeType.put("type","m4r");
             jsonMimeType.put("mime","audio/aac");
+            jsonMimeType.put("gzip",false);
             jsonMimeTypes.put(jsonMimeType);
 
             jsonSample.put("types",jsonMimeTypes);
