@@ -30,6 +30,7 @@ public class Constants {
     public static final String REQUEST_MODEL = "model";
     public static final String REQUEST_MANUFACTURER = "manufacturer";
     public static final String REQUEST_OS = "os";
+    public static final String REQUEST_KEY = "key";
 
 // instances to/from server
     public static final String REQUEST_TRACKING = "tracking";

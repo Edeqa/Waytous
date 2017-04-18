@@ -578,8 +578,6 @@ public class MyTrackingFB implements Tracking {
 
                                         System.out.println("SNAPSHOT:"+authResult.getUser().getUid());
 
-
-
                                         ref = database.getReference().child(getToken());
 
                                         registerChildListener(ref.child(DATABASE_SECTION_USERS_DATA),usersDataListener, -1);

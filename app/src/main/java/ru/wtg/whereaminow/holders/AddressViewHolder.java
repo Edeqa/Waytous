@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 
 import ru.wtg.whereaminow.MainActivity;
 import ru.wtg.whereaminow.R;
@@ -67,6 +68,8 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     }
 
     class AddressView extends AbstractView {
+        private long lastRequestTimestamp;
+
         AddressView(MyUser myUser) {
             super(myUser);
         }
@@ -102,22 +105,23 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountAllSelected() > 1){
                 return;
             }
+            long currentTimestamp = new Date().getTime();
+            if(currentTimestamp - lastRequestTimestamp < 5000) return;
+            lastRequestTimestamp = currentTimestamp;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
+
                     try {
-                        String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
+                        System.out.println(myUser.getProperties().getNumber() +":"+ req);
                         final String res = Utils.getUrl(req);
-                        try {
+                        System.out.println(res);
                             JSONObject address = new JSONObject(res);
                             setTitle(address.getString("display_name"));
-                        } catch (JSONException | NullPointerException e) {
-                            e.printStackTrace();
-                            setTitle(null);
-                        }
-                    } catch (IOException | NullPointerException e) {
-                        //e.printStackTrace();
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        setTitle(null);
                     }
                 }
             }).start();
