@@ -55,7 +55,7 @@ configurations {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(path: ':WayToUsServer')
+    compile project(path: ':WaytousServer')
     // smart location https://github.com/mrmans0n/smart-location-lib
     // https://aodevblue.github.io/MaterialValues/
     // https://github.com/andreynovikov/GeoTrackFilter
