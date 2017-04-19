@@ -29,7 +29,7 @@ function PropertiesHolder(main) {
             negative: {
                 label: "Cancel"
             }
-        });
+        }, main.right);
     };
 
     this.onEvent = function(EVENT,object){
@@ -57,7 +57,7 @@ function PropertiesHolder(main) {
                             label: u.lang.maybe_later
                         },
                         timeout: 10000
-                    }).open();
+                    }, main.right).open();
                 }
                 var name = main.me.name;
                 if(!name && main.me.properties) name = main.me.properties.name;

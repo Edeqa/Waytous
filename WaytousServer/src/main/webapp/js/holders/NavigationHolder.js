@@ -389,11 +389,11 @@ function NavigationHolder(main) {
                          }
                    },
                 ]
-            });
+            }, main.right);
 
             modeDialog = u.dialog({
                 title: u.lang.navigation_options,
-                className: "navigations-options",
+                className: "navigations-options-dialog",
                 items: [
                     { type: HTML.HIDDEN },
                     { type: HTML.CHECKBOX, label: u.lang.avoid_highways },
@@ -446,7 +446,7 @@ function NavigationHolder(main) {
                             break;
                     }
                 }
-            });
+            }, main.right);
 
         }
 

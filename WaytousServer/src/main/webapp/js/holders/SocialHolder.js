@@ -80,7 +80,7 @@ function SocialHolder(main) {
                             label: "Cancel"
                         },
                         timeout: 20000
-                    });
+                    }, main.right);
                     shareDialog.open();
 
 

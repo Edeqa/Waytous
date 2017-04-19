@@ -166,7 +166,7 @@ function Main() {
              help: function() {
                 main.fire(EVENTS.SHOW_HELP, {module: main, article: 1});
              }
-         });
+         }, main.right);
         main.toast = u.toast;
         main.right.appendChild(main.toast);
 

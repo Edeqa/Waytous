@@ -1,0 +1,87 @@
+{
+  "rules": {
+    ".read": "auth.uid === 'Administrator'",
+    ".write": "auth.uid === 'Administrator'",
+    "_groups":{
+      ".read": false,
+      ".write": false
+    },
+    "$group_id": {
+      /* ".write": "(auth.uid != null && !data.exists() && newData.exists()) || auth.uid === 'rdvGxl3Yc0boERLyh71Ur8IaMen1'", */
+      "o": { /* options */
+        ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()",
+        ".write": false,
+        "welcome-message": {
+          ".write": "root.child($group_id+'/u/p/0/key').val() === auth.uid"
+        },
+        "date-created": {
+          ".write": "!data.exists() && newData.exists()"
+        },
+        "persistent": {
+          ".write": "!data.exists() && newData.exists()"
+        },
+        "requires-password": {
+          ".write": "!data.exists() && newData.exists()"
+        },
+        "time-to-live-if-empty": {
+          ".write": "!data.exists() && newData.exists()"
+        },
+        "dismiss-inactive": {
+          ".write": "!data.exists() && newData.exists()"
+        },
+        "delay-to-dismiss": {
+          ".write": "!data.exists() && newData.exists()"
+        }
+      },
+      "u": { /* users */
+        "k": { /* keys */
+          ".read": "false",
+          ".write": "false"
+        },
+        "b": { /* data */
+          ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()",
+          ".write": "false",
+          "$user_number":{
+            "active": {
+              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid"
+            },
+            "name": {
+              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid"
+            },
+            "changed": {
+              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid"
+            }
+          }
+        },
+        "p": { /* data-private */
+          ".read": "false",
+          ".write": "false"
+        }
+      },
+      "b": { /* public */
+        ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()",
+        "$event": {
+          "$user_number": {
+            ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
+            "$item_id": {
+            }
+          }
+        }
+      },
+      "p": { /* private */
+        "$event": {
+          "$user_number": {
+            ".read": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
+            "$item_id": {
+              ".write": "root.child($group_id+'/u/k/'+auth.uid).exists()"
+              /* ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()", */
+            }
+          }
+        }
+      }
+      /*    				".read": "root.child($group_id+'/u/'+auth.uid).exists()", */
+      /*    				".write": "root.child($group_id+'/u/'+auth.uid).exists() && newData.child('author_id').val() === auth.uid && !data.exists() && newData.exists()", */
+
+    }
+  }
+}

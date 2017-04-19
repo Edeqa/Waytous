@@ -49,7 +49,7 @@ function ButtonHolder(main) {
             resizeable: true,
             items: [],
             itemsClassName: "user-buttons-items",
-        });
+        }, main.right);
 
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
                 contextMenuLayout.hide();

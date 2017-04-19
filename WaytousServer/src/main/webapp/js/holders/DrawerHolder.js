@@ -18,6 +18,7 @@ function DrawerHolder(main) {
 
     var start = function() {
 
+        var dialogAbout = u.dialogAbout(main.right);
         drawer = new u.drawer({
             title: main.appName,
             subtitle: u.lang.be_always_on_the_same_way,
@@ -35,7 +36,12 @@ function DrawerHolder(main) {
             },
             footer: {
                 className: "drawer-footer-label",
-                innerHTML: main.appName + " &copy;2017 <a href=\"http://www.edeqa.com\" target=\"_blank\">Edeqa</a>\nBuild " + data.version
+                content: u.create(HTML.DIV).place(HTML.A, {innerHTML: "${APP_NAME} &copy;2017 Edeqa", href: "", onclick: function(e){
+                    dialogAbout.open();
+                    e.preventDefault();
+                    e.stopPropagation;
+                    return false;
+                }}).place(HTML.SPAN, "\nBuild " + data.version)
             }
         }, main.layout);
 
@@ -79,7 +85,7 @@ function DrawerHolder(main) {
                     alphaDialog.close();
                 }
             },
-        });
+        }, main.right);
         main.alpha.addEventListener("click", function(){
             alphaDialog.open();
         });

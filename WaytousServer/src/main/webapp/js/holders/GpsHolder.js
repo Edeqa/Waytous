@@ -50,7 +50,7 @@ function GpsHolder(main) {
                     startPositioning();
                 } else if(!u.load("gps:asked")) {
                     locationRequiredDialog = locationRequiredDialog || u.dialog({
-                        className: "gps-required",
+                        className: "gps-required-dialog",
                         items: [
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
@@ -75,7 +75,7 @@ function GpsHolder(main) {
                             locationRequiredDialog.close();
                             main.fire(EVENTS.SHOW_HELP, {module:main.holders.gps, article:1})
                         }
-                    });
+                    }, main.right);
                     locationRequiredDialog.open();
                     return false;
                 } /*else if(!u.load("gps:allowed")) {
@@ -151,7 +151,7 @@ function GpsHolder(main) {
                 help: function() {
                     main.fire(EVENTS.SHOW_HELP, {module: main.holders.gps, article: 1});
                  }
-            }).open();
+            }, main.right).open();
 
             icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
                 icon.classList.add("hidden");

@@ -72,11 +72,11 @@ function StreetViewHolder(main) {
                     label: u.lang.street_view,
                     className: "media-hidden"
                 },
-                className: "streetview",
+                className: "streetview-dialog",
                 tabindex: 1,
                 items: [
-                    { type: HTML.DIV, className: "streetview-placeholder", innerHTML: u.lang.loading },
-                    { type: HTML.DIV, className: "streetview-view hidden", id: "streetview" },
+                    { type: HTML.DIV, className: "streetview-dialog-placeholder", innerHTML: u.lang.loading },
+                    { type: HTML.DIV, className: "streetview-dialog-view hidden", id: "streetview" },
                 ],
                 onclose: function(){
                     u.save("streetview:show");
@@ -98,7 +98,7 @@ function StreetViewHolder(main) {
                 negative: {
                     onclick: function() {}
                 }
-            });
+            }, main.right);
             placeholder = view.items[0];
             streetview = view.items[1];
             if(show) view.open();

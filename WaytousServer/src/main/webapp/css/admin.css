@@ -3,15 +3,15 @@
  */
 
 .right {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
     overflow-y: auto;
-    width: 100%;
 }
 .content {
     padding: 5px;
     width: calc(100% - 10px);
+    height: calc(100% - 10px);
+}
+.modal {
+    position: fixed;
 }
 .two_tables {
     display:flex;

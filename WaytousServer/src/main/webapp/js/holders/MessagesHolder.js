@@ -32,8 +32,8 @@ function MessagesHolder(main) {
                 label: u.lang.chat,
                 filter: true
             },
-            className: "chat",
-            itemsClassName: "chat-messages",
+            className: "chat-dialog",
+            itemsClassName: "chat-dialog-messages",
             tabindex: 3,
             resizeable: true,
             items: [
@@ -49,21 +49,21 @@ function MessagesHolder(main) {
             },
             footer: {
                 type: HTML.DIV,
-                className: "chat-reply"
+                className: "chat-dialog-reply"
             }
-        });
+        }, main.right);
 
 //        messages = chat.items[0];
         reply = chat.footer;
         replyTo = u.create(HTML.INPUT, {type:HTML.HIDDEN, value:""}, reply);
-        replyInput = u.create(HTML.INPUT, {className: "chat-reply-input", tabindex:5, onkeyup:function(e){
+        replyInput = u.create(HTML.INPUT, {className: "chat-dialog-reply-input", tabindex:5, onkeyup:function(e){
             if(e.keyCode == 13) {
                 replyButton.click();
             }
         }, onclick: function(){
             this.focus();
         }}, reply);
-        replyButton = u.create(HTML.BUTTON, {className: "chat-reply-button", innerHTML:"send", onclick:sendUserMessage}, reply);
+        replyButton = u.create(HTML.BUTTON, {className: "chat-dialog-reply-button", innerHTML:"send", onclick:sendUserMessage}, reply);
 
         incomingMessageSound = u.load("messages:incoming") || defaultIncomingMessageSound;
         sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+incomingMessageSound, last:0, playButLast:function(){
@@ -120,10 +120,10 @@ function MessagesHolder(main) {
             case EVENTS.USER_MESSAGE:
                 var div = chat.addItem({
                     type:HTML.DIV,
-                    className:"chat-message" + (object.private ? " chat-message-private" : ""),
+                    className:"chat-dialog-message" + (object.private ? " chat-dialog-message-private" : ""),
                     order: object.timestamp,
                 });
-                u.create(HTML.DIV, {className:"chat-message-timestamp", innerHTML: new Date(object.timestamp).toLocaleString()}, div);
+                u.create(HTML.DIV, {className:"chat-dialog-message-timestamp", innerHTML: new Date(object.timestamp).toLocaleString()}, div);
 
                 var toUser = null;
                 if(object.private) {
@@ -131,10 +131,10 @@ function MessagesHolder(main) {
                 }
 
                 var divName = u.create(HTML.DIV, {
-                    className:"chat-message-name",
+                    className:"chat-dialog-message-name",
                     style: {color: this.properties.color},
                     innerHTML:this.properties.getDisplayName() + (object.private ? " &rarr; " + toUser.properties.getDisplayName() : "") + ":"}, div);
-                u.create(HTML.DIV, {className:"chat-message-body", innerHTML: object.body}, div);
+                u.create(HTML.DIV, {className:"chat-dialog-message-body", innerHTML: object.body}, div);
 
                 div.scrollIntoView();
 

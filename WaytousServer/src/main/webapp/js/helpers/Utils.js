@@ -776,13 +776,15 @@ function Utils(main) {
     }
 
     var modalBackground;
-    function dialog(options) {
+    function dialog(options, appendTo) {
+        if(!appendTo) throw new Error("Parent node is not defined.");
+
         var dialog = create(HTML.DIV, {
             className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
             tabindex:-1,
             onblur: options.onblur,
             onfocus: options.onfocus
-        }, main.right);
+        }, appendTo);
 
         dialog.opened = false;
 
@@ -938,11 +940,11 @@ function Utils(main) {
                 dialog.style.bottom = HTML.AUTO;
             } else {
 //                left = dialog.offsetLeft;
-                var outWidth = main.right.offsetWidth;
+                var outWidth = appendTo.offsetWidth;
 
                 if((dialog.offsetLeft + dialog.offsetWidth) >= outWidth || left == 0) {
                     dialog.style.left = ((outWidth - dialog.offsetWidth) /2)+"px";
-                    dialog.style.top = ((main.right.offsetHeight - dialog.offsetHeight) /2)+"px";
+                    dialog.style.top = ((appendTo.offsetHeight - dialog.offsetHeight) /2)+"px";
                     dialog.style.right = "auto";
                     dialog.style.bottom = "auto";
                 }
@@ -963,7 +965,7 @@ function Utils(main) {
         }
 
         if(options.modal) {
-            modalBackground = modalBackground || u.create(HTML.DIV, {className:"dim"}, main.right);
+            modalBackground = modalBackground || u.create(HTML.DIV, {className:"dim"}, appendTo);
             dialog.modal = modalBackground;
         }
 
@@ -1592,7 +1594,9 @@ function Utils(main) {
         options.onsuccess = function(xhr){
             if(onsuccess) {
                 try {
-                    var json = JSON.parse(xhr.responseText);
+                    var text = xhr.responseText;
+                    text = text.replace(/\/\*[\s\S]*?\*\//g, "");
+                    var json = JSON.parse(text);
                     onsuccess(json, xhr);
                 } catch(e) {
                     if(options.onerror) options.onerror(ERRORS.INCORRECT_JSON, xhr);
@@ -2216,6 +2220,27 @@ function Utils(main) {
         return table;
     }
 
+    function dialogAbout(appendTo) {
+        return dialog({
+           className: "about-dialog",
+           items: [
+               { type: HTML.DIV, innerHTML: "${APP_NAME} v.1.${SERVER_BUILD}" },
+               { type: HTML.DIV, content: create(HTML.DIV)
+                   .place(HTML.A, { className: "about-dialog-link", href: "/support/", target: "_blank", innerHTML: "Support"})
+                   .place(HTML.A, { className: "about-dialog-link", href: "/help/", target: "_blank", innerHTML: "Help"})
+                   .place(HTML.A, { className: "about-dialog-link", href: "/feedback/", target: "_blank", innerHTML: "Feedback" })
+               },
+               { type: HTML.DIV, innerHTML: "&nbsp;" },
+               { type: HTML.DIV, innerHTML: "Copyright &copy;2017 Edeqa LLC" },
+               { type: HTML.A, href: "http://www.edeqa.com", target: "_blank", innerHTML: "http://www.edeqa.com" },
+           ],
+           positive: {
+               label: "OK"
+           }
+       }, appendTo);
+    }
+
+
     return {
         create: create,
         clear: clear,
@@ -2254,5 +2279,6 @@ function Utils(main) {
         notification:notification,
         copyToClipboard:copyToClipboard,
         table:table,
+        dialogAbout:dialogAbout,
     }
 }

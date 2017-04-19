@@ -40,7 +40,7 @@ function PlaceHolder(main) {
 //                            onblur: function() {
 //                                searchDialog.close();
 //                            }
-                        });
+                        }, main.right);
                         autocomplete = new google.maps.places.Autocomplete(searchDialog.items[0]);
                         autocomplete.bindTo("bounds", main.map);
                         autocomplete.addListener("place_changed", function() {
@@ -173,7 +173,7 @@ function PlaceHolder(main) {
                             { type: HTML.INPUT, label: u.lang.name },
                             { type: "textarea", label: u.lang.description },
                         ],
-                        className: "place-edit",
+                        className: "place-edit-dialog",
                         positive: {
                             label: "OK",
                             onclick: function(items) {
@@ -190,7 +190,7 @@ function PlaceHolder(main) {
                         negative: {
                             label: u.lang.cancel
                         },
-                    });
+                    }, main.right);
                     placeEditDialog.items[0].value = place.number;
                     placeEditDialog.items[1].value = place.origin.name || "";
                     placeEditDialog.items[2].value = place.origin.description || "";
@@ -212,7 +212,7 @@ function PlaceHolder(main) {
                             { type: HTML.HIDDEN },
                             { type: HTML.DIV },
                         ],
-                        className: "saved-location-send",
+                        className: "saved-location-send-dialog",
                         positive: {
                             label: "Yes",
                             onclick: function(items) {
@@ -232,7 +232,7 @@ function PlaceHolder(main) {
                         negative: {
                             label: "No"
                         },
-                    });
+                    }, main.right);
 
                     placeSendDialog.items[0].value = number;
                     placeSendDialog.items[1].innerHTML = "You're going to send the location " + loc.n + " to all. Continue?";

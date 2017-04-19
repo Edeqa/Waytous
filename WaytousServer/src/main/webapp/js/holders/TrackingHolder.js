@@ -39,12 +39,12 @@ function TrackingHolder(main) {
     function start(){
 
         progress = u.dialog({
-            className: "progress",
+            className: "progress-dialog",
             items: [
-                { type: HTML.DIV, className: "progress-circle" },
-                { type: HTML.DIV, className: "progress-title" },
+                { type: HTML.DIV, className: "progress-dialog-circle" },
+                { type: HTML.DIV, className: "progress-dialog-title" },
             ]
-        });
+        }, main.right);
 
         joinSound = u.load("tracking:sound_on_join") || defaultSound;
         sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+joinSound, last:0, playButLast:function(){
@@ -206,7 +206,7 @@ function TrackingHolder(main) {
                                     positive: {
                                         label: "Close"
                                     },
-                                });
+                                }, main.right);
                                 shareBlockedDialog.open();
                             });
                         }
@@ -225,7 +225,7 @@ function TrackingHolder(main) {
                         label: u.lang.cancel
                     },
                     timeout: 20000
-                });
+                }, main.right);
                 shareDialog.open();
                 break;
             default:
@@ -346,7 +346,7 @@ function TrackingHolder(main) {
                 onclose: function() {
                     window.location = "/track/";
                 }
-            }).open();
+            }, main.right).open();
 
 //            window.history.pushState({}, null, "/track/" );
 

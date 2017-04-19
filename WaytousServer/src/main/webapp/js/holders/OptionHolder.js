@@ -41,7 +41,7 @@ function OptionHolder(main) {
                 label: u.lang.options,
                 filter: true
             },
-            className: "option",
+            className: "options-dialog",
             positive: {
                 label: u.lang.ok,
                 onclick: function(e, event) {
@@ -67,7 +67,7 @@ function OptionHolder(main) {
                 label: u.lang.cancel,
                 onclick: function(){}
             }
-        });
+        }, main.right);
 
         sections = {};
         categories = {};
@@ -87,13 +87,13 @@ function OptionHolder(main) {
                 if(!option.id || !sections[option.id]) {
                     optionsDialog.addItem({
                         type:HTML.DIV,
-                        className:"option-title",
+                        className:"options-dialog-title",
                         innerHTML: title
                     });
                     sections[option.id] = optionsDialog.addItem({
                         id: option.id || "",
                         type:HTML.DIV,
-                        className:"option-section",
+                        className:"options-dialog-section",
 //                        innerHTML: title
                     });
                 }
@@ -109,7 +109,7 @@ function OptionHolder(main) {
                     categories[category.id || ""] = categories[category.id || ""] || optionsDialog.addItem({
                         id: category.id || "",
                         type: HTML.DIV,
-                        className: "option-item",
+                        className: "options-dialog-item",
                         enclosed: true,
                         label: title,
                     }, sections[option.id]);

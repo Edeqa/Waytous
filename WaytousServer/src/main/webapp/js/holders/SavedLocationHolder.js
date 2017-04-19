@@ -114,7 +114,7 @@ function SavedLocationHolder(main) {
                             label: u.lang.maybe_later
                         },
                         timeout: 5000
-                    });
+                    }, main.right);
                     locationSavedDialog.items[0].value = last;
                     locationSavedDialog.open();
                 }
@@ -188,7 +188,7 @@ function SavedLocationHolder(main) {
                         { type: HTML.INPUT, label: u.lang.name },
                         { type: HTML.TEXTAREA, label: u.lang.description },
                     ],
-                    className: "saved-location-edit",
+                    className: "saved-location-edit-dialog",
                     positive: {
                         label: u.lang.ok,
                         onclick: function(items) {
@@ -214,7 +214,7 @@ function SavedLocationHolder(main) {
                     negative: {
                         label: u.lang.cancel
                     },
-                });
+                }, main.right);
 
                 if(loc) {
                     locationEditDialog.items[0].value = number;
@@ -252,7 +252,7 @@ function SavedLocationHolder(main) {
                                         positive: {
                                             label: u.lang.close
                                         },
-                                    });
+                                    }, main.right);
                                     shareBlockedDialog.open();
                                 });
                             }
@@ -261,7 +261,7 @@ function SavedLocationHolder(main) {
                             label: u.lang.no
                         },
 //                        timeout: 20000
-                    });
+                    }, main.right);
 
                     locationShareDialog.items[0].value = encodeURIComponent(encodeURI("http://maps.google.com/maps?q=" + loc.n + "&z=14&ll=" + loc.la + "," + loc.lo));
 
@@ -283,7 +283,6 @@ function SavedLocationHolder(main) {
                         { type: HTML.HIDDEN },
                         { type: HTML.DIV },
                     ],
-                    className: "saved-location-send",
                     positive: {
                         label: u.lang.yes,
                         onclick: function(items) {
@@ -303,7 +302,7 @@ function SavedLocationHolder(main) {
                     negative: {
                         label: u.lang.no
                     },
-                });
+                }, main.right);
 
                 if(loc) {
                     locationSendDialog.items[0].value = number;
@@ -325,7 +324,7 @@ function SavedLocationHolder(main) {
                         { type: HTML.HIDDEN },
                         { type: HTML.DIV, innerHTML: u.lang.delete_this_location },
                     ],
-                    className: "saved-location-delete",
+                    className: "saved-location-delete-dialog",
                     positive: {
                         label: u.lang.yes,
                         onclick: function(items) {
@@ -338,7 +337,7 @@ function SavedLocationHolder(main) {
                     negative: {
                         label: u.lang.no
                     },
-                });
+                }, main.right);
 
                 if(loc) {
                     locationDeleteDialog.items[0].value = number;
@@ -353,14 +352,14 @@ function SavedLocationHolder(main) {
                     },
                     resizeable: true,
                     items: [],
-                    className: "saved-location",
-                    itemsClassName: "saved-location-items",
+                    className: "saved-locations-dialog",
+                    itemsClassName: "saved-locations-dialog-items",
                     onopen: function(){},
                     onclose: function(){},
                     negative: {
                         onclick: function() {}
                     }
-                });
+                }, main.right);
                 locationsDialog.clearItems();
                 var last = u.load("saved_location:counter") || 0;
                 for(var i = 1; i <= last; i++) {
@@ -375,7 +374,7 @@ function SavedLocationHolder(main) {
 
                         u.create(HTML.IMG, {
                             src: url,
-                            className: "saved-location-item-image",
+                            className: "saved-locations-dialog-item-image",
                             onload: function(e) {
 //                                console.log(e);
                             },
@@ -385,17 +384,17 @@ function SavedLocationHolder(main) {
                             innerHTML:"update",
                         }, div);
 
-                        var content = u.create(HTML.DIV, { className: "saved-location-item-text" }, div);
-                        u.create(HTML.DIV, { className: "saved-location-item-label", innerHTML:loc.n }, content);
-                        u.create(HTML.DIV, { className: "saved-location-item-timestamp", innerHTML:new Date(loc.t).toLocaleString() }, content);
-                        u.create(HTML.DIV, { className: "saved-location-item-address", innerHTML:loc.a }, content);
+                        var content = u.create(HTML.DIV, { className: "saved-locations-dialog-item-text" }, div);
+                        u.create(HTML.DIV, { className: "saved-locations-dialog-item-label", innerHTML:loc.n }, content);
+                        u.create(HTML.DIV, { className: "saved-locations-dialog-item-timestamp", innerHTML:new Date(loc.t).toLocaleString() }, content);
+                        u.create(HTML.DIV, { className: "saved-locations-dialog-item-address", innerHTML:loc.a }, content);
                         if(!loc.a) fetchAddressFor(i);
-                        u.create(HTML.DIV, { className: "saved-location-item-description", innerHTML:loc.d }, content);
-                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-show notranslate", dataNumber: i, innerHTML:"remove_red_eye", title: u.lang.show_location.innerText, onclick:function(){
+                        u.create(HTML.DIV, { className: "saved-locations-dialog-item-description", innerHTML:loc.d }, content);
+                        u.create(HTML.BUTTON, { className: "saved-locations-dialog-item-button saved-locations-dialog-item-show notranslate", dataNumber: i, innerHTML:"remove_red_eye", title: u.lang.show_location.innerText, onclick:function(){
                             locationsDialog.close();
                             main.fire(EVENTS.SHOW_SAVED_LOCATION, this.dataset.number);
                         } }, content);
-                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-navigate notranslate", dataNumber: i, innerHTML:"navigation", title:u.lang.show_direction_to_location.innerText, onclick:function(){
+                        u.create(HTML.BUTTON, { className: "saved-locations-dialog-item-button saved-locations-dialog-item-navigate notranslate", dataNumber: i, innerHTML:"navigation", title:u.lang.show_direction_to_location.innerText, onclick:function(){
                             locationsDialog.close();
                             var number = this.dataset.number;
                             main.fire(EVENTS.SHOW_SAVED_LOCATION, number);
@@ -405,13 +404,13 @@ function SavedLocationHolder(main) {
                                 });
                             },0);
                         } }, content);
-                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-edit notranslate", dataNumber: i, innerHTML:"mode_edit", title:u.lang.edit_location.innerText, onclick:function(){
+                        u.create(HTML.BUTTON, { className: "saved-locations-dialog-item-button saved-locations-dialog-item-edit notranslate", dataNumber: i, innerHTML:"mode_edit", title:u.lang.edit_location.innerText, onclick:function(){
                             main.fire(EVENTS.EDIT_SAVED_LOCATION, this.dataset.number);
                         } }, content);
-                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-share notranslate", dataNumber: i, innerHTML:"share", title:u.lang.share_location.innerText, onclick:function(){
+                        u.create(HTML.BUTTON, { className: "saved-locations-dialog-item-button saved-locations-dialog-item-share notranslate", dataNumber: i, innerHTML:"share", title:u.lang.share_location.innerText, onclick:function(){
                             main.fire(EVENTS.SHARE_SAVED_LOCATION, this.dataset.number);
                         } }, content);
-                        u.create(HTML.BUTTON, { className: "saved-location-item-button saved-location-item-delete notranslate", dataNumber: i, innerHTML:"clear", title:u.lang.delete_location.innerText, onclick:function(){
+                        u.create(HTML.BUTTON, { className: "saved-locations-dialog-item-button saved-locations-dialog-item-delete notranslate", dataNumber: i, innerHTML:"clear", title:u.lang.delete_location.innerText, onclick:function(){
                             main.fire(EVENTS.DELETE_SAVED_LOCATION, this.dataset.number);
                         } }, content);
                     }
@@ -499,15 +498,15 @@ function SavedLocationHolder(main) {
                  { type: HTML.DIV },
                  { type: HTML.DIV, innerHTML: u.lang.add_it_to_your_saved_locations_list },
              ],
-             itemsClassName: "saved-location-receive-items",
-             className: "saved-location-receive",
+             itemsClassName: "saved-location-receive-dialog-items",
+             className: "saved-location-receive-dialog",
              positive: {
                  label: u.lang.yes
              },
              negative: {
                  label: u.lang.no
              },
-         });
+         }, main.right);
         locationReceiveDialog.items[0].innerHTML = u.lang.you_ve_got_the_location_from_s.format((from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName()).outerHTML;
         if(user.address) {
             locationReceiveDialog.items[1].innerHTML = u.lang.address_s.format(user.address).outerHTML;

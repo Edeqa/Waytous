@@ -691,7 +691,7 @@ p.bottom-desc {
     outline: none;
     max-height: 90%;
 }
-.progress {
+.progress-dialog {
     min-width: 20%;
     padding-top: 20px;
     padding-bottom: 20px;
@@ -700,7 +700,7 @@ p.bottom-desc {
     0%    { transform: rotate(0deg); }
     100%  { transform: rotate(360deg); }
 }
-.progress-circle {
+.progress-dialog-circle {
     margin: 20px;
     max-height: 28px;
     max-width: 28px;
@@ -711,7 +711,7 @@ p.bottom-desc {
     border-right-color: transparent;
     border-radius: 50%;
 }
-.progress-title {
+.progress-dialog-title {
     white-space: nowrap;
     padding: 10px;
 }
@@ -760,7 +760,7 @@ p.bottom-desc {
     color: white;
     border-radius: 2px;
     min-height: 24px;
-    cursor: pointer;
+    cursor: default;
     position: relative;
     display: flex;
     align-items: center;
@@ -944,7 +944,7 @@ p.bottom-desc {
     height: 10px;
     cursor: se-resize;
 }
-.chat {
+.chat-dialog {
     width: 500px;
     max-width: 60%;
     height: 300px;
@@ -952,16 +952,16 @@ p.bottom-desc {
     bottom: 10px;
     left: 10px;
 }
-.chat:hover {
+.chat-dialog:hover {
     opacity: 1.0;
 }
-.chat:focus {
+.chat-dialog:focus {
     opacity: 1.0;
 }
-.chat:active {
+.chat-dialog:active {
     opacity: 1.0;
 }
-.chat-messages {
+.chat-dialog-messages {
     font-size: 10px;
     overflow-y: scroll;
     flex-direction: column;
@@ -969,36 +969,36 @@ p.bottom-desc {
     flex-grow: 1;
     justify-content: flex-start;
 }
-.chat-message {
+.chat-dialog-message {
     display: block;
     text-align: left;
 }
-.chat-message-private {
+.chat-dialog-message-private {
 
 }
-.chat-message-name {
+.chat-dialog-message-name {
     text-shadow: #000 0px 0px 1px;
 }
-.chat-message-timestamp {
+.chat-dialog-message-timestamp {
     float: right;
     padding-right: 4px;
 }
-.chat-message-body {
+.chat-dialog-message-body {
     padding-bottom: 8px;
     white-space: pre;
 }
-.chat-reply {
+.chat-dialog-reply {
     /*padding-top: 8px;
     align-items: stretch;
     width: 100%;
     min-height: 40px;*/
     flex: 0 0 30px;
 }
-.chat-reply-input {
+.chat-dialog-reply-input {
     width: 100%;
     height: 24px;
 }
-.chat-reply-button {
+.chat-dialog-reply-button {
     font-family: 'Material Icons';
     font-feature-settings: "liga" 1;
     font-style: normal;
@@ -1010,14 +1010,14 @@ p.bottom-desc {
     border: none;
     outline: none;
 }
-.chat-reply-button:hover {
+.chat-dialog-reply-button:hover {
     color: blue;
     background: none;
 }
-.chat-reply-button:active {
+.chat-dialog-reply-button:active {
     color: cyan;
 }
-.streetview {
+.streetview-dialog {
     width: 500px;
     max-width: 60%;
     top: auto;
@@ -1025,10 +1025,10 @@ p.bottom-desc {
     left: 10px;
     outline: none;
 }
-.streetview-placeholder {
+.streetview-dialog-placeholder {
     height: 300px;
 }
-.streetview-view {
+.streetview-dialog-view {
     width: 100%;
     height: 300px;
     padding: 5px;
@@ -1091,48 +1091,48 @@ p.bottom-desc {
 .navigation-mode-item-selected {
     background-color: #a6cddc;
 }
-.navigation-options {
+.navigation-options-dialog {
 }
-.help {
+.help-dialog {
     z-index: 9000 !important;
     width: 70%;
 }
-.help-item {
+.help-dialog-item {
 }
-.help-item-title {
+.help-dialog-item-title {
     font-size: larger;
     font-weight: bold;
 }
-.help-item-body {
+.help-dialog-item-body {
     align-items: initial;
     padding-top: 10px;
     flex-direction: column;
     text-align: left;
 }
-.help-module-title {
+.help-dialog-module-title {
     width: 100%;
     margin-top: 10px;
     font-weight: bold;
     min-height: 25px;
     justify-content: flex-start;
 }
-.help-module-item {
+.help-dialog-module-item {
     width: 100%;
     margin-top: 0px;
 }
-.saved-location {
+.saved-locations-dialog {
     width: 500px;
 }
-.saved-location-items {
+.saved-locations-dialog-items {
     display: initial !important;
 }
-.saved-location-item {
+.saved-locations-dialog-item {
     width: 100%;
     display: flex;
     margin-bottom: 10px;
     position: relative;
 }
-.saved-location-item-text {
+.saved-locations-dialog-item-text {
     order: 2;
     display: flex;
     flex-wrap: wrap;
@@ -1140,46 +1140,46 @@ p.bottom-desc {
     flex: 1 0 65%;
     text-align: left;
 }
-.saved-location-item-label {
+.saved-locations-dialog-item-label {
     font-weight: bold;
     order: 1;
     flex: 1 0 30%;
 }
-.saved-location-item-timestamp {
+.saved-locations-dialog-item-timestamp {
     order: 2;
     flex: 1 0 30%;
     text-align: right;
     font-size: smaller;
     white-space: nowrap;
 }
-.saved-location-item-show {
+.saved-locations-dialog-item-show {
     order: 3;
 }
-.saved-location-item-navigate {
+.saved-locations-dialog-item-navigate {
     order: 4;
 }
-.saved-location-item-edit {
+.saved-locations-dialog-item-edit {
     order: 5;
 }
-.saved-location-item-share {
+.saved-locations-dialog-item-share {
     order: 6;
 }
-.saved-location-item-delete {
+.saved-locations-dialog-item-delete {
     order: 7;
 }
-.saved-location-item-address {
+.saved-locations-dialog-item-address {
     order: 8;
     flex: 0 1 100%;
     padding-top: 5px;
     padding-bottom: 5px;
 }
-.saved-location-item-description {
+.saved-locations-dialog-item-description {
     order: 9;
     flex: 0 1 100%;
     font-size: small;
     font-weight: bold;
 }
-.saved-location-item-image {
+.saved-locations-dialog-item-image {
     align-self: flex-start;
     order: 1;
     height: 120px;
@@ -1197,7 +1197,7 @@ p.bottom-desc {
     object-fit: cover;
     padding-top: 1px;
 }
-.saved-location-item-button {
+.saved-locations-dialog-item-button {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
@@ -1212,21 +1212,21 @@ p.bottom-desc {
     max-width: 16px;
     margin-left: 2px;
 }
-.saved-location-edit {
+.saved-location-edit-dialog {
     width: 400px;
     z-index: 1001;
 }
-.saved-location-delete {
+.saved-location-delete-dialog {
     width: 250px;
     z-index: 1002;
 }
-.saved-location-receive {
+.saved-location-receive-dialog {
     max-width: 500px;
 }
-.saved-location-receive-items {
+.saved-location-receive-dialog-items {
     align-items: flex-start;
 }
-.gps-required {
+.gps-required-dialog {
     z-index: 9999;
 }
 .map-recenter {
@@ -1250,22 +1250,33 @@ p.bottom-desc {
 .place-search-label {
     display: none;
 }
-.option {
+.options-dialog {
     min-width: 400px;
 }
-.option-title {
+.options-dialog-title {
     width: 100%;
     margin-top: 10px;
     font-weight: bold;
     min-height: 25px;
 }
-.option-section {
+.options-dialog-section {
     flex-direction: column;
     display: block;
 }
-.option-item {
+.options-dialog-item {
     width: 100%;
     margin-top: 0px;
+}
+.about-dialog {
+    padding: 30px;
+    width: 300px;
+    max-width: 80%;
+    z-index: 20000 !important;
+}
+.about-dialog-link {
+    font-size: x-small;
+    margin: 5px;
+    text-decoration: none;
 }
 
 
@@ -1647,7 +1658,7 @@ p.bottom-desc {
     .dialog-resize {
         display: none;
     }
-    .chat {
+    .chat-dialog {
         max-width: 100%;
         left: 0px !important;
         right: 0px !important;
@@ -1658,21 +1669,21 @@ p.bottom-desc {
         max-height: 100%;
         border: none;
     }
-    .chat-messages {
+    .chat-dialog-messages {
         padding: 8px;
         font-size: 14px;
     }
-    .chat-reply {
+    .chat-dialog-reply {
         padding: 8px;
         display: flex;
         align-items: stretch;
     }
-    .chat-reply-button {
+    .chat-dialog-reply-button {
         min-width: 40px;
         height: 32px;
         padding: 0px;
     }
-    .streetview {
+    .streetview-dialog {
         position: initial;
         width: 100% !important;
         transform: none !important;
@@ -1681,11 +1692,11 @@ p.bottom-desc {
         max-width: 100%;
         border-bottom: none;
     }
-    .streetview-view {
+    .streetview-dialog-view {
         margin: -12px;
         padding: 10px;
     }
-    .help {
+    .help-dialog {
         left: 0px !important;
         right: 0px !important;
         top: 0px !important;
@@ -1695,10 +1706,10 @@ p.bottom-desc {
         max-height: 100%;
         border: none;
     }
-    .help-buttons {
+    .help-dialog-buttons {
         display: none;
     }
-    .saved-location {
+    .saved-locations-dialog {
         left: 0px !important;
         right: 0px !important;
         top: 0px !important;
@@ -1708,20 +1719,20 @@ p.bottom-desc {
         max-height: 100%;
         border: none;
     }
-    .saved-location-items {
+    .saved-locations-dialog-items {
     }
-    .saved-location-item {
+    .saved-locations-dialog-item {
     }
-    .saved-location-item-text {
+    .saved-locations-dialog-item-text {
         font-size: 14px;
         flex: initial;
     }
-    .saved-location-item-label {
+    .saved-locations-dialog-item-label {
     }
-    .saved-location-item-timestamp {
+    .saved-locations-dialog-item-timestamp {
         font-size: inherit;
     }
-    .saved-location-item-show {
+    .saved-locations-dialog-item-show {
         position: absolute;
         height: 100px;
         max-height: initial;
@@ -1730,7 +1741,7 @@ p.bottom-desc {
         opacity: 0;
         left: 120px;
     }
-    .saved-location-item-navigate {
+    .saved-locations-dialog-item-navigate {
         position: absolute;
         left: 0px;
         height: 100px;
@@ -1739,42 +1750,42 @@ p.bottom-desc {
         max-width: initial;
         opacity: 0;
     }
-    .saved-location-item-edit {
+    .saved-locations-dialog-item-edit {
         position: absolute;
         right: 68px;
         bottom: 0px;
         min-width: 32px;
         min-height: 32px;
     }
-    .saved-location-item-share {
+    .saved-locations-dialog-item-share {
         position: absolute;
         right: 34px;
         bottom: 0px;
         min-width: 32px;
         min-height: 32px;
     }
-    .saved-location-item-delete {
+    .saved-locations-dialog-item-delete {
         position: absolute;
         right: 0px;
         bottom: 0px;
         min-width: 32px;
         min-height: 32px;
     }
-    .saved-location-item-address {
+    .saved-locations-dialog-item-address {
     }
-    .saved-location-item-description {
+    .saved-locations-dialog-item-description {
         margin-bottom: 36px;
     }
-    .saved-location-item-image {
+    .saved-locations-dialog-item-image {
         height: 100px;
         flex: 0 0 120px;
     }
-    .saved-location-item-button {
+    .saved-locations-dialog-item-button {
         font-size: 20px;
     }
-    .saved-location-edit {
+    .saved-location-edit-dialog {
     }
-    .saved-location-delete {
+    .saved-location-delete-dialog {
     }
     .navigation-mode {
         width: auto !important;
@@ -1808,7 +1819,7 @@ p.bottom-desc {
         max-width: 24px;
         display: block;
     }
-    .option {
+    .options-dialog {
         min-width: auto;
     }
     .table-filter {
@@ -1847,7 +1858,7 @@ p.bottom-desc {
     .drawer-footer {
         position: initial;
     }
-    .streetview {
+    .streetview-dialog {
         display: none;
     }
 

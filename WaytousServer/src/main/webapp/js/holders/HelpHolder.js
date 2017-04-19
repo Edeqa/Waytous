@@ -27,25 +27,25 @@ function HelpHolder(main) {
                         label: u.lang.help,
                         filter: true,
                     },
-                    className: "help",
-                    buttonsClassName: "help-buttons",
+                    className: "help-dialog",
+                    buttonsClassName: "help-dialog-buttons",
                     negative: {
                         label: u.lang.close,
                         onclick: function(){}
                     }
-                });
+                }, main.right);
                 if(dialog.opened) break;
                 dialog.clearItems();
                 if(object) {
                     if(object["module"].help) {
                         dialog.addItem({
                             type: HTML.DIV,
-                            className: "help-item-title",
+                            className: "help-dialog-item-title",
                             innerHTML: object["module"].help()[object.article].title
                         });
                         dialog.addItem({
                             type: HTML.DIV,
-                            className: "help-item-body",
+                            className: "help-dialog-item-body",
                             innerHTML: object["module"].help()[object.article].body
                         });
                     }
@@ -62,7 +62,7 @@ function HelpHolder(main) {
                             title = title || modules[i].type;
                             dialog.addItem({
                                 type:HTML.DIV,
-                                className:"help-module-title",
+                                className:"help-dialog-module-title",
                                 innerHTML: title
                             });
                             for(var j in help) {
@@ -80,7 +80,7 @@ function HelpHolder(main) {
 
                                 dialog.addItem({
                                     type:HTML.DIV,
-                                    className:"help-module-item",
+                                    className:"help-dialog-module-item",
                                     enclosed:true,
                                     label:j + ". " + title,
                                     body:body

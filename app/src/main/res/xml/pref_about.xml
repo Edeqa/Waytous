@@ -5,6 +5,7 @@
     <PreferenceCategory
         android:key="category_general"
         android:title="General">
+
         <Preference
             android:defaultValue="true"
             android:key="about"
@@ -14,14 +15,24 @@
                 android:data="https://play.google.com/store/apps/details?id=com.edeqa.waytous" />
         </Preference>
 
-        <PreferenceScreen
+        <Preference
             android:defaultValue="true"
-            android:key="copyright"
-            android:summary="http://wayto.us"
-            android:title="Copyright">
+            android:key="about"
+            android:title="Waytous web service"
+            android:summary="http://wayto.us">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://wayto.us" />
+        </Preference>
+
+        <PreferenceScreen
+            android:defaultValue="true"
+            android:key="copyright"
+            android:summary="http://www.edeqa.com"
+            android:title="Copyright (c) 2017 Edeqa">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.edeqa.com" />
         </PreferenceScreen>
 
 
