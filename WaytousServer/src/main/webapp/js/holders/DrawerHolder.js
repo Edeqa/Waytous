@@ -35,7 +35,7 @@ function DrawerHolder(main) {
             },
             footer: {
                 className: "drawer-footer-label",
-                innerHTML: main.appName + " &copy;2017 Edeqa\nBuild " + data.version
+                innerHTML: main.appName + " &copy;2017 <a href=\"http://www.edeqa.com\" target=\"_blank\">Edeqa</a>\nBuild " + data.version
             }
         }, main.layout);
 

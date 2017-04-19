@@ -105,7 +105,7 @@ function Main() {
                 },
                 footer: {
                     className: "drawer-footer-label",
-                    innerHTML: "${APP_NAME}" + " &copy;2017 Edeqa\nBuild " + data.version
+                    innerHTML: "${APP_NAME}" + " &copy;2017 <a href=\"http://www.edeqa.com\" target=\"_blank\">Edeqa</a>\nBuild " + data.version
                 }
             }, out);
 

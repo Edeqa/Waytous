@@ -91,7 +91,7 @@ button:active {
 .alert-icon {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
-    position: fixed;
+    position: absolute;
     top: 50px;
     z-index: 10000;
     background-color: transparent;
@@ -99,7 +99,7 @@ button:active {
     border: none;
     outline: none;
     color: red;
-    left: 240px;
+    left: 10px;
 }
 .alert-icon:hover {
     background: none;
@@ -309,6 +309,9 @@ button:active {
 }
 .drawer-footer-label {
     white-space: pre;
+}
+.drawer-footer-label a {
+    text-decoration: none;
 }
 .right {
     width: 100%;
@@ -713,9 +716,9 @@ p.bottom-desc {
     padding: 10px;
 }
 .alpha {
-    position: fixed;
+    position: absolute;
     top: -10px;
-    left: 260px;
+    left: 20px;
     z-index: 9999;
     color: red;
     font-size: 50px;
@@ -948,7 +951,6 @@ p.bottom-desc {
     top: auto;
     bottom: 10px;
     left: 10px;
-    opacity: 0.4;
 }
 .chat:hover {
     opacity: 1.0;
@@ -1655,7 +1657,6 @@ p.bottom-desc {
         width: 100% !important;
         max-height: 100%;
         border: none;
-        opacity: 1;
     }
     .chat-messages {
         padding: 8px;
