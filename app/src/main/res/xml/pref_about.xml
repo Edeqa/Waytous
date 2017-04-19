@@ -11,17 +11,17 @@
             android:title="@string/app_name">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://play.google.com/store/apps/details?id=ru.wtg.whereaminow" />
+                android:data="https://play.google.com/store/apps/details?id=com.edeqa.waytous" />
         </Preference>
 
         <PreferenceScreen
             android:defaultValue="true"
             android:key="copyright"
-            android:summary="http://www.wtg.ru"
+            android:summary="http://wayto.us"
             android:title="Copyright">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.wtg.ru" />
+                android:data="http://wayto.us" />
         </PreferenceScreen>
 
 

@@ -1,0 +1,113 @@
+/**
+ * Created 1/19/17.
+ */
+
+.right {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow-y: auto;
+    width: 100%;
+}
+.content {
+    padding: 5px;
+    width: calc(100% - 10px);
+}
+.two_tables {
+    display:flex;
+    justify-content:space-between;
+}
+.two_tables_one {
+    width:48%
+}
+.inactive {
+    color: darkgray;
+}
+.highlight {
+    transition: 0.4s ease-in-out all;
+}
+.highlight:hover {
+    transition: 0.1s ease-in-out all;
+}
+.changed {
+    color: indianred;
+    background-color: cornsilk;
+}
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
+    background-color: lightcyan;
+}
+.th.option {
+    text-align: left;
+    width: 250px;
+}
+.td.th {
+    text-align: left;
+    width: 250px;
+}
+.td.option {
+    text-align: left;
+    border: none;
+}
+.td.option input {
+    width: 250px;
+}
+.question {
+    font-weight: bold;
+    color: red;
+}
+
+
+
+@media screen and (max-width: 1000px) {
+    button {
+        font-size: 16px;
+        min-width: 100px;
+        border-style: solid;
+        border-radius: 10px;
+        margin: 1px;
+        padding: 10px;
+    }
+
+    /* CLASSES */
+    .alert {
+        margin: 0px;
+    }
+    .content {
+        padding:0px;
+        margin-top: 64px;
+        width: 100%;
+    }
+    .two_tables_one {
+        width:100%
+    }
+    .two_tables {
+        display:inline;
+        justify-content:space-between
+    }
+    .buttons {
+        text-align: center;
+    }
+    .td.th {
+        width: 50%;
+    }
+    .th.option {
+        text-align: left;
+        width: 40%;
+    }
+    .td.option input {
+        width: 100%;
+        border-style: solid;
+        border-width: 1px;
+        font-size:16px;
+        height: 25px;
+    }
+
+    /* media specific classes */
+    .hideable {
+        display: none;
+    }
+
+}

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Waytogo</string>
+    <string name="app_name">Waytous</string>
     <string name="title_activity_main">@string/app_name</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -9,8 +9,8 @@
 
     <string name="app_information">Information</string>
     <string name="caught_an_exception_s">Caught an exception <b>\"%1$s\"</b></string>
-    <string name="email" translatable="false"><![CDATA[ORW support <support@wtg.ru>]]></string>
-    <string name="uncaught_exception_in_wain" formatted="false">Uncaught exception in WAIN %s.%d</string>
+    <string name="email" translatable="false"><![CDATA[ORW support <support@wayto.us]]></string>
+    <string name="uncaught_exception_in_waytous" formatted="false">Uncaught exception in Waytous %s.%d</string>
     <string name="send_report_about_an_error">Send report about an error</string>
     <string name="restart">Restart</string>
     <string name="report">Report</string>

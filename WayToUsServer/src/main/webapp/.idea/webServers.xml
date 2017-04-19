@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="ef969c7d-f3c0-4fdc-b651-71654f7e5c76" name="Inchem" url="http://inchem.kstu.ru:8080">
+        <fileTransfer host="inchem.kstu.ru" port="22" rootFolder="/home/wtiger" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

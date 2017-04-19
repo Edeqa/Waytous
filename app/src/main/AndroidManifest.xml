@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="ru.wtg.whereaminow">
+    package="com.edeqa.waytous">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -12,7 +12,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <permission
-        android:name="ru.wtg.whereaminow.permission.MAPS_RECEIVE"
+        android:name="com.edeqa.waytous.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
     <uses-feature
@@ -20,7 +20,7 @@
         android:required="true" />
 
     <application
-        android:name=".State"
+        android:name="com.edeqa.waytous.State"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -45,7 +45,7 @@
             tools:replace="android:value" />
 
         <service
-            android:name=".WhereAmINowService"
+            android:name=".WaytousService"
             android:enabled="true"
             android:exported="true"/>
 
@@ -70,7 +70,7 @@
                 <data
                     android:host="*"
                     android:pathPrefix="/track/"
-                    android:scheme="wain"/>
+                    android:scheme="waytous"/>
                 <data
                     android:host="*"
                     android:pathPrefix="/track/"
@@ -100,7 +100,7 @@
             android:theme="@style/AppTheme.Dialog"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.edeqa.waytous.SettingsActivity"
             android:label="@string/settings"
             android:theme="@style/AppTheme" />
 
@@ -118,14 +118,14 @@
             android:theme="@style/Theme.Intro" />
 
         <service
-            android:name=".NotificationIDService">
+            android:name="com.edeqa.waytous.NotificationIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name=".NotificationService">
+            android:name="com.edeqa.waytous.NotificationService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>

@@ -1,1 +1,1 @@
-include ':app', ':WhereAmINowServer'
+include ':app', ':WayToUsServer'
