@@ -26,7 +26,7 @@ function MarkerHolder(main) {
         };
 
         var marker = new google.maps.Marker({
-            position: u.latLng(user.location),
+            position: utils.latLng(user.location),
             title: user.properties ? user.properties.getDisplayName() : "",
             icon:icon,
             optimized:false,
@@ -107,13 +107,13 @@ function MarkerHolder(main) {
             var marker = this.views.marker.marker;
             var prev = this.locations[this.locations.length-2];
 
-            var startPosition = u.latLng(prev);
-            var finalPosition = u.latLng(location);
+            var startPosition = utils.latLng(prev);
+            var finalPosition = utils.latLng(location);
 
             var startRotation = prev.coords.heading;
             var finalRotation = location.coords.heading;
 
-            u.smoothInterpolated(1000, function(time,value) {
+            utils.smoothInterpolated(1000, function(time,value) {
 
                 var currentPosition = new google.maps.LatLng(
                     startPosition.lat()*(1-time) + finalPosition.lat()*time,
@@ -139,7 +139,7 @@ function MarkerHolder(main) {
                 icon.rotation = location.coords.heading;
                 this.views.marker.marker.setIcon(icon);
             }
-            this.views.marker.marker.setPosition(u.latLng(location));
+            this.views.marker.marker.setPosition(utils.latLng(location));
         }
     }
 

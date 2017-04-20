@@ -236,7 +236,7 @@ function CameraHolder(main) {
             for(var i in main.users.users) {
                 var user = main.users.users[i];
                 if(user.properties && user.properties.selected && user.properties.active && user.location && user.location.coords) {
-                    finalBounds.extend(u.latLng(user.location));
+                    finalBounds.extend(utils.latLng(user.location));
                 }
             }
             main.map.fitBounds(finalBounds);
@@ -248,7 +248,7 @@ function CameraHolder(main) {
             var finalNE = finalBounds.getNorthEast();
             var finalSW = finalBounds.getSouthWest();
             clearInterval(task);
-            task = u.smoothInterpolated(1000, function(time,value) {
+            task = utils.smoothInterpolated(1000, function(time,value) {
 
                 var currentNE = new google.maps.LatLng(
                     startNE.lat()*(1-time) + finalNE.lat()*time,
@@ -267,7 +267,7 @@ function CameraHolder(main) {
         } else if(main.users.getCountSelected() == 1) {
             main.users.forAllUsers(function(number,user){
                 if(user.properties && user.properties.selected && user.properties.active) {
-                    var finalCenter = u.latLng(user.location);
+                    var finalCenter = utils.latLng(user.location);
                     if (finalCenter) {
                         var startCenter = main.map.getCenter();
 
@@ -279,7 +279,7 @@ function CameraHolder(main) {
                             && startZoom == finalZoom) return;
 
                         clearInterval(task);
-                        task = u.smoothInterpolated(1000, function(time,value) {
+                        task = utils.smoothInterpolated(1000, function(time,value) {
 
                             var currentCenter = new google.maps.LatLng(
                                 startCenter.lat()*(1-time) + finalCenter.lat()*time,

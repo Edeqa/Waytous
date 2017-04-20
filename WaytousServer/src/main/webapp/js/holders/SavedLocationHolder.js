@@ -138,7 +138,7 @@ function SavedLocationHolder(main) {
                         o[USER.BEARING] = 0;
                         o[USER.SPEED] = 0;
                         o[USER.NUMBER] = 10000 + number;
-                        o[USER.COLOR] = u.getDecimalColor("#00AA00");
+                        o[USER.COLOR] = utils.getDecimalColor("#00AA00");
                         o[USER.NAME] = loc.n;
                         o[REQUEST.TIMESTAMP] = loc.t;
                         o.markerIcon = {
@@ -241,7 +241,7 @@ function SavedLocationHolder(main) {
                             onclick: function() {
                                 var link = locationShareDialog.items[0].value;
                                 var popup = window.open("mailto:?subject=Here%20is%20that%20location&body="+link,"_blank");
-                                u.popupBlockerChecker.check(popup, function() {
+                                utils.popupBlockerChecker.check(popup, function() {
                                     shareBlockedDialog = shareBlockedDialog || u.dialog({
                                         items: [
                                             {type:HTML.DIV, innerHTML:u.lang.popup_blocked_dialog_1 },

@@ -14,8 +14,6 @@ function Summary() {
     var firebaseToken;
     var div;
 
-    var u = new Utils();
-
     var start = function() {
         div = document.getElementsByClassName("content")[0];
 
@@ -40,7 +38,7 @@ function Summary() {
           })
           .catch(function(err) {
             console.log('An error occurred while retrieving token. ', err);
-                u.showAlert("Data will not be updated. For instant updating you must allow notifications for this page.")
+                utils.showAlert("Data will not be updated. For instant updating you must allow notifications for this page.")
           });*/
     }
 
@@ -306,4 +304,3 @@ function Summary() {
         menu: title,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Summary()).start);

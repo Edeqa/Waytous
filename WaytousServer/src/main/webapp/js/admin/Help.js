@@ -5,8 +5,6 @@ function Help() {
 
     var title = "Help";
 
-    var u = new Utils();
-
     var start = function() {
         div = document.getElementsByClassName("content")[0];
 

@@ -140,7 +140,7 @@ function ButtonHolder(main) {
             case EVENTS.CHANGE_COLOR:
                 if(!object && object.constructor === String) {
                     var color = object || "#0000FF";
-                    color = u.getRGBAColor(color, 0.4)
+                    color = utils.getRGBAColor(color, 0.4)
                     this.views.button.button.style.backgroundColor = color;
                 } else if(object && object.constructor === Number) {
                     console.log("TODO NUMERIC")
@@ -161,7 +161,7 @@ function ButtonHolder(main) {
 
         if(!user || !user.properties) return;
         var color = user.color || user.properties.color || "#0000FF";
-        color = u.getRGBAColor(color, 0.4);
+        color = utils.getRGBAColor(color, 0.4);
 
         var task;
         var onlyTouch,clicked,firstClick;

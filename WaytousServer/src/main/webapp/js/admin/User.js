@@ -5,18 +5,13 @@ function User() {
 
     var title = "User";
 
-    var u = new Utils();
     var positions;
     var div;
     var groupId;
     var userNumber;
     var tableSummary;
 
-    var u = new Utils();
-
     var renderInterface = function() {
-
-//        div.appendChild(renderAlertArea());
 
         u.create("h2", "Summary", div);
 
@@ -101,7 +96,7 @@ function User() {
 
             tableSummary.add({ cells: [
                 { className: "th", innerHTML: "Color" },
-                { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }
+                { style: { backgroundColor: utils.getHexColor(snapshot.val().color), opacity: 0.5 } }
             ]});
 
             tableSummary.add({ cells: [
@@ -165,7 +160,7 @@ function User() {
                 cursor: "pointer"
             }}, u.create("td", {}, tr));
             u.create("td", snapshot.val().name, tr);
-            u.create("td", { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
+            u.create("td", { style: { backgroundColor: utils.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
             u.create("td", snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;", tr);
             var userChanged = u.create("td", "...", tr);
             var userOs = u.create("td", "...", tr);
@@ -268,4 +263,3 @@ function User() {
         title: "User",
     }
 }
-document.addEventListener("DOMContentLoaded", (new User()).start);

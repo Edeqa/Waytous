@@ -52,13 +52,13 @@ function DistanceHolder(main) {
             case EVENTS.SHOW_DISTANCE:
                 if(this != main.me && this.properties && this.properties.active) {
                     this.views.distance.show = true;
-                    u.saveForGroup("distance:show:" + this.number, true);
+                    u.saveForContext("distance:show:" + this.number, true);
                     show.call(this);
                 }
                 break;
             case EVENTS.HIDE_DISTANCE:
                 this.views.distance.show = false;
-                u.saveForGroup("distance:show:" + this.number);
+                u.saveForContext("distance:show:" + this.number);
                 if(this.views && this.views.distance && this.views.distance.distance) {
                     this.views.distance.distance.setMap(null);
                     this.views.distance.distance = null;
@@ -80,7 +80,7 @@ function DistanceHolder(main) {
         var view = {};
         view.user = myUser;
 
-        view.show = u.loadForGroup("distance:show:" + myUser.number);
+        view.show = u.loadForContext("distance:show:" + myUser.number);
 
         if(view.show) {
             show.call(myUser);
@@ -134,19 +134,19 @@ function DistanceHolder(main) {
                     map: main.map,
                     visible: false
                 });
-                this.views.distance.label = new u.label({map:main.map, className:"distance-label"});
+                this.views.distance.label = new utils.label({map:main.map, className:"distance-label"});
                 this.views.distance.label.bindTo("position", this.views.distance.marker, "position");
             }
 
             var points = [
-                u.latLng(main.me.location),
-                u.latLng(this.location)
+                utils.latLng(main.me.location),
+                utils.latLng(this.location)
             ];
             this.views.distance.distance.setPath(points);
 
             var markerPosition = google.maps.geometry.spherical.interpolate(points[0], points[1], .5);
             this.views.distance.marker.setPosition(markerPosition);
-            var title = u.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[1]));
+            var title = utils.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[1]));
             title = this.properties.getDisplayName() + "\n" + title;
             this.views.distance.label.set("text", title);
         }

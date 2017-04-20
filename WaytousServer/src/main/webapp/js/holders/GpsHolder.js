@@ -31,7 +31,7 @@ function GpsHolder(main) {
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 if(main.me.location) {
-                    var message = u.locationToJson(main.me.location);
+                    var message = utils.locationToJson(main.me.location);
                     main.tracking.sendMessage(REQUEST.TRACKING, message);
                 }
                 //
@@ -181,12 +181,12 @@ function GpsHolder(main) {
             && last.coords
             && last.coords.accuracy
             && position.coords.accuracy > last.coords.accuracy
-            && google.maps.geometry.spherical.computeDistanceBetween(u.latLng(last), u.latLng(position)) < position.coords.accuracy) {
+            && google.maps.geometry.spherical.computeDistanceBetween(utils.latLng(last), utils.latLng(position)) < position.coords.accuracy) {
                 return;
         }
 console.log("POSITION",position);
         u.save("gps:last",u.cloneAsObject(position));
-        var message = u.locationToJson(position);
+        var message = utils.locationToJson(position);
         if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
         main.me.addLocation(position);
     }

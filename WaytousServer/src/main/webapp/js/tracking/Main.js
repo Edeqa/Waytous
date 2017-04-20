@@ -37,14 +37,14 @@ function Main() {
 //            return;
 
             var a = document.createElement("script");
-            a.setAttribute("src","/js/helpers/Utils.js");
+            a.setAttribute("src","/js/helpers/Edequate.js");
             a.setAttribute("onload","preloaded()");
             document.head.appendChild(a);
 //        }
     }
 
     preloaded = function(){
-        window.u = new Utils(main);
+        window.u = new Edequate({export:true, origin:"waytous"});
 
         main.appName = "${APP_NAME}";
         main.layout = document.body;
@@ -176,6 +176,7 @@ function Main() {
             "https://www.gstatic.com/firebasejs/3.7.4/firebase-database.js",
             // "https://code.jquery.com/jquery-3.1.1.min.js",
             "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js", // https://cdnjs.com/libraries/fingerprintjs2
+            "/js/helpers/Utils.js",
             "/js/helpers/MyUser",
             "/js/helpers/MyUsers",
             "/js/helpers/NoSleep.js",
@@ -227,12 +228,13 @@ function Main() {
                     progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
                     if(loaded == u.keys(files).length) {
                         console.warn("Preload finished: "+loaded+" files done.");
+                        window.utils = new Utils(main);
 
                         for(var i in ordered) {
                             holders[inordered[ordered[i]].type] = inordered[ordered[i]];
                         }
 
-                        u.getUuid(initialize.bind(main));
+                        utils.getUuid(initialize.bind(main));
                     }
                 },function(code, moduleName, event) {
                     console.log(code, moduleName, event.srcElement.src);

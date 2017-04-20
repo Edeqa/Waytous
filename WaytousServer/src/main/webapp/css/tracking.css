@@ -312,6 +312,7 @@ button:active {
 }
 .drawer-footer-label a {
     text-decoration: none;
+    color: inherit;
 }
 .right {
     width: 100%;
@@ -548,6 +549,8 @@ p.bottom-desc {
 .user-buttons-title {
 }
 .user-buttons-title-button {
+    left: auto !important;
+    right: 0px !important;
 }
 .user-buttons-title-button::before {
     content: "" !important;
@@ -773,7 +776,6 @@ p.bottom-desc {
     font-feature-settings: "liga" 1;
     font-style: normal;
     position: absolute;
-    right: 0px;
     top: 0px;
     padding: 5px;
     background: none;
@@ -791,7 +793,7 @@ p.bottom-desc {
 }
 .dialog-filter {
     position: absolute;
-    right: 24px;
+    right: 0px;
     top: 0px;
     background: none;
     border: none;
@@ -1276,6 +1278,11 @@ p.bottom-desc {
 .about-dialog-link {
     font-size: x-small;
     margin: 5px;
+    text-decoration: none;
+}
+.about-dialog-edeqa-link {
+    font-size: small;
+    margin: 3px;
     text-decoration: none;
 }
 

@@ -64,7 +64,7 @@ function TrackingFB(main) {
             opened = true;
             if(newTracking) {
                 put(REQUEST.REQUEST, REQUEST.NEW_TOKEN);
-                put(REQUEST.DEVICE_ID, u.getUuid());
+                put(REQUEST.DEVICE_ID, utils.getUuid());
             } else {
                 var parts = link.split("/");
                 var groupId = parts[parts.length-1];
@@ -72,7 +72,7 @@ function TrackingFB(main) {
 
                 put(REQUEST.REQUEST, REQUEST.JOIN_TOKEN);
                 put(REQUEST.TOKEN, groupId);
-                put(REQUEST.DEVICE_ID, u.getUuid());
+                put(REQUEST.DEVICE_ID, utils.getUuid());
             }
             put(REQUEST.MODEL, navigator.appCodeName );
             put(REQUEST.MANUFACTURER, navigator.appCodeName);
@@ -91,8 +91,8 @@ function TrackingFB(main) {
                 case RESPONSE.STATUS_CHECK:
                     if(RESPONSE.CONTROL) {
                         var control = o[RESPONSE.CONTROL];
-                        var deviceId = u.getUuid();
-                        var hash = u.getEncryptedHash(control +":"+ deviceId);
+                        var deviceId = utils.getUuid();
+                        var hash = utils.getEncryptedHash(control +":"+ deviceId);
                         put(REQUEST.REQUEST, REQUEST.CHECK_USER);
                         put(REQUEST.HASH, hash);
                         send();

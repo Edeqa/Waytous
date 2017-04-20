@@ -61,7 +61,7 @@ function TrackingHolder(main) {
     }
 
     function perform(json){
-        var loc = u.jsonToLocation(json);
+        var loc = utils.jsonToLocation(json);
         var number = json[USER.NUMBER];
         main.users.forUser(number, function(number,user){
             user.addLocation(loc);
@@ -102,8 +102,9 @@ function TrackingHolder(main) {
             case EVENTS.MAP_READY:
                 drawerItemNew.show();
                 var group = window.location.pathname.split("/")[2];
-//                var groupOld = u.loadForGroup("group");
+//                var groupOld = u.loadForContext("group");
                 if(group) {
+                    u.context = group;
                     var self = this;
                     setTimeout(function(){
                         u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
@@ -117,6 +118,7 @@ function TrackingHolder(main) {
                 }, 0);
                 break;
             case EVENTS.TRACKING_ACTIVE:
+                u.context = main.tracking.getToken();
                 document.title = main.appName + " - " + main.tracking.getToken();
                 if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
                     drawerItemShare.enable();
@@ -179,7 +181,7 @@ function TrackingHolder(main) {
                         user.removeViews();
                     });
                     main.tracking && main.tracking.stop();
-                    u.saveForGroup("group");
+                    u.saveForContext("group");
                 }
                 break;
             case EVENTS.SHARE_LINK:
@@ -195,7 +197,7 @@ function TrackingHolder(main) {
                         label: "OK",
                         onclick: function() {
                             var popup = window.open("mailto:?subject=Follow%20me%20at%20Wayto.us&body="+main.tracking.getTrackingUri(),"_blank");
-                            u.popupBlockerChecker.check(popup, function() {
+                            utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
                                     items: [
                                         {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
@@ -246,13 +248,13 @@ function TrackingHolder(main) {
         if(a[2]) {
             a[2] = a[2].toUpperCase();
 
-//            var groupOld = u.loadForGroup("group");
+//            var groupOld = u.loadForContext("group");
             window.history.pushState({}, null, a.join("/"));
 //            window.history.pushState({}, null, "/track/" + token);
 
             main.fire(EVENTS.TRACKING_JOIN, window.location.href);
             this.tracking.setLink(window.location.href);
-            u.saveForGroup("group",a[2]);
+            u.saveForContext("group",a[2]);
         } else {
             progressTitle.innerHTML = u.lang.creating_group;
             console.log("NEW")
@@ -269,7 +271,7 @@ function TrackingHolder(main) {
             //progressTitle.innerHTML = u.lang.connecting;
             progress.open();
 
-            u.saveForGroup(TRACKING_URI, null);
+            u.saveForContext(TRACKING_URI, null);
             main.fire(EVENTS.TRACKING_CONNECTING);
         },
         onJoining: function(){
@@ -292,7 +294,7 @@ function TrackingHolder(main) {
         onAccept: function(o){
             // console.log("ONACCEPT",o);
             //FIXME
-//            u.saveForGroup(TRACKING_URI, this.tracking.getTrackingUri());
+//            u.saveForContext(TRACKING_URI, this.tracking.getTrackingUri());
             try {
                 if(main.tracking.getStatus() != EVENTS.TRACKING_ACTIVE) {
                     main.tracking.setStatus(EVENTS.TRACKING_ACTIVE);
@@ -301,7 +303,7 @@ function TrackingHolder(main) {
                 if (o[RESPONSE.TOKEN]) {
                     var token = o[RESPONSE.TOKEN];
                     main.fire(EVENTS.TOKEN_CREATED, token);
-                    u.saveForGroup("group", token);
+                    u.saveForContext("group", token);
                     window.history.pushState({}, null, "/track/" + token);
                     main.fire(EVENTS.SHOW_HELP, {module: main.holders.tracking, article: 1});
                     main.me.fire(EVENTS.SELECT_USER);
@@ -326,12 +328,12 @@ function TrackingHolder(main) {
         },
         onReject: function(reason){
             console.error("ONREJECT",reason);
-            u.saveForGroup(TRACKING_URI);
+            u.saveForContext(TRACKING_URI);
             main.fire(EVENTS.TRACKING_DISABLED);
             main.fire(EVENTS.TRACKING_ERROR, reason);
 
             progress.close();
-            u.saveForGroup("group");
+            u.saveForContext("group");
 
              u.dialog({
                 className: "alert-dialog",
@@ -353,7 +355,7 @@ function TrackingHolder(main) {
         },
         onStop: function(){
             console.log("ONSTOP");
-            u.saveForGroup(TRACKING_URI);
+            u.saveForContext(TRACKING_URI);
             main.fire(EVENTS.TRACKING_DISABLED);
         },
         onMessage: function(o){
@@ -460,7 +462,7 @@ function TrackingHolder(main) {
                                             var selected = 0;
                                             for(var i in json.files) {
                                                 var file = json.files[i];
-                                                var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
+                                                var name = (file.replace(/\..*$/,"").replace(/[\-_]/g," ")).toUpperCaseFirst();
                                                 sounds[file] = name;
                                                 u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
                                                 if((joinSound || defaultSound) == file) selected = i;

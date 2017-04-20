@@ -51,7 +51,7 @@ function TrackHolder(main) {
             case EVENTS.SHOW_TRACK:
                 if(this && this.views && this.views.track && this.properties && this.properties.active) {
                     this.views.track.show = true;
-                    u.saveForGroup("track:show:" + this.number, true);
+                    u.saveForContext("track:show:" + this.number, true);
                     show.call(this);
                 }
                 break;
@@ -67,7 +67,7 @@ function TrackHolder(main) {
     function createView(myUser){
         var view = {
             user:myUser,
-            show:u.loadForGroup("track:show:" + myUser.number)
+            show:u.loadForContext("track:show:" + myUser.number)
         };
         if(view.show) {
             show.call(myUser);
@@ -79,7 +79,7 @@ function TrackHolder(main) {
     function removeView(user){
         if(!user) return;
         user.views.track.show = false;
-        u.saveForGroup("track:show:" + user.number);
+        u.saveForContext("track:show:" + user.number);
         if(user.views && user.views.track && user.views.track.track) {
             user.views.track.track.setMap(null);
             user.views.track.track = null;
@@ -114,7 +114,7 @@ function TrackHolder(main) {
             if(!this.views.track.track) {
                 var points = [];
                 for(var i in this.locations) {
-                    points.push(u.latLng(this.locations[i]));
+                    points.push(utils.latLng(this.locations[i]));
                 }
                 this.views.track.track = new google.maps.Polyline({
                     path: points,
@@ -126,7 +126,7 @@ function TrackHolder(main) {
                 });
                 // this.views.track.track.setMap(main.map);
             } else {
-                this.views.track.track.getPath().push(u.latLng(this.location));
+                this.views.track.track.getPath().push(utils.latLng(this.location));
             }
 
         }

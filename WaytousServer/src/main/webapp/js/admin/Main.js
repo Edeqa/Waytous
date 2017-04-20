@@ -13,6 +13,7 @@ function Main() {
         "https://www.gstatic.com/firebasejs/3.6.8/firebase-auth.js",
         "https://www.gstatic.com/firebasejs/3.6.8/firebase-database.js",
         "Home",
+        "/js/helpers/Utils.js",
         "/js/helpers/Constants",
         "Create",
         "Group",
@@ -25,7 +26,7 @@ function Main() {
 
     function start() {
         var a = document.createElement("script");
-        a.setAttribute("src","/js/helpers/Utils.js");
+        a.setAttribute("src","/js/helpers/Edequate.js");
         a.setAttribute("onload","preloaded()");
         document.head.appendChild(a);
     }
@@ -37,7 +38,7 @@ function Main() {
             return;
         }
 
-        window.u = new Utils();
+        window.u = new Edequate({export:true, origin:"waytous"});
 
         var loaded = 0;
         for(var i in holderFiles) {
@@ -50,6 +51,7 @@ function Main() {
                 }
                 if(loaded == u.keys(holderFiles).length) {
                     console.log("Preload finished: "+loaded+" files done.");
+                    window.utils = new Utils();
                     initializeFirebase();
                 }
             });
@@ -115,7 +117,7 @@ function Main() {
             }, out);
 
             var right = u.create("div", {className:"right"}, out);
-            var dialogAbout = u.dialogAbout(right);
+            var dialogAbout = utils.dialogAbout(right);
 
             actionbar = u.actionBar({
                 title: holders[data.page].title,
@@ -134,7 +136,7 @@ function Main() {
                 var x = holderFiles[i].toLowerCase();
                 if(holders[x] && holders[x].menu) {
 
-                    var item = drawer.add(DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
+                    var item = drawer.add(u.DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
                         var holder = holders[this.instance];
                       u.clear(content);
 
@@ -150,7 +152,7 @@ function Main() {
                 }
             }
 
-            drawer.add(DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
+            drawer.add(u.DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
 
             actionbar.titleNode.innerHTML = holders[data.page].title;
             drawer.headerPrimary.innerHTML = holders[data.page].title;

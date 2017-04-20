@@ -5,8 +5,6 @@ function Home() {
 
     var title = "Home";
 
-    var u = new Utils();
-
     var start = function() {
         div = document.getElementsByClassName("content")[0];
 
@@ -22,4 +20,3 @@ function Home() {
         menu: title,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Home()).start);

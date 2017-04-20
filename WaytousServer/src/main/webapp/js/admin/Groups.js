@@ -13,8 +13,6 @@ function Groups() {
     var div;
     var groupNodes = {};
 
-    var u = new Utils();
-
     var renderInterface = function() {
 
         div = document.getElementsByClassName("content")[0];
@@ -106,6 +104,5 @@ function Groups() {
         menu: title,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Groups()).start);
 
 

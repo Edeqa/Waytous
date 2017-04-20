@@ -40,12 +40,12 @@ function MessagesHolder(main) {
             ],
             negative: {
                 onclick: function(){
-                    u.saveForGroup("message:chat");
+                    u.saveForContext("message:chat");
                 }
             },
             onopen: function() {
                 lastReadTimestamp = new Date().getTime();
-                u.saveForGroup("message:lastread", lastReadTimestamp);
+                u.saveForContext("message:lastread", lastReadTimestamp);
             },
             footer: {
                 type: HTML.DIV,
@@ -83,15 +83,15 @@ function MessagesHolder(main) {
                     if(chat.classList.contains("hidden")) {
                         main.fire(EVENTS.SHOW_MESSAGES);
                     } else {
-                        u.saveForGroup("message:chat");
+                        u.saveForContext("message:chat");
                         chat.close();
                     }
                 });
                 drawerItemChat.hide();
                 break;
             case EVENTS.TRACKING_ACTIVE:
-                if(u.loadForGroup("message:chat")) chat.open();
-                lastReadTimestamp = u.loadForGroup("message:lastread");
+                if(u.loadForContext("message:chat")) chat.open();
+                lastReadTimestamp = u.loadForContext("message:lastread");
 
                 drawerItemChat.show();
                 break;
@@ -108,7 +108,7 @@ function MessagesHolder(main) {
                 }
                 break;
             case EVENTS.SHOW_MESSAGES:
-                u.saveForGroup("message:chat", true);
+                u.saveForContext("message:chat", true);
                 chat.open();
                 chat.focus();
                 replyInput.focus();
@@ -155,7 +155,7 @@ function MessagesHolder(main) {
                         this.fire(EVENTS.SHOW_BADGE, EVENTS.INCREASE_BADGE);
                         drawerItemChat && drawerItemChat.increaseBadge();
                     } else {
-                        u.saveForGroup("message:lastread", object.timestamp);
+                        u.saveForContext("message:lastread", object.timestamp);
                     }
                 }
                 break;
@@ -244,7 +244,7 @@ function MessagesHolder(main) {
                                             var selected = 0;
                                             for(var i in json.files) {
                                                 var file = json.files[i];
-                                                var name = u.toUpperCaseFirst(file.replace(/\..*$/,"").replace(/[\-_]/g," "));
+                                                var name = (file.replace(/\..*$/,"").replace(/[\-_]/g," ")).toUpperCaseFirst();
                                                 incomingMessageSounds[file] = name;
                                                 u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
                                                 if((incomingMessageSound || defaultIncomingMessageSound) == file) selected = i;

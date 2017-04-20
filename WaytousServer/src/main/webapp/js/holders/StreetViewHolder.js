@@ -117,7 +117,7 @@ function StreetViewHolder(main) {
                         enableCloseButton: false
                 });
                 streetviewService.getPanorama({
-                    location: u.latLng(user.location),
+                    location: utils.latLng(user.location),
                     radius: 50
                 }, function(data, status) {
                     if (status == google.maps.StreetViewStatus.OK) {

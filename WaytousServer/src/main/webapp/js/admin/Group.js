@@ -15,8 +15,6 @@ function Group() {
     var tableSummary;
     var tableUsers;
 
-    var u = new Utils();
-
     var renderInterface = function() {
 
 //        div.appendChild(renderAlertArea());
@@ -168,7 +166,7 @@ function Group() {
                 cells: [
                     { innerHTML: snapshot.key },
                     { innerHTML: snapshot.val().name },
-                    { style: { backgroundColor: u.getHexColor(snapshot.val().color), opacity: 0.5 } },
+                    { style: { backgroundColor: utils.getHexColor(snapshot.val().color), opacity: 0.5 } },
                     { className: "media-hidden", sort: snapshot.val().created, innerHTML: snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;" },
                     { sort: 0, innerHTML: "..." },
                     { className: "media-hidden", innerHTML: "..." },
@@ -262,6 +260,5 @@ function Group() {
         title: title,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Group()).start);
 
 

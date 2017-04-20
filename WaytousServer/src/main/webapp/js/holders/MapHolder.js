@@ -67,7 +67,7 @@ function MapHolder(main) {
             rotateControl: true,
         });
         main.map = map;
-        u.label.prototype = new google.maps.OverlayView;
+        utils.label.prototype = new google.maps.OverlayView;
         main.fire(EVENTS.MAP_READY);
         main.map.addListener("zoom_changed", function() {
             main.fire(EVENTS.CAMERA_ZOOM, main.map.getZoom());

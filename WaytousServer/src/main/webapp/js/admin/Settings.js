@@ -5,8 +5,6 @@ function Settings() {
 
     var title = "Settings";
 
-    var u = new Utils();
-
     var start = function() {
         div = document.getElementsByClassName("content")[0];
 
@@ -21,4 +19,3 @@ function Settings() {
         menu: title,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Settings()).start);

@@ -18,7 +18,7 @@ function DrawerHolder(main) {
 
     var start = function() {
 
-        var dialogAbout = u.dialogAbout(main.right);
+        var dialogAbout = utils.dialogAbout(main.right);
         drawer = new u.drawer({
             title: main.appName,
             subtitle: u.lang.be_always_on_the_same_way,

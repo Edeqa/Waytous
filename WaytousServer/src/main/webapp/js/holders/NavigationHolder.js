@@ -77,7 +77,7 @@ function NavigationHolder(main) {
                         menuItemShow.hide();
                     }
                     if(main.me.location && user.location) {
-                        var distance = google.maps.geometry.spherical.computeDistanceBetween(u.latLng(main.me.location), u.latLng(user.location))
+                        var distance = google.maps.geometry.spherical.computeDistanceBetween(utils.latLng(main.me.location), utils.latLng(user.location))
                         if(distance < 20) {
                             menuItemShow.hide();
                         }
@@ -100,7 +100,7 @@ function NavigationHolder(main) {
             case EVENTS.SHOW_NAVIGATION:
                 installation = true;
                 this.views.navigation.show = true;
-                u.saveForGroup("navigation:show:" + this.number, true);
+                u.saveForContext("navigation:show:" + this.number, true);
                 main.toast.show(u.lang.setting_up_direction, -1);
                 update.call(this);
                 break;
@@ -117,7 +117,7 @@ function NavigationHolder(main) {
         var view = {};
         view.user = user;
 
-        view.show = u.loadForGroup("navigation:show:" + user.number);
+        view.show = u.loadForContext("navigation:show:" + user.number);
 
         if(view.show) {
             update.call(user);
@@ -130,7 +130,7 @@ function NavigationHolder(main) {
         if(!user) return;
         main.toast.hide();
         user.views.navigation.show = false;
-        u.saveForGroup("navigation:show:" + user.number);
+        u.saveForContext("navigation:show:" + user.number);
         if(user.views && user.views.navigation && user.views.navigation.track) {
             user.views.navigation.track.setMap(null);
             user.views.navigation.track = null;
@@ -259,12 +259,12 @@ function NavigationHolder(main) {
             this.views.navigation.track.setPath(points);
             this.views.navigation.trackCenter.setPath(points);
 
-            var mePosition = u.latLng(main.me.location);
-            var userPosition = u.latLng(this.location);
+            var mePosition = utils.latLng(main.me.location);
+            var userPosition = utils.latLng(this.location);
 
 
-            var markerPosition = u.findPoint(points);
-            var bounds = u.reduce(main.map.getBounds(), 0.8);
+            var markerPosition = utils.findPoint(points);
+            var bounds = utils.reduce(main.map.getBounds(), 0.8);
 
             if(!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
                 if(!bounds.contains(markerPosition)) {
@@ -272,13 +272,13 @@ function NavigationHolder(main) {
                     while(!bounds.contains(markerPosition)) {
                         fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
                         if (fract < 0 || fract > 1) break;
-                        markerPosition = u.findPoint(points, fract);
+                        markerPosition = utils.findPoint(points, fract);
                     }
                 }
             }
 
             this.views.navigation.marker.setPosition(markerPosition);
-//            var title = u.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[points.length-1]));
+//            var title = utils.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[points.length-1]));
             title = this.properties.getDisplayName() + "\n" + title;
             this.views.navigation.label.set("text", title);
 
@@ -494,7 +494,7 @@ function NavigationHolder(main) {
 
     function createTrack() {
 
-        var points = [u.latLng(main.me.location), u.latLng(this.location)];
+        var points = [utils.latLng(main.me.location), utils.latLng(this.location)];
 
         this.views.navigation.track = new google.maps.Polyline({
             geodesic: true,
@@ -516,7 +516,7 @@ function NavigationHolder(main) {
             map: main.map,
             visible: false
         });
-        this.views.navigation.label = new u.label({
+        this.views.navigationtils.label = new utils.label({
             map:main.map,
             className:"navigation-label",
             style: {backgroundColor:this.properties.color},

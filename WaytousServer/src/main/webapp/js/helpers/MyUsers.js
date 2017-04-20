@@ -12,13 +12,13 @@ function MyUsers(main) {
             user = new MyUser(main);
             user.number = json[RESPONSE.NUMBER];
             if (json[USER.COLOR]){
-                user.color = u.getHexColor(json[USER.COLOR]);
+                user.color = utils.getHexColor(json[USER.COLOR]);
             }
             if (json[USER.NAME]){
                 user.name = json[USER.NAME];
             }
             if (json[USER.PROVIDER]) {
-                var location = u.jsonToLocation(json);
+                var location = utils.jsonToLocation(json);
                 user.addLocation(location);
             }
             users[json[RESPONSE.NUMBER]] = user;

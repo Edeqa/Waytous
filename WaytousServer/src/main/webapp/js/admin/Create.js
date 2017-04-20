@@ -7,8 +7,6 @@ function Create() {
 
     var inputId,inputRequiresPassword,inputPassword,inputWelcomeMessage,inputPersistent,inputTtl,inputDismissInactive,inputDelay;
 
-    var u = new Utils();
-
     var start = function() {
 
         div = document.getElementsByClassName("content")[0];
@@ -125,4 +123,3 @@ function Create() {
         menu: title,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Create()).start);
