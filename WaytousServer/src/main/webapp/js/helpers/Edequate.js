@@ -1221,7 +1221,6 @@ function Edequate(options) {
          });
          appendTo.insertBefore(layout,appendTo.firstChild);
 
-
          layout.frame = u.create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
          layout.frame.contentWindow.addEventListener("resize",function(){
             if(!layout.resizeTask) layout.resizeTask = setTimeout(function(){

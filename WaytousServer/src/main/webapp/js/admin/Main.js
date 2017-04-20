@@ -162,7 +162,7 @@ function Main() {
                  }
             }, right);
             content = u.create(HTML.DIV, {className: "content"}, right);
-          u.create(HTML.DIV, {className:"alert"}, right);
+           u.create(HTML.DIV, {className:"alert"}, right);
 
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();

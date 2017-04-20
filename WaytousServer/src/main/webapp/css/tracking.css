@@ -860,6 +860,7 @@ p.bottom-desc {
     width: 100%;
     text-align: center;
     justify-content: center;
+    flex: 1 0;
 }
 .dialog-item-input {
     text-align: left;
