@@ -502,7 +502,6 @@ function Utils(main) {
        }, appendTo);
     }
 
-
     return {
         showAlert: showAlert,
         getHexColor: getHexColor,

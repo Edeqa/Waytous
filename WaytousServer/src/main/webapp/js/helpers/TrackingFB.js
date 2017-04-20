@@ -214,7 +214,11 @@ function TrackingFB(main) {
                     return;
                 }
                 put(REQUEST.TIMESTAMP, new Date().getTime());
-                xhr.send(JSON.stringify(json));
+                try {
+                    xhr.send(JSON.stringify(json));
+                } catch(e) {
+                    console.error(e);
+                }
                 json = {};
             };
             xhr.open("POST", link, true);

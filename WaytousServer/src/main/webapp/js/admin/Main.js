@@ -3,15 +3,15 @@
  */
 
 function Main() {
+    var firebaseVersion = "3.8.0";
     var drawer;
     var content;
 
     var holders = {};
     var holderFiles = [
-        "https://code.jquery.com/jquery-3.1.1.min.js",
-        "https://www.gstatic.com/firebasejs/3.6.8/firebase-app.js",
-        "https://www.gstatic.com/firebasejs/3.6.8/firebase-auth.js",
-        "https://www.gstatic.com/firebasejs/3.6.8/firebase-database.js",
+        "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js",
+        "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
+        "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
         "Home",
         "/js/helpers/Utils.js",
         "/js/helpers/Constants",
@@ -38,7 +38,15 @@ function Main() {
             return;
         }
 
-        window.u = new Edequate({export:true, origin:"waytous"});
+        window.u = new Edequate({exportConstants:true, origin:"waytous"});
+
+        u.loading("Loading resources...");
+
+        u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons", async:"", defer:""}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/tracking.css", async:"", defer:""}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css", async:"", defer:""}, document.head);
+
 
         var loaded = 0;
         for(var i in holderFiles) {
@@ -52,18 +60,40 @@ function Main() {
                 if(loaded == u.keys(holderFiles).length) {
                     console.log("Preload finished: "+loaded+" files done.");
                     window.utils = new Utils();
-                    initializeFirebase();
+
+                    initialize();
+
                 }
             });
         }
     }
 
-    function initializeFirebase() {
+    function initialize() {
 
-        u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons"}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/tracking.css"}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css"}, document.head);
+        if(!firebase || !firebase.database || !firebase.auth) {
+            console.error("Failed firebase loading, trying again...");
+//debugger;
+            var files = [];
+            if(!firebase) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js");
+            if(!firebase.database) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js");
+            if(!firebase.auth) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js");
+
+            var loaded = 0;
+            var failed = false;
+            for(var i in files) {
+                var file = files[i];
+                u.require(file, function(e) {
+                    if(failed) return;
+                    loaded++;
+                    progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
+                    if(loaded == u.keys(files).length) {
+                        initialize.call(main);
+                    }
+                });
+            }
+
+            return;
+        }
 
         firebase.initializeApp(data.firebase_config);
         database = firebase.database();
@@ -76,6 +106,8 @@ function Main() {
     }
 
     function resign(callback){
+
+        u.loading("Signing in...");
         firebase.auth().signInWithCustomToken(sign.token).then(function(e){
             callback();
         //            console.log("AAA",e)
@@ -158,7 +190,7 @@ function Main() {
             actionbar.titleNode.innerHTML = holders[data.page].title;
             drawer.headerPrimary.innerHTML = holders[data.page].title;
             holders[data.page].start();
-
+            u.loading.hide();
         } catch(e) {
             console.error(e);
         }

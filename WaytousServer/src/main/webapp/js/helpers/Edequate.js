@@ -92,6 +92,8 @@ function Edequate(options) {
         SECTION_LAST: 9
     };
 
+    var self = this;
+
     URL = function(link) {
         var href = link;
         var p = link.split("://");
@@ -1529,6 +1531,7 @@ function Edequate(options) {
         if(options.caption.items) {
             table.head = create(HTML.DIV, {className:options.caption.className}, table);
             table.head.cells = [];
+//            var div = create(HTML.DIV, {className:"tr"}, table.head);
             for(var i in options.caption.items) {
                 var item = options.caption.items[i];
                 item.className = "th"+(item.className ? " "+item.className : "");
@@ -1733,8 +1736,29 @@ function Edequate(options) {
         return table;
     }
 
+    var loadingHolder;
+    function loading(progress) {
+        loadingHolder = loadingHolder || create("div", {style:{
+            position: "fixed", top: 0, bottom: 0, left: 0, right: 0,
+            zIndex: 10000, backgroundColor: "white", display: "flex", flexDirection: "column",
+            justifyContent: "center", alignItems: "center", fontFamily: "sans-serif"
+        }}, document.body)
+            .place(HTML.DIV, {className:"loading-progress-circle"})
+            .place(HTML.DIV, {className:"loading-progress-title", innerHTML: "Loading, please wait... "})
+            .place(HTML.DIV, {className:"loading-progress-subtitle hidden"});
+        if(progress) {
+            loadingHolder.lastChild.innerHTML = progress;
+            loadingHolder.lastChild.show();
+        } else {
+            loadingHolder.lastChild.hide();
+        }
+    }
+    loading.hide = function() {
+        loadingHolder.hide();
+    }
+
     options = options || {};
-    if(options.export) {
+    if(options.exportConstants) {
         window.HTML = HTML;
         window.ERRORS = ERRORS;
         window.DRAWER = DRAWER;
@@ -1758,6 +1782,7 @@ function Edequate(options) {
         keys: keys,
         lang:lang,
         load:load,
+        loading:loading,
         loadForContext:loadForContext,
         notification:notification,
         origin:options.origin || "edequate",

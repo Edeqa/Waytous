@@ -432,6 +432,7 @@ button:active {
 }
 .thead {
     display: table-header-group;
+    background: #ffffdd;
 }
 .tbody {
     display: table-row-group;
@@ -439,7 +440,6 @@ button:active {
 .th {
     display: table-cell;
     text-align: center;
-    background: #ffffdd;
     padding: 2px;
     padding-top: 5px;
     padding-bottom: 5px;
@@ -702,6 +702,25 @@ p.bottom-desc {
 @keyframes rotate {
     0%    { transform: rotate(0deg); }
     100%  { transform: rotate(360deg); }
+}
+.loading-progress-circle {
+    margin: 20px;
+    max-height: 28px;
+    max-width: 28px;
+    min-height: 28px;
+    min-width: 28px;
+    animation: rotate 0.8s infinite linear;
+    border: 8px solid #888888;
+    border-right-color: transparent;
+    border-radius: 50%;
+}
+.loading-progress-title {
+    white-space: nowrap;
+    padding: 10px;
+}
+.loading-progress-subtitle {
+    white-space: nowrap;
+    padding: 10px;
 }
 .progress-dialog-circle {
     margin: 20px;

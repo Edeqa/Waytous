@@ -97,7 +97,7 @@ function PropertiesHolder(main) {
                 break;
             case EVENTS.CHANGE_NAME:
                 if(this.properties)this.properties.name = object;
-                if(this.number == main.me.number) {
+                if(main.tracking && this.number == main.me.number) {
                     main.tracking.put(USER.NAME, object);
                     main.tracking.send(REQUEST.CHANGE_NAME);
                 }

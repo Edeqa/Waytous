@@ -21,11 +21,9 @@ function MapHolder(main) {
     u.create("div", {id: "map"}, main.right);
 
     function start() {
-        u.create(HTML.SCRIPT, {
-            src: "https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap&libraries=geometry,places",
-            async: "",
-            defer: ""
-        }, document.head);
+        setTimeout(function(){
+            u.require("https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap&libraries=geometry,places");
+        }, 0);
         buttonRecenter = u.create(HTML.BUTTON, {
             className: "map-recenter hidden",
             innerHTML: u.lang.re_center,
@@ -68,7 +66,7 @@ function MapHolder(main) {
         });
         main.map = map;
         utils.label.prototype = new google.maps.OverlayView;
-        main.fire(EVENTS.MAP_READY);
+        main.fire(EVENTS.MAP_READY, main.map);
         main.map.addListener("zoom_changed", function() {
             main.fire(EVENTS.CAMERA_ZOOM, main.map.getZoom());
         });

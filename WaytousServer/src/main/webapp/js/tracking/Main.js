@@ -5,12 +5,12 @@
 // git filter-branch --force --index-filter "git rm -r --cached --ignore-unmatch WaytousServer/build" --prune-empty --tag-name-filter cat -- --all
 
 function Main() {
+    var firebaseVersion = "3.8.0";
     var holders = {};
     var users;
     var me;
     var layout;
     var right;
-    var loading;
     var origin;
     var main = w = this;
     var progress;
@@ -44,7 +44,7 @@ function Main() {
     }
 
     preloaded = function(){
-        window.u = new Edequate({export:true, origin:"waytous"});
+        window.u = new Edequate({exportConstants:true, origin:"waytous"});
 
         main.appName = "${APP_NAME}";
         main.layout = document.body;
@@ -55,14 +55,7 @@ function Main() {
             loadResources();
         },0);
 
-        loading = u.create("div", {style:{
-            position: "fixed", top: 0, bottom: 0, left: 0, right: 0,
-            zIndex: 10000, backgroundColor: "white", display: "flex", flexDirection: "column",
-            justifyContent: "center", alignItems: "center", fontFamily: "sans-serif"
-        }}, main.layout);
-        u.create("div", {className:"progress-circle"}, loading);
-        u.create("div", {className:"progress-title", innerHTML:"Service loading, please wait... "}, loading);
-        progress = u.create("div", {className:"progress-title", innerHTML:"0%"}, loading);
+        u.loading("0%");
 //        window.onload = function() {
 //            window.scrollTo(0, 1);
 //            document.addEventListener("touchmove", function(e) { e.preventDefault() });
@@ -171,10 +164,9 @@ function Main() {
         main.right.appendChild(main.toast);
 
         var files = [
-            "https://www.gstatic.com/firebasejs/3.7.4/firebase-app.js", // https://firebase.google.com/docs/web/setup
-            "https://www.gstatic.com/firebasejs/3.7.4/firebase-auth.js",
-            "https://www.gstatic.com/firebasejs/3.7.4/firebase-database.js",
-            // "https://code.jquery.com/jquery-3.1.1.min.js",
+            "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js", // https://firebase.google.com/docs/web/setup
+            "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
+            "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
             "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js", // https://cdnjs.com/libraries/fingerprintjs2
             "/js/helpers/Utils.js",
             "/js/helpers/MyUser",
@@ -225,7 +217,7 @@ function Main() {
                     if(e && e.type) {
                         inordered[e.moduleName] = e;
                     }
-                    progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
+                    u.loading(Math.ceil(loaded / files.length * 100) + "%");
                     if(loaded == u.keys(files).length) {
                         console.warn("Preload finished: "+loaded+" files done.");
                         window.utils = new Utils(main);
@@ -240,7 +232,7 @@ function Main() {
                     console.log(code, moduleName, event.srcElement.src);
                     if(failed) return;
                     failed = true;
-                    loading.hide();
+                    u.loading.hide();
 
                     u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(moduleName,code));
 //                    main.alert.items[1].body.innerHTML = u.lang.error_while_loading_s_code_d.format(moduleName,code);
@@ -263,16 +255,13 @@ function Main() {
 
     function initialize() {
 
-        loading.classList.add("hidden");
-        main.alpha = u.create("div", {className:"alpha", innerHTML:"&alpha;"}, main.right);
-
         if(!firebase || !firebase.database || !firebase.auth) {
             console.error("Failed firebase loading, trying again...");
 //debugger;
             var files = [];
-            if(!firebase) files.push("https://www.gstatic.com/firebasejs/3.6.8/firebase-app.js");
-            if(!firebase.database) files.push("https://www.gstatic.com/firebasejs/3.6.8/firebase-database.js");
-            if(!firebase.auth) files.push("https://www.gstatic.com/firebasejs/3.6.8/firebase-auth.js");
+            if(!firebase) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js");
+            if(!firebase.database) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js");
+            if(!firebase.auth) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js");
 
             var loaded = 0;
             var failed = false;
@@ -281,7 +270,7 @@ function Main() {
                 u.require(file, function(e) {
                     if(failed) return;
                     loaded++;
-                    progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
+                    u.loading(Math.ceil(loaded / files.length * 100) + "%");
                     if(loaded == u.keys(files).length) {
                         initialize.call(main);
                     }
@@ -300,6 +289,9 @@ function Main() {
         firebase.initializeApp(data.firebase_config);
         database = firebase.database();
 //throw new Error("A");
+
+        u.loading.hide();
+        main.alpha = u.create("div", {className:"alpha", innerHTML:"&alpha;"}, main.right);
 
         for(var x in holders){
             try {

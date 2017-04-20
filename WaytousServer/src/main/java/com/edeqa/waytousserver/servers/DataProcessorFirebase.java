@@ -339,12 +339,12 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                                     refGroup.child(DATABASE_SECTION_USERS_DATA).child(""+check.getNumber()).updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                                                            response.put(RESPONSE_NUMBER, check.getNumber());
-                                                            response.put(RESPONSE_SIGN, customToken);
-                                                            conn.send(response.toString());
-                                                            conn.close();
-                                                            Common.log("WpFB", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken:"+customToken);
+                                                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                                                        response.put(RESPONSE_NUMBER, check.getNumber());
+                                                        response.put(RESPONSE_SIGN, customToken);
+                                                        conn.send(response.toString());
+                                                        conn.close();
+                                                        Common.log("WpFB", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken:"+customToken);
                                                         }
                                                     });
 
@@ -361,16 +361,16 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                             Common.log("WpFB", "onMessage:joinNotAuthenticated:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                             response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
+                                            conn.send(response.toString());
                                         }
 
                                     } catch(Exception e) {
                                         Common.log("WpFB", "onMessage:joinHashFailed:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
                                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                         response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
+                                        conn.send(response.toString());
                                         e.printStackTrace();
-
                                     }
-                                    conn.send(response.toString());
 
                                 } else { // join as new member
 
