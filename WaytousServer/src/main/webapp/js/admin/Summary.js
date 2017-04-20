@@ -16,6 +16,7 @@ function Summary() {
 
     var start = function() {
         div = document.getElementsByClassName("content")[0];
+        u.clear(div);
 
         renderInterface();
 //        start();
@@ -302,5 +303,6 @@ function Summary() {
         icon: "list",
         title: title,
         menu: title,
+        move:true,
     }
 }

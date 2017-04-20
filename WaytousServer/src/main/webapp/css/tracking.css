@@ -852,18 +852,18 @@ p.bottom-desc {
     flex: 1 0 40%;
     white-space: nowrap;
 }
-.dialog-item-input-input {
+.dialog-item-input-input, .dialog-item-input-password {
     font-size: 12px;
     padding-top: 5px;
     padding-bottom: 5px;
-    width: 100%;
+    width: 50%;
 }
 .dialog-item-input-textarea {
     font-size: 12px;
     padding-top: 5px;
     padding-bottom: 5px;
     height: 50px;
-    width: 100%;
+    width: 50%;
 }
 .dialog-item-input-checkbox {
 }

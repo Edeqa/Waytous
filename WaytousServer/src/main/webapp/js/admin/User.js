@@ -253,6 +253,7 @@ function User() {
            }
            this.page = "user" + "/" + groupId + "/" + userNumber;
            div = document.getElementsByClassName("content")[0];
+            u.clear(div);
 
            renderInterface();
             updateSummary();
@@ -261,5 +262,6 @@ function User() {
         page: "user",
         icon: "navigation",
         title: "User",
+        move:true,
     }
 }

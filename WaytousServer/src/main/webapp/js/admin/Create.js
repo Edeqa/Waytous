@@ -4,64 +4,55 @@
 function Create() {
 
     var title = "Create group";
+    var dialog;
 
     var inputId,inputRequiresPassword,inputPassword,inputWelcomeMessage,inputPersistent,inputTtl,inputDismissInactive,inputDelay;
 
     var start = function() {
 
-        div = document.getElementsByClassName("content")[0];
-
-        var form = u.create("form", null, div);
-
-        var table = u.create("div", {className: "table option" }, form);
-
-        var tbody = u.create("div", {className:"tbody"}, table);
-
-        var tr = u.create("div", {className:"tr"}, tbody);
-        u.create("div", {className:"th option", innerHTML:"ID"}, tr);
-        inputId = u.create("input", { oninput: validate_id }, u.create("div", {className:"td option"}, tr));
-
-        var tr = u.create("div", {className:"tr"}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Requires password"}, tr);
-        inputRequiresPassword = u.create("input", { type:"checkbox", onchange: function() {
-            trPassword.style.display = this.checked ? "" : "none";
-            inputPassword.focus();
-        } }, u.create("div", {className:"td option"}, tr));
-
-        var trPassword = u.create("div", {className:"tr", style:{display:"none"}}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Password"}, trPassword);
-        inputPassword = u.create("input", { type:"password" }, u.create("div", {className:"td option"}, trPassword));
-
-        var tr = u.create("div", {className:"tr"}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Welcome message"}, tr);
-        inputWelcomeMessage = u.create("input", {}, u.create("div", {className:"td option"}, tr));
-
-        var tr = u.create("div", {className:"tr"}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Persistent group"}, tr);
-        inputPersistent = u.create("input", { type:"checkbox", onchange: function() {
-            trTtl.style.display = this.checked ? "none" : ""
-        } }, u.create("div", {className:"td option"}, tr));
-
-        var trTtl = u.create("div", {className:"tr"}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Time to live, min"}, trTtl);
-        inputTtl = u.create("input", { oninput: validate_ttl }, u.create("div", {className:"td option"}, trTtl));
-
-        var tr = u.create("div", {className:"tr"}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Dismiss inactive users"}, tr);
-        inputDismissInactive = u.create("input", { type:"checkbox", onchange: function() {
-            trDelay.style.display = this.checked ? "" : "none";
-            inputDelay.focus();
-        } }, u.create("div", {className:"td option"}, tr));
-
-        var trDelay = u.create("div", {className:"tr", style: {display:"none"}}, tbody);
-        u.create("div", {className:"th option", innerHTML:"Delay to dismiss, sec"}, trDelay);
-        inputDelay = u.create("input", { onchange: validate_delay , title:"Minimum 300"}, u.create("div", {className:"td option"}, trDelay));
-
-        var div = u.create("div", {className:"buttons"}, div);
-        u.create("button", { type: "button", innerHTML:"OK", onclick: validate_submit}, div);
-        u.create("button", { type: "reset", innerHTML:"Clear"}, div);
-
-        inputId.focus();
+        div = document.getElementsByClassName("right")[0];
+        dialog = dialog || u.dialog({
+            title: "Create group",
+            className: "create-dialog",
+            items: [
+                { type: HTML.INPUT, label: "ID", oninput: validate_id },
+                { type: HTML.CHECKBOX, label: "Requires password", onchange: function() {
+                       dialog.items[2].parentNode[this.checked ? "show" : "hide"]();
+                       dialog.items[2].focus();
+                   } },
+                { type: HTML.PASSWORD, itemClassName: "hidden", label: "Password" },
+                { type: HTML.INPUT, label: "Welcome message" },
+                { type: HTML.CHECKBOX, label: "Persistent group", onchange: function() {
+                      dialog.items[5].parentNode[this.checked ? "hide" : "show"]();
+                      dialog.items[5].focus();
+                  } },
+                { type: HTML.INPUT, label: "Time to live, min", oninput: validate_ttl },
+                { type: HTML.CHECKBOX, label: "Dismiss inactive users", onchange: function() {
+                    dialog.items[7].parentNode[this.checked ? "show" : "hide"]();
+                  dialog.items[7].focus();
+                } },
+                { type: HTML.INPUT, itemClassName: "hidden", label: "Delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay },
+            ],
+            positive: {
+                label: "OK",
+                onclick: validate_submit
+            },
+            negative: {
+                label: "Cancel"
+            },
+            help: function() {
+                console.log("HELP");
+            }
+        }, div);
+        dialog.open();
+        inputId = dialog.items[0];
+        inputRequiresPassword = dialog.items[1];
+        inputPassword = dialog.items[2];
+        inputWelcomeMessage = dialog.items[3];
+        inputPersistent = dialog.items[4];
+        inputTtl = dialog.items[5];
+        inputDismissInactive = dialog.items[6];
+        inputDelay = dialog.items[7];
 
     }
 
@@ -83,6 +74,8 @@ function Create() {
         validate_id.call(inputId);
         validate_ttl.call(inputTtl);
         validate_delay.call(inputDelay);
+
+        if(!inputId.value) return;
 
         var ref = database.ref();
 

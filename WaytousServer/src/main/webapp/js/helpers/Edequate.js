@@ -49,6 +49,7 @@ function Edequate(options) {
         TEXT:"text",
         TEXTAREA:"textarea",
         HIDDEN:"hidden",
+        PASSWORD:"password",
         SELECT:"select",
         OPTION:"option",
         SUBMIT:"submit",
@@ -534,23 +535,23 @@ function Edequate(options) {
                 var type = HTML.INPUT;
                 if(item.type.toLowerCase() == HTML.TEXTAREA) type = HTML.TEXTAREA;
 
-                x = create(type, {
-                    type:item.type,
-                    className:"dialog-item-input-"+item.type + (item.className ? " "+item.className : ""),
-                    tabindex: i,
-                    value:item.value || "",
-                    onclick: function(e) { this.focus(); e.stopPropagation(); },
-                    onkeyup:function(e){
-                        if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
-                            dialog.close();
-                            if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
-                        } else if(e.keyCode == 27) {
-                            dialog.close();
-                            if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
-                        }
-                    },
+                item.tabindex = i;
+                item.className = "dialog-item-input-"+item.type + (item.className ? " "+item.className : "");
+                item.onclick = function(e) { this.focus(); e.stopPropagation(); };
+                item.onkeyup = function(e){
+                   if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
+                       dialog.close();
+                       if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
+                   } else if(e.keyCode == 27) {
+                       dialog.close();
+                       if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+                   }
+               };
+                item.value = item.value || "";
+                delete item.label;
+                delete item.labelClassName;
 
-                }, div);
+                x = create(type, item, div);
             }
             items.push(x);
 

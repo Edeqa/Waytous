@@ -7,6 +7,7 @@ function Help() {
 
     var start = function() {
         div = document.getElementsByClassName("content")[0];
+        u.clear(div);
 
         u.create("p", "To be implemented soon...", div);
 
@@ -18,6 +19,6 @@ function Help() {
         icon: "help_outline",
         title: title,
         menu: title,
+        move:true,
     }
 }
-document.addEventListener("DOMContentLoaded", (new Help()).start);

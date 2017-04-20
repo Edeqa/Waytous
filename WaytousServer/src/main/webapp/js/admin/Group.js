@@ -251,6 +251,7 @@ function Group() {
                 groupId = data.request[3];
             }
             div = document.getElementsByClassName("content")[0];
+            u.clear(div);
 
             renderInterface();
             updateSummary();
@@ -258,6 +259,7 @@ function Group() {
         },
         page: "group",
         title: title,
+        move:true,
     }
 }
 

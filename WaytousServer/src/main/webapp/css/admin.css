@@ -58,6 +58,14 @@
     font-weight: bold;
     color: red;
 }
+.create-dialog {
+    width: 400px;
+    max-width: 90%;
+}
+.settings-dialog {
+    width: 400px;
+    max-width: 90%;
+}
 
 
 

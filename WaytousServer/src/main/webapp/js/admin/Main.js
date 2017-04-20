@@ -138,12 +138,13 @@ function Main() {
 
                     var item = drawer.add(u.DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
                         var holder = holders[this.instance];
-                      u.clear(content);
 
-                      window.history.pushState({}, null, "/admin/" + holder.page);
+                    if(holder.move) {
+                          window.history.pushState({}, null, "/admin/" + holder.page);
+                          actionbar.titleNode.innerHTML = holder.title;
+                          drawer.headerPrimary.innerHTML = holder.title;
+                      }
 
-                      actionbar.titleNode.innerHTML = holder.title;
-                      drawer.headerPrimary.innerHTML = holder.title;
 
                       holder.start();
                       return false;
@@ -186,7 +187,9 @@ function Main() {
             actionbar.titleNode.innerHTML = holders[parts[2]].title;
             drawer.headerPrimary.innerHTML = holders[parts[2]].title;
             holders[parts[2]].start(parts);
-            window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
+            if(holders[parts[2]].move) {
+                window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
+            }
         }
     }
 

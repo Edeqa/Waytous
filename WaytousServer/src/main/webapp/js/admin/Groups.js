@@ -16,7 +16,7 @@ function Groups() {
     var renderInterface = function() {
 
         div = document.getElementsByClassName("content")[0];
-
+        u.clear(div);
 //        u.create("div", {className:"summary"}, div);
 //        u.create("h2", "Groups", div);
 
@@ -95,6 +95,7 @@ function Groups() {
 
     return {
         start: function() {
+
             renderInterface();
             updateData();
         },
@@ -102,6 +103,7 @@ function Groups() {
         icon: "list",
         title: title,
         menu: title,
+        move:true,
     }
 }
 

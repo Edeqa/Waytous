@@ -4,11 +4,23 @@
 function Settings() {
 
     var title = "Settings";
+    var dialog;
 
     var start = function() {
-        div = document.getElementsByClassName("content")[0];
+        div = document.getElementsByClassName("right")[0];
 
-        u.create("p", "To be implemented soon...", div);
+        dialog = dialog || u.dialog({
+            title: "Settings",
+            className: "settings-dialog",
+            items: [
+                { type: HTML.DIV, label: "To be implemented soon..." },
+            ],
+            positive: {
+                label: "OK",
+            },
+        }, div);
+        dialog.open();
+
    }
 
     return {
