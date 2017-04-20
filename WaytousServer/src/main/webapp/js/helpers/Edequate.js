@@ -1,5 +1,5 @@
 /**
- * Created 1/19/17.
+ * Edequate - javascript DOM and interface routines
  */
 
 function Edequate(options) {
