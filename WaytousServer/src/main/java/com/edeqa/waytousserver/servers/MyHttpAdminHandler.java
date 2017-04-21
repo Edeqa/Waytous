@@ -57,6 +57,7 @@ public class MyHttpAdminHandler implements HttpHandler {
         classes.add("AdminSettingsPageHolder");
         classes.add("AdminUserPageHolder");
         classes.add("AdminMainPageHolder");
+        classes.add("AdminLogsPageHolder");
 
         for(String s:classes){
             try {
@@ -88,17 +89,17 @@ public class MyHttpAdminHandler implements HttpHandler {
             AdminMainPageHolder main = (AdminMainPageHolder) holders.get(AdminMainPageHolder.HOLDER_TYPE);
             main.addRequest(parts);
             if (parts.size() > 3 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2)) && parts.get(parts.size()-1).equals("set")) {
-                html = holders.get(parts.get(2)).create(html,parts);
+                html = holders.get(parts.get(2)).create(html,parts,exchange);
             } else if (parts.size() > 2 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2))) {
                 main.addPart(parts.get(2));
-                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts);
+                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts,exchange);
             } else {
                 main.addPart("home");
-                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts);
+                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts,exchange);
             }
+            if(html == null) return;
 
             html.getBody().with(CLASS,"body");
-
 
             FirebaseAuth.getInstance().createCustomToken("Administrator").addOnSuccessListener(new OnSuccessListener<String>() {
                 @Override
@@ -126,7 +127,6 @@ public class MyHttpAdminHandler implements HttpHandler {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
 
                     // Send token back to client
                 }

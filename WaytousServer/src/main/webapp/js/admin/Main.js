@@ -18,6 +18,7 @@ function Main() {
         "Create",
         "Group",
         "Groups",
+        "Logs",
         "Settings",
         "Help",
         "User"

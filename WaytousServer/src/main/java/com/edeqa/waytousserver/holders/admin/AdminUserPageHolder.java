@@ -3,6 +3,7 @@ package com.edeqa.waytousserver.holders.admin;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,22 +35,12 @@ public class AdminUserPageHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
-    public HtmlGenerator create(HtmlGenerator html, ArrayList<String> query) {
+    public HtmlGenerator create(HtmlGenerator html, ArrayList<String> query,HttpExchange exchange) {
         this.html = html;
         html.clear();
 
-        header();
-
         return html;
     }
-
-    private void header() {
-
-        html.getHead().add(TITLE).with("User");
-        html.getHead().add(SCRIPT).with(SRC, "/js/admin/User.js");
-
-    }
-
 
     private boolean processQuery(Map<String, List<String>> query) {
         boolean processed = false;

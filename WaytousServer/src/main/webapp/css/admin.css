@@ -67,7 +67,8 @@
     width: 400px;
     max-width: 90%;
 }
-
+.table-logs {
+}
 
 
 @media screen and (max-width: 1000px) {

@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver.interfaces;
 
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
 
@@ -11,5 +12,5 @@ import java.util.ArrayList;
 public interface PageHolder {
 
     String getType();
-    HtmlGenerator create(HtmlGenerator html, ArrayList<String> query);
+    HtmlGenerator create(HtmlGenerator html, ArrayList<String> query, HttpExchange exchange);
 }

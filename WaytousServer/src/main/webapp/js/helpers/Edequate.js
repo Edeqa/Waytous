@@ -338,7 +338,7 @@ function Edequate(options) {
             name += ".js";
         }
         if(viaXhr) {
-            getRemote(name, function(xhr){
+            getRemote(name).then(function(xhr){
                 create(HTML.SCRIPT, {innerHTML: xhr.responseText }, document.head);
                 if (onload) {
                     var a;
@@ -354,7 +354,7 @@ function Edequate(options) {
                     }
                     onload(a);
                 }
-            }, function(code,xhr){
+            }).catch(function(code,xhr){
                 if(onerror) {
                     onerror(ERRORS.NOT_EXISTS, onlyname, xhr);
                 }
@@ -384,13 +384,26 @@ function Edequate(options) {
 
     }
 
+
+    function _stringify(key, value) {
+          return typeof value === "function" ? value.toString() : value;
+      }
+      function _parse(key, value) {
+          if (typeof value === "string" && /^function.*?\([\s\S]*?\)\s*\{[\s\S]*\}[\s\S]*$/.test(value)) {
+              var args = value
+                  .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
+                  .match(/\([\s\S]*?\)/m)[0]                      //find argument list
+                  .replace(/^\(|\)$/g, "")                    //remove parens
+                  .match(/[^\s(),]+/g) || [],                //find arguments
+                  body = value.replace(/\n/mg, "").match(/\{([\s\S]*)\}/)[1]          //extract body between curlies
+              return Function.apply(0, args.concat(body));
+          } else {
+              return value;
+          }
+      }
     function save(name, value) {
         if(value) {
-            localStorage[this.origin + ":" + name] = JSON.stringify(value,
-                function(key, value) {
-                    return typeof value === "function" ? value.toString() : value;
-                }
-            );
+            localStorage[this.origin + ":" + name] = JSON.stringify(value, _stringify);
         } else {
             delete localStorage[this.origin + ":" + name];
         }
@@ -399,21 +412,7 @@ function Edequate(options) {
     function load(name) {
         var value = localStorage[this.origin + ":" + name];
         if(value) {
-            return JSON.parse(value,
-                function(key, value) {
-                    if (typeof value === "string" && /^function.*?\([\s\S]*?\)\s*\{[\s\S]*\}[\s\S]*$/.test(value)) {
-                        var args = value
-                            .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
-                            .match(/\([\s\S]*?\)/m)[0]                      //find argument list
-                            .replace(/^\(|\)$/g, "")                    //remove parens
-                            .match(/[^\s(),]+/g) || [],                //find arguments
-                            body = value.replace(/\n/mg, "").match(/\{([\s\S]*)\}/)[1]          //extract body between curlies
-                        return Function.apply(0, args.concat(body));
-                    } else {
-                        return value;
-                    }
-                }
-            );
+            return JSON.parse(value, _parse);
         } else {
             return null;
         }
@@ -425,7 +424,7 @@ function Edequate(options) {
             return;
         }
         if(value) {
-            localStorage[this.origin + "$" + this.context +":" + name] = JSON.stringify(value);
+            localStorage[this.origin + "$" + this.context +":" + name] = JSON.stringify(value, _stringify);
         } else {
             delete localStorage[this.origin + "$" + this.context +":" + name];
         }
@@ -437,7 +436,7 @@ function Edequate(options) {
         }
         var value = localStorage[this.origin + "$" + this.context +":"+name];
         if(value) {
-            return JSON.parse(value);
+            return JSON.parse(value, _parse);
         } else {
             return null;
         }
@@ -1761,6 +1760,7 @@ function Edequate(options) {
         dialog:dialog,
         drawer:drawer,
         getJSON:getJSON,
+        getRemote:getRemote,
         keys: keys,
         lang:lang,
         load:load,

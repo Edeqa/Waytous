@@ -5,6 +5,7 @@ import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
 import com.sun.net.httpserver.HttpExchange;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,18 +16,18 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
 
 
 /**
- * Created 1/20/2017.
+ * Created 4/20/2017.
  */
 
 @SuppressWarnings("unused")
-public class AdminGroupsPageHolder implements PageHolder {
+public class AdminLogsPageHolder implements PageHolder {
 
-    private static final String HOLDER_TYPE = "groups";
+    private static final String HOLDER_TYPE = "logs";
 
     private final MyHttpAdminHandler server;
     private HtmlGenerator html;
 
-    public AdminGroupsPageHolder(MyHttpAdminHandler server) {
+    public AdminLogsPageHolder(MyHttpAdminHandler server) {
         this.server = server;
     }
 
@@ -39,33 +40,21 @@ public class AdminGroupsPageHolder implements PageHolder {
         this.html = html;
         html.clear();
 
-        return html;
-    }
 
-    private boolean processQuery(Map<String, List<String>> query) {
-        boolean processed = false;
-        if(query.containsKey("action")){
-            for(String x:query.get("action")){
-                processAction(x,query);
-                processed = true;
-            }
-        }
-        return processed;
-    }
 
-    private void processAction(String action, Map<String, List<String>> query) {
-
-        if("del".equals(action)){
-
-            String token=null,id=null;
-
-            if(query.containsKey("token")) token = query.get("token").get(0);
-            if(query.containsKey("id")) id = query.get("id").get(0);
-
-            server.getDataProcessor().removeUser(token,id);
-
+        byte[] bytes = "ABCDEFGH".getBytes();
+        try {
+            exchange.getResponseHeaders().set("Content-Type", "text/html");
+            exchange.sendResponseHeaders(200, bytes.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(bytes);
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
+
+        return null;
     }
 
 }

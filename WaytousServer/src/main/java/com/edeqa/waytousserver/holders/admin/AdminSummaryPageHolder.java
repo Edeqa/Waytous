@@ -7,6 +7,7 @@ import com.edeqa.waytousserver.helpers.MyToken;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.sun.net.httpserver.HttpExchange;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,7 +46,7 @@ public class AdminSummaryPageHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
-    public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query) {
+    public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query,HttpExchange exchange) {
         this.html = html;
         html.clear();
 
