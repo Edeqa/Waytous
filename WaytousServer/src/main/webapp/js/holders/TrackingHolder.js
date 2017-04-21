@@ -454,24 +454,18 @@ function TrackingHolder(main) {
                             onshow: function(e) {
                                 if(sounds) {
                                 } else {
-                                    u.getJSON({
-                                        url: "/xhr/getSounds",
-                                        onsuccess: function(json){
-                                            sounds = {};
-                                            u.clear(e);
-                                            var selected = 0;
-                                            for(var i in json.files) {
-                                                var file = json.files[i];
-                                                var name = (file.replace(/\..*$/,"").replace(/[\-_]/g," ")).toUpperCaseFirst();
-                                                sounds[file] = name;
-                                                u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
-                                                if((joinSound || defaultSound) == file) selected = i;
-                                            }
-                                            e.selectedIndex = selected;
-                                        },
-                                        onerror: function(code,xhr){
-                                            console.error(code,xhr)
+                                    u.getJSON("/xhr/getSounds").then(function(json){
+                                        sounds = {};
+                                        u.clear(e);
+                                        var selected = 0;
+                                        for(var i in json.files) {
+                                            var file = json.files[i];
+                                            var name = (file.replace(/\..*$/,"").replace(/[\-_]/g," ")).toUpperCaseFirst();
+                                            sounds[file] = name;
+                                            u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
+                                            if((joinSound || defaultSound) == file) selected = i;
                                         }
+                                        e.selectedIndex = selected;
                                     });
                                 }
                             },

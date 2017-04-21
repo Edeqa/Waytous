@@ -193,23 +193,19 @@ console.log("POSITION",position);
 
     function alternativeGeolocation() {
 return;
-        u.getJSON({
-            url: "https://ipinfo.io/json",
-            onsuccess: function(json) {
-                console.log("Alternative geolocation applied",json);
-                var latlng = json.loc.split(",");
-                var position = {
-                    coords: {
-                        provider: "ipinfo.io",
-                        latitude: latlng[0],
-                        longitude: latlng[1],
-                        accuracy: 10000
-                    },
-                    timestamp: new Date().getTime()
-                }
-                locationUpdateListener(position);
-            },
-            onerror: function(xhr){console.error(xhr)}
+        u.getJSON("https://ipinfo.io/json").then(function(json) {
+            console.log("Alternative geolocation applied",json);
+            var latlng = json.loc.split(",");
+            var position = {
+                coords: {
+                    provider: "ipinfo.io",
+                    latitude: latlng[0],
+                    longitude: latlng[1],
+                    accuracy: 10000
+                },
+                timestamp: new Date().getTime()
+            }
+            locationUpdateListener(position);
         });
 
     }

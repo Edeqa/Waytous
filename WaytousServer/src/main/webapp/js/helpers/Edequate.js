@@ -80,7 +80,8 @@ function Edequate(options) {
         NOT_EXISTS: 1,
         NOT_AN_OBJECT: 2,
         INCORRECT_JSON: 4,
-        ERROR_LOADING: 8
+        ERROR_LOADING: 8,
+        ERROR_SENDING_REQUEST: 16
     };
     var DRAWER = {
         SECTION_PRIMARY: 0,
@@ -1016,41 +1017,37 @@ function Edequate(options) {
 
             var resourcesFile = "/locales/resources." + holder + ".json";
 
-            getJSON({
-                url: resourcesFile,
-                onsuccess: function(json){
-                    var nodes = document.getElementsByTagName(HTML.SPAN);
-                    console.warn("Switching to resources \""+holder+"\".");
-                    for(var x in json) {
-    //                            if(lang.$origin[x]) {
-    //                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
-    //                            }
-                        lang(x, json[x]);
+            getJSON(resourcesFile).then(function(json){
+                var nodes = document.getElementsByTagName(HTML.SPAN);
+                console.warn("Switching to resources \""+holder+"\".");
+                for(var x in json) {
+//                            if(lang.$origin[x]) {
+//                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
+//                            }
+                    lang(x, json[x]);
+                }
+                for(var i = 0; i < nodes.length; i++) {
+                    if(nodes[i].lang) {
+                        nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
                     }
-                    for(var i = 0; i < nodes.length; i++) {
-                        if(nodes[i].lang) {
-                            nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
-                        }
-                    }
+                }
 
-                },
-                onerror: function(code, xhr){
-                    switch(code) {
-                        case ERRORS.ERROR_LOADING:
-                            console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
-                            if(holder != "en-us"){
-                                console.warn("Switching to default resources \"en-us\".")
-                                lang.overrideResources("en-us");
-                            }
-                            break;
-                        case ERRORS.INCORRECT_JSON:
-                            console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",xhr);
-                            if(holder != "en-us"){
-                                console.warn("Switching to default resources \"en-us\".")
-                                lang.overrideResources("en-us");
-                            }
-                            break;
-                    }
+            }).catch(function(code, xhr){
+                switch(code) {
+                    case ERRORS.ERROR_LOADING:
+                        console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
+                        if(holder != "en-us"){
+                            console.warn("Switching to default resources \"en-us\".")
+                            lang.overrideResources("en-us");
+                        }
+                        break;
+                    case ERRORS.INCORRECT_JSON:
+                        console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",xhr);
+                        if(holder != "en-us"){
+                            console.warn("Switching to default resources \"en-us\".")
+                            lang.overrideResources("en-us");
+                        }
+                        break;
                 }
             });
 
@@ -1072,85 +1069,71 @@ function Edequate(options) {
     }
 
     /**
-        options:
-            url,
-            post - for send as body (optional),
-            onsuccess - function,
-            onerror - function (optional)
+        getRemote(url [, post])
+            .then(callback(xhr))
+            .catch(callback(code,xhr));
     */
-    function getRemote(options) {
-        options = options || {};
+    function getRemote(url, post) {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", options.url, true);
-//        xhr.overrideMimeType("text/plain; charset=x-user-defined");
+        xhr.open("GET", url, true);
+        var callbacks = {
+            then: function(xhr) { console.warn("Define .then(callback(xhr){...})")},
+            "catch": function(code, xhr) { console.error(code, xhr); }
+        }
+        var catchFunction = function(callback) {
+            callbacks.catch = callback;
+        }
+        var thenFunction = function(callback) {
+            callbacks.then = callback;
+            return { "catch": catchFunction };
+        }
         xhr.onreadystatechange = function() { // (3)
             if (xhr.readyState != 4) return;
             if (xhr.status != 200) {
-                if(options.onerror) options.onerror(ERRORS.ERROR_LOADING, xhr);
-                else console.error("Error loading resource",xhr);
+                callbacks.catch(xhr.status, xhr);
             } else {
-                if(options.onsuccess) options.onsuccess(xhr);
-                else console.warn("Resource loaded, define onsuccess",xhr);
+                callbacks.then(xhr);
             }
         }
         try {
-            xhr.send(options.post);
+            xhr.send(post);
         } catch(e) {
-            console.error("Error sending request",xhr);
+            callbacks.catch(ERRORS.ERROR_SENDING_REQUEST, xhr);
+            return;
         }
+        return { then: thenFunction, "catch": catchFunction };
     }
 
     /**
-        options:
-            url,
-            post - for send as body (optional),
-            onsuccess - function,
-            onerror - function (optional)
+        getJSON(url [, post])
+            .then(callback(xhr))
+            .catch(callback(code,xhr));
     */
-    function getJSON(options) {
-        var args = options || {};
-        var onsuccess = options.onsuccess;
-        options.onsuccess = function(xhr){
-            if(onsuccess) {
+    function getJSON(url, post) {
+        var callbacks = {
+            then: function(xhr) { console.warn("Define1 .then(callback(xhr){...})")},
+            "catch": function(code, xhr) { console.error(code, xhr); }
+        }
+        var catchFunction = function(callback) {
+            callbacks.catch = callback;
+        }
+        var thenFunction = function(callback) {
+            callbacks.then = function(xhr) {
                 try {
                     var text = xhr.responseText;
                     text = text.replace(/\/\*[\s\S]*?\*\//g, "");
                     var json = JSON.parse(text);
-                    onsuccess(json, xhr);
+                    callback(json, xhr);
                 } catch(e) {
-                    if(options.onerror) options.onerror(ERRORS.INCORRECT_JSON, xhr);
-                    else console.error(e);
+                    callbacks.catch(ERRORS.INCORRECT_JSON, xhr);
                 }
             }
-        };
-        getRemote(options);
-
-        /*var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.onreadystatechange = function() { // (3)
-            if (xhr.readyState != 4) return;
-            if (xhr.status != 200) {
-                if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
-                else console.error("Error loading resource",xhr);
-            } else {
-                if(callback) {
-                    try {
-                        var json = JSON.parse(xhr.responseText);
-                        callback(json, xhr);
-                    } catch(e) {
-                        if(fallback) fallback(ERRORS.INCORRECT_JSON, xhr);
-                        else console.error(e);
-                    }
-                }
-            }
+            return { "catch": catchFunction };
         }
-        try {
-            xhr.send();
-        } catch(e) {
-//            if(fallback) fallback(ERRORS.ERROR_LOADING, xhr);
-//            else console.error("Error loading resource",xhr);
-            console.error("Error sending request",xhr);
-        }*/
+        setTimeout(function(){
+            getRemote(url, post).then(callbacks.then).catch(callbacks.catch);
+        },0);
+        return { then: thenFunction, "catch": catchFunction };
     }
 
     function drawer(options, appendTo) {

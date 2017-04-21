@@ -198,22 +198,18 @@ function NavigationHolder(main) {
 
         console.log(type,req);
 
-        u.getJSON({
-            url: req,
-            onsuccess: function(json){
-                installation = false;
-                updateTrack.call(user,json);
-            },
-            onerror: function(code,xhr){
-                console.error(xhr);
-                if(installation) {
-                    user.fire(EVENTS.HIDE_NAVIGATION);
-                    setTimeout(function(){
-                        main.toast.show(u.lang.sorry_direction_request_was_failed);
-                    },0);
-                }
+        u.getJSON(req).then(function(json){
+            installation = false;
+            updateTrack.call(user,json);
+        }).catch(function(code,xhr){
+            console.error(xhr);
+            if(installation) {
+                user.fire(EVENTS.HIDE_NAVIGATION);
+                setTimeout(function(){
+                    main.toast.show(u.lang.sorry_direction_request_was_failed);
+                },0);
             }
-        });
+        })
 
     }
 

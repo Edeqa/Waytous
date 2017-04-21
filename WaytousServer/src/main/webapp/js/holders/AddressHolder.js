@@ -41,16 +41,17 @@ function AddressHolder(main) {
                     delayStart = 0;
                 }
 
-                u.getJSON({
-                    url: "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1",
-                    onsuccess: function(json){
+//                u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1")
+//                .then()
+//                .catch();
+
+                u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1")
+                    .then(function(json){
                         user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
-                    },
-                    onerror: function(code, xhr) {
+                    }).catch(function(code, xhr) {
                         user.fire(EVENTS.UPDATE_ADDRESS);
                         delayStart = new Date().getTime();
-                    }
-                });
+                    });
 
             }
         }, 0);
@@ -68,16 +69,10 @@ function AddressHolder(main) {
                 delayStart = 0;
             }
 
-            u.getJSON({
-                url: "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1",
-                onsuccess: function(json){
+            u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1")
+                .then(function(json){
                     node.innerHTML = json["display_name"];
-                },
-                onerror: function(code, xhr) {
-//                    updateAddress.call(user,node);
-//                    delayStart = new Date().getTime();
-                }
-            });
+                });
         }
     }
 

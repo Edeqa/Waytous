@@ -236,24 +236,18 @@ function MessagesHolder(main) {
                             onshow: function(e) {
                                 if(incomingMessageSounds) {
                                 } else {
-                                    u.getJSON({
-                                        url: "/xhr/getSounds",
-                                        onsuccess: function(json){
-                                            incomingMessageSounds = {};
-                                            u.clear(e);
-                                            var selected = 0;
-                                            for(var i in json.files) {
-                                                var file = json.files[i];
-                                                var name = (file.replace(/\..*$/,"").replace(/[\-_]/g," ")).toUpperCaseFirst();
-                                                incomingMessageSounds[file] = name;
-                                                u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
-                                                if((incomingMessageSound || defaultIncomingMessageSound) == file) selected = i;
-                                            }
-                                            e.selectedIndex = selected;
-                                        },
-                                        onerror: function(code,xhr){
-                                            console.error(code,xhr)
+                                    u.getJSON("/xhr/getSounds").then(function(json){
+                                        incomingMessageSounds = {};
+                                        u.clear(e);
+                                        var selected = 0;
+                                        for(var i in json.files) {
+                                            var file = json.files[i];
+                                            var name = (file.replace(/\..*$/,"").replace(/[\-_]/g," ")).toUpperCaseFirst();
+                                            incomingMessageSounds[file] = name;
+                                            u.create(HTML.OPTION, {value:file, innerHTML:name}, e);
+                                            if((incomingMessageSound || defaultIncomingMessageSound) == file) selected = i;
                                         }
+                                        e.selectedIndex = selected;
                                     });
                                 }
                             },
