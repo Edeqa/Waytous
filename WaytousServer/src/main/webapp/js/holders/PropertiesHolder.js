@@ -181,7 +181,6 @@ function PropertiesHolder(main) {
                                 u.save("properties:name", this.value);
                                 u.save("properties:name_asked", true);
                                 main.me.fire(EVENTS.CHANGE_NAME, this.value);
-                                console.log("NAME:",this.value);
                             },
                         }
                     ]

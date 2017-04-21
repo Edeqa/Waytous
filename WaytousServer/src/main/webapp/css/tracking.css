@@ -796,6 +796,7 @@ p.bottom-desc {
     font-style: normal;
     position: absolute;
     top: 0px;
+    left: 0px;
     padding: 5px;
     background: none;
     border: none;
@@ -860,7 +861,6 @@ p.bottom-desc {
     width: 100%;
     text-align: center;
     justify-content: center;
-    flex: 1 0;
 }
 .dialog-item-input {
     text-align: left;
@@ -1268,6 +1268,7 @@ p.bottom-desc {
     padding: 2px;
 }
 .place-search-input {
+    width: 100%;
 }
 .place-search-label {
     display: none;

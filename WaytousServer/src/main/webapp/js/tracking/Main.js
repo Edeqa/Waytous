@@ -15,7 +15,7 @@ function Main() {
     var main = w = this;
     var progress;
     var alert;
-    var defaultLang = "en-us";
+    var defaultResources = "/locales/resources.en.json";
 
     if (false && "serviceWorkers" in navigator) {
         window.addEventListener("load", function() {
@@ -352,9 +352,13 @@ function Main() {
     }
 
     function loadResources() {
-        u.lang.overrideResources(defaultLang);
-        var lang = (u.load("lang") || navigator.language || defaultLang).toLowerCase();
-        if(lang != defaultLang) u.lang.overrideResources(lang);
+
+        u.lang.overrideResources({"default":defaultResources});
+
+        var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+        var resources = "/locales/resources."+lang+".json";
+
+        if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
     }
 
     function help(){
@@ -382,11 +386,12 @@ function Main() {
                             label: u.lang.language,
                             default: u.load("lang") || "",
                             onaccept: function(e, event) {
-                                var res = (this.value || navigator.language || defaultLang).toLowerCase();
-                                u.save("lang", res);
-                                u.lang.overrideResources(res);
+                                var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
+                                u.save("lang", lang);
+                                var resources = "/locales/resources."+lang+".json";
+                                u.lang.overrideResources({"default":defaultResources, resources: resources});
                             },
-                            values: {"": u.lang.default, "en-us": u.lang.english, "ru-ru": u.lang.russian }
+                            values: {"": u.lang.default, "en": u.lang.english, "ru": u.lang.russian }
                         },
                     ]
                 },

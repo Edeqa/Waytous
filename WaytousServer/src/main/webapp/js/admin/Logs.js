@@ -23,7 +23,7 @@ function Logs() {
 
     function updateData(){
 
-        u.getRemote("/admin/logs/log").then(function(xhr){
+        u.get("/admin/logs/log").then(function(xhr){
             console.log(xhr);
         });
 

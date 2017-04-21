@@ -91,14 +91,14 @@ function Groups() {
                     table.update();
                 });
             }).catch(function(error){
-                console.log("ERR",error);
+                console.error(error);
                 table.placeholder.show();
             });
         }, function(e) {
-            if(resign) {
-                console.error(e);
-                return;
-            }
+//            if(resign) {
+//                console.error(e);
+//                return;
+//            }
             console.warn("Resign because of",e.message);
             resign = true;
             WTU.resign(updateData);

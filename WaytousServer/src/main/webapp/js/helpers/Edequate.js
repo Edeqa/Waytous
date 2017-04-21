@@ -1031,17 +1031,22 @@ function Edequate(options) {
     lang.$arguments = lang.$arguments || {};
 
 
-    lang.overrideResources = function(holder) {
-        if(holder.constructor === String) {
+    lang.overrideResources = function(options) {
+        if(!options || !options.default) {
+            console.error("Not defined default resources");
+            return;
+        }
 
-            var resourcesFile = "/locales/resources." + holder + ".json";
+        options.resources = options.resources || options.default;
 
-            getJSON(resourcesFile).then(function(json){
+        if(options.resources.constructor === String) {
+
+            getJSON(options.resources).then(function(json){
                 var nodes = document.getElementsByTagName(HTML.SPAN);
-                console.warn("Switching to resources \""+holder+"\".");
+                console.warn("Switching to resources \""+options.resources+"\".");
                 for(var x in json) {
 //                            if(lang.$origin[x]) {
-//                                console.warn("Overrided resource: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
+//                                console.warn("Overrided resources: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
 //                            }
                     lang(x, json[x]);
                 }
@@ -1054,28 +1059,28 @@ function Edequate(options) {
             }).catch(function(code, xhr){
                 switch(code) {
                     case ERRORS.ERROR_LOADING:
-                        console.warn("Error fetching resources for \""+holder+"\":",xhr.status + ': ' + xhr.statusText);
-                        if(holder != "en-us"){
-                            console.warn("Switching to default resources \"en-us\".")
-                            lang.overrideResources("en-us");
+                        console.warn("Error fetching resources for \""+options.resources+"\":",xhr.status + ': ' + xhr.statusText);
+                        if(options.default != options.resources){
+                            console.warn("Switching to default resources \""+options.default+"\".");
+                            lang.overrideResources({"default":options.default});
                         }
                         break;
                     case ERRORS.INCORRECT_JSON:
-                        console.warn("Incorrect, empty or damaged resource file for \""+holder+"\":",xhr);
-                        if(holder != "en-us"){
-                            console.warn("Switching to default resources \"en-us\".")
-                            lang.overrideResources("en-us");
+                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",xhr);
+                        if(options.default != options.resources){
+                            console.warn("Switching to default resources \""+options.default+"\".");
+                            lang.overrideResources({"default":options.default});
                         }
                         break;
                 }
             });
 
-        } else if(holder.resources) {
-            for(var x in holder.resources) {
+        } else if(options.resources.resources) {
+            for(var x in options.resources.resources) {
                 if(lang[x]) {
-//                    console.warn("Overrided resource: " + x + ":", holder.resources[x] ? (holder.resources[x].length > 30 ? holder.resources[x].substr(0,30)+"..." : holder.resources[x]) : "" );
+//                    console.warn("Overrided resources: " + x + ":", holder.resources[x] ? (holder.resources[x].length > 30 ? holder.resources[x].substr(0,30)+"..." : holder.resources[x]) : "" );
                 }
-                lang(x, holder.resources[x]);
+                lang(x, options.resources.resources[x]);
             }
         }
     }
