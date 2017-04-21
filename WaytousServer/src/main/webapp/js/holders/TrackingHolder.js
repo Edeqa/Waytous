@@ -107,14 +107,14 @@ function TrackingHolder(main) {
                     u.context = group;
                     var self = this;
                     setTimeout(function(){
-                        u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
+                        u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
                     }, 0);
                 }
                 break;
             case EVENTS.TRACKING_NEW:
                 var self = this;
                 setTimeout(function(){
-                    u.require("/js/helpers/TrackingFB.js", startTracking.bind(self));
+                    u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
                 }, 0);
                 break;
             case EVENTS.TRACKING_ACTIVE:
@@ -124,9 +124,9 @@ function TrackingHolder(main) {
                     drawerItemShare.enable();
                 }
                 u.notification({
-                    title: "Tracking is active",
-                    body: "You have joined to the group " + main.tracking.getToken(),
-                    icon: "/icons/android-chrome-256x256.png",
+                    title: u.lang.waytous_online.innerText,
+                    body: u.lang.you_have_joined_to_the_group_s.format(main.tracking.getToken()).innerText,
+                    icon: "/icons/favicon-256x256.png",
                     duration: 10000,
                     onclick: function(e){
                         console.log(this,e)

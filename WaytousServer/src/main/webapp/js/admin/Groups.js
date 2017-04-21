@@ -12,6 +12,7 @@ function Groups() {
     var firebaseToken;
     var div;
     var groupNodes = {};
+    var ref;
 
     var renderInterface = function() {
 
@@ -19,6 +20,7 @@ function Groups() {
         u.clear(div);
 //        u.create("div", {className:"summary"}, div);
 //        u.create("h2", "Groups", div);
+        ref = database.ref();
 
         table = u.table({
             id: "groups",
@@ -42,13 +44,15 @@ function Groups() {
 
     function updateData(){
 
-        var ref = database.ref();
         var initial = true;
         setTimeout(function(){initial = false;}, 3000);
+        var resign = true;
 
         table.placeholder.show();
 
+        ref.child(DATABASE.SECTION_GROUPS).off();
         ref.child(DATABASE.SECTION_GROUPS).on("child_added", function(data) {
+            resign = false;
             ref.child(data.key).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
                 if(!snapshot || !snapshot.val()) return;
 
@@ -87,15 +91,23 @@ function Groups() {
                     table.update();
                 });
             }).catch(function(error){
+                console.log("ERR",error);
                 table.placeholder.show();
             });
+        }, function(e) {
+            if(resign) {
+                console.error(e);
+                return;
+            }
+            console.warn("Resign because of",e.message);
+            resign = true;
+            WTU.resign(updateData);
         });
     }
 
 
     return {
         start: function() {
-
             renderInterface();
             updateData();
         },

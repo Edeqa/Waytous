@@ -54,6 +54,7 @@ function User() {
         var ref = database.ref();
         tableSummary.placeholder.show();
 
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).off();
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
 

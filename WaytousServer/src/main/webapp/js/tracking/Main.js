@@ -63,7 +63,7 @@ function Main() {
 
         //addConsoleLayer(main.right);
 
-        u.require("/js/helpers/Constants", function(e){
+        u.require("/js/helpers/Constants").then(function(e){
             initializeHeader.call(main);
         });
     };
@@ -211,7 +211,7 @@ function Main() {
                 if(!file.match(/^(https?:)|\//i)) file = "/js/holders/"+file;
                 var viaXhr = false;// ! file.match(/^https?:/i);
 
-                u.require(file, function(e) {
+                u.require(file, main).then(function(e) {
                     if(failed) return;
                     loaded++;
                     if(e && e.type) {
@@ -228,7 +228,7 @@ function Main() {
 
                         utils.getUuid(initialize.bind(main));
                     }
-                },function(code, moduleName, event) {
+                }).catch(function(code, moduleName, event) {
                     console.log(code, moduleName, event.srcElement.src);
                     if(failed) return;
                     failed = true;
@@ -238,7 +238,7 @@ function Main() {
 //                    main.alert.items[1].body.innerHTML = u.lang.error_while_loading_s_code_d.format(moduleName,code);
                     main.alert.open();
 
-                }, main, viaXhr);
+                });
             }
         } catch(e) {
             u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s.format(e.message));
@@ -267,21 +267,21 @@ function Main() {
             var failed = false;
             for(var i in files) {
                 var file = files[i];
-                u.require(file, function(e) {
+                u.require(file, main).then(function(e) {
                     if(failed) return;
                     loaded++;
                     u.loading(Math.ceil(loaded / files.length * 100) + "%");
                     if(loaded == u.keys(files).length) {
                         initialize.call(main);
                     }
-                },function(code, moduleName, event) {
+                }).catch(function(code, moduleName, event) {
                     console.log(code, moduleName, event.srcElement.src);
                     if(failed) return;
                     failed = true;
 
                     u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(moduleName,code));
                     main.alert.open();
-                }, main);
+                });
             }
 
             return;

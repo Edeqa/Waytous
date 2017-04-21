@@ -48,12 +48,17 @@ function Main() {
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/tracking.css", async:"", defer:""}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css", async:"", defer:""}, document.head);
 
+        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"},document.head);
+        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"32x32", href:"/icons/favicon-32x32.png"},document.head);
+        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"},document.head);
+        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"},document.head);
+
 
         var loaded = 0;
         for(var i in holderFiles) {
             var file = holderFiles[i];
             if(!file.match(/^(https?:)|\//i)) file = "/js/admin/"+file;
-            u.require(file, function(e) {
+            u.require(file).then(function(e) {
                 loaded++;
                 if(e && e.moduleName) {
                     holders[e.moduleName.toLowerCase()] = e;
@@ -83,7 +88,7 @@ function Main() {
             var failed = false;
             for(var i in files) {
                 var file = files[i];
-                u.require(file, function(e) {
+                u.require(file).then(function(e) {
                     if(failed) return;
                     loaded++;
                     progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
@@ -96,8 +101,13 @@ function Main() {
             return;
         }
 
-        firebase.initializeApp(data.firebase_config);
-        database = firebase.database();
+        try {
+            firebase.initializeApp(data.firebase_config);
+            database = firebase.database();
+        } catch(e) {
+            console.error(e);
+            resign(resume);
+        }
 
         resign(resume);
 
@@ -198,15 +208,8 @@ function Main() {
     }
 
     var logout = function() {
-        var to_url;
-        var out = window.location.href.replace(/:\/\//, '://log:out@');
-
-        if(!to_url){
-            to_url = window.location.protocol + "//" + window.location.host + "/";// + window.location.pathname;
-            console.log("TO:",to_url);
-        }
-
-        jQuery.get(out).then(function() {
+        var to_url = window.location.protocol + "//" + window.location.host + "/";// + window.location.pathname;
+        u.get(window.location.href.replace(/:\/\//, '://log:out@')).then(function() {
             window.location = to_url;
         }).catch(function() {
             window.location = to_url;

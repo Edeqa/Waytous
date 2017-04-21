@@ -324,7 +324,7 @@ function Edequate(options) {
         return keys;
     }
 
-    function require(name, onload, onerror, context, viaXhr){
+    function require(name, context) {
         var parts = name.split("/");
         var filename = parts[parts.length-1];
         var onlyname = filename.split(".")[0];
@@ -337,52 +337,72 @@ function Edequate(options) {
             needInstantiate = true;
             name += ".js";
         }
-        if(viaXhr) {
-            getRemote(name).then(function(xhr){
-                create(HTML.SCRIPT, {innerHTML: xhr.responseText }, document.head);
-                if (onload) {
-                    var a;
-                    console.log(needInstantiate,onlyname,filename)
-                    if(needInstantiate) {
-                        if(onlyname && window[onlyname] && window[onlyname].constructor === Function) {
-                            a = new window[onlyname](context);
-                            a.moduleName = onlyname;
-                            lang.overrideResources(a);
-                        } else {
-                            onerror(ERRORS.NOT_AN_OBJECT, onlyname, xhr);
-                        }
-                    }
-                    onload(a);
-                }
-            }).catch(function(code,xhr){
-                if(onerror) {
-                    onerror(ERRORS.NOT_EXISTS, onlyname, xhr);
-                }
-            });
-        } else {
-            create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
-                if (onload) {
-                    var a;
-                    if(needInstantiate) {
-                        if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
-                            a = new window[this.instance](context);
-                            a.moduleName = this.instance;
-                            lang.overrideResources(a);
-                        } else {
-                            onerror(ERRORS.NOT_AN_OBJECT, this.instance, e);
-                        }
-                    }
-                    onload(a);
-                }
-            }, onerror: function(e) {
-                if(onerror) {
-                    onerror(ERRORS.NOT_EXISTS, this.instance, e);
-                }
-            }, async:"", defer:""}, document.head);
+
+        var callbacks = {
+            then: function(instance) { console.warn("Define .then(callback(path [, context]){...})")},
+            "catch": function(code, instance, error) { console.error(code, instance, error); }
+        }
+        var catchFunction = function(callback) {
+            callbacks.catch = callback;
+        }
+        var thenFunction = function(callback) {
+            callbacks.then = callback;
+            return { "catch": catchFunction };
         }
 
+        create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
+            var a;
+            if(needInstantiate) {
+                if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
+                    a = new window[this.instance](context);
+                    a.moduleName = this.instance;
+                } else {
+                    callbacks.catch(ERRORS.NOT_AN_OBJECT, this.instance, e);
+                }
+            }
+            callbacks.then(a);
+        }, onerror: function(e) {
+            callbacks.catch(ERRORS.NOT_EXISTS, this.instance, e);
+        }, async:"", defer:""}, document.head);
 
+        return { then: thenFunction, "catch": catchFunction };
     }
+
+
+    /*function require(name, onload, onerror, context){
+        var parts = name.split("/");
+        var filename = parts[parts.length-1];
+        var onlyname = filename.split(".")[0];
+        var needInstantiate = false;
+        if(onerror && onerror.constructor !== Function) {
+            context = onerror;
+            onerror = function(){};
+        }
+        if(!filename.match(/\.js$/) && parts[1] == "js") {
+            needInstantiate = true;
+            name += ".js";
+        }
+        create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
+            if (onload) {
+                var a;
+                if(needInstantiate) {
+                    if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
+                        a = new window[this.instance](context);
+                        a.moduleName = this.instance;
+                        lang.overrideResources(a);
+                    } else {
+                        onerror(ERRORS.NOT_AN_OBJECT, this.instance, e);
+                    }
+                }
+                onload(a);
+            }
+        }, onerror: function(e) {
+            if(onerror) {
+                onerror(ERRORS.NOT_EXISTS, this.instance, e);
+            }
+        }, async:"", defer:""}, document.head);
+
+    }*/
 
 
     function _stringify(key, value) {
@@ -1068,11 +1088,11 @@ function Edequate(options) {
     }
 
     /**
-        getRemote(url [, post])
+        get(url [, post])
             .then(callback(xhr))
             .catch(callback(code,xhr));
     */
-    function getRemote(url, post) {
+    function get(url, post) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
         var callbacks = {
@@ -1110,7 +1130,7 @@ function Edequate(options) {
     */
     function getJSON(url, post) {
         var callbacks = {
-            then: function(xhr) { console.warn("Define1 .then(callback(xhr){...})")},
+            then: function(json,xhr) { console.warn("Define .then(callback(json,xhr){...})")},
             "catch": function(code, xhr) { console.error(code, xhr); }
         }
         var catchFunction = function(callback) {
@@ -1130,7 +1150,7 @@ function Edequate(options) {
             return { "catch": catchFunction };
         }
         setTimeout(function(){
-            getRemote(url, post).then(callbacks.then).catch(callbacks.catch);
+            get(url, post).then(callbacks.then).catch(callbacks.catch);
         },0);
         return { then: thenFunction, "catch": catchFunction };
     }
@@ -1759,8 +1779,8 @@ function Edequate(options) {
         destroy:destroy,
         dialog:dialog,
         drawer:drawer,
+        get:get,
         getJSON:getJSON,
-        getRemote:getRemote,
         keys: keys,
         lang:lang,
         load:load,

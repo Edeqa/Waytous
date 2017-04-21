@@ -236,6 +236,8 @@
   "sound_on_join": "Sound on join",
   "none": "None",
   "user_s_has_joined": "User %s has joined.",
+  "waytous_online": "Waytous online",
+  "you_have_joined_to_the_group_s": "You have joined to the group %s.",
 
   "sorry_you_have_requested_the_expired_group": "Sorry, you have requested the expired group.",
   "expired_explanation": "Somebody has created this group to meet with his friends. Perhaps that goal was succeded because the group was removed. <p>You can create your own group and send the link to your friends. Note that the group expires soon if nobody will be online. If you'd like to create the permanent group please ask the administration.",

@@ -54,6 +54,7 @@ function Group() {
         var ref = database.ref();
         tableSummary.placeholder.show();
 
+        ref.child(groupId).child(DATABASE.SECTION_OPTIONS).off();
         ref.child(groupId).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
 
@@ -153,6 +154,7 @@ function Group() {
         var initial = true;
         setTimeout(function(){initial = false;}, 3000);
 
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).off();
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("child_added", function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
             reload = false;
