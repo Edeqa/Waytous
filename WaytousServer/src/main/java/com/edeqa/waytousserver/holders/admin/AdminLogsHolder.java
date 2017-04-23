@@ -1,5 +1,6 @@
 package com.edeqa.waytousserver.holders.admin;
 
+import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.interfaces.PageHolder;
@@ -14,6 +15,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
+
+import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 
 /**
@@ -55,8 +58,9 @@ public class AdminLogsHolder implements PageHolder {
 
     private void printLog(HttpExchange exchange) {
         try {
-            File file = new File("waytous.log");
-            System.out.println(file.getCanonicalPath());
+            File file = new File(SENSITIVE.getLogFile());
+
+            Common.log("Logs",file.getCanonicalPath());
 
             boolean gzip = true;
             exchange.getResponseHeaders().set("Content-Type", "text/plain");

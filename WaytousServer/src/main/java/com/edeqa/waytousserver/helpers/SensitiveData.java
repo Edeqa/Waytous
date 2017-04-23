@@ -129,6 +129,7 @@ public class SensitiveData {
             jsonSample.put("ssl_certificate_password","SAMPL");
             jsonSample.put("keystore_filename","SAMPL");
             jsonSample.put("debug_mode",false);
+            jsonSample.put("log_file","waytous.log");
 
             JSONArray jsonMimeTypes = new JSONArray();
             JSONObject jsonMimeType = new JSONObject();
@@ -293,6 +294,14 @@ public class SensitiveData {
 
     public boolean isDebugMode() {
         return json.getBoolean("debug_mode");
+    }
+
+    public String getLogFile() {
+        if(json.has("log_file")) {
+            return json.getString("log_file");
+        } else {
+            return "waytous.log";
+        }
     }
 
     public JSONArray getTypes() {
