@@ -11,6 +11,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,9 @@ public class AdminLogsHolder implements PageHolder {
             case "/admin/logs/log":
                 printLog(exchange);
                 return true;
+            case "/admin/logs/clear":
+                clearLog(exchange);
+                return true;
             default:
                 break;
         }
@@ -56,11 +60,33 @@ public class AdminLogsHolder implements PageHolder {
         return false;
     }
 
+    private void clearLog(HttpExchange exchange) {
+        try {
+            File file = new File(SENSITIVE.getLogFile());
+            Common.log("Logs", "Clear:", file.getCanonicalPath());
+
+            PrintWriter writer = new PrintWriter(file);
+            writer.close();
+
+            byte[] bytes = "".getBytes();
+
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().set("Content-Type", "text/plain");
+            exchange.sendResponseHeaders(200, bytes.length);
+
+            OutputStream os = exchange.getResponseBody();
+            os.write(bytes);
+            os.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void printLog(HttpExchange exchange) {
         try {
             File file = new File(SENSITIVE.getLogFile());
 
-            Common.log("Logs",file.getCanonicalPath());
+            Common.log("Logs","Update:",file.getCanonicalPath());
 
             boolean gzip = true;
             exchange.getResponseHeaders().set("Content-Type", "text/plain");

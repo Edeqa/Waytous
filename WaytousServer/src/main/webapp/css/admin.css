@@ -69,6 +69,15 @@
 }
 .logs-header {
 }
+.logs-header-label {
+    display: inline-block;
+    padding-left: 16px;
+    padding-right: 4px;
+}
+.logs-header-input {
+    margin: 4px;
+    width: 30px;
+}
 .table-logs {
     white-space: pre-wrap;
     display: block;
@@ -82,6 +91,9 @@
     width: 100%;
     padding-left: 0px;
     padding-right: 0px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
 }
 .table-logs-body {
     display: block;
@@ -96,6 +108,10 @@
     overflow: scroll;
     display: block;
     width: 100%;
+    user-select: initial;
+    -moz-user-select: -moz-initial;
+    -webkit-user-select: initial;
+    border: none;
 }
 
 

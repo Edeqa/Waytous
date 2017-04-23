@@ -12,11 +12,49 @@ function Logs() {
 //        u.create("div", {className:"summary"}, div);
 //        u.create("h2", "Groups", div);
 
-        var divHeader = u.create(HTML.DIV, {className: "logs-header"}, div);
+        var refreshTask;
 
-        u.create(HTML.BUTTON, {innerHTML:"Refresh", onclick: function(){
-            updateData();
-        }}, divHeader);
+        var divHeader = u.create(HTML.DIV, {className: "logs-header"}, div)
+            .place(HTML.BUTTON, {innerHTML:"Refresh", onclick: function(){
+               updateData();
+           }})
+           .place(HTML.DIV, { className: "logs-header-label hidden", content: u.create(HTML.DIV)
+                .place(HTML.DIV, { className: "logs-header-label question", innerHTML: "Clear logs?"})
+                .place(HTML.BUTTON, { className: "question", innerHTML:"Yes, clear logs", onclick: function(){
+                   this.parentNode.parentNode.hide();
+                   this.parentNode.parentNode.nextSibling.classList.remove("hidden");
+                   u.get("/admin/logs/clear")
+                   .then(updateData);
+               }})
+                .place(HTML.BUTTON, { innerHTML:"No", onclick: function(){
+                   this.parentNode.parentNode.hide();
+                   this.parentNode.parentNode.nextSibling.classList.remove("hidden");
+               }})
+           })
+            .place(HTML.BUTTON, { innerHTML:"Clear logs", onclick: function(){
+                this.previousSibling.classList.add("hidden");
+                this.classList.add("hidden");
+                this.previousSibling.show();
+
+            }})
+           .place(HTML.DIV, { className: "logs-header-label", innerHTML: "Autorefresh each, sec"})
+           .place(HTML.INPUT, { className: "logs-header-input", value: 5})
+           .place(HTML.BUTTON, {innerHTML:"Start", onclick: function(){
+                clearInterval(refreshTask);
+                refreshTask = setInterval(updateData, this.previousSibling.value*1000);
+                this.classList.add("hidden");
+                this.nextSibling.classList.remove("hidden");
+                this.previousSibling.classList.add("disabled");
+                this.previousSibling.disabled = true;
+            }})
+            .place(HTML.BUTTON, {className:"hidden", innerHTML:"Stop", onclick: function(){
+                clearInterval(refreshTask);
+                this.classList.add("hidden");
+                this.previousSibling.classList.remove("hidden");
+                this.previousSibling.previousSibling.classList.remove("disabled");
+                this.previousSibling.previousSibling.disabled = false;
+            }});
+
         table = u.table({
             id: "logs",
             caption: {
