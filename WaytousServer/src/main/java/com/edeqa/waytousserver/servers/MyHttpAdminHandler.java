@@ -1,7 +1,6 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
-import com.edeqa.waytousserver.holders.admin.AdminMainPageHolder;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -27,10 +26,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.CLASS;
-import static com.edeqa.waytousserver.helpers.HtmlGenerator.ID;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SCRIPT;
+import static com.edeqa.waytousserver.helpers.HtmlGenerator.SRC;
+import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
 
 
 /**
@@ -48,16 +50,9 @@ public class MyHttpAdminHandler implements HttpHandler {
         holders = new LinkedHashMap<>();
 
         LinkedList<String> classes = new LinkedList<>();
-        classes.add("AdminHomePageHolder");
-        classes.add("AdminCreatePageHolder");
-        classes.add("AdminGroupsPageHolder");
-        classes.add("AdminGroupPageHolder");
-        classes.add("AdminSummaryPageHolder");
-        classes.add("AdminHelpPageHolder");
-        classes.add("AdminSettingsPageHolder");
-        classes.add("AdminUserPageHolder");
-        classes.add("AdminMainPageHolder");
-        classes.add("AdminLogsPageHolder");
+        classes.add("AdminLogsHolder");
+        classes.add("AdminMainHolder");
+        classes.add("AdminSettingsHolder");
 
         for(String s:classes){
             try {
@@ -80,24 +75,26 @@ public class MyHttpAdminHandler implements HttpHandler {
         try {
 //            System.out.println("Admin server requested");
 
-            URI uri = exchange.getRequestURI();
 
-            ArrayList<String> parts = new ArrayList<>();
-            parts.addAll(Arrays.asList(uri.getPath().split("/")));
+            for(Map.Entry<String, PageHolder> x: holders.entrySet()) {
+                if(x.getValue().perform(exchange)) {
+                    return;
+                }
+            }
 
             html = new HtmlGenerator();
-            AdminMainPageHolder main = (AdminMainPageHolder) holders.get(AdminMainPageHolder.HOLDER_TYPE);
-            main.addRequest(parts);
-            if (parts.size() > 3 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2)) && parts.get(parts.size()-1).equals("set")) {
-                html = holders.get(parts.get(2)).create(html,parts,exchange);
-            } else if (parts.size() > 2 && parts.get(1).equals("admin") && holders.containsKey(parts.get(2))) {
-                main.addPart(parts.get(2));
-                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts,exchange);
-            } else {
-                main.addPart("home");
-                html = holders.get(AdminMainPageHolder.HOLDER_TYPE).create(html,parts,exchange);
-            }
-            if(html == null) return;
+            html.getHead().add(TITLE).with("Admin");
+
+            final JSONObject o = new JSONObject();
+            o.put("version", SERVER_BUILD);
+            o.put("HTTP_PORT", SENSITIVE.getHttpPort());
+            o.put("HTTPS_PORT", SENSITIVE.getHttpsPort());
+            o.put("WS_FB_PORT", SENSITIVE.getWsPortFirebase());
+            o.put("WSS_FB_PORT", SENSITIVE.getWssPortFirebase());
+            o.put("WS_PORT", SENSITIVE.getWsPortDedicated());
+            o.put("WSS_PORT", SENSITIVE.getWssPortDedicated());
+            o.put("firebase_config", SENSITIVE.getFirebaseConfig());
+
 
             html.getBody().with(CLASS,"body");
 
@@ -112,10 +109,9 @@ public class MyHttpAdminHandler implements HttpHandler {
                     update.put("changed", new Date().getTime());
                     update.put(USER_NAME,"Administrator");
 
-                    JSONObject o = new JSONObject();
-                    o.put("token", customToken);
-
-                    html.getHead().add(SCRIPT).with(ID, "sign").with("sign", o);
+                    o.put("sign", customToken);
+                    html.getHead().add(SCRIPT).with("data", o);
+                    html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");
 
                     byte[] bytes = html.build().getBytes();
                     try {

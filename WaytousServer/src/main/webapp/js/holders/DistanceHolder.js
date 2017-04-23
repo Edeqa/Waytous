@@ -12,13 +12,11 @@ function DistanceHolder(main) {
     var drawerItemShow;
     var drawerItemHide;
 
-
     function start() {
         view = {};
     }
 
     function onEvent(EVENT,object){
-        // console.log("SAMPLEEVENT",EVENT,object)
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 drawerItemShow = object.add(DRAWER.SECTION_VIEWS, EVENTS.SHOW_DISTANCE, u.lang.show_distances, "settings_ethernet", function(){
@@ -62,12 +60,10 @@ function DistanceHolder(main) {
                 if(this.views && this.views.distance && this.views.distance.distance) {
                     this.views.distance.distance.setMap(null);
                     this.views.distance.distance = null;
-
                     this.views.distance.marker.setMap(null);
                     this.views.distance.marker = null;
                     this.views.distance.label.setMap(null);
                     this.views.distance.label = null;
-
                 }
                 break;
             default:
@@ -87,12 +83,10 @@ function DistanceHolder(main) {
         }
         drawerPopulate();
         return view;
-        // console.log("SAMPLECREATEVIEW",user);
     }
 
     function removeView(user) {
         if(user && user.views && user.views.distance & user.views.distance.distance) {
-
             user.views.distance.distance.setMap(null);
             user.views.distance.distance = null;
             user.views.distance.marker.setMap(null);
@@ -107,7 +101,7 @@ function DistanceHolder(main) {
             drawerItemHide.hide();
             drawerItemShow.hide();
             main.users.forAllUsersExceptMe(function (number, user) {
-                if(user.views.distance) {
+                if(user.properties.active && user.views.distance) {
                     if (user.views.distance.show) {
                         drawerItemHide.show();
                     } else {
@@ -154,7 +148,6 @@ function DistanceHolder(main) {
 
     function onChangeLocation(location) {
         show.call(this);
-        // console.log("SAMPLEONCHANGELOCATION",this,location);
     }
 
     function Label(opt_options, node) {

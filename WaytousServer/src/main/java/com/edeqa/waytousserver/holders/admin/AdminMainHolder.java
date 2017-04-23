@@ -20,7 +20,7 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
  * Created 1/20/2017.
  */
 
-public class AdminMainPageHolder implements PageHolder {
+public class AdminMainHolder implements PageHolder {
 
     public static final String HOLDER_TYPE = "main";
 
@@ -30,13 +30,18 @@ public class AdminMainPageHolder implements PageHolder {
     private String part;
     private ArrayList<String> request;
 
-    public AdminMainPageHolder(MyHttpAdminHandler server) {
+    public AdminMainHolder(MyHttpAdminHandler server) {
         this.server = server;
     }
 
     @Override
     public String getType() {
         return HOLDER_TYPE;
+    }
+
+    @Override
+    public boolean perform(HttpExchange parts) {
+        return false;
     }
 
     public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query,HttpExchange exchange) {
@@ -47,8 +52,6 @@ public class AdminMainPageHolder implements PageHolder {
 
         JSONObject o = new JSONObject();
         o.put("page", part);
-        o.put("request", request);
-//        o.put("request", parts);
         o.put("version", SERVER_BUILD);
         o.put("HTTP_PORT", SENSITIVE.getHttpPort());
         o.put("HTTPS_PORT", SENSITIVE.getHttpsPort());
@@ -64,10 +67,4 @@ public class AdminMainPageHolder implements PageHolder {
         return html;
     }
 
-    public void addPart(String s) {
-        part = s;
-    }
-    public void addRequest(ArrayList<String> s) {
-        request = s;
-    }
 }

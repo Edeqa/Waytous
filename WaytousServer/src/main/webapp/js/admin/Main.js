@@ -34,7 +34,7 @@ function Main() {
 
 
     preloaded = function() {
-        if(!data.page) {
+        if(window.location.pathname == "/admin" || window.location.pathname == "/admin/") {
             window.location.href = "/admin/home";
             return;
         }
@@ -111,21 +111,18 @@ function Main() {
 
         resign(resume);
 
-        var a = u.byId("sign");
-        a.parentNode.removeChild(a);
-
     }
 
     function resign(callback){
 
         u.loading("Signing in...");
-        firebase.auth().signInWithCustomToken(sign.token).then(function(e){
+        firebase.auth().signInWithCustomToken(data.sign).then(function(e){
             callback();
         //            console.log("AAA",e)
         }).catch(function(error) {
-                          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              window.location = window.location.href;
           // ...
         });
     }
@@ -135,6 +132,7 @@ function Main() {
             window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
                 window.scrollTo(0, 1); }, 0);
             });
+            var page = window.location.pathname.split("/")[2];
 
             var out = u.create("div", {className:"layout"}, document.body);
 
@@ -163,7 +161,7 @@ function Main() {
             var dialogAbout = utils.dialogAbout(right);
 
             actionbar = u.actionBar({
-                title: holders[data.page].title,
+                title: holders[page].title,
                 onbuttonclick: function(){
                      try {
                          drawer.open();
@@ -180,16 +178,18 @@ function Main() {
                 if(holders[x] && holders[x].menu) {
 
                     var item = drawer.add(u.DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
-                        var holder = holders[this.instance];
 
-                    if(holder.move) {
-                          window.history.pushState({}, null, "/admin/" + holder.page);
-                          actionbar.titleNode.innerHTML = holder.title;
-                          drawer.headerPrimary.innerHTML = holder.title;
-                      }
-
-
-                      holder.start();
+                        switchTo("/admin/" + holders[this.instance].page);
+//                        var holder = holders[this.instance];
+//
+//                    if(holder.move) {
+//                          window.history.pushState({}, null, "/admin/" + page);
+//                          actionbar.titleNode.innerHTML = holder.title;
+//                          drawer.headerPrimary.innerHTML = holder.title;
+//                      }
+//
+//
+//                      holder.start();
                       return false;
                   });
                   item.instance = x;
@@ -198,9 +198,9 @@ function Main() {
 
             drawer.add(u.DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
 
-            actionbar.titleNode.innerHTML = holders[data.page].title;
-            drawer.headerPrimary.innerHTML = holders[data.page].title;
-            holders[data.page].start();
+            actionbar.titleNode.innerHTML = holders[page].title;
+            drawer.headerPrimary.innerHTML = holders[page].title;
+            holders[page].start();
             u.loading.hide();
         } catch(e) {
             console.error(e);
@@ -219,13 +219,13 @@ function Main() {
     var switchTo = function(to) {
         var parts = to.split("/");
         if(parts[1] == "admin") {
-            u.clear(content);
-            actionbar.titleNode.innerHTML = holders[parts[2]].title;
-            drawer.headerPrimary.innerHTML = holders[parts[2]].title;
-            holders[parts[2]].start(parts);
             if(holders[parts[2]].move) {
+                u.clear(content);
+                actionbar.titleNode.innerHTML = holders[parts[2]].title;
+                drawer.headerPrimary.innerHTML = holders[parts[2]].title;
                 window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
             }
+            holders[parts[2]].start(parts);
         }
     }
 

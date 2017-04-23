@@ -66,7 +66,6 @@ function DrawerHolder(main) {
            drawer.toggle();
         }
 
-
 ////// FIXME - remove when no alpha
         alphaDialog = alphaDialog || u.dialog({
             className: "alert-dialog",

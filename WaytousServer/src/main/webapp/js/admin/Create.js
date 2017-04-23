@@ -111,7 +111,7 @@ function Create() {
     return {
         start: start,
         page: "create",
-        icon: "add",
+        icon: "group_add",
         title: title,
         menu: title,
     }

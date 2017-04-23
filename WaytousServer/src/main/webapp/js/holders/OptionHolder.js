@@ -94,7 +94,6 @@ function OptionHolder(main) {
                         id: option.id || "",
                         type:HTML.DIV,
                         className:"options-dialog-section",
-//                        innerHTML: title
                     });
                 }
                 for(var j in option.categories) {
@@ -117,7 +116,6 @@ function OptionHolder(main) {
                         var item = category.items[k];
                         var id = i + ":" + j + ":" + k;
                         options[id] = optionsDialog.addItem(item, categories[category.id || ""].lastChild);
-//                        delete options[id].accept;
                         options[id].onaccept = item.onaccept;
                         if(item.onchange) options[id].addEventListener("change", item.onchange);
                     }

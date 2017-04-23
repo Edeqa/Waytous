@@ -249,8 +249,9 @@ function Group() {
                 this.page = request[2] + "/" + request[3];
                 groupId = request[3];
             } else {
-                this.page = data.request[2] + "/" + data.request[3];
-                groupId = data.request[3];
+                var parts = window.location.pathname.split("/");
+                this.page = parts[2] + "/" + parts[3];
+                groupId = parts[3];
             }
             div = document.getElementsByClassName("content")[0];
             u.clear(div);

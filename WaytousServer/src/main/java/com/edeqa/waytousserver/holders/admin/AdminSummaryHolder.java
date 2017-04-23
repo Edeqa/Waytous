@@ -30,20 +30,25 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
  */
 
 @SuppressWarnings("unused")
-public class AdminSummaryPageHolder implements PageHolder {
+public class AdminSummaryHolder implements PageHolder {
 
     private static final String HOLDER_TYPE = "summary";
 
     private final MyHttpAdminHandler server;
     private HtmlGenerator html;
 
-    public AdminSummaryPageHolder(MyHttpAdminHandler server) {
+    public AdminSummaryHolder(MyHttpAdminHandler server) {
         this.server = server;
     }
 
     @Override
     public String getType() {
         return HOLDER_TYPE;
+    }
+
+    @Override
+    public boolean perform(HttpExchange parts) {
+        return false;
     }
 
     public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query,HttpExchange exchange) {

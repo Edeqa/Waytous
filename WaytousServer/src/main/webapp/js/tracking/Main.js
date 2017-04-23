@@ -393,6 +393,23 @@ function Main() {
                             },
                             values: {"": u.lang.default, "en": u.lang.english, "ru": u.lang.russian }
                         },
+                        {
+                            id:"main:reset_dialogs",
+                            type: HTML.BUTTON,
+                            label: "Dialogs positions",
+                            innerHTML: "Reset",
+                            onclick: function(e, event) {
+                                for(var x in localStorage) {
+                                    if(x.indexOf(u.origin + ":dialog:") == 0) {
+                                        delete localStorage[x];
+                                    }
+                                }
+                                var items = document.getElementsByClassName("modal");
+                                for(var i in items) {
+                                    items[i].style = "";
+                                }
+                            }
+                        }
                     ]
                 },
                 {
@@ -400,7 +417,7 @@ function Main() {
                     title: u.lang.notifications,
                     items: [
                         {
-                            id:"main:notification",
+                            id:"notification:disable",
                             type: HTML.CHECKBOX,
                             label: u.lang.onscreen_notifications,
                             checked: !u.load("main:disable_notification"),
@@ -412,6 +429,36 @@ function Main() {
                                     e.parentNode.hide();
                                 }
                             }
+                        }
+                    ]
+                },
+                {
+                    id: "general:about",
+                    title: "About",
+                    items: [
+                        {
+                            id:"about:general",
+                            type: HTML.DIV,
+                            className: "options-dialog-item--about",
+                            innerHTML: "Waytous",
+                        },
+                        {
+                            id:"about:legal",
+                            type: HTML.DIV,
+                            className: "options-dialog-item-about",
+                            innerHTML: "Legal information",
+                        },
+                        {
+                            id:"about:terms",
+                            type: HTML.DIV,
+                            className: "options-dialog-item-about",
+                            innerHTML: "Terms and conditions",
+                        },
+                        {
+                            id:"about:other",
+                            type: HTML.DIV,
+                            className: "options-dialog-item-about",
+                            innerHTML: "Third party components",
                         }
                     ]
                 }

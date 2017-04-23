@@ -443,7 +443,6 @@ function NavigationHolder(main) {
                     }
                 }
             }, main.right);
-
         }
 
         main.toast.hide();
@@ -512,7 +511,7 @@ function NavigationHolder(main) {
             map: main.map,
             visible: false
         });
-        this.views.navigationtils.label = new utils.label({
+        this.views.navigation.label = new utils.label({
             map:main.map,
             className:"navigation-label",
             style: {backgroundColor:this.properties.color},

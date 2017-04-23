@@ -23,7 +23,6 @@ function PropertiesHolder(main) {
                         u.save("properties:name_asked", true);
                         main.me.fire(EVENTS.CHANGE_NAME, name);
                     }
-                    console.log(args);
                 }
             },
             negative: {

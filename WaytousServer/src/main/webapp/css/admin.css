@@ -67,7 +67,35 @@
     width: 400px;
     max-width: 90%;
 }
+.logs-header {
+}
 .table-logs {
+    white-space: pre-wrap;
+    display: block;
+    height: 100%;
+}
+.table-logs-caption {
+    display: block;
+}
+.table-logs-caption-cell {
+    display: block;
+    width: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.table-logs-body {
+    display: block;
+    overflow: auto;
+    height: 100%;
+}
+.table-logs-row {
+    display: block;
+    width: 100%;
+}
+.table-logs-row-cell {
+    overflow: scroll;
+    display: block;
+    width: 100%;
 }
 
 

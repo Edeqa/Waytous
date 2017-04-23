@@ -112,7 +112,7 @@ function Groups() {
             updateData();
         },
         page: "groups",
-        icon: "list",
+        icon: "group",
         title: title,
         menu: title,
         move:true,

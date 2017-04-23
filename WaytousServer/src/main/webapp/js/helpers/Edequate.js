@@ -1,8 +1,15 @@
 /**
  * Edequate - javascript DOM and interface routines
+ * Edequate (C)2017 Edeqa LLC
+ * http://www.edeqa.com
+ *
+ * v.1 - initial release
  */
 
 function Edequate(options) {
+    var self = this;
+
+    this.version = 1;
 
     var HTML = {
         DIV: "div",
@@ -76,6 +83,8 @@ function Edequate(options) {
         AUTO:"auto",
         AUDIO:"audio",
     };
+    this.HTML = HTML;
+
     var ERRORS = {
         NOT_EXISTS: 1,
         NOT_AN_OBJECT: 2,
@@ -83,6 +92,8 @@ function Edequate(options) {
         ERROR_LOADING: 8,
         ERROR_SENDING_REQUEST: 16
     };
+    this.ERRORS = ERRORS;
+
     var DRAWER = {
         SECTION_PRIMARY: 0,
         SECTION_COMMUNICATION: 2,
@@ -92,36 +103,26 @@ function Edequate(options) {
         SECTION_MISCELLANEOUS: 8,
         SECTION_LAST: 9
     };
-
-    var self = this;
+    this.DRAWER = DRAWER;
 
     URL = function(link) {
-        var href = link;
+        this.href = link;
         var p = link.split("://");
-        var protocol = "http:";
-        if(p.length > 1) protocol = p.shift() +":";
+        this.protocol = "http:";
+        if(p.length > 1) this.protocol = p.shift() +":";
         p = p.join("//").split("/");
-        var host = p.shift();
-        var pathname = "/" + p.join("/");
-        p = host.split(":");
-        var hostname = p.shift();
-        var port = p.shift();
-        if(!port) port = "";
-        var origin = protocol + "//" + host;
+        this.host = p.shift();
+        this.pathname = "/" + p.join("/");
+        p = this.host.split(":");
+        this.hostname = p.shift();
+        this.port = p.shift();
+        if(!this.port) this.port = "";
+        this.origin = this.protocol + "//" + this.host;
+        this.hash = "";
+        this.password = "";
+        this.search = "";
+        this.username = "";
 
-        return {
-            hash: "",
-            host: host,
-            hostname: hostname,
-            href: href,
-            origin: origin,
-            pathname: pathname,
-            password: "",
-            port: port,
-            protocol: protocol,
-            search: "",
-            username: ""
-        }
     };
 
     HTMLDivElement.prototype.show = function() {
@@ -166,6 +167,7 @@ function Edequate(options) {
     function byId(id) {
         return document.getElementById(id);
     }
+    this.byId = byId;
 
     function normalizeName(name) {
         if(name == HTML.CLASSNAME){
@@ -183,6 +185,7 @@ function Edequate(options) {
         }
         return name;
     }
+    this.normalizeName = normalizeName;
 
     var attributable = {
         "frameBorder":1,
@@ -298,6 +301,7 @@ function Edequate(options) {
 
         return el;
     }
+    this.create = create;
 
     function clear(node) {
         if(!node) return;
@@ -305,8 +309,9 @@ function Edequate(options) {
             node.removeChild(node.children[i]);
         }
     }
+    this.clear = clear;
 
-    function destroy(node) {
+     function destroy(node) {
         try {
             clear(node);
             if(node.parentNode) node.parentNode.removeChild(node);
@@ -315,6 +320,7 @@ function Edequate(options) {
             console.error(e);
         }
     }
+    this.destroy = destroy;
 
     function keys(o) {
         var keys = [];
@@ -323,6 +329,7 @@ function Edequate(options) {
         }
         return keys;
     }
+    this.keys = keys;
 
     function require(name, context) {
         var parts = name.split("/");
@@ -367,42 +374,7 @@ function Edequate(options) {
 
         return { then: thenFunction, "catch": catchFunction };
     }
-
-
-    /*function require(name, onload, onerror, context){
-        var parts = name.split("/");
-        var filename = parts[parts.length-1];
-        var onlyname = filename.split(".")[0];
-        var needInstantiate = false;
-        if(onerror && onerror.constructor !== Function) {
-            context = onerror;
-            onerror = function(){};
-        }
-        if(!filename.match(/\.js$/) && parts[1] == "js") {
-            needInstantiate = true;
-            name += ".js";
-        }
-        create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
-            if (onload) {
-                var a;
-                if(needInstantiate) {
-                    if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
-                        a = new window[this.instance](context);
-                        a.moduleName = this.instance;
-                        lang.overrideResources(a);
-                    } else {
-                        onerror(ERRORS.NOT_AN_OBJECT, this.instance, e);
-                    }
-                }
-                onload(a);
-            }
-        }, onerror: function(e) {
-            if(onerror) {
-                onerror(ERRORS.NOT_EXISTS, this.instance, e);
-            }
-        }, async:"", defer:""}, document.head);
-
-    }*/
+    this.require = require;
 
 
     function _stringify(key, value) {
@@ -423,44 +395,48 @@ function Edequate(options) {
       }
     function save(name, value) {
         if(value) {
-            localStorage[this.origin + ":" + name] = JSON.stringify(value, _stringify);
+            localStorage[self.origin + ":" + name] = JSON.stringify(value, _stringify);
         } else {
-            delete localStorage[this.origin + ":" + name];
+            delete localStorage[self.origin + ":" + name];
         }
     }
+    this.save = save;
 
     function load(name) {
-        var value = localStorage[this.origin + ":" + name];
+        var value = localStorage[self.origin + ":" + name];
         if(value) {
             return JSON.parse(value, _parse);
         } else {
             return null;
         }
     }
+    this.load = load;
 
     function saveForContext(name, value) {
-        if(!this.context) {
+        if(!self.context) {
             save(name, value);
             return;
         }
         if(value) {
-            localStorage[this.origin + "$" + this.context +":" + name] = JSON.stringify(value, _stringify);
+            localStorage[self.origin + "$" + self.context +":" + name] = JSON.stringify(value, _stringify);
         } else {
-            delete localStorage[this.origin + "$" + this.context +":" + name];
+            delete localStorage[self.origin + "$" + self.context +":" + name];
         }
     }
+    this.saveForContext = saveForContext;
 
     function loadForContext(name) {
-        if(!this.context) {
+        if(!self.context) {
             return load(name);
         }
-        var value = localStorage[this.origin + "$" + this.context +":"+name];
+        var value = localStorage[self.origin + "$" + self.context +":"+name];
         if(value) {
             return JSON.parse(value, _parse);
         } else {
             return null;
         }
     }
+    this.loadForContext = loadForContext;
 
     var modalBackground;
     function dialog(options, appendTo) {
@@ -556,10 +532,16 @@ function Edequate(options) {
 
                 var type = HTML.INPUT;
                 if(item.type.toLowerCase() == HTML.TEXTAREA) type = HTML.TEXTAREA;
+                else if(item.type.toLowerCase() == HTML.BUTTON) type = HTML.BUTTON;
 
                 item.tabindex = i;
                 item.className = "dialog-item-input-"+item.type + (item.className ? " "+item.className : "");
-                item.onclick = function(e) { this.focus(); e.stopPropagation(); };
+                if(item.onclick) {
+                    var a = item.onclick;
+                    item.onclick = function(e) { this.focus(); a(); e.stopPropagation(); };
+                } else {
+                    item.onclick = function(e) { this.focus(); e.stopPropagation(); };
+                }
                 item.onkeyup = function(e){
                    if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
                        dialog.close();
@@ -600,10 +582,10 @@ function Edequate(options) {
             var left,top,width,height;
             var id = options.id || (options.title && options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
             if(id) {
-                left = load("dialog:left:"+id);
-                top = load("dialog:top:"+id);
-                width = load("dialog:width:"+id);
-                height = load("dialog:height:"+id);
+                left = load("dialog:"+id+":left");
+                top = load("dialog:"+id+":top");
+                width = load("dialog:"+id+":width");
+                height = load("dialog:"+id+":height");
             }
             if(left || top || width || height) {
                 if(left) dialog.style.left = left;
@@ -736,10 +718,8 @@ function Edequate(options) {
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
                         var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
                         if(id && moved) {
-                            if(dialog.style.left) save("dialog:left:"+id, dialog.style.left);
-                            if(dialog.style.top) save("dialog:top:"+id, dialog.style.top);
-//                            if(dialog.style.width) save("dialog:width:"+(options.id || options.title.label), dialog.style.width);
-//                            if(dialog.style.height) save("dialog:height:"+(options.id || options.title.label), dialog.style.height);
+                            if(dialog.style.left) save("dialog:"+id+":left", dialog.style.left);
+                            if(dialog.style.top) save("dialog:"+id+":top", dialog.style.top);
                         }
                     }
                     function mousemove(e){
@@ -759,10 +739,10 @@ function Edequate(options) {
                 },
                 ondblclick: function(e) {
                     var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
-                    save("dialog:left:"+id);
-                    save("dialog:top:"+id);
-                    save("dialog:width:"+id);
-                    save("dialog:height:"+id);
+                    save("dialog:"+id+":left");
+                    save("dialog:"+id+":top");
+                    save("dialog:"+id+":width");
+                    save("dialog:"+id+":height");
                     dialog.style.left = "";
                     dialog.style.top = "";
                     dialog.style.width = "";
@@ -921,11 +901,9 @@ function Edequate(options) {
                         window.removeEventListener(HTML.MOUSEUP, mouseup, false);
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
                         if((options.id || options.title.label) && moved) {
-//                            if(dialog.style.left) save("dialog:left:"+(options.id || options.title.label), dialog.style.left);
-//                            if(dialog.style.top) save("dialog:top:"+(options.id || options.title.label), dialog.style.top);
                             var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
-                            if(dialog.style.width) save("dialog:width:"+id, dialog.style.width);
-                            if(dialog.style.height) save("dialog:height:"+id, dialog.style.height);
+                            if(dialog.style.width) save("dialog:"+id+":width", dialog.style.width);
+                            if(dialog.style.height) save("dialog:"+id+":height", dialog.style.height);
                         }
                     }
                     function mousemove(e){
@@ -952,6 +930,7 @@ function Edequate(options) {
 
         return dialog;
     }
+    this.dialog = dialog;
 
     function sprintf() {
         var a = this, b;
@@ -982,6 +961,7 @@ function Edequate(options) {
         }
         return a; // Make chainable
     }
+    this.sprintf = sprintf;
 
     function cloneAsObject(object) {
         var o = {};
@@ -994,6 +974,7 @@ function Edequate(options) {
         }
         return o;
     }
+    this.cloneAsObject = cloneAsObject;
 
     function lang(string, value) {
         if(value) {
@@ -1025,6 +1006,7 @@ function Edequate(options) {
         var res = (lang.$origin[string] && lang[string]) || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
         return res;
     }
+    this.lang = lang;
 
     lang.$nodes = lang.$nodes || {};
     lang.$origin = lang.$origin || {};
@@ -1097,7 +1079,7 @@ function Edequate(options) {
             .then(callback(xhr))
             .catch(callback(code,xhr));
     */
-    function get(url, post) {
+     function get(url, post) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
         var callbacks = {
@@ -1127,6 +1109,7 @@ function Edequate(options) {
         }
         return { then: thenFunction, "catch": catchFunction };
     }
+    this.get = get;
 
     /**
         getJSON(url [, post])
@@ -1159,6 +1142,7 @@ function Edequate(options) {
         },0);
         return { then: thenFunction, "catch": catchFunction };
     }
+    this.getJSON = getJSON;
 
     function drawer(options, appendTo) {
 //        collapsed = options.collapsed;
@@ -1231,7 +1215,7 @@ function Edequate(options) {
          layout.frame = u.create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
          layout.frame.contentWindow.addEventListener("resize",function(){
             if(!layout.resizeTask) layout.resizeTask = setTimeout(function(){
-                if(options.ontoggle) options.ontoggle();
+                if(options.onwidthtoggle) options.onwidthtoggle();
                 delete layout.resizeTask;
             }, 500);
          });
@@ -1349,6 +1333,7 @@ function Edequate(options) {
 
         return layout;
     }
+    this.drawer = drawer;
 
     function toast() {
         var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(); }});
@@ -1365,8 +1350,9 @@ function Edequate(options) {
        };
         return toast;
     }
+    this.toast = new toast();
 
-    function notification(options) {
+     function notification(options) {
         if(!options.persistent && !document.hidden) return;
         if(u.load("main:disable_notification")) return;
         if (!("Notification" in window)) {
@@ -1395,6 +1381,7 @@ function Edequate(options) {
             });
         }
     }
+    this.notification = notification;
 
     function actionBar(options, appendTo) {
 
@@ -1407,6 +1394,7 @@ function Edequate(options) {
         if(appendTo) appendTo.appendChild(actionbar);
         return actionbar;
     }
+    this.actionBar = actionBar;
 
     function copyToClipboard(input) {
         if(!input) return false;
@@ -1419,6 +1407,7 @@ function Edequate(options) {
             return false;
         }
     }
+    this.copyToClipboard = copyToClipboard;
 
     function table(options, appendTo) {
         options.className = "table" + (options.className ? " " + options.className : "");
@@ -1541,7 +1530,8 @@ function Edequate(options) {
             for(var i in options.caption.items) {
                 var item = options.caption.items[i];
                 item.className = "th"+(item.className ? " "+item.className : "");
-                item.innerHTML = item.innerHTML || item.label;
+                var innerHTML = item.innerHTML;
+                delete item.innerHTML;
                 item.index = i;
                 item.sort = 0;
                 item.onclick = function() {
@@ -1560,8 +1550,8 @@ function Edequate(options) {
                     table.update();
                 }
                 var cell = create(HTML.DIV, item, table.head);
+                cell.place(HTML.DIV,{className:"table-sort hidden", innerHTML:"sort"}).place(HTML.SPAN, {innerHTML: item.innerHTML || item.label});
                 table.head.cells.push(cell);
-                cell.insertBefore(create(HTML.DIV,{className:"table-sort hidden", innerHTML:"sort"}),cell.firstChild);
             }
 
             table.resetButton = u.create(HTML.DIV, {
@@ -1718,7 +1708,7 @@ function Edequate(options) {
             }
         }
 
-        table.body = create(HTML.DIV, {className:"tbody"}, table);
+        table.body = create(HTML.DIV, {className:"tbody" + (options.bodyClassName ? " "+options.bodyClassName : "")}, table);
 
 
         table.placeholder = create(HTML.DIV, {
@@ -1741,6 +1731,7 @@ function Edequate(options) {
 
         return table;
     }
+    this.table = table;
 
     var loadingHolder;
     function loading(progress) {
@@ -1759,6 +1750,7 @@ function Edequate(options) {
             loadingHolder.lastChild.hide();
         }
     }
+    this.loading = loading;
     loading.hide = function() {
         loadingHolder.hide();
     }
@@ -1770,34 +1762,7 @@ function Edequate(options) {
         window.DRAWER = DRAWER;
     }
 
-    return {
-        HTML:HTML,
-        ERRORS:ERRORS,
-        DRAWER:DRAWER,
-        actionBar:actionBar,
-        byId:byId,
-        clear: clear,
-        cloneAsObject:cloneAsObject,
-        context:options.context || "",
-        copyToClipboard:copyToClipboard,
-        create: create,
-        destroy:destroy,
-        dialog:dialog,
-        drawer:drawer,
-        get:get,
-        getJSON:getJSON,
-        keys: keys,
-        lang:lang,
-        load:load,
-        loading:loading,
-        loadForContext:loadForContext,
-        notification:notification,
-        origin:options.origin || "edequate",
-        require:require,
-        save:save,
-        saveForContext:saveForContext,
-        sprintf:sprintf,
-        table:table,
-        toast:new toast(),
-    }
+    this.context = options.context || "";
+    this.origin = options.origin || "edequate";
+
 }

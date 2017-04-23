@@ -380,7 +380,7 @@ function Utils(main) {
                     var s = "";
                     for(var x in options.style) {
                         if(options.style.hasOwnProperty(x)) {
-                            s += normalizeName(x) + ":" + options.style[x] + ";";
+                            s += u.normalizeName(x) + ":" + options.style[x] + ";";
                         }
                     }
                     options.style = s;

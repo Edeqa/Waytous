@@ -92,7 +92,7 @@ function TrackHolder(main) {
             drawerItemShow.hide();
             if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
                 main.users.forAllUsers(function (number, user) {
-                    if(user.views.track) {
+                    if(user.properties.active && user.views.track) {
                         if (user.views.track.show) {
                             drawerItemHide.show();
                         } else {
@@ -135,7 +135,6 @@ function TrackHolder(main) {
 
     function onChangeLocation(location) {
         show.call(this);
-        // console.log("SAMPLEONCHANGELOCATION",this,location);
     }
 
     return {

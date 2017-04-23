@@ -249,8 +249,9 @@ function User() {
                groupId = request[3];
                userNumber = request[4];
            } else {
-               groupId = data.request[3];
-               userNumber = data.request[4];
+                var parts = window.location.pathname.split("/");
+               groupId = parts[3];
+               userNumber = parts[4];
            }
            this.page = "user" + "/" + groupId + "/" + userNumber;
            div = document.getElementsByClassName("content")[0];
