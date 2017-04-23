@@ -176,7 +176,7 @@ button:active {
 .drawer-collapsed .drawer-header-logo {
     height: 24px;
     width: 24px;
-    left: 6px;
+    left: 7px;
 }
 .drawer-header-name, .drawer-collapsed:hover .drawer-header-name {
     display: block;
@@ -222,6 +222,18 @@ button:active {
 }
 .drawer-collapsed .drawer-menu {
     top: 50px;
+}
+.drawer-menu-item-expand {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    justify-content: flex-end;
+}
+.drawer-menu-item-collapse {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    float: right;
 }
 .drawer-menu-item:hover {
     background: #dddd99;

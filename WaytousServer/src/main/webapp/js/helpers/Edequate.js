@@ -1238,7 +1238,29 @@ function Edequate(options) {
 
         layout.menu = u.create(HTML.DIV, {className:"drawer-menu changeable"}, layout);
         for(var i=0;i<10;i++){
-            layout.sections[i] = u.create(HTML.DIV, {className:"hidden" + (i==9 ? "" : " divider")}, layout.menu);
+            layout.sections[i] = u.create(HTML.DIV, {order:i, className:"changeable hidden" + (i==9 ? "" : " divider")}, layout.menu);
+            if(options.collapsible && options.collapsible.indexOf(i) >= 0) {
+                var collapsed = load("drawer:section:collapsed:"+i);
+
+                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-expand notranslate" + (collapsed ? "" : " hidden"), innerHTML: "expand_more", onclick: function(){
+                    for(var j in this.parentNode.childNodes) {
+                        if(this.parentNode.childNodes.hasOwnProperty(j)) {
+                            this.parentNode.childNodes[j].show();
+                        }
+                    }
+                  this.hide();
+                  save("drawer:section:collapsed:"+this.parentNode.order);
+                }}, layout.sections[i]);
+                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-collapse notranslate" + (collapsed ? " hidden" : ""), innerHTML: "expand_less", onclick: function(){
+                    for(var j in this.parentNode.childNodes) {
+                        if(this.parentNode.childNodes.hasOwnProperty(j)) {
+                            this.parentNode.childNodes[j].classList.add("hidden");
+                        }
+                    }
+                  this.previousSibling.show();
+                  save("drawer:section:collapsed:"+this.parentNode.order, true);
+              }}, layout.sections[i]);
+            }
         }
 
         layout.add = function(section,id,name,icon,callback) {
@@ -1247,8 +1269,9 @@ function Edequate(options) {
                 icon:icon,
                 callback:callback
             };
+            var collapsed = load("drawer:section:collapsed:"+section);
             var th = u.create(HTML.DIV, {
-                className:"drawer-menu-item",
+                className:"drawer-menu-item" + (collapsed ? " hidden" : ""),
                 onclick: function (event) {
                     var self = this;
                     setTimeout(function () {
@@ -1354,7 +1377,7 @@ function Edequate(options) {
 
      function notification(options) {
         if(!options.persistent && !document.hidden) return;
-        if(u.load("main:disable_notification")) return;
+        if(load("main:disable_notification")) return;
         if (!("Notification" in window)) {
             console.error("This browser does not support desktop notification");
             return;
