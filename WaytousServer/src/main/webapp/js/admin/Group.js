@@ -51,6 +51,11 @@ function Group() {
     }
 
     function updateSummary() {
+        if(!groupId) {
+            WTU.switchTo("/admin/groups/");
+            return;
+        }
+
         var ref = database.ref();
         tableSummary.placeholder.show();
 

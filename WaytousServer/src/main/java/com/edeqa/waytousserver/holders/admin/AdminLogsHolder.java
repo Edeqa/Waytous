@@ -5,6 +5,7 @@ import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.BufferedOutputStream;
@@ -70,8 +71,8 @@ public class AdminLogsHolder implements PageHolder {
 
             byte[] bytes = "".getBytes();
 
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().set("Content-Type", "text/plain");
+            exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
             exchange.sendResponseHeaders(200, bytes.length);
 
             OutputStream os = exchange.getResponseBody();
@@ -89,14 +90,14 @@ public class AdminLogsHolder implements PageHolder {
             Common.log("Logs","Update:",file.getCanonicalPath());
 
             boolean gzip = true;
-            exchange.getResponseHeaders().set("Content-Type", "text/plain");
-            exchange.getResponseHeaders().set("Server", "WAIN/"+ Constants.SERVER_BUILD);
-            exchange.getResponseHeaders().set("Accept-Ranges", "bytes");
+            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
+            exchange.getResponseHeaders().set(HttpHeaders.SERVER, "WAIN/"+ Constants.SERVER_BUILD);
+            exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
 
             if(gzip){
-                exchange.getResponseHeaders().set("Content-Encoding", "gzip");
+                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
             } else {
-                exchange.getResponseHeaders().set("Content-Length", String.valueOf(file.length()));
+                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
             }
 
             exchange.sendResponseHeaders(200, 0);

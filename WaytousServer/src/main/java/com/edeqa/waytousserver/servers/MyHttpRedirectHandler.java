@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
+import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -25,7 +26,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
             URI uri = exchange.getRequestURI();
             String host;
             try {
-                host = exchange.getRequestHeaders().get("Host").get(0);
+                host = exchange.getRequestHeaders().get(HttpHeaders.HOST).get(0);
                 host = host.split(":")[0];
             } catch(Exception e){
                 e.printStackTrace();
@@ -61,9 +62,9 @@ public class MyHttpRedirectHandler implements HttpHandler {
                 Common.log("Redirect ->", redirectLink);
 
                 Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set("Content-Type", "text/plain");
-                responseHeaders.set("Date", new Date().toString());
-                responseHeaders.set("Location", redirectLink);
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+                responseHeaders.set(HttpHeaders.LOCATION, redirectLink);
                 exchange.sendResponseHeaders(302, 0);
                 exchange.close();
 
@@ -83,9 +84,9 @@ public class MyHttpRedirectHandler implements HttpHandler {
         String requestMethod = exchange.getRequestMethod();
         if (requestMethod.equalsIgnoreCase("GET")) {
             Headers responseHeaders = exchange.getResponseHeaders();
-            responseHeaders.set("Content-Type", "text/plain");
-            responseHeaders.set("Date", new Date().toString());
-            responseHeaders.set("Location", newUri);
+            responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+            responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+            responseHeaders.set(HttpHeaders.LOCATION, newUri);
             exchange.sendResponseHeaders(302, 0);
         }
     }

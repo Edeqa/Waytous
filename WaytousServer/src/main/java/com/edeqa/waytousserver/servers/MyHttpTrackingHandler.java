@@ -2,6 +2,7 @@ package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -40,7 +41,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
         String host = null;
         try {
-            host = exchange.getRequestHeaders().get("Host").get(0);
+            host = exchange.getRequestHeaders().get(HttpHeaders.HOST).get(0);
             host = host.split(":")[0];
         } catch(Exception e){
             e.printStackTrace();
@@ -73,8 +74,8 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
         byte[] bytes = html.build().getBytes();
 
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().set("Content-Type", "text/html");
+        exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/html");
         exchange.sendResponseHeaders(200, bytes.length);
 
         OutputStream os = exchange.getResponseBody();

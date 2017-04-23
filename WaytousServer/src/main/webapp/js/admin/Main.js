@@ -142,9 +142,12 @@ function Main() {
                 collapsed: "admin:drawer:collapsed",
                 logo: {
                     src:"/images/logo.svg",
+                    onclick: function() {
+                        dialogAbout.open();
+                    }
                 },
                 onprimaryclick: function(){
-                    console.log("onprimaryclick");
+
                 },
                 footer: {
                     className: "drawer-footer-label",

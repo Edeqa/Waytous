@@ -2,8 +2,8 @@ package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.interfaces.PageHolder;
+import com.google.common.net.HttpHeaders;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.internal.NonNull;
 import com.google.firebase.tasks.OnFailureListener;
@@ -17,9 +17,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -28,6 +25,7 @@ import java.util.Map;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.CLASS;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SCRIPT;
@@ -41,7 +39,6 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
 public class MyHttpAdminHandler implements HttpHandler {
 
     private final LinkedHashMap<String, PageHolder> holders;
-    private DatabaseReference ref;
     private volatile AbstractDataProcessor dataProcessor;
     private HtmlGenerator html;
 
@@ -66,8 +63,6 @@ public class MyHttpAdminHandler implements HttpHandler {
             }
         }
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        ref = database.getReference();
     }
 
     @Override
@@ -115,7 +110,7 @@ public class MyHttpAdminHandler implements HttpHandler {
 
                     byte[] bytes = html.build().getBytes();
                     try {
-                        exchange.getResponseHeaders().set("Content-Type", "text/html");
+                        exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/html");
                         exchange.sendResponseHeaders(200, bytes.length);
                         OutputStream os = exchange.getResponseBody();
                         os.write(bytes);

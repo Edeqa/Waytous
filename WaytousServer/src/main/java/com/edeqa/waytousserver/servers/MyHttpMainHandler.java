@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
+import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -86,9 +87,9 @@ public class MyHttpMainHandler implements HttpHandler {
                 os.close();
             } else if (!uri.getPath().endsWith("/") && !file.exists()) {
                 Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set("Content-Type", "text/plain");
-                responseHeaders.set("Date", new Date().toString());
-                responseHeaders.set("Location", uri.getPath() + "/");
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+                responseHeaders.set(HttpHeaders.LOCATION, uri.getPath() + "/");
                 exchange.sendResponseHeaders(302, 0);
                 exchange.close();
             } else if (!file.isFile() || path.startsWith("/WEB-INF") || path.startsWith("/META-INF") || path.startsWith("/.idea")) {
@@ -140,15 +141,15 @@ public class MyHttpMainHandler implements HttpHandler {
                 dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
                 String lastModified = dateFormat.format(file.lastModified());
 
-                exchange.getResponseHeaders().set("Last-Modified", lastModified);
+                exchange.getResponseHeaders().set(HttpHeaders.LAST_MODIFIED, lastModified);
 
-                exchange.getResponseHeaders().set("Cache-Control", SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
-                exchange.getResponseHeaders().set("ETag", etag);
-                exchange.getResponseHeaders().set("Server", "Waytous/" + SERVER_BUILD);
-                exchange.getResponseHeaders().set("Accept-Ranges", "bytes");
+                exchange.getResponseHeaders().set(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
+                exchange.getResponseHeaders().set(HttpHeaders.ETAG, etag);
+                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
+                exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
 
                 if (gzip) {
-                    exchange.getResponseHeaders().set("Content-Encoding", "gzip");
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
                 } else {
 //                    exchange.getResponseHeaders().set("Content-Length", String.valueOf(file.length()));
                 }
@@ -165,8 +166,8 @@ public class MyHttpMainHandler implements HttpHandler {
                         string = string.replaceAll(x.getKey(), x.getValue());
                     }
 
-                    exchange.getResponseHeaders().set("Content-Type", type );
-                    exchange.getResponseHeaders().set("Content-Length", String.valueOf(string.length()));
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type );
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
                     exchange.sendResponseHeaders(200, 0);
                     OutputStream os;
                     if(gzip) {
@@ -178,7 +179,7 @@ public class MyHttpMainHandler implements HttpHandler {
                     os.write(string.getBytes(charset));
                     os.close();
                 } else {
-                    exchange.getResponseHeaders().set("Content-Length", String.valueOf(file.length()));
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
                     exchange.sendResponseHeaders(200, 0);
                     OutputStream os;
                     if (gzip) {
