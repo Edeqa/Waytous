@@ -63,10 +63,10 @@ function Group() {
         ref.child(groupId).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
 
-            var td = u.create(HTML.DIV)
+            var td = u.create()
                 .place(HTML.A, { href:"/track/"+groupId, innerHTML:groupId, target:"_blank"})
                 .place(HTML.SPAN, " ")
-                .place(HTML.A, { href:"/group/"+groupId, innerHTML:"(Open forced in browser)", target:"_blank"});
+                .place(HTML.A, { href:"/group/"+groupId, innerHTML:"(Force open in browser)", target:"_blank"});
 
              tableSummary.add({ cells: [
                     { className: "th", innerHTML: "ID" },
@@ -113,7 +113,7 @@ function Group() {
 
             function filterActive(row){
                return !row.classList.contains("inactive");
-           };
+            };
             var usersNode = tableSummary.add({
                 onclick: function(e){
                     tableUsers.filter.remove(filterActive);
@@ -122,7 +122,6 @@ function Group() {
                     { className: "th", innerHTML: "Users total" },
                     { className: "option highlight", innerHTML: "..." }
             ]});
-
 
             var activeUsersNode = tableSummary.add({
                 onclick: function(e){
@@ -235,7 +234,7 @@ function Group() {
     function deleteGroupQuestion(e){
         u.clear(buttons);
 
-        u.create(HTML.DIV,{className:"question", innerHTML: "Are you sure you want to delete group "+groupId+"?"}, buttons);
+        u.create({className:"question", innerHTML: "Are you sure you want to delete group "+groupId+"?"}, buttons);
         u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: deleteGroup}, buttons);
         u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){
             renderButtons(buttons);

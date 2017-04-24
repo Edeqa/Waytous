@@ -15,21 +15,27 @@ function Create() {
             title: "Create group",
             className: "create-dialog",
             items: [
-                { type: HTML.INPUT, label: "ID", oninput: validate_id },
+                {
+                    type: HTML.INPUT,
+                    label: u.create(HTML.DIV, "ID ").place(HTML.DIV, {className: "create-dialog-button-generate", innerHTML:"Generate ID", onclick(){
+                        dialog.items[0].value = Math.random().toString(32).toUpperCase().replace(/0\./,"");
+                    }}),
+                    oninput: validate_id
+                },
                 { type: HTML.CHECKBOX, label: "Requires password", onchange: function() {
                        dialog.items[2].parentNode[this.checked ? "show" : "hide"]();
                        dialog.items[2].focus();
-                   } },
+                } },
                 { type: HTML.PASSWORD, itemClassName: "hidden", label: "Password" },
                 { type: HTML.INPUT, label: "Welcome message" },
                 { type: HTML.CHECKBOX, label: "Persistent group", onchange: function() {
                       dialog.items[5].parentNode[this.checked ? "hide" : "show"]();
                       dialog.items[5].focus();
-                  } },
+                } },
                 { type: HTML.INPUT, label: "Time to live, min", oninput: validate_ttl },
                 { type: HTML.CHECKBOX, label: "Dismiss inactive users", onchange: function() {
                     dialog.items[7].parentNode[this.checked ? "show" : "hide"]();
-                  dialog.items[7].focus();
+                    dialog.items[7].focus();
                 } },
                 { type: HTML.INPUT, itemClassName: "hidden", label: "Delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay },
             ],
@@ -79,13 +85,13 @@ function Create() {
 
         var ref = database.ref();
 
-        ref.child("_groups").child(inputId.value).set(0);
+        ref.child(DATABASE.SECTION_GROUPS).child(inputId.value).set(0);
 
-        ref.child(inputId.value).child("u/b/0/active").set(false);
-        ref.child(inputId.value).child("u/k/0").set(0);
-        ref.child(inputId.value).child("u/p/0/key").set(0);
+        ref.child(inputId.value).child(DATABASE.SECTION_USERS_DATA).child(0).child(DATABASE.USER_ACTIVE).set(false);
+        ref.child(inputId.value).child(DATABASE.SECTION_USERS_KEYS).child(0).set(0);
+        ref.child(inputId.value).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(0).child("key").set(0);
 
-        ref.child(inputId.value).child("o").set({
+        ref.child(inputId.value).child(DATABASE.SECTION_OPTIONS).set({
             "date-created": firebase.database.ServerValue.TIMESTAMP,
             "requires-password": inputRequiresPassword.checked,
             "password": inputPassword.value ? inputPassword.value : null,

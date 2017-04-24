@@ -49,7 +49,7 @@ function Summary() {
 
         div.appendChild(renderInterfaceTokensHeader());
 
-        var tt = u.create("div", {
+        var tt = u.create({
             className: "two_tables",
         }, div);
 

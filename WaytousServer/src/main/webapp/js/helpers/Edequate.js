@@ -199,10 +199,12 @@ function Edequate(options) {
 
     function create(name, properties, appendTo, position) {
         var el,namespace;
-        if(typeof name == "object") {
+        if(name && typeof name == "object") {
             position = appendTo;
             appendTo = properties;
             properties = name;
+            name = HTML.DIV;
+        } else if(!name) {
             name = HTML.DIV;
         }
 
@@ -466,6 +468,7 @@ function Edequate(options) {
         dialog.addItem = function(item, appendTo) {
             item = item || {};
             appendTo = appendTo || dialog.itemsLayout;
+            item.type = item.type || HTML.DIV;
 
             var div,x;
             if(item.type == HTML.DIV || item.type == HTML.A) {
@@ -502,9 +505,13 @@ function Edequate(options) {
 
                 if(item.label) {
                     var labelOptions = {
-                        className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : ""),
-                        innerHTML:item.label
+                        className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : "")
                     };
+                    if(item.label.constructor === String) {
+                        labelOptions.innerHTML = item.label;
+                    } else {
+                        labelOptions.content = item.label;
+                    }
                     if(item.id){
                         labelOptions["for"] = item.id;
 //                    } else {
@@ -522,15 +529,18 @@ function Edequate(options) {
                 for(var y in item.values) {
                     u.create(HTML.OPTION, {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
                 }
-
             } else {
                 div = create(HTML.DIV, {className:"dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : ""), onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
                     var labelOptions = {
-                        className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : ""),
-                        innerHTML:item.label
+                        className:"dialog-item-label" + (item.labelClassName ? " " + item.labelClassName : "")
                     };
+                    if(item.label.constructor === String) {
+                        labelOptions.innerHTML = item.label;
+                    } else {
+                        labelOptions.content = item.label;
+                    }
                     if(item.id){
                         labelOptions["for"] = item.id;
                     }

@@ -215,9 +215,11 @@ function Main() {
                 u.clear(content);
                 actionbar.titleNode.innerHTML = holders[parts[2]].title;
                 drawer.headerPrimary.innerHTML = holders[parts[2]].title;
-                window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
             }
             holders[parts[2]].start(parts);
+            if(holders[parts[2]].move) {
+                window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
+            }
         }
     }
 

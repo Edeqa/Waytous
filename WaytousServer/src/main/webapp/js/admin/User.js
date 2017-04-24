@@ -13,7 +13,7 @@ function User() {
 
     var renderInterface = function() {
 
-        u.create("h2", "Summary", div);
+        u.create(HTML.H2, "Summary", div);
 
         tableSummary = u.table({
             className: "option",
@@ -42,8 +42,8 @@ function User() {
         }, u.create("tr", {}, tbody));
 */
 
-        u.create("br", null, div);
-        buttons = u.create("div", {className:"buttons"}, div);
+        u.create(HTML.BR, null, div);
+        buttons = u.create({className:"buttons"}, div);
         renderButtons(buttons);
 
         return div;
@@ -214,7 +214,7 @@ function User() {
 
     function removeUserQuestion(e) {
         u.clear(buttons);
-        u.create(HTML.DIV,{className:"question", innerHTML: "Are you sure you want to remove user "+userNumber+" from group "+groupId+"?"}, buttons);
+        u.create({className:"question", innerHTML: "Are you sure you want to remove user "+userNumber+" from group "+groupId+"?"}, buttons);
         u.create(HTML.BUTTON,{className:"question",innerHTML:"Yes", onclick: removeUser}, buttons);
 
         u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){

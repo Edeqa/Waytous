@@ -14,12 +14,12 @@ function Logs() {
 
         var refreshTask;
 
-        var divHeader = u.create(HTML.DIV, {className: "logs-header"}, div)
+        var divHeader = u.create({className: "logs-header"}, div)
             .place(HTML.BUTTON, {innerHTML:"Refresh", onclick: function(){
                updateData();
            }})
-           .place(HTML.DIV, { className: "logs-header-label hidden", content: u.create(HTML.DIV)
-                .place(HTML.DIV, { className: "logs-header-label question", innerHTML: "Clear logs?"})
+           .place({ className: "logs-header-label hidden", content: u.create(HTML.DIV)
+                .place({ className: "logs-header-label question", innerHTML: "Clear logs?"})
                 .place(HTML.BUTTON, { className: "question", innerHTML:"Yes, clear logs", onclick: function(){
                    this.parentNode.parentNode.hide();
                    this.parentNode.parentNode.nextSibling.classList.remove("hidden");
@@ -37,7 +37,7 @@ function Logs() {
                 this.previousSibling.show();
 
             }})
-           .place(HTML.DIV, { className: "logs-header-label", innerHTML: "Autorefresh each, sec"})
+           .place({ className: "logs-header-label", innerHTML: "Autorefresh each, sec"})
            .place(HTML.INPUT, { className: "logs-header-input", value: 5})
            .place(HTML.BUTTON, {innerHTML:"Start", onclick: function(){
                 clearInterval(refreshTask);
