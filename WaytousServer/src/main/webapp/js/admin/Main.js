@@ -160,7 +160,7 @@ function Main() {
                 }
             }, out);
 
-            var right = u.create("div", {className:"right"}, out);
+            var right = u.create({className:"right"}, out);
             var dialogAbout = utils.dialogAbout(right);
 
             actionbar = u.actionBar({
@@ -173,33 +173,22 @@ function Main() {
                      }
                  }
             }, right);
-            content = u.create(HTML.DIV, {className: "content"}, right);
-           u.create(HTML.DIV, {className:"alert"}, right);
+            content = u.create({className: "content"}, right);
+            u.create({className:"alert"}, right);
 
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();
                 if(holders[x] && holders[x].menu) {
 
                     var item = drawer.add(u.DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
-
                         switchTo("/admin/" + holders[this.instance].page);
-//                        var holder = holders[this.instance];
-//
-//                    if(holder.move) {
-//                          window.history.pushState({}, null, "/admin/" + page);
-//                          actionbar.titleNode.innerHTML = holder.title;
-//                          drawer.headerPrimary.innerHTML = holder.title;
-//                      }
-//
-//
-//                      holder.start();
-                      return false;
-                  });
-                  item.instance = x;
+                        return false;
+                    });
+                    item.instance = x;
                 }
             }
 
-            drawer.add(u.DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
+            drawer.add(DRAWER.SECTION_LAST, "exit", "Log out", "exit_to_app", logout);
 
             actionbar.titleNode.innerHTML = holders[page].title;
             drawer.headerPrimary.innerHTML = holders[page].title;
@@ -238,5 +227,4 @@ function Main() {
         resign: resign,
     }
 }
-//document.addEventListener("DOMContentLoaded", (window.WTU = new Main()).start);
 document.addEventListener("readystatechange", function(){if(document.readyState == "complete"){(window.WTU = new Main()).start()}});

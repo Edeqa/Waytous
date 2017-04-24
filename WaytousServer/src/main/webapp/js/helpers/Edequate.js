@@ -199,6 +199,13 @@ function Edequate(options) {
 
     function create(name, properties, appendTo, position) {
         var el,namespace;
+        if(typeof name == "object") {
+            position = appendTo;
+            appendTo = properties;
+            properties = name;
+            name = HTML.DIV;
+        }
+
         if(properties && properties.xmlns) {
             el = document.createElementNS(properties.xmlns, name);
             namespace = properties.xmlns;

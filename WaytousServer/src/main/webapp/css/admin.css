@@ -9,6 +9,8 @@
     padding: 5px;
     width: calc(100% - 10px);
     height: calc(100% - 10px);
+    display: flex;
+    flex-direction: column;
 }
 .modal {
     position: fixed;
@@ -80,7 +82,8 @@
 }
 .table-logs {
     white-space: pre-wrap;
-    display: block;
+    display: flex;
+    flex-direction: column;
     height: 100%;
 }
 .table-logs-caption {

@@ -72,7 +72,7 @@ function Logs() {
 
 
     function updateData(){
-
+        var scroll = table.body.scrollTop;
         table.placeholder.show("Loading...");
         u.get("/admin/logs/log").then(function(xhr){
             table.head.cells[0].lastChild.innerHTML = "Logs (updated "+(new Date().toLocaleString())+")";
@@ -85,6 +85,7 @@ function Logs() {
                   ]
               });
             }
+            table.body.scrollTop = scroll
         });
 
     }
