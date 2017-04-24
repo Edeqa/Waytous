@@ -13,7 +13,6 @@ function Main() {
     var right;
     var origin;
     var main = w = this;
-    var progress;
     var alert;
     var defaultResources = "/locales/resources.en.json";
 
@@ -101,6 +100,7 @@ function Main() {
 
     function initializeHeader() {
 
+        u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"}, document.head);
         u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"},document.head);

@@ -1,0 +1,241 @@
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+.layout {
+    width: 100%;
+    display: flex;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1;
+    margin-bottom: 21px;
+    position: initial;
+    overflow: auto;
+}
+.drawer {
+    width: 100%;
+    height: 150px;
+    top: 0px;
+    position: fixed;
+    max-width: 100%;
+    border: none;
+    bottom: auto;
+}
+.drawer-header {
+    height: 150px;
+}
+.drawer-header-holder {
+    height: 150px;
+    display: block;
+    flex: 0 0 150px;
+}
+.drawer-header-logo {
+    height: 40px;
+    top: 15px;
+}
+.drawer-header-title {
+    font-size: x-large;
+    position: absolute;
+    left: 16px;
+    bottom: 5px;
+}
+.drawer-header-subtitle {
+    margin-left: 60px;
+}
+.drawer-menu {
+    top: 116px;
+    left: 150px;
+    bottom: auto;
+    position: fixed;
+    color: white;
+    width: auto;
+    height: 34px;
+    display: flex;
+}
+.drawer-menu:hover {
+    height: auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: black;
+}
+.drawer-menu-item {
+    padding-right: 10px;
+}
+.divider {
+    border: none;
+       position: relative;
+       overflow: hidden;
+}
+.drawer-footer {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    background-color: lightgray;
+    padding: 5px;
+    margin: 0px;
+}
+.drawer-footer-button {
+    display: none;
+}
+.drawer-footer-link {
+    margin: 10px;
+}
+
+.drawer-collapsed:hover {
+    max-width: 100%;
+}
+.drawer.drawer-collapsed {
+    height: 40px;
+}
+.drawer-collapsed .drawer-header {
+    height: 40px;
+}
+.drawer-header-holder.drawer-collapsed {
+    flex: 0 0 40px;
+}
+.drawer-collapsed .drawer-header-logo {
+    height: 32px;
+    left: 8px;
+    top: 4px;
+}
+.drawer-collapsed .drawer-header-name {
+    font-size: x-large;
+    top: 6px;
+}
+.drawer-collapsed .drawer-header-title {
+    font-size: larger;
+    left: 40px;
+    bottom: 8px;
+}
+.drawer-collapsed .drawer-menu {
+    top: 10px;
+    font-size: 12px;
+}
+
+
+
+.layout::-webkit-scrollbar {
+    width: 10px;
+    background-color: #F5F5F5;
+}
+.layout::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+    border-radius: 3px;
+}
+.layout::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: rgba(85, 85, 85, 0.3);
+    border-radius: 3px;
+}
+
+.content, .content-about {
+    position: initial;
+    height: 100%;
+    padding: 0px;
+    white-space: pre-wrap;
+}
+
+
+@media screen and (max-width: 1000px) {
+    .drawer, .drawer-collapsed {
+        left: 0px;
+        width: 70%;
+        height: 100%;
+        max-width:300px;
+        position: fixed;
+        top: 0px;
+        bottom: 0px;
+        background-color: white;
+        display:none;
+        z-index: 10000;
+    }
+    .drawer-open {
+        display: block;
+        outline: none;
+        box-shadow: 20px 0px 60px 10px rgba(0,0,0,0.75);
+    }
+    .drawer:focus {
+        display: block;
+    }
+    .drawer-collapsed .drawer-header {
+        height: 150px;
+    }
+    .drawer-collapsed .drawer-menu {
+        top: 150px;
+    }
+    .drawer-collapsed .drawer-header-logo {
+        height: 50px;
+        width: 50px;
+        left: 10px;
+    }
+    .drawer-collapsed .drawer-header-name {
+        font-size: x-large;
+    }
+    .drawer-collapsed .drawer-header-title {
+        font-size: larger;
+    }
+    .drawer-collapsed .drawer-header-subtitle {
+        font-size: inherit;
+    }
+
+   .drawer-menu {
+        position: absolute;
+        top: 150px;
+        bottom: 50px;
+        left: 0px;
+        color: darkslategray;
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .drawer-menu-item {
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .drawer-menu-item:hover {
+        background: #dddd99;
+    }
+    .drawer-menu-item-icon, .drawer-menu-item svg {
+        margin: 15px;
+        font-size: 16px;
+    }
+    .drawer-menu-item-label {
+    }
+    .drawer-menu-item-badge, .drawer-collapsed .drawer-menu-item-badge, .drawer-collapsed:hover .drawer-menu-item-badge {
+        margin: 14px;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+    }
+    .drawer-header {
+        height: 150px;
+    }
+    .drawer-header-logo {
+        height: 50px;
+        top: 15px;
+    }
+    .drawer-header-title {
+        margin-left: 10px;
+    }
+    .drawer-header-subtitle {
+        margin-left: 10px;
+    }
+    .drawer-footer {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        width: auto;
+        text-align: center;
+        font-size: 10px;
+    }
+    .drawer-footer-button {
+        display: none;
+    }
+
+}

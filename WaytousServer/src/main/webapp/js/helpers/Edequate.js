@@ -215,6 +215,15 @@ function Edequate(options) {
             el = document.createElement(name);
         }
 
+        if(appendTo && typeof appendTo == "string") {
+            replace = true;
+            properties.id = appendTo;
+            appendTo = byId(appendTo);
+            if(!properties.innerHTML && appendTo.innerHTML) properties.innerHTML = appendTo.innerHTML;
+        }
+
+
+
         if(properties) {
             if(properties instanceof HTMLElement) {
                 el.appendChild(properties);
@@ -296,7 +305,9 @@ function Edequate(options) {
             }
         }
         if(appendTo) {
-            if(appendTo.childNodes.length > 0) {
+            if(replace) {
+                appendTo.parentNode.replaceChild(el, appendTo);
+            } else if(appendTo.childNodes.length > 0) {
                 if(position == "first") {
                     appendTo.insertBefore(el,appendTo.firstChild);
 //                    appendTo.insertBefore(el,appendTo.childNodes[0]);
@@ -449,7 +460,7 @@ function Edequate(options) {
 
     var modalBackground;
     function dialog(options, appendTo) {
-        if(!appendTo) throw new Error("Parent node is not defined.");
+        appendTo = appendTo || document.body;
 
         var dialog = create(HTML.DIV, {
             className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
@@ -1194,7 +1205,7 @@ function Edequate(options) {
         };
 
         var layout = u.create(HTML.DIV, {
-            className:"drawer changeable" + (collapsed ? " drawer-collapsed" : ""),
+            className:"drawer changeable" + (collapsed ? " drawer-collapsed" : "") + (options.className ? " "+options.className : ""),
             tabindex: -1,
             onblur: function(){
                  this.close();
@@ -1224,10 +1235,16 @@ function Edequate(options) {
                 u.save("drawer:collapsed", collapsed);
                 layout.toggleButton.innerHTML = collapsed ? "last_page" : "first_page";
                 layout.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
+                layoutHeaderHolder.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
                 if(options.onwidthtoggle) options.onwidthtoggle();
             }
          });
-         appendTo.insertBefore(layout,appendTo.firstChild);
+         if(typeof appendTo == "string") {
+            appendTo = byId(appendTo);
+            appendTo.parentNode.replaceChild(layout, appendTo);
+         } else {
+            appendTo.insertBefore(layout, appendTo.firstChild);
+         }
 
          layout.frame = u.create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
          layout.frame.contentWindow.addEventListener("resize",function(){
@@ -1237,7 +1254,10 @@ function Edequate(options) {
             }, 500);
          });
 
+         var layoutHeaderHolder = u.create(HTML.DIV, {className: "drawer-header-holder changeable"});
+         layout.parentNode.insertBefore(layoutHeaderHolder, layout);
          layout.header = u.create(HTML.DIV, { className:"drawer-header changeable" }, layout);
+
          if(options.logo) {
              u.create(HTML.IMG, {
                 className:"drawer-header-logo changeable",
@@ -1794,6 +1814,36 @@ function Edequate(options) {
     loading.hide = function() {
         loadingHolder.hide();
     }
+
+    var progressHolder;
+    function progress(options, appendTo) {
+        options = options || {};
+        if(typeof options == "string") {
+            options = { label: options };
+        }
+        options.label = options.label || "Loading...";
+        options.dim = options.dim || false;
+
+        appendTo = appendTo || document.body;
+
+        progressHolder = progressHolder || dialog({
+            className: "progress-dialog",
+            items: [
+                { type: HTML.DIV, className: "progress-dialog-circle" },
+                { type: HTML.DIV, className: "progress-dialog-title" },
+            ]
+        }, appendTo)
+        progress.show(options.label);
+    }
+    progress.show = function(label) {
+        progressHolder.items[1].innerHTML = label;
+        progressHolder.open();
+    }
+    progress.hide = function() {
+        progressHolder.hide();
+    }
+
+
 
     options = options || {};
     if(options.exportConstants) {
