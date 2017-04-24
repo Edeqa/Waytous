@@ -499,7 +499,7 @@ function Utils(main) {
            positive: {
                label: "OK"
            }
-       }, appendTo);
+       });
     }
 
     return {
