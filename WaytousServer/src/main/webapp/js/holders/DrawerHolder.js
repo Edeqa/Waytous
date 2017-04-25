@@ -43,8 +43,10 @@ function DrawerHolder(main) {
                     return false;
                 }}).place(HTML.SPAN, "\nBuild " + data.version)
             },
-            collapsible: [DRAWER.SECTION_MAP]
-        }, main.layout);
+            collapsible: {
+                [DRAWER.SECTION_MAP]: true
+            }
+        }, document.body);
 
         actionbar = u.actionBar({
             title: main.appName,
