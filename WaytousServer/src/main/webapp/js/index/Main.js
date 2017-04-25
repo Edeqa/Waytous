@@ -30,7 +30,7 @@ function Main() {
 
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons", async:"", defer:""}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/tracking.css", async:"", defer:""}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/common.css", async:"", defer:""}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/index.css", async:"", defer:""}, document.head);
 
         u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"},document.head);
@@ -159,14 +159,14 @@ var type = "support";
                          console.error(e);
                      }
                  }
-            }, out);
+            }, document.body);
             var switchFullDrawer = function(){
                if(this.parentNode.scrollTop) {
                    self.drawer.toggleWidth(true);
                } else {
                    self.drawer.toggleWidth(false);
                }
-           }
+            }
             self.content = u.create(HTML.DIV, {className: "content", onwheel: switchFullDrawer }, "content");
             u.create(HTML.DIV, {className:"alert"}, out);
 

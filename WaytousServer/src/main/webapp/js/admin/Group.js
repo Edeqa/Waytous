@@ -19,14 +19,14 @@ function Group() {
 
 //        div.appendChild(renderAlertArea());
 
-//        u.create("h2", "Summary", div);
+        u.create(HTML.H2, "Summary", div);
 
         tableSummary = u.table({
             className: "option",
             placeholder: "Loading..."
         }, div);
 
-        u.create("h2", "Users", div);
+        u.create(HTML.H2, "Users", div);
 
         tableUsers = u.table({
             id: "admin:users",
@@ -257,7 +257,7 @@ function Group() {
                 this.page = parts[2] + "/" + parts[3];
                 groupId = parts[3];
             }
-            div = document.getElementsByClassName("content")[0];
+            div = document.getElementsByClassName("layout")[0];
             u.clear(div);
 
             renderInterface();

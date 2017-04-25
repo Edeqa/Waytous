@@ -7,7 +7,7 @@ function Settings() {
     var dialog;
 
     var start = function() {
-        div = document.getElementsByClassName("right")[0];
+        div = document.getElementsByClassName("layout")[0];
 
         dialog = dialog || u.dialog({
             title: "Settings",

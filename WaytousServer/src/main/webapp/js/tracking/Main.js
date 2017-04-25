@@ -46,8 +46,10 @@ function Main() {
         window.u = new Edequate({exportConstants:true, origin:"waytous"});
 
         main.appName = "${APP_NAME}";
-        main.layout = document.body;
-        main.layout.classList.add("layout");
+        main.right = main.layout = u.create({className:"layout changeable"}, document.body);
+
+//        main.layout = document.body;
+//        main.layout.classList.add("layout");
 //        main.layout = u.create("div", {className:"layout"}, document.body);
 
         setTimeout(function(){
@@ -102,6 +104,7 @@ function Main() {
 
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
+        u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/common.css"}, document.head);
         u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"}, document.head);
         u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"},document.head);
 
@@ -136,7 +139,6 @@ function Main() {
 
     function loadScripts(){
 
-        main.right = u.create("div", {className:"right changeable"}, main.layout);
         main.fire = fire;
         main.help = help;
         main.options = options;
@@ -159,7 +161,7 @@ function Main() {
              help: function() {
                 main.fire(EVENTS.SHOW_HELP, {module: main, article: 1});
              }
-         }, main.right);
+         }, document.body);
         main.toast = u.toast;
         main.right.appendChild(main.toast);
 

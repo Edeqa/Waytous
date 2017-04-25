@@ -5,6 +5,7 @@
 function Main() {
     var firebaseVersion = "3.8.0";
     var drawer;
+    var layout;
     var content;
 
     var holders = {};
@@ -45,7 +46,7 @@ function Main() {
 
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons", async:"", defer:""}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/tracking.css", async:"", defer:""}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/common.css", async:"", defer:""}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css", async:"", defer:""}, document.head);
 
         u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"},document.head);
@@ -134,7 +135,8 @@ function Main() {
             });
             var page = window.location.pathname.split("/")[2];
 
-            var out = u.create("div", {className:"layout"}, document.body);
+            layout = u.create("div", {className:"layout"}, document.body);
+//            content = u.create("div", {className:"content"}, layout);
 
             drawer = new u.drawer({
                 title: "${APP_NAME}",
@@ -158,10 +160,9 @@ function Main() {
                         return false;
                     }}).place(HTML.SPAN, "\nBuild " + data.version)
                 }
-            }, out);
+            }, document.body);
 
-            var right = u.create({className:"right"}, out);
-            var dialogAbout = utils.dialogAbout(right);
+            var dialogAbout = utils.dialogAbout();
 
             actionbar = u.actionBar({
                 title: holders[page].title,
@@ -172,9 +173,8 @@ function Main() {
                          console.error(e);
                      }
                  }
-            }, right);
-            content = u.create({className: "content"}, right);
-            u.create({className:"alert"}, right);
+            }, document.body);
+            u.create({className:"alert"}, document.body);
 
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();
@@ -212,7 +212,7 @@ function Main() {
         var parts = to.split("/");
         if(parts[1] == "admin") {
             if(holders[parts[2]].move) {
-                u.clear(content);
+                u.clear(layout);
                 actionbar.titleNode.innerHTML = holders[parts[2]].title;
                 drawer.headerPrimary.innerHTML = holders[parts[2]].title;
             }

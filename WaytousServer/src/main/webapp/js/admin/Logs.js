@@ -7,7 +7,7 @@ function Logs() {
 
     var renderInterface = function() {
 
-        div = document.getElementsByClassName("content")[0];
+        div = document.getElementsByClassName("layout")[0];
         u.clear(div);
 //        u.create("div", {className:"summary"}, div);
 //        u.create("h2", "Groups", div);
@@ -19,7 +19,7 @@ function Logs() {
                updateData();
            }})
            .place({ className: "logs-header-label hidden", content: u.create(HTML.DIV)
-                .place({ className: "logs-header-label question", innerHTML: "Clear logs?"})
+                .place(HTML.DIV, { className: "logs-header-label question", innerHTML: "Clear logs?"})
                 .place(HTML.BUTTON, { className: "question", innerHTML:"Yes, clear logs", onclick: function(){
                    this.parentNode.parentNode.hide();
                    this.parentNode.parentNode.nextSibling.classList.remove("hidden");
@@ -37,7 +37,7 @@ function Logs() {
                 this.previousSibling.show();
 
             }})
-           .place({ className: "logs-header-label", innerHTML: "Autorefresh each, sec"})
+           .place(HTML.DIV, { className: "logs-header-label", innerHTML: "Autorefresh each, sec"})
            .place(HTML.INPUT, { className: "logs-header-input", value: 5})
            .place(HTML.BUTTON, {innerHTML:"Start", onclick: function(){
                 clearInterval(refreshTask);

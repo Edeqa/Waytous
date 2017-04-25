@@ -46,7 +46,11 @@ function OptionHolder(main) {
                 label: u.lang.ok,
                 onclick: function(e, event) {
                     for(var i in options) {
-                        options[i].onaccept(e, event);
+                        try {
+                            options[i].onaccept && options[i].onaccept(e, event);
+                        } catch(e) {
+                            console.error(e);
+                        }
                     }
                 }
             },
@@ -56,7 +60,7 @@ function OptionHolder(main) {
                 onclick: function(e, event) {
                     for(var i in options) {
                         try {
-                            options[i].onaccept(e, event);
+                            options[i].onaccept && options[i].onaccept(e, event);
                         } catch(e) {
                             console.error(e);
                         }
@@ -67,7 +71,7 @@ function OptionHolder(main) {
                 label: u.lang.cancel,
                 onclick: function(){}
             }
-        }, main.right);
+        }, main.layout);
 
         sections = {};
         categories = {};

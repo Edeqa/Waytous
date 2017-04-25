@@ -1,71 +1,6 @@
 /**
  * Created 1/19/17.
  */
-* {
-    user-select: none;
-    -moz-user-select: -moz-none;
-    -webkit-user-select: none;
-}
-::selection {
-    background-color: lightgray;
-    color: inherit;
-}
-::-moz-selection {
-    background-color: lightgray;
-    color: inherit;
-}
-
-/* TAGS */
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: -webkit-box;   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-    display: -ms-flexbox;  /* TWEENER - IE 10 */
-    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-}
-body {
-    font-family: sans-serif;
-    font-size: 14px;
-    color: darkslategray;
-}
-input, textarea {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-button {
-    border-radius: 3px;
-    box-shadow: none;
-    outline: none;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-button:hover {
-    background-color: #eeeeee;
-}
-button:active {
-    background-color: #aaaaaa;
-}
-
-/* CLASSES */
-.layout {
-    width: 100%;
-    height: 100%;
-}
 .title {
     font-size: 18px;
     font-weight: bold;
@@ -106,240 +41,10 @@ button:active {
 .alert-icon:hover {
     background: none;
 }
-.toast {
-    position: fixed;
-    z-index: 5000;
-    padding: 10px;
-    background-color: rgba(128, 128, 128, 0.7);
-    color: white;
-    border-radius: 5px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: rgba(255, 255, 240, 0.7);
-    bottom: 40px;
-    cursor: default;
-}
-.drawer {
-    border-right-style: solid;
-    min-width: 240px;
-    max-width: 240px;
-    border-width: 1px;
-    background-color: azure;
-    left: 0px;
-    position: relative;
-    height: 100%;
-    top: 0px;
-    bottom: 0px;
-    z-index: 10000;
-}
-.drawer-collapsed {
-    max-width: 40px;
-    min-width: 40px;
-    overflow-x: hidden;
-}
-.drawer-collapsed:hover {
-    max-width: 240px;
-    min-width: 240px;
-    transition-delay: 1s;
-}
-.drawer-iframe {
-    position: absolute;
-    z-index: -1;
-    opacity: 0;
-}
-.drawer-open {
-    display: block;
-}
-.drawer:focus {
-    outline: none;
-}
-.drawer-header {
-    background: linear-gradient(135deg, #2e5d7d 0%,#32667b 54%,#819bc7 100%);
-    display: flex;
-    height: 150px;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-left: 10px;
-    padding-right: 10px;
-    position: sticky;
-    overflow: hidden;
-}
-.drawer-header-holder {
-    display: none;
-    visibility: hidden;
-}
-.drawer-collapsed .drawer-header {
-    height: 50px;
-}
-.drawer-header-logo {
-    height: 50px;
-    width: 50px;
-    position: absolute;
-    top: 15px;
-    left: 10px;
-    cursor: pointer;
-}
-.drawer-collapsed .drawer-header-logo {
-    height: 24px;
-    width: 24px;
-    left: 7px;
-}
-.drawer-header-name, .drawer-collapsed:hover .drawer-header-name {
-    display: block;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: white;
-    font-size: x-large;
-    font-weight: bold;
-    cursor: default;
-    transition-delay: 1s;
-}
-.drawer-collapsed .drawer-header-name {
-    font-size: 0px;
-}
-.drawer-header-title {
-    display: block;
-    color: white;
-    font-weight: bold;
-    font-size: larger;
-}
-.drawer-collapsed .drawer-header-title {
-    font-size: 0px;
-}
-.drawer-header-subtitle {
-    font-size: inherit;
-    display: block;
-    color: white;
-    padding-bottom: 10px;
-    white-space: pre;
-}
-.drawer-collapsed .drawer-header-subtitle {
-    font-size: 0px;
-}
-.drawer-menu {
-    position: absolute;
-    top: 150px;
-    bottom: 50px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
-}
-.drawer-collapsed .drawer-menu {
-    top: 50px;
-}
-.drawer-menu-item-expand {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    justify-content: flex-end;
-}
-.drawer-menu-item-collapse {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    float: right;
-}
-.drawer-menu-item:hover {
-    background: #dddd99;
-}
-.drawer-menu-item:active {
-    background: burlywood;
-}
-.drawer-menu-item {
-    font-weight: bold;
-    text-decoration: none;
-    /* margin-left: 24px; */
-    cursor: pointer;
-    display: flex;
-    padding: 2px;
-    align-items: center;
-}
-.drawer-menu-item-icon, .drawer-menu-item svg {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    margin: 10px;
-    padding: 0px;
-    /* float: left; */
-    font-size: 16px;
-    width: 16px;
-    min-width: 16px;
-    height: 16px;
-    stroke: darkslategray;
-}
-.drawer-menu-item-label {
-    padding-left: 3px;
-    white-space: nowrap;
-}
-.drawer-menu-item-badge, .drawer-collapsed:hover .drawer-menu-item-badge {
-    background-color: lightgreen;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 10px;
-    padding: 2px;
-    position: relative;
-    right: 10px;
-    top: 0px;
-    font-size: 12px;
-    min-width: 12px;
-    font-weight: normal;
-    text-align: center;
-    margin-left: auto;
-}
-.drawer-collapsed .drawer-menu-item-badge {
-    right: 1px;
-    top: 1px;
-    position: absolute;
-    font-size: 10px;
-}
-.drawer-menu-item-social {
-    display: flex;
-}
-.drawer-menu-item-facebook {
-
-}
-.drawer-menu-item-twitter {
-
-}
-.drawer-footer {
-    position: absolute;
-    bottom: 10px;
-    width: 240px;
-    text-align: center;
-    font-size: 10px;
-}
-.drawer-footer-button {
-   position: absolute;
-   bottom: -10px;
-   font-size: 16px;
-   font-weight: bold;
-   cursor: default;
-   margin: 5px;
-   border-radius: 20px;
-   padding: 7px;
-}
-.drawer-footer-button:hover {
-    background-color: #dddd99;
-}
-.drawer-footer-button:active {
-    background-color: burlywood;
-}
-.drawer-footer-label {
-    white-space: pre;
-}
-.drawer-footer-label a {
-    text-decoration: none;
-    color: inherit;
-}
-.right {
-    width: 100%;
-    height: 100%;
+.layout {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
 }
 .version {
     position: fixed;
@@ -348,23 +53,11 @@ button:active {
 .content {
     padding:5px;
 }
-.shadow {
-    box-shadow: 3px 3px 7px 2px rgba(0,0,0,.5);
-}
 .inactive {
     color: darkgray;
 }
-.changeable {
-    transition: 0.5s ease-in-out all;
-}
 .changed {
     color: chocolate;
-}
-.clickable {
-    cursor: pointer;
-}
-.clickable:hover {
-    background-color: lightcyan;
 }
 .selected {
     border-color: #00ff00;
@@ -372,126 +65,8 @@ button:active {
     border-style: ridge;
     padding: 3px !important;
 }
-.hidden {
-    display: none !important;
-}
 .desktop-hidden {
     display: none !important;
-}
-.disabled {
-    color: darkgray;
-}
-.table {
-    position: relative;
-    display: table;
-    width: 100%;
-    border-style: solid;
-    border-width: 1px;
-    border-spacing:0px;
-    border-collapse: collapse;
-    font-family: sans-serif;
-    font-size:12px;
-    margin-top: 22px;
-}
-.table-placeholder {
-    display: table-caption;
-    caption-side: bottom;
-    text-align: center;
-    padding: 5px;
-    padding-bottom: 5px;
-    border: 1px solid black;
-    border-top: none;
-    font-weight: bold;
-}
-.table-reset-button {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    position: absolute;
-    top: -15px;
-    right: 2px;
-    cursor: default;
-}
-.table-filter {
-    position: absolute;
-    top: -25px;
-    right: 16px;
-}
-.table-filter-button {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    padding-top: 10px;
-    cursor: default;
-}
-.table-filter-input {
-    padding: 3px;
-    width: 200px;
-}
-.table-filter-clear {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    padding: 6px;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    color: gray;
-    cursor: default;
-}
-.table-sort {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    position: absolute;
-    left: 4px;
-}
-.table-sort-descend {
-    transform: scale(1,-1);
-}
-.thead {
-    display: table-header-group;
-    background: #ffffdd;
-}
-.tbody {
-    display: table-row-group;
-}
-.th {
-    display: table-cell;
-    text-align: center;
-    padding: 2px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border: 1px solid black;
-    font-weight: bold;
-    cursor: default;
-    position: relative;
-    min-width: 20px;
-}
-.tr {
-    display: table-row;
-}
-.td {
-    display: table-cell;
-    padding: 2px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border: 1px solid black;
-    vertical-align:top;
-}
-.table.option {
-    border: none;
-}
-.th.option {
-    text-align: left;
-    width: 250px;
-}
-.td.option {
-    text-align: left;
-    border: none;
-}
-.td.option input {
-    width: 250px;
 }
 .question {
     font-weight: bold;
@@ -510,14 +85,17 @@ button:active {
     color: white;
     cursor: pointer;
 }
-.divider {
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: darkgray;
+.drawer-collapsed:hover {
+    transition-delay: 1s;
 }
-.actionbar {
-    display: none;
+.drawer-header-name, .drawer-collapsed:hover .drawer-header-name {
+    transition-delay: 1s;
 }
+.drawer-collapsed .drawer-header-name {
+    transition-delay: 0s;
+}
+
+
 
 #map {
   height: 100%;
@@ -700,19 +278,6 @@ p.bottom-desc {
     bottom: 0px;
     background-color: rgba(128, 128, 128, 0.4);
 }
-.modal {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    background-color: floralwhite;
-    opacity: 0.9;
-    border-radius: 5px;
-    border-style: solid;
-    border-width: 2px;
-    z-index: 1000;
-    outline: none;
-    max-height: 90%;
-}
 .progress-dialog {
     min-width: 20%;
     padding-top: 20px;
@@ -794,200 +359,6 @@ p.bottom-desc {
     z-index: 1000;
     white-space: pre-wrap;
 }
-.dialog-title {
-    width: 100%;
-    text-align: center;
-    background-color: #4c93af;
-    color: white;
-    border-radius: 2px;
-    min-height: 24px;
-    cursor: default;
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.dialog-title-label {
-    flex: 1 1 auto;
-    padding-left: 24px;
-    padding-right: 24px;
-}
-.dialog-title-button {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    padding: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    color: inherit;
-}
-.dialog-title-button::before {
-    content: "clear";
-}
-.dialog-title-button:hover {
-    color: red;
-    background-color: initial;
-}
-.dialog-filter {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    color: inherit;
-}
-.dialog-filter-button {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    padding: 5px;
-}
-.dialog-filter-button:hover {
-    color: red;
-    background-color: initial;
-}
-.dialog-filter-input {
-    padding: 3px;
-    width: 100px;
-}
-.dialog-filter-clear {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    padding: 5px;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    color: gray;
-}
-.dialog-header {
-}
-.dialog-items {
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    overflow-y: auto;
-    flex-grow: 1;
-}
-.dialog-item {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-}
-.dialog-item-input {
-    text-align: left;
-    min-height: 30px;
-    min-width: 250px;
-}
-.dialog-item-label {
-    padding-right: 5px;
-    flex: 1 0 40%;
-    white-space: nowrap;
-}
-.dialog-item-input-input, .dialog-item-input-password {
-    font-size: 12px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    width: 50%;
-    background-color: antiquewhite;
-}
-.dialog-item-input-textarea {
-    font-size: 12px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    height: 50px;
-    width: 50%;
-}
-.dialog-item-input-checkbox {
-}
-.dialog-item-enclosed {
-    margin-top: 10px;
-    font-size: smaller;
-}
-.dialog-item-enclosed-button {
-    display: flex;
-    align-items: center;
-    cursor: default;
-}
-.dialog-item-enclosed-button:hover {
-    background-color: burlywood;
-}
-.dialog-item-enclosed-icon {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    font-size: initial !important;
-}
-.dialog-item-enclosed-label {
-    padding-right: 5px;
-}
-.dialog-item-enclosed-body {
-    text-align: left;
-    padding: 2px;
-    padding-top: 10px;
-    outline-style: dashed;
-    outline-width: 1px;
-}
-.dialog-footer {
-    padding: 10px;
-    display: flex;
-    align-items: center;
-}
-.dialog-buttons {
-    align-self: center;
-    padding: 5px;
-}
-.dialog-button-positive {
-
-}
-.dialog-button-negative {
-
-}
-.dialog-progress-bar {
-    height: 5px;
-    width: 90%;
-    background-color: darkgray;
-    margin-bottom: 5px;
-    align-self: center;
-}
-.dialog-progress-value {
-    background-color: #4c93af;
-    height: 100%;
-}
-.dialog-help-button {
-    font-family: "Material Icons";
-    font-feature-settings: "liga" 1;
-    font-style: normal;
-    background: none;
-    border: none;
-    outline: none;
-    position: absolute;
-    right: 5px;
-    bottom: 5px;
-    padding: 0px;
-    min-width: auto;
-    font-size: initial !important;
-}
-.dialog-help-button:hover {
-    background-color: burlywood;
-}
-.dialog-resize {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    width: 10px;
-    height: 10px;
-    cursor: se-resize;
-}
 .chat-dialog {
     width: 500px;
     max-width: 60%;
@@ -1007,10 +378,7 @@ p.bottom-desc {
 }
 .chat-dialog-messages {
     font-size: 10px;
-    overflow-y: scroll;
-    flex-direction: column;
     text-align: left;
-    flex-grow: 1;
     justify-content: flex-start;
 }
 .chat-dialog-message {
@@ -1025,11 +393,10 @@ p.bottom-desc {
 }
 .chat-dialog-message-timestamp {
     float: right;
-    padding-right: 4px;
 }
 .chat-dialog-message-body {
     padding-bottom: 8px;
-    white-space: pre;
+    white-space: pre-wrap;
 }
 .chat-dialog-reply {
     /*padding-top: 8px;
@@ -1316,22 +683,6 @@ p.bottom-desc {
     text-align: left;
     justify-content: flex-start;
 }
-.about-dialog {
-    padding: 30px;
-    width: 300px;
-    max-width: 80%;
-    z-index: 20000 !important;
-}
-.about-dialog-link {
-    font-size: x-small;
-    margin: 5px;
-    text-decoration: none;
-}
-.about-dialog-edeqa-link {
-    font-size: small;
-    margin: 3px;
-    text-decoration: none;
-}
 
 
 /* shift zoom control */
@@ -1343,50 +694,7 @@ p.bottom-desc {
 }*/
 
 @media screen and (max-width: 1000px) {
-    /*html, body {
-        overflow-x: hidden;
-        overflow-y: auto;
-    }*/
-    body {
-        font-family: sans-serif;
-        font-size: 16px;
-        margin: 0px;
-        zoom: 1;
-        color: darkslategray;
-        overflow-y: hidden;
-    }
-/*
-    h2 {
-        padding: 5px;
-        font-size: 18px;
-        width: 100%;
-        */
-/*border-bottom: 1px solid #000;*//*
 
-    }
-*/
-    button {
-        font-size: 16px;
-        min-width: 80px;
-        border-style: solid;
-        border-radius: 5px;
-        border-width: 1px;
-        border-color: gray;
-        margin: 1px;
-        padding: 10px;
-        background-color: ivory;
-    }
-
-    /* CLASSES */
-    .layout {
-        width: 100%;
-        height: 100%;
-        min-height: 100%;
-        align-items: center;
-    }
-    .right {
-        flex-direction: column;
-    }
     .title {
         position: absolute;
         padding-top:15px;
@@ -1398,50 +706,7 @@ p.bottom-desc {
     .alert-icon {
         right: 32px;
         top: -4px;
-    }
-    .modal {
-        width: 90% !important;
-        height: auto !important;
-        left: 50% !important;
-        top: 50% !important;
-        transform: translate(-50%,-50%) !important;
-        /*left: auto !important;
-        top: auto !important;*/
-    }
-    .actionbar {
-        padding: 0px;
-        position: fixed;
-        left: 0px;
-        right: 0px;
-        border: none;
-        background-color: rgba(76, 147, 175, 1);
-        color: white;
-        height: 50px;
-        display: flex;
-        top: 0px;
-        opacity: 0.8;
-        z-index: 10;
-    }
-    .actionbar-button {
-        font-family: "Material Icons";
-        font-feature-settings: "liga" 1;
-        padding-left: 16px;
-        font-size: 22px;
-        align-self: center;
-    }
-    .actionbar-label {
-        align-self: center;
-        padding-left: 16px;
-    }
-    .actionbar-label-title {
-        font-size: 16px;
-        font-weight: bold;
-    }
-    .actionbar-label-subtitle {
-        font-size: 12px;
-        overflow-x: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        left: auto;
     }
     .alpha {
         left: auto;
@@ -1449,85 +714,9 @@ p.bottom-desc {
         bottom: 30px;
         top: auto;
     }
-    .drawer, .drawer-collapsed {
-        left: 0px;
-        width: 70%;
-        max-width:300px;
-        position: fixed;
-        top: 0px;
-        bottom: 0px;
-        background-color: white;
-        display:none;
-        z-index: 10000;
-    }
-    .drawer-open {
-        display: block;
-        outline: none;
-        box-shadow: 20px 0px 60px 10px rgba(0,0,0,0.75);
-    }
-    .drawer:focus {
-        display: block;
-    }
-    .drawer-collapsed .drawer-header {
-        height: 150px;
-    }
-    .drawer-collapsed .drawer-menu {
-        top: 150px;
-    }
-    .drawer-collapsed .drawer-header-logo {
-        height: 50px;
-        width: 50px;
-        left: 10px;
-    }
-    .drawer-collapsed .drawer-header-name {
-        font-size: x-large;
-    }
-    .drawer-collapsed .drawer-header-title {
-        font-size: larger;
-    }
-    .drawer-collapsed .drawer-header-subtitle {
-        font-size: inherit;
-    }
-    .drawer-menu-item {
-        text-decoration: none;
-        font-weight: bold;
-    }
-    .drawer-menu-item:hover {
-        background: #dddd99;
-    }
-    .drawer-menu-item-icon, .drawer-menu-item svg {
-        margin: 15px;
-        font-size: 16px;
-    }
-    .drawer-menu-item-label {
-    }
-    .drawer-menu-item-badge, .drawer-collapsed .drawer-menu-item-badge, .drawer-collapsed:hover .drawer-menu-item-badge {
-        margin: 14px;
-        position: absolute;
-        top: 0px;
-        right: 0px;
-    }
-    .drawer-header {
-
-    }
-    .drawer-footer {
-        position: absolute;
-        bottom: 10px;
-        left: 0px;
-        right: 0px;
-        width: auto;
-        text-align: center;
-        font-size: 10px;
-    }
-    .drawer-footer-button {
-        display: none;
-    }
     .version {
         position: fixed;
         font-size: 10px;
-    }
-    .content {
-        padding:0px;
     }
 /*
     .shadow {
@@ -1536,28 +725,6 @@ p.bottom-desc {
 */
     .buttons {
         text-align: center;
-    }
-    .table {
-        font-size:14px;
-    }
-    .th {
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
-    .td {
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
-    .th.option {
-        text-align: left;
-        width: 40%;
-    }
-    .td.option input {
-        width: 100%;
-        border-style: solid;
-        border-width: 1px;
-        font-size:16px;
-        height: 25px;
     }
     .user-buttons {
         display: flex;
@@ -1650,68 +817,6 @@ p.bottom-desc {
         left: 0;
         font-size: 9px;
     }
-    .dialog-title {
-        min-height: 50px !important;
-    }
-    .dialog-filter {
-        font-size: 20px;
-        right: 0px;
-        position: absolute;
-        left: 50px;
-        height: 50px;
-    }
-    .dialog-filter-button {
-        padding: 15px;
-        position: absolute;
-        right: 0px;
-    }
-    .dialog-filter-input {
-        height: 30px;
-        padding: 8px;
-        outline: none;
-        position: relative;
-        font-size: 16px;
-        width: 100%;
-        border-style: solid;
-        border-width: 2px;
-    }
-    .dialog-filter-clear {
-        padding: 15px;
-    }
-    .dialog-items {
-
-    }
-    .dialog-item {
-    }
-    .dialog-buttons {
-        text-align: center;
-    }
-    .dialog-title-button {
-        padding: 15px;
-        right: auto;
-        left: 0px;
-    }
-    .dialog-title-button::before {
-        content: "arrow_back" !important;
-        font-size: 20px;
-    }
-    .dialog-item-enclosed-button {
-        padding-top: 5px;
-    }
-    .dialog-item-enclosed-label {
-        font-size: initial;
-    }
-    .dialog-item-enclosed-body {
-        font-size: initial;
-    }
-    .dialog-item-input-select {
-        background-color: antiquewhite;
-        height: 30px;
-        width: 50%;
-    }
-    .dialog-resize {
-        display: none;
-    }
     .chat-dialog {
         max-width: 100%;
         left: 0px !important;
@@ -1724,7 +829,6 @@ p.bottom-desc {
         border: none;
     }
     .chat-dialog-messages {
-        padding: 8px;
         font-size: 14px;
     }
     .chat-dialog-reply {
@@ -1876,21 +980,7 @@ p.bottom-desc {
     .options-dialog {
         min-width: auto;
     }
-    .table-filter {
-        display: none;
-    }
-    .table-reset-button {
-        display: none;
-    }
 
-
-    /* media specific classes */
-    .media-hidden {
-        display: none !important;
-    }
-    .desktop-hidden {
-        display: inherit !important;
-    }
 
     /* shift zoom control */
     .gm-bundled-control {
@@ -1900,18 +990,6 @@ p.bottom-desc {
 }
 
 @media screen and (max-height: 400px) {
-    .drawer {
-        overflow-y: auto;
-    }
-    .drawer-header {
-        position: initial;
-    }
-    .drawer-menu {
-        position: initial;
-    }
-    .drawer-footer {
-        position: initial;
-    }
     .streetview-dialog {
         display: none;
     }

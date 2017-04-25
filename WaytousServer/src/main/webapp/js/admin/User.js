@@ -254,7 +254,7 @@ function User() {
                userNumber = parts[4];
            }
            this.page = "user" + "/" + groupId + "/" + userNumber;
-           div = document.getElementsByClassName("content")[0];
+           div = document.getElementsByClassName("layout")[0];
             u.clear(div);
 
            renderInterface();

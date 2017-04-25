@@ -6,7 +6,7 @@ function Help() {
     var title = "Help";
 
     var start = function() {
-        div = document.getElementsByClassName("content")[0];
+        div = document.getElementsByClassName("layout")[0];
         u.clear(div);
 
         u.create("p", "To be implemented soon...", div);

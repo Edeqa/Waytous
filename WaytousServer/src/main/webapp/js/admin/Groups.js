@@ -16,7 +16,7 @@ function Groups() {
 
     var renderInterface = function() {
 
-        div = document.getElementsByClassName("content")[0];
+        div = document.getElementsByClassName("layout")[0];
         u.clear(div);
 //        u.create("div", {className:"summary"}, div);
 //        u.create("h2", "Groups", div);
