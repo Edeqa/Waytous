@@ -9,6 +9,8 @@
     flex: 1 1;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 .two_tables {
     display:flex;
@@ -103,7 +105,8 @@
 }
 .table-logs-body {
     display: block;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     height: 100%;
 }
 .table-logs-row {
@@ -111,7 +114,7 @@
     width: 100%;
 }
 .table-logs-row-cell {
-    overflow: scroll;
+    overflow: auto;
     display: block;
     width: 100%;
     user-select: initial;
@@ -119,16 +122,9 @@
     -webkit-user-select: initial;
     border: none;
 }
-.drawer-collapsed:hover {
-    transition-delay: 1s;
-}
-.drawer-header-name, .drawer-collapsed:hover .drawer-header-name {
-    transition-delay: 1s;
-}
 .buttons {
     margin-bottom: 5px;
 }
-
 
 @media screen and (max-width: 1000px) {
     button {
@@ -176,6 +172,12 @@
     }
     .buttons {
         margin-bottom: 50px;
+    }
+    .logs-header-input {
+        font-size: 16px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        background-color: antiquewhite;
     }
 
 

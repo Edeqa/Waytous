@@ -13,6 +13,7 @@ function AboutHolder(main) {
 
             u.byId("content").innerHTML = xhr.response;
             u.byId("content").classList.add("content-about");
+            u.byId("content").parentNode.scrollTop = 0;
             u.progress.hide();
         });
     }

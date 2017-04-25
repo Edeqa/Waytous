@@ -89,6 +89,23 @@ public class AdminLogsHolder implements PageHolder {
 
             Common.log("Logs","Update:",file.getCanonicalPath());
 
+            if(!file.exists()) {
+                Common.log("Logs","File not found.");
+                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "WAIN/"+ Constants.SERVER_BUILD);
+                exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
+
+                exchange.sendResponseHeaders(500, 0);
+
+                byte[] bytes = (file.toString() + " not found. Fix the key 'log_file' in your options file.").getBytes();
+
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
+                return;
+            }
+
+
             boolean gzip = true;
             exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
             exchange.getResponseHeaders().set(HttpHeaders.SERVER, "WAIN/"+ Constants.SERVER_BUILD);
@@ -111,13 +128,13 @@ public class AdminLogsHolder implements PageHolder {
 
             FileInputStream fs = new FileInputStream(file);
             final byte[] buffer = new byte[0x10000];
+
             int count = 0;
             while ((count = fs.read(buffer)) >= 0) {
-                os.write(buffer,0,count);
+                os.write(buffer, 0, count);
             }
             fs.close();
             os.close();
-
         } catch(Exception e) {
             e.printStackTrace();
         }

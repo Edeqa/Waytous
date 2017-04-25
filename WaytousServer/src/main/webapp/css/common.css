@@ -64,6 +64,12 @@ button:active {
     width: 100%;
     height: 100%;
     position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .hidden {
     display: none !important;
@@ -112,6 +118,10 @@ button:active {
 /* Actionbar */
 .actionbar {
     display: none;
+}
+.actionbar-holder {
+    display: none;
+    visibility: hidden;
 }
 /* Dialog */
 .dialog-title {
@@ -198,6 +208,7 @@ button:active {
     flex-grow: 1;
 }
 
+/*
 .dialog-items::-webkit-scrollbar {
     width: 10px;
     background-color: #F5F5F5;
@@ -212,6 +223,7 @@ button:active {
     background-color: rgba(85, 85, 85, 0.3);
     border-radius: 3px;
 }
+*/
 
 
 .dialog-item {
@@ -346,8 +358,8 @@ button:active {
     overflow-x: hidden;
 }
 .drawer-collapsed:hover {
-    max-width: 240px;
     min-width: 240px;
+    max-width: 240px;
 }
 .drawer-iframe {
     position: absolute;
@@ -451,11 +463,15 @@ button:active {
     font-style: normal;
     justify-content: flex-end;
 }
-.drawer-menu-item-collapse {
+.drawer-menu-item-collapse, .drawer-collapsed:hover .drawer-menu-item-collapse {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
+    justify-content: flex-end;
     float: right;
+}
+.drawer-collapsed .drawer-menu-item-collapse {
+    float: initial;
 }
 .drawer-menu-item:hover {
     background: #dddd99;
@@ -549,6 +565,11 @@ button:active {
     text-decoration: none;
     color: inherit;
 }
+.drawer-footer-link {
+    margin: 10px;
+    cursor: pointer;
+}
+
 /* Table */
 .table {
     position: relative;
@@ -680,6 +701,30 @@ button:active {
     text-decoration: none;
 }
 
+.progress-dialog {
+    min-width: 20%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+@keyframes rotate {
+    0%    { transform: rotate(0deg); }
+    100%  { transform: rotate(360deg); }
+}
+.progress-dialog-circle {
+    margin: 20px;
+    max-height: 28px;
+    max-width: 28px;
+    min-height: 28px;
+    min-width: 28px;
+    animation: rotate 0.8s infinite linear;
+    border: 8px solid #888888;
+    border-right-color: transparent;
+    border-radius: 50%;
+}
+.progress-dialog-title {
+    white-space: nowrap;
+    padding: 10px;
+}
 
 
 @media screen and (max-width: 1000px) {
@@ -753,10 +798,16 @@ button:active {
         padding-left: 16px;
         font-size: 22px;
         align-self: center;
+        position: absolute;
+        top: 14px;
+        left: 0px;
+        display: block;
+        z-index: 100;
+        cursor: default;
     }
     .actionbar-label {
         align-self: center;
-        padding-left: 16px;
+        padding-left: 50px;
     }
     .actionbar-label-title {
         font-size: 16px;
@@ -835,6 +886,7 @@ button:active {
     .drawer, .drawer-collapsed {
         left: 0px;
         width: 70%;
+        min-width:300px;
         max-width:300px;
         position: fixed;
         top: 0px;
@@ -850,6 +902,10 @@ button:active {
     }
     .drawer:focus {
         display: block;
+    }
+    .drawer-collapsed:hover {
+        min-width: 300px;
+        max-width: 300px;
     }
     .drawer-collapsed .drawer-header {
         height: 150px;

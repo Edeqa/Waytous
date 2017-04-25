@@ -94,6 +94,9 @@
 .drawer-collapsed .drawer-header-name {
     transition-delay: 0s;
 }
+.drawer-menu-item-collapse, .drawer-collapsed:hover .drawer-menu-item-collapse {
+    transition-delay: 1s;
+}
 
 
 
@@ -306,21 +309,7 @@ p.bottom-desc {
     white-space: nowrap;
     padding: 10px;
 }
-.progress-dialog-circle {
-    margin: 20px;
-    max-height: 28px;
-    max-width: 28px;
-    min-height: 28px;
-    min-width: 28px;
-    animation: rotate 0.8s infinite linear;
-    border: 8px solid #888888;
-    border-right-color: transparent;
-    border-radius: 50%;
-}
-.progress-dialog-title {
-    white-space: nowrap;
-    padding: 10px;
-}
+
 .alpha {
     position: absolute;
     top: -10px;
@@ -736,6 +725,7 @@ p.bottom-desc {
         right: auto;
         transform: translateX(-50%) !important;
     }
+/*
     .dialog-items::-webkit-scrollbar {
         width: initial;
         background-color: initial;
@@ -750,6 +740,7 @@ p.bottom-desc {
         background-color: initial;
         border-radius: initial;
     }
+*/
     .user-buttons-title {
         display: none;
     }
@@ -759,7 +750,7 @@ p.bottom-desc {
         width: 100%;
         justify-content: initial;
         overflow-x: auto;
-
+        overflow-y: hidden;
     }
     .user-button {
         display: block;

@@ -279,6 +279,7 @@ function Edequate(options) {
                                 el.clickFunction(evt);
                             }
                             el.addEventListener("click", call, false);
+                            el.addEventListener("touch", call, false);
                         }
                     } else if(x.indexOf("on") == 0) {
                         var action = x.substr(2).toLowerCase();
@@ -1180,8 +1181,16 @@ function Edequate(options) {
 
     function drawer(options, appendTo) {
 //        collapsed = options.collapsed;
-        options.collapsed = options.collapsed || "drawer:collapsed";
         var collapsed = load(options.collapsed);
+        if(options.collapsed == undefined) {
+            collapsed = load("drawer:collapsed");
+            options.collapsed = "drawer:collapsed";
+        } else if(typeof options.collapsed == "boolean") {
+            collapsed = options.collapsed;
+            options.collapsed = "drawer:collapsed";
+        } else {
+            collapsed = load(options.collapsed);
+        }
 
         var footerButton;
         var footerButtonCollapseDiv;
@@ -1235,14 +1244,14 @@ function Edequate(options) {
             },
             items: {},
             sections: [],
-            toggleWidth: function(force) {
+            toggleSize: function(force) {
                 collapsed = !collapsed;
                 if(force != undefined) collapsed = force;
                 save("drawer:collapsed", collapsed);
                 layout.toggleButton.innerHTML = collapsed ? "last_page" : "first_page";
                 layout.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
                 layoutHeaderHolder.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
-                if(options.onwidthtoggle) options.onwidthtoggle();
+                if(options.ontogglesize) options.ontogglesize(force);
             }
          });
          if(typeof appendTo == "string") {
@@ -1255,7 +1264,7 @@ function Edequate(options) {
          layout.frame = create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
          layout.frame.contentWindow.addEventListener("resize",function(){
             if(!layout.resizeTask) layout.resizeTask = setTimeout(function(){
-                if(options.onwidthtoggle) options.onwidthtoggle();
+                if(options.ontogglesize) options.ontogglesize();
                 delete layout.resizeTask;
             }, 500);
          });
@@ -1281,10 +1290,10 @@ function Edequate(options) {
 
         layout.menu = create(HTML.DIV, {className:"drawer-menu changeable"}, layout);
         for(var i=0;i<10;i++){
-            layout.sections[i] = create({order:i, className:"changeable hidden" + (i==9 ? "" : " drawer-menu-divider")}, layout.menu).place({}).place({});
+            layout.sections[i] = create({order:i, className:"hidden" + (i==9 ? "" : " drawer-menu-divider")}, layout.menu).place({className: "media-hidden"}).place({});
             if(options.collapsible && options.collapsible[i]) {
-                var collapsed = load("drawer:section:collapsed:"+i);
-                if(collapsed) layout.sections[i].lastChild.hide();
+                var sectionCollapsed = load("drawer:section:collapsed:"+i);
+                if(sectionCollapsed) layout.sections[i].lastChild.hide();
 
                 var div = create(HTML.DIV, {onclick: function(){
                     if(this.parentNode.nextSibling.isHidden) {
@@ -1304,8 +1313,8 @@ function Edequate(options) {
                     div.classList.add("drawer-menu-item")
                     div.place({className: "drawer-menu-section-label", innerHTML:options.collapsible[i]});
                 }
-                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-expand notranslate" + (collapsed ? "" : " hidden"), innerHTML: "expand_more"}, div);
-                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-collapse notranslate" + (collapsed ? " hidden" : ""), innerHTML: "expand_less"}, div);
+                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-expand notranslate" + (sectionCollapsed ? "" : " hidden"), innerHTML: "expand_more"}, div);
+                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-collapse notranslate" + (sectionCollapsed ? " hidden" : ""), innerHTML: "expand_less"}, div);
             }
         }
 
@@ -1394,7 +1403,7 @@ function Edequate(options) {
         footerButtonExpandDiv = create(HTML.PATH, footerButtonExpandPath);
 
         layout.toggleButton = create(HTML.DIV, {className: "drawer-menu-item-icon drawer-footer-button notranslate", innerHTML: collapsed ? "last_page" : "first_page", onclick: function(e){
-            layout.toggleWidth();
+            layout.toggleSize();
         }}, layout.footer);
         if(options.footer) {
             create(HTML.DIV, options.footer, layout.footer);
@@ -1454,13 +1463,32 @@ function Edequate(options) {
 
     function actionBar(options, appendTo) {
 
-        var actionbar = create(HTML.DIV, {className:"actionbar" + (options.className ? " " + options.className : "")});
+        var actionbar = create(HTML.DIV, {
+            className:"actionbar changeable" + (options.className ? " " + options.className : ""),
+            toggleSize: function(force){
+                var cvollapsed = actionbar.classList.contains("actionbar-collapsed");
+                if(force != undefined) collapsed = force;
+                actionbar.classList[collapsed ? "add" : "remove"]("actionbar-collapsed");
+                actionbarHolder.classList[collapsed ? "add" : "remove"]("actionbar-collapsed");
+                if(options.ontogglesize) options.ontogglesize(force);
+            }
+        });
         create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: options.onbuttonclick, onfocus:function(){}}, actionbar);
-        var label = create(HTML.DIV, {className:"actionbar-label"}, actionbar);
-        actionbar.titleNode = create(HTML.DIV, {className:"actionbar-label-title", innerHTML: options.title || ""}, label);
-        actionbar.subtitle = create(HTML.DIV, {className:"actionbar-label-subtitle", innerHTML: options.subtitle || ""}, label);
+        var label = create(HTML.DIV, {className:"actionbar-label changeable"}, actionbar);
+        actionbar.titleNode = create(HTML.DIV, {className:"actionbar-label-title changeable", innerHTML: options.title || ""}, label);
+        actionbar.subtitle = create(HTML.DIV, {className:"actionbar-label-subtitle changeable", innerHTML: options.subtitle || ""}, label);
 
-        if(appendTo) appendTo.appendChild(actionbar);
+         if(typeof appendTo == "string") {
+            appendTo = byId(appendTo);
+            appendTo.parentNode.replaceChild(actionbar, appendTo);
+         } else {
+            appendTo.insertBefore(actionbar, appendTo.firstChild);
+         }
+
+         var actionbarHolder = create(HTML.DIV, {className: "actionbar-holder changeable"});
+         actionbar.parentNode.insertBefore(actionbarHolder, actionbar);
+
+
         return actionbar;
     }
     this.actionBar = actionBar;

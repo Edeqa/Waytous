@@ -86,6 +86,8 @@ function Logs() {
               });
             }
             table.body.scrollTop = scroll
+        }).catch(function(code,xhr){
+            table.placeholder.show(xhr.response);
         });
 
     }

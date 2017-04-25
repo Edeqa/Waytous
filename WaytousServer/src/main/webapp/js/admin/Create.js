@@ -49,7 +49,7 @@ function Create() {
             help: function() {
                 console.log("HELP");
             }
-        }, div);
+        });
         dialog.open();
         inputId = dialog.items[0];
         inputRequiresPassword = dialog.items[1];

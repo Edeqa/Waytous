@@ -90,9 +90,6 @@ public class MyHttpAdminHandler implements HttpHandler {
             o.put("WSS_PORT", SENSITIVE.getWssPortDedicated());
             o.put("firebase_config", SENSITIVE.getFirebaseConfig());
 
-
-            html.getBody().with(CLASS,"body");
-
             FirebaseAuth.getInstance().createCustomToken("Administrator").addOnSuccessListener(new OnSuccessListener<String>() {
                 @Override
                 public void onSuccess(final String customToken) {

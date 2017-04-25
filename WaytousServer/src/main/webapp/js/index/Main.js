@@ -126,30 +126,6 @@ var type = "support";
 
             var out = u.create("div", {className:"layout"}, "layout");
 
-            self.drawer = new u.drawer({
-                title: "${APP_NAME}",
-                logo: {
-                    src:"/images/logo.svg",
-                },
-                onprimaryclick: function(){
-                    console.log("onprimaryclick");
-                },
-                footer: {
-                    className: "drawer-footer-label",
-                    content: u.create(HTML.DIV)
-                        .place(HTML.A, { className: "drawer-footer-link", innerHTML: "Privacy", href: "", onclick: showPrivacy})
-                        .place(HTML.A, { className: "drawer-footer-link" ,innerHTML: "Terms", href: "", onclick: showTerms})
-                        .place(HTML.A, { className: "drawer-footer-link", innerHTML: "${APP_NAME} &copy;2017 Edeqa", href: "", onclick: function(e){
-                            dialogAbout.open();
-                            e.preventDefault();
-                            e.stopPropagation;
-                            return false;
-                        }})
-                }
-            }, "drawer");
-
-            var dialogAbout = utils.dialogAbout();
-
             self.actionbar = u.actionBar({
                 title: holders[type].title,
                 onbuttonclick: function(){
@@ -159,15 +135,46 @@ var type = "support";
                          console.error(e);
                      }
                  }
-            }, document.body);
+            }, "actionbar");
+            self.drawer = new u.drawer({
+                title: "${APP_NAME}",
+                collapsed: false,
+                logo: {
+                    src:"/images/logo.svg",
+                },
+                onprimaryclick: function(){
+                    console.log("onprimaryclick");
+                },
+                footer: {
+                    className: "drawer-footer-label",
+                    content: u.create(HTML.DIV)
+                        .place(HTML.SPAN, { className: "drawer-footer-link", innerHTML: "Privacy", onclick: showPrivacy})
+                        .place(HTML.SPAN, { className: "drawer-footer-link" ,innerHTML: "Terms", onclick: showTerms})
+                        .place(HTML.SPAN, { className: "drawer-footer-link", innerHTML: "${APP_NAME} &copy;2017 Edeqa", onclick: function(e){
+                            dialogAbout.open();
+                            e.preventDefault();
+                            e.stopPropagation;
+                            return false;
+                        }})
+                },
+                collapsible: {
+                    [DRAWER.SECTION_PRIMARY]: "Main",
+                    [DRAWER.SECTION_LAST]: "About",
+                }
+            }, "drawer");
+
+            var dialogAbout = utils.dialogAbout();
+
             var switchFullDrawer = function(){
                if(this.parentNode.scrollTop) {
-                   self.drawer.toggleWidth(true);
+                   self.drawer.toggleSize(true);
+                   self.actionbar.toggleSize(true);
                } else {
-                   self.drawer.toggleWidth(false);
+                   self.drawer.toggleSize(false);
+                   self.actionbar.toggleSize(false);
                }
             }
-            self.content = u.create(HTML.DIV, {className: "content", onwheel: switchFullDrawer }, "content");
+            self.content = u.create(HTML.DIV, {className: "content", onwheel: switchFullDrawer, ontouchmove: switchFullDrawer }, "content");
             u.create(HTML.DIV, {className:"alert"}, out);
 
             for(var x in holders) {
@@ -175,7 +182,7 @@ var type = "support";
 
                     var categories = {
                         "main": DRAWER.SECTION_PRIMARY,
-                        "about": DRAWER.SECTION_MISCELLANEOUS
+                        "about": DRAWER.SECTION_LAST
                     }
 
                     var item = self.drawer.add(categories[holders[x].category], x, holders[x].menu, holders[x].icon, function(){

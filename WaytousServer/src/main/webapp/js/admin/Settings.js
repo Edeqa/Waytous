@@ -18,7 +18,7 @@ function Settings() {
             positive: {
                 label: "OK",
             },
-        }, div);
+        });
         dialog.open();
 
    }
