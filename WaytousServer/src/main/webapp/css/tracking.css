@@ -736,6 +736,20 @@ p.bottom-desc {
         right: auto;
         transform: translateX(-50%) !important;
     }
+    .dialog-items::-webkit-scrollbar {
+        width: initial;
+        background-color: initial;
+    }
+    .dialog-items::-webkit-scrollbar-thumb {
+        -webkit-box-shadow: initial;
+        background-color: initial;
+        border-radius: initial;
+    }
+    .dialog-items::-webkit-scrollbar-track {
+        -webkit-box-shadow: initial;
+        background-color: initial;
+        border-radius: initial;
+    }
     .user-buttons-title {
         display: none;
     }
@@ -744,6 +758,8 @@ p.bottom-desc {
         flex-direction: row;
         width: 100%;
         justify-content: initial;
+        overflow-x: auto;
+
     }
     .user-button {
         display: block;
