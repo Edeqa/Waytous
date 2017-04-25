@@ -452,23 +452,37 @@ button:active {
     border-bottom-width: 1px;
     border-bottom-color: darkgray;
 }
+.drawer-menu-section-title {
+    display: block;
+}
+.drawer-collapsed .drawer-menu-section-title {
+    display: none;
+}
+.drawer-menu-section-title:hover {
+    background: #dddd99;
+}
+.drawer-menu-section-title:active {
+    background: burlywood;
+}
 .drawer-menu-section-label {
     margin-left: 12px;
     font-size: small;
-    width: 100%;
+    display: inline-block;
+    font-weight: bold;
 }
 .drawer-menu-item-expand {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
-    justify-content: flex-end;
+    float: right;
+    padding: 0px !important;
 }
 .drawer-menu-item-collapse, .drawer-collapsed:hover .drawer-menu-item-collapse {
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     font-style: normal;
-    justify-content: flex-end;
     float: right;
+    padding: 0px !important;
 }
 .drawer-collapsed .drawer-menu-item-collapse {
     float: initial;

@@ -116,10 +116,14 @@ body {
         border: none;
         height: auto;
     }
+    .drawer-menu-section-title {
+        padding: 2px;
+    }
     .drawer-menu-section-label {
         font-size: initial;
         padding: 2px;
         transition: 0.5s ease-in-out font-size;
+        cursor: pointer;
     }
     .drawer-menu-item-expand {
         display: none;
@@ -188,6 +192,9 @@ body {
     }
     .drawer-collapsed:hover .drawer-menu {
         height: auto;
+    }
+    .drawer-collapsed .drawer-menu-section-title {
+        display: block;
     }
     .drawer-collapsed .drawer-menu-section-label {
         font-size: small;

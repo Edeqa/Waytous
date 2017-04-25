@@ -1289,32 +1289,34 @@ function Edequate(options) {
 
 
         layout.menu = create(HTML.DIV, {className:"drawer-menu changeable"}, layout);
+        options.sections = options.sections || {};
         for(var i=0;i<10;i++){
-            layout.sections[i] = create({order:i, className:"hidden" + (i==9 ? "" : " drawer-menu-divider")}, layout.menu).place({className: "media-hidden"}).place({});
-            if(options.collapsible && options.collapsible[i]) {
+            layout.sections[i] = create({order:i, className:"hidden" + (i==9 ? "" : " drawer-menu-divider")}, layout.menu)
+                .place({className: "drawer-menu-section-title media-hidden"})
+                .place({});
+            if(options.sections[i]) {
+                layout.sections[i].firstChild.place({className: "drawer-menu-section-label", innerHTML: options.sections[i]});
+            }
+
+            if(options.collapsible && options.collapsible.indexOf(i) >= 0) {
                 var sectionCollapsed = load("drawer:section:collapsed:"+i);
                 if(sectionCollapsed) layout.sections[i].lastChild.hide();
 
-                var div = create(HTML.DIV, {onclick: function(){
-                    if(this.parentNode.nextSibling.isHidden) {
-                        this.parentNode.nextSibling.show();
+                layout.sections[i].firstChild.addEventListener("click", function(){
+                    if(this.nextSibling.isHidden) {
+                        this.nextSibling.show();
                         this.lastChild.show();
                         this.lastChild.previousSibling.hide();
-                        save("drawer:section:collapsed:"+this.parentNode.parentNode.order);
+                        save("drawer:section:collapsed:"+this.parentNode.order);
                     } else {
-                        this.parentNode.nextSibling.hide();
+                        this.nextSibling.hide();
                         this.lastChild.hide();
                         this.lastChild.previousSibling.show();
-
-                        save("drawer:section:collapsed:"+this.parentNode.parentNode.order, true);
+                        save("drawer:section:collapsed:"+this.parentNode.order, true);
                     }
-                }}, layout.sections[i].firstChild)
-                if(typeof options.collapsible[i] == "string") {
-                    div.classList.add("drawer-menu-item")
-                    div.place({className: "drawer-menu-section-label", innerHTML:options.collapsible[i]});
-                }
-                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-expand notranslate" + (sectionCollapsed ? "" : " hidden"), innerHTML: "expand_more"}, div);
-                create(HTML.DIV, { className: "drawer-menu-item drawer-menu-item-collapse notranslate" + (sectionCollapsed ? " hidden" : ""), innerHTML: "expand_less"}, div);
+                });
+                layout.sections[i].firstChild.place({ className: "drawer-menu-item drawer-menu-item-expand notranslate" + (sectionCollapsed ? "" : " hidden"), innerHTML: "expand_more"});
+                layout.sections[i].firstChild.place({ className: "drawer-menu-item drawer-menu-item-collapse notranslate" + (sectionCollapsed ? " hidden" : ""), innerHTML: "expand_less"});
             }
         }
 
@@ -1324,7 +1326,6 @@ function Edequate(options) {
                 icon:icon,
                 callback:callback
             };
-            var collapsed = load("drawer:section:collapsed:"+section);
             var th = create(HTML.DIV, {
                 className:"drawer-menu-item",
                 onclick: function (event) {
@@ -1353,7 +1354,7 @@ function Edequate(options) {
                     return this;
                 },
                 fixShowing: function() {
-                    var parent = th.parentNode;
+                    var parent = th.parentNode.parentNode;
                     var shown = false;
                     for(var i in parent.childNodes) {
                         if(parent.childNodes.hasOwnProperty(i)) {
@@ -1376,7 +1377,6 @@ function Edequate(options) {
                     this.badge.hide();
                     this.badge.innerHTML = "0";
                 },
-
             }, layout.sections[section].lastChild);
 
             if(icon) {
@@ -1394,6 +1394,7 @@ function Edequate(options) {
             }
             th.badge = create(HTML.DIV, { className:"drawer-menu-item-badge hidden", innerHTML: "0" }, th);
             layout.sections[section].show();
+
             return th;
         }
 

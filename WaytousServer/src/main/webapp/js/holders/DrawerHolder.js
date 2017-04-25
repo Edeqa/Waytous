@@ -43,9 +43,10 @@ function DrawerHolder(main) {
                     return false;
                 }}).place(HTML.SPAN, "\nBuild " + data.version)
             },
-            collapsible: {
-                [DRAWER.SECTION_MAP]: true
-            }
+            sections: {
+                [DRAWER.SECTION_MAP]: "Map",
+            },
+            collapsible: [DRAWER.SECTION_MAP, DRAWER.SECTION_VIEWS]
         }, document.body);
 
         actionbar = u.actionBar({

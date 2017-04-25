@@ -157,7 +157,7 @@ var type = "support";
                             return false;
                         }})
                 },
-                collapsible: {
+                sections: {
                     [DRAWER.SECTION_PRIMARY]: "Main",
                     [DRAWER.SECTION_LAST]: "About",
                 }
