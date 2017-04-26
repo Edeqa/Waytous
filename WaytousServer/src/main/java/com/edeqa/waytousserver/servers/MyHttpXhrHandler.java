@@ -56,6 +56,9 @@ public class MyHttpXhrHandler implements HttpHandler {
             case "getSounds":
                 printRes = getSounds(json);
                 break;
+            case "getResources":
+                printRes = getResources(json, parts.size() > 2 ? parts.get(3) : null);
+                break;
             case "join":
                 printRes = join(json, exchange);
                 break;
@@ -163,4 +166,39 @@ public class MyHttpXhrHandler implements HttpHandler {
         }
         return false;
     }
+
+
+    private boolean getResources(final JSONObject json, final String resource) {
+        File dir = new File(SENSITIVE.getWebRootDirectory() + "/locales");
+
+        try {
+            if(!dir.getCanonicalPath().equals(dir.getAbsolutePath())) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return true;
+        }
+
+        File[] files;
+        if(resource != null) {
+            files = dir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.startsWith(resource);
+                }
+            });
+        } else {
+            files = new File[]{};
+        }
+        ArrayList<String> list = new ArrayList<>();
+        if(files != null) {
+            for(File file: files) {
+                if(!list.contains(file.getName())) list.add(file.getName());
+            }
+        }
+        json.put("files", list);
+        return true;
+    }
+
 }

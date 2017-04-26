@@ -4,13 +4,16 @@
 
 function Main() {
     var self = this;
+    var defaultResources = "/locales/index.en.json";
+
 
     var holders = {};
     var holderFiles = [
         "/js/helpers/Utils.js",
         "/js/helpers/Constants",
-        "/js/index/BlablaHolder",
-        "/js/index/SupportHolder",
+        "/js/index/HomeHolder",
+//        "/js/index/BlablaHolder",
+//        "/js/index/SupportHolder",
         "/js/index/AboutHolder",
     ];
 
@@ -38,7 +41,6 @@ function Main() {
         u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"},document.head);
         u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"},document.head);
 
-
         var loaded = 0;
         for(var i in holderFiles) {
             var file = holderFiles[i];
@@ -52,8 +54,7 @@ function Main() {
                     console.log("Preload finished: "+loaded+" files done.");
                     window.utils = new Utils();
 
-                    resume();
-
+                    loadResources(resume);
                 }
             });
         }
@@ -103,7 +104,7 @@ function Main() {
 
     function resign(callback){
 
-        u.loading("Signing in...");
+        u.loading(u.lang.signing_in);
         firebase.auth().signInWithCustomToken(sign.token).then(function(e){
             callback();
         //            console.log("AAA",e)
@@ -118,7 +119,7 @@ function Main() {
     function resume() {
         try {
 
-var type = "support";
+var type = "home";
 
             window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
                 window.scrollTo(0, 1); }, 0);
@@ -136,6 +137,25 @@ var type = "support";
                      }
                  }
             }, "actionbar");
+            var selectLang = u.create(HTML.SELECT, { className: "actionbar-select-lang changeable", onchange: function(e, event) {
+                var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
+                u.save("lang", lang);
+                var resources = "/locales/index."+lang+".json";
+                u.lang.overrideResources({"default":defaultResources, resources: resources});
+            }}, self.actionbar).place(HTML.OPTION, { name: u.lang.loading, value:"" });
+
+            u.getJSON("/xhr/getResources/index").then(function(json){
+                u.clear(selectLang);
+                var count = 1;
+                selectLang.place(HTML.OPTION, { innerHTML: "Default", value: "" });
+                for(var i in json.files) {
+                    var a = json.files[i].split(".");
+                    selectLang.place(HTML.OPTION, { innerHTML: a[1].toUpperCase(), value: a[1] });
+                    if(u.load("lang") == a[1]) selectLang.selectedIndex = count;
+                    count++;
+                }
+            })
+
             self.drawer = new u.drawer({
                 title: "${APP_NAME}",
                 collapsed: false,
@@ -148,8 +168,8 @@ var type = "support";
                 footer: {
                     className: "drawer-footer-label",
                     content: u.create(HTML.DIV)
-                        .place(HTML.SPAN, { className: "drawer-footer-link", innerHTML: "Privacy", onclick: showPrivacy})
-                        .place(HTML.SPAN, { className: "drawer-footer-link" ,innerHTML: "Terms", onclick: showTerms})
+                        .place(HTML.SPAN, { className: "drawer-footer-link", innerHTML: u.lang.privacy, onclick: showPrivacy})
+                        .place(HTML.SPAN, { className: "drawer-footer-link" ,innerHTML: u.lang.terms, onclick: showTerms})
                         .place(HTML.SPAN, { className: "drawer-footer-link", innerHTML: "${APP_NAME} &copy;2017 Edeqa", onclick: function(e){
                             dialogAbout.open();
                             e.preventDefault();
@@ -215,7 +235,7 @@ var type = "support";
 
     function showPrivacy(e) {
         showPrivacy.dialog = showPrivacy.dialog || u.dialog({
-            title: "Privacy",
+            title: u.lang.privacy,
 
             positive: {
                 label: "Close"
@@ -230,7 +250,7 @@ var type = "support";
 
     function showTerms(e) {
         showTerms.dialog = showTerms.dialog || u.dialog({
-            title: "Terms and conditions",
+            title: u.lang.terms_and_conditions,
 
             positive: {
                 label: "Close"
@@ -241,6 +261,16 @@ var type = "support";
         e.preventDefault();
         e.stopPropagation;
         return false;
+    }
+
+    function loadResources(callback) {
+
+        u.lang.overrideResources({"default":defaultResources, callback: callback});
+
+        var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+        var resources = "/locales/index."+lang+".json";
+
+        if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
     }
 
 

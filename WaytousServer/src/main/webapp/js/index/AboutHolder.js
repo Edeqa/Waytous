@@ -7,7 +7,7 @@ function AboutHolder(main) {
     function start() {
         console.log("INDEX ABOUT");
 
-        u.progress("Loading...", main.right);
+        u.progress(u.lang.loading, main.right);
         u.get("/texts/lorem.txt").then(function(xhr){
 //            u.clear(main.content);
 
