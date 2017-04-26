@@ -455,10 +455,10 @@ button:active {
 .drawer-menu-section-title {
     display: block;
     height: auto;
-    overflow: hidden;
 }
 .drawer-collapsed .drawer-menu-section-title {
     height: 0px;
+    overflow: hidden;
 }
 .drawer-menu-section-title:hover {
     background: #dddd99;
