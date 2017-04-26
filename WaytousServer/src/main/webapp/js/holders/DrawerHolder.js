@@ -28,7 +28,7 @@ function DrawerHolder(main) {
                     alphaDialog.open();
                 }
             },
-            onwidthtoggle: function() {
+            ontogglesize: function() {
                 main.fire(EVENTS.CAMERA_UPDATE);
             },
             onprimaryclick: function(){
@@ -161,7 +161,7 @@ function DrawerHolder(main) {
                             label: u.lang.collapsed_drawer,
                             checked: u.load("drawer:collapsed"),
                             onaccept: function(e, event) {
-                                drawer.toggleWidth(this.checked);
+                                drawer.toggleSize(this.checked);
                             },
                         }
                     ]

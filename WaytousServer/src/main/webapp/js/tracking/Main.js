@@ -14,7 +14,7 @@ function Main() {
     var origin;
     var main = w = this;
     var alert;
-    var defaultResources = "/locales/resources.en.json";
+    var defaultResources = "/locales/tracking.en.json";
 
     if (false && "serviceWorkers" in navigator) {
         window.addEventListener("load", function() {
@@ -358,7 +358,7 @@ function Main() {
         u.lang.overrideResources({"default":defaultResources});
 
         var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-        var resources = "/locales/resources."+lang+".json";
+        var resources = "/locales/tracking."+lang+".json";
 
         if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
     }
@@ -390,7 +390,7 @@ function Main() {
                             onaccept: function(e, event) {
                                 var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
                                 u.save("lang", lang);
-                                var resources = "/locales/resources."+lang+".json";
+                                var resources = "/locales/tracking."+lang+".json";
                                 u.lang.overrideResources({"default":defaultResources, resources: resources});
                             },
                             values: {"": u.lang.default, "en": u.lang.english, "ru": u.lang.russian }

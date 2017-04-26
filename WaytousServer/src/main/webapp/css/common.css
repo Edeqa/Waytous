@@ -454,9 +454,11 @@ button:active {
 }
 .drawer-menu-section-title {
     display: block;
+    height: auto;
+    overflow: hidden;
 }
 .drawer-collapsed .drawer-menu-section-title {
-    display: none;
+    height: 0px;
 }
 .drawer-menu-section-title:hover {
     background: #dddd99;

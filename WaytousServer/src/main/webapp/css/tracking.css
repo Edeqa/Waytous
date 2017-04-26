@@ -624,7 +624,7 @@ p.bottom-desc {
     max-width: 500px;
 }
 .saved-location-receive-dialog-items {
-    align-items: flex-start;
+    display: block;
 }
 .gps-required-dialog {
     z-index: 9999;

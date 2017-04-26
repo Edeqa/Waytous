@@ -55,6 +55,18 @@ body {
 .actionbar.actionbar-collapsed {
     height: 50px;
 }
+.actionbar-select-lang {
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #819bc7;
+    outline: none;
+}
+.actionbar-collapsed .actionbar-select-lang {
+    right: -150px;
+}
+
 .content, .content-about {
     position: initial;
     height: 100%;
@@ -70,8 +82,8 @@ body {
         position: fixed;
         border: none;
         background: none;
-        max-width: 100%;
-        min-width: 100%;
+        /*max-width: 100%;
+        min-width: 100%;*/
     }
     .drawer-header {
         background: none;
@@ -90,8 +102,9 @@ body {
     .drawer-header-title {
         font-size: x-large;
         position: absolute;
-        left: 8px;
-        bottom: 5px;
+        left: 64px;
+        top: 20px;
+        font-weight: normal;
     }
     .drawer-header-subtitle {
         margin-left: 60px;
@@ -184,7 +197,7 @@ body {
     .drawer-collapsed .drawer-header-title {
         font-size: large;
         left: 50px;
-        bottom: 12px;
+        top: 14px;
     }
     .drawer-collapsed .drawer-menu {
         top: 28px;
@@ -195,6 +208,7 @@ body {
     }
     .drawer-collapsed .drawer-menu-section-title {
         display: block;
+        height: 18px;
     }
     .drawer-collapsed .drawer-menu-section-label {
         font-size: small;

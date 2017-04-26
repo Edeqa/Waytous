@@ -135,7 +135,7 @@ function Edequate(options) {
         this.isHidden = true;
         return this;
     }
-    HTMLDivElement.prototype.place = function(type, args) {
+    HTMLElement.prototype.place = function(type, args) {
         if(type && typeof type == "object") {
             args = type;
             type = HTML.DIV;
@@ -228,8 +228,6 @@ function Edequate(options) {
             if(!properties.innerHTML && appendTo.innerHTML) properties.innerHTML = appendTo.innerHTML;
         }
 
-
-
         if(properties) {
             if(properties instanceof HTMLElement) {
                 el.appendChild(properties);
@@ -239,6 +237,9 @@ function Edequate(options) {
                         if(properties[x]) {
                             if(properties[x] instanceof HTMLElement) {
                                 el.appendChild(properties[x]);
+                            } else if(typeof properties[x] == "string") {
+                                properties[x] = properties[x].replace(/\$\{(\w+)\}/g, function(x,y){return u.lang[y] ? u.lang[y].outerHTML : y})
+                                el[x] = properties[x];
                             } else {
                                 el[x] = properties[x];
                             }
@@ -1057,7 +1058,6 @@ function Edequate(options) {
         options.resources = options.resources || options.default;
 
         if(options.resources.constructor === String) {
-
             getJSON(options.resources).then(function(json){
                 var nodes = document.getElementsByTagName(HTML.SPAN);
                 console.warn("Switching to resources \""+options.resources+"\".");
@@ -1072,7 +1072,7 @@ function Edequate(options) {
                         nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
                     }
                 }
-
+                if(options.callback) options.callback();
             }).catch(function(code, xhr){
                 switch(code) {
                     case ERRORS.ERROR_LOADING:
@@ -1089,6 +1089,15 @@ function Edequate(options) {
                             lang.overrideResources({"default":options.default});
                         }
                         break;
+                    default:
+                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",xhr);
+                        break;
+                }
+                if(options.default != options.resources){
+                    console.warn("Switching to default resources \""+options.default+"\".");
+                    lang.overrideResources({"default":options.default});
+                } else {
+                    if(options.callback) options.callback();
                 }
             });
 
@@ -1103,7 +1112,9 @@ function Edequate(options) {
     }
 
     lang.updateNode = function(node, lang) {
-        if(node && lang && lang.lang) {
+        if(typeof lang == "string") {
+            node.innerHTML = lang;
+        } else if(node && lang && lang.lang) {
             node.innerHTML = lang.innerHTML;
             node.lang = lang.lang;
         }
@@ -1842,7 +1853,7 @@ function Edequate(options) {
             .place(HTML.DIV, {className:"loading-progress-title", innerHTML: "Loading, please wait... "})
             .place(HTML.DIV, {className:"loading-progress-subtitle hidden"});
         if(progress) {
-            loadingHolder.lastChild.innerHTML = progress;
+            lang.updateNode(loadingHolder.lastChild, progress);
             loadingHolder.lastChild.show();
         } else {
             loadingHolder.lastChild.hide();
@@ -1858,6 +1869,8 @@ function Edequate(options) {
         options = options || {};
         if(typeof options == "string") {
             options = { label: options };
+        } else if(options instanceof HTMLSpanElement) {
+            options.label = options.outerHTML;
         }
         options.label = options.label || "Loading...";
         options.dim = options.dim || false;
