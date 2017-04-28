@@ -13,16 +13,16 @@ function Main() {
         "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js",
         "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
         "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
-        "Home",
         "/js/helpers/Utils.js",
         "/js/helpers/Constants",
+        "Home",
         "Create",
+        "User",
         "Group",
         "Groups",
         "Logs",
         "Settings",
-        "Help",
-        "User"
+//        "Help",
     ];
 
 

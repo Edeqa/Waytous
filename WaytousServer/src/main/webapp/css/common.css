@@ -350,6 +350,7 @@ button:active {
     height: 100%;
     top: 0px;
     bottom: 0px;
+    overflow-x: hidden;
     z-index: 10000;
 }
 .drawer-collapsed {
