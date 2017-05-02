@@ -73,6 +73,10 @@ body {
     padding: 0px;
     white-space: pre-wrap;
 }
+.terms-body {
+    align-self: flex-start;
+    text-align: left;
+}
 
 
 @media screen and (min-width: 1001px) {
