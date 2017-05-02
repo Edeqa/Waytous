@@ -170,6 +170,27 @@ function Edequate(options) {
         });
     }
 
+    function EPromise() {
+        var eprom = {
+            then: function(callback) {
+                this.onResolved = callback;
+                return this;
+            },
+            catch: function(callback) {
+                this.onRejected = callback;
+            },
+            onResolved: function(value) {
+                console.warn("Define '.then(onResolved(value){...})'");
+                console.log(value);
+            },
+            onRejected: function(code, value, error) {
+                console.warn("Define '.catch(onRejected(code, value[, error]){...})'");
+                console.error(code, value, error);
+            }
+        }
+        return eprom;
+    }
+
     function byId(id) {
         return document.getElementById(id);
     }
@@ -359,30 +380,17 @@ function Edequate(options) {
     }
     this.keys = keys;
 
+
+
     function require(name, context) {
+        var returned = new EPromise();
         var parts = name.split("/");
         var filename = parts[parts.length-1];
         var onlyname = filename.split(".")[0];
         var needInstantiate = false;
-        if(onerror && onerror.constructor !== Function) {
-            context = onerror;
-            onerror = function(){};
-        }
         if(!filename.match(/\.js$/) && parts[1] == "js") {
             needInstantiate = true;
             name += ".js";
-        }
-
-        var callbacks = {
-            then: function(instance) { console.warn("Define .then(callback(path [, context]){...})")},
-            "catch": function(code, instance, error) { console.error(code, instance, error); }
-        }
-        var catchFunction = function(callback) {
-            callbacks.catch = callback;
-        }
-        var thenFunction = function(callback) {
-            callbacks.then = callback;
-            return { "catch": catchFunction };
         }
 
         create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
@@ -392,15 +400,16 @@ function Edequate(options) {
                     a = new window[this.instance](context);
                     a.moduleName = this.instance;
                 } else {
-                    callbacks.catch(ERRORS.NOT_AN_OBJECT, this.instance, e);
+                    returned.onRejected(ERRORS.NOT_AN_OBJECT, this.instance, e);
+                    return;
                 }
             }
-            callbacks.then(a);
+            returned.onResolved(a);
         }, onerror: function(e) {
-            callbacks.catch(ERRORS.NOT_EXISTS, this.instance, e);
+            returned.onRejected(ERRORS.NOT_EXISTS, this.instance, e);
         }, async:"", defer:""}, document.head);
 
-        return { then: thenFunction, "catch": catchFunction };
+        return returned;
     }
     this.require = require;
 
@@ -1126,34 +1135,24 @@ function Edequate(options) {
             .catch(callback(code,xhr));
     */
      function get(url, post) {
+        var returned = new EPromise();
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
-        var callbacks = {
-            then: function(xhr) { console.warn("Define .then(callback(xhr){...})")},
-            "catch": function(code, xhr) { console.error(code, xhr); }
-        }
-        var catchFunction = function(callback) {
-            callbacks.catch = callback;
-        }
-        var thenFunction = function(callback) {
-            callbacks.then = callback;
-            return { "catch": catchFunction };
-        }
         xhr.onreadystatechange = function() { // (3)
             if (xhr.readyState != 4) return;
             if (xhr.status != 200) {
-                callbacks.catch(xhr.status, xhr);
+                returned.onRejected(xhr.status, xhr);
             } else {
-                callbacks.then(xhr);
+                returned.onResolved(xhr);
             }
         }
         try {
             xhr.send(post);
         } catch(e) {
-            callbacks.catch(ERRORS.ERROR_SENDING_REQUEST, xhr);
+            returned.onRejected(ERRORS.ERROR_SENDING_REQUEST, xhr);
             return;
         }
-        return { then: thenFunction, "catch": catchFunction };
+        return returned;
     }
     this.get = get;
 

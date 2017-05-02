@@ -196,7 +196,7 @@ function TrackingHolder(main) {
                     positive: {
                         label: "OK",
                         onclick: function() {
-                            var popup = window.open("mailto:?subject=Follow%20me%20at%20Wayto.us&body="+main.tracking.getTrackingUri(),"_blank");
+                            var popup = window.open("mailto:?subject=Way%20to%20us&body="+main.tracking.getTrackingUri(),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
                                     items: [
