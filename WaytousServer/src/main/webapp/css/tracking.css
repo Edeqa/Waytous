@@ -891,6 +891,7 @@ p.bottom-desc {
     .saved-locations-dialog-item-text {
         font-size: 14px;
         flex: initial;
+        position: relative;
     }
     .saved-locations-dialog-item-label {
     }

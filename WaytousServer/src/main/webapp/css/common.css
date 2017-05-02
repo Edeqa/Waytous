@@ -114,6 +114,7 @@ button:active {
     z-index: 1000;
     outline: none;
     max-height: 90%;
+    max-width: 90%;
 }
 /* Actionbar */
 .actionbar {
@@ -791,6 +792,7 @@ button:active {
         left: 50% !important;
         top: 50% !important;
         transform: translate(-50%,-50%) !important;
+        max-width: 100%;
         /*left: auto !important;
         top: auto !important;*/
     }
