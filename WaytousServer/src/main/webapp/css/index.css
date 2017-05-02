@@ -73,8 +73,8 @@ body {
     padding: 0px;
     white-space: pre-wrap;
 }
-.terms-body {
-    align-self: flex-start;
+.terms-body, .privacy-body {
+    align-items: flex-start;
     text-align: left;
 }
 
