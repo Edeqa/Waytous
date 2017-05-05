@@ -129,6 +129,7 @@ function Constants() {
         USER_CHANGED : "changed", // changed
         SECTION_USERS_DATA_PRIVATE : "u/p", // users/data-private
         SECTION_USERS_KEYS : "u/k", // users/keys
+        SECTION_USERS_ORDER : "u/n", // users/order
         SECTION_OPTIONS : "o", // options
         SECTION_OPTIONS_PERSISTENT : "o/persistent",
         SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY : "o/time-to-live-if-empty",

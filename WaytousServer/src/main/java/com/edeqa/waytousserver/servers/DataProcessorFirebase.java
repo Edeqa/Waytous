@@ -221,11 +221,17 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
                             int count = 1;
                             boolean found = false;
+                            Object value = dataSnapshot.getValue();
+                            if(value == null) {
+                                dataSnapshot.getRef().push().setValue(user.getUid());
+                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+                                return;
+                            }
+
                             TreeMap<String, String> map = new TreeMap<>();
                             map.putAll((HashMap<String, String>) dataSnapshot.getValue());
 
                             for(Map.Entry<String,String> x: map.entrySet()) {
-                                System.out.println("A:"+user.getUid()+":"+x.getValue());
                                 if(user.getUid().equals(x.getValue())){
                                     found = true;
                                     break;
@@ -237,10 +243,10 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                 user.number = (int) count;
                                 registerUser(tokenId, user, request);
                             } else {
-                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
                                 ref.child(DATABASE_SECTION_GROUPS).child(tokenId).setValue(user.getUid());
                                 DatabaseReference nodeNumber = ref.child(tokenId).child(DATABASE_SECTION_USERS_ORDER).push();
                                 nodeNumber.setValue(user.getUid());
+                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
                             }
 
                         }

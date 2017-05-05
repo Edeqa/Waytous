@@ -89,6 +89,7 @@ function Create() {
 
         ref.child(inputId.value).child(DATABASE.SECTION_USERS_DATA).child(0).child(DATABASE.USER_ACTIVE).set(false);
         ref.child(inputId.value).child(DATABASE.SECTION_USERS_KEYS).child(0).set(0);
+//        ref.child(inputId.value).child(DATABASE.SECTION_USERS_ORDER).push().set(0);
         ref.child(inputId.value).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(0).child("key").set(0);
 
         ref.child(inputId.value).child(DATABASE.SECTION_OPTIONS).set({
