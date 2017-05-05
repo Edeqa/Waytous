@@ -90,6 +90,7 @@ public class Constants {
     public static final String DATABASE_USER_CHANGED = "changed";
     public static final String DATABASE_SECTION_USERS_DATA_PRIVATE = "u/p"; // users/data-private
     public static final String DATABASE_SECTION_USERS_KEYS = "u/k"; // users/keys
+    public static final String DATABASE_SECTION_USERS_ORDER = "u/n"; // users/order
     public static final String DATABASE_SECTION_OPTIONS = "o"; // options
     public static final String DATABASE_OPTION_PERSISTENT = "persistent";
     public static final String DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY = "time-to-live-if-empty";
@@ -99,7 +100,6 @@ public class Constants {
     public static final String DATABASE_OPTION_WELCOME_MESSAGE = "welcome-message";
     public static final String DATABASE_OPTION_DATE_CREATED = "date-created";
     public static final String DATABASE_OPTION_DATE_CHANGED = "date-changed";
-
 
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
     public static final int LIFETIME_INACTIVE_GROUP = 300;

@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.snapshot.Node;
 import com.google.firebase.internal.NonNull;
 import com.google.firebase.tasks.OnFailureListener;
 import com.google.firebase.tasks.OnSuccessListener;
@@ -25,10 +26,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.RunnableFuture;
 
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CHANGED;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CREATED;
@@ -43,6 +47,7 @@ import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_DATA_PRIVATE;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_KEYS;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_ORDER;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_ACTIVE;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_CHANGED;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_COLOR;
@@ -164,6 +169,8 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                     ref.child(token.getId()).updateChildren(childUpdates);
 
                     ref.child(DATABASE_SECTION_GROUPS).child(token.getId()).setValue(user.getUid());
+                    DatabaseReference nodeNumber = ref.child(token.getId()).child(DATABASE_SECTION_USERS_ORDER).push();
+                    nodeNumber.setValue(user.getUid());
 
                     //TODO implement token controller here
 
@@ -205,19 +212,36 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                         }
                     };
 
-                    final ValueEventListener requestDataPrivateListener = new ValueEventListener() {
+                    final ValueEventListener[] requestDataPrivateListener = new ValueEventListener[1];
+                    requestDataPrivateListener[0] = new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            System.out.println(dataSnapshot.getValue().getClass() +":"+ dataSnapshot.getChildrenCount());
-                            long number = dataSnapshot.getChildrenCount();
-
-                            final MyToken token = new MyToken();
-
 
                             final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-                            user.number = (int) number;
 
-                            registerUser(tokenId, user, request);
+                            int count = 1;
+                            boolean found = false;
+                            TreeMap<String, String> map = new TreeMap<>();
+                            map.putAll((HashMap<String, String>) dataSnapshot.getValue());
+
+                            for(Map.Entry<String,String> x: map.entrySet()) {
+                                System.out.println("A:"+user.getUid()+":"+x.getValue());
+                                if(user.getUid().equals(x.getValue())){
+                                    found = true;
+                                    break;
+                                }
+                                ++count;
+                            }
+                            if(found) {
+                                final MyToken token = new MyToken();
+                                user.number = (int) count;
+                                registerUser(tokenId, user, request);
+                            } else {
+                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+                                ref.child(DATABASE_SECTION_GROUPS).child(tokenId).setValue(user.getUid());
+                                DatabaseReference nodeNumber = ref.child(tokenId).child(DATABASE_SECTION_USERS_ORDER).push();
+                                nodeNumber.setValue(user.getUid());
+                            }
 
                         }
 
@@ -256,7 +280,8 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
                             } else { // join as new member
 
-                                refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
+                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+//                                refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
 
 //                                System.out.println("ASNEW:"+dataSnapshot.getValue());
 //                                long number = (long) dataSnapshot.getValue();

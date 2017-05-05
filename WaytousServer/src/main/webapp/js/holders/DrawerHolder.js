@@ -19,6 +19,10 @@ function DrawerHolder(main) {
     var start = function() {
 
         var dialogAbout = utils.dialogAbout(main.right);
+
+        var sections = {};
+        sections[DRAWER.SECTION_MAP] = "Map";
+
         drawer = new u.drawer({
             title: main.appName,
             subtitle: u.lang.be_always_on_the_same_way,
@@ -43,9 +47,7 @@ function DrawerHolder(main) {
                     return false;
                 }}).place(HTML.SPAN, "\nBuild " + data.version)
             },
-            sections: {
-                [DRAWER.SECTION_MAP]: "Map",
-            },
+            sections: sections,
             collapsible: [DRAWER.SECTION_MAP, DRAWER.SECTION_VIEWS]
         }, document.body);
 
