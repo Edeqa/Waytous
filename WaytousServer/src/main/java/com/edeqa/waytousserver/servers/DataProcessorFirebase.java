@@ -569,7 +569,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
     }
 
     public void validateGroups() {
-//        if(SENSITIVE.isDebugMode()) return;
+        if(SENSITIVE.isDebugMode()) return;
         Common.log("WPF","Groups validation scheduled is performing, checking online users");
         ChildEventListener groupsList = new ChildEventListener() {
             @Override

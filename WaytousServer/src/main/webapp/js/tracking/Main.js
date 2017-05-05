@@ -5,7 +5,7 @@
 // git filter-branch --force --index-filter "git rm -r --cached --ignore-unmatch WaytousServer/build" --prune-empty --tag-name-filter cat -- --all
 
 function Main() {
-    var firebaseVersion = "3.8.0";
+    var firebaseVersion = "3.9.0";
     var holders = {};
     var users;
     var me;
@@ -102,37 +102,36 @@ function Main() {
 
     function initializeHeader() {
 
-        u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
-        u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
-        u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/common.css"}, document.head);
-        u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"}, document.head);
-        u.create(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"},document.head);
-
-        u.create(HTML.LINK, {rel:"apple-touch-icon", href:"/icons/apple-touch-icon.png"},document.head);
-        u.create(HTML.LINK, {rel:"apple-touch-icon", sizes:"60x60", href:"/icons/apple-touch-icon-60x60.png"},document.head);
-        u.create(HTML.LINK, {rel:"apple-touch-icon", sizes:"76x76", href:"/icons/apple-touch-icon-76x76.png"},document.head);
-        u.create(HTML.LINK, {rel:"apple-touch-icon", sizes:"120x120", href:"/icons/apple-touch-icon-120x120.png"},document.head);
-        u.create(HTML.LINK, {rel:"apple-touch-icon", sizes:"152x152", href:"/icons/apple-touch-icon-152x152.png"},document.head);
-        u.create(HTML.LINK, {rel:"apple-touch-icon", sizes:"180x180", href:"/icons/apple-touch-icon.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"32x32", href:"/icons/favicon-32x32.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"},document.head);
-        u.create(HTML.LINK, {rel:"manifest", href:"/icons/manifest.json"},document.head);
-        u.create(HTML.LINK, {rel:"mask-icon", href:"/icons/safari-pinned-tab.svg", color:"#00aaaa"},document.head);
-        u.create(HTML.LINK, {rel:"icon",type:"image/x-icon", href:"/icons/favicon.ico"},document.head);
-        u.create(HTML.LINK, {rel:"shortcut icon", href:"/icons/favicon.ico"},document.head);
-        u.create(HTML.LINK, {rel:"apple-touch-startup-image", href: "/icons/apple-touch-icon.png"},document.head);
-        u.create(HTML.META, {name:"apple-mobile-web-app-title", content:main.appName},document.head);
-        u.create(HTML.META, {name:"apple-mobile-web-app-capable", content:"yes"},document.head);
-//        u.create(HTML.META, {name:"apple-mobile-web-app-status-bar-style", content:"black-translucent"},document.head);
-        u.create(HTML.META, {name:"mobile-web-app-capable", content:"yes"},document.head);
-        u.create(HTML.META, {name:"application-name", content:main.appName},document.head);
-        u.create(HTML.META, {name:"application-shortName", content:main.appName},document.head);
-        u.create(HTML.META, {name:"msapplication-TileColor", content:"#00aaaa"},document.head);
-        u.create(HTML.META, {name:"msapplication-TileImage", content:"/icons/mstile-144x144.png"},document.head);
-        u.create(HTML.META, {name:"msapplication-config", content:"/icons/browserconfig.xml"},document.head);
-        u.create(HTML.META, {name:"theme-color", content:"#aaeeee"},document.head);
+        document.head
+            .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/common.css"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", href:"/icons/apple-touch-icon.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"60x60", href:"/icons/apple-touch-icon-60x60.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"76x76", href:"/icons/apple-touch-icon-76x76.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"120x120", href:"/icons/apple-touch-icon-120x120.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"152x152", href:"/icons/apple-touch-icon-152x152.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"180x180", href:"/icons/apple-touch-icon.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"32x32", href:"/icons/favicon-32x32.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"})
+            .place(HTML.LINK, {rel:"manifest", href:"/icons/manifest.json"})
+            .place(HTML.LINK, {rel:"mask-icon", href:"/icons/safari-pinned-tab.svg", color:"#00aaaa"})
+            .place(HTML.LINK, {rel:"icon",type:"image/x-icon", href:"/icons/favicon.ico"})
+            .place(HTML.LINK, {rel:"shortcut icon", href:"/icons/favicon.ico"})
+            .place(HTML.LINK, {rel:"apple-touch-startup-image", href: "/icons/apple-touch-icon.png"})
+            .place(HTML.META, {name:"apple-mobile-web-app-title", content:main.appName})
+            .place(HTML.META, {name:"apple-mobile-web-app-capable", content:"yes"})
+//            .place(HTML.META, {name:"apple-mobile-web-app-status-bar-style", content:"black-translucent"})
+            .place(HTML.META, {name:"mobile-web-app-capable", content:"yes"})
+            .place(HTML.META, {name:"application-name", content:main.appName})
+            .place(HTML.META, {name:"application-shortName", content:main.appName})
+            .place(HTML.META, {name:"msapplication-TileColor", content:"#00aaaa"})
+            .place(HTML.META, {name:"msapplication-TileImage", content:"/icons/mstile-144x144.png"})
+            .place(HTML.META, {name:"msapplication-config", content:"/icons/browserconfig.xml"})
+            .place(HTML.META, {name:"theme-color", content:"#aaeeee"});
 
         loadScripts.call(main);
     }
