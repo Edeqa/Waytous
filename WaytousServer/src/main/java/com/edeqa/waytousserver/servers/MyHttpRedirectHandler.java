@@ -55,8 +55,8 @@ public class MyHttpRedirectHandler implements HttpHandler {
                         + "&al=" + mobileRedirect
                         + "&afl=" + webRedirect
                         + "&ifl=" + webRedirect
-                        + "&st=Waytogo"
-                        + "&sd=Waytogo+description"
+                        + "&st=Waytous"
+                        + "&sd=Waytous+description"
                         + "&si=https://raw.githubusercontent.com/tujger/WhereAmINow/master/WhereAmINowServer/src/main/webapp/images/logo.png";
 
                 Common.log("Redirect ->", redirectLink);

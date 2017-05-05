@@ -68,7 +68,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
 
 
         html.clear();
-        html.getHead().add(TITLE).with("Waytogo");
+        html.getHead().add(TITLE).with("Waytous");
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WTU = new Main()).start();");
 
