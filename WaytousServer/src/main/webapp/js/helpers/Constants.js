@@ -136,8 +136,8 @@ function Constants() {
         SECTION_OPTIONS_DISMISS_INACTIVE : "o/dismiss-inactive",
         SECTION_OPTIONS_REQUIRES_PASSWORD : "o/requires-password",
         SECTION_OPTIONS_WELCOME_MESSAGE : "o/welcome-message",
-        SECTION_OPTIONS_DATE_CREATED : "o/date-created"
-
+        SECTION_OPTIONS_DATE_CREATED : "o/date-created",
+        SECTION_OPTIONS_DATE_CHANGED : "o/date-changed"
     };
 
     return {

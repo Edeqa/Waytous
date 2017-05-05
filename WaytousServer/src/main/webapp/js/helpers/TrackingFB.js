@@ -48,12 +48,12 @@ function TrackingFB(main) {
         updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
-        ref.child(DATABASE.SECTION_USERS_DATA + "/" + main.me.number).update(updates);
+        ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);
 
         firebase.auth().signOut();
         trackingListener.onStop();
 
-        var uri = new URL(this.link);
+        var uri = new URL(serverUri);
         window.location.href = "https://" + uri.hostname + ":"+ data.HTTPS_PORT + "/track/";
     }
 
@@ -121,6 +121,7 @@ function TrackingFB(main) {
                                 ref = database.ref().child(getToken());
 
                                 updateTask = setInterval(updateActive, 60000);
+                                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userChangedListener);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
                                 for (var i in main.holders) {
                                     if (main.holders[i] && main.holders[i].saveable) {
@@ -378,6 +379,14 @@ function TrackingFB(main) {
     function registerValueListener(ref, listener) {
         ref.on("value", listener);
         // refs[ref] = listener;
+    }
+
+    function userChangedListener(data) {
+        console.log("GROUPCHANGED",data);
+
+        if(!data.val()) {
+            stop();
+        }
     }
 
     function usersDataListener(data){

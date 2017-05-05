@@ -242,8 +242,8 @@ function Group() {
     }
 
     function deleteGroup() {
-        database.ref().child(groupId).remove();
         database.ref(DATABASE.SECTION_GROUPS).child(groupId).remove();
+        database.ref().child(groupId).remove();
         WTU.switchTo("/admin/groups");
     }
 

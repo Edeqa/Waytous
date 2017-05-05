@@ -466,6 +466,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
         o.put(DATABASE_USER_NAME, user.getName());
         o.put(DATABASE_USER_ACTIVE, true);
         o.put(DATABASE_USER_CREATED, user.getCreated());
+        o.put(DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
         childUpdates.put(DATABASE_SECTION_USERS_DATA + "/" + user.getNumber(),o);
 
         o = new HashMap<>();
@@ -568,7 +569,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
     }
 
     public void validateGroups() {
-        if(SENSITIVE.isDebugMode()) return;
+//        if(SENSITIVE.isDebugMode()) return;
         Common.log("WPF","Groups validation scheduled is performing, checking online users");
         ChildEventListener groupsList = new ChildEventListener() {
             @Override
