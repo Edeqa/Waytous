@@ -153,7 +153,18 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
                     final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
 
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY, 15);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_REQUIRES_PASSWORD, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_PERSISTENT, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DISMISS_INACTIVE, false);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DELAY_TO_DISMISS, 300);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
+                    ref.child(token.getId()).updateChildren(childUpdates);
+
                     ref.child(DATABASE_SECTION_GROUPS).child(token.getId()).setValue(user.getUid());
+
                     //TODO implement token controller here
 
                     registerUser(token.getId(), user, request);
@@ -473,33 +484,6 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
         }
 
         childUpdates.put(DATABASE_SECTION_USERS_KEYS + "/"+uid,user.getNumber());
-
-        System.out.println("LISTENER:"+tokenId+"/"+DATABASE_SECTION_OPTIONS);
-        ref.child(tokenId).child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                System.out.println("SINGLE:"+dataSnapshot.getKey()+":"+dataSnapshot.getValue());
-//FIXME
-                if(dataSnapshot.getValue() == null) {
-                    Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY, 15);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_REQUIRES_PASSWORD, false);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_PERSISTENT, false);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DISMISS_INACTIVE, false);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DELAY_TO_DISMISS, 300);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
-                    ref.child(tokenId).updateChildren(childUpdates);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("CANCELLED:"+databaseError);
-            }
-
-        });
-
 
         Task<Void> a = ref.child(tokenId).updateChildren(childUpdates);
         a.addOnSuccessListener(new OnSuccessListener<Void>() {
