@@ -13,6 +13,7 @@
   "apply": "Apply",
   "copy": "Copy",
   "loading":"Loading...",
+  "s_s": "%s - %s",
 
   "popup_blocked_dialog_1": "Looks like your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly.",
   "popup_blocked_dialog_2": "Detailed information how to unblock this feature",

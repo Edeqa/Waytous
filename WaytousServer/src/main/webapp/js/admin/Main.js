@@ -21,7 +21,7 @@ function Main() {
         "Group",
         "Groups",
         "Logs",
-        "Settings",
+//        "Settings",
 //        "Help",
     ];
 
@@ -40,8 +40,10 @@ function Main() {
             return;
         }
 
+
         window.u = new Edequate({exportConstants:true, origin:"waytous"});
 
+        document.title = u.create(HTML.DIV, "${APP_NAME} - Admin").innerHTML;
         u.loading("Loading resources...");
 
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);

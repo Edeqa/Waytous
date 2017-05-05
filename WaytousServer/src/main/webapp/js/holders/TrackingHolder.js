@@ -119,7 +119,7 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 u.context = main.tracking.getToken();
-                document.title = main.appName + " - " + main.tracking.getToken();
+                document.title = u.lang.s_s.format(main.appName, main.tracking.getToken()).innerHTML;
                 if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
                     drawerItemShare.enable();
                 }

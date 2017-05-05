@@ -44,7 +44,7 @@ public class MyHttpMainHandler implements HttpHandler {
 
         substitutions = new LinkedHashMap<>();
         substitutions.put("\\$\\{SERVER_BUILD\\}", ""+ SERVER_BUILD);
-        substitutions.put("\\$\\{APP_NAME\\}", "Waytous");
+        substitutions.put("\\$\\{APP_NAME\\}", "Waytous" + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
         substitutions.put("\\$\\{SUPPORT_EMAIL\\}", "support@wayto.us");
         substitutions.put("\\$\\{WEB_PAGE\\}", "http://wayto.us");
 
