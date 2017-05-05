@@ -86,6 +86,7 @@ body {
         position: fixed;
         border: none;
         background: none;
+        z-index: 1;
         /*max-width: 100%;
         min-width: 100%;*/
     }

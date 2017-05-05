@@ -235,7 +235,7 @@ var type = "home";
 
     function showPrivacy(e) {
         showPrivacy.dialog = showPrivacy.dialog || u.dialog({
-            title: u.lang.privacy,
+            title: u.lang.privacy_policy,
             items: [
                 { type: HTML.DIV, className: "privacy-body", innerHTML: u.lang.privacy_policy_body }
             ],

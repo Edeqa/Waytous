@@ -64,7 +64,7 @@ public class MyHttpMainHandler implements HttpHandler {
             File root = new File(SENSITIVE.getWebRootDirectory());
             File file = new File(root + uri.getPath()).getCanonicalFile();
 
-            Common.log("Main", uri.getPath(), "(" + (file.exists() ? file.length() + " byte(s)" : "not found") + ")");
+            Common.log("Main", uri.getPath(), "[" + (file.exists() ? file.length() + " byte(s)" : "not found") + "]");
 
             String etag = "W/1976" + ("" + file.lastModified()).hashCode();
 
