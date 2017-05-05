@@ -73,6 +73,10 @@ body {
     padding: 0px;
     white-space: pre-wrap;
 }
+.terms-body, .privacy-body {
+    align-items: flex-start;
+    text-align: left;
+}
 
 
 @media screen and (min-width: 1001px) {

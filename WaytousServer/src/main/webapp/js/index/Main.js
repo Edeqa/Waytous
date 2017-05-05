@@ -236,7 +236,9 @@ var type = "home";
     function showPrivacy(e) {
         showPrivacy.dialog = showPrivacy.dialog || u.dialog({
             title: u.lang.privacy,
-
+            items: [
+                { type: HTML.DIV, className: "privacy-body", innerHTML: u.lang.privacy_policy_body }
+            ],
             positive: {
                 label: "Close"
             }
@@ -251,7 +253,9 @@ var type = "home";
     function showTerms(e) {
         showTerms.dialog = showTerms.dialog || u.dialog({
             title: u.lang.terms_and_conditions,
-
+            items: [
+                { type: HTML.DIV, className: "terms-body", innerHTML: u.lang.terms_and_conditions_body }
+            ],
             positive: {
                 label: "Close"
             }

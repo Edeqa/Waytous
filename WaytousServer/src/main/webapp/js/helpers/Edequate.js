@@ -1082,7 +1082,7 @@ function Edequate(options) {
                     }
                 }
                 if(options.callback) options.callback();
-            }).catch(function(code, xhr){
+            }).catch(function(code, xhr, error){
                 switch(code) {
                     case ERRORS.ERROR_LOADING:
                         console.warn("Error fetching resources for \""+options.resources+"\":",xhr.status + ': ' + xhr.statusText);
@@ -1092,14 +1092,14 @@ function Edequate(options) {
                         }
                         break;
                     case ERRORS.INCORRECT_JSON:
-                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",xhr);
+                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",error,xhr);
                         if(options.default != options.resources){
                             console.warn("Switching to default resources \""+options.default+"\".");
                             lang.overrideResources({"default":options.default});
                         }
                         break;
                     default:
-                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",xhr);
+                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",error,xhr);
                         break;
                 }
                 if(options.default != options.resources){
@@ -1173,11 +1173,11 @@ function Edequate(options) {
             callbacks.then = function(xhr) {
                 try {
                     var text = xhr.responseText;
-                    text = text.replace(/\/\*[\s\S]*?\*\//g, "");
+                    text = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/[\r\n]+/gm, " ");
                     var json = JSON.parse(text);
                     callback(json, xhr);
                 } catch(e) {
-                    callbacks.catch(ERRORS.INCORRECT_JSON, xhr);
+                    callbacks.catch(ERRORS.INCORRECT_JSON, xhr, e);
                 }
             }
             return { "catch": catchFunction };

@@ -155,6 +155,10 @@ public class MyHttpMainHandler implements HttpHandler {
                 }
 
                 if (text) {
+                    if(!type.toLowerCase().matches(";\\s*charset\\s*=")) {
+                        type += "; charset=UTF-8";
+                    }
+
                     byte[] bytes = Files.readAllBytes(file.toPath());
                     Charset charset = StandardCharsets.ISO_8859_1;
                     if(bytes[0] == -1 && bytes[1] == -2) charset = StandardCharsets.UTF_16;
@@ -179,6 +183,7 @@ public class MyHttpMainHandler implements HttpHandler {
                     os.write(string.getBytes(charset));
                     os.close();
                 } else {
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type );
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
                     exchange.sendResponseHeaders(200, 0);
                     OutputStream os;

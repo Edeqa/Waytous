@@ -25,7 +25,7 @@ function MapHolder(main) {
             u.require("https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap&libraries=geometry,places").then(function(){});
         }, 0);
         buttonRecenter = u.create(HTML.BUTTON, {
-            className: "map-recenter hidden",
+            className: "map-recenter shadow hidden",
             innerHTML: u.lang.re_center,
             onclick: function() {
                 main.fire(EVENTS.CAMERA_UPDATE);
