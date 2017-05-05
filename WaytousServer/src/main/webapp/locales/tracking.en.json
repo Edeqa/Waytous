@@ -62,7 +62,7 @@
   "collapsed_drawer": "Collapsed drawer",
 
   "alpha_1": "Thank you for using the",
-  "alpha_2": "ALPHA version of ${APP_NAME}.",
+  "alpha_2": "BETA version of ${APP_NAME}.",
   "alpha_3": "&nbsp;",
   "alpha_4": "Please if you found some errors, weird behaviour, new great idea or just because - feel free to send us an e-mail:",
   "alpha_5": "<a href=\"mailto:${SUPPORT_EMAIL}\">${SUPPORT_EMAIL}</a>.",

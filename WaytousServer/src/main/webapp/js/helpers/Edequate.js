@@ -1229,6 +1229,43 @@ function Edequate(options) {
             d: "M5.46 8.846l3.444-3.442-1.058-1.058-4.5 4.5 4.5 4.5 1.058-1.057L5.46 8.84zm7.194 4.5v-9h-1.5v9h1.5z"
         };
 
+        var swipeHolder = function(e){
+
+            var touch;
+            if(e.changedTouches) touch = e.changedTouches[0];
+
+            var startX = e.pageX || touch.pageX;
+
+            var endHolder = function(e){
+                window.removeEventListener("touchend",endHolder);
+                window.removeEventListener("touchmove",moveHolder);
+                layout.style.transition = "";
+
+                var x = parseInt(layout.style.left || 0)
+                if(x < -layout.offsetWidth/3) {
+                    layout.style.left = (-layout.offsetWidth*1.5)+"px";
+                    setTimeout(function(){layout.blur()},500);
+                } else {
+                    layout.style.left = "";
+                }
+            }
+            var moveHolder = function(e) {
+                var delta;
+                if(e.changedTouches) touch = e.changedTouches[0];
+                delta = (e.pageX || touch.pageX) - startX;
+                if(delta <= -10) {
+                    layout.style.left = delta + "px";
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }
+            window.addEventListener("touchend", endHolder);
+            window.addEventListener("touchmove", moveHolder);
+
+            layout.style.transition = "none";
+        }
+
+
         var layout = create(HTML.DIV, {
             className:"drawer changeable" + (collapsed ? " drawer-collapsed" : "") + (options.className ? " "+options.className : ""),
             tabindex: -1,
@@ -1238,6 +1275,7 @@ function Edequate(options) {
             },
             open: function() {
                  this.classList.add("drawer-open");
+                 this.style.left = "";
                  this.scrollTop = 0;
                  this.menu.scrollTop = 0;
                  this.focus();
@@ -1262,7 +1300,9 @@ function Edequate(options) {
                 layout.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
                 layoutHeaderHolder.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
                 if(options.ontogglesize) options.ontogglesize(force);
-            }
+            },
+            ontouchstart: swipeHolder,
+            onmousedown: swipeHolder
          });
          if(typeof appendTo == "string") {
             appendTo = byId(appendTo);

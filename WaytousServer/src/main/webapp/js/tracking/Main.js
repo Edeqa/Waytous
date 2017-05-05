@@ -292,7 +292,7 @@ function Main() {
 //throw new Error("A");
 
         u.loading.hide();
-        main.alpha = u.create("div", {className:"alpha", innerHTML:"&alpha;"}, main.right);
+        main.alpha = u.create("div", {className:"alpha", innerHTML:"&beta;"}, main.right);
 
         for(var x in holders){
             try {
