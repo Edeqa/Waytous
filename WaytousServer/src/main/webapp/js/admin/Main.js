@@ -73,7 +73,20 @@ function Main() {
                     initialize();
 
                 }
-            });
+            }).catch(function(){
+              u.dialog({
+                  title: "Alert",
+                  items: [
+                      { type:HTML.DIV, innerHTML: "Error loading service."}
+                  ],
+                  positive: {
+                      label: "Reload",
+                      onclick: function(){
+                          window.location = window.location.href;
+                      }
+                  }
+              }).open();
+          });
         }
     }
 
@@ -98,6 +111,19 @@ function Main() {
                     if(loaded == u.keys(files).length) {
                         initialize.call(main);
                     }
+                }).catch(function(){
+                    u.dialog({
+                        title: "Alert",
+                        items: [
+                            { type:HTML.DIV, innerHTML: "Error loading service."}
+                        ],
+                        positive: {
+                            label: "Reload",
+                            onclick: function(){
+                                window.location = window.location.href;
+                            }
+                        }
+                    }).open();
                 });
             }
 
@@ -121,12 +147,10 @@ function Main() {
         u.loading("Signing in...");
         firebase.auth().signInWithCustomToken(data.sign).then(function(e){
             callback();
-        //            console.log("AAA",e)
         }).catch(function(error) {
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              window.location = window.location.href;
-          // ...
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            window.location = window.location.href;
         });
     }
 

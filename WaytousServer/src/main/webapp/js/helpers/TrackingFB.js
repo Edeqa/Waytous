@@ -121,7 +121,7 @@ function TrackingFB(main) {
                                 ref = database.ref().child(getToken());
 
                                 updateTask = setInterval(updateActive, 60000);
-                                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userChangedListener);
+                                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userActiveListener);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
                                 for (var i in main.holders) {
                                     if (main.holders[i] && main.holders[i].saveable) {
@@ -381,9 +381,7 @@ function TrackingFB(main) {
         // refs[ref] = listener;
     }
 
-    function userChangedListener(data) {
-        console.log("GROUPCHANGED",data);
-
+    function userActiveListener(data) {
         if(!data.val()) {
             stop();
         }

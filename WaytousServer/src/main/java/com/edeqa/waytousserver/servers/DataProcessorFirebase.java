@@ -525,7 +525,6 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                 FirebaseAuth.getInstance().createCustomToken(uid).addOnSuccessListener(new OnSuccessListener<String>() {
                     @Override
                     public void onSuccess(String customToken) {
-                        System.out.println("GOT:"+customToken);
                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
                         if(!REQUEST_JOIN_TOKEN.equals(request.getString(REQUEST)) && !REQUEST_CHECK_USER.equals(request.getString(REQUEST))) {
                             response.put(RESPONSE_TOKEN, tokenId);
