@@ -1230,18 +1230,24 @@ function Edequate(options) {
 
         var swipeHolder = function(e){
 
+var t = new toast();
+document.body.appendChild(t);
+
             var touch;
             if(e.changedTouches) touch = e.changedTouches[0];
 
             var startX = e.pageX || touch.pageX;
+            var lastX = startX;
+            var lastDelta = 0;
 
             var endHolder = function(e){
                 window.removeEventListener("touchend",endHolder);
                 window.removeEventListener("touchmove",moveHolder);
                 layout.style.transition = "";
 
+                if(e.changedTouches) touch = e.changedTouches[0];
                 var x = parseInt(layout.style.left || 0)
-                if(x < -layout.offsetWidth/3) {
+                if(lastDelta < -20 || (lastDelta <=0 && x < -layout.offsetWidth/2)) {
                     layout.style.left = (-layout.offsetWidth*1.5)+"px";
                     setTimeout(function(){layout.blur()},500);
                 } else {
@@ -1252,6 +1258,9 @@ function Edequate(options) {
                 var delta;
                 if(e.changedTouches) touch = e.changedTouches[0];
                 delta = (e.pageX || touch.pageX) - startX;
+                lastDelta = (e.pageX || touch.pageX) - lastX;
+                lastX = e.pageX || touch.pageX;
+
                 if(delta <= -10) {
                     layout.style.left = delta + "px";
                     e.preventDefault();
