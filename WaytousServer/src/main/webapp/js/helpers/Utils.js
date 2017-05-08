@@ -1,4 +1,9 @@
 /**
+ * Part of Waytous <http://waytous.net>
+ * Copyright (C) Edeqa LLC <http://www.edeqa.com>
+ * Author: Edward Mukhutdinov <wise@edeqa.com>
+ *
+ * Version 1.${SERVER_BUILD}
  * Created 1/19/17.
  */
 

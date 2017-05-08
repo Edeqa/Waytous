@@ -1,4 +1,8 @@
 /**
+ * Part of Waytous <http://waytous.net>
+ * Copyright (C) Edeqa LLC <http://www.edeqa.com>
+ *
+ * Version 1.${SERVER_BUILD}
  * Created 2/8/17.
  */
 EVENTS.UPDATE_ACTIONBAR_SUBTITLE = "update_actionbar_subtitle";

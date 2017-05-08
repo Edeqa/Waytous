@@ -1,7 +1,6 @@
 /**
  * Edequate - javascript DOM and interface routines
- * Edequate (C)2017 Edeqa LLC
- * http://www.edeqa.com
+ * Copyright (C) Edeqa LLC <http://www.edeqa.com>
  *
  * v.1 - initial release
  */
