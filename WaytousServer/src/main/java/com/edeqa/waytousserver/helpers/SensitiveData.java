@@ -8,7 +8,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,9 +89,109 @@ public class SensitiveData {
             string.append((char)c);
         }
 
-        Matcher m = Pattern.compile("\\/\\* [\\s\\S]*?\\*\\/").matcher(string);
-        string.replace(0, string.length(), m.replaceAll(""));
+        Matcher m = Pattern.compile("\\/\\*[\\s\\S]*?\\*\\/").matcher(string);
+        string = string.replace(0, string.length(), m.replaceAll(""));
         json = new JSONObject(string.toString());
+
+        if(!json.has("types")) {
+            json.put("types",new JSONArray());
+        }
+
+        // add default MIME-types if they are not added in options-file
+
+        JSONArray types = json.getJSONArray("types");
+
+        ArrayList<HashMap<String, Serializable>> commonTypes = new ArrayList<>();
+        HashMap<String,Serializable> type = new HashMap<>();
+        type.put("type", "html");
+        type.put("mime", "text/html");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "js");
+        type.put("mime", "application/javascript");
+        type.put("text", true);
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "css");
+        type.put("mime", "text/css");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "xml");
+        type.put("mime", "application/xml");
+        type.put("text", true);
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("name", "manifest.json");
+        type.put("mime", "application/x-web-app-manifest+json");
+        type.put("text", true);
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "json");
+        type.put("mime", "application/json");
+        type.put("text", true);
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "gif");
+        type.put("mime", "image/gif");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "png");
+        type.put("mime", "image/png");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "jpg");
+        type.put("mime", "image/jpg");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "ico");
+        type.put("mime", "image/ico");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "svg");
+        type.put("mime", "image/svg+xml");
+        type.put("text", true);
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "mp3");
+        type.put("mime", "audio/mp3");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "ogg");
+        type.put("mime", "audio/ogg");
+        commonTypes.add(type);
+
+        type = new HashMap<>();
+        type.put("type", "m4r");
+        type.put("mime", "audio/aac");
+        commonTypes.add(type);
+
+        for(int i=0; i<types.length(); i++) {
+            JSONObject o = types.getJSONObject(i);
+            for(HashMap<String,Serializable> x:commonTypes){
+                if(x.containsKey("type") && o.has("type") && ((String)x.get("type")).equals(o.getString("type"))) {
+                    commonTypes.remove(x);
+                    break;
+                } else if(x.containsKey("name") && o.has("name") && ((String)x.get("name")).equals(o.getString("name"))) {
+                    commonTypes.remove(x);
+                    break;
+                }
+            }
+        }
+        for(HashMap<String,Serializable> x:commonTypes){
+            types.put(x);
+        }
 
     }
 
@@ -133,76 +237,9 @@ public class SensitiveData {
 
             JSONArray jsonMimeTypes = new JSONArray();
             JSONObject jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","js");
-            jsonMimeType.put("mime","text/javascript");
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","css");
-            jsonMimeType.put("mime","text/css");
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","xml");
-            jsonMimeType.put("mime","application/xml");
+            jsonMimeType.put("type","sample");
+            jsonMimeType.put("mime","text/sample");
             jsonMimeType.put("text",true);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("name","manifest.json");
-            jsonMimeType.put("mime","application/x-web-app-manifest+json");
-            jsonMimeType.put("text",true);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","json");
-            jsonMimeType.put("mime","application/json");
-            jsonMimeType.put("text",true);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","gif");
-            jsonMimeType.put("mime","image/gif");
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","jpg");
-            jsonMimeType.put("mime","image/jpg");
-            jsonMimeType.put("gzip",false);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","png");
-            jsonMimeType.put("mime","image/png");
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","ico");
-            jsonMimeType.put("mime","image/ico");
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","svg");
-            jsonMimeType.put("mime","image/svg+xml");
-            jsonMimeType.put("text",true);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","mp3");
-            jsonMimeType.put("mime","audio/mp3");
-            jsonMimeType.put("gzip",false);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","ogg");
-            jsonMimeType.put("mime","audio/ogg");
-            jsonMimeType.put("gzip",false);
-            jsonMimeTypes.put(jsonMimeType);
-
-            jsonMimeType = new JSONObject();
-            jsonMimeType.put("type","m4r");
-            jsonMimeType.put("mime","audio/aac");
-            jsonMimeType.put("gzip",false);
             jsonMimeTypes.put(jsonMimeType);
 
             jsonSample.put("types",jsonMimeTypes);
