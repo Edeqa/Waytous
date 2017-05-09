@@ -124,16 +124,41 @@ function Edequate(options) {
 
     };
 
-    HTMLDivElement.prototype.show = function() {
-        this.classList.remove("hidden");
-        this.isHidden = false;
-        return this;
+    HTMLDivElement.prototype.show = function(animate) {
+        var div = this;
+        div.isHidden = false;
+        if(animate) {
+            div.classList.add("hiding-state");
+            div.classList.add("hiding-animation");
+            div.classList.remove("hidden");
+            setTimeout(function(){
+                div.classList.remove("hiding-state");
+                setTimeout(function(){
+                    div.classList.remove("hiding-animation");
+                }, 200);
+            },0);
+        } else {
+            div.classList.remove("hidden");
+        }
+        return div;
     }
-    HTMLDivElement.prototype.hide = function() {
-        this.classList.add("hidden");
-        this.isHidden = true;
-        return this;
+    HTMLDivElement.prototype.hide = function(animate) {
+        var div = this;
+        div.isHidden = true;
+        if(animate) {
+            div.classList.add("hiding-animation");
+            div.classList.add("hiding-state");
+            setTimeout(function(){
+                div.classList.add("hidden");
+                div.classList.remove("hiding-state");
+                div.classList.remove("hiding-animation");
+            }, 200);
+        } else {
+            div.classList.add("hidden");
+        }
+        return div;
     }
+
     HTMLElement.prototype.place = function(type, args) {
         if(type && typeof type == "object") {
             args = type;
@@ -679,7 +704,7 @@ function Edequate(options) {
         dialog.open = function(event){
             clearInterval(dialog.intervalTask);
             dialog.modal && dialog.modal.show();
-            dialog.show();
+            dialog.show(true);
             dialog.opened = true;
             dialog.adjustPosition();
             if(options.onopen) options.onopen.call(dialog,items,event);
@@ -705,7 +730,7 @@ function Edequate(options) {
         };
 
         dialog.close = function (event){
-            dialog.hide();
+            dialog.hide(true);
             dialog.modal && dialog.modal.hide();
             dialog.opened = false;
 
@@ -1230,9 +1255,6 @@ function Edequate(options) {
 
         var swipeHolder = function(e){
 
-var t = new toast();
-document.body.appendChild(t);
-
             var touch;
             if(e.changedTouches) touch = e.changedTouches[0];
 
@@ -1473,7 +1495,7 @@ document.body.appendChild(t);
     this.drawer = drawer;
 
     function toast() {
-        var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(); }});
+        var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(true); }});
         toast.show = function(text,delay){
            clearTimeout(toast.hideTask);
            lang.updateNode(toast, text);
@@ -1481,7 +1503,7 @@ document.body.appendChild(t);
            delay = delay || 5000;
            if(delay > 0) {
                toast.hideTask = setTimeout(function(){
-                   toast.hide();
+                   toast.hide(true);
                },delay);
            }
        };

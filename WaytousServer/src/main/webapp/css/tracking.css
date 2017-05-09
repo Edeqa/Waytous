@@ -856,6 +856,7 @@ p.bottom-desc {
         transform: none !important;
         width: 100% !important;
         max-height: 100%;
+        max-width: 100%;
         border: none;
     }
     .chat-dialog-messages {
@@ -892,6 +893,7 @@ p.bottom-desc {
         transform: none !important;
         width: 100% !important;
         max-height: 100%;
+        max-width: 100%;
         border: none;
     }
     .help-dialog-buttons {
@@ -905,6 +907,7 @@ p.bottom-desc {
         transform: none !important;
         width: 100% !important;
         max-height: 100%;
+        max-width: 100%;
         border: none;
     }
     .saved-locations-dialog-items {
