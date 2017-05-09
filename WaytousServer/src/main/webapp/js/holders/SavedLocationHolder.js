@@ -485,7 +485,7 @@ function SavedLocationHolder(main) {
         var last = u.load("saved_location:counter") || 0;
         for(var i = 1; i <= last; i++) {
             var saved = u.load("saved_location:"+i);
-//            if(saved && saved.k == user.key) return;
+            if(saved && saved.k == user.key) return;
         }
 
         locationEditDialog && locationEditDialog.close();
