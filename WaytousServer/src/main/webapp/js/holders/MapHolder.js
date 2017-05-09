@@ -37,7 +37,7 @@ function MapHolder(main) {
                 main.users.forAllUsers(function(number,user){
                     if(user.views.properties.selected) user.fire(EVENTS.SELECT_USER);
                 });
-                this.classList.add("hidden");
+//                this.hide(u.HIDING.OPACITY);
                 return false;
             }
         }, main.right);
@@ -75,7 +75,7 @@ function MapHolder(main) {
             main.fire(EVENTS.CAMERA_ZOOM, main.map.getZoom());
         });
         main.map.addListener("dragstart", function() {
-            buttonRecenter.classList.remove("hidden");
+            buttonRecenter.show(u.HIDING.OPACITY);
         });
     }
 
@@ -178,7 +178,7 @@ function MapHolder(main) {
                 }
                 break;
             case EVENTS.SELECT_USER:
-                buttonRecenter && buttonRecenter.classList.add("hidden");
+                buttonRecenter && buttonRecenter.hide(u.HIDING.OPACITY);
                 break;
             default:
                 break;

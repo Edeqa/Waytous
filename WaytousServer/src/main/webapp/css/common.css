@@ -74,11 +74,36 @@ button:active {
 .hidden {
     display: none !important;
 }
-.hiding-state {
+.hiding-opacity {
     opacity: 0 !important;
 }
+.hiding-scale-xy {
+    transform: scale(0,0) !important;
+}
+.hiding-scale-x {
+    transform: scaleX(0) !important;
+}
+.hiding-scale-x-left {
+    transform: scaleX(0) !important;
+    transform-origin: left !important;
+}
+.hiding-scale-x-right {
+    transform: scaleX(0) !important;
+    transform-origin: right !important;
+}
+.hiding-scale-y {
+    transform: scaleY(0) !important;
+}
+.hiding-scale-y-top {
+    transform: scaleY(0) !important;
+    transform-origin: top !important;
+}
+.hiding-scale-y-bottom {
+    transform: scaleY(0) !important;
+    transform-origin: bottom !important;
+}
 .hiding-animation {
-    transition: opacity 0.2s !important;
+    transition: opacity 0.2s, all 0.2s !important;
 }
 .toast {
     position: fixed;

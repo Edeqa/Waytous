@@ -401,7 +401,8 @@ function Main() {
                         {
                             id:"main:reset_dialogs",
                             type: HTML.BUTTON,
-                            label: "Dialogs positions",
+                            label: u.lang.dialogs_positions,
+                            itemClassName: "media-hidden",
                             innerHTML: "Reset",
                             onclick: function(e, event) {
                                 for(var x in localStorage) {

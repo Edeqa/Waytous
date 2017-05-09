@@ -44,7 +44,7 @@ function ButtonHolder(main) {
                         var mininized = u.load("button:minimized");
                         u.save("button:minimized", !mininized);
                         main.users.forAllUsers(function(number,user){
-                            user.views.button.subtitle[u.load("button:minimized") ? "hide" : "show"]();
+                            user.views.button.subtitle[u.load("button:minimized") ? "hide" : "show"](u.HIDING.SCALE_XY);
                             updateSubtitle.call(user);
                         });
                     }
@@ -58,9 +58,9 @@ function ButtonHolder(main) {
         }, main.right);
 
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
-                contextMenuLayout.hide();
+                contextMenuLayout.hide(u.HIDING.OPACITY);
             }, onmouseleave: function(){
-                contextMenuLayout.hide();
+                contextMenuLayout.hide(u.HIDING.OPACITY);
             }, onmouseenter: function(){
                 clearTimeout(delayDismiss);
             }
@@ -191,7 +191,7 @@ function ButtonHolder(main) {
                 if(thisClick - firstClick < 500) {
                     setTimeout(function(){
                         user.fire(EVENTS.CAMERA_ZOOM);
-                        contextMenuLayout.hide();
+                        contextMenuLayout.hide(u.HIDING.OPACITY);
                     },0);
                 }
                 firstClick = thisClick;
@@ -249,7 +249,7 @@ function ButtonHolder(main) {
         var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden", innerHTML:""}, div);
 
         if(!u.load("button:minimized")) {
-            subtitle.show();
+            subtitle.show(u.HIDING.SCALE_Y_TOP);
             updateSubtitle.call(user);
         }
 
@@ -292,7 +292,7 @@ function ButtonHolder(main) {
 
         setTimeout(function(){
             var size = user.views.button.button.getBoundingClientRect();
-            contextMenuLayout.show();
+            contextMenuLayout.show(u.HIDING.OPACITY);
             contextMenuLayout.style.top = Math.floor(size.top) + "px";
             if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
                 contextMenuLayout.style.left = Math.floor(size.left - contextMenuLayout.offsetWidth -10) + "px";
@@ -305,7 +305,7 @@ function ButtonHolder(main) {
 
             clearTimeout(delayDismiss);
             delayDismiss = setTimeout(function(){
-                contextMenuLayout.hide();
+                contextMenuLayout.hide(u.HIDING.OPACITY);
             },2000);
         },0);
     }
@@ -317,7 +317,7 @@ function ButtonHolder(main) {
                 className:"user-context-menu-item",
                 onclick: function() {
                     setTimeout(function(){
-                        contextMenuLayout.hide();
+                        contextMenuLayout.hide(u.HIDING.OPACITY);
                         contextMenuLayout.blur();
                         callback();
                     }, 0);

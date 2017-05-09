@@ -18,6 +18,7 @@
   "name": "Name",
   "delete": "Delete",
   "apply": "Apply",
+  "reset": "Reset",
   "copy": "Copy",
   "mail": "Mail",
   "loading":"Loading...",
@@ -43,6 +44,7 @@
   "error_while_initializing_s_s": "Error while initializing %s: %s",
   "notifications": "Notifications",
   "onscreen_notifications": "Onscreen notifications",
+  "dialogs_positions": "Dialogs positions",
 
   "// ButtonHolder": "",
 

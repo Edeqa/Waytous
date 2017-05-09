@@ -104,6 +104,18 @@ function Edequate(options) {
     };
     this.DRAWER = DRAWER;
 
+    var HIDING = {
+        OPACITY: "opacity",
+        SCALE_XY: "scale-xy",
+        SCALE_X: "scale-x",
+        SCALE_X_LEFT: "scale-x-left",
+        SCALE_X_RIGHT: "scale-x-right",
+        SCALE_Y: "scale-y",
+        SCALE_Y_TOP: "scale-y-top",
+        SCALE_Y_BOTTOM: "scale-y-bottom",
+    }
+    this.HIDING = HIDING;
+
     URL = function(link) {
         this.href = link;
         var p = link.split("://");
@@ -124,19 +136,105 @@ function Edequate(options) {
 
     };
 
-    HTMLDivElement.prototype.show = function(animate) {
+    HTMLElement.prototype.show = function(animatedType) {
         var div = this;
+        if(!div.classList.contains("hidden")) return;
         clearTimeout(div.hideTask);
         div.isHidden = false;
-        if(animate) {
-            div.classList.add("hiding-state");
+        if(animatedType) {
+            var height,width;
+            switch(animatedType) {
+            case HIDING.SCALE_Y:
+            case HIDING.SCALE_Y_TOP:
+            case HIDING.SCALE_Y_BOTTOM:
+                var parent = div.parentNode;
+                var holder = create(HTML.DIV, {style:{display:"none"}});
+                parent.replaceChild(holder,div);
+                document.body.appendChild(div);
+                div.style.position = "fixed";
+                div.style.left = "-10000px";
+                div.classList.remove("hidden");
+
+                var computedStyle = window.getComputedStyle(div,null);
+                height = computedStyle.height;
+
+                div.classList.add("hidden");
+                div.style.position = "";
+                div.style.left = "";
+                parent.replaceChild(div,holder);
+                holder = null;
+
+                div.style.height = "0px";
+                break;
+            case HIDING.SCALE_X:
+            case HIDING.SCALE_X_LEFT:
+            case HIDING.SCALE_X_RIGHT:
+                var parent = div.parentNode;
+                var holder = create(HTML.DIV, {style:{display:"none"}});
+                parent.replaceChild(holder,div);
+                document.body.appendChild(div);
+                div.style.position = "fixed";
+                div.style.left = "-10000px";
+                div.classList.remove("hidden");
+
+                var computedStyle = window.getComputedStyle(div,null);
+                height = computedStyle.height;
+
+                div.classList.add("hidden");
+                div.style.position = "";
+                div.style.left = "";
+                parent.replaceChild(div,holder);
+                holder = null;
+
+                width = computedStyle.width;
+                div.style.width = "0px";
+                break;
+            case HIDING.SCALE_XY:
+                var parent = div.parentNode;
+                var holder = create(HTML.DIV, {style:{display:"none"}});
+                parent.replaceChild(holder,div);
+                document.body.appendChild(div);
+                div.style.position = "fixed";
+                div.style.left = "-10000px";
+                div.classList.remove("hidden");
+
+                var computedStyle = window.getComputedStyle(div,null);
+                height = computedStyle.height;
+
+                div.classList.add("hidden");
+                div.style.position = "";
+                div.style.left = "";
+                parent.replaceChild(div,holder);
+                holder = null;
+
+                width = computedStyle.width;
+                height = computedStyle.height;
+                div.style.width = "0px";
+                div.style.height = "0px";
+                break;
+            }
+
+            div.classList.add("hiding-"+animatedType);
             div.classList.add("hiding-animation");
+
             div.classList.remove("hidden");
+
+            var duration = 200;
+            try {
+                duration = parseFloat(window.getComputedStyle(div, null).transitionDuration)*1000;
+            } catch(e) {
+                console.error(e)
+            }
+
             div.hideTask = setTimeout(function(){
-                div.classList.remove("hiding-state");
+                div.classList.remove("hiding-"+animatedType);
+                if(height) div.style.height = height;
+                if(width) div.style.width = width;
                 setTimeout(function(){
+                    if(height) div.style.height = "";
+                    if(width) div.style.width = "";
                     div.classList.remove("hiding-animation");
-                }, 200);
+                }, duration);
             },0);
         } else {
             div.classList.remove("hidden");
@@ -144,18 +242,59 @@ function Edequate(options) {
         return div;
     }
 
-    HTMLDivElement.prototype.hide = function(animate) {
+    HTMLElement.prototype.hide = function(animatedType) {
         var div = this;
+        if(div.classList.contains("hidden")) return;
         clearTimeout(div.hideTask);
         div.isHidden = true;
-        if(animate) {
+        if(animatedType) {
+            var height,width;
+            switch(animatedType) {
+            case HIDING.SCALE_Y:
+            case HIDING.SCALE_Y_TOP:
+            case HIDING.SCALE_Y_BOTTOM:
+                var computedStyle = window.getComputedStyle(div,null);
+                height = computedStyle.height;
+                div.style.height = height;
+                break;
+            case HIDING.SCALE_X:
+            case HIDING.SCALE_X_LEFT:
+            case HIDING.SCALE_X_RIGHT:
+                var computedStyle = window.getComputedStyle(div,null);
+                width = computedStyle.width;
+                div.style.width = width;
+                break;
+            case HIDING.SCALE_XY:
+                var computedStyle = window.getComputedStyle(div,null);
+                width = computedStyle.width;
+                height = computedStyle.height;
+                div.style.width = width;
+                div.style.height = height;
+                break;
+            }
+
             div.classList.add("hiding-animation");
-            div.classList.add("hiding-state");
+            div.classList.add("hiding-"+animatedType);
+
+            var computedStyle = window.getComputedStyle(div,null);
+
+            var duration = 200;
+            try {
+                duration = parseFloat(computedStyle.transitionDuration)*1000;
+            } catch(e) {
+                console.error(e)
+            }
+
+            if(height)div.style.height = "0px";
+            if(width)div.style.width = "0px";
+
             div.hideTask = setTimeout(function(){
                 div.classList.add("hidden");
-                div.classList.remove("hiding-state");
+                if(height)div.style.height = "";
+                if(width)div.style.width = "";
+                div.classList.remove("hiding-"+animatedType);
                 div.classList.remove("hiding-animation");
-            }, 200);
+            }, duration);
         } else {
             div.classList.add("hidden");
         }
@@ -535,10 +674,10 @@ function Edequate(options) {
                     enclosedButton = create(HTML.DIV, {className:"dialog-item-enclosed-button", onclick: function(){
                         if(x.body.classList.contains("hidden")) {
                             enclosedIcon.innerHTML = "expand_less";
-                            x.body.classList.remove("hidden");
+                            x.body.show(HIDING.SCALE_Y_TOP);
                         } else {
                             enclosedIcon.innerHTML = "expand_more";
-                            x.body.classList.add("hidden");
+                            x.body.hide(HIDING.SCALE_Y_TOP);
                         }
                     }}, x);
                     enclosedIcon = create(HTML.DIV, {className:"dialog-item-enclosed-icon notranslate", innerHTML:"expand_more"}, enclosedButton);
@@ -704,10 +843,30 @@ function Edequate(options) {
             dialog.close();
         }
 
+        // define the method of animated showing and hiding
+        if(options.hiding !== undefined) {
+            if(""+options.hiding == "false") {
+                options.hiding = "";
+            } else if(options.hiding.constructor === String) {
+                options.hiding = {
+                    open: options.hiding,
+                    close: options.hiding
+                }
+            } else {
+                options.hiding.open = options.hiding.open || HIDING.OPACITY;
+                options.hiding.close = options.hiding.close || HIDING.OPACITY;
+            }
+        } else {
+            options.hiding = {
+                open: HIDING.OPACITY,
+                close: HIDING.OPACITY
+            }
+        }
+
         dialog.open = function(event){
             clearInterval(dialog.intervalTask);
             dialog.modal && dialog.modal.show();
-            dialog.show(true);
+            dialog.show(options.hiding.open);
             dialog.opened = true;
             dialog.adjustPosition();
             if(options.onopen) options.onopen.call(dialog,items,event);
@@ -734,7 +893,7 @@ function Edequate(options) {
 
         dialog.close = function (event){
             clearInterval(dialog.intervalTask);
-            dialog.hide(true);
+            dialog.hide(options.hiding.close);
             dialog.modal && dialog.modal.hide();
             dialog.opened = false;
 
@@ -876,19 +1035,19 @@ function Edequate(options) {
                         var counter = 0;
                         for(var i in dialog.itemsLayout.childNodes) {
                             if(!dialog.itemsLayout.childNodes.hasOwnProperty(i)) continue;
-                            if(!this.value || (dialog.itemsLayout.childNodes[i].innerText && dialog.itemsLayout.childNodes[i].innerText.toLowerCase().match(this.value.toLowerCase()))) {
-                                dialog.itemsLayout.childNodes[i].show();
+                            if(!this.value || (dialog.itemsLayout.childNodes[i].innerText && dialog.itemsLayout.childNodes[i].innerText.toLowerCase().match(this.value.trim().toLowerCase()))) {
+                                dialog.itemsLayout.childNodes[i].show(HIDING.SCALE_Y_TOP);
                                 counter++;
                             } else {
-                                dialog.itemsLayout.childNodes[i].hide();
+                                dialog.itemsLayout.childNodes[i].hide(HIDING.SCALE_Y_TOP);
                             }
                         }
                         if(counter) {
                             dialog.filterPlaceholder.hide();
-                            dialog.itemsLayout.show();
+                            dialog.itemsLayout.show(HIDING.SCALE_Y_TOP);
                         } else {
                             dialog.filterPlaceholder.show();
-                            dialog.itemsLayout.hide();
+                            dialog.itemsLayout.hide(HIDING.SCALE_Y_TOP);
                         }
                     }
                 }, dialog.filterLayout);
@@ -1386,12 +1545,12 @@ function Edequate(options) {
 
                 layout.sections[i].firstChild.addEventListener("click", function(){
                     if(this.nextSibling.isHidden) {
-                        this.nextSibling.show();
+                        this.nextSibling.show(HIDING.SCALE_Y_TOP);
                         this.lastChild.show();
                         this.lastChild.previousSibling.hide();
                         save("drawer:section:collapsed:"+this.parentNode.order);
                     } else {
-                        this.nextSibling.hide();
+                        this.nextSibling.hide(HIDING.SCALE_Y_TOP);
                         this.lastChild.hide();
                         this.lastChild.previousSibling.show();
                         save("drawer:section:collapsed:"+this.parentNode.order, true);
@@ -1497,15 +1656,16 @@ function Edequate(options) {
     this.drawer = drawer;
 
     function toast() {
-        var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(true); }});
+        var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(HIDING.SCALE_Y_BOTTOM); }});
         toast.show = function(text,delay){
            clearTimeout(toast.hideTask);
            lang.updateNode(toast, text);
-           toast.classList.remove("hidden");
+           HTMLDivElement.prototype.show.call(toast, HIDING.SCALE_Y_BOTTOM);
+//           toast.classList.remove("hidden");
            delay = delay || 5000;
            if(delay > 0) {
                toast.hideTask = setTimeout(function(){
-                   toast.hide(true);
+                   toast.hide(HIDING.SCALE_Y_BOTTOM);
                },delay);
            }
        };
