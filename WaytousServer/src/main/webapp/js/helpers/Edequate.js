@@ -126,12 +126,13 @@ function Edequate(options) {
 
     HTMLDivElement.prototype.show = function(animate) {
         var div = this;
+        clearTimeout(div.hideTask);
         div.isHidden = false;
         if(animate) {
             div.classList.add("hiding-state");
             div.classList.add("hiding-animation");
             div.classList.remove("hidden");
-            setTimeout(function(){
+            div.hideTask = setTimeout(function(){
                 div.classList.remove("hiding-state");
                 setTimeout(function(){
                     div.classList.remove("hiding-animation");
@@ -142,13 +143,15 @@ function Edequate(options) {
         }
         return div;
     }
+
     HTMLDivElement.prototype.hide = function(animate) {
         var div = this;
+        clearTimeout(div.hideTask);
         div.isHidden = true;
         if(animate) {
             div.classList.add("hiding-animation");
             div.classList.add("hiding-state");
-            setTimeout(function(){
+            div.hideTask = setTimeout(function(){
                 div.classList.add("hidden");
                 div.classList.remove("hiding-state");
                 div.classList.remove("hiding-animation");
@@ -730,13 +733,12 @@ function Edequate(options) {
         };
 
         dialog.close = function (event){
+            clearInterval(dialog.intervalTask);
             dialog.hide(true);
             dialog.modal && dialog.modal.hide();
             dialog.opened = false;
 
             window.removeEventListener("popstate", backButtonAction);
-
-            clearInterval(dialog.intervalTask);
 
             if(options.onclose) options.onclose.call(dialog,items,event);
         };
@@ -941,7 +943,7 @@ function Edequate(options) {
             buttons.show();
         }
         if(options.neutral && options.neutral.label) {
-            dialog.neutral = create("button", {className:"dialog-button-neutral", tabindex:100, onclick:function(event){
+            dialog.neutral = create(HTML.BUTTON, {className:"dialog-button-neutral", tabindex:100, onclick:function(event){
                 if(options.neutral.dismiss == undefined || options.neutral.dismiss) dialog.close();
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items,event);
             }, innerHTML: options.neutral.label}, buttons);
