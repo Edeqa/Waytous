@@ -237,14 +237,14 @@ function SavedLocationHolder(main) {
                 if(loc) {
                     locationShareDialog = locationShareDialog || u.dialog({
                         items: [
-                            {type:HTML.HIDDEN },
                             {type:HTML.DIV, innerHTML: u.lang.let_your_email_client_compose_the_message_with_link_to_this_location },
+                            {type:HTML.INPUT, className: "dialog-item-input-link" },
                         ],
                         positive: {
-                            label: u.lang.yes,
+                            label: u.lang.mail,
                             onclick: function() {
-                                var link = locationShareDialog.items[0].value;
-                                var popup = window.open("mailto:?subject=Here%20is%20that%20location&body="+link,"_blank");
+                                var link = locationShareDialog.items[1].value;
+                                var popup = window.open("mailto:?subject=Here is that location&body="+encodeURIComponent(encodeURI(link)),"_blank");
                                 utils.popupBlockerChecker.check(popup, function() {
                                     shareBlockedDialog = shareBlockedDialog || u.dialog({
                                         items: [
@@ -261,13 +261,23 @@ function SavedLocationHolder(main) {
                                 });
                             }
                         },
+                        neutral: {
+                            label: u.lang.copy,
+                            dismiss: false,
+                            onclick: function(items) {
+                                if(u.copyToClipboard(items[1])) {
+                                    main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                                }
+                                locationShareDialog.close();
+                            }
+                        },
                         negative: {
-                            label: u.lang.no
+                            label: u.lang.cancel
                         },
 //                        timeout: 20000
                     }, main.right);
 
-                    locationShareDialog.items[0].value = encodeURIComponent(encodeURI("http://maps.google.com/maps?q=" + loc.n + "&z=14&ll=" + loc.la + "," + loc.lo));
+                    locationShareDialog.items[1].value = "http://maps.google.com/maps?q=" + loc.n + "&z=14&ll=" + loc.la + "," + loc.lo;
 
                     locationShareDialog.open();
                 }

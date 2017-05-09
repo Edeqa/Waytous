@@ -557,7 +557,7 @@ function Edequate(options) {
                     u.create(HTML.OPTION, {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
                 }
             } else {
-                div = create(HTML.DIV, {className:"dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : ""), onclick: function(){this.firstChild.nextSibling.click();}});
+                div = create(HTML.DIV, {className:"dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : ""), onclick: function(){this.lastChild.click();}});
 
                 if(item.label) {
                     var labelOptions = {

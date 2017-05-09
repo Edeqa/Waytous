@@ -192,13 +192,11 @@ function TrackingHolder(main) {
                 if(shareDialog) shareDialog.close();
                 shareDialog = shareDialog || u.dialog({
                     items: [
-                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_1 },
-                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog_2 },
-                        {type:HTML.INPUT, value: main.tracking.getTrackingUri() },
-//                        {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
+                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog },
+                        {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri() }
                     ],
                     positive: {
-                        label: "OK",
+                        label: u.lang.mail,
                         onclick: function() {
                             var popup = window.open("mailto:?subject=Way%20to%20us&body="+main.tracking.getTrackingUri(),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
@@ -210,8 +208,8 @@ function TrackingHolder(main) {
                                         {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
                                     ],
                                     positive: {
-                                        label: "Close"
-                                    },
+                                        label: u.lang.close
+                                    }
                                 }, main.right);
                                 shareBlockedDialog.open();
                             });
@@ -221,7 +219,7 @@ function TrackingHolder(main) {
                         label: u.lang.copy,
                         dismiss: false,
                         onclick: function(items) {
-                            if(u.copyToClipboard(items[2])) {
+                            if(u.copyToClipboard(items[1])) {
                                 main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
                             }
                             shareDialog.close();

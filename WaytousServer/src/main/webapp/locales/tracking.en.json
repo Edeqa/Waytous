@@ -6,7 +6,7 @@
  * Created 1/20/17.
  */
 {
-  "SECTION Common": "// Common ",
+  "// Common": "",
   "ok": "OK",
   "cancel": "Cancel",
   "yes": "Yes",
@@ -19,6 +19,7 @@
   "delete": "Delete",
   "apply": "Apply",
   "copy": "Copy",
+  "mail": "Mail",
   "loading":"Loading...",
   "s_s": "%s - %s",
 
@@ -29,7 +30,7 @@
   "reset_customizations": "Reset customizations",
   "filter": "Filter",
 
-  "SECTION Main": "// ",
+  "// Main": "",
 
   "general": "General",
   "main": "Main",
@@ -43,19 +44,19 @@
   "notifications": "Notifications",
   "onscreen_notifications": "Onscreen notifications",
 
-  "SECTION ButtonHolder": "// ",
+  "// ButtonHolder": "",
 
   "users_d": "Users (%d)",
 
 
-  "SECTION CameraHolder": "// ",
+  "// CameraHolder": "",
 
   "select": "Select",
   "unselect": "Unselect",
   "fit_to_screen": "Fit to screen",
 
 
-  "SECTION DistanceHolder": "// ",
+  "// DistanceHolder": "",
 
   "show_distances": "Distances",
   "hide_distances": "Hide distances",
@@ -63,7 +64,7 @@
   "hide_distance": "Hide distance",
 
 
-  "SECTION DrawerHolder": "// ",
+  "// DrawerHolder": "",
   "connecting": "Connecting...",
   "be_always_on_the_same_way": "Be always on the same way\nwith your friends",
   "collapsed_drawer": "Collapsed drawer",
@@ -77,7 +78,7 @@
   "alpha_7": "<a href=\"/\" target=\"_blank\">Go to the main page of project (new window).</a>",
 
 
-  "SECTION GpsHolder": "// ",
+  "// GpsHolder": "",
   "enable_geolocation": "Enable geolocation",
 
   "ok_go_ahead": "OK, go ahead",
@@ -126,12 +127,12 @@
   "gps_help_10_body": "<ul><li>Open Chrome. <li>In the top right, click the Chrome menu. <li>Click Settings > Show advanced settings. <li>In the \"Privacy\" section, click Content settings. <li>In the dialog that appears, scroll down to the \"Location\" section. Select your default permission for future location requests: <ul><li>Allow all sites to track your physical location - select this option to let all sites automatically see your location. <li>Ask when a site tries to track your physical location - select this option if you want Google Chrome to alert you whenever a site wants to see your location. <li>Do not allow any site to track your physical location - select this option to automatically deny requests for your location.</ul> <li>Click Manage exceptions if you want to remove permissions you gave before to specific sites.</ul>",
 
 
-  "SECTION HelpHolder": "// ",
+  "// HelpHolder": "",
 
   "help": "Help",
 
 
-  "SECTION MapHolder": "// ",
+  "// MapHolder": "",
   "traffic": "Traffic",
   "transit": "Transit",
   "bicycle": "Bicycle",
@@ -140,13 +141,13 @@
   "re_center": "Re-center",
 
 
-  "SECTION MessagesHolder": "// ",
+  "// MessagesHolder": "",
 
   "chat": "Chat",
   "private_message": "Private message",
 
 
-  "SECTION NavigationHolder": "// ",
+  "// NavigationHolder": "",
 
   "navigation": "Navigation",
   "hide_navigations": "Hide navigations",
@@ -161,12 +162,12 @@
   "avoid_ferries": "Avoid ferries",
 
 
-  "SECTION OptionHolder": "// ",
+  "// OptionHolder": "",
 
   "options": "Options",
 
 
-  "SECTION PlaceHolder": "// ",
+  "// PlaceHolder": "",
 
   "search": "Search",
   "sorry_incorrect_place_has_returned": "Sorry, incorrect place has returned.",
@@ -174,14 +175,14 @@
   "description": "Description",
 
 
-  "SECTION PropertiesHolder": "// ",
+  "// PropertiesHolder": "",
 
   "your_name_is_not_defined": "Your name is not defined. Set up your name now?",
   "set_my_name": "Set my name",
   "properties": "Properties",
 
 
-  "SECTION SavedLocationHolder": "// ",
+  "// SavedLocationHolder": "",
 
   "save_location": "Save location",
   "send_to_group": "Send to group",
@@ -189,7 +190,7 @@
   "you_have_added_location": "You have added location. It can be found under \"Saved locations\" menu. Would you like to do something else?",
   "show": "Show",
   "edit_location": "Edit location",
-  "let_your_email_client_compose_the_message_with_link_to_this_location": "Let your e-mail client compose the message with link to this location?",
+  "let_your_email_client_compose_the_message_with_link_to_this_location": "Let your e-mail client compose the message with link to this location?<br>Or you may copy the link into clipboard and paste wherever you'd like.",
   "send_location": "Send location",
   "you_re_going_to_send_the_location_s_to_all_continue": "You're going to send the location %s to all. Continue?",
   "delete_location": "Delete location",
@@ -204,7 +205,7 @@
   "description_s": "Description: %s.",
 
 
-  "SECTION StreetViewHolder": "// ",
+  "// StreetViewHolder": "",
 
   "show_street_view": "Street view",
   "hide_street_view": "Hide street view",
@@ -213,7 +214,7 @@
   "street_view_available_only_for_one_point": "Street view available only for one point.",
 
 
-  "SECTION TrackHolder": "// ",
+  "// TrackHolder": "",
 
   "show_tracks": "Tracks",
   "hide_tracks": "Hide tracks",
@@ -221,8 +222,7 @@
   "hide_track": "Hide track",
 
 
-
-  "SECTION TrackingHolder": "// ",
+  "// TrackingHolder": "",
 
   "create_group": "Create group",
   "exit_group": "Exit group",
@@ -233,8 +233,7 @@
   "joining_group": "Joining group...",
   "beforeunload": "You are online in the group with your friends. Leaving this page you will exit the group.",
 
-  "tracking_share_link_dialog_1": "Let your e-mail client compose the message with link to this group?",
-  "tracking_share_link_dialog_2": "You can add there all your friends you'd like.",
+  "tracking_share_link_dialog": "Let your e-mail client compose the message with link to this group?<br>You can add there all your friends you'd like.<br>Or you may copy the link into clipboard and paste wherever you'd like.",
 
   "tracking_help_title": "Tracking",
   "tracking_help_title_1": "You have created new group",
@@ -250,7 +249,7 @@
   "expired_explanation": "Somebody has created this group to meet with his friends. Perhaps that goal was succeded because the group was removed. <p>You can create your own group and send the link to your friends. Note that the group expires soon if nobody will be online. If you'd like to create the permanent group please ask the administration.",
 
 
-  "SECTION": "// ",
+  "// Sample": "",
 
   "sample_item": "Sample item",
   "sample_menu": "Sample menu",

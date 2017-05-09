@@ -251,6 +251,10 @@ button:active {
     width: 50%;
     background-color: antiquewhite;
 }
+.dialog-item-input-link {
+    margin-top: 10px;
+    width: 100%;
+}
 .dialog-item-input-textarea {
     font-size: 12px;
     padding-top: 5px;
