@@ -125,6 +125,7 @@ function OptionHolder(main) {
                         var id = i + ":" + j + ":" + k;
                         options[id] = optionsDialog.addItem(item, categories[category.id || ""].lastChild);
                         options[id].onaccept = item.onaccept;
+                        options[id].dialog = optionsDialog;
                         if(item.onchange) options[id].addEventListener("change", item.onchange);
                     }
                 }

@@ -485,7 +485,7 @@ function SavedLocationHolder(main) {
         var last = u.load("saved_location:counter") || 0;
         for(var i = 1; i <= last; i++) {
             var saved = u.load("saved_location:"+i);
-            if(saved && saved.k == user.key) return;
+//            if(saved && saved.k == user.key) return;
         }
 
         locationEditDialog && locationEditDialog.close();
@@ -498,9 +498,8 @@ function SavedLocationHolder(main) {
              title: u.lang.add_location,
              items: [
                  { type: HTML.DIV },
-                 { type: HTML.DIV },
-                 { type: HTML.DIV },
-                 { type: HTML.DIV, innerHTML: u.lang.add_it_to_your_saved_locations_list },
+                 { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" },
+                 { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" }
              ],
              itemsClassName: "saved-location-receive-dialog-items",
              className: "saved-location-receive-dialog",
@@ -511,7 +510,7 @@ function SavedLocationHolder(main) {
                  label: u.lang.no
              },
          }, main.right);
-        locationReceiveDialog.items[0].innerHTML = u.lang.you_ve_got_the_location_from_s.format((from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName()).outerHTML;
+        locationReceiveDialog.items[0].innerHTML = u.lang.you_ve_got_the_location_from_s_add_it_to_your_saved_locations_list.format((from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName()).outerHTML;
         if(user.address) {
             locationReceiveDialog.items[1].innerHTML = u.lang.address_s.format(user.address).outerHTML;
             locationReceiveDialog.items[1].show();

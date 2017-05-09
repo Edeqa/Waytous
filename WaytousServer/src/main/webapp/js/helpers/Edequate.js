@@ -582,7 +582,7 @@ function Edequate(options) {
                 item.className = "dialog-item-input-"+item.type + (item.className ? " "+item.className : "");
                 if(item.onclick) {
                     var a = item.onclick;
-                    item.onclick = function(e) { this.focus(); a(); e.stopPropagation(); };
+                    item.onclick = function(e) { this.focus(); a.call(this); e.stopPropagation(); };
                 } else {
                     item.onclick = function(e) { this.focus(); e.stopPropagation(); };
                 }
@@ -1309,8 +1309,8 @@ document.body.appendChild(t);
                 layoutHeaderHolder.classList[collapsed ? "add" : "remove"]("drawer-collapsed");
                 if(options.ontogglesize) options.ontogglesize(force);
             },
-            ontouchstart: swipeHolder,
-            onmousedown: swipeHolder
+            ontouchstart: swipeHolder
+//            onmousedown: swipeHolder
          });
          if(typeof appendTo == "string") {
             appendTo = byId(appendTo);

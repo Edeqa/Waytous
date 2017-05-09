@@ -626,6 +626,11 @@ p.bottom-desc {
 .saved-location-receive-dialog-items {
     display: block;
 }
+.saved-location-receive-dialog-item-second {
+    font-size: smaller;
+    text-align: left;
+    padding-top: 10px;
+}
 .gps-required-dialog {
     z-index: 9999;
 }

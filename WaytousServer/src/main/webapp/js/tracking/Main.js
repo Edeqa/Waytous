@@ -413,6 +413,7 @@ function Main() {
                                 for(var i in items) {
                                     items[i].style = "";
                                 }
+                                this.dialog.close();
                             }
                         }
                     ]

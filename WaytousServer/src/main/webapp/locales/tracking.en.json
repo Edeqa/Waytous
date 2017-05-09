@@ -198,9 +198,8 @@
   "show_location": "Show location",
   "show_direction_to_location": "Show direction to location",
   "share_location": "Share location",
-  "add_it_to_your_saved_locations_list": "Add it to your saved locations list?",
+  "you_ve_got_the_location_from_s_add_it_to_your_saved_locations_list": "You've got the location from %s. Add it to your saved locations list?",
   "add_location": "Add location",
-  "you_ve_got_the_location_from_s": "You've got the location from %s.",
   "address_s": "Address: %s.",
   "description_s": "Description: %s.",
 
