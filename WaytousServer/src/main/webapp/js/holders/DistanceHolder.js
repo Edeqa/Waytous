@@ -61,6 +61,7 @@ function DistanceHolder(main) {
             case EVENTS.HIDE_DISTANCE:
                 this.views.distance.show = false;
                 u.saveForContext("distance:show:" + this.number);
+                this.fire(EVENTS.UPDATE_MENU_SUFFIX, "");
                 if(this.views && this.views.distance && this.views.distance.distance) {
                     this.views.distance.distance.setMap(null);
                     this.views.distance.distance = null;
@@ -145,6 +146,8 @@ function DistanceHolder(main) {
             var markerPosition = google.maps.geometry.spherical.interpolate(points[0], points[1], .5);
             this.views.distance.marker.setPosition(markerPosition);
             var title = utils.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[1]));
+            this.fire(EVENTS.UPDATE_MENU_SUFFIX, title);
+
             title = this.properties.getDisplayName() + "\n" + title;
             this.views.distance.label.set("text", title);
         }

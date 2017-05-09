@@ -221,13 +221,28 @@ p.bottom-desc {
     top: -8px;
 }
 .user-button-label {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.user-button-prefix {
+    overflow: hidden;
+    display: inline-block;
+    color: gray;
+    padding-right: 5px;
+    font-size: smaller;
 }
 .user-button-title {
     max-width: 150px;
     text-overflow: ellipsis;
     overflow: hidden;
+    display: inline-block;
+}
+.user-button-suffix {
+    overflow: hidden;
+    display: inline-block;
+    color: gray;
+    padding-left: 5px;
+    font-size: smaller;
 }
 .user-button-subtitle {
     font-size: 9px;
@@ -765,6 +780,9 @@ p.bottom-desc {
         cursor: pointer;
         font-size: 10px;
         min-width: 45px;
+    }
+    .user-button-suffix {
+        display: none;
     }
     .user-button-selected {
         border-color: green;

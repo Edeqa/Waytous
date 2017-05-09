@@ -8,6 +8,8 @@
 EVENTS.HIDE_MENU_SUBTITLE = "hide_menu_subtitle";
 EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
 EVENTS.UPDATE_MENU_SUBTITLE = "update_menu_subtitle";
+EVENTS.UPDATE_MENU_SUFFIX = "update_menu_suffix";
+EVENTS.UPDATE_MENU_PREFIX = "update_menu_prefix";
 
 MENU = {
     SECTION_PRIMARY: 0,
@@ -135,6 +137,14 @@ function ButtonHolder(main) {
                 this.views.button.badge.hide();
                 this.views.button.badge.innerHTML = "";
                 break;
+            case EVENTS.UPDATE_MENU_PREFIX:
+                this.views.button.prefix.innerHTML = object;
+                this.views.button.prefix[object ? "show" : "hide"]()
+                break;
+            case EVENTS.UPDATE_MENU_SUFFIX:
+                this.views.button.suffix.innerHTML = object;
+                this.views.button.suffix[object ? "show" : "hide"]()
+                break;
             case EVENTS.MOUSE_OVER:
                 this.views.button.button.classList.add("user-button-hover");
                 break;
@@ -232,8 +242,11 @@ function ButtonHolder(main) {
         var badge = u.create(HTML.DIV, {className:"user-button-badge hidden"}, b);
 //        console.log(user)
         var div = u.create(HTML.DIV, {className:"user-button-label"}, b);
-        var title = u.create(HTML.DIV, {className:"user-button-title",innerHTML:user.properties.getDisplayName()}, div);
-        var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden",innerHTML:""}, div);
+        var divText = u.create(HTML.DIV, null, div)
+        var prefix = u.create(HTML.DIV, {className:"user-button-prefix hidden", innerHTML:""}, divText);
+        var title = u.create(HTML.DIV, {className:"user-button-title", innerHTML:user.properties.getDisplayName()}, divText);
+        var suffix = u.create(HTML.DIV, {className:"user-button-suffix hidden", innerHTML:""}, divText);
+        var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden", innerHTML:""}, div);
 
         if(!u.load("button:minimized")) {
             subtitle.show();
@@ -257,7 +270,9 @@ function ButtonHolder(main) {
 
         return {
             button: b,
+            prefix: prefix,
             title: title,
+            suffix: suffix,
             subtitle: subtitle,
             badge:badge,
         };
