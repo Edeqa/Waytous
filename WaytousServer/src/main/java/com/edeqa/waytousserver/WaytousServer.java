@@ -49,9 +49,9 @@ public class WaytousServer {
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
 
+        Common.log("Main", "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);
 
-        Common.log("Main", "====== Waytous ("+SENSITIVE.getAppName()+")" + " server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
 
         try {
             FirebaseApp.initializeApp(new FirebaseOptions.Builder()
@@ -78,8 +78,8 @@ public class WaytousServer {
             Common.log("Main","Keystore file: "+kf.getCanonicalPath());
             ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
 
-            System.out.println("Server \t\t\t\t| Port \t| Path");
-            System.out.println("----------------------------------------------");
+            Common.log("Main", "Server \t\t\t| Port \t| Path");
+            Common.log("Main", "----------------------------------------------");
 
             //    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
         //    kmf.init(ks, KEYPASSWORD.toCharArray());
@@ -105,7 +105,7 @@ public class WaytousServer {
             Certificate ca;
             try {
                 ca = cf.generateCertificate(caInput);
-                System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+                Common.log("Main", "ca=" + ((X509Certificate) ca).getSubjectDN());
             } finally {
                 caInput.close();
             }
@@ -161,16 +161,16 @@ public class WaytousServer {
                 public void run() {
                     try {
                         WebSocketImpl.DEBUG = false;
-                        System.out.println("WS FB\t\t\t\t| " + SENSITIVE.getWsPortFirebase() + "\t|");
+                        Common.log("Main", "WS FB\t\t\t\t| " + SENSITIVE.getWsPortFirebase() + "\t|");
                         wsServer.start();
-                        System.out.println("WSS FB\t\t\t\t| " + SENSITIVE.getWssPortFirebase() + "\t|");
+                        Common.log("Main", "WSS FB\t\t\t\t| " + SENSITIVE.getWssPortFirebase() + "\t|");
                         wssServer.start();
 
                             /*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
                             while (true) {
         //                        if(!wssServer.parse(sysin)) break;
                                 String in = sysin.readLine();
-                                System.out.println("READ:" + in);
+                                Common.log("Main", "READ:" + in);
         //                        s.sendToAll(in);
                                 if (in.equals("exit")) {
                                     wssServer.stop();
@@ -192,13 +192,13 @@ public class WaytousServer {
                 try {
                     WebSocketImpl.DEBUG = false;
                     wssServer.start();
-                    System.out.println("WSS\t\t\t\t| " + WSS_PORT + "\t|");
+                    Common.log("Main", "WSS\t\t\t\t| " + WSS_PORT + "\t|");
 
                     *//*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
                     while (true) {
 //                        if(!wssServer.parse(sysin)) break;
                         String in = sysin.readLine();
-                        System.out.println("READ:" + in);
+                        Common.log("Main", "READ:" + in);
 //                        s.sendToAll(in);
                         if (in.equals("exit")) {
                             wssServer.stop();
@@ -215,7 +215,7 @@ public class WaytousServer {
         server.bind(new InetSocketAddress(SENSITIVE.getHttpPort()), 0);
 
         MyHttpRedirectHandler redirectServer = new MyHttpRedirectHandler();
-        System.out.println("Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
+        Common.log("Main", "Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
         server.createContext("/", redirectServer);
 
 //        server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
@@ -228,25 +228,25 @@ public class WaytousServer {
         MyHttpMainHandler mainServer = new MyHttpMainHandler();
         mainServer.setDataProcessor(dataProcessorFirebase);
 //        server.createContext("/", mainServer);
-//        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
+//        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpXhrHandler joinServer = new MyHttpXhrHandler();
         joinServer.setDataProcessor(dataProcessorFirebase);
 //        server.createContext("/", mainServer);
-//        System.out.println("Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
+//        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpTrackingHandler trackingServer = new MyHttpTrackingHandler();
         trackingServer.setDataProcessor(dataProcessorFirebase);
 //        server.createContext("/track", trackingServer);
-//        System.out.println("Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/track");
+//        Common.log("Main", "Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/track");
 
 //        server.createContext("/group", trackingServer);
-//        System.out.println("Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/group");
+//        Common.log("Main", "Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/group");
 
         MyHttpAdminHandler adminServer = new MyHttpAdminHandler();
         adminServer.setDataProcessor(dataProcessorFirebase);
 //        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
-//        System.out.println("Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
+//        Common.log("Main", "Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
 
         server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
         server.start();
@@ -295,22 +295,22 @@ public class WaytousServer {
             });
 
             sslServer.createContext("/", mainServer);
-            System.out.println("Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
+            Common.log("Main", "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
 
             sslServer.createContext("/track/", trackingServer);
-            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track/");
+            Common.log("Main", "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track/");
 
             sslServer.createContext("/group/", trackingServer);
-            System.out.println("Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
+            Common.log("Main", "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
 
 //            sslServer.createContext("/join/", joinServer);
-//            System.out.println("Join HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/join/");
+//            Common.log("Main", "Join HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/join/");
 
             sslServer.createContext("/xhr/", joinServer);
-            System.out.println("Xhr HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/xhr/");
+            Common.log("Main", "Xhr HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/xhr/");
 
             sslServer.createContext("/admin/", adminServer).setAuthenticator(new Authenticator("get"));
-            System.out.println("Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/");
+            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/");
 
             sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
 

@@ -93,7 +93,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
         File f = new File(SENSITIVE.getFirebasePrivateKeyFile());
         try {
-            Common.log("WPF","Firebase config file: "+f.getCanonicalPath());
+            Common.log("DPF","Firebase config file: "+f.getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,7 +138,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
             try {
                 request = new JSONObject(message);
             } catch(JSONException e) {
-                Common.err("WPF","onMessage:request"+e.getMessage());
+                Common.err("DPF","onMessage:request"+e.getMessage());
                 return;
             }
             if (!request.has(REQUEST_TIMESTAMP)) return;
@@ -176,13 +176,13 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
                     registerUser(token.getId(), user, request);
 
-                    Common.log("WpFB","onMessage:newToken:"+conn.getRemoteSocketAddress(),"token:"+token);
+                    Common.log("DPF","onMessage:newToken:"+conn.getRemoteSocketAddress(),"token:"+token);
                 } else {
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                     response.put(RESPONSE_MESSAGE, "Cannot create group (code 15).");
                     conn.send(response.toString());
                     conn.close();
-                    Common.err("WPF","onMessage:newToken:",response);
+                    Common.err("DPF","onMessage:newToken:",response);
                 }
 
             } else if (REQUEST_JOIN_TOKEN.equals(req)) {
@@ -268,7 +268,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                 check.setNumber((long) dataSnapshot.getValue());
                                 check.setUser(conn, request);
 
-                                Common.log("WpFB","onMessage:checkRequest:"+conn.getRemoteSocketAddress(),"{ number:"+dataSnapshot.getValue(), "key:"+dataSnapshot.getKey(), "control:"+check.getControl()+" }");
+                                Common.log("DPF","onMessage:checkRequest:"+conn.getRemoteSocketAddress(),"{ number:"+dataSnapshot.getValue(), "key:"+dataSnapshot.getKey(), "control:"+check.getControl()+" }");
 //                                if (request.has(USER_NAME))
 //                                    check.setName(request.getString(USER_NAME));
 //
@@ -347,12 +347,12 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
             } else if (REQUEST_CHECK_USER.equals(req)) {
                 if (request.has(REQUEST_HASH)) {
                     final String hash = request.getString((REQUEST_HASH));
-                    Common.log("WpFB","onMessage:checkResponse:"+conn.getRemoteSocketAddress(),"hash:"+hash);
+                    Common.log("DPF","onMessage:checkResponse:"+conn.getRemoteSocketAddress(),"hash:"+hash);
                     if (ipToCheck.containsKey(ip)) {
                         final CheckReq check = ipToCheck.get(ip);
                         ipToCheck.remove(ip);
 
-                        Common.log("WpFB","onMessage:checkFound:"+conn.getRemoteSocketAddress(),"{ name:"+check.getName(), "token:"+check.getTokenId(), "control:"+check.getControl() +" }");
+                        Common.log("DPF","onMessage:checkFound:"+conn.getRemoteSocketAddress(),"{ name:"+check.getName(), "token:"+check.getTokenId(), "control:"+check.getControl() +" }");
 
                         final DatabaseReference refGroup = ref.child(check.getTokenId());
 
@@ -364,7 +364,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                         String calculatedHash = Utils.getEncryptedHash(check.getControl() + ":" + ((HashMap) dataSnapshot.getValue()).get("device_id"));
 
                                         if(calculatedHash.equals(hash)) {
-                                            Common.log("WpFB", "onMessage:joinAsExisting:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"user:{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue()," }");
+                                            Common.log("DPF", "onMessage:joinAsExisting:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"user:{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue()," }");
 
                                             FirebaseAuth.getInstance().createCustomToken(check.getUid()).addOnSuccessListener(new OnSuccessListener<String>() {
                                                 @Override
@@ -386,7 +386,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                                         response.put(RESPONSE_SIGN, customToken);
                                                         conn.send(response.toString());
                                                         conn.close();
-                                                        Common.log("WpFB", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken:"+customToken);
+                                                        Common.log("DPF", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken: [provided]"/*+customToken*/);
                                                         }
                                                     });
 
@@ -400,14 +400,14 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                                             });
 
                                         } else {
-                                            Common.log("WpFB", "onMessage:joinNotAuthenticated:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
+                                            Common.log("DPF", "onMessage:joinNotAuthenticated:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                             response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
                                             conn.send(response.toString());
                                         }
 
                                     } catch(Exception e) {
-                                        Common.log("WpFB", "onMessage:joinHashFailed:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
+                                        Common.log("DPF", "onMessage:joinHashFailed:"+conn.getRemoteSocketAddress(),"token:"+check.getTokenId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
                                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                         response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
                                         conn.send(response.toString());
@@ -418,7 +418,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
                                     check.getUser().setNumber((int) check.getNumber());
                                     registerUser(check.getTokenId(), check.getUser(), request);
-                                    Common.log("WpFB", "onMessage:joinAsNew:"+check.getUser().connection.getRemoteSocketAddress());
+                                    Common.log("DPF", "onMessage:joinAsNew:"+check.getUser().connection.getRemoteSocketAddress());
                                 }
 
                             }
@@ -454,13 +454,13 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
 
                         return;
                     } else {
-                        Common.log("WpFB", "onMessage:joinNotAuthorized:"+conn.getRemoteSocketAddress());
+                        Common.log("DPF", "onMessage:joinNotAuthorized:"+conn.getRemoteSocketAddress());
                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                         response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authorized).");
                         disconnect = true;
                     }
                 } else {
-                    Common.log("WpFB", "onMessage:joinNotDefined:"+conn.getRemoteSocketAddress());
+                    Common.log("DPF", "onMessage:joinNotDefined:"+conn.getRemoteSocketAddress());
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                     response.put(RESPONSE_MESSAGE, "Cannot join to group (hash not defined).");
                     disconnect = true;
@@ -470,7 +470,7 @@ public class DataProcessorFirebase extends AbstractDataProcessor {
                 conn.send(response.toString());
             }
         } catch (Exception e) {
-            Common.log("WpFB", "onMessage:error:"+e.getMessage(),"req:"+message);
+            Common.log("DPF", "onMessage:error:"+e.getMessage(),"req:"+message);
 //            e.printStackTrace();
             conn.send("{\"status\":\"Request failed\"}");
         }

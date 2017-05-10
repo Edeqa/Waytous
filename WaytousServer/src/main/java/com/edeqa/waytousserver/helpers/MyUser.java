@@ -47,7 +47,7 @@ public class MyUser {
 //        positions = new ArrayList<MyPosition>();
 
         newControl();
-        System.out.println("USER CONTROL:" + control);
+//        System.out.println("USER CONTROL:" + control);
         calculateHash();
     }
 
