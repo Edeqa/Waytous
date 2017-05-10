@@ -138,12 +138,20 @@ function ButtonHolder(main) {
                 this.views.button.badge.innerHTML = "";
                 break;
             case EVENTS.UPDATE_MENU_PREFIX:
-                this.views.button.prefix.innerHTML = object;
-                this.views.button.prefix[object ? "show" : "hide"]()
+                if(object) {
+                    this.views.button.prefix.innerHTML = object;
+                    this.views.button.prefix.show(u.HIDING.SCALE_X_RIGHT);
+                } else {
+                    this.views.button.prefix.hide(u.HIDING.SCALE_X_RIGHT);
+                }
                 break;
             case EVENTS.UPDATE_MENU_SUFFIX:
-                this.views.button.suffix.innerHTML = object;
-                this.views.button.suffix[object ? "show" : "hide"]()
+                if(object) {
+                    this.views.button.suffix.innerHTML = object;
+                    this.views.button.suffix.show(u.HIDING.SCALE_X_RIGHT);
+                } else {
+                    this.views.button.suffix.hide(u.HIDING.SCALE_X_RIGHT);
+                }
                 break;
             case EVENTS.MOUSE_OVER:
                 this.views.button.button.classList.add("user-button-hover");

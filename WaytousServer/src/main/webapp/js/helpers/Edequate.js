@@ -178,7 +178,7 @@ function Edequate(options) {
                 div.classList.remove("hidden");
 
                 var computedStyle = window.getComputedStyle(div,null);
-                height = computedStyle.height;
+                width = computedStyle.width;
 
                 div.classList.add("hidden");
                 div.style.position = "";
@@ -186,7 +186,6 @@ function Edequate(options) {
                 parent.replaceChild(div,holder);
                 holder = null;
 
-                width = computedStyle.width;
                 div.style.width = "0px";
                 break;
             case HIDING.SCALE_XY:

@@ -103,7 +103,7 @@ button:active {
     transform-origin: bottom !important;
 }
 .hiding-animation {
-    transition: opacity 0.2s, all 0.2s !important;
+    transition: opacity 0.2s ease-in-out, all 0.2s ease-in-out !important;
 }
 .toast {
     position: fixed;
