@@ -1318,10 +1318,11 @@ function Edequate(options) {
             .then(callback(xhr))
             .catch(callback(code,xhr));
     */
-     function get(url, post) {
+
+     function rest(method, url, body) {
         var returned = new EPromise();
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
+        xhr.open(method, url, true);
         xhr.onreadystatechange = function() { // (3)
             if (xhr.readyState != 4) return;
             if (xhr.status != 200) {
@@ -1331,21 +1332,36 @@ function Edequate(options) {
             }
         }
         try {
-            xhr.send(post);
+            if(body) xhr.send(body);
+            else xhr.send();
         } catch(e) {
             returned.onRejected(ERRORS.ERROR_SENDING_REQUEST, xhr);
             return;
         }
         return returned;
     }
+
+    function get(url) {
+        return rest("GET",url);
+    }
     this.get = get;
+
+    function post(url, body) {
+        return rest("POST",url, body);
+    }
+    this.post = post;
+
+    function put(url) {
+        return rest("PUT",url);
+    }
+    this.put = put;
 
     /**
         getJSON(url [, post])
             .then(callback(xhr))
             .catch(callback(code,xhr));
     */
-    function getJSON(url, post) {
+    function getJSON(url, body) {
         var callbacks = {
             then: function(json,xhr) { console.warn("Define .then(callback(json,xhr){...})")},
             "catch": function(code, xhr) { console.error(code, xhr); }
@@ -1367,7 +1383,8 @@ function Edequate(options) {
             return { "catch": catchFunction };
         }
         setTimeout(function(){
-            get(url, post).then(callbacks.then).catch(callbacks.catch);
+            if(body) post(url, body).then(callbacks.then).catch(callbacks.catch);
+            else get(url).then(callbacks.then).catch(callbacks.catch);
         },0);
         return { then: thenFunction, "catch": catchFunction };
     }

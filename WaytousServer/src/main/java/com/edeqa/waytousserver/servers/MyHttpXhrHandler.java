@@ -2,6 +2,7 @@ package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
+import com.google.api.client.http.HttpMethods;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -48,24 +49,33 @@ public class MyHttpXhrHandler implements HttpHandler {
 
         List<String> parts = Arrays.asList(uri.getPath().split("/"));
         JSONObject json = new JSONObject();
-        boolean printRes;
-        switch(parts.get(2)) {
-            case "getApiVersion":
-                printRes = getApiVersion(json);
-                break;
-            case "getSounds":
-                printRes = getSounds(json);
-                break;
-            case "getResources":
-                printRes = getResources(json, parts.size() > 2 ? parts.get(3) : null);
-                break;
-            case "join":
-                printRes = join(json, exchange);
-                break;
-            default:
-                printRes = noAction(json);
-                break;
-        }
+        boolean printRes = false;
+
+//        switch(exchange.getRequestMethod()) {
+//            case HttpMethods.GET:
+                switch(parts.get(2)) {
+                    case "getApiVersion":
+                        printRes = getApiVersion(json);
+                        break;
+                    case "getSounds":
+                        printRes = getSounds(json);
+                        break;
+                    case "getResources":
+                        printRes = getResources(json, parts.size() > 2 ? parts.get(3) : null);
+                        break;
+                    case "join":
+                        printRes = join(json, exchange);
+                        break;
+                    default:
+                        printRes = noAction(json);
+                        break;
+                }
+//                break;
+//            case HttpMethods.PUT:
+//                break;
+//            case HttpMethods.POST:
+//                break;
+//        }
 
         if(printRes) printResult(json.toString().getBytes(),exchange);
 

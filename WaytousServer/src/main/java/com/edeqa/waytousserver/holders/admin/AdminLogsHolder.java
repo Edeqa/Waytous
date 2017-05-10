@@ -5,6 +5,7 @@ import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.google.api.client.http.HttpMethods;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -47,16 +48,29 @@ public class AdminLogsHolder implements PageHolder {
 
         URI uri = exchange.getRequestURI();
 
-        switch (uri.getPath()) {
-            case "/admin/logs/log":
-                printLog(exchange);
-                return true;
-            case "/admin/logs/clear":
-                clearLog(exchange);
-                return true;
-            default:
+        switch(exchange.getRequestMethod()) {
+            case HttpMethods.GET:
+                switch (uri.getPath()) {
+                    case "/admin/logs/log":
+                        printLog(exchange);
+                        return true;
+                    default:
+                        break;
+                }
+                break;
+            case HttpMethods.PUT:
+                switch (uri.getPath()) {
+                    case "/admin/logs/clear":
+                        clearLog(exchange);
+                        return true;
+                    default:
+                        break;
+                }
+                break;
+            case HttpMethods.POST:
                 break;
         }
+
 
         return false;
     }
