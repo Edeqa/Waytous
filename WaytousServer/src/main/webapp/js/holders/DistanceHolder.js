@@ -154,7 +154,13 @@ function DistanceHolder(main) {
     }
 
     function onChangeLocation(location) {
-        show.call(this);
+        if(this.number == main.me.number) {
+            main.users.forAllUsersExceptMe(function(number,user){
+                show.call(user);
+            })
+        } else {
+            show.call(this);
+        }
     }
 
     function Label(opt_options, node) {
