@@ -44,13 +44,11 @@ public class MyHttpMainHandler implements HttpHandler {
 
         substitutions = new LinkedHashMap<>();
         substitutions.put("\\$\\{SERVER_BUILD\\}", ""+ SERVER_BUILD);
-        substitutions.put("\\$\\{APP_NAME\\}", "Waytous" + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
-        substitutions.put("\\$\\{SUPPORT_EMAIL\\}", "support@wayto.us");
-        substitutions.put("\\$\\{WEB_PAGE\\}", "http://wayto.us");
+        substitutions.put("\\$\\{APP_NAME\\}", SENSITIVE.getAppName() + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
+        substitutions.put("\\$\\{SUPPORT_EMAIL\\}", SENSITIVE.getSupportEmail());
+        substitutions.put("\\$\\{WEB_PAGE\\}", SENSITIVE.getAppLink());
 
     }
-
-
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {

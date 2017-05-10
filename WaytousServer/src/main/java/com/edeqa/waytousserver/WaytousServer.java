@@ -35,6 +35,7 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 
 
 /**
@@ -50,6 +51,7 @@ public class WaytousServer {
 
         SENSITIVE = new SensitiveData(args);
 
+        Common.log("Main", "====== Waytous ("+SENSITIVE.getAppName()+")" + " server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
 
         try {
             FirebaseApp.initializeApp(new FirebaseOptions.Builder()

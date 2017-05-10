@@ -93,6 +93,11 @@ public class SensitiveData {
         string = string.replace(0, string.length(), m.replaceAll(""));
         json = new JSONObject(string.toString());
 
+        if(!json.has("app_name")) json.put("app_name", "Waytous");
+        if(!json.has("app_link")) json.put("app_link", "http://wayto.us");
+        if(!json.has("support_email")) json.put("support_email", "support@wayto.us");
+
+
         if(!json.has("types")) {
             json.put("types",new JSONArray());
         }
@@ -343,6 +348,18 @@ public class SensitiveData {
 
     public JSONArray getTypes() {
         return json.getJSONArray("types");
+    }
+
+    public String getAppName() {
+        return json.getString("app_name");
+    }
+
+    public String getAppLink() {
+        return json.getString("app_link");
+    }
+
+    public String getSupportEmail() {
+        return json.getString("support_email");
     }
 
 }

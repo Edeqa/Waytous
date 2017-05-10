@@ -39,22 +39,8 @@ public class Common {
             str += aText + " ";
         }
         System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
-        /*try {
-            if(out == null) {
-                File log = new File("WaytousServer/WTU.log");
-                System.out.println("Log file: "+log.getAbsolutePath());
-//            out = new PrintWriter(new BufferedWriter(new FileWriter("WaytousServer/WTU.log", true)));
-                out = new PrintWriter(log);
-            }
-
-            out.println(Common.dateFormat.format(new Date()) + "/" + str);
-            out.flush();
-//            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
     }
+
     public static void err(Object... text) {
         String str = "";
         for (Object aText : text) {
