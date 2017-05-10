@@ -1445,7 +1445,7 @@ function Edequate(options) {
 
                 if(delta <= -10) {
                     layout.style.left = delta + "px";
-                    e.preventDefault();
+//                    e.preventDefault();
                     e.stopPropagation();
                 }
             }
