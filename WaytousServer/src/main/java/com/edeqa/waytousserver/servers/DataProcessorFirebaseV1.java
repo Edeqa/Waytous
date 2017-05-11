@@ -86,8 +86,8 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 @SuppressWarnings("HardCodedStringLiteral")
 public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
-    private DatabaseReference ref;
     public static String VERSION = "v1";
+    private DatabaseReference ref;
 
     public DataProcessorFirebaseV1() {
         super();

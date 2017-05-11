@@ -53,6 +53,7 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 
 public class DataProcessorDedicated extends AbstractDataProcessor {
 
+    public static String VERSION = "v1";
     private HashMap<String,FlagHolder> flagHolders;
 
 //    public DataProcessorDedicated() {
