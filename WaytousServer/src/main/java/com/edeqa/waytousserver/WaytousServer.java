@@ -2,7 +2,7 @@ package com.edeqa.waytousserver;
 
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.SensitiveData;
-import com.edeqa.waytousserver.servers.DataProcessorFirebase;
+import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
 import com.edeqa.waytousserver.servers.MyHttpMainHandler;
 import com.edeqa.waytousserver.servers.MyHttpRedirectHandler;
@@ -62,9 +62,9 @@ public class WaytousServer {
             e.printStackTrace();
         }
 
-        DataProcessorFirebase dataProcessorFirebase = new DataProcessorFirebase();
-        wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), dataProcessorFirebase);
-        wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), dataProcessorFirebase);
+        DataProcessorFirebaseV1 dataProcessorFirebaseV1 = new DataProcessorFirebaseV1();
+        wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), dataProcessorFirebaseV1);
+        wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), dataProcessorFirebaseV1);
 
         Common.log("Main","Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
 
@@ -226,17 +226,17 @@ public class WaytousServer {
 //        server.bind(new InetSocketAddress(HTTP_PORT), 0);
 
         MyHttpMainHandler mainServer = new MyHttpMainHandler();
-        mainServer.setDataProcessor(dataProcessorFirebase);
+        mainServer.setDataProcessor(dataProcessorFirebaseV1);
 //        server.createContext("/", mainServer);
 //        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpXhrHandler joinServer = new MyHttpXhrHandler();
-        joinServer.setDataProcessor(dataProcessorFirebase);
+        joinServer.setDataProcessor(dataProcessorFirebaseV1);
 //        server.createContext("/", mainServer);
 //        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpTrackingHandler trackingServer = new MyHttpTrackingHandler();
-        trackingServer.setDataProcessor(dataProcessorFirebase);
+        trackingServer.setDataProcessor(dataProcessorFirebaseV1);
 //        server.createContext("/track", trackingServer);
 //        Common.log("Main", "Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/track");
 
@@ -244,7 +244,7 @@ public class WaytousServer {
 //        Common.log("Main", "Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/group");
 
         MyHttpAdminHandler adminServer = new MyHttpAdminHandler();
-        adminServer.setDataProcessor(dataProcessorFirebase);
+        adminServer.setDataProcessor(dataProcessorFirebaseV1);
 //        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
 //        Common.log("Main", "Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
 

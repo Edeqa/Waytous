@@ -29,8 +29,8 @@ function TrackingFB(main) {
         }
 
         var path = uri.pathname.replace("/group/","/track/");
-        serverUri = "wss://" + uri.hostname + ":"+ data.WSS_FB_PORT + path;
-//         serverUri = "ws://" + uri.hostname + ":" + data.WS_FB_PORT + path;
+        serverUri = "wss://" + uri.hostname + ":"+ data.WSS_FB_PORT + "/v1" + path;
+//         serverUri = "ws://" + uri.hostname + ":" + data.WS_FB_PORT + "/v1" + path;
 
         if(newTracking) {
             setStatus(EVENTS.TRACKING_CONNECTING);
@@ -182,7 +182,7 @@ function TrackingFB(main) {
 
         var xhrModeStart = function(link) {
             var uri = new URL(link);
-            link = "https://" + uri.hostname + ":" + data.HTTPS_PORT + "/xhr/join"/* + uri.pathname*/;
+            link = "https://" + uri.hostname + ":" + data.HTTPS_PORT + "/xhr/v1/join"/* + uri.pathname*/;
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //

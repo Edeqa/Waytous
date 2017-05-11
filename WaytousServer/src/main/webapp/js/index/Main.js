@@ -148,7 +148,7 @@ var type = "home";
                 u.lang.overrideResources({"default":defaultResources, resources: resources});
             }}, self.actionbar).place(HTML.OPTION, { name: u.lang.loading, value:"" });
 
-            u.getJSON("/xhr/getResources/index").then(function(json){
+            u.getJSON("/xhr/v1/getResources/index").then(function(json){
                 u.clear(selectLang);
                 var count = 1;
                 selectLang.place(HTML.OPTION, { innerHTML: "Default", value: "" });

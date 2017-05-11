@@ -240,7 +240,7 @@ function MessagesHolder(main) {
                             onshow: function(e) {
                                 if(incomingMessageSounds) {
                                 } else {
-                                    u.getJSON("/xhr/getSounds").then(function(json){
+                                    u.getJSON("/xhr/v1/getSounds").then(function(json){
                                         incomingMessageSounds = {};
                                         u.clear(e);
                                         var selected = 0;

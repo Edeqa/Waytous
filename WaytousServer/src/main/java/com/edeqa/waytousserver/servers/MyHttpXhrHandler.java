@@ -19,7 +19,9 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
@@ -29,9 +31,10 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
  */
 public class MyHttpXhrHandler implements HttpHandler {
 
-    private volatile AbstractDataProcessor dataProcessor;
+    private volatile Map<String,AbstractDataProcessor> dataProcessor;
 
     public MyHttpXhrHandler(){
+        dataProcessor = new HashMap<>();
     }
 
     @Override
@@ -53,7 +56,7 @@ public class MyHttpXhrHandler implements HttpHandler {
 
 //        switch(exchange.getRequestMethod()) {
 //            case HttpMethods.GET:
-                switch(parts.get(2)) {
+                switch(parts.get(3)) {
                     case "getApiVersion":
                         printRes = getApiVersion(json);
                         break;
@@ -95,12 +98,16 @@ public class MyHttpXhrHandler implements HttpHandler {
     }
 
 
-    public AbstractDataProcessor getDataProcessor() {
-        return dataProcessor;
+    public AbstractDataProcessor getDataProcessor(String version) {
+        if(dataProcessor.containsKey(version)) {
+            return dataProcessor.get(version);
+        } else {
+            return dataProcessor.get("v1");
+        }
     }
 
     public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor = dataProcessor;
+        this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
     }
 
     class HttpConnection implements AbstractDataProcessor.Connection {
@@ -168,7 +175,7 @@ public class MyHttpXhrHandler implements HttpHandler {
             String body = br.readLine();
 
             Common.log("Xhr-join",exchange.getRemoteAddress().toString(), body);
-            getDataProcessor().onMessage(new HttpConnection(exchange), body);
+            getDataProcessor(exchange.getRequestURI().getPath().split("/")[3]).onMessage(new HttpConnection(exchange), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");

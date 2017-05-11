@@ -84,11 +84,12 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
  */
 
 @SuppressWarnings("HardCodedStringLiteral")
-public class DataProcessorFirebase extends AbstractDataProcessor {
+public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     private DatabaseReference ref;
+    public static String VERSION = "v1";
 
-    public DataProcessorFirebase() {
+    public DataProcessorFirebaseV1() {
         super();
 
         File f = new File(SENSITIVE.getFirebasePrivateKeyFile());
