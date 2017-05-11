@@ -18,7 +18,7 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 public class CheckReq {
 
     private long timestamp;
-    private MyToken token;
+    private MyGroup token;
     private String tokenId;
     private String control;
     private String name;
@@ -50,19 +50,19 @@ public class CheckReq {
         this.name = name;
     }
 
-    public MyToken getToken() {
+    public MyGroup getToken() {
         return token;
     }
 
-    public void setToken(MyToken token) {
+    public void setToken(MyGroup token) {
         this.token = token;
     }
 
-    public String getTokenId() {
+    public String getGroupId() {
         return tokenId;
     }
 
-    public void setTokenId(String tokenId) {
+    public void setGroupId(String tokenId) {
         this.tokenId = tokenId;
     }
 

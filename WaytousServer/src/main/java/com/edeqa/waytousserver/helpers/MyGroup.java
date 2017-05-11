@@ -34,11 +34,11 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
  * Created 10/8/16.
  */
 
-public class MyToken {
+public class MyGroup {
     public Map<String,MyUser> users = new HashMap<>();
     private Long created;
     private Long changed;
-    private String id;
+    public String id;
     private String owner;
     private String welcomeMessage;
     private int count;
@@ -48,13 +48,8 @@ public class MyToken {
     ));
 
 
-    public MyToken(){
-
-        String token = Utils.getUnique();
-
-        System.out.println("NEW TOKEN CREATED:"+token);
-
-        this.id = token;
+    public MyGroup(){
+        fetchNewId();
         created = new Date().getTime();
     }
 
@@ -100,11 +95,12 @@ public class MyToken {
 
     public String toString(){
         String res = "";
-        res += "Token id:"+id+", owner:"+owner+", created:"+new Date(created);
+        res += "{ Group id:"+id+", owner:"+owner+", created:"+new Date(created) ;
 
         for (Map.Entry<String,MyUser> x: users.entrySet()) {
             res += ", \n\tuser: ["+x.getValue().toString()+"]";
         }
+        res += "}";
 
         return res;
     }
@@ -326,5 +322,10 @@ public class MyToken {
 
     public void setWelcomeMessage(String welcomeMessage) {
         this.welcomeMessage = welcomeMessage;
+    }
+
+    public void fetchNewId() {
+        id = Utils.getUnique();
+        Common.log("MT","New group ID:",id);
     }
 }

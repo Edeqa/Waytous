@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.holders.request;
 
-import com.edeqa.waytousserver.helpers.MyToken;
+import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
 import com.edeqa.waytousserver.servers.AbstractDataProcessor;
@@ -31,7 +31,7 @@ public class TrackingRequestHolder implements RequestHolder {
     }
 
     @Override
-    public boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result) {
+    public boolean perform(MyGroup token, MyUser user, JSONObject request, JSONObject result) {
 
         user.addPosition(request);
         JSONObject o = user.getPosition().toJSON();

@@ -1,7 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.CheckReq;
-import com.edeqa.waytousserver.helpers.MyToken;
+import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
@@ -23,8 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 abstract public class AbstractDataProcessor {
 
-    final ConcurrentHashMap<String, MyToken> tokens;
-    final ConcurrentHashMap<String, MyToken> ipToToken;
+    final ConcurrentHashMap<String, MyGroup> groups;
+    final ConcurrentHashMap<String, MyGroup> ipToToken;
     final ConcurrentHashMap<String, MyUser> ipToUser;
     final ConcurrentHashMap<String, CheckReq> ipToCheck;
     final HashMap<String,RequestHolder> requestHolders;
@@ -35,7 +35,7 @@ abstract public class AbstractDataProcessor {
     abstract public void validateUsers();
 
     public AbstractDataProcessor() {
-        tokens = new ConcurrentHashMap<>();
+        groups = new ConcurrentHashMap<>();
         ipToToken = new ConcurrentHashMap<>();
         ipToUser = new ConcurrentHashMap<>();
         ipToCheck = new ConcurrentHashMap<>();
@@ -130,11 +130,11 @@ abstract public class AbstractDataProcessor {
 
     abstract public void removeUser(String tokenId,String id);
 
-    public ConcurrentHashMap<String, MyToken> getTokens(){
-        return tokens;
+    public ConcurrentHashMap<String, MyGroup> getGroups(){
+        return groups;
     }
 
-    public ConcurrentHashMap<String, MyToken> getIpToToken(){
+    public ConcurrentHashMap<String, MyGroup> getIpToToken(){
         return ipToToken;
     }
 

@@ -1,7 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.CheckReq;
-import com.edeqa.waytousserver.helpers.MyToken;
+import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
@@ -24,10 +24,10 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
@@ -80,7 +80,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                             // dismiss user
                             JSONObject o = new JSONObject();
                             if(ipToToken.containsKey(entry.getKey())) {
-                                MyToken token = ipToToken.get(entry.getKey());
+                                MyGroup token = ipToToken.get(entry.getKey());
                                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
                                 o.put(USER_DISMISSED, user.getNumber());
                                 token.sendToAllFrom(o, user);
@@ -136,7 +136,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
         if(ipToToken.containsKey(ip)){
-            final MyToken token = ipToToken.get(ip);
+            final MyGroup token = ipToToken.get(ip);
             ipToToken.remove(ip);
 
             try {
@@ -154,7 +154,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                 @Override
                 public void run() {
                     if(token.isEmpty() && new Date().getTime() - token.getChanged() >= LIFETIME_INACTIVE_GROUP) {
-                        tokens.remove(token.getId());
+                        groups.remove(token.getId());
                     }
                 }
             }, LIFETIME_INACTIVE_GROUP +10, TimeUnit.SECONDS);
@@ -191,9 +191,9 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
             if (!request.has(REQUEST)) return;
 
             String req = request.getString(REQUEST);
-            if (REQUEST_NEW_TOKEN.equals(req)) {
+            if (REQUEST_NEW_GROUP.equals(req)) {
                 if (request.has(REQUEST_DEVICE_ID)) {
-                    MyToken token = new MyToken();
+                    MyGroup token = new MyGroup();
                     MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
                     user.setManufacturer(request.getString(REQUEST_MANUFACTURER));
                     user.setModel(request.getString(REQUEST_MODEL));
@@ -201,7 +201,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                     if (request.has(USER_NAME)) user.setName(request.getString(USER_NAME));
 
                     token.addUser(user);
-                    tokens.put(token.getId(), token);
+                    groups.put(token.getId(), token);
 
 //                    if(request.has(REQUEST_MODEL)){
 //                        user.setModel(request.getString(REQUEST_MODEL));
@@ -231,11 +231,11 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                 Utils.pause(2);//FIXME remove pause
 
                 conn.send(response.toString());
-            } else if (REQUEST_JOIN_TOKEN.equals(req)) {
+            } else if (REQUEST_JOIN_GROUP.equals(req)) {
                 if (request.has(REQUEST_TOKEN)) {
                     String tokenId = request.getString(REQUEST_TOKEN);
-                    if (tokens.containsKey(tokenId)) {
-                        MyToken token = tokens.get(tokenId);
+                    if (groups.containsKey(tokenId)) {
+                        MyGroup token = groups.get(tokenId);
 
                         if (request.has(REQUEST_DEVICE_ID)) {
                             String deviceId1 = request.getString(REQUEST_DEVICE_ID);
@@ -380,7 +380,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                 conn.send(response.toString());
             } else {
                 if (ipToToken.containsKey(ip)) {
-                    MyToken token = ipToToken.get(ip);
+                    MyGroup token = ipToToken.get(ip);
                     MyUser user = ipToUser.get(ip);
                     user.setChanged();
 
@@ -442,8 +442,8 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     }*/
 
     public void removeUser(String tokenId,String id){
-        if(tokenId != null && id != null && tokens.containsKey(tokenId)){
-            MyToken t = tokens.get(tokenId);
+        if(tokenId != null && id != null && groups.containsKey(tokenId)){
+            MyGroup t = groups.get(tokenId);
             MyUser user = t.users.get(id);
             if(user != null){
                 JSONObject response = new JSONObject();

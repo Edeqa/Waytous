@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.interfaces;
 
-import com.edeqa.waytousserver.helpers.MyToken;
+import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 
 import org.json.JSONObject;
@@ -12,6 +12,6 @@ import org.json.JSONObject;
 public interface FlagHolder {
     String getType();
 
-    boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result);
+    boolean perform(MyGroup token, MyUser user, JSONObject request, JSONObject result);
 
 }

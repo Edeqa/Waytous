@@ -65,10 +65,10 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
@@ -319,7 +319,7 @@ public class MyTrackingFB implements Tracking {
         try {
             o.put(REQUEST_TIMESTAMP, new Date().getTime());
             String type = o.getString(REQUEST);
-            if(REQUEST_NEW_TOKEN.equals(type) || REQUEST_JOIN_TOKEN.equals(type) || REQUEST_CHECK_USER.equals(type)) {
+            if(REQUEST_NEW_GROUP.equals(type) || REQUEST_JOIN_GROUP.equals(type) || REQUEST_CHECK_USER.equals(type)) {
                 switch (webSocket.getState()) {
                     case CREATED:
                         break;
@@ -513,9 +513,9 @@ public class MyTrackingFB implements Tracking {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             Log.i("MyTrackingFB","onConnected");
             if(newTracking) {
-                put(REQUEST, REQUEST_NEW_TOKEN);
+                put(REQUEST, REQUEST_NEW_GROUP);
             } else {
-                put(REQUEST, REQUEST_JOIN_TOKEN);
+                put(REQUEST, REQUEST_JOIN_GROUP);
 
                 String path = MyTrackingFB.this.serverUri.getPath();
                 if(path != null) {

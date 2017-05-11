@@ -42,11 +42,11 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_LEAVE;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
@@ -92,9 +92,9 @@ public class MyTracking implements Tracking {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             Log.i("MyTracking","onConnected");
             if(newTracking) {
-                put(REQUEST, REQUEST_NEW_TOKEN);
+                put(REQUEST, REQUEST_NEW_GROUP);
             } else {
-                put(REQUEST, REQUEST_JOIN_TOKEN);
+                put(REQUEST, REQUEST_JOIN_GROUP);
 
                 String path = MyTracking.this.serverUri.getPath();
                 if(path != null) {

@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.holders.flag;
 
-import com.edeqa.waytousserver.helpers.MyToken;
+import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.servers.AbstractDataProcessor;
@@ -29,7 +29,7 @@ public class PushFlagHolder implements FlagHolder {
     }
 
     @Override
-    public boolean perform(MyToken token, MyUser user, JSONObject request, JSONObject result) {
+    public boolean perform(MyGroup token, MyUser user, JSONObject request, JSONObject result) {
 
         System.out.println("PUSHFLAGHOLDER:" + request);
 

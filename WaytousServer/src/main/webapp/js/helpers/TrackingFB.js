@@ -67,14 +67,14 @@ function TrackingFB(main) {
         var onopen =  function(event) {
             opened = true;
             if(newTracking) {
-                put(REQUEST.REQUEST, REQUEST.NEW_TOKEN);
+                put(REQUEST.REQUEST, REQUEST.NEW_GROUP);
                 put(REQUEST.DEVICE_ID, utils.getUuid());
             } else {
                 var parts = link.split("/");
                 var groupId = parts[parts.length-1];
                 setToken(groupId);
 
-                put(REQUEST.REQUEST, REQUEST.JOIN_TOKEN);
+                put(REQUEST.REQUEST, REQUEST.JOIN_GROUP);
                 put(REQUEST.TOKEN, groupId);
                 put(REQUEST.DEVICE_ID, utils.getUuid());
             }
@@ -277,7 +277,7 @@ function TrackingFB(main) {
 
         jsonMessage[REQUEST.TIMESTAMP] = new Date().getTime();
         var type = jsonMessage[REQUEST.REQUEST];
-        if(type == REQUEST.NEW_TOKEN || type == REQUEST.JOIN_TOKEN || type == REQUEST.CHECK_USER) {
+        if(type == REQUEST.NEW_GROUP || type == REQUEST.JOIN_GROUP || type == REQUEST.CHECK_USER) {
             // console.error("WRONG WAY");
             // switch (webSocketListener.status) {
             webSocketListener.send(JSON.stringify(json));

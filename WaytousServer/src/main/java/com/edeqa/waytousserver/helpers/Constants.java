@@ -18,8 +18,8 @@ public class Constants {
     public static final String REQUEST = "client";
     public static final String REQUEST_TIMESTAMP = "timestamp";
     public static final String REQUEST_UPDATE = "update";
-    public static final String REQUEST_JOIN_TOKEN = "join";
-    public static final String REQUEST_NEW_TOKEN = "create";
+    public static final String REQUEST_JOIN_GROUP = "join";
+    public static final String REQUEST_NEW_GROUP = "create";
     public static final String REQUEST_CHECK_USER = "check";
     public static final String REQUEST_TOKEN = "token";
     public static final String REQUEST_HASH = "hash";

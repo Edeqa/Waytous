@@ -3,7 +3,7 @@ package com.edeqa.waytousserver.holders.admin;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
-import com.edeqa.waytousserver.helpers.MyToken;
+import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
@@ -83,7 +83,7 @@ public class AdminSummaryHolder implements PageHolder {
     private JSONArray fetchTokensData() {
         JSONArray a = new JSONArray();
 
-        for (Map.Entry<String, MyToken> x : server.getDataProcessor().getTokens().entrySet()) {
+        for (Map.Entry<String, MyGroup> x : server.getDataProcessor().getGroups().entrySet()) {
             JSONObject o = new JSONObject();
             a.put(o);
 
@@ -127,7 +127,7 @@ public class AdminSummaryHolder implements PageHolder {
     private JSONArray fetchIpToTokenData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyToken> x: server.getDataProcessor().getIpToToken().entrySet()){
+        for(Map.Entry<String,MyGroup> x: server.getDataProcessor().getIpToToken().entrySet()){
             JSONArray ta = new JSONArray();
             a.put(ta);
             ta.put(x.getKey());
