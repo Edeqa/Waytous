@@ -1672,10 +1672,11 @@ function Edequate(options) {
     this.drawer = drawer;
 
     function toast() {
-        var toast = create(HTML.DIV, {className:"toast shadow hidden", onclick: function(){ this.hide(HIDING.SCALE_Y_BOTTOM); }});
+        var toast = create(HTML.DIV, {className:"toast-holder hidden", onclick: function(){ this.hide(HIDING.SCALE_Y_BOTTOM); }});
+        toast.content = create(HTML.DIV, {className:"toast shadow"}, toast);
         toast.show = function(text,delay){
            clearTimeout(toast.hideTask);
-           lang.updateNode(toast, text);
+           lang.updateNode(toast.content, text);
            HTMLDivElement.prototype.show.call(toast, HIDING.SCALE_Y_BOTTOM);
 //           toast.classList.remove("hidden");
            delay = delay || 5000;
