@@ -105,18 +105,26 @@ button:active {
 .hiding-animation {
     transition: opacity 0.2s ease-in-out, all 0.2s ease-in-out !important;
 }
-.toast {
-    position: fixed;
+.toast-holder {
+    position: absolute;
     z-index: 50000;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
     bottom: 0px;
-    cursor: default;
-    border: none;
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.toast {
+   background-color: rgba(0, 0, 0, 0.5);
+   color: white;
+   cursor: default;
+   border: none;
+   padding-left: 30px;
+   padding-right: 30px;
+   padding-top: 10px;
+   padding-bottom: 10px;
+   display: inline-block;
 }
 .shadow {
     box-shadow: 3px 3px 7px 2px rgba(0,0,0,.5);
@@ -1016,14 +1024,15 @@ button:active {
         display: none;
     }
     /* Toast */
+    .toast-holder {
+        bottom: 40px;
+    }
     .toast {
         padding: 10px;
-        background-color: rgba(128, 128, 128, 0.7);
         border-radius: 5px;
         border-style: solid;
         border-width: 1px;
         border-color: rgba(255, 255, 240, 0.7);
-        bottom: 40px;
     }
     /* Table */
     .table {
