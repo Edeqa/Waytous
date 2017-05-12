@@ -944,7 +944,13 @@ function Edequate(options) {
 
         dialog.close = function (event){
             var dialog = this;
-            if(!dialog.opened) return;
+            if(!dialog.opened) {
+                var index = dialogQueue.indexOf(dialog);
+                if(index >= 0) {
+                    dialogQueue.splice(index,1);
+                }
+                return;
+            }
             clearInterval(dialog.intervalTask);
             dialog.hide(dialog.options.hiding.close);
             dialog.modal && dialog.modal.hide();

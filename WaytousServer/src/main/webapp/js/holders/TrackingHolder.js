@@ -160,28 +160,6 @@ function TrackingHolder(main) {
                     });
                     noSleepDialog.open();
                 }
-
-    u.dialog({
-        title: "Test1",
-        className: "test",
-        queue: true,
-        positive: {label: u.lang.ok}
-    }).open();
-    u.dialog({
-        title: "Test2",
-        className: "test",
-        queue: true,
-        positive: {label: u.lang.ok}
-    }).open();
-    u.dialog({
-        title: "Test3",
-        className: "test",
-        queue: true,
-        positive: {label: u.lang.ok}
-    }).open();
-
-
-
                 break;
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;
