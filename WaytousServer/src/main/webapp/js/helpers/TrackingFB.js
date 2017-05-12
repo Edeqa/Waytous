@@ -392,7 +392,7 @@ function TrackingFB(main) {
     }
 
     function usersDataListener(data){
-        if(main.me.number != parseInt(data.getKey())) {
+//        if(main.me.number != parseInt(data.getKey())) {
             try{
                 var o = data.val();
                 o[RESPONSE.NUMBER] = parseInt(data.getKey());
@@ -420,7 +420,7 @@ function TrackingFB(main) {
             } catch(e) {
                 console.error(e.message);
             }
-        }
+//        }
         // console.log(data);
     }
 

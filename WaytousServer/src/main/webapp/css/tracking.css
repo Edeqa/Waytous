@@ -389,15 +389,25 @@ p.bottom-desc {
     text-align: left;
 }
 .chat-dialog-message-private {
-
+}
+.chat-dialog-message-private::before {
+    content: "lock";
+    font-family: 'Material Icons';
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    float: left;
+    padding-right: 5px;
 }
 .chat-dialog-message-name {
-    text-shadow: #000 0px 0px 1px;
 }
 .chat-dialog-message-timestamp {
     float: right;
+    padding-right: 10px;
 }
 .chat-dialog-message-body {
+    padding-right: 10px;
     padding-bottom: 8px;
     white-space: pre-wrap;
 }

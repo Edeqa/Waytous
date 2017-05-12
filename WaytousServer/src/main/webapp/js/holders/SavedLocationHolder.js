@@ -474,7 +474,7 @@ function SavedLocationHolder(main) {
 
     function perform(json) {
         var number = json[USER.NUMBER];
-
+        if(main.me.number == number) return;
         var from = main.users.users[number];
         var name = json[USER.NAME] || (from ? from.properties.getDisplayName() : "Point");
         var user = new MyUser(main);

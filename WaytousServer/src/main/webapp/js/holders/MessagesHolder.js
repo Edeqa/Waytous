@@ -136,7 +136,7 @@ function MessagesHolder(main) {
 
                 var divName = u.create(HTML.DIV, {
                     className:"chat-dialog-message-name",
-                    style: {color: this.properties.color},
+                    style: {textShadow: this.properties.color + " 0px 0px 1px"},
                     innerHTML:this.properties.getDisplayName() + (object.private ? " &rarr; " + toUser.properties.getDisplayName() : "") + ":"}, div);
                 u.create(HTML.DIV, {className:"chat-dialog-message-body", innerHTML: object.body}, div);
 
@@ -188,7 +188,7 @@ function MessagesHolder(main) {
                 main.me.fire(EVENTS.USER_MESSAGE, {body: text, timestamp: new Date().getTime(), private: true, to: parseInt(replyTo.value)});
                 replyTo.value = "";
             } else {
-                main.me.fire(EVENTS.USER_MESSAGE, {body: text, timestamp: new Date().getTime()});
+//                main.me.fire(EVENTS.USER_MESSAGE, {body: text, timestamp: new Date().getTime()});
             }
             main.tracking.put(REQUEST.DELIVERY_CONFIRMATION, true);
             main.tracking.put(REQUEST.MESSAGE, text);
