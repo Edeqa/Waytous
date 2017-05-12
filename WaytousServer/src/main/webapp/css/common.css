@@ -139,7 +139,7 @@ button:active {
     background-color: lightcyan;
 }
 .disabled {
-    color: darkgray;
+    color: gray;
 }
 .modal {
     position: absolute;

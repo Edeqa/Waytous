@@ -60,7 +60,7 @@
     color: chocolate;
 }
 .selected {
-    border-color: #00ff00;
+    border-color: lime;
     border-width: 2px;
     border-style: ridge;
     padding: 3px !important;
@@ -174,7 +174,7 @@ p.bottom-desc {
     padding: 3px;
 }
 .user-button-selected {
-    border-color: green;
+    border-color: lime;
     border-style: ridge;
     border-width: 2px;
     padding: 3px;
@@ -787,8 +787,6 @@ p.bottom-desc {
         display: none;
     }
     .user-button-selected {
-        border-color: green;
-        border-style: ridge;
         border-width: 2px;
         padding: 3px;
     }

@@ -188,7 +188,7 @@ function ButtonHolder(main) {
         var task;
         var onlyTouch,clicked,firstClick;
         var b = u.create(HTML.DIV, {
-            className:"user-button" +(user.properties.active ? "" : " hidden"),
+            className:"user-button" + (user.locations && user.locations.length > 0 ? "" : " disabled") +(user.properties.active ? "" : " hidden"),
             dataNumber:user.number,
             style:{backgroundColor:color},
             onclick: function() {
@@ -357,6 +357,7 @@ function ButtonHolder(main) {
 
     function onChangeLocation(location) {
         updateSubtitle.call(this);
+        this.views.button.button.classList.remove("disabled");
     }
 
     function updateSubtitle() {
