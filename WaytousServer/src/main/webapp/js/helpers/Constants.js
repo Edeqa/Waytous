@@ -145,8 +145,6 @@ function Constants() {
         SECTION_OPTIONS_DATE_CHANGED : "o/date-changed"
     };
 
-    return {
-        type:"constants",
-        start:function(){}
-    };
+    this.type = "constants";
+    this.start = function(){}
 }
