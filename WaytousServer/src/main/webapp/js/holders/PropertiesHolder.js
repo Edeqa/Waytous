@@ -41,6 +41,7 @@ function PropertiesHolder(main) {
             case EVENTS.TRACKING_ACTIVE:
                 if(!u.load("properties:name") && !u.load("properties:name_asked")) {
                     var askIfNameNotDefinedDialog = u.dialog({
+                        queue: true,
                         items: [
                             { type: HTML.DIV, label: u.lang.your_name_is_not_defined }
                         ],

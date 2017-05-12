@@ -150,6 +150,7 @@ function Main() {
         main.initialize = initialize;
 
         main.alert = main.alert || u.dialog({
+            queue: true,
              className: "alert-dialog",
              items: [
                  { type: HTML.DIV, label: u.lang.error_while_loading_service },

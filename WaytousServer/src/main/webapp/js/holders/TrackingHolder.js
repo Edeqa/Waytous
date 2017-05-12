@@ -44,6 +44,7 @@ function TrackingHolder(main) {
     function start(){
 
         progress = u.dialog({
+            queue: true,
             className: "progress-dialog",
             items: [
                 { type: HTML.DIV, className: "progress-dialog-circle" },
@@ -140,6 +141,7 @@ function TrackingHolder(main) {
 
                 if (!wakeLockEnabled) {
                     noSleepDialog = noSleepDialog || u.dialog({
+                        queue: true,
                         className: "desktop-hidden",
                         items: [
                             { type: HTML.DIV, innerHTML: "Do you want to keep screen on during group active?" }
@@ -158,6 +160,28 @@ function TrackingHolder(main) {
                     });
                     noSleepDialog.open();
                 }
+
+    u.dialog({
+        title: "Test1",
+        className: "test",
+        queue: true,
+        positive: {label: u.lang.ok}
+    }).open();
+    u.dialog({
+        title: "Test2",
+        className: "test",
+        queue: true,
+        positive: {label: u.lang.ok}
+    }).open();
+    u.dialog({
+        title: "Test3",
+        className: "test",
+        queue: true,
+        positive: {label: u.lang.ok}
+    }).open();
+
+
+
                 break;
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;
@@ -347,6 +371,7 @@ function TrackingHolder(main) {
             u.saveForContext("group");
 
              u.dialog({
+                queue: true,
                 className: "alert-dialog",
                 modal: true,
                 items: [

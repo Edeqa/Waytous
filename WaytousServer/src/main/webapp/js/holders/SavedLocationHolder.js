@@ -506,6 +506,7 @@ function SavedLocationHolder(main) {
 
         locationReceiveDialog = locationReceiveDialog || u.dialog({
              title: u.lang.add_location,
+             queue: true,
              items: [
                  { type: HTML.DIV },
                  { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" },

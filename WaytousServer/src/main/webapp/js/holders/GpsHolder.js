@@ -54,6 +54,7 @@ function GpsHolder(main) {
                     startPositioning();
                 } else if(!u.load("gps:asked")) {
                     locationRequiredDialog = locationRequiredDialog || u.dialog({
+                        queue: true,
                         className: "gps-required-dialog",
                         items: [
                             { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
@@ -135,6 +136,7 @@ function GpsHolder(main) {
             alternativeGeolocation();
 
             var alert = u.dialog({
+                queue: true,
                 className: "alert-dialog",
                 items: [
                     { type: HTML.DIV, label: u.lang.please_resolve_this_problem_and_try_again.format(message) },

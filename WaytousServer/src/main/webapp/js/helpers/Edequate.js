@@ -641,15 +641,52 @@ function Edequate(options) {
     this.loadForContext = loadForContext;
 
     var modalBackground;
-    function dialog(options, appendTo) {
-        appendTo = appendTo || document.body;
+    var dialogQueue = [];
+    var performingDialogInQueue;
+
+    /**
+    * dialog(options [, appendTo])
+    * options = {
+    *       id,
+    *       title: name | {label, className, button},
+    *       queue: true|*false*,
+    *       modal: true|*false*,
+    *       hiding: HIDING.method (*HIDING.OPACITY*),
+    *       resizeable: true|*false*,
+    *       items,
+    *       positive: button,
+    *       neutral: button,
+    *       negative: button,
+    *       onopen: function,
+    *       onclose: function,
+    *       timeout,
+    *       help: function
+    *   }
+    * title.button = {
+    *       icon,
+    *       className,
+    *       onclick: function
+    *   }
+    * button = {
+    *       label,
+    *       className,
+    *       onclick,
+    *       dismiss: *true*|false
+    *   }
+    * dialog.addItem(options)
+    * dialog.open()
+    * dialog.close()
+    */
+    function dialog(options, appendTo = document.body) {
+//        appendTo = appendTo || document.body;
 
         var dialog = create(HTML.DIV, {
             className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
             tabindex:-1,
             onblur: options.onblur,
-            onfocus: options.onfocus
+            onfocus: options.onfocus,
         }, appendTo);
+        dialog.options = options;
 
         dialog.opened = false;
 
@@ -658,9 +695,9 @@ function Edequate(options) {
             dialog.items = [];
         };
 
-        dialog.addItem = function(item, appendTo) {
+        dialog.addItem = function(item, appendTo = dialog.itemsLayout) {
             item = item || {};
-            appendTo = appendTo || dialog.itemsLayout;
+//            appendTo = appendTo || dialog.itemsLayout;
             item.type = item.type || HTML.DIV;
 
             var div,x;
@@ -863,23 +900,38 @@ function Edequate(options) {
         }
 
         dialog.open = function(event){
+            var dialog = this;
+            if(dialog.opened) return;
+            if(dialog.options.queue) {
+                if(performingDialogInQueue) {
+                    dialogQueue.push(dialog);
+                    return;
+                } else {
+                    performingDialogInQueue = dialog;
+                }
+            }
+
             clearInterval(dialog.intervalTask);
             dialog.modal && dialog.modal.show();
-            dialog.show(options.hiding.open);
+            dialog.show(dialog.options.hiding.open);
             dialog.opened = true;
             dialog.adjustPosition();
-            if(options.onopen) options.onopen.call(dialog,items,event);
-            if(options.timeout) {
-                var atom = options.timeout / 16;
-                var current = 0;
-                dialog.intervalTask = setInterval(function(){
-                    current += 16;
-                    progress.style.width = (current / options.timeout * 100) + "%";
-                    if(current >= options.timeout) {
-                        clearInterval(dialog.intervalTask);
-                        dialog.close();
-                    }
-                }, 16);
+            if(dialog.options.onopen) dialog.options.onopen.call(dialog,items,event);
+            if(dialog.offsetHeight) {
+                if(dialog.options.timeout) {
+                    var atom = dialog.options.timeout / 16;
+                    var current = 0;
+                    dialog.intervalTask = setInterval(function(){
+                        current += 16;
+                        dialog.progress.style.width = (current / dialog.options.timeout * 100) + "%";
+                        if(current >= dialog.options.timeout) {
+                            clearInterval(dialog.intervalTask);
+                            dialog.close();
+                        }
+                    }, 16);
+                }
+            } else {
+                dialog.close();
             }
 
 //            window.history.pushState(null, document.title, location.href);
@@ -891,14 +943,25 @@ function Edequate(options) {
         };
 
         dialog.close = function (event){
+            var dialog = this;
+            if(!dialog.opened) return;
             clearInterval(dialog.intervalTask);
-            dialog.hide(options.hiding.close);
+            dialog.hide(dialog.options.hiding.close);
             dialog.modal && dialog.modal.hide();
             dialog.opened = false;
 
             window.removeEventListener("popstate", backButtonAction);
 
-            if(options.onclose) options.onclose.call(dialog,items,event);
+            if(dialog.options.onclose) dialog.options.onclose.call(dialog,items,event);
+
+            if(dialog.options.queue) {
+                performingDialogInQueue = null;
+                if(dialogQueue.length > 0) {
+                    dialog = dialogQueue.shift();
+                    dialog.open();
+                }
+            }
+
         };
         dialog.addEventListener("keyup", function(e) {
             if(e.keyCode == 27) {
@@ -1153,8 +1216,8 @@ function Edequate(options) {
 
         if(options.timeout) {
             var progressBar = create(HTML.DIV, {className:"dialog-progress-bar"}, dialog);
-            var progress = create(HTML.DIV, {className:"dialog-progress-value"}, progressBar);
-            progress.style.width = "0%";
+            dialog.progress = create(HTML.DIV, {className:"dialog-progress-value"}, progressBar);
+            dialog.progress.style.width = "0%";
         }
 
         return dialog;
