@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.CheckReq;
+import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
@@ -56,9 +57,10 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     public static String VERSION = "v1";
     private HashMap<String,FlagHolder> flagHolders;
 
-//    public DataProcessorDedicated() {
-//        super();
-//    }
+    public DataProcessorDedicated() {
+        super();
+        Common.log("DPD","Data Processor Dedicated "+VERSION+".");
+    }
 
     @Override
     public void validateGroups() {
