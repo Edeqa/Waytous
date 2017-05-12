@@ -250,6 +250,7 @@
   "sorry_you_have_requested_the_expired_group": "Sorry, you have requested the expired group.",
   "expired_explanation": "Somebody has created this group to meet with his friends. Perhaps that goal was succeded because the group was removed. <p>You can create your own group and send the link to your friends. Note that the group expires soon if nobody will be online. If you'd like to create the permanent group please ask the administration.",
 
+  "do_you_want_to_keep_screen_on_during_group_is_active": "Do you want to keep screen on during group is active?",
 
   "// Sample": "",
 

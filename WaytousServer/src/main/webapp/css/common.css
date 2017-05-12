@@ -787,6 +787,13 @@ button:active {
     padding: 10px;
 }
 
+/* media specific classes */
+.media-hidden {
+    display: inherit;
+}
+.desktop-hidden {
+    display: none;
+}
 
 @media screen and (max-width: 1000px) {
     /*html, body {
@@ -1054,10 +1061,10 @@ button:active {
 
     /* media specific classes */
     .media-hidden {
-        display: none !important;
+        display: none;
     }
     .desktop-hidden {
-        display: inherit !important;
+        display: inherit;
     }
 
 

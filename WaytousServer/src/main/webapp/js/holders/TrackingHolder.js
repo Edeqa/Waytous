@@ -19,6 +19,7 @@ function TrackingHolder(main) {
     var drawerItemNew;
     var drawerItemExit;
     var noSleep;
+    var noSleepDialog;
     var wakeLockEnabled;
     var shareDialog;
     var shareBlockedDialog;
@@ -138,8 +139,24 @@ function TrackingHolder(main) {
                 });
 
                 if (!wakeLockEnabled) {
-                    noSleep.enable(); // keep the screen on!
-                    wakeLockEnabled = true;
+                    noSleepDialog = noSleepDialog || u.dialog({
+                        className: "desktop-hidden",
+                        items: [
+                            { type: HTML.DIV, innerHTML: "Do you want to keep screen on during group active?" }
+                        ],
+                        positive: {
+                            label: u.lang.yes,
+                            onclick: function(){
+                                noSleep.enable(); // keep the screen on!
+                                wakeLockEnabled = true;
+                            }
+                        },
+                        negative: {
+                            label: u.lang.no
+                        },
+                        timeout: 3000
+                    });
+                    noSleepDialog.open();
                 }
                 break;
             case EVENTS.TRACKING_CONNECTING:
@@ -150,10 +167,6 @@ function TrackingHolder(main) {
                 drawerItemShare.show();
                 drawerItemShare.enable();
                 drawerItemExit.show();
-                if (!wakeLockEnabled) {
-                    noSleep.enable(); // keep the screen on!
-                    wakeLockEnabled = true;
-                }
                 break;
             case EVENTS.TRACKING_RECONNECTING:
 //                window.onbeforeunload = beforeunload;
@@ -163,10 +176,6 @@ function TrackingHolder(main) {
                 drawerItemShare.show();
                 drawerItemShare.enable();
                 drawerItemExit.show();
-                if (!wakeLockEnabled) {
-                    noSleep.enable(); // keep the screen on!
-                    wakeLockEnabled = true;
-                }
                 break;
             case EVENTS.TRACKING_DISABLED:
                 window.onbeforeunload = null;

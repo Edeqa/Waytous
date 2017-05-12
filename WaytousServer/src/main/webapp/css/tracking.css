@@ -65,9 +65,6 @@
     border-style: ridge;
     padding: 3px !important;
 }
-.desktop-hidden {
-    display: none !important;
-}
 .question {
     font-weight: bold;
     color: red;
