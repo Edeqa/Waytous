@@ -41,11 +41,6 @@ function NavigationHolder(main) {
         d: "M12,2L4.5,20.29l0.71,0.71L12,18l6.79,3 0.71,-0.71z"
     };
 
-
-//<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" x="5" y="5" viewBox="1 1.029998779296875 16 16" style="red:transparent; fill:red; ">
-//    <path d="M9 1.03c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM10 13H8v-2h2v2zm0-3H8V5h2v5z"></path>
-//</svg>
-
     function start() {
         view = {};
     }

@@ -64,4 +64,12 @@ public class Common {
 
     }
 
+    public static String getWrappedHttpPort(){
+        return SENSITIVE.getHttpPort() == 80 ? "" : ":" + SENSITIVE.getHttpPort();
+    }
+
+    public static String getWrappedHttpsPort(){
+        return SENSITIVE.getHttpsPort() == 443 ? "" : ":" + SENSITIVE.getHttpsPort();
+    }
+
 }

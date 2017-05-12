@@ -46,8 +46,8 @@ public class MyHttpRedirectHandler implements HttpHandler {
 
             if(uri.getPath().startsWith("/track/") && tokenId != null) {
                 String mobileRedirect = "waytous://" + host + "/track/" + tokenId;
-                String webRedirect = "https://" + host + ":" + SENSITIVE.getHttpsPort() + "/group/" + tokenId;
-                String mainLink = "https://" + host + ":" + SENSITIVE.getHttpsPort() + "/track/" + tokenId;
+                String webRedirect = "https://" + host + Common.getWrappedHttpsPort() + "/group/" + tokenId;
+                String mainLink = "https://" + host + Common.getWrappedHttpsPort() + "/track/" + tokenId;
 
                 String redirectLink = "http://"+ SENSITIVE.getFirebaseDynamicLinkHost()+"/?"
                         + "link=" + mainLink
@@ -77,7 +77,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
     }
 
     public void redirect(HttpExchange exchange, String host, String path) throws IOException {
-        String newUri = "https://" + host + ":" + SENSITIVE.getHttpsPort() + path;
+        String newUri = "https://" + host + Common.getWrappedHttpsPort() + path;
 
         Common.log("Redirect ->", newUri);
 
