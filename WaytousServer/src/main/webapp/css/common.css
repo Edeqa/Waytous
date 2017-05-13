@@ -518,7 +518,7 @@ button:active {
     float: initial;
 }
 .drawer-menu-item:hover {
-    background: #dddd99;
+    background: gainsboro;
 }
 .drawer-menu-item:active {
     background: burlywood;
