@@ -139,12 +139,11 @@ function TrackingHolder(main) {
                     }
                 });
 
-                if (!wakeLockEnabled) {
+                if (!wakeLockEnabled && /android/ig.test(navigator.userAgent)) {
                     noSleepDialog = noSleepDialog || u.dialog({
                         queue: true,
-                        className: "desktop-hidden",
                         items: [
-                            { type: HTML.DIV, innerHTML: "Do you want to keep screen on during group active?" }
+                            { type: HTML.DIV, innerHTML: u.lang.do_you_want_to_keep_screen_on_during_group_is_active }
                         ],
                         positive: {
                             label: u.lang.yes,

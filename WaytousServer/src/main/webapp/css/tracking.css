@@ -96,7 +96,6 @@
 }
 
 
-
 #map {
   height: 100%;
   position: relative;
@@ -246,9 +245,6 @@ p.bottom-desc {
 .user-button-subtitle {
     font-size: 9px;
     max-width: 150px;
-    /*overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;*/
 }
 .user-context-menu {
     position: fixed;
@@ -698,15 +694,6 @@ p.bottom-desc {
     justify-content: flex-start;
 }
 
-
-/* shift zoom control */
-/*.gmnoprint:nth-child(9) {
-    top: 50px !important;
-}
-.gmnoprint:nth-child(10) {
-    top: 110px !important;
-}*/
-
 @media screen and (max-width: 1000px) {
 
     .title {
@@ -732,11 +719,6 @@ p.bottom-desc {
         position: fixed;
         font-size: 10px;
     }
-/*
-    .shadow {
-        box-shadow: 3px 3px 10px 3px rgba(0,0,0,.7)
-    }
-*/
     .buttons {
         text-align: center;
     }
@@ -750,22 +732,6 @@ p.bottom-desc {
         right: auto;
         transform: translateX(-50%) !important;
     }
-/*
-    .dialog-items::-webkit-scrollbar {
-        width: initial;
-        background-color: initial;
-    }
-    .dialog-items::-webkit-scrollbar-thumb {
-        -webkit-box-shadow: initial;
-        background-color: initial;
-        border-radius: initial;
-    }
-    .dialog-items::-webkit-scrollbar-track {
-        -webkit-box-shadow: initial;
-        background-color: initial;
-        border-radius: initial;
-    }
-*/
     .user-buttons-title {
         display: none;
     }
@@ -1021,12 +987,10 @@ p.bottom-desc {
         min-width: auto;
     }
 
-
     /* shift zoom control */
     .gm-bundled-control {
         top: 100px !important;
     }
-
 }
 
 @media screen and (max-height: 400px) {
