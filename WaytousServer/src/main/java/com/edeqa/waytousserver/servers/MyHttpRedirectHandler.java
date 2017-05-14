@@ -57,7 +57,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
                         + "&ifl=" + webRedirect
                         + "&st=Waytous"
                         + "&sd=Waytous+description"
-                        + "&si=https://raw.githubusercontent.com/tujger/WhereAmINow/master/WhereAmINowServer/src/main/webapp/images/logo.png";
+                        + "&si=https://raw.githubusercontent.com/tujger/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
 
                 Common.log("Redirect ->", redirectLink);
 

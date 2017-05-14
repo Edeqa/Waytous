@@ -128,6 +128,7 @@ function TrackHolder(main) {
                     strokeWeight: 8,
                     map: main.map
                 });
+                u.toast.show("COLOR:"+this.properties.color);
                 // this.views.track.track.setMap(main.map);
             } else {
                 this.views.track.track.getPath().push(utils.latLng(this.location));

@@ -61,7 +61,8 @@ function PropertiesHolder(main) {
                             label: u.lang.maybe_later
                         },
                         timeout: 10000
-                    }, main.right).open();
+                    }, main.right);
+                    setTimeout(function(){askIfNameNotDefinedDialog.open();}, 0);
                 }
                 var name = main.me.name;
                 if(!name && main.me.properties) name = main.me.properties.name;
@@ -110,13 +111,14 @@ function PropertiesHolder(main) {
                 if(this.properties)this.properties.number = object;
                 break;
             case EVENTS.CHANGE_COLOR:
-                if(this.properties)this.properties.color = object;
+                if(this.properties) this.properties.color = object;
+                if(this.number == main.me.number) this.properties.color = "#0000FF";
                 break;
             case EVENTS.MAKE_ACTIVE:
-                if(this.properties)this.properties.active = true;
+                if(this.properties) this.properties.active = true;
                 break;
             case EVENTS.MAKE_INACTIVE:
-                if(this.properties)this.properties.active = false;
+                if(this.properties) this.properties.active = false;
                 break;
             case EVENTS.MAP_READY:
                 main.me.createViews();
