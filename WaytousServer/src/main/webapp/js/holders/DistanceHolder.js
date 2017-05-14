@@ -71,6 +71,14 @@ function DistanceHolder(main) {
                     this.views.distance.label = null;
                 }
                 break;
+            case EVENTS.MAP_MOVED:
+                main.users.forAllUsers(function (number, user) {
+                    if(user.views && user.views.distance && user.views.distance.distance) {
+                        show.call(user);
+                    }
+                });
+
+                break;
             default:
                 break;
         }
@@ -143,7 +151,8 @@ function DistanceHolder(main) {
             ];
             this.views.distance.distance.setPath(points);
 
-            var markerPosition = google.maps.geometry.spherical.interpolate(points[0], points[1], .5);
+            var markerPosition = utils.labelPosition(main.map, points, utils.latLng(main.me.location), utils.latLng(this.location));
+
             this.views.distance.marker.setPosition(markerPosition);
             var title = utils.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[1]));
             this.fire(EVENTS.UPDATE_MENU_SUFFIX, title);

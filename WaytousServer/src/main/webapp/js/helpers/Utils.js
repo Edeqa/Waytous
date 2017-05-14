@@ -456,7 +456,8 @@ function Utils(main) {
         var newNortheast = google.maps.geometry.spherical.interpolate(bounds.getNorthEast(), bounds.getSouthWest(), (1+fraction)/2);
         var newSouthwest = google.maps.geometry.spherical.interpolate(bounds.getSouthWest(), bounds.getNorthEast(), (1+fraction)/2);
         bounds = new google.maps.LatLngBounds();
-        bounds.extend(newNortheast, newSouthwest);
+        bounds.extend(newNortheast);
+        bounds.extend(newSouthwest);
         return bounds;
     }
 
@@ -507,6 +508,24 @@ function Utils(main) {
        });
     }
 
+    function labelPosition(map, points, mePosition, userPosition) {
+
+        var markerPosition = utils.findPoint(points);
+        var bounds = reduce(map.getBounds(), 0.8);
+
+        if(!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
+            if(!bounds.contains(markerPosition)) {
+                var fract = 0.5;
+                while(!bounds.contains(markerPosition)) {
+                    fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
+                    if (fract < 0 || fract > 1) break;
+                    markerPosition = findPoint(points, fract);
+                }
+            }
+        }
+        return markerPosition;
+    }
+
     return {
         showAlert: showAlert,
         getHexColor: getHexColor,
@@ -524,5 +543,6 @@ function Utils(main) {
         reduce:reduce,
         popupBlockerChecker:popupBlockerChecker,
         dialogAbout:dialogAbout,
+        labelPosition:labelPosition,
     }
 }

@@ -13,6 +13,7 @@ EVENTS.REQUEST_MODE_TERRAIN = "request_mode_terrain";
 EVENTS.REQUEST_MODE_TRAFFIC = "request_mode_traffic";
 EVENTS.REQUEST_MODE_TRANSIT = "request_mode_transit";
 EVENTS.REQUEST_MODE_BIKE = "request_mode_bike";
+EVENTS.MAP_MOVED = "map_moved";
 
 function MapHolder(main) {
 
@@ -76,6 +77,9 @@ function MapHolder(main) {
         });
         main.map.addListener("dragstart", function() {
             buttonRecenter.show(u.HIDING.OPACITY);
+        });
+        main.map.addListener("idle", function() {
+            main.me.fire(EVENTS.MAP_MOVED)
         });
     }
 

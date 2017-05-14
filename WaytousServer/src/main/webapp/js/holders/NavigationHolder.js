@@ -111,6 +111,14 @@ function NavigationHolder(main) {
                 removeView(this);
 
                 break;
+            case EVENTS.MAP_MOVED:
+                main.users.forAllUsers(function (number, user) {
+                    if(user.views && user.views.navigation && user.views.navigation.distance) {
+                        updateLabel.call(user);
+                    }
+                });
+
+                break;
             default:
                 break;
         }
@@ -238,58 +246,15 @@ function NavigationHolder(main) {
             return;
         }
         var text = o.routes[0].overview_polyline.points;
-        var points = google.maps.geometry.encoding.decodePath(text);
+        this.views.navigation.points = google.maps.geometry.encoding.decodePath(text);
 
         var distanceText = o.routes[0].legs[0].distance.text;
         var durationText = o.routes[0].legs[0].duration.text;
-        var title = distanceText + "\n" + durationText;
+        this.views.navigation.title = distanceText + "\n" + durationText;
 
         this.views.navigation.distance = o.routes[0].legs[0].distance.value;
 
-        if (this.views.navigation.distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
-            this.views.navigation.previousDistance = this.views.navigationdistance;
-                return;
-        } else if (this.views.navigation.distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
-            && this.views.navigation.previousDistance
-            && this.views.navigation.previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
-            && this.views.navigation.track == null) {
-                this.views.navigation.previousDistance = this.views.navigation.distance;
-        } else if (this.views.navigation.distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN
-            && this.views.navigation.distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
-            && this.views.navigation.track == null) {
-                this.views.navigation.previousDistance = this.views.navigation.distance;
-                return;
-        }
-        this.views.navigation.previousDistance = this.views.navigation.distance;
-
-        if (this.views.navigation.track != null) {
-            this.views.navigation.track.setPath(points);
-            this.views.navigation.trackCenter.setPath(points);
-
-            var mePosition = utils.latLng(main.me.location);
-            var userPosition = utils.latLng(this.location);
-
-
-            var markerPosition = utils.findPoint(points);
-            var bounds = utils.reduce(main.map.getBounds(), 0.8);
-
-            if(!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
-                if(!bounds.contains(markerPosition)) {
-                    var fract = 0.5;
-                    while(!bounds.contains(markerPosition)) {
-                        fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
-                        if (fract < 0 || fract > 1) break;
-                        markerPosition = utils.findPoint(points, fract);
-                    }
-                }
-            }
-
-            this.views.navigation.marker.setPosition(markerPosition);
-//            var title = utils.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(points[0], points[points.length-1]));
-            title = this.properties.getDisplayName() + "\n" + title;
-            this.views.navigation.label.set("text", title);
-
-        }
+        updateLabel.call(this);
 
         if(!modeButtons) {
             modeButtons = u.dialog({
@@ -501,7 +466,7 @@ function NavigationHolder(main) {
 
     function createTrack() {
 
-        var points = [utils.latLng(main.me.location), utils.latLng(this.location)];
+        this.views.navigation.points = [utils.latLng(main.me.location), utils.latLng(this.location)];
 
         this.views.navigation.track = new google.maps.Polyline({
             geodesic: true,
@@ -551,6 +516,40 @@ function NavigationHolder(main) {
             modeButtons.close();
         }, 3000);
     }
+
+    function updateLabel() {
+
+        if (this.views.navigation.distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
+            this.views.navigation.previousDistance = this.views.navigationdistance;
+                return;
+        } else if (this.views.navigation.distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
+            && this.views.navigation.previousDistance
+            && this.views.navigation.previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
+            && this.views.navigation.track == null) {
+                this.views.navigation.previousDistance = this.views.navigation.distance;
+        } else if (this.views.navigation.distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN
+            && this.views.navigation.distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
+            && this.views.navigation.track == null) {
+                this.views.navigation.previousDistance = this.views.navigation.distance;
+                return;
+        }
+        this.views.navigation.previousDistance = this.views.navigation.distance;
+
+        if (this.views.navigation.track != null) {
+            this.views.navigation.track.setPath(this.views.navigation.points);
+            this.views.navigation.trackCenter.setPath(this.views.navigation.points);
+
+            var markerPosition = utils.labelPosition(main.map, this.views.navigation.points, utils.latLng(main.me.location), utils.latLng(this.location));
+
+            this.views.navigation.marker.setPosition(markerPosition);
+//            var title = utils.formatLengthToLocale(google.maps.geometry.spherical.computeDistanceBetween(this.views.navigation.points[0], this.views.navigation.points[this.views.navigation.points.length-1]));
+            var title = this.properties.getDisplayName() + "\n" + this.views.navigation.title;
+            this.views.navigation.label.set("text", title);
+
+        }
+
+    }
+
 
     function options(){
         return {
