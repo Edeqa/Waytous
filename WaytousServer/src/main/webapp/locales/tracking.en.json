@@ -157,7 +157,7 @@
   "hide_navigation": "Hide navigation",
   "navigate_with_google_maps": "Google Maps",
   "setting_up_direction": "Setting up direction...",
-  "sorry_direction_request_was_failed": "Sorry, direction request was failed.",
+  "direction_failed_will_try_again_later": "Direction failed. Will try again later.",
   "navigation_options": "Navigation options",
   "avoid_highways": "Avoid highways",
   "avoid_tolls": "Avoid tolls",

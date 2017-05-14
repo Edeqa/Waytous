@@ -27,6 +27,8 @@ function NavigationHolder(main) {
     var modeButtons;
     var modeDialog;
     var installation;
+    var listenerHandler;
+    var showModeButtonsTask;
 
     var navigation_outline_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -101,10 +103,13 @@ function NavigationHolder(main) {
                 this.views.navigation.show = true;
                 u.saveForContext("navigation:show:" + this.number, true);
                 main.toast.show(u.lang.setting_up_direction, -1);
+
                 update.call(this);
+
                 break;
             case EVENTS.HIDE_NAVIGATION:
                 removeView(this);
+
                 break;
             default:
                 break;
@@ -146,12 +151,17 @@ function NavigationHolder(main) {
     function drawerPopulate() {
         setTimeout(function(){
             drawerItemHide && drawerItemHide.hide();
-            modeButtons && modeButtons.close();
+            if(listenerHandler) {
+                listenerHandler.remove();
+                listenerHandler = null;
+            }
+//            modeButtons && modeButtons.close();
             main.users.forAllUsersExceptMe(function (number, user) {
                 if(user.views.navigation) {
                     if (user.views.navigation.show) {
                         drawerItemHide && drawerItemHide.show();
-                        modeButtons && modeButtons.open();
+                        if(!listenerHandler) listenerHandler = main.map.addListener("dragstart", showModeButtons);
+//                        modeButtons && modeButtons.open();
                     } else {
     //                    drawerItemShow.show();
                     }
@@ -166,6 +176,7 @@ function NavigationHolder(main) {
 
         var user = this;
         var req = "https://crossorigin.me/https://maps.googleapis.com/maps/api/directions/json?"
+//        var req = "https://maps.googleapis.com/maps/api/directions/json?"
             + "origin=" + main.me.location.coords.latitude + "," + main.me.location.coords.longitude + "&"
             + "destination=" + this.location.coords.latitude + "," + this.location.coords.longitude + "&"
             + "alternatives=false&"
@@ -205,7 +216,7 @@ function NavigationHolder(main) {
             if(installation) {
                 user.fire(EVENTS.HIDE_NAVIGATION);
                 setTimeout(function(){
-                    main.toast.show(u.lang.sorry_direction_request_was_failed);
+                    main.toast.show(u.lang.direction_failed_will_try_again_later, 5000);
                 },0);
             }
         })
@@ -222,6 +233,7 @@ function NavigationHolder(main) {
 
         if(!o.routes || !o.routes[0]) {
 //            main.toast.show("Route ");
+            u.toast.show(u.lang.direction_failed_will_try_again_later, 5000);
             console.error("NO ROUTE",o);
             return;
         }
@@ -385,6 +397,7 @@ function NavigationHolder(main) {
                    },
                 ]
             }, main.right);
+            modeButtons.addEventListener("mouseover", showModeButtons);
 
             modeDialog = u.dialog({
                 title: u.lang.navigation_options,
@@ -446,7 +459,7 @@ function NavigationHolder(main) {
 
         main.toast.hide();
 
-        modeButtons.open();
+        showModeButtons();
 
         modeButtons.itemsLayout.childNodes[0].classList.remove("navigation-mode-item-selected");
         modeButtons.itemsLayout.childNodes[1].classList.remove("navigation-mode-item-selected");
@@ -531,6 +544,13 @@ function NavigationHolder(main) {
         }
     }
 
+    function showModeButtons() {
+        clearTimeout(showModeButtonsTask);
+        if(!modeButtons.opened) modeButtons.open();
+        showModeButtonsTask = setTimeout(function(){
+            modeButtons.close();
+        }, 3000);
+    }
 
     function options(){
         return {
