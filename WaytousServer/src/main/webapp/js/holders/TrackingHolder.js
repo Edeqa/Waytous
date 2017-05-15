@@ -203,7 +203,7 @@ function TrackingHolder(main) {
                 shareDialog = shareDialog || u.dialog({
                     items: [
                         {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog },
-                        {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri() }
+                        {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
                     ],
                     positive: {
                         label: u.lang.mail,
