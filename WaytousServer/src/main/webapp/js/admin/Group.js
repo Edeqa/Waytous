@@ -76,32 +76,185 @@ function Group() {
                     { className: "th", innerHTML: "ID" },
                     { className: "option", content: td }
             ]});
-
-            tableSummary.add({ cells: [
+/*
+            var requiresPasswordNode = tableSummary.add({
+                onclick: function() {
+                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_REQUIRES_PASSWORD).once("value").then(function(snapshot){
+                        var newValue = !snapshot.val();
+                        ref.child(groupId).child(DATABASE.SECTION_OPTIONS_REQUIRES_PASSWORD).set(newValue).then(function(){
+                            requiresPasswordNode.childNodes[1].innerHTML = newValue ? "Yes" : "No";
+                            passwordNode[newValue ? "show" : "hide"]();
+                        }).catch(function(error){
+                            WTU.resign(updateSummary);
+                            console.error(error)
+                        });
+                    }).catch(function(error){
+                          WTU.resign(updateSummary);
+                      });
+                },
+                cells: [
                     { className: "th", innerHTML: "Requires password" },
                     { className: "option", innerHTML: snapshot.val()["requires-password"] ? "Yes" : "No" }
             ]});
 
-            tableSummary.add({ cells: [
+
+            var passwordNode = tableSummary.add({
+                className: snapshot.val()["requires-password"] ? "" : "hidden",
+                cells: [
+                    { className: "th", innerHTML: "&#150; password" },
+                    { className: "option", innerHTML: u.create(HTML.DIV, {innerHTML: "Not set"}).place(HTML.BUTTON, {className:"group-button-set-password", innerHTML:"Set password", onclick: function(e){
+                          e.stopPropagation();
+                          passwordNode.childNodes[1].firstChild.firstChild.nodeValue = "Not set "+Math.random()
+                      }}) }
+            ]});
+*/
+            var welcomeMessageNode = tableSummary.add({
+                onclick: function() {
+                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_WELCOME_MESSAGE).once("value").then(function(snapshot){
+                        u.dialog({
+                            title: "Welcome message",
+                            items: [
+                                { type:HTML.INPUT, className:"welcome-input", value:snapshot.val() }
+                            ],
+                            positive: {
+                                label: "OK",
+                                onclick: function(items) {
+                                    var newValue = items[0].value;
+                                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_WELCOME_MESSAGE).set(newValue).then(function(){
+                                        welcomeMessageNode.childNodes[1].innerHTML = newValue;
+                                    }).catch(function(error){
+                                        WTU.resign(updateSummary);
+                                        console.error(error)
+                                    });
+                                }
+                            },
+                            negative: { label:"Cancel"}
+                        }).open();
+                    }).catch(function(error){
+                          WTU.resign(updateSummary);
+                      });
+                },
+                cells: [
                     { className: "th", innerHTML: "Welcome message" },
                     { className: "option", innerHTML: snapshot.val()["welcome-message"] }
             ]});
 
-            tableSummary.add({ cells: [
+            var persistentNode = tableSummary.add({
+                onclick: function() {
+                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_PERSISTENT).once("value").then(function(snapshot){
+                        var newValue = !snapshot.val();
+                        ref.child(groupId).child(DATABASE.SECTION_OPTIONS_PERSISTENT).set(newValue).then(function(){
+                            persistentNode.childNodes[1].innerHTML = newValue ? "Yes" : "No";
+                            timeToLiveNode[newValue ? "hide" : "show"]();
+                        }).catch(function(error){
+                            WTU.resign(updateSummary);
+                            console.error(error)
+                        });
+                    }).catch(function(error){
+                          WTU.resign(updateSummary);
+                      });
+                },
+                cells: [
                     { className: "th", innerHTML: "Persistent group" },
                     { className: "option", innerHTML: snapshot.val().persistent ? "Yes" : "No" }
             ]});
 
-             tableSummary.add({
-                style: { display: (snapshot.val().persistent ? "none" : "")},
+            var timeToLiveNode = tableSummary.add({
+                className: snapshot.val().persistent ? "hidden" : "",
+                onclick: function() {
+                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY).once("value").then(function(snapshot){
+                        u.dialog({
+                            title: "Time to live",
+                            items: [
+                                { type:HTML.DIV, innerHTML:"Set time to live (in minutes) if the group is empty (i.e. all users are offline)." },
+                                { type:HTML.NUMBER, label:"Time to live, min", value:snapshot.val() }
+                            ],
+                            positive: {
+                                label: "OK",
+                                dismiss: false,
+                                onclick: function(items) {
+                                    var newValue = parseInt(items[1].value);
+                                    if(newValue == NaN) {
+                                        items[1].value = "";
+                                    } else if (newValue) {
+                                        this.close();
+                                        ref.child(groupId).child(DATABASE.SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY).set(newValue).then(function(){
+                                            timeToLiveNode.childNodes[1].innerHTML = newValue;
+                                        }).catch(function(error){
+                                            WTU.resign(updateSummary);
+                                            console.error(error)
+                                        });
+                                    }
+                                }
+                            },
+                            negative: { label:"Cancel"}
+                        }).open();
+                    }).catch(function(error){
+                          WTU.resign(updateSummary);
+                      });
+                },
                 cells: [
-                    { className: "th", innerHTML: "Time to live, min" },
+                    { className: "th", innerHTML: "&#150; time to live, min" },
                     { className: "option", innerHTML: snapshot.val()["time-to-live-if-empty"] }
                 ]
             });
 
-            tableSummary.add({ cells: [
-                    { className: "th", innerHTML: "Dismiss inactive after, sec" },
+            var dismissInactiveNode = tableSummary.add({
+                onclick: function() {
+                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_DISMISS_INACTIVE).once("value").then(function(snapshot){
+                        var newValue = !snapshot.val();
+                        ref.child(groupId).child(DATABASE.SECTION_OPTIONS_DISMISS_INACTIVE).set(newValue).then(function(){
+                            dismissInactiveNode.childNodes[1].innerHTML = newValue ? "Yes" : "No";
+                            delayToDismissNode[newValue ? "show" : "hide"]();
+                        }).catch(function(error){
+                            WTU.resign(updateSummary);
+                            console.error(error)
+                        });
+                    }).catch(function(error){
+                          WTU.resign(updateSummary);
+                      });
+                },
+                cells: [
+                    { className: "th", innerHTML: "Dismiss inactive" },
+                    { className: "option", innerHTML: snapshot.val()["dismiss-inactive"] ? "Yes" :"No" }
+            ]});
+
+            var delayToDismissNode = tableSummary.add({
+                className: snapshot.val()["dismiss-inactive"] ? "" : "hidden",
+                onclick: function() {
+                    ref.child(groupId).child(DATABASE.SECTION_OPTIONS_DELAY_TO_DISMISS).once("value").then(function(snapshot){
+                        u.dialog({
+                            title: "Delay to dismiss",
+                            items: [
+                                { type:HTML.DIV, innerHTML:"Switch user offline if he is not active at least (in seconds)." },
+                                { type:HTML.NUMBER, label:"Delay to dismiss, sec", value:snapshot.val() }
+                            ],
+                            positive: {
+                                label: "OK",
+                                dismiss: false,
+                                onclick: function(items) {
+                                    var newValue = parseInt(items[1].value);
+                                    if(newValue == NaN) {
+                                        items[1].value = "";
+                                    } else if (newValue) {
+                                        this.close();
+                                        ref.child(groupId).child(DATABASE.SECTION_OPTIONS_DELAY_TO_DISMISS).set(newValue).then(function(){
+                                            delayToDismissNode.childNodes[1].innerHTML = newValue;
+                                        }).catch(function(error){
+                                            WTU.resign(updateSummary);
+                                            console.error(error)
+                                        });
+                                    }
+                                }
+                            },
+                            negative: { label:"Cancel"}
+                        }).open();
+                    }).catch(function(error){
+                          WTU.resign(updateSummary);
+                      });
+                },
+                cells: [
+                    { className: "th", innerHTML: "&#150; dismiss after, sec" },
                     { className: "option", innerHTML: snapshot.val()["dismiss-inactive"] ? snapshot.val()["delay-to-dismiss"] : "&#150;" }
             ]});
 

@@ -200,7 +200,7 @@ function User() {
         }}, buttons);
         u.create(HTML.BUTTON,{innerHTML:"Inactive", onclick: function(){
             switchActive(userNumber, false);
-            renderButtons(buttons);
+            WTU.switchTo("/admin/group/" + groupId);
         }}, buttons);
         u.create(HTML.BUTTON,{innerHTML:"Cancel", onclick: function(){
             renderButtons(buttons);

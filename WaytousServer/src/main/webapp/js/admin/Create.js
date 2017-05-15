@@ -21,7 +21,7 @@ function Create() {
             items: [
                 {
                     type: HTML.INPUT,
-                    label: u.create(HTML.DIV, "ID ").place(HTML.DIV, {className: "create-dialog-button-generate", innerHTML:"Generate ID", onclick(){
+                    label: u.create(HTML.DIV, "ID ").place(HTML.BUTTON, {className: "create-dialog-button-generate", innerHTML:"Generate ID", onclick(){
                         dialog.items[0].value = Math.random().toString(32).toUpperCase().replace(/0\./,"");
                     }}),
                     oninput: validate_id

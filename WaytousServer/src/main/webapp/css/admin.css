@@ -56,13 +56,15 @@
     width: 400px;
     max-width: 90%;
 }
-.create-dialog-button-generate {
+.create-dialog-button-generate, .group-button-set-password {
     display: inline-block;
     font-size: x-small;
     padding: 2px;
+    margin-left: 10px;
     border-style: solid;
     border-width: 1px;
     border-radius: 3px;
+    border-color: darkslategray;
     background-color: antiquewhite;
 }
 .settings-dialog {
@@ -124,6 +126,9 @@
 }
 .buttons {
     margin-bottom: 5px;
+}
+.welcome-input {
+    width: 100%;
 }
 
 

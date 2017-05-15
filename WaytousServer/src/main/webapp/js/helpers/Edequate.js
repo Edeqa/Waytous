@@ -53,6 +53,7 @@ function Edequate(options) {
         INPUT:"input",
         CHECKBOX:"checkbox",
         TEXT:"text",
+        NUMBER:"number",
         TEXTAREA:"textarea",
         HIDDEN:"hidden",
         PASSWORD:"password",
@@ -856,7 +857,7 @@ function Edequate(options) {
             dialog.focus();
             var focused = false;
             for(var i in items) {
-                if(items[i].constructor === HTMLInputElement && items[i].type == HTML.TEXT) {
+                if(items[i].constructor === HTMLInputElement && (items[i].type == HTML.TEXT || items[i].type == HTML.NUMBER)) {
                     focused = true;
                     items[i].focus();
                     break;

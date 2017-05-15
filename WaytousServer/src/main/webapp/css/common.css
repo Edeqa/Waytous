@@ -266,7 +266,7 @@ button:active {
     flex: 1 0 40%;
     white-space: nowrap;
 }
-.dialog-item-input-input, .dialog-item-input-password {
+.dialog-item-input-input, .dialog-item-input-password, .dialog-item-input-number {
     font-size: 12px;
     padding-top: 5px;
     padding-bottom: 5px;
