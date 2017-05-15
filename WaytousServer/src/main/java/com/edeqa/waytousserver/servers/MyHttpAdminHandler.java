@@ -93,7 +93,6 @@ public class MyHttpAdminHandler implements HttpHandler {
             FirebaseAuth.getInstance().createCustomToken("Administrator").addOnSuccessListener(new OnSuccessListener<String>() {
                 @Override
                 public void onSuccess(final String customToken) {
-                    System.out.println("GOT:"+customToken);
 
                     Map<String,Object> update = new HashMap<>();
                     update.put("active", false);

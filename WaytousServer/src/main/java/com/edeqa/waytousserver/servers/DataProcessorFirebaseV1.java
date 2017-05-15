@@ -534,7 +534,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         a.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                System.out.println("SUCCESS REGISTERING USER, IDs:"+groupId+":"+uid);
+                Common.log("DPF1", "onMessage:registerUser:"+user.getNumber(),"uid:"+uid,"group:"+groupId);
                 FirebaseAuth.getInstance().createCustomToken(uid).addOnSuccessListener(new OnSuccessListener<String>() {
                     @Override
                     public void onSuccess(String customToken) {

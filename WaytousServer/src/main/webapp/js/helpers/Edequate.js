@@ -1903,35 +1903,23 @@ function Edequate(options) {
                table.head.cells[index].firstChild.show();
                table.head.cells[index].firstChild.classList[sort > 0 ? "add" : "remove"]("table-sort-descend");
 
+               var rows = [];
                for(var i = 0; i < table.body.childNodes.length-1; i++) {
-                   var icrit = i;
-                   var crit = table.body.childNodes[i];
-                   var sortCrit = crit.cells[index].sort;
-                   var textCrit = crit.cells[index].innerText;
-
-                   textCrit = ""+(sortCrit == undefined ? textCrit : sortCrit);
-                   var parsedCrit = parseInt(textCrit);
-                   for(var j = i + 1; j < table.body.childNodes.length; j++) {
-                       var b = table.body.childNodes[j];
-                       var textB = ""+(b.cells[index].sort == undefined ? b.cells[index].innerText : b.cells[index].sort);
-                       var parsedB = parseInt(textB);
-                       var cmp;
-                       if(""+parsedCrit == textCrit && ""+parsedB == textB){
-                           cmp = (parsedCrit > parsedB ? 1 : (parsedCrit < parsedB ? -1 : 0));
-                       } else {
-                           cmp = textCrit.toLocaleLowerCase().localeCompare(textB.toLocaleLowerCase());
-                       }
-                       if(sort == cmp) {
-                           crit = b;
-                           textCrit = ""+(crit.cells[index].sort == undefined ? crit.cells[index].innerText : crit.cells[index].sort);
-                           parsedCrit = parseInt(textCrit);
-                           icrit = j;
-                       }
-                   }
-                   if(icrit != i) {
-                       table.body.appendChild(table.body.replaceChild(table.body.childNodes[icrit], table.body.childNodes[i]));
-                   }
+                    rows.push(table.body.childNodes[i]);
                }
+
+                rows.sort(function(a, b) {
+                    var aCriteria = a.cells[index].sort == undefined ? a.cells[index].innerText.toLowerCase() : a.cells[index].sort;
+                    var bCriteria = b.cells[index].sort == undefined ? b.cells[index].innerText.toLowerCase() : b.cells[index].sort;
+
+                  return aCriteria == bCriteria ? 0 : (aCriteria > bCriteria ? 1 : -1) * sort;
+                });
+
+
+               for(var i in rows) {
+                    table.body.appendChild(rows[i]);
+               }
+
             },
             _sorts: [],
             sorts: function(options) {
