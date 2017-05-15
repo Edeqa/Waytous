@@ -82,7 +82,16 @@ function Groups() {
 
                 ref.child(data.key).child(DATABASE.SECTION_USERS_DATA).on("value", function(snapshot){
                     if(!snapshot.val()) return;
-                    usersNode.innerHTML = snapshot.val().length;
+
+                    usersNode.lastChild.innerHTML = snapshot.val().length;
+                    var changed = 0, active = 0;
+                    for(var i in snapshot.val()) {
+                        var c = parseInt(snapshot.val()[i].changed);
+                        if(c > changed) changed = c;
+                        if(snapshot.val()[i].active) active ++;
+                    }
+                    usersNode.innerHTML = active + " / " + snapshot.val().length;
+
                     var changed = 0;
                     for(var i in snapshot.val()) {
                         var c = parseInt(snapshot.val()[i].changed);
@@ -99,10 +108,6 @@ function Groups() {
                 table.placeholder.show();
             });
         }, function(e) {
-//            if(resign) {
-//                console.error(e);
-//                return;
-//            }
             console.warn("Resign because of",e.message);
             resign = true;
             WTU.resign(updateData);

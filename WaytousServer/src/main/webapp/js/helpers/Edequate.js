@@ -386,7 +386,8 @@ function Edequate(options) {
         "version":1,
         "fill":1,
         "d":1,
-        "tabindex":1
+        "tabindex":1,
+        "readOnly":1,
     };
 
     function create(name, properties, appendTo, position) {

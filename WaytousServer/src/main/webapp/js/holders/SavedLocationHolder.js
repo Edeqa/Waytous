@@ -23,7 +23,6 @@ function SavedLocationHolder(main) {
     var locationEditDialog;
     var locationShareDialog;
     var locationSendDialog;
-    var locationReceiveDialog;
     var locationDeleteDialog;
     var shareBlockedDialog;
     var locationsDialog;
@@ -182,7 +181,6 @@ function SavedLocationHolder(main) {
                 locationShareDialog && locationShareDialog.close();
                 locationSendDialog && locationSendDialog.close();
                 locationDeleteDialog && locationDeleteDialog.close();
-                locationReceiveDialog && locationReceiveDialog.close();
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
                 locationEditDialog = locationEditDialog || u.dialog({
@@ -232,13 +230,12 @@ function SavedLocationHolder(main) {
                 locationShareDialog && locationShareDialog.close();
                 locationSendDialog && locationSendDialog.close();
                 locationDeleteDialog && locationDeleteDialog.close();
-                locationReceiveDialog && locationReceiveDialog.close();
                 var loc = u.load("saved_location:"+parseInt(object));
                 if(loc) {
                     locationShareDialog = locationShareDialog || u.dialog({
                         items: [
                             {type:HTML.DIV, innerHTML: u.lang.let_your_email_client_compose_the_message_with_link_to_this_location },
-                            {type:HTML.INPUT, className: "dialog-item-input-link" },
+                            {type:HTML.INPUT, className: "dialog-item-input-link", readOnly:true },
                         ],
                         positive: {
                             label: u.lang.mail,
@@ -287,7 +284,6 @@ function SavedLocationHolder(main) {
                 locationShareDialog && locationShareDialog.close();
                 locationSendDialog && locationSendDialog.close();
                 locationDeleteDialog && locationDeleteDialog.close();
-                locationReceiveDialog && locationReceiveDialog.close();
 
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
@@ -329,7 +325,6 @@ function SavedLocationHolder(main) {
                 locationShareDialog && locationShareDialog.close();
                 locationSendDialog && locationSendDialog.close();
                 locationDeleteDialog && locationDeleteDialog.close();
-                locationReceiveDialog && locationReceiveDialog.close();
                 var number = parseInt(object);
                 var loc = u.load("saved_location:"+number);
                 locationDeleteDialog = locationDeleteDialog || u.dialog({
@@ -502,49 +497,35 @@ function SavedLocationHolder(main) {
         locationShareDialog && locationShareDialog.close();
         locationSendDialog && locationSendDialog.close();
         locationDeleteDialog && locationDeleteDialog.close();
-        locationReceiveDialog && locationReceiveDialog.close();
 
-        locationReceiveDialog = locationReceiveDialog || u.dialog({
+        u.dialog({
              title: u.lang.add_location,
              queue: true,
              items: [
-                 { type: HTML.DIV },
-                 { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" },
-                 { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" }
+                 { type: HTML.DIV, innerHTML: u.lang.you_ve_got_the_location_from_s_add_it_to_your_saved_locations_list.format((from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName()).outerHTML },
+                 { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" + (user.address ? "" : " hidden"), innerHTML: user.address ? u.lang.address_s.format(user.address).outerHTML : "" },
+                 { type: HTML.DIV, className: "saved-location-receive-dialog-item-second" + (user.description ? "" : " hidden"), innerHTML: user.description ? u.lang.description_s.format(user.description).outerHTML : "" }
              ],
              itemsClassName: "saved-location-receive-dialog-items",
              className: "saved-location-receive-dialog",
              positive: {
-                 label: u.lang.yes
+                 label: u.lang.yes,
+                 onclick: function() {
+                     this.options.location.views[type] = createView(this.options.location)
+                     this.options.location.fire(EVENTS.SAVE_LOCATION);
+                 }
              },
              negative: {
-                 label: u.lang.no
+                 label: u.lang.no,
+                 onclick: function() {
+                     var last = u.load("saved_location:counter") || 0;
+                     last++;
+                     u.save("saved_location:counter",last);
+                     u.save("saved_location:"+last, {k:this.options.location.key});
+                 }
              },
-         }, main.right);
-        locationReceiveDialog.items[0].innerHTML = u.lang.you_ve_got_the_location_from_s_add_it_to_your_saved_locations_list.format((from ? from.properties.getDisplayName() : number) + ": " + user.properties.getDisplayName()).outerHTML;
-        if(user.address) {
-            locationReceiveDialog.items[1].innerHTML = u.lang.address_s.format(user.address).outerHTML;
-            locationReceiveDialog.items[1].show();
-        } else {
-            locationReceiveDialog.items[1].hide();
-        }
-        if(user.description) {
-            locationReceiveDialog.items[2].innerHTML = u.lang.description_s.format(user.description).outerHTML;
-            locationReceiveDialog.items[2].show();
-        } else {
-            locationReceiveDialog.items[2].hide();
-        }
-        locationReceiveDialog.positive.onclick = function() {
-            user.views[type] = createView(user)
-            user.fire(EVENTS.SAVE_LOCATION);
-        }
-        locationReceiveDialog.negative.onclick = function() {
-            var last = u.load("saved_location:counter") || 0;
-            last++;
-            u.save("saved_location:counter",last);
-            u.save("saved_location:"+last, {k:user.key});
-        }
-        locationReceiveDialog.open();
+             location: user
+         }, main.right).open();
 
     }
 
@@ -555,5 +536,6 @@ function SavedLocationHolder(main) {
         createView:createView,
         saveable:true,
         perform:perform,
+        loadsaved:-1,
     }
 }
