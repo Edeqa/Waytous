@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver;
 
 import com.edeqa.waytousserver.helpers.Common;
+import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
@@ -12,6 +13,7 @@ import com.edeqa.waytousserver.servers.MyWsServer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.sun.net.httpserver.BasicAuthenticator;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
@@ -26,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -46,12 +49,14 @@ public class WaytousServer {
 
     private static MyWsServer wsServer;
     private static MyWsServer wssServer;
+    private static DigestAuthenticator authenticator;
 
     public static void main(final String[] args ) throws InterruptedException , IOException {
 
         Common.log("Main", "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);
 
+        authenticator = new DigestAuthenticator("waytous");
 
         try {
             FirebaseApp.initializeApp(new FirebaseOptions.Builder()
@@ -245,6 +250,7 @@ public class WaytousServer {
 
         MyHttpAdminHandler adminServer = new MyHttpAdminHandler();
         adminServer.setDataProcessor(dataProcessorFirebaseV1);
+        adminServer.setAuthenticator(authenticator);
 //        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
 //        Common.log("Main", "Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
 
@@ -309,8 +315,14 @@ public class WaytousServer {
             sslServer.createContext("/xhr/", joinServer);
             Common.log("Main", "Xhr HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/xhr/");
 
-            sslServer.createContext("/admin/", adminServer).setAuthenticator(new Authenticator("get"));
-            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/");
+//            sslServer.createContext("/admin/", adminServer).setAuthenticator(new Authenticator("get"));
+//            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/");
+
+            sslServer.createContext("/admin/", adminServer).setAuthenticator(authenticator);
+            sslServer.createContext("/admin/logout", adminServer);
+
+//            sslServer.createContext("/admin/", adminServer).setAuthenticator(new Authenticator("get"));
+            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/, /admin/logout");
 
             sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
 
@@ -334,13 +346,15 @@ public class WaytousServer {
 
     }
 
-    static class Authenticator extends BasicAuthenticator {
+    static class Authenticator extends  BasicAuthenticator {
         public Authenticator(String s) {
             super(s);
+            System.out.println("AUTHENTICATOR:"+s);
         }
 
         @Override
         public boolean checkCredentials(String user, String pwd) {
+            System.out.println("USER:"+user+", PASSWORD:"+pwd);
             return user.equals(SENSITIVE.getLogin()) && pwd.equals(SENSITIVE.getPassword());
         }
     }

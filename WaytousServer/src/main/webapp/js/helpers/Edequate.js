@@ -651,18 +651,18 @@ function Edequate(options) {
     * options = {
     *       id,
     *       title: name | {label, className, button},
-    *       queue: true|*false*,
-    *       modal: true|*false*,
-    *       hiding: HIDING.method (*HIDING.OPACITY*),
+    *       queue: true|*false*, - if true then post this dialog to the queue and wait
+    *       modal: true|*false*, - if true then dim all behind the dialog and wait for user
+    *       hiding: HIDING.method, - default is HIDING.OPACITY
     *       resizeable: true|*false*,
-    *       items,
+    *       items, - items can be added also via dialog.addItem
     *       positive: button,
     *       neutral: button,
     *       negative: button,
-    *       onopen: function,
-    *       onclose: function,
-    *       timeout,
-    *       help: function
+    *       onopen: function, - also will be called if positive is clicked
+    *       onclose: function, - also will be called if negative is clicked
+    *       timeout, - dialog will be closed automatically after timeout, onclose will be called
+    *       help: function, - question mark will be shown on bottom right corner
     *   }
     * title.button = {
     *       icon,
@@ -673,9 +673,24 @@ function Edequate(options) {
     *       label,
     *       className,
     *       onclick,
-    *       dismiss: *true*|false
+    *       dismiss: *true*|false, - if false then dialog will keep shown,
     *   }
     * dialog.addItem(options)
+    * options = {
+    *       id,
+    *       type: HTML.DIV|HTML.A|HTML.SELECT|*HTML.TEXT*|HTML.NUMBER|HTML.TEXTAREA|HTML.BUTTON|HTML.HIDDEN,
+    *       className,
+    *       labelClassName,
+    *       label,
+    *       order, - item will be added before another item that has greater order
+    *       label|title|innerHTML, - actual for HTML.DIV, can be String or HTMLElement
+    *       enclosed: true|*false*, - hide body and show it on click on title
+    *       body, - actual only if enclosed:true
+    *       value, - actual for HTML.HIDDEN, HTML.SELECT
+    *       values, - actual for HTML.SELECT
+    *       default, - actual for HTML.SELECT
+    *       onclick: function,
+    *   }
     * dialog.open()
     * dialog.close()
     */

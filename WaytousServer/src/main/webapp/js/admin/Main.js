@@ -230,12 +230,15 @@ function Main() {
     }
 
     var logout = function() {
-        var to_url = window.location.protocol + "//" + window.location.host + "/";// + window.location.pathname;
-        u.get(window.location.href.replace(/:\/\//, '://log:out@')).then(function() {
-            window.location = to_url;
-        }).catch(function() {
-            window.location = to_url;
-        });
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/admin", true);
+        xhr.setRequestHeader("Authorization", "Digest logout");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState==4) {
+                window.location = "/"
+            }
+        }
+        xhr.send();
     }
 
     var switchTo = function(to) {

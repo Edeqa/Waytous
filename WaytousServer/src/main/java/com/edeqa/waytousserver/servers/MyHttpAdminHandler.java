@@ -1,5 +1,6 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.google.common.net.HttpHeaders;
@@ -41,6 +42,7 @@ public class MyHttpAdminHandler implements HttpHandler {
     private final LinkedHashMap<String, PageHolder> holders;
     private volatile AbstractDataProcessor dataProcessor;
     private HtmlGenerator html;
+    private DigestAuthenticator authenticator;
 
     public MyHttpAdminHandler(){
 
@@ -69,7 +71,6 @@ public class MyHttpAdminHandler implements HttpHandler {
     public void handle(final HttpExchange exchange) throws IOException {
         try {
 //            System.out.println("Admin server requested");
-
 
             for(Map.Entry<String, PageHolder> x: holders.entrySet()) {
                 if(x.getValue().perform(exchange)) {
@@ -136,5 +137,13 @@ public class MyHttpAdminHandler implements HttpHandler {
 
     public void setDataProcessor(AbstractDataProcessor dataProcessor) {
         this.dataProcessor = dataProcessor;
+    }
+
+    public void setAuthenticator(DigestAuthenticator authenticator) {
+        this.authenticator = authenticator;
+    }
+
+    public DigestAuthenticator getAuthenticator() {
+        return authenticator;
     }
 }
