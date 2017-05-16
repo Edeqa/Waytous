@@ -52,6 +52,7 @@ public class MyHttpAdminHandler implements HttpHandler {
         classes.add("AdminLogsHolder");
         classes.add("AdminMainHolder");
         classes.add("AdminSettingsHolder");
+        classes.add("AdminXhrHolder");
 
         for(String s:classes){
             try {
@@ -72,9 +73,15 @@ public class MyHttpAdminHandler implements HttpHandler {
         try {
 //            System.out.println("Admin server requested");
 
-            for(Map.Entry<String, PageHolder> x: holders.entrySet()) {
-                if(x.getValue().perform(exchange)) {
-                    return;
+            String[] parts = exchange.getRequestURI().getPath().split("/");
+            if(parts.length >2) {
+                for(Map.Entry<String, PageHolder> x: holders.entrySet()) {
+
+                    System.out.println("ADMIN:"+parts[2]+":"+x.getValue().getType());
+
+                    if(parts[2].equals(x.getValue().getType()) && x.getValue().perform(exchange)) {
+                        return;
+                    }
                 }
             }
 
@@ -139,11 +146,4 @@ public class MyHttpAdminHandler implements HttpHandler {
         this.dataProcessor = dataProcessor;
     }
 
-    public void setAuthenticator(DigestAuthenticator authenticator) {
-        this.authenticator = authenticator;
-    }
-
-    public DigestAuthenticator getAuthenticator() {
-        return authenticator;
-    }
 }

@@ -209,7 +209,6 @@ function Main() {
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();
                 if(holders[x] && holders[x].menu) {
-
                     var item = drawer.add(u.DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
                         switchTo("/admin/" + holders[this.instance].page);
                         return false;
@@ -226,6 +225,7 @@ function Main() {
             u.loading.hide();
         } catch(e) {
             console.error(e);
+            window.location = "/admin/home";
         }
     }
 

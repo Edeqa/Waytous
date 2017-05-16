@@ -87,7 +87,22 @@ function Create() {
 
         if(!inputId.value) return;
 
-        var ref = database.ref();
+        var options = {
+//            "date-created": firebase.database.ServerValue.TIMESTAMP,
+            "requires-password": inputRequiresPassword.checked,
+            "password": inputPassword.value ? inputPassword.value : null,
+            "welcome-message": inputWelcomeMessage.value,
+            "persistent": inputPersistent.checked,
+            "time-to-live-if-empty": inputTtl.value,
+            "dismiss-inactive": inputDismissInactive.checked,
+            "delay-to-dismiss": inputDelay.value
+        }
+        u.post("/admin/xhr/group/create", JSON.stringify(options))
+        .then(function(){
+           WTU.switchTo("/admin/groups");
+        });
+
+        /*var ref = database.ref();
 
         ref.child(DATABASE.SECTION_GROUPS).child(inputId.value).set(0);
 
@@ -108,7 +123,7 @@ function Create() {
         }).then(function(){
             WTU.switchTo("/admin/groups");
         });
-
+*/
 //        window.location.href = "/admin/groups";
 
 //        if(window.name == "content") {
