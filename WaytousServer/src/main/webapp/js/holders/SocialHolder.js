@@ -11,6 +11,7 @@ function SocialHolder(main) {
     var type = "social";
 
     var shareDialog;
+    var drawerItemShare;
     var ic_facebook;
 
     var facebook_svg = {
@@ -26,14 +27,13 @@ function SocialHolder(main) {
         d: "M17,2V2H17V6H15C14.31,6 14,6.81 14,7.5V10H14L17,10V14H14V22H10V14H7V10H10V6A4,4 0 0,1 14,2H17Z"
     };
 
-
     function start() {
 
         window.fbAsyncInit = function() {
             FB.init({
               appId      : '1226806074062997',
               xfbml      : false,
-              version    : 'v2.8'
+              version    : 'v2.9'
             });
 //            FB.AppEvents.logPageView();
             FB.ui({
@@ -61,35 +61,44 @@ function SocialHolder(main) {
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 ic_facebook = ic_facebook || u.create(HTML.PATH, facebook_path, u.create(HTML.SVG, facebook_svg)).parentNode;
-                object.add(DRAWER.SECTION_COMMUNICATION,"facebook","Share to Facebook",ic_facebook,function(){
+                drawerItemShare = object.add(DRAWER.SECTION_COMMUNICATION,"facebook","Share to Facebook",ic_facebook,function(){
                     if(shareDialog) shareDialog.close();
                     shareDialog = shareDialog || u.dialog({
                         items: [
-                            {type:HTML.DIV, innerHTML:"Let Facebook share the link to this group?"},
-                            {type:HTML.DIV, innerHTML:"Note: may be your browser locks pop-ups. If so please unlock this ability for calling e-mail properly."}
+                            {type:HTML.DIV, innerHTML: u.lang.social_share_to_facebook_dialog },
+                            {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
                         ],
                         positive: {
-                            label: "OK",
+                            label: u.lang.share,
                             onclick: function() {
                                 FB.ui({
-                                    method: "feed",
-                                    link: main.tracking.getTrackingUri(),
+                                    method: "share",
+                                    display: "popup",
+                                    href: main.tracking.getTrackingUri(),
                                     caption: "Follow me at ${WEB_PAGE}",
                                 }, function(response){
                                     console.log("A",response);
                                 });
                             }
                         },
+                        neutral: {
+                            label: u.lang.copy,
+                            dismiss: false,
+                            onclick: function(items) {
+                                if(u.copyToClipboard(items[1])) {
+                                    main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                                }
+                                shareDialog.close();
+                            }
+                        },
                         negative: {
-                            label: "Cancel"
+                            label: u.lang.cancel
                         },
                         timeout: 20000
                     }, main.right);
                     shareDialog.open();
-
-
-
                 });
+                drawerItemShare.hide();
                 // var drawerItem = object.add(DRAWER.SECTION_LAST,type+"_1");
                 //
                 // drawerItem.classList.add("menu-item-social");
@@ -99,6 +108,15 @@ function SocialHolder(main) {
                 // u.create(HTML.DIV, { className: "menu-item-twitter", innerHTML: "twitter" }, drawerItem);
 
                 break;
+            case EVENTS.TRACKING_CONNECTING:
+            case EVENTS.TRACKING_RECONNECTING:
+            case EVENTS.TRACKING_ACTIVE:
+                drawerItemShare.show();
+                break;
+            case EVENTS.TRACKING_DISABLED:
+                drawerItemShare.hide();
+                break;
+
             default:
                 break;
         }
