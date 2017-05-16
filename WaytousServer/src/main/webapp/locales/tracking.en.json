@@ -207,6 +207,11 @@
   "description_s": "Description: %s.",
 
 
+  "// SocialHolder": "",
+
+  "social_share_to_facebook_dialog": "Let Facebook share the link to this group?<br>Or you may copy the link into clipboard and paste wherever you'd like.",
+
+
   "// StreetViewHolder": "",
 
   "show_street_view": "Street view",

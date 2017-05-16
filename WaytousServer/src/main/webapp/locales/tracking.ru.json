@@ -157,7 +157,7 @@
   "you_have_added_location": "Вы сохранили место. Сохраненные места можно посмотреть в меню \"Сохраненные\". Сделать еще что-нибудь?",
   "show": "Показать",
   "edit_location": "Править место",
-  "let_your_email_client_compose_the_message_with_link_to_this_location": "Создать письмо со ссылкой на это место? Или вы можете скопировать ссылку в буфер обмена и вставить где угодно.",
+  "let_your_email_client_compose_the_message_with_link_to_this_location": "Создать письмо со ссылкой на это место?<br>Или вы можете скопировать ссылку в буфер обмена и вставить куда угодно.",
   "send_location": "Отправить место",
   "you_re_going_to_send_the_location_s_to_all_continue": "Вы собираетесь отправить информацию о %s всем в группе. Продолжить?",
   "delete_location": "Удалить место",
@@ -170,6 +170,11 @@
   "add_location": "Сохранить место",
   "address_s": "Адрес: %s.",
   "description_s": "Описание: %s.",
+
+
+  "// SocialHolder": "",
+
+  "social_share_to_facebook_dialog": "Поделиться на Фейсбуке ссылкой на группу?<br>Или вы можете скопировать ссылку в буфер обмена и вставить куда угодно.",
 
 
   "// StreetViewHolder": "",
