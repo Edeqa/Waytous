@@ -57,20 +57,21 @@ function Main() {
 //        main.layout = u.create("div", {className:"layout"}, document.body);
 
         setTimeout(function(){
-            loadResources();
+            loadResources(function(){
+                u.loading("0%");
+        //        window.onload = function() {
+        //            window.scrollTo(0, 1);
+        //            document.addEventListener("touchmove", function(e) { e.preventDefault() });
+        //        };
+
+                //addConsoleLayer(main.right);
+
+                u.require("/js/helpers/Constants").then(function(e){
+                    initializeHeader.call(main);
+                });
+            });
         },0);
 
-        u.loading("0%");
-//        window.onload = function() {
-//            window.scrollTo(0, 1);
-//            document.addEventListener("touchmove", function(e) { e.preventDefault() });
-//        };
-
-        //addConsoleLayer(main.right);
-
-        u.require("/js/helpers/Constants").then(function(e){
-            initializeHeader.call(main);
-        });
     };
 
     function addConsoleLayer(parent) {
@@ -357,9 +358,10 @@ function Main() {
         }, 0);
     }
 
-    function loadResources() {
+    function loadResources(callback) {
 
         u.lang.overrideResources({"default":defaultResources});
+        if(callback) callback();
 
         var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
         var resources = "/locales/tracking."+lang+".json";
