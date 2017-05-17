@@ -36,12 +36,12 @@ function Create() {
                       dialog.items[5].parentNode[this.checked ? "hide" : "show"]();
                       dialog.items[5].focus();
                 } },
-                { type: HTML.INPUT, label: "Time to live, min", oninput: validate_ttl },
+                { type: HTML.NUMBER, label: "Time to live, min", oninput: validate_ttl },
                 { type: HTML.CHECKBOX, label: "Dismiss inactive users", onchange: function() {
                     dialog.items[7].parentNode[this.checked ? "show" : "hide"]();
                     dialog.items[7].focus();
-                } },
-                { type: HTML.INPUT, itemClassName: "hidden", label: "Delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay },
+                }, checked: true },
+                { type: HTML.NUMBER, itemClassName: "", label: "Delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay, value: 300 },
             ],
             positive: {
                 label: "OK",
@@ -88,7 +88,7 @@ function Create() {
         if(!inputId.value) return;
 
         var options = {
-//            "date-created": firebase.database.ServerValue.TIMESTAMP,
+            "group_id": inputId.value,
             "requires-password": inputRequiresPassword.checked,
             "password": inputPassword.value ? inputPassword.value : null,
             "welcome-message": inputWelcomeMessage.value,
@@ -97,33 +97,16 @@ function Create() {
             "dismiss-inactive": inputDismissInactive.checked,
             "delay-to-dismiss": inputDelay.value
         }
-        u.post("/admin/xhr/group/create", JSON.stringify(options))
-        .then(function(){
+        u.post("/admin/rest/v1/group/create", JSON.stringify(options))
+        .then(function(xhr){
+           u.toast.show("Group "+inputId.value+" has created.");
            WTU.switchTo("/admin/groups");
+        }).catch(function(code,xhr){
+            console.error(code,xhr);
+            var res = JSON.parse(xhr.responseText) || {};
+            u.toast.show(res.message || xhr.statusText);
         });
 
-        /*var ref = database.ref();
-
-        ref.child(DATABASE.SECTION_GROUPS).child(inputId.value).set(0);
-
-        ref.child(inputId.value).child(DATABASE.SECTION_USERS_DATA).child(0).child(DATABASE.USER_ACTIVE).set(false);
-        ref.child(inputId.value).child(DATABASE.SECTION_USERS_KEYS).child(0).set(0);
-//        ref.child(inputId.value).child(DATABASE.SECTION_USERS_ORDER).push().set(0);
-        ref.child(inputId.value).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(0).child("key").set(0);
-
-        ref.child(inputId.value).child(DATABASE.SECTION_OPTIONS).set({
-            "date-created": firebase.database.ServerValue.TIMESTAMP,
-            "requires-password": inputRequiresPassword.checked,
-            "password": inputPassword.value ? inputPassword.value : null,
-            "welcome-message": inputWelcomeMessage.value,
-            "persistent": inputPersistent.checked,
-            "time-to-live-if-empty": inputTtl.value,
-            "dismiss-inactive": inputDismissInactive.value,
-            "delay-to-dismiss": inputDelay.value
-        }).then(function(){
-            WTU.switchTo("/admin/groups");
-        });
-*/
 //        window.location.href = "/admin/groups";
 
 //        if(window.name == "content") {

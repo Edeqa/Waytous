@@ -1,10 +1,19 @@
 package com.edeqa.waytousserver.helpers;
 
+import com.edeqa.waytousserver.interfaces.Callable2;
+import com.edeqa.waytousserver.interfaces.Callable3;
+import com.edeqa.waytousserver.interfaces.Callable4;
+import com.google.common.net.HttpHeaders;
+import com.sun.net.httpserver.HttpExchange;
+
+import org.json.JSONObject;
+
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.URL;
@@ -12,10 +21,13 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 
 /**
  * Created 10/8/16.
@@ -173,5 +185,38 @@ public class Utils {
 
         return sb.toString();
     }
+
+    public static Callable2<HttpExchange,JSONObject> sendResultJson = new Callable2<HttpExchange,JSONObject>() {
+        @Override
+        public void call(HttpExchange exchange, JSONObject json) {
+            sendResult.call(exchange, 200, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
+        }
+    };
+
+    public static Callable3<HttpExchange,Integer,JSONObject> sendError = new Callable3<HttpExchange,Integer,JSONObject>() {
+        @Override
+        public void call(HttpExchange exchange, Integer code, JSONObject json) {
+            sendResult.call(exchange, code, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
+        }
+    };
+
+    public static Callable4<HttpExchange,Integer,String,byte[]> sendResult = new Callable4<HttpExchange,Integer,String,byte[]>() {
+        @Override
+        public void call(HttpExchange exchange, Integer code, String contentType, byte[] bytes) {
+            try {
+                exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                if(contentType != null) exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, contentType);
+                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
+                exchange.getResponseHeaders().set(HttpHeaders.DATE, new Date().toString());
+                exchange.sendResponseHeaders(code, bytes.length);
+
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
 }

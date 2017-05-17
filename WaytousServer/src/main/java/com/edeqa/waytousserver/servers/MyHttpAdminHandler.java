@@ -1,7 +1,9 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.google.common.net.HttpHeaders;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,8 +53,8 @@ public class MyHttpAdminHandler implements HttpHandler {
         LinkedList<String> classes = new LinkedList<>();
         classes.add("AdminLogsHolder");
         classes.add("AdminMainHolder");
+        classes.add("AdminRestHolder");
         classes.add("AdminSettingsHolder");
-        classes.add("AdminXhrHolder");
 
         for(String s:classes){
             try {
@@ -77,8 +79,6 @@ public class MyHttpAdminHandler implements HttpHandler {
             if(parts.length >2) {
                 for(Map.Entry<String, PageHolder> x: holders.entrySet()) {
 
-                    System.out.println("ADMIN:"+parts[2]+":"+x.getValue().getType());
-
                     if(parts[2].equals(x.getValue().getType()) && x.getValue().perform(exchange)) {
                         return;
                     }
@@ -98,7 +98,7 @@ public class MyHttpAdminHandler implements HttpHandler {
             o.put("WSS_PORT", SENSITIVE.getWssPortDedicated());
             o.put("firebase_config", SENSITIVE.getFirebaseConfig());
 
-            FirebaseAuth.getInstance().createCustomToken("Administrator").addOnSuccessListener(new OnSuccessListener<String>() {
+            FirebaseAuth.getInstance().createCustomToken("Viewer").addOnSuccessListener(new OnSuccessListener<String>() {
                 @Override
                 public void onSuccess(final String customToken) {
 
@@ -112,16 +112,8 @@ public class MyHttpAdminHandler implements HttpHandler {
                     html.getHead().add(SCRIPT).with("data", o);
                     html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");
 
-                    byte[] bytes = html.build().getBytes();
-                    try {
-                        exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/html");
-                        exchange.sendResponseHeaders(200, bytes.length);
-                        OutputStream os = exchange.getResponseBody();
-                        os.write(bytes);
-                        os.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Utils.sendResult.call(exchange, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
+
 
                     // Send token back to client
                 }

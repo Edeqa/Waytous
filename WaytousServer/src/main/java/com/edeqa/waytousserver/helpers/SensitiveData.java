@@ -109,77 +109,77 @@ public class SensitiveData {
         ArrayList<HashMap<String, Serializable>> commonTypes = new ArrayList<>();
         HashMap<String,Serializable> type = new HashMap<>();
         type.put("type", "html");
-        type.put("mime", "text/html");
+        type.put("mime", Constants.MIME.TEXT_HTML);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "js");
-        type.put("mime", "application/javascript");
+        type.put("mime", Constants.MIME.APPLICATION_JAVASCRIPT);
         type.put("text", true);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "css");
-        type.put("mime", "text/css");
+        type.put("mime", Constants.MIME.TEXT_CSS);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "xml");
-        type.put("mime", "application/xml");
+        type.put("mime", Constants.MIME.APPLICATION_XML);
         type.put("text", true);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("name", "manifest.json");
-        type.put("mime", "application/x-web-app-manifest+json");
+        type.put("mime", Constants.MIME.APPLICATION_X_WEB_APP_MANIFEST_JSON);
         type.put("text", true);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "json");
-        type.put("mime", "application/json");
+        type.put("mime", Constants.MIME.APPLICATION_JSON);
         type.put("text", true);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "gif");
-        type.put("mime", "image/gif");
+        type.put("mime", Constants.MIME.IMAGE_GIF);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "png");
-        type.put("mime", "image/png");
+        type.put("mime", Constants.MIME.IMAGE_PNG);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "jpg");
-        type.put("mime", "image/jpg");
+        type.put("mime", Constants.MIME.IMAGE_JPG);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "ico");
-        type.put("mime", "image/ico");
+        type.put("mime", Constants.MIME.IMAGE_ICO);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "svg");
-        type.put("mime", "image/svg+xml");
+        type.put("mime", Constants.MIME.IMAGE_SVG_XML);
         type.put("text", true);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "mp3");
-        type.put("mime", "audio/mp3");
+        type.put("mime", Constants.MIME.AUDIO_MP3);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "ogg");
-        type.put("mime", "audio/ogg");
+        type.put("mime", Constants.MIME.AUDIO_OGG);
         commonTypes.add(type);
 
         type = new HashMap<>();
         type.put("type", "m4r");
-        type.put("mime", "audio/aac");
+        type.put("mime", Constants.MIME.AUDIO_AAC);
         commonTypes.add(type);
 
         for(int i=0; i<types.length(); i++) {

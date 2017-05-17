@@ -1,6 +1,8 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
+import com.edeqa.waytousserver.helpers.Constants;
+import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -71,38 +73,27 @@ public class MyHttpMainHandler implements HttpHandler {
                 file = new File(file.getCanonicalPath() + "/index.html");
             }
             if (etag.equals(ifModifiedSince)) {
-                String response = "304 Not Modified\n";
-                exchange.sendResponseHeaders(304, 0);
-                OutputStream os = exchange.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
+                Utils.sendResult.call(exchange, 304, null, "304 Not Modified\n".getBytes());
             } else if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {
                 // Suspected path traversal attack: reject with 403 error.
-                String response = "403 Forbidden\n";
-                exchange.sendResponseHeaders(403, response.length());
-                OutputStream os = exchange.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
+                Utils.sendResult.call(exchange, 403, Constants.MIME.TEXT_PLAIN, "403 Forbidden\n".getBytes());
             } else if (!uri.getPath().endsWith("/") && !file.exists()) {
                 Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
                 responseHeaders.set(HttpHeaders.DATE, new Date().toString());
                 responseHeaders.set(HttpHeaders.LOCATION, uri.getPath() + "/");
                 exchange.sendResponseHeaders(302, 0);
                 exchange.close();
+
             } else if (!file.isFile() || path.startsWith("/WEB-INF") || path.startsWith("/META-INF") || path.startsWith("/.idea")) {
                 // Object does not exist or is not a file: reject with 404 error.
-                String response = "404 Not Found\n";
-                exchange.sendResponseHeaders(404, response.length());
-                OutputStream os = exchange.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
+                Utils.sendResult.call(exchange, 404, Constants.MIME.TEXT_PLAIN, "404 Not Found\n".getBytes());
             } else {
                 // Object exists and is a file: accept with response code 200.
 
                 boolean gzip = false;
                 for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
-                    if ("accept-encoding".equals(entry.getKey().toLowerCase())) {
+                    if (HttpHeaders.ACCEPT_ENCODING.equals(entry.getKey().toLowerCase())) {
                         for (String s : entry.getValue()) {
                             for (String ss : s.split(", ")) {
                                 if ("gzip".equals(ss.toLowerCase())) {
@@ -111,15 +102,15 @@ public class MyHttpMainHandler implements HttpHandler {
                                 }
                             }
                         }
-                    } else if ("if-none-match".equals(entry.getKey().toLowerCase())) {
+                    } else if (HttpHeaders.IF_NONE_MATCH.equals(entry.getKey().toLowerCase())) {
 
                     }
                 }
 
                 boolean text = false;
-                String type = "application/octet-stream";
+                String type = Constants.MIME.APPLICATION_OCTET_STREAM;
                 JSONArray types = SENSITIVE.getTypes();
-                types.put(new JSONObject("{\"type\":\"\",\"mime\":\"application:unknown\"}"));
+                types.put(new JSONObject("{\"type\":\"\",\"mime\":\"application/unknown\"}"));
                 JSONObject json = null;
                 for (int i = 0; i < types.length(); i++) {
                     json = types.getJSONObject(i);

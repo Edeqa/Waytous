@@ -1761,10 +1761,10 @@ function Edequate(options) {
         var toast = create(HTML.DIV, {className:"toast-holder hidden", onclick: function(){ this.hide(HIDING.SCALE_Y_BOTTOM); }});
         toast.content = create(HTML.DIV, {className:"toast shadow"}, toast);
         toast.show = function(text,delay){
+            if(!toast.parentNode) document.body.appendChild(toast);
            clearTimeout(toast.hideTask);
            lang.updateNode(toast.content, text);
            HTMLDivElement.prototype.show.call(toast, HIDING.SCALE_Y_BOTTOM);
-//           toast.classList.remove("hidden");
            delay = delay || 5000;
            if(delay > 0) {
                toast.hideTask = setTimeout(function(){
@@ -1889,7 +1889,7 @@ function Edequate(options) {
                  }
                  table.rows.push(res);
                  table.placeholder.hide();
-                table.update();
+                 table.update();
                  return res;
             },
             update: function() {
@@ -2146,7 +2146,7 @@ function Edequate(options) {
             className:"table-placeholder",
             innerHTML: options.placeholder || "No data",
             show: function(text){
-                clear(table.body);
+//                clear(table.body);
                 if(text) table.placeholder.innerHTML = text;
                 table.placeholder.classList.remove("hidden");
             }

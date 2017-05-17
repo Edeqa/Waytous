@@ -2,9 +2,11 @@ package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.Common;
+import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
+import com.edeqa.waytousserver.interfaces.Callable1;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -24,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +41,7 @@ import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DISMISS_
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_PERSISTENT;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_REQUIRES_PASSWORD;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_WELCOME_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_GROUPS;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_OPTIONS;
 import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
@@ -153,45 +157,26 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             if (REQUEST_NEW_GROUP.equals(req)) {
                 if (request.has(REQUEST_DEVICE_ID)) {
                     final MyGroup group = new MyGroup();
-
-                    final ValueEventListener[] groupRegistrationListener = new ValueEventListener[1];
-                    groupRegistrationListener[0] = new ValueEventListener() {
+                    final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                    final Callable1<JSONObject> onresult[] = new Callable1[2];
+                    onresult[0] = new Callable1<JSONObject>() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                        public void call(JSONObject json) {
+                            ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
+                            DatabaseReference nodeNumber = ref.child(group.getId()).child(DATABASE_SECTION_USERS_ORDER).push();
+                            nodeNumber.setValue(user.getUid());
 
-                            if(dataSnapshot.getValue() == null) {
-                                final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
-
-                                Map<String, Object> childUpdates = new HashMap<>();
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY, 15);
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_REQUIRES_PASSWORD, false);
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_PERSISTENT, false);
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DISMISS_INACTIVE, false);
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DELAY_TO_DISMISS, 300);
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
-                                childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
-                                ref.child(group.getId()).updateChildren(childUpdates);
-
-                                ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
-                                DatabaseReference nodeNumber = ref.child(group.getId()).child(DATABASE_SECTION_USERS_ORDER).push();
-                                nodeNumber.setValue(user.getUid());
-
-                                registerUser(group.getId(), user, request);
-
-                                Common.log("DPF1", "onMessage:newGroup:" + conn.getRemoteSocketAddress(), "id:" + group.getId());
-                            } else {
-                                Common.log("DPF1", "onMessage:newGroup:" + conn.getRemoteSocketAddress(), "alreadyExists:" + group.getId());
-                                group.fetchNewId();
-                                ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).addListenerForSingleValueEvent(groupRegistrationListener[0]);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                            registerUser(group.getId(), user, request);
                         }
                     };
-
-                    ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).addListenerForSingleValueEvent(groupRegistrationListener[0]);
+                    onresult[1] = new Callable1<JSONObject>() {
+                        @Override
+                        public void call(JSONObject json) {
+                            group.fetchNewId();
+                            createGroup(group, onresult[0], onresult[1]);
+                        }
+                    };
+                    createGroup(group, onresult[0], onresult[1]);
                 } else {
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                     response.put(RESPONSE_MESSAGE, "Cannot create group (code 15).");
@@ -394,12 +379,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                     refGroup.child(DATABASE_SECTION_USERS_DATA).child(""+check.getNumber()).updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
-                                                        response.put(RESPONSE_NUMBER, check.getNumber());
-                                                        response.put(RESPONSE_SIGN, customToken);
-                                                        conn.send(response.toString());
-                                                        conn.close();
-                                                        Common.log("DPF1", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken: [provided]"/*+customToken*/);
+                                                            response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
+                                                            response.put(RESPONSE_NUMBER, check.getNumber());
+                                                            response.put(RESPONSE_SIGN, customToken);
+                                                            conn.send(response.toString());
+                                                            conn.close();
+                                                            Common.log("DPF1", "onMessage:joined:"+conn.getRemoteSocketAddress(),"signToken: [provided]"/*+customToken*/);
                                                         }
                                                     });
 
@@ -492,6 +477,153 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         }
     }
 
+    @Override
+    public void createGroup(final MyGroup group, final Callable1 onsuccess, final Callable1 onerror) {
+
+        final JSONObject json = new JSONObject();
+
+        Common.log("DPF1","New group ID:",group.getId());
+
+        ValueEventListener groupRegistrationListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.getValue() == null) {
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_PERSISTENT, group.isPersistent());
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DISMISS_INACTIVE, group.isDismissInactive());
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
+                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
+                    ref.child(group.getId()).updateChildren(childUpdates);
+                    ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).setValue(0);
+
+                    json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                    json.put(Constants.REST.GROUP_ID, group.getId());
+
+                    Common.log("DPF1", "onMessage:createGroup:created:" + group.getId());
+                    onsuccess.call(json);
+
+                } else {
+                    json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                    json.put(Constants.REST.GROUP_ID, group.getId());
+                    json.put(Constants.REST.MESSAGE, "Already exists: " + group.getId() + ".");
+                    Common.log("DPF1", "onMessage:createGroup:alreadyExists:" + group.getId());
+                    if(onerror != null) onerror.call(json);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.GROUP_ID, group.getId());
+                json.put(Constants.REST.MESSAGE, "Cancelled.");
+
+                Common.log("DPF1", "onMessage:createGroup:error:" + group.getId());
+                if(onerror != null) onerror.call(json);
+            }
+        };
+
+        ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).addListenerForSingleValueEvent(groupRegistrationListener);
+
+    }
+
+    @Override
+    public void deleteGroup(final String groupId, final Callable1 onsuccess, final Callable1 onerror) {
+        final JSONObject json = new JSONObject();
+
+        json.put(Constants.REST.GROUP_ID, groupId);
+
+        final OnFailureListener onFailureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, e.getMessage());
+                Common.log("DPF1", "deleteGroup:" + groupId, "error:"+e.getMessage());
+                onerror.call(json);
+            }
+        };
+
+        ref.child(DATABASE_SECTION_GROUPS).child(groupId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                ref.child(groupId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                        Common.log("DPF1", "deleteGroup:" + groupId);
+                        onsuccess.call(json);
+                    }
+                }).addOnFailureListener(onFailureListener);
+            }
+        }).addOnFailureListener(onFailureListener);
+
+    }
+
+    @Override
+    public void switchPropertyInGroup(final String groupId, final String property, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+
+        final JSONObject res = new JSONObject();
+        res.put(Constants.REST.PROPERTY, property);
+
+        ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean value = (Boolean) dataSnapshot.getValue();
+                if(value != null) {
+                    res.put(Constants.REST.OLD_VALUE, value);
+                    value = !value;
+                    ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).setValue(value);
+                    res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                    onsuccess.call(res);
+                } else {
+                    res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                    Common.log("DPF1", "switchPropertyInGroup:nullValue:", property);
+                    onerror.call(res);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                onerror.call(res);
+            }
+        });
+    }
+
+    @Override
+    public void modifyPropertyInGroup(final String groupId, final String property, final Serializable value, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+
+        final JSONObject res = new JSONObject();
+        res.put(Constants.REST.PROPERTY, property);
+        res.put(Constants.REST.VALUE, value);
+        ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Serializable oldValue = (Serializable) dataSnapshot.getValue();
+                if(oldValue != null && value != null) {
+                    res.put(Constants.REST.OLD_VALUE, oldValue);
+                    ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).setValue(value);
+                    res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                    onsuccess.call(res);
+                } else {
+                    res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                    Common.log("DPF1", "modifyPropertyInGroup:nullValue:", property);
+                    onerror.call(res);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                onerror.call(res);
+            }
+        });
+    }
+
     private void registerUser(final String groupId, final MyUser user, final JSONObject request) {
         final JSONObject response = new JSONObject();
 
@@ -577,7 +709,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //        try {
 //            String ip = conn.getRemoteSocketAddress().toString();
 //            if (ipToUser.containsKey(ip)) {
-//                ipToUser.get(ip).setChanged();
+//                ipToUser.get(ip).updateChanged();
 //            }
 ////            System.out.println("PING:" + conn.getRemoteSocketAddress() + ":" + f);
 //        } catch ( Exception e) {

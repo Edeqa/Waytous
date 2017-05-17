@@ -1,5 +1,7 @@
 package com.edeqa.waytousserver.helpers;
 
+import java.io.Serializable;
+
 /**
  * Created 10/14/16.
  */
@@ -104,5 +106,37 @@ public class Constants {
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
     public static final int LIFETIME_INACTIVE_GROUP = 300;
     public final static int LIFETIME_INACTIVE_USER = 600;
+
+    public static class REST {
+        public static final String STATUS = "status",
+            SUCCESS = "success",
+            ERROR = "error",
+            MESSAGE = "message",
+            REQUEST = "request",
+            GROUP_ID = "group_id",
+            VALUE = "value",
+            PROPERTY = "property",
+            OLD_VALUE = "old_value";
+
+    }
+
+    public static class MIME {
+        public static final String APPLICATION_JSON = "application/json",
+            TEXT_PLAIN = "text/plain",
+            TEXT_HTML = "text/html",
+            APPLICATION_OCTET_STREAM = "application/octet-stream",
+            APPLICATION_JAVASCRIPT = "application/javascript",
+            TEXT_CSS = "text/css",
+            APPLICATION_X_WEB_APP_MANIFEST_JSON = "application/x-web-app-manifest+json",
+            AUDIO_MP3 = "audio/mp3",
+            AUDIO_OGG = "audio/ogg",
+            AUDIO_AAC = "audio/aac",
+            APPLICATION_XML = "application/xml",
+            IMAGE_GIF = "image/png",
+            IMAGE_PNG = "image/png",
+            IMAGE_JPG = "image/jpg",
+            IMAGE_ICO = "image/ico",
+            IMAGE_SVG_XML = "image/svg+xml";
+    }
 
 }

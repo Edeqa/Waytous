@@ -2,6 +2,7 @@ package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
+import com.edeqa.waytousserver.helpers.Utils;
 import com.google.api.client.http.HttpMethods;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
@@ -29,11 +30,11 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 /**
  * Created 1/19/17.
  */
-public class MyHttpXhrHandler implements HttpHandler {
+public class MyHttpRestHandler implements HttpHandler {
 
     private volatile Map<String,AbstractDataProcessor> dataProcessor;
 
-    public MyHttpXhrHandler(){
+    public MyHttpRestHandler(){
         dataProcessor = new HashMap<>();
     }
 
@@ -48,7 +49,7 @@ public class MyHttpXhrHandler implements HttpHandler {
         } catch(Exception e){
             e.printStackTrace();
         }
-        Common.log("Xhr",host + uri.getPath(),exchange.getRemoteAddress().toString());
+        Common.log("Rest",host + uri.getPath(),exchange.getRemoteAddress().toString());
 
         List<String> parts = Arrays.asList(uri.getPath().split("/"));
         JSONObject json = new JSONObject();
@@ -80,23 +81,9 @@ public class MyHttpXhrHandler implements HttpHandler {
 //                break;
 //        }
 
-        if(printRes) printResult(json.toString().getBytes(),exchange);
+        if(printRes) Utils.sendResultJson.call(exchange, json);
 
     }
-
-    private void printResult(byte[] bytes, HttpExchange exchange) {
-        exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-        exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "application/json");
-        try {
-            exchange.sendResponseHeaders(200, bytes.length);
-            OutputStream os = exchange.getResponseBody();
-            os.write(bytes);
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public AbstractDataProcessor getDataProcessor(String version) {
         if(dataProcessor.containsKey(version)) {
@@ -130,7 +117,7 @@ public class MyHttpXhrHandler implements HttpHandler {
 
         @Override
         public void send(String string) {
-            printResult(string.getBytes(), exchange);
+            Utils.sendResult.call(exchange, 200, Constants.MIME.APPLICATION_JSON, string.getBytes());
         }
 
         @Override
@@ -174,12 +161,12 @@ public class MyHttpXhrHandler implements HttpHandler {
             BufferedReader br = new BufferedReader(isr);
             String body = br.readLine();
 
-            Common.log("Xhr-join",exchange.getRemoteAddress().toString(), body);
+            Common.log("Rest",exchange.getRemoteAddress().toString(), "join:", body);
             getDataProcessor(exchange.getRequestURI().getPath().split("/")[3]).onMessage(new HttpConnection(exchange), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");
-            printResult(json.toString().getBytes(), exchange);
+            Utils.sendResultJson.call(exchange,json);
         }
         return false;
     }

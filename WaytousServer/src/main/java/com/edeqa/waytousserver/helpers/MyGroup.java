@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver.helpers;
 
 import com.edeqa.waytousserver.servers.AbstractDataProcessor;
+import com.google.firebase.database.ServerValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +20,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CHANGED;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CREATED;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DELAY_TO_DISMISS;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DISMISS_INACTIVE;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_PERSISTENT;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_REQUIRES_PASSWORD;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY;
+import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_OPTIONS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;
@@ -38,10 +47,18 @@ public class MyGroup {
     public Map<String,MyUser> users = new HashMap<>();
     private Long created;
     private Long changed;
-    public String id;
+    private String id;
     private String owner;
     private String welcomeMessage;
     private int count;
+
+    private boolean requirePassword;
+    private String password;
+    private boolean persistent;
+    private int timeToLiveIfEmpty;
+    private boolean dismissInactive;
+    private int delayToDismiss;
+
 
     private ArrayList<Color> colors = new ArrayList<>(Arrays.asList(Color.GREEN, Color.RED, Color.MAGENTA, Color.PINK, Color.ORANGE,
             Color.CYAN, Color.YELLOW
@@ -51,10 +68,23 @@ public class MyGroup {
     public MyGroup(){
         fetchNewId();
         created = new Date().getTime();
+
+        requirePassword = false;
+        password = null;
+        persistent = false;
+        timeToLiveIfEmpty = 15;
+        dismissInactive = true;
+        delayToDismiss = 300;
+        welcomeMessage = "";
+
     }
 
     public String getId(){
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void addUser(MyUser user){
@@ -68,7 +98,7 @@ public class MyGroup {
             user.setColor(Utils.selectColor(user.getNumber()));
         }
 
-        setChanged();
+        updateChanged();
     }
 
 
@@ -117,7 +147,7 @@ public class MyGroup {
         return changed;
     }
 
-    public void setChanged(){
+    public void updateChanged(){
         changed = new Date().getTime();
     }
 
@@ -326,6 +356,53 @@ public class MyGroup {
 
     public void fetchNewId() {
         id = Utils.getUnique();
-        Common.log("MT","New group ID:",id);
+    }
+
+    public boolean isRequirePassword() {
+        return requirePassword;
+    }
+
+    public void setRequiresPassword(boolean requirePassword) {
+        this.requirePassword = requirePassword;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isPersistent() {
+        return persistent;
+    }
+
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
+    }
+
+    public int getTimeToLiveIfEmpty() {
+        return timeToLiveIfEmpty;
+    }
+
+    public void setTimeToLiveIfEmpty(int timeToLiveIfEmpty) {
+        this.timeToLiveIfEmpty = timeToLiveIfEmpty;
+    }
+
+    public boolean isDismissInactive() {
+        return dismissInactive;
+    }
+
+    public void setDismissInactive(boolean dismissInactive) {
+        this.dismissInactive = dismissInactive;
+    }
+
+    public int getDelayToDismiss() {
+        return delayToDismiss;
+    }
+
+    public void setDelayToDismiss(int delayToDismiss) {
+        this.delayToDismiss = delayToDismiss;
     }
 }

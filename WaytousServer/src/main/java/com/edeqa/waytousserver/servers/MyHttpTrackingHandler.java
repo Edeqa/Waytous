@@ -1,7 +1,9 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
+import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -10,7 +12,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,15 +73,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WTU = new Main()).start();");
 
-        byte[] bytes = html.build().getBytes();
-
-        exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-        exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/html");
-        exchange.sendResponseHeaders(200, bytes.length);
-
-        OutputStream os = exchange.getResponseBody();
-        os.write(bytes);
-        os.close();
+        Utils.sendResult.call(exchange, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
 
     }
 

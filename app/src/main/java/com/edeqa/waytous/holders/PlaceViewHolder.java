@@ -358,7 +358,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         searchItem.setActionView(searchView);
         searchItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
+        final Callable1<String> setFilter = new Callable1<String>() {
             @Override
             public void call(String text) {
                 System.out.println("FILTER:"+text);

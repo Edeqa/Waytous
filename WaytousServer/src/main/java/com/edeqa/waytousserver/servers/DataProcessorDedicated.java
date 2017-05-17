@@ -5,11 +5,13 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
+import com.edeqa.waytousserver.interfaces.Callable1;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -391,7 +393,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                         o.put(RESPONSE_STATUS, req);
 
                         if(requestHolders.get(req).perform(token, user, request, o)) {
-                            token.setChanged();
+                            token.updateChanged();
 
                             Set<String> keys = new LinkedHashSet<>(request.keySet());
                             keys.retainAll(flagHolders.keySet());
@@ -424,6 +426,26 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
         if(disconnect) {
             conn.close();
         }
+    }
+
+    @Override
+    public void createGroup(MyGroup group, Callable1 onsuccess, Callable1 onerror) {
+        // TODO
+    }
+
+    @Override
+    public void deleteGroup(String groupId, Callable1 onsuccess, Callable1 onerror) {
+        // TODO
+    }
+
+    @Override
+    public void switchPropertyInGroup(String groupId, String property, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+        // TODO
+    }
+
+    @Override
+    public void modifyPropertyInGroup(String groupId, String property, Serializable value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+        // TODO
     }
 
 //    @Override

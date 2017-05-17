@@ -467,7 +467,7 @@ function TrackingHolder(main) {
                             onshow: function(e) {
                                 if(sounds) {
                                 } else {
-                                    u.getJSON("/xhr/v1/getSounds").then(function(json){
+                                    u.getJSON("/rest/v1/getSounds").then(function(json){
                                         sounds = {};
                                         u.clear(e);
                                         var selected = 0;

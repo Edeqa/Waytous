@@ -135,14 +135,14 @@ function Constants() {
         SECTION_USERS_KEYS : "u/k", // users/keys
         SECTION_USERS_ORDER : "u/n", // users/order
         SECTION_OPTIONS : "o", // options
-        SECTION_OPTIONS_PERSISTENT : "o/persistent",
-        SECTION_OPTIONS_TIME_TO_LIVE_IF_EMPTY : "o/time-to-live-if-empty",
-        SECTION_OPTIONS_DELAY_TO_DISMISS : "o/delay-to-dismiss",
-        SECTION_OPTIONS_DISMISS_INACTIVE : "o/dismiss-inactive",
-        SECTION_OPTIONS_REQUIRES_PASSWORD : "o/requires-password",
-        SECTION_OPTIONS_WELCOME_MESSAGE : "o/welcome-message",
-        SECTION_OPTIONS_DATE_CREATED : "o/date-created",
-        SECTION_OPTIONS_DATE_CHANGED : "o/date-changed"
+        OPTION_PERSISTENT : "persistent",
+        OPTION_TIME_TO_LIVE_IF_EMPTY : "time-to-live-if-empty",
+        OPTION_DELAY_TO_DISMISS : "delay-to-dismiss",
+        OPTION_DISMISS_INACTIVE : "dismiss-inactive",
+        OPTION_REQUIRES_PASSWORD : "requires-password",
+        OPTION_WELCOME_MESSAGE : "welcome-message",
+        OPTION_DATE_CREATED : "date-created",
+        OPTION_DATE_CHANGED : "date-changed"
     };
 
     this.type = "constants";

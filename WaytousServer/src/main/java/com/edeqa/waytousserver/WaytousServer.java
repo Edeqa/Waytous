@@ -8,12 +8,10 @@ import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
 import com.edeqa.waytousserver.servers.MyHttpMainHandler;
 import com.edeqa.waytousserver.servers.MyHttpRedirectHandler;
 import com.edeqa.waytousserver.servers.MyHttpTrackingHandler;
-import com.edeqa.waytousserver.servers.MyHttpXhrHandler;
+import com.edeqa.waytousserver.servers.MyHttpRestHandler;
 import com.edeqa.waytousserver.servers.MyWsServer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.sun.net.httpserver.BasicAuthenticator;
-import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
@@ -28,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -232,8 +229,8 @@ public class WaytousServer {
 //        server.createContext("/", mainServer);
 //        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
-        MyHttpXhrHandler joinServer = new MyHttpXhrHandler();
-        joinServer.setDataProcessor(dataProcessorFirebaseV1);
+        MyHttpRestHandler restServer = new MyHttpRestHandler();
+        restServer.setDataProcessor(dataProcessorFirebaseV1);
 //        server.createContext("/", mainServer);
 //        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
@@ -305,8 +302,8 @@ public class WaytousServer {
             sslServer.createContext("/group/", trackingServer);
             Common.log("Main", "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
 
-            sslServer.createContext("/xhr/", joinServer);
-            Common.log("Main", "Xhr HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/xhr/");
+            sslServer.createContext("/rest/", restServer);
+            Common.log("Main", "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/rest/");
 
             sslServer.createContext("/admin/", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
             sslServer.createContext("/admin/logout", adminServer);

@@ -3,12 +3,17 @@ package com.edeqa.waytousserver.servers;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
+import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.Callable2;
+import com.edeqa.waytousserver.interfaces.Callable3;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
 
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
+import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -128,7 +133,16 @@ abstract public class AbstractDataProcessor {
         }
     }
 
-    abstract public void removeUser(String tokenId,String id);
+    abstract public void createGroup(MyGroup group, Callable1 onsuccess, Callable1 onerror);
+
+    abstract public void deleteGroup(String groupId, Callable1 onsuccess, Callable1 onerror);
+
+
+    abstract public void switchPropertyInGroup(String groupId, String property, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+
+    abstract public void modifyPropertyInGroup(String groupId, String property, Serializable value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+
+    abstract public void removeUser(String groupId,String id);
 
     public ConcurrentHashMap<String, MyGroup> getGroups(){
         return groups;
