@@ -147,6 +147,7 @@
 
   "chat": "Chat",
   "private_message": "Private message",
+  "incoming_message": "Incoming message",
 
 
   "// NavigationHolder": "",

@@ -25,6 +25,7 @@ function DistanceHolder(main) {
             case EVENTS.CREATE_DRAWER:
                 drawerItemShow = object.add(DRAWER.SECTION_VIEWS, EVENTS.SHOW_DISTANCE, u.lang.show_distances, "settings_ethernet", function(){
                     main.users.forAllUsers(function (number, user) {
+                        if(!user.location) return;
                         user.fire(EVENTS.SHOW_DISTANCE);
                         drawerPopulate();
                     });
@@ -35,7 +36,8 @@ function DistanceHolder(main) {
                         drawerPopulate();
                     });
                 });
-                drawerPopulate();
+                drawerItemShow.hide();
+                drawerItemHide.hide();
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
@@ -114,7 +116,7 @@ function DistanceHolder(main) {
             drawerItemHide.hide();
             drawerItemShow.hide();
             main.users.forAllUsersExceptMe(function (number, user) {
-                if(user.properties.active && user.views.distance) {
+                if(user.properties.active && user.views.distance && user.location) {
                     if (user.views.distance.show) {
                         drawerItemHide.show();
                     } else {
@@ -170,6 +172,7 @@ function DistanceHolder(main) {
         } else {
             show.call(this);
         }
+        drawerPopulate();
     }
 
     function Label(opt_options, node) {

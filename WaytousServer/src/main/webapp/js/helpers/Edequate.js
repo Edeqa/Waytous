@@ -1100,7 +1100,10 @@ function Edequate(options) {
                                 dialog.focus();
                             }
                         }
-                        this.apply();
+                        clearTimeout(dialog.filterInput.updateTask);
+                        dialog.filterInput.updateTask = setTimeout(function(){
+                            dialog.filterInput.apply();
+                        }, 300);
                     },
                     onblur: function() {
                         if(!this.value) {
@@ -1118,9 +1121,11 @@ function Edequate(options) {
                             dialog.filterClear.hide();
                         }
                         var counter = 0;
+                        var substring = this.value.trim().toLowerCase();
                         for(var i in dialog.itemsLayout.childNodes) {
                             if(!dialog.itemsLayout.childNodes.hasOwnProperty(i)) continue;
-                            if(!this.value || (dialog.itemsLayout.childNodes[i].innerText && dialog.itemsLayout.childNodes[i].innerText.toLowerCase().match(this.value.trim().toLowerCase()))) {
+                            var text = dialog.itemsLayout.childNodes[i].innerText;
+                            if(!substring || (text && text.toLowerCase().match(substring))) {
                                 dialog.itemsLayout.childNodes[i].show(HIDING.SCALE_Y_TOP);
                                 counter++;
                             } else {
@@ -1858,17 +1863,23 @@ function Edequate(options) {
             className:options.className,
             filter: function() {
                 if(!options.caption.items) return;
-                for(var i in table.rows) {
-                    var valid = true;
-                    for(var j in table.filter.options) {
-                        if(table.filter.options[j]) {
-                            valid = table.filter.options[j].call(table,table.rows[i]);
+                setTimeout(function(){
+                    for(var i in table.rows) {
+                        var valid = true;
+                        for(var j in table.filter.options) {
+                            if(table.filter.options[j]) {
+                                valid = table.filter.options[j].call(table,table.rows[i]);
+                            }
+                            if(!valid) break;
                         }
-                        if(!valid) break;
+                        var row = table.rows[i];
+                        if(valid && row.isHidden) {
+                            row.show();
+                        } else if (!valid && !row.isHidden) {
+                            row.hide();
+                        }
                     }
-                    if(valid) table.rows[i].show();
-                    else table.rows[i].hide();
-                }
+                },0);
             },
             rows: [],
             saveOption: function(name,value) {
@@ -2033,7 +2044,10 @@ function Edequate(options) {
                             this.blur();
                         }
                     }
-                    this.apply();
+                    clearTimeout(table.filterInput.updateTask);
+                    table.filterInput.updateTask = setTimeout(function(){
+                        table.filterInput.apply();
+                    }, 300);
                 },
                 onblur: function() {
                     if(!this.value) {

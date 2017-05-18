@@ -1,6 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
+import com.edeqa.waytousserver.helpers.Constants;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -57,12 +58,12 @@ public class MyHttpRedirectHandler implements HttpHandler {
                         + "&ifl=" + webRedirect
                         + "&st=Waytous"
                         + "&sd=Waytous+description"
-                        + "&si=https://raw.githubusercontent.com/tujger/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
+                        + "&si=https://raw.githubusercontent.com/Edeqa/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
 
                 Common.log("Redirect ->", redirectLink);
 
                 Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
                 responseHeaders.set(HttpHeaders.DATE, new Date().toString());
                 responseHeaders.set(HttpHeaders.LOCATION, redirectLink);
                 exchange.sendResponseHeaders(302, 0);
@@ -71,7 +72,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
             } else if(uri.getPath().startsWith("/admin")) {
                 String redirectLink = "https://" + host + ":" + SENSITIVE.getHttpsAdminPort() + uri.getPath();
                 Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
                 responseHeaders.set(HttpHeaders.DATE, new Date().toString());
                 responseHeaders.set(HttpHeaders.LOCATION, redirectLink);
                 exchange.sendResponseHeaders(302, 0);
@@ -92,7 +93,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
         String requestMethod = exchange.getRequestMethod();
         if (requestMethod.equalsIgnoreCase("GET")) {
             Headers responseHeaders = exchange.getResponseHeaders();
-            responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+            responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
             responseHeaders.set(HttpHeaders.DATE, new Date().toString());
             responseHeaders.set(HttpHeaders.LOCATION, newUri);
             exchange.sendResponseHeaders(302, 0);

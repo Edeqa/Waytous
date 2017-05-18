@@ -164,7 +164,7 @@ public class MyHttpMainHandler implements HttpHandler {
                         string = string.replaceAll(x.getKey(), x.getValue());
                     }
 
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type );
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type);
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
                     exchange.sendResponseHeaders(resultCode, 0);
                     OutputStream os;
@@ -177,7 +177,7 @@ public class MyHttpMainHandler implements HttpHandler {
                     os.write(string.getBytes(charset));
                     os.close();
                 } else {
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type );
+                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type);
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
                     exchange.sendResponseHeaders(resultCode, 0);
                     OutputStream os;

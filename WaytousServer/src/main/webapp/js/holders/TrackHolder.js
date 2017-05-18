@@ -26,6 +26,7 @@ function TrackHolder(main) {
             case EVENTS.CREATE_DRAWER:
                 drawerItemShow = object.add(DRAWER.SECTION_VIEWS,EVENTS.SHOW_TRACK, u.lang.show_tracks,"title",function(){
                     main.users.forAllUsers(function (number, user) {
+                        if(!user.location) return;
                         user.fire(EVENTS.SHOW_TRACK);
                         drawerPopulate();
                     });
@@ -51,6 +52,9 @@ function TrackHolder(main) {
                         drawerPopulate();
                     });
                 }
+                break;
+            case EVENTS.SELECT_USER:
+                drawerPopulate();
                 break;
             case EVENTS.SHOW_TRACK:
                 if(this && this.views && this.views.track && this.properties && this.properties.active) {
@@ -96,7 +100,7 @@ function TrackHolder(main) {
             drawerItemShow.hide();
             if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
                 main.users.forAllUsers(function (number, user) {
-                    if(user.properties.active && user.views.track) {
+                    if(user.properties.active && user.views.track && user.location) {
                         if (user.views.track.show) {
                             drawerItemHide.show();
                         } else {
@@ -132,9 +136,7 @@ function TrackHolder(main) {
             } else {
                 this.views.track.track.getPath().push(utils.latLng(this.location));
             }
-
         }
-
     }
 
     function onChangeLocation(location) {

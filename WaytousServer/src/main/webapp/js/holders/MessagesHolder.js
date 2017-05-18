@@ -224,7 +224,7 @@ function MessagesHolder(main) {
                         {
                             id:"messages:incoming",
                             type: HTML.SELECT,
-                            label: "Incoming message",
+                            label: u.lang.incoming_message,
                             default: u.load("messages:incoming") || defaultIncomingMessageSound,
                             onaccept: function(e, event) {
                                 u.save("messages:incoming", this.value);

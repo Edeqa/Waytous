@@ -112,6 +112,7 @@
 
   "chat": "Чат",
   "private_message": "Личное сообщение",
+  "incoming_message": "Входящее сообщение",
 
 
   "// NavigationHolder": "",

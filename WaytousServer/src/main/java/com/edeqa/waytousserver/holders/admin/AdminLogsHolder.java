@@ -85,7 +85,7 @@ public class AdminLogsHolder implements PageHolder {
             byte[] bytes = "".getBytes();
 
             exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
+            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
             exchange.sendResponseHeaders(200, bytes.length);
 
             OutputStream os = exchange.getResponseBody();
@@ -104,8 +104,8 @@ public class AdminLogsHolder implements PageHolder {
 
             if(!file.exists()) {
                 Common.log("Logs","File not found.");
-                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
-                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "WAIN/"+ Constants.SERVER_BUILD);
+                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
                 exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
 
                 exchange.sendResponseHeaders(500, 0);
@@ -120,8 +120,8 @@ public class AdminLogsHolder implements PageHolder {
 
 
             boolean gzip = true;
-            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, "text/plain");
-            exchange.getResponseHeaders().set(HttpHeaders.SERVER, "WAIN/"+ Constants.SERVER_BUILD);
+            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+            exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
             exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
 
             if(gzip){

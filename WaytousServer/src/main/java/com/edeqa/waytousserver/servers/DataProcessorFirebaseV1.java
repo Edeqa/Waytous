@@ -399,7 +399,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                     registerUser(check.getGroupId(), check.getUser(), request);
                                     Common.log("DPF1", "onMessage:joinAsNew:"+check.getUser().connection.getRemoteSocketAddress());
                                 }
-
                             }
 
                             @Override
@@ -719,6 +718,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //        }
     }*/
 
+    /*@Override
     public void removeUser(String groupId, String id){
         if(groupId != null && id != null && groups.containsKey(groupId)){
             MyGroup t = groups.get(groupId);
@@ -732,7 +732,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 t.removeUser(id);
             }
         }
-    }
+    }*/
 
     @Override
     public void removeUser(final String groupId, final Long userNumber, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {

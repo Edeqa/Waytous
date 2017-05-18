@@ -240,12 +240,12 @@ button:active {
 }
 .dialog-items {
     padding: 10px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
     overflow-y: overlay;
     overflow-x: hidden;
-    flex-grow: 1;
+    /*display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-grow: 1;*/
 }
 
 .dialog-item {
@@ -255,6 +255,7 @@ button:active {
     text-align: center;
     justify-content: center;
     flex: 0 0;
+    margin: auto;
 }
 .dialog-item-input {
     text-align: left;
@@ -748,7 +749,8 @@ button:active {
     100%  { transform: rotate(360deg); }
 }
 .progress-dialog-circle {
-    margin: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     max-height: 28px;
     max-width: 28px;
     min-height: 28px;

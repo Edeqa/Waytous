@@ -77,7 +77,7 @@ public class MyHttpAdminHandler implements HttpHandler {
 
             if("/".equals(exchange.getRequestURI().getPath())) {
                 Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
                 responseHeaders.set(HttpHeaders.DATE, new Date().toString());
                 responseHeaders.set(HttpHeaders.LOCATION, "/admin/");
                 exchange.sendResponseHeaders(302, 0);

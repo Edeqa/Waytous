@@ -465,6 +465,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
 //        }
     }*/
 
+    /*@Override
     public void removeUser(String tokenId,String id){
         if(tokenId != null && id != null && groups.containsKey(tokenId)){
             MyGroup t = groups.get(tokenId);
@@ -478,7 +479,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                 t.removeUser(id);
             }
         }
-    }
+    }*/
 
     @Override
     public void removeUser(String groupId, Long userNumber, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
