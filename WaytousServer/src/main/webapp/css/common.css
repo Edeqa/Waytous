@@ -912,8 +912,6 @@ button:active {
     .drawer, .drawer-collapsed {
         left: 0px;
         width: 70%;
-        min-width:300px;
-        max-width:300px;
         position: fixed;
         top: 0px;
         bottom: 0px;
@@ -930,8 +928,6 @@ button:active {
         display: block;
     }
     .drawer-collapsed:hover {
-        min-width: 300px;
-        max-width: 300px;
     }
     .drawer-collapsed .drawer-header {
         height: 150px;
