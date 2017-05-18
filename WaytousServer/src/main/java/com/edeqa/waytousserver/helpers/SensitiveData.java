@@ -230,11 +230,12 @@ public class SensitiveData {
             jsonSample.put("admin_password","password");
             jsonSample.put("server_host","localhost");
             jsonSample.put("http_port",8080);
-            jsonSample.put("http_secured_port",8000);
-            jsonSample.put("websocket_port_dedicated",8082);
-            jsonSample.put("websocket_secured_port_dedicated",8002);
-            jsonSample.put("websocket_port_firebase",8081);
-            jsonSample.put("websocket_secured_port_firebase",8001);
+            jsonSample.put("http_secured_port",8443);
+            jsonSample.put("http_admin_port",8989);
+            jsonSample.put("websocket_port_dedicated",8081);
+            jsonSample.put("websocket_secured_port_dedicated",8444);
+            jsonSample.put("websocket_port_firebase",8082);
+            jsonSample.put("websocket_secured_port_firebase",8445);
             jsonSample.put("ssl_certificate_password","SAMPL");
             jsonSample.put("keystore_filename","SAMPL");
             jsonSample.put("debug_mode",false);
@@ -324,6 +325,10 @@ public class SensitiveData {
 
     public int getHttpsPort(){
         return json.getInt("http_secured_port");
+    }
+
+    public int getHttpsAdminPort(){
+        return json.getInt("http_admin_port");
     }
 
     public String getWebRootDirectory() {

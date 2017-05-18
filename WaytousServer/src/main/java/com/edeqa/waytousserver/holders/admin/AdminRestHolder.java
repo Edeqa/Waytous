@@ -82,6 +82,12 @@ public class AdminRestHolder implements PageHolder {
                     case "/admin/rest/v1/group/switch":
                         switchPropertyInGroup(exchange);
                         return true;
+                    case "/admin/rest/v1/user/remove":
+                        removeUser(exchange);
+                        return true;
+                    case "/admin/rest/v1/user/switch":
+                        switchPropertyForUser(exchange);
+                        return true;
                     default:
                         break;
                 }
@@ -193,6 +199,47 @@ public class AdminRestHolder implements PageHolder {
         }
     }
 
+    private void removeUser(final HttpExchange exchange) {
+        String options = "";
+        try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = exchange.getRequestBody();
+            int b;
+            while((b = is.read()) != -1) {
+                buf.append((char) b);
+            }
+
+            is.close();
+            options = buf.toString();
+
+            Common.log("ARH", "removeUser:", options);
+
+            JSONObject json = new JSONObject(options);
+            String groupId = json.getString(Constants.REST.GROUP_ID);
+            Long userNumber = Long.parseLong(json.get(Constants.REST.USER_NUMBER).toString());
+
+            server.getDataProcessor().removeUser(groupId,userNumber,new Callable1<JSONObject>() {
+                @Override
+                public void call(JSONObject json) {
+                    Utils.sendResultJson.call(exchange, json);
+                }
+            }, new Callable1<JSONObject>() {
+                @Override
+                public void call(JSONObject json) {
+                    Utils.sendError.call(exchange, 500, json);
+                }
+            });
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            JSONObject json = new JSONObject();
+            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+            json.put(Constants.REST.MESSAGE, "Incorrect request.");
+            json.put(Constants.REST.REQUEST, options);
+            Utils.sendError.call(exchange, 400, json);
+        }
+    }
+
     private void switchPropertyInGroup(final HttpExchange exchange) {
         String options = "";
         try {
@@ -213,6 +260,50 @@ public class AdminRestHolder implements PageHolder {
             String property = json.getString(Constants.REST.PROPERTY);
 
             server.getDataProcessor().switchPropertyInGroup(groupId,property,new Callable1<JSONObject>() {
+                @Override
+                public void call(JSONObject json) {
+                    Utils.sendResultJson.call(exchange, json);
+                }
+            }, new Callable1<JSONObject>() {
+                @Override
+                public void call(JSONObject json) {
+                    Utils.sendError.call(exchange, 500, json);
+                }
+            });
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            JSONObject json = new JSONObject();
+            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+            json.put(Constants.REST.MESSAGE, "Incorrect request.");
+            json.put(Constants.REST.REQUEST, options);
+            Utils.sendError.call(exchange, 400, json);
+        }
+
+    }
+
+    private void switchPropertyForUser(final HttpExchange exchange) {
+        String options = "";
+        try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = exchange.getRequestBody();
+            int b;
+            while((b = is.read()) != -1) {
+                buf.append((char) b);
+            }
+
+            is.close();
+            options = buf.toString();
+
+            Common.log("ARH", "switchPropertyForUser:", options);
+
+            JSONObject json = new JSONObject(options);
+            String groupId = json.getString(Constants.REST.GROUP_ID);
+            Long userNumber = Long.parseLong(json.getString(Constants.REST.USER_NUMBER));
+            String property = json.getString(Constants.REST.PROPERTY);
+            Boolean value = json.getBoolean(Constants.REST.VALUE);
+
+            server.getDataProcessor().switchPropertyForUser(groupId,userNumber,property,value,new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendResultJson.call(exchange, json);

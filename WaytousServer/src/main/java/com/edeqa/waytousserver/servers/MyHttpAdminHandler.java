@@ -11,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.internal.NonNull;
 import com.google.firebase.tasks.OnFailureListener;
 import com.google.firebase.tasks.OnSuccessListener;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -44,7 +45,6 @@ public class MyHttpAdminHandler implements HttpHandler {
     private final LinkedHashMap<String, PageHolder> holders;
     private volatile AbstractDataProcessor dataProcessor;
     private HtmlGenerator html;
-    private DigestAuthenticator authenticator;
 
     public MyHttpAdminHandler(){
 
@@ -74,6 +74,16 @@ public class MyHttpAdminHandler implements HttpHandler {
     public void handle(final HttpExchange exchange) throws IOException {
         try {
 //            System.out.println("Admin server requested");
+
+            if("/".equals(exchange.getRequestURI().getPath())) {
+                Headers responseHeaders = exchange.getResponseHeaders();
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+                responseHeaders.set(HttpHeaders.LOCATION, "/admin/");
+                exchange.sendResponseHeaders(302, 0);
+                exchange.close();
+                return;
+            }
 
             String[] parts = exchange.getRequestURI().getPath().split("/");
             if(parts.length >2) {
@@ -106,7 +116,7 @@ public class MyHttpAdminHandler implements HttpHandler {
                     update.put("active", false);
                     update.put("color", Color.BLACK);
                     update.put("changed", new Date().getTime());
-                    update.put(USER_NAME,"Administrator");
+                    update.put(USER_NAME,"Viewer");
 
                     o.put("sign", customToken);
                     html.getHead().add(SCRIPT).with("data", o);

@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -217,42 +218,23 @@ public class WaytousServer {
         Common.log("Main", "Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
         server.createContext("/", redirectServer);
 
-//        server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
-//        server.start();
-
-
-//        server = HttpServer.create();
-//        server.bind(new InetSocketAddress(HTTP_PORT), 0);
 
         MyHttpMainHandler mainServer = new MyHttpMainHandler();
         mainServer.setDataProcessor(dataProcessorFirebaseV1);
-//        server.createContext("/", mainServer);
-//        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpRestHandler restServer = new MyHttpRestHandler();
         restServer.setDataProcessor(dataProcessorFirebaseV1);
-//        server.createContext("/", mainServer);
-//        Common.log("Main", "Main HTTP\t\t| " + HTTP_PORT + "\t| /, /*");
 
         MyHttpTrackingHandler trackingServer = new MyHttpTrackingHandler();
         trackingServer.setDataProcessor(dataProcessorFirebaseV1);
-//        server.createContext("/track", trackingServer);
-//        Common.log("Main", "Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/track");
-
-//        server.createContext("/group", trackingServer);
-//        Common.log("Main", "Tracking HTTP\t| " + HTTP_PORT + "\t| " + "/group");
 
         MyHttpAdminHandler adminServer = new MyHttpAdminHandler();
         adminServer.setDataProcessor(dataProcessorFirebaseV1);
-//        server.createContext("/admin", adminServer).setAuthenticator(new Authenticator("get"));
-//        Common.log("Main", "Admin HTTP\t\t| " + HTTP_PORT + "\t| " + "/admin");
-
-        server.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
-        server.start();
 
 
         try {
             HttpsServer sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsPort()), 0);
+            HttpsServer sslAdminServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsAdminPort()), 0);
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -293,6 +275,26 @@ public class WaytousServer {
                 }
             });
 
+            sslAdminServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+                public void configure(HttpsParameters params) {
+                    try {
+                        // initialise the SSL context
+                        SSLContext c = SSLContext.getDefault();
+                        SSLEngine engine = c.createSSLEngine();
+                        params.setNeedClientAuth(false);
+                        params.setCipherSuites(engine.getEnabledCipherSuites());
+                        params.setProtocols(engine.getEnabledProtocols());
+
+                        // get the default parameters
+                        SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
+                        params.setSSLParameters(defaultSSLParameters);
+
+                    } catch (Exception ex) {
+                        Common.log("Main","Failed to create HTTPS port");
+                    }
+                }
+            });
+
             sslServer.createContext("/", mainServer);
             Common.log("Main", "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
 
@@ -305,16 +307,22 @@ public class WaytousServer {
             sslServer.createContext("/rest/", restServer);
             Common.log("Main", "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/rest/");
 
-            sslServer.createContext("/admin/", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
-            sslServer.createContext("/admin/logout", adminServer);
+            sslAdminServer.createContext("/admin", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
+            sslAdminServer.createContext("/admin/logout", adminServer);
+            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| " + "/");
 
-            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/admin/");
+            sslAdminServer.createContext("/", mainServer);
+            Common.log("Main", "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| /, /*");
 
-            sslServer.setExecutor(Executors.newCachedThreadPool()); // creates a default executor
-
+            ExecutorService executor = Executors.newCachedThreadPool();
+            server.setExecutor(executor);
+            sslServer.setExecutor(executor);
+            sslAdminServer.setExecutor(executor);
 
 //            sslServer.setHttpsConfigurator(new HttpsConfigurator(SSLContext.getDefault()));
+            server.start();
             sslServer.start();
+            sslAdminServer.start();
         } catch(Exception e){
             e.printStackTrace();
         }

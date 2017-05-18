@@ -27,21 +27,24 @@ function Create() {
                     oninput: validate_id
                 },
                 { type: HTML.CHECKBOX, label: "Requires password", onchange: function() {
-                       dialog.items[2].parentNode[this.checked ? "show" : "hide"]();
+                       dialog.items[2].disabled = !this.checked;
+                       dialog.items[2].parentNode.classList[this.checked ? "remove" : "add"]("disabled");
                        dialog.items[2].focus();
                 } },
-                { type: HTML.PASSWORD, itemClassName: "hidden", label: "Password" },
+                { type: HTML.PASSWORD, itemClassName: "disabled", disabled: true, label: "&#150; password" },
                 { type: HTML.INPUT, label: "Welcome message" },
                 { type: HTML.CHECKBOX, label: "Persistent group", onchange: function() {
-                      dialog.items[5].parentNode[this.checked ? "hide" : "show"]();
-                      dialog.items[5].focus();
+                        dialog.items[5].disabled = this.checked;
+                       dialog.items[5].parentNode.classList[this.checked ? "add" : "remove"]("disabled");
+                       dialog.items[5].focus();
                 } },
-                { type: HTML.NUMBER, label: "Time to live, min", oninput: validate_ttl },
+                { type: HTML.NUMBER, label: "&#150; time to live, min", oninput: validate_ttl, value: 15 },
                 { type: HTML.CHECKBOX, label: "Dismiss inactive users", onchange: function() {
-                    dialog.items[7].parentNode[this.checked ? "show" : "hide"]();
-                    dialog.items[7].focus();
+                    dialog.items[7].disabled = !!this.checked;
+                   dialog.items[7].parentNode.classList[this.checked ? "add" : "remove"]("disabled");
+                   dialog.items[7].focus();
                 }, checked: true },
-                { type: HTML.NUMBER, itemClassName: "", label: "Delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay, value: 300 },
+                { type: HTML.NUMBER, itemClassName: "", label: "&#150; delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay, value: 300 },
             ],
             positive: {
                 label: "OK",

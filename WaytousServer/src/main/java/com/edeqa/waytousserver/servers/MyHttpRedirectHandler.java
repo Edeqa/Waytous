@@ -49,7 +49,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
                 String webRedirect = "https://" + host + Common.getWrappedHttpsPort() + "/group/" + tokenId;
                 String mainLink = "https://" + host + Common.getWrappedHttpsPort() + "/track/" + tokenId;
 
-                String redirectLink = "http://"+ SENSITIVE.getFirebaseDynamicLinkHost()+"/?"
+                String redirectLink = "http://" + SENSITIVE.getFirebaseDynamicLinkHost() + "/?"
                         + "link=" + mainLink
                         + "&apn=com.edeqa.waytous"
                         + "&al=" + mobileRedirect
@@ -68,6 +68,14 @@ public class MyHttpRedirectHandler implements HttpHandler {
                 exchange.sendResponseHeaders(302, 0);
                 exchange.close();
 
+            } else if(uri.getPath().startsWith("/admin")) {
+                String redirectLink = "https://" + host + ":" + SENSITIVE.getHttpsAdminPort() + uri.getPath();
+                Headers responseHeaders = exchange.getResponseHeaders();
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+                responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+                responseHeaders.set(HttpHeaders.LOCATION, redirectLink);
+                exchange.sendResponseHeaders(302, 0);
+                exchange.close();
             } else {
                 redirect(exchange, host, uri.getPath());
             }

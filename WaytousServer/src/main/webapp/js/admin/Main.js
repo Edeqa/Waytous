@@ -235,7 +235,10 @@ function Main() {
         xhr.setRequestHeader("Authorization", "Digest logout");
         xhr.onreadystatechange = function() {
             if (xhr.readyState==4) {
-                window.location = "/"
+
+                var url = new URL(window.location.href);
+                url = "https://" + url.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) + "/";
+                window.location = url
             }
         }
         xhr.send();

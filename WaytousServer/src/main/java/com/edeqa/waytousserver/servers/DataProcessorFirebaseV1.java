@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.internal.NonNull;
+import com.google.firebase.tasks.OnCompleteListener;
 import com.google.firebase.tasks.OnFailureListener;
 import com.google.firebase.tasks.OnSuccessListener;
 import com.google.firebase.tasks.Task;
@@ -510,7 +511,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 } else {
                     json.put(Constants.REST.STATUS, Constants.REST.ERROR);
                     json.put(Constants.REST.GROUP_ID, group.getId());
-                    json.put(Constants.REST.MESSAGE, "Already exists: " + group.getId() + ".");
+                    json.put(Constants.REST.MESSAGE, "Group " + group.getId() + " already exists.");
                     Common.log("DPF1", "onMessage:createGroup:alreadyExists:" + group.getId());
                     if(onerror != null) onerror.call(json);
                 }
@@ -547,9 +548,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        ref.child(DATABASE_SECTION_GROUPS).child(groupId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+        ref.child(DATABASE_SECTION_GROUPS).child(groupId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onComplete(@NonNull Task<Void> task) {
                 ref.child(groupId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -560,7 +561,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 }).addOnFailureListener(onFailureListener);
             }
         }).addOnFailureListener(onFailureListener);
-
     }
 
     @Override
@@ -569,6 +569,16 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
 
+        final OnFailureListener onFailureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                res.put(Constants.REST.MESSAGE, e.getMessage());
+                Common.log("DPF1", "switchPropertyInGroup:", property, e.getMessage());
+                onerror.call(res);
+            }
+        };
+
         ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -576,20 +586,21 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 if(value != null) {
                     res.put(Constants.REST.OLD_VALUE, value);
                     value = !value;
-                    ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).setValue(value);
-                    res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
-                    onsuccess.call(res);
+                    ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).setValue(value).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                            onsuccess.call(res);
+                        }
+                    }).addOnFailureListener(onFailureListener);
                 } else {
-                    res.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                    Common.log("DPF1", "switchPropertyInGroup:nullValue:", property);
-                    onerror.call(res);
+                    onFailureListener.onFailure(new Exception("Null value."));
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                onerror.call(res);
+                onFailureListener.onFailure(new Exception("Cancelled."));
             }
         });
     }
@@ -728,7 +739,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //        }
     }*/
 
-    public void removeUser(String groupId,String id){
+    public void removeUser(String groupId, String id){
         if(groupId != null && id != null && groups.containsKey(groupId)){
             MyGroup t = groups.get(groupId);
             MyUser user = t.users.get(id);
@@ -741,6 +752,108 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 t.removeUser(id);
             }
         }
+    }
+
+    @Override
+    public void removeUser(final String groupId, final Long userNumber, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+
+        final JSONObject json = new JSONObject();
+        final String user = String.valueOf(userNumber);
+
+        json.put(Constants.REST.GROUP_ID, groupId);
+        json.put(Constants.REST.USER_NUMBER, userNumber);
+
+        final OnFailureListener onFailureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, e.getMessage());
+                Common.log("DPF1", "removeUser:" + userNumber, "group:"+groupId, "error:"+e.getMessage());
+                onerror.call(json);
+            }
+        };
+        onFailureListener.onFailure(new Exception("Not implemented yet."));
+
+        /*ref.child(groupId).child(DATABASE_SECTION_USERS_DATA_PRIVATE).child(user).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child(groupId).child(DATABASE_SECTION_USERS_DATA).child(user).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        ref.child(groupId).child(DATABASE_SECTION_USERS_KEYS).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                HashMap<String,Serializable> val = (HashMap<String, Serializable>) dataSnapshot.getValue();
+                                for(Map.Entry<String,Serializable> x:val.entrySet()) {
+                                    System.out.println(userNumber +":"+x.getKey() + ":" + x.getValue() + ":"+x.getValue().getClass()+":"+(x.getValue() == userNumber));
+                                    if(x.getValue() == userNumber) {
+                                        ref.child(groupId).child(DATABASE_SECTION_USERS_KEYS).child(x.getKey()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                                                Common.log("DPF1", "removeUser:" + userNumber, "group:"+groupId);
+                                                onsuccess.call(json);
+                                            }
+                                        });
+                                        return;
+                                    }
+                                }
+                                onFailureListener.onFailure(new Exception("User not found."));
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }).addOnFailureListener(onFailureListener);
+            }
+        }).addOnFailureListener(onFailureListener);*/
+    }
+
+    @Override
+    public void switchPropertyForUser(final String groupId, final Long userNumber, final String property, final Boolean value, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+
+        final JSONObject res = new JSONObject();
+        res.put(Constants.REST.PROPERTY, property);
+
+        final OnFailureListener onFailureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                res.put(Constants.REST.MESSAGE, e.getMessage());
+                Common.log("DPF1", "switchPropertyForUser:", property, e.getMessage());
+                onerror.call(res);
+            }
+        };
+
+        ref.child(groupId).child(DATABASE_SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean oldValue = (Boolean) dataSnapshot.getValue();
+                if(oldValue != null) {
+                    res.put(Constants.REST.OLD_VALUE, oldValue);
+                    Boolean newValue = !oldValue;
+                    if(value != null) newValue = value;
+                    ref.child(groupId).child(DATABASE_SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).setValue(newValue).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                            onsuccess.call(res);
+                        }
+                    }).addOnFailureListener(onFailureListener);
+                } else {
+                    onFailureListener.onFailure(new Exception("Invalid property."));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                onFailureListener.onFailure(new Exception("Cancelled."));
+            }
+        });
+
     }
 
     public void validateGroups() {

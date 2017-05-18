@@ -53,6 +53,7 @@ function Groups() {
         var resign = true;
 
         table.placeholder.show();
+        u.clear(table.body);
 
         ref.child(DATABASE.SECTION_GROUPS).off();
         ref.child(DATABASE.SECTION_GROUPS).on("child_added", function(data) {
@@ -68,12 +69,12 @@ function Groups() {
                      },
                     cells: [
                         { innerHTML: data.key },
-                        { className: "media-hidden", innerHTML:snapshot.val()["requires-password"] ? "Yes" : "No" },
-                        { className: "media-hidden", innerHTML:snapshot.val().persistent ? "Yes" : "No" },
-                        { className: "media-hidden", innerHTML:snapshot.val().persistent ? "&#150;" : snapshot.val()["time-to-live-if-empty"] },
-                        { className: "media-hidden", innerHTML:snapshot.val()["dismiss-inactive"] ? snapshot.val()["delay-to-dismiss"] : "&#150;" },
-                        { innerHTML:"..." },
-                        { className: "media-hidden", sort: snapshot.val()["date-created"], innerHTML:snapshot.val()["date-created"] ? new Date(snapshot.val()["date-created"]).toLocaleString() : "&#150;" },
+                        { className: "media-hidden", innerHTML:snapshot.val()[DATABASE.OPTION_REQUIRES_PASSWORD] ? "Yes" : "No" },
+                        { className: "media-hidden", innerHTML:snapshot.val()[DATABASE.OPTION_PERSISTENT] ? "Yes" : "No" },
+                        { className: "media-hidden", innerHTML:snapshot.val()[DATABASE.OPTION_PERSISTENT] ? "&#150;" : snapshot.val()[DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY] },
+                        { className: "media-hidden", innerHTML:snapshot.val()[DATABASE.OPTION_DISMISS_INACTIVE] ? snapshot.val()[DATABASE.OPTION_DELAY_TO_DISMISS] : "&#150;" },
+                        { innerHTML: "..." },
+                        { className: "media-hidden", sort: snapshot.val()[DATABASE.OPTION_DATE_CREATED], innerHTML:snapshot.val()[DATABASE.OPTION_DATE_CREATED] ? new Date(snapshot.val()[DATABASE.OPTION_DATE_CREATED]).toLocaleString() : "&#150;" },
                         { sort: 0, innerHTML:"..." }
                     ]
                 });
@@ -83,18 +84,18 @@ function Groups() {
                 ref.child(data.key).child(DATABASE.SECTION_USERS_DATA).on("value", function(snapshot){
                     if(!snapshot.val()) return;
 
-                    usersNode.lastChild.innerHTML = snapshot.val().length;
-                    var changed = 0, active = 0;
+                    var changed = 0, active = 0, total = 0;
                     for(var i in snapshot.val()) {
-                        var c = parseInt(snapshot.val()[i].changed);
+                        total++;
+                        var c = parseInt(snapshot.val()[i][DATABASE.USER_CREATED]);
                         if(c > changed) changed = c;
-                        if(snapshot.val()[i].active) active ++;
+                        if(snapshot.val()[i][DATABASE.USER_ACTIVE]) active ++;
                     }
-                    usersNode.innerHTML = active + " / " + snapshot.val().length;
+                    usersNode.innerHTML = active + " / " + total;
 
                     var changed = 0;
                     for(var i in snapshot.val()) {
-                        var c = parseInt(snapshot.val()[i].changed);
+                        var c = parseInt(snapshot.val()[i][DATABASE.USER_CHANGED]);
                         if(c > changed) changed = c;
                     }
                     changedNode.sort = changed;

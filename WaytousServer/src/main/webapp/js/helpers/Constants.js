@@ -131,6 +131,7 @@ function Constants() {
         USER_ACTIVE : "active", // active
         USER_CREATED : "created", // created
         USER_CHANGED : "changed", // changed
+        USER_COLOR : "color", // color
         SECTION_USERS_DATA_PRIVATE : "u/p", // users/data-private
         SECTION_USERS_KEYS : "u/k", // users/keys
         SECTION_USERS_ORDER : "u/n", // users/order

@@ -480,4 +480,14 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
         }
     }
 
+    @Override
+    public void removeUser(String groupId, Long userNumber, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+        // TODO
+    }
+
+    @Override
+    public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+        // TODO
+    }
+
 }

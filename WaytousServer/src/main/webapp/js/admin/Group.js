@@ -21,9 +21,9 @@ function Group() {
 
     var renderInterface = function() {
 
-//        div.appendChild(renderAlertArea());
         var ref = database.ref();
 
+        u.clear(div);
         u.create(HTML.H2, "Summary", div);
 
         tableSummary = u.table({
@@ -31,10 +31,13 @@ function Group() {
             placeholder: "Loading..."
         }, div);
 
+        var url = new URL(window.location.href);
+        url = "https://" + url.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT);
+
         var td = u.create()
-            .place(HTML.A, { href:"/track/"+groupId, innerHTML:groupId, target:"_blank"})
+            .place(HTML.A, { href: url + "/track/"+groupId, innerHTML:groupId, target:"_blank"})
             .place(HTML.SPAN, " ")
-            .place(HTML.A, { href:"/group/"+groupId, innerHTML:"(Force open in browser)", target:"_blank"});
+            .place(HTML.A, { href: url + "/group/"+groupId, innerHTML:"(Force open in browser)", target:"_blank"});
 
          tableSummary.add({ cells: [
                 { className: "th", innerHTML: "ID" },
@@ -75,25 +78,28 @@ function Group() {
                     u.dialog({
                         title: "Welcome message",
                         items: [
-                            { type:HTML.INPUT, className:"welcome-input", value:snapshot.val() }
+                            { type:HTML.INPUT, className:"welcome-input", value: tableSummary.welcomeMessageNode.lastChild.innerHTML }
                         ],
                         positive: {
                             label: "OK",
                             onclick: function(items) {
-                                this.lastChild.innerHTML += " ...wait";
                                 var newValue = items[0].value;
-                                u.post("/admin/rest/v1/group/modify", JSON.stringify({group_id:groupId, property:DATABASE.OPTION_WELCOME_MESSAGE, value:newValue}))
-                                .catch(function(code,xhr){
-                                   console.error(code,xhr);
-                                   WTU.resign(updateSummary);
-                                   var res = JSON.parse(xhr.responseText) || {};
-                                   u.toast.show(res.message || xhr.statusText);
-                               });
+                                if(tableSummary.welcomeMessageNode.lastChild.innerHTML != newValue) {
+                                    tableSummary.welcomeMessageNode.lastChild.innerHTML += " ...wait";
+                                    u.post("/admin/rest/v1/group/modify", JSON.stringify({group_id:groupId, property:DATABASE.OPTION_WELCOME_MESSAGE, value:newValue}))
+                                    .catch(function(code,xhr){
+                                       console.error(code,xhr);
+                                       WTU.resign(updateSummary);
+                                       var res = JSON.parse(xhr.responseText) || {};
+                                       u.toast.show(res.message || xhr.statusText);
+                                   });
+                               }
                             }
                         },
                         negative: { label:"Cancel"}
                     }).open();
                 }).catch(function(error){
+                      console.warn("Resign because of",error);
                       WTU.resign(updateSummary);
                   });
             },
@@ -107,7 +113,7 @@ function Group() {
                 this.lastChild.innerHTML += " ...wait";
                 u.post("/admin/rest/v1/group/switch", JSON.stringify({group_id:groupId, property:DATABASE.OPTION_PERSISTENT}))
                 .catch(function(code,xhr){
-                   console.error(code,xhr);
+                   console.warn("Resign because of",code,xhr);
                    WTU.resign(updateSummary);
                    var res = JSON.parse(xhr.responseText) || {};
                    u.toast.show(res.message || xhr.statusText);
@@ -121,33 +127,31 @@ function Group() {
         tableSummary.timeToLiveNode = tableSummary.add({
             className: "hidden",
             onclick: function() {
-                ref.child(groupId).child(DATABASE.SECTION_OPTIONS).child(DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY).once("value").then(function(snapshot){
-                    u.dialog({
-                        title: "Time to live",
-                        items: [
-                            { type:HTML.DIV, innerHTML:"Set time to live (in minutes) if the group is empty (i.e. all users are offline)." },
-                            { type:HTML.NUMBER, label:"Time to live, min", value:snapshot.val() }
-                        ],
-                        positive: {
-                            label: "OK",
-                            dismiss: false,
-                            onclick: function(items) {
-                                this.lastChild.innerHTML += " ...wait";
-                                var newValue = items[1].value;
+                u.dialog({
+                    title: "Time to live",
+                    items: [
+                        { type:HTML.DIV, innerHTML:"Set time to live (in minutes) if the group is empty (i.e. all users are offline)." },
+                        { type:HTML.NUMBER, label:"Time to live, min", value:parseInt(tableSummary.timeToLiveNode.lastChild.innerHTML || 15) }
+                    ],
+                    positive: {
+                        label: "OK",
+                        dismiss: false,
+                        onclick: function(items) {
+                            var newValue = items[1].value;
+                            if(tableSummary.timeToLiveNode.lastChild.innerHTML != newValue) {
+                                tableSummary.timeToLiveNode.lastChild.innerHTML += " ...wait";
                                 u.post("/admin/rest/v1/group/modify", JSON.stringify({group_id:groupId, property:DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY, value:newValue}))
                                 .catch(function(code,xhr){
-                                   console.error(code,xhr);
+                                   console.warn("Resign because of",code,xhr);
                                    WTU.resign(updateSummary);
                                    var res = JSON.parse(xhr.responseText) || {};
                                    u.toast.show(res.message || xhr.statusText);
                                });
-                            }
-                        },
-                        negative: { label:"Cancel"}
-                    }).open();
-                }).catch(function(error){
-                      WTU.resign(updateSummary);
-                  });
+                           }
+                        }
+                    },
+                    negative: { label:"Cancel"}
+                }).open();
             },
             cells: [
                 { className: "th", innerHTML: "&#150; time to live, min" },
@@ -160,7 +164,7 @@ function Group() {
                 this.lastChild.innerHTML += " ...wait";
                  u.post("/admin/rest/v1/group/switch", JSON.stringify({group_id:groupId, property:DATABASE.OPTION_DISMISS_INACTIVE}))
                 .catch(function(code,xhr){
-                   console.error(code,xhr);
+                   console.warn("Resign because of",code,xhr);
                    WTU.resign(updateSummary);
                    var res = JSON.parse(xhr.responseText) || {};
                    u.toast.show(res.message || xhr.statusText);
@@ -174,33 +178,30 @@ function Group() {
         tableSummary.delayToDismissNode = tableSummary.add({
             className: "hidden",
             onclick: function() {
-                ref.child(groupId).child(DATABASE.SECTION_OPTIONS).child(DATABASE.OPTION_DELAY_TO_DISMISS).once("value").then(function(snapshot){
-                    u.dialog({
-                        title: "Delay to dismiss",
-                        items: [
-                            { type:HTML.DIV, innerHTML:"Switch user offline if he is not active at least (in seconds)." },
-                            { type:HTML.NUMBER, label:"Delay to dismiss, sec", value:snapshot.val() }
-                        ],
-                        positive: {
-                            label: "OK",
-                            dismiss: false,
-                            onclick: function(items) {
-                                this.lastChild.innerHTML += " ...wait";
-                                var newValue = items[1].value;
+                u.dialog({
+                    title: "Delay to dismiss",
+                    items: [
+                        { type:HTML.DIV, innerHTML:"Switch user offline if he is not active at least (in seconds)." },
+                        { type:HTML.NUMBER, label:"Delay to dismiss, sec", value:parseInt(tableSummary.delayToDismissNode.lastChild.innerHTML || 300) }
+                    ],
+                    positive: {
+                        label: "OK",
+                        onclick: function(items) {
+                            var newValue = items[1].value;
+                            if(tableSummary.delayToDismissNode.lastChild.innerHTML != newValue) {
+                                tableSummary.delayToDismissNode.lastChild.innerHTML += " ...wait";
                                 u.post("/admin/rest/v1/group/modify", JSON.stringify({group_id:groupId, property:DATABASE.OPTION_DELAY_TO_DISMISS, value:newValue}))
                                 .catch(function(code,xhr){
-                                   console.error(code,xhr);
+                                   console.warn("Resign because of",code,xhr);
                                    WTU.resign(updateSummary);
                                    var res = JSON.parse(xhr.responseText) || {};
                                    u.toast.show(res.message || xhr.statusText);
                                });
                             }
-                        },
-                        negative: { label:"Cancel"}
-                    }).open();
-                }).catch(function(error){
-                      WTU.resign(updateSummary);
-                  });
+                        }
+                    },
+                    negative: { label:"Cancel"}
+                }).open();
             },
             cells: [
                 { className: "th", innerHTML: "&#150; dismiss after, sec" },
@@ -210,7 +211,6 @@ function Group() {
         tableSummary.createdNode = tableSummary.add({ cells: [
                 { className: "th", innerHTML: "Created" },
                 { className: "option", innerHTML: "..." }
-//                { className: "option", innerHTML: snapshot.val()[DATABASE.OPTION_DATE_CREATED] ? new Date(snapshot.val()[DATABASE.OPTION_DATE_CREATED]).toLocaleString() : "&#150;" }
         ]});
 
         tableSummary.changedNode = tableSummary.add({ cells: [
@@ -227,7 +227,7 @@ function Group() {
             },
             cells: [
                 { className: "th", innerHTML: "Users total" },
-                { className: "option highlight", innerHTML: "..." }
+                { className: "option highlight", innerHTML: 0 }
         ]});
 
         tableSummary.activeUsersNode = tableSummary.add({
@@ -236,7 +236,7 @@ function Group() {
             },
             cells: [
                 { className: "th", innerHTML: "&#150; online" },
-                { className: "option highlight", innerHTML: "..." }
+                { className: "option highlight", innerHTML: 0 }
         ]});
 
         u.create(HTML.H2, "Users", div);
@@ -272,57 +272,17 @@ function Group() {
         var ref = database.ref();
 //        tableSummary.placeholder.show();
 
-        ref.child(groupId).child(DATABASE.SECTION_OPTIONS).off();
         ref.child(groupId).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
 
-
-            /*var requiresPasswordNode = tableSummary.add({
-                onclick: function() {
-                    this.lastChild.innerHTML += " ...wait";
-                    u.post("/admin/rest/v1/group/switch", JSON.stringify({id:groupId, property:DATABASE.OPTION_REQUIRES_PASSWORD}))
-                    .catch(function(code,xhr){
-                       console.error(code,xhr);
-                       WTU.resign(updateSummary);
-                       var res = JSON.parse(xhr.responseText) || {};
-                       u.toast.show(res.message || xhr.statusText);
-                   });
-                },
-                cells: [
-                    { className: "th", innerHTML: "Requires password" },
-                    { className: "option", innerHTML: snapshot.val()[DATABASE.OPTION_REQUIRES_PASSWORD] ? "Yes" : "No" }
-            ]});
-
-
-            var passwordNode = tableSummary.add({
-                className: snapshot.val()[DATABASE.OPTION_REQUIRES_PASSWORD] ? "" : "hidden",
-                cells: [
-                    { className: "th", innerHTML: "&#150; password" },
-                    { className: "option", innerHTML: u.create(HTML.DIV, {innerHTML: "Not set"}).place(HTML.BUTTON, {className:"group-button-set-password", innerHTML:"Set password", onclick: function(e){
-                          e.stopPropagation();
-                          passwordNode.childNodes[1].firstChild.firstChild.nodeValue = "Not set "+Math.random()
-                      }}) }
-            ]});*/
-
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("value", function(snapshot){
-                if(!snapshot.val()) return;
-                tableSummary.usersNode.lastChild.innerHTML = snapshot.val().length;
-                var changed = 0;var active = 0;
-                for(var i in snapshot.val()) {
-                    var c = parseInt(snapshot.val()[i].changed);
-                    if(c > changed) changed = c;
-                    if(snapshot.val()[i].active) active ++;
-                }
-                tableSummary.changedNode.lastChild.innerHTML = new Date(changed).toLocaleString();
-                tableSummary.activeUsersNode.lastChild.innerHTML = active;
-            });
+            ref.child(groupId).child(DATABASE.SECTION_OPTIONS).off();
             ref.child(groupId).child(DATABASE.SECTION_OPTIONS).on("value", function(snapshot){
                 if(!snapshot.val()) return;
 
 //                tableSummary.requiresPasswordNode.lastChild.innerHTML = snapshot.val()[DATABASE.OPTION_REQUIRES_PASSWORD] ? "Yes" : "No";
 //                tableSummary.passwordNode[snapshot.val()[DATABASE.OPTION_REQUIRES_PASSWORD] ? "show":"hide"]();
 
-                tableSummary.welcomeMessageNode.lastChild.innerHTML = snapshot.val()[DATABASE.OPTION_WELCOME_MESSAGE] || "&lt; not set &gt;";
+                tableSummary.welcomeMessageNode.lastChild.innerHTML = snapshot.val()[DATABASE.OPTION_WELCOME_MESSAGE] || "";
 
                 tableSummary.persistentNode.lastChild.innerHTML = snapshot.val()[DATABASE.OPTION_PERSISTENT] ? "Yes" : "No";
                 tableSummary.timeToLiveNode[snapshot.val()[DATABASE.OPTION_PERSISTENT] ? "hide":"show"]();
@@ -335,24 +295,36 @@ function Group() {
                 tableSummary.delayToDismissNode.lastChild.innerHTML = snapshot.val()[DATABASE.OPTION_DELAY_TO_DISMISS] || 300;
 
                 tableSummary.createdNode.lastChild.innerHTML = new Date(snapshot.val()[DATABASE.OPTION_DATE_CREATED]).toLocaleString();
-                tableSummary.changedNode.lastChild.innerHTML = new Date(snapshot.val()[DATABASE.OPTION_DATE_CHANGED]).toLocaleString();
+//                tableSummary.changedNode.lastChild.innerHTML = new Date(snapshot.val()[DATABASE.OPTION_DATE_CHANGED]).toLocaleString();
 
             });
         }).catch(function(error){
-            WTU.resign(updateSummary);
+            console.warn("Resign because of",error);
+            WTU.resign(updateAll);
         });
 
+    }
+
+    function updateAll() {
+        updateSummary();
+        updateData();
     }
 
     function updateData(){
 
         var ref = database.ref();
         tableUsers.placeholder.show();
+        u.clear(tableUsers.body);
         var reload = false;
         var initial = true;
         setTimeout(function(){initial = false;}, 3000);
 
+        tableSummary.usersNode.lastChild.innerHTML = 0;
+        tableSummary.activeUsersNode.lastChild.innerHTML = 0;
+
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).off();
+        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).off();
+
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("child_added", function(snapshot) {
             if(!snapshot || !snapshot.val()){
                 tableUsers.placeholder.show("No users");
@@ -361,16 +333,16 @@ function Group() {
             reload = false;
 
             var row = tableUsers.add({
-                className: "highlight" + (snapshot.val().active ? "" : " inactive"),
+                className: "highlight" + (snapshot.val()[DATABASE.USER_ACTIVE] ? "" : " inactive"),
                 onclick: function(){
                     WTU.switchTo("/admin/user/"+groupId+"/"+snapshot.key);
                     return false;
                  },
                 cells: [
                     { innerHTML: snapshot.key, sort: parseInt(snapshot.key) },
-                    { innerHTML: snapshot.val().name },
-                    { style: { backgroundColor: utils.getHexColor(snapshot.val().color), opacity: 0.5 } },
-                    { className: "media-hidden", sort: snapshot.val().created, innerHTML: snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;" },
+                    { innerHTML: snapshot.val()[DATABASE.USER_NAME] },
+                    { style: { backgroundColor: utils.getHexColor(snapshot.val()[DATABASE.USER_COLOR]), opacity: 0.5 } },
+                    { className: "media-hidden", sort: snapshot.val()[DATABASE.USER_CREATED], innerHTML: snapshot.val()[DATABASE.USER_CREATED] ? new Date(snapshot.val()[DATABASE.USER_CREATED]).toLocaleString() : "&#150;" },
                     { sort: 0, innerHTML: "..." },
                     { className: "media-hidden", innerHTML: "..." },
                     { className: "media-hidden", innerHTML: "..." }
@@ -381,23 +353,35 @@ function Group() {
             var userOs = row.cells[5];
             var userDevice = row.cells[6];
 
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("changed").on("value", function(snapshot){
+            var usersCount = parseInt(tableSummary.usersNode.lastChild.innerHTML);
+            tableSummary.usersNode.lastChild.innerHTML = usersCount + 1;
+            if(snapshot.val()[DATABASE.USER_ACTIVE]) {
+                var usersCount = parseInt(tableSummary.activeUsersNode.lastChild.innerHTML);
+                tableSummary.activeUsersNode.lastChild.innerHTML = ++usersCount;
+            }
+
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child(DATABASE.USER_CHANGED).on("value", function(snapshot){
                 if(!snapshot.val()) return;
                 userChanged.sort = snapshot.val();
                 userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
                 if(!initial) row.classList.add("changed");
                 setTimeout(function(){row.classList.remove("changed")}, 5000);
+                tableSummary.changedNode.lastChild.innerHTML = new Date(snapshot.val()).toLocaleString();
                 tableUsers.update();
             });
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("active").on("value", function(snapshot){
-                if(snapshot.val()) {
-                    row.classList.remove("inactive");
-                } else {
-                    row.classList.add("inactive");
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child(DATABASE.USER_ACTIVE).on("value", function(snapshot){
+                var active = !!snapshot.val();
+                var wasInactive = row.classList.contains("inactive");
+                row.classList[active ? "remove" : "add"]("inactive");
+                var usersCount = parseInt(tableSummary.activeUsersNode.lastChild.innerHTML);
+                if(active && wasInactive) {
+                    tableSummary.activeUsersNode.lastChild.innerHTML = ++usersCount;
+                } else if(!active && !wasInactive) {
+                    tableSummary.activeUsersNode.lastChild.innerHTML = --usersCount;
                 }
                 tableUsers.update();
             });
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("name").on("value", function(snapshot){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child(DATABASE.USER_NAME).on("value", function(snapshot){
                 if(snapshot.val()) {
                     userName.innerHTML = snapshot.val();
                 } else {
@@ -413,15 +397,15 @@ function Group() {
             }).catch(function(error){
                 if(!reload) {
                     reload = true;
-                    console.error("PERMISSION ERROR, RESIGNING",error);
+                    console.warn("Resign because of",error);
                     WTU.resign(updateData);
                 } else {
 //                    console.error("ERROR, ALREADY RESIGNING");
                 }
              });
         }, function(error){
-            console.error(error);
-
+            console.warn("Resign because of",error);
+            WTU.resign(updateAll);
         });
 
     }
@@ -440,7 +424,7 @@ function Group() {
                WTU.switchTo("/admin/groups");
                u.toast.show("Group "+groupId+" was deleted.");
             }).catch(function(code,xhr){
-               console.error(code,xhr);
+               console.warn("Resign because of",code,xhr);
                WTU.resign(updateSummary);
                var res = JSON.parse(xhr.responseText) || {};
                u.toast.show(res.message || xhr.statusText);

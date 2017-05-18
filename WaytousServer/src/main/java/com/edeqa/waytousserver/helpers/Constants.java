@@ -116,8 +116,8 @@ public class Constants {
             GROUP_ID = "group_id",
             VALUE = "value",
             PROPERTY = "property",
-            OLD_VALUE = "old_value";
-
+            OLD_VALUE = "old_value",
+            USER_NUMBER = "user_number";
     }
 
     public static class MIME {
