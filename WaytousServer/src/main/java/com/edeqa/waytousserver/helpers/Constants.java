@@ -81,27 +81,29 @@ public class Constants {
     public static final String USER_ADDRESS = "address";
     public static final String USER_DESCRIPTION = "description";
 
-    public static final String DATABASE_SECTION_GROUPS = "_groups";
-    public static final String DATABASE_SECTION_PUBLIC = "b"; // public
-    public static final String DATABASE_SECTION_PRIVATE = "p"; // private
-    public static final String DATABASE_SECTION_USERS_DATA = "u/b"; // users/data-public
-    public static final String DATABASE_USER_NAME = "name";
-    public static final String DATABASE_USER_ACTIVE = "active";
-    public static final String DATABASE_USER_COLOR = "color";
-    public static final String DATABASE_USER_CREATED = "created";
-    public static final String DATABASE_USER_CHANGED = "changed";
-    public static final String DATABASE_SECTION_USERS_DATA_PRIVATE = "u/p"; // users/data-private
-    public static final String DATABASE_SECTION_USERS_KEYS = "u/k"; // users/keys
-    public static final String DATABASE_SECTION_USERS_ORDER = "u/n"; // users/order
-    public static final String DATABASE_SECTION_OPTIONS = "o"; // options
-    public static final String DATABASE_OPTION_PERSISTENT = "persistent";
-    public static final String DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY = "time-to-live-if-empty";
-    public static final String DATABASE_OPTION_DELAY_TO_DISMISS = "delay-to-dismiss";
-    public static final String DATABASE_OPTION_DISMISS_INACTIVE = "dismiss-inactive";
-    public static final String DATABASE_OPTION_REQUIRES_PASSWORD = "requires-password";
-    public static final String DATABASE_OPTION_WELCOME_MESSAGE = "welcome-message";
-    public static final String DATABASE_OPTION_DATE_CREATED = "date-created";
-    public static final String DATABASE_OPTION_DATE_CHANGED = "date-changed";
+    public static class DATABASE {
+        public static final String SECTION_GROUPS = "_groups",
+                SECTION_PUBLIC = "b", // public
+                SECTION_PRIVATE = "p", // private
+                SECTION_USERS_DATA = "u/b", // users/data-public
+                USER_NAME = "name",
+                USER_ACTIVE = "active",
+                USER_COLOR = "color",
+                USER_CREATED = "created",
+                USER_CHANGED = "changed",
+                SECTION_USERS_DATA_PRIVATE = "u/p", // users/data-private
+                SECTION_USERS_KEYS = "u/k", // users/keys
+                SECTION_USERS_ORDER = "u/n", // users/order
+                SECTION_OPTIONS = "o", // options
+                OPTION_PERSISTENT = "persistent",
+                OPTION_TIME_TO_LIVE_IF_EMPTY = "time-to-live-if-empty",
+                OPTION_DELAY_TO_DISMISS = "delay-to-dismiss",
+                OPTION_DISMISS_INACTIVE = "dismiss-inactive",
+                OPTION_REQUIRES_PASSWORD = "requires-password",
+                OPTION_WELCOME_MESSAGE = "welcome-message",
+                OPTION_DATE_CREATED = "date-created",
+                OPTION_DATE_CHANGED = "date-changed";
+    }
 
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
     public static final int LIFETIME_INACTIVE_GROUP = 300;
@@ -109,34 +111,34 @@ public class Constants {
 
     public static class REST {
         public static final String STATUS = "status",
-            SUCCESS = "success",
-            ERROR = "error",
-            MESSAGE = "message",
-            REQUEST = "request",
-            GROUP_ID = "group_id",
-            VALUE = "value",
-            PROPERTY = "property",
-            OLD_VALUE = "old_value",
-            USER_NUMBER = "user_number";
+                SUCCESS = "success",
+                ERROR = "error",
+                MESSAGE = "message",
+                REQUEST = "request",
+                GROUP_ID = "group_id",
+                VALUE = "value",
+                PROPERTY = "property",
+                OLD_VALUE = "old_value",
+                USER_NUMBER = "user_number";
     }
 
     public static class MIME {
         public static final String APPLICATION_JSON = "application/json",
-            TEXT_PLAIN = "text/plain",
-            TEXT_HTML = "text/html",
-            APPLICATION_OCTET_STREAM = "application/octet-stream",
-            APPLICATION_JAVASCRIPT = "application/javascript",
-            TEXT_CSS = "text/css",
-            APPLICATION_X_WEB_APP_MANIFEST_JSON = "application/x-web-app-manifest+json",
-            AUDIO_MP3 = "audio/mp3",
-            AUDIO_OGG = "audio/ogg",
-            AUDIO_AAC = "audio/aac",
-            APPLICATION_XML = "application/xml",
-            IMAGE_GIF = "image/png",
-            IMAGE_PNG = "image/png",
-            IMAGE_JPG = "image/jpg",
-            IMAGE_ICO = "image/ico",
-            IMAGE_SVG_XML = "image/svg+xml";
+                TEXT_PLAIN = "text/plain",
+                TEXT_HTML = "text/html",
+                APPLICATION_OCTET_STREAM = "application/octet-stream",
+                APPLICATION_JAVASCRIPT = "application/javascript",
+                TEXT_CSS = "text/css",
+                APPLICATION_X_WEB_APP_MANIFEST_JSON = "application/x-web-app-manifest+json",
+                AUDIO_MP3 = "audio/mp3",
+                AUDIO_OGG = "audio/ogg",
+                AUDIO_AAC = "audio/aac",
+                APPLICATION_XML = "application/xml",
+                IMAGE_GIF = "image/png",
+                IMAGE_PNG = "image/png",
+                IMAGE_JPG = "image/jpg",
+                IMAGE_ICO = "image/ico",
+                IMAGE_SVG_XML = "image/svg+xml";
     }
 
 }

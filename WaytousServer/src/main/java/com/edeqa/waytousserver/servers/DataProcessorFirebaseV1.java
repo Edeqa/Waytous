@@ -35,26 +35,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CHANGED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CREATED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DELAY_TO_DISMISS;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DISMISS_INACTIVE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_PERSISTENT;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_REQUIRES_PASSWORD;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_WELCOME_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_GROUPS;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_OPTIONS;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_DATA_PRIVATE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_KEYS;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_ORDER;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_ACTIVE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_CHANGED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_COLOR;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_CREATED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_NAME;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
@@ -163,8 +143,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     onresult[0] = new Callable1<JSONObject>() {
                         @Override
                         public void call(JSONObject json) {
-                            ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
-                            DatabaseReference nodeNumber = ref.child(group.getId()).child(DATABASE_SECTION_USERS_ORDER).push();
+                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
+                            DatabaseReference nodeNumber = ref.child(group.getId()).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
                             nodeNumber.setValue(user.getUid());
 
                             registerUser(group.getId(), user, request);
@@ -223,7 +203,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             Object value = dataSnapshot.getValue();
                             if(value == null) {
                                 dataSnapshot.getRef().push().setValue(user.getUid());
-                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+                                refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
                                 return;
                             }
 
@@ -242,10 +222,10 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 user.number = (int) count;
                                 registerUser(groupId, user, request);
                             } else {
-                                ref.child(DATABASE_SECTION_GROUPS).child(groupId).setValue(user.getUid());
-                                DatabaseReference nodeNumber = ref.child(groupId).child(DATABASE_SECTION_USERS_ORDER).push();
+                                ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).setValue(user.getUid());
+                                DatabaseReference nodeNumber = ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
                                 nodeNumber.setValue(user.getUid());
-                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+                                refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
                             }
 
                         }
@@ -285,12 +265,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                             } else { // join as new member
 
-                                refGroup.child(DATABASE_SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
-//                                refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
+                                refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+//                                refGroup.child(DATABASE.SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
 
 //                                System.out.println("ASNEW:"+dataSnapshot.getValue());
 //                                long number = (long) dataSnapshot.getValue();
-//                                refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE + "/" + number).addListenerForSingleValueEvent(userDataListener);
+//                                refGroup.child(DATABASE.SECTION_USERS_DATA_PRIVATE + "/" + number).addListenerForSingleValueEvent(userDataListener);
                             }
 
                         }
@@ -308,7 +288,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             if(dataSnapshot.getValue() != null) {
                                 String deviceId = request.getString(REQUEST_DEVICE_ID);
                                 final String uid = Utils.getEncryptedHash(deviceId);
-                                refGroup.child(DATABASE_SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
+                                refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
                             } else {
                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                 response.put(RESPONSE_MESSAGE, "This group is expired.");
@@ -324,7 +304,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     };
 
                     if (request.has(REQUEST_DEVICE_ID)) {
-                        refGroup.child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
+                        refGroup.child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
                     } else {
                         CheckReq check = new CheckReq();
                         check.setControl(Utils.getUnique());
@@ -370,14 +350,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                 public void onSuccess(final String customToken) {
 
                                                     Map<String,Object> update = new HashMap<>();
-                                                    update.put(DATABASE_USER_ACTIVE, true);
-                                                    update.put(DATABASE_USER_COLOR,Utils.selectColor((int) check.getNumber()));
-                                                    update.put(DATABASE_USER_CHANGED, new Date().getTime());
+                                                    update.put(Constants.DATABASE.USER_ACTIVE, true);
+                                                    update.put(Constants.DATABASE.USER_COLOR,Utils.selectColor((int) check.getNumber()));
+                                                    update.put(Constants.DATABASE.USER_CHANGED, new Date().getTime());
                                                     if (check.getName() != null && check.getName().length() > 0) {
                                                         update.put(USER_NAME,check.getName());
                                                     }
 
-                                                    refGroup.child(DATABASE_SECTION_USERS_DATA).child(""+check.getNumber()).updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    refGroup.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+check.getNumber()).updateChildren(update).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
                                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
@@ -433,7 +413,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue() != null) {
-                                    refGroup.child(DATABASE_SECTION_USERS_DATA_PRIVATE).child(""+check.getNumber()).addListenerForSingleValueEvent(userCheckListener);
+                                    refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child(""+check.getNumber()).addListenerForSingleValueEvent(userCheckListener);
                                 } else {
                                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                     response.put(RESPONSE_MESSAGE, "This group is expired.");
@@ -448,7 +428,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             }
                         };
 
-                        refGroup.child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
+                        refGroup.child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
 
 
                         return;
@@ -491,16 +471,16 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                 if(dataSnapshot.getValue() == null) {
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_PERSISTENT, group.isPersistent());
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DISMISS_INACTIVE, group.isDismissInactive());
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
-                    childUpdates.put(DATABASE_SECTION_OPTIONS + "/" + DATABASE_OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_PERSISTENT, group.isPersistent());
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_DISMISS_INACTIVE, group.isDismissInactive());
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
+                    childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/" + Constants.DATABASE.OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
                     ref.child(group.getId()).updateChildren(childUpdates);
-                    ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).setValue(0);
+                    ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(0);
 
                     json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
                     json.put(Constants.REST.GROUP_ID, group.getId());
@@ -528,7 +508,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        ref.child(DATABASE_SECTION_GROUPS).child(group.getId()).addListenerForSingleValueEvent(groupRegistrationListener);
+        ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).addListenerForSingleValueEvent(groupRegistrationListener);
 
     }
 
@@ -548,7 +528,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        ref.child(DATABASE_SECTION_GROUPS).child(groupId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+        ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 ref.child(groupId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -579,14 +559,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Boolean value = (Boolean) dataSnapshot.getValue();
                 if(value != null) {
                     res.put(Constants.REST.OLD_VALUE, value);
                     value = !value;
-                    ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).setValue(value).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property).setValue(value).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
@@ -611,13 +591,13 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
         res.put(Constants.REST.VALUE, value);
-        ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Serializable oldValue = (Serializable) dataSnapshot.getValue();
                 if(oldValue != null && value != null) {
                     res.put(Constants.REST.OLD_VALUE, oldValue);
-                    ref.child(groupId).child(DATABASE_SECTION_OPTIONS).child(property).setValue(value);
+                    ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property).setValue(value);
                     res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
                     onsuccess.call(res);
                 } else {
@@ -649,12 +629,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         final Map<String, Object> childUpdates = new HashMap<>();
 
         Map<String,Object> o = new HashMap<>();
-        o.put(DATABASE_USER_COLOR, user.getColor());
-        o.put(DATABASE_USER_NAME, user.getName());
-        o.put(DATABASE_USER_ACTIVE, true);
-        o.put(DATABASE_USER_CREATED, user.getCreated());
-        o.put(DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
-        childUpdates.put(DATABASE_SECTION_USERS_DATA + "/" + user.getNumber(),o);
+        o.put(Constants.DATABASE.USER_COLOR, user.getColor());
+        o.put(Constants.DATABASE.USER_NAME, user.getName());
+        o.put(Constants.DATABASE.USER_ACTIVE, true);
+        o.put(Constants.DATABASE.USER_CREATED, user.getCreated());
+        o.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
+        childUpdates.put(Constants.DATABASE.SECTION_USERS_DATA + "/" + user.getNumber(),o);
 
         o = new HashMap<>();
 
@@ -663,15 +643,15 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         o.put(REQUEST_DEVICE_ID,user.getDeviceId());
         o.put(REQUEST_OS,user.getOs());
         o.put(REQUEST_KEY,uid);
-        childUpdates.put(DATABASE_SECTION_USERS_DATA_PRIVATE + "/" + user.getNumber(),o);
+        childUpdates.put(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE + "/" + user.getNumber(),o);
 
         for(Map.Entry<String,RequestHolder> entry: requestHolders.entrySet()) {
             if(entry.getValue().isSaveable()) {
-                childUpdates.put(DATABASE_SECTION_PUBLIC +"/" + entry.getKey() + "/"+user.getNumber(), "{}");
+                childUpdates.put(Constants.DATABASE.SECTION_PUBLIC +"/" + entry.getKey() + "/"+user.getNumber(), "{}");
             }
         }
 
-        childUpdates.put(DATABASE_SECTION_USERS_KEYS + "/"+uid,user.getNumber());
+        childUpdates.put(Constants.DATABASE.SECTION_USERS_KEYS + "/"+uid,user.getNumber());
 
         Task<Void> a = ref.child(groupId).updateChildren(childUpdates);
         a.addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -774,20 +754,20 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         };
         onFailureListener.onFailure(new Exception("Not implemented yet."));
 
-        /*ref.child(groupId).child(DATABASE_SECTION_USERS_DATA_PRIVATE).child(user).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+        /*ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(user).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                ref.child(groupId).child(DATABASE_SECTION_USERS_DATA).child(user).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(user).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        ref.child(groupId).child(DATABASE_SECTION_USERS_KEYS).addListenerForSingleValueEvent(new ValueEventListener() {
+                        ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 HashMap<String,Serializable> val = (HashMap<String, Serializable>) dataSnapshot.getValue();
                                 for(Map.Entry<String,Serializable> x:val.entrySet()) {
                                     System.out.println(userNumber +":"+x.getKey() + ":" + x.getValue() + ":"+x.getValue().getClass()+":"+(x.getValue() == userNumber));
                                     if(x.getValue() == userNumber) {
-                                        ref.child(groupId).child(DATABASE_SECTION_USERS_KEYS).child(x.getKey()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS).child(x.getKey()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
@@ -828,7 +808,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        ref.child(groupId).child(DATABASE_SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Boolean oldValue = (Boolean) dataSnapshot.getValue();
@@ -836,7 +816,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     res.put(Constants.REST.OLD_VALUE, oldValue);
                     Boolean newValue = !oldValue;
                     if(value != null) newValue = value;
-                    ref.child(groupId).child(DATABASE_SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).setValue(newValue).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).setValue(newValue).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
@@ -875,7 +855,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                         if(value == null) {
                             Common.log("WPF","--- corrupted group detected, removing"); //TODO
-                            ref.child(DATABASE_SECTION_GROUPS).child(group).removeValue();
+                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
                             ref.child(group).removeValue();
                             return;
                         }
@@ -887,23 +867,23 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         final long timeToLiveIfEmpty;
 
 
-                        Object object = value.get(DATABASE_OPTION_REQUIRES_PASSWORD);
+                        Object object = value.get(Constants.DATABASE.OPTION_REQUIRES_PASSWORD);
                         if(object != null) requiresPassword = (boolean) object;
                         else requiresPassword = false;
 
-                        object = value.get(DATABASE_OPTION_DISMISS_INACTIVE);
+                        object = value.get(Constants.DATABASE.OPTION_DISMISS_INACTIVE);
                         if(object != null) dismissInactive = (boolean) object;
                         else dismissInactive = false;
 
-                        object = value.get(DATABASE_OPTION_PERSISTENT);
+                        object = value.get(Constants.DATABASE.OPTION_PERSISTENT);
                         if(object != null) persistent = (boolean) object;
                         else persistent = false;
 
-                        object = value.get(DATABASE_OPTION_DELAY_TO_DISMISS);
+                        object = value.get(Constants.DATABASE.OPTION_DELAY_TO_DISMISS);
                         if(object != null) delayToDismiss = Long.parseLong("0"+object.toString());
                         else delayToDismiss = 0;
 
-                        object = value.get(DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY);
+                        object = value.get(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY);
                         if(object != null) timeToLiveIfEmpty = Long.parseLong("0"+object.toString());
                         else timeToLiveIfEmpty = 0;
 
@@ -920,7 +900,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //                                }
                                 if(users == null) {
                                     Common.log("WPF","--- corrupted group detected, removing ----- 2"); //TODO
-                                    Common.log(ref.child(DATABASE_SECTION_GROUPS).child(group), ref.child(group));
+                                    Common.log(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group), ref.child(group));
                                     return;
                                 }
                                 long groupChanged = 0;
@@ -929,11 +909,11 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                     Map user = users.get(i);
                                     if(user == null) continue;
 
-                                    String name = (String) user.get(DATABASE_USER_NAME);
-                                    Long changed = (Long) user.get(DATABASE_USER_CHANGED);
+                                    String name = (String) user.get(Constants.DATABASE.USER_NAME);
+                                    Long changed = (Long) user.get(Constants.DATABASE.USER_CHANGED);
                                     if(changed != null && changed > groupChanged) groupChanged = changed;
                                     boolean active = false;
-                                    Object object = user.get(DATABASE_USER_ACTIVE);
+                                    Object object = user.get(Constants.DATABASE.USER_ACTIVE);
                                     if(object != null) {
                                         active = (Boolean) object;
                                     }
@@ -945,12 +925,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         Long current = new Date().getTime();
                                         if (changed == null) {
                                             Common.log("WPF", "--- user:", i, "name:", name, "is NULL");
-//                                            dataSnapshot.getRef().child(""+i).child(DATABASE_USER_ACTIVE).setValue(false);
+//                                            dataSnapshot.getRef().child(""+i).child(DATABASE.USER_ACTIVE).setValue(false);
                                         } else if (current - delayToDismiss * 1000 > changed) {
                                             Common.log("WPF", "--- user:", i, "name:", name, "is EXPIRED for", ((current - delayToDismiss * 1000 - changed) / 1000), "seconds");
-//                                            dataSnapshot.getRef().child(""+i).child(DATABASE_USER_ACTIVE).setValue(false);
+//                                            dataSnapshot.getRef().child(""+i).child(DATABASE.USER_ACTIVE).setValue(false);
                                         } else {
-                                            dataSnapshot.getRef().getParent().getParent().child(DATABASE_SECTION_OPTIONS).child(DATABASE_OPTION_DATE_CHANGED).setValue(changed);
+                                            dataSnapshot.getRef().getParent().getParent().child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CHANGED).setValue(changed);
                                             Common.log("WPF", "--- user:", i, "name:", name, "is OK");
                                         }
                                     }
@@ -959,7 +939,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 if(!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000 ) {
 //TODO
                                     Common.log("WPF","--- removing expired group "+group+" for:", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000)/1000/60, "minutes");
-                                    Common.log(ref.child(DATABASE_SECTION_GROUPS).child(group), ref.child(group));
+                                    Common.log(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group), ref.child(group));
 
                                 }
 
@@ -971,8 +951,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             }
                         };
 
-                        ref.child(group).child(DATABASE_SECTION_USERS_DATA).removeEventListener(usersValidation);
-                        ref.child(group).child(DATABASE_SECTION_USERS_DATA).addListenerForSingleValueEvent(usersValidation);
+                        ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA).removeEventListener(usersValidation);
+                        ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA).addListenerForSingleValueEvent(usersValidation);
 
                     }
 
@@ -983,8 +963,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 };
 
 
-                ref.child(group).child(DATABASE_SECTION_OPTIONS).removeEventListener(groupValidation);
-                ref.child(group).child(DATABASE_SECTION_OPTIONS).addListenerForSingleValueEvent(groupValidation);
+                ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS).removeEventListener(groupValidation);
+                ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupValidation);
 
             }
 
@@ -1008,8 +988,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        ref.child(DATABASE_SECTION_GROUPS).removeEventListener(groupsList);
-        ref.child(DATABASE_SECTION_GROUPS).addChildEventListener(groupsList);
+        ref.child(Constants.DATABASE.SECTION_GROUPS).removeEventListener(groupsList);
+        ref.child(Constants.DATABASE.SECTION_GROUPS).addChildEventListener(groupsList);
 
 /*        while(true) {
             try {

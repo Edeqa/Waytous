@@ -1,7 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
 import com.edeqa.waytousserver.servers.AbstractDataProcessor;
-import com.google.firebase.database.ServerValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,14 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CHANGED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DATE_CREATED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DELAY_TO_DISMISS;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DISMISS_INACTIVE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_PERSISTENT;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_REQUIRES_PASSWORD;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_OPTIONS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;

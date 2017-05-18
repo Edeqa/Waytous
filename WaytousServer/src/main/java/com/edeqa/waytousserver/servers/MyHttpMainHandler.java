@@ -63,20 +63,24 @@ public class MyHttpMainHandler implements HttpHandler {
 
             File root = new File(SENSITIVE.getWebRootDirectory());
             File file = new File(root + uri.getPath()).getCanonicalFile();
+            int resultCode = 200;
 
             Common.log("Main", uri.getPath(), "[" + (file.exists() ? file.length() + " byte(s)" : "not found") + "]");
 
             String etag = "W/1976" + ("" + file.lastModified()).hashCode();
 
             String path = uri.getPath().toLowerCase();
-            if (file.isDirectory()) {
-                file = new File(file.getCanonicalPath() + "/index.html");
-            }
-            if (etag.equals(ifModifiedSince)) {
-                Utils.sendResult.call(exchange, 304, null, "304 Not Modified\n".getBytes());
-            } else if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {
+            if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {
                 // Suspected path traversal attack: reject with 403 error.
-                Utils.sendResult.call(exchange, 403, Constants.MIME.TEXT_PLAIN, "403 Forbidden\n".getBytes());
+                resultCode = 403;
+                file = new File(root + "/403.html");
+//                Utils.sendResult.call(exchange, 403, Constants.MIME.TEXT_PLAIN, "403 Forbidden\n".getBytes());
+            } else if (file.isDirectory()) {
+                file = new File(file.getCanonicalPath() + "/index.html");
+            } else if (etag.equals(ifModifiedSince)) {
+                resultCode = 304;
+                file = new File(root + "/304.html");
+//                Utils.sendResult.call(exchange, 304, null, "304 Not Modified\n".getBytes());
             } else if (!uri.getPath().endsWith("/") && !file.exists()) {
                 Headers responseHeaders = exchange.getResponseHeaders();
                 responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
@@ -84,12 +88,14 @@ public class MyHttpMainHandler implements HttpHandler {
                 responseHeaders.set(HttpHeaders.LOCATION, uri.getPath() + "/");
                 exchange.sendResponseHeaders(302, 0);
                 exchange.close();
-
+                return;
             } else if (!file.isFile() || path.startsWith("/WEB-INF") || path.startsWith("/META-INF") || path.startsWith("/.idea")) {
                 // Object does not exist or is not a file: reject with 404 error.
-                Utils.sendResult.call(exchange, 404, Constants.MIME.TEXT_PLAIN, "404 Not Found\n".getBytes());
-            } else {
-                // Object exists and is a file: accept with response code 200.
+                resultCode = 404;
+                file = new File(root + "/404.html");
+            }
+             {
+                // Object exists and it is a file: accept with response code 200.
 
                 boolean gzip = false;
                 for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
@@ -131,7 +137,6 @@ public class MyHttpMainHandler implements HttpHandler {
                 String lastModified = dateFormat.format(file.lastModified());
 
                 exchange.getResponseHeaders().set(HttpHeaders.LAST_MODIFIED, lastModified);
-
                 exchange.getResponseHeaders().set(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
                 exchange.getResponseHeaders().set(HttpHeaders.ETAG, etag);
                 exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
@@ -161,7 +166,7 @@ public class MyHttpMainHandler implements HttpHandler {
 
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type );
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
-                    exchange.sendResponseHeaders(200, 0);
+                    exchange.sendResponseHeaders(resultCode, 0);
                     OutputStream os;
                     if(gzip) {
                         os = new BufferedOutputStream(new GZIPOutputStream(exchange.getResponseBody()));
@@ -174,7 +179,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 } else {
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type );
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
-                    exchange.sendResponseHeaders(200, 0);
+                    exchange.sendResponseHeaders(resultCode, 0);
                     OutputStream os;
                     if (gzip) {
                         os = new BufferedOutputStream(new GZIPOutputStream(exchange.getResponseBody()));

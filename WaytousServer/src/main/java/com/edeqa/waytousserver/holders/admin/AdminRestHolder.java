@@ -17,13 +17,6 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.URI;
 
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DELAY_TO_DISMISS;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_DISMISS_INACTIVE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_PERSISTENT;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_REQUIRES_PASSWORD;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_WELCOME_MESSAGE;
-
 
 /**
  * Created 4/20/2017.
@@ -116,21 +109,21 @@ public class AdminRestHolder implements PageHolder {
 
             MyGroup group = new MyGroup();
             if(json.has(Constants.REST.GROUP_ID)) group.setId(json.getString(Constants.REST.GROUP_ID));
-            if(json.has(DATABASE_OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(DATABASE_OPTION_REQUIRES_PASSWORD));
+            if(json.has(Constants.DATABASE.OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(Constants.DATABASE.OPTION_REQUIRES_PASSWORD));
             if(json.has("password")) group.setPassword(json.get("password").toString());
-            if(json.has(DATABASE_OPTION_WELCOME_MESSAGE)) group.setWelcomeMessage(json.getString(DATABASE_OPTION_WELCOME_MESSAGE));
-            if(json.has(DATABASE_OPTION_PERSISTENT)) group.setPersistent(json.getBoolean(DATABASE_OPTION_PERSISTENT));
-            if(json.has(DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY)) {
+            if(json.has(Constants.DATABASE.OPTION_WELCOME_MESSAGE)) group.setWelcomeMessage(json.getString(Constants.DATABASE.OPTION_WELCOME_MESSAGE));
+            if(json.has(Constants.DATABASE.OPTION_PERSISTENT)) group.setPersistent(json.getBoolean(Constants.DATABASE.OPTION_PERSISTENT));
+            if(json.has(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)) {
                 try {
-                    group.setTimeToLiveIfEmpty(Integer.parseInt(json.getString(DATABASE_OPTION_TIME_TO_LIVE_IF_EMPTY)));
+                    group.setTimeToLiveIfEmpty(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)));
                 } catch (Exception e) {
                     group.setTimeToLiveIfEmpty(15);
                 }
             }
-            if(json.has(DATABASE_OPTION_DISMISS_INACTIVE)) group.setDismissInactive(json.getBoolean(DATABASE_OPTION_DISMISS_INACTIVE));
-            if(json.has(DATABASE_OPTION_DELAY_TO_DISMISS)) {
+            if(json.has(Constants.DATABASE.OPTION_DISMISS_INACTIVE)) group.setDismissInactive(json.getBoolean(Constants.DATABASE.OPTION_DISMISS_INACTIVE));
+            if(json.has(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)) {
                 try {
-                    group.setDelayToDismiss(Integer.parseInt(json.getString(DATABASE_OPTION_DELAY_TO_DISMISS)));
+                    group.setDelayToDismiss(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)));
                 } catch(Exception e){
                     group.setDelayToDismiss(300);
                 }
