@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.edeqa.waytous.helpers.DBHelper;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -103,14 +103,14 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         dbHelpers.get(itemType).clear();
     }
 
-    public void save(SimpleCallback<T> onSaveCallback) {
+    public void save(Callable1<T> onSaveCallback) {
         dbHelpers.get(itemType).save(this);
         if(onSaveCallback != null) {
             onSaveCallback.call((T) this);
         }
     }
 
-    public void delete(SimpleCallback<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
+    public void delete(Callable1<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
         dbHelpers.get(itemType).deleteByItem(this);
         if(onDeleteCallback != null) {
             onDeleteCallback.call(this);
@@ -131,9 +131,9 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         private final LinearLayoutManager layoutManager;
         private final RecyclerView list;
         protected Cursor cursor;
-        protected SimpleCallback<T> onItemClickListener;
-        protected SimpleCallback<T> onItemTouchListener;
-        protected SimpleCallback<Cursor> onCursorReloadListener;
+        protected Callable1<T> onItemClickListener;
+        protected Callable1<T> onItemTouchListener;
+        protected Callable1<Cursor> onCursorReloadListener;
         private View emptyView;
 
         public AbstractSavedItemsAdapter(final Context context, final RecyclerView list){
@@ -191,15 +191,15 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
         public abstract void onBindViewHolder(final RecyclerView.ViewHolder holder, final Cursor cursor);
 
-        public void setOnRightSwipeListener(SimpleCallback<Integer> callback) {
+        public void setOnRightSwipeListener(Callable1<Integer> callback) {
             enableSwipe(ItemTouchHelper.RIGHT, callback);
         }
 
-        public void setOnLeftSwipeListener(SimpleCallback<Integer> callback) {
+        public void setOnLeftSwipeListener(Callable1<Integer> callback) {
             enableSwipe(ItemTouchHelper.LEFT, callback);
         }
 
-        public void setOnCursorReloadListener(SimpleCallback<Cursor> callback) {
+        public void setOnCursorReloadListener(Callable1<Cursor> callback) {
             this.onCursorReloadListener = callback;
         }
 
@@ -215,7 +215,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             return cursor.getLong(cursor.getColumnIndex(fieldName + "_"));
         }
 
-        private void enableSwipe(final int direction, final SimpleCallback<Integer> callback){
+        private void enableSwipe(final int direction, final Callable1<Integer> callback){
             ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, direction) {
                 @Override
                 public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -248,11 +248,11 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
             itemTouchHelper.attachToRecyclerView(list);
         }
 
-        public void setOnItemClickListener(SimpleCallback<T> onItemClickListener) {
+        public void setOnItemClickListener(Callable1<T> onItemClickListener) {
             this.onItemClickListener = onItemClickListener;
         }
 
-        public void setOnItemTouchListener(SimpleCallback<T> onItemTouchListener) {
+        public void setOnItemTouchListener(Callable1<T> onItemTouchListener) {
             this.onItemTouchListener = onItemTouchListener;
         }
 

@@ -20,14 +20,14 @@ import android.widget.Toast;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.holders.CameraViewHolder;
 import com.edeqa.waytous.holders.DrawerViewHolder;
 import com.edeqa.waytous.holders.FabViewHolder;
 import com.edeqa.waytous.holders.FacebookViewHolder;
 import com.edeqa.waytous.holders.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.SnackbarViewHolder;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        state.getUsers().forAllUsers(new MyUsers.Callback() {
+        state.getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 myUser.removeViews();
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (permissions.size() > 0) {
             Thread.dumpStack();
-            new ContinueDialog(this).setMessage(getString(R.string.application_must_continuously_get_your_locations)).setCallback(new SimpleCallback<Void>() {
+            new ContinueDialog(this).setMessage(getString(R.string.application_must_continuously_get_your_locations)).setCallback(new Callable1<Void>() {
                 @Override
                 public void call(Void arg) {
                     ActivityCompat.requestPermissions(MainActivity.this,
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(map == null) return;
 
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()){
-            new ContinueDialog(this).setMessage(getString(R.string.application_needs_the_enabled_location_services)).setCallback(new SimpleCallback() {
+            new ContinueDialog(this).setMessage(getString(R.string.application_needs_the_enabled_location_services)).setCallback(new Callable1() {
                 @Override
                 public void call(Object arg) {
                     Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.getUiSettings().setIndoorLevelPickerEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
-        state.getUsers().forAllUsers(new MyUsers.Callback() {
+        state.getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 myUser.createViews();
@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         case RESPONSE_STATUS_ACCEPTED:
                             SmartLocation.with(MainActivity.this).location().stop();
                             if (o.has(RESPONSE_NUMBER)) {
-                                state.getUsers().forMe(new MyUsers.Callback() {
+                                state.getUsers().forMe(new Callable2<Integer, MyUser>() {
                                     @Override
                                     public void call(Integer number, MyUser myUser) {
                                         myUser.createViews();
@@ -396,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 });
                             }
                             if (o.has(RESPONSE_INITIAL)) {
-                                state.getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                                state.getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
                                     @Override
                                     public void call(Integer number, MyUser myUser) {
                                         myUser.createViews();
@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         case RESPONSE_STATUS_UPDATED:
                             if (o.has(USER_DISMISSED)) {
                                 int number = o.getInt(USER_DISMISSED);
-                                state.getUsers().forUser(number, new MyUsers.Callback() {
+                                state.getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                                     @Override
                                     public void call(Integer number, final MyUser myUser) {
                                         myUser.removeViews();
@@ -418,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                             if (o.has(USER_JOINED)) {
                                 int number = o.getInt(USER_JOINED);
-                                state.getUsers().forUser(number, new MyUsers.Callback() {
+                                state.getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                                     @Override
                                     public void call(Integer number, MyUser myUser) {
                                         myUser.createViews();

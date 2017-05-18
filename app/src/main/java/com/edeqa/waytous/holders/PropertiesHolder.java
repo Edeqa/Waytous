@@ -8,8 +8,8 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
@@ -67,7 +67,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case TRACKING_ACTIVE:
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> value = (HashMap<String, Serializable>) myUser.getProperties().loadFor(TYPE);
@@ -103,7 +103,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
                 break;
             case ACTIVITY_PAUSE:
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> m = new HashMap<>();
@@ -174,7 +174,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     @Override
                     public void run() {
                         if(myUser == State.getInstance().getMe()) {
-                            State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                            State.getInstance().getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, MyUser user) {
                                     if(user.getProperties().isActive()) {
@@ -197,14 +197,14 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     selected = true;
                     break;
                 case SELECT_SINGLE_USER:
-                    State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                    State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             myUser.getProperties().selected = false;
                         }
                     });
                     myUser.fire(SELECT_USER);
-                    State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                    State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser user) {
                             if(user != myUser) user.fire(UNSELECT_USER);

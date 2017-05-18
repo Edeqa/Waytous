@@ -11,9 +11,9 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.SmoothInterpolated;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
@@ -75,7 +75,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 optionsMenu.add(Menu.NONE, R.string.show_tracks, Menu.NONE, R.string.show_tracks).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(SHOW_TRACK);
@@ -88,7 +88,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 optionsMenu.add(Menu.NONE, R.string.hide_tracks, Menu.NONE, R.string.hide_tracks).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(HIDE_TRACK);
@@ -102,7 +102,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 optionsMenu = (Menu) object;
                 final MenuItem menuItemShowTracks = optionsMenu.findItem(R.string.show_tracks);
                 menuItemShowTracks.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         TrackView trackView = ((TrackView) myUser.getEntity(TYPE));
@@ -113,7 +113,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 });
                 final MenuItem menuItemHideTracks = optionsMenu.findItem(R.string.hide_tracks);
                 menuItemHideTracks.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         TrackView trackView = ((TrackView) myUser.getEntity(TYPE));
@@ -163,7 +163,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                             counter = myUser.getLocations().size();
 
                             final Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
-                            new SmoothInterpolated(new SimpleCallback<Float[]>() {
+                            new SmoothInterpolated(new Callable1<Float[]>() {
                                 @Override
                                 public void call(Float[] value) {
                                     LatLng current = new LatLng(

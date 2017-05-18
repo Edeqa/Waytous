@@ -10,7 +10,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
 
 import org.json.JSONObject;
 
@@ -27,11 +27,11 @@ import static com.edeqa.waytous.State.EVENTS.UNSELECT_USER;
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
     
     private static final String TYPE = "address";
-    private SimpleCallback<String> callback;
+    private Callable1<String> callback;
 
     public AddressViewHolder(final MainActivity context) {
         super(context);
-        setCallback(new SimpleCallback<String>() {
+        setCallback(new Callable1<String>() {
             @Override
             public void call(String text) {
                 if(context.getSupportActionBar() != null) {
@@ -52,7 +52,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         return new AddressView(myUser);
     }
 
-    public AddressViewHolder setCallback(SimpleCallback<String> callback) {
+    public AddressViewHolder setCallback(Callable1<String> callback) {
         this.callback = callback;
         return this;
     }

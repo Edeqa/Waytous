@@ -11,9 +11,9 @@ import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyTrackingFB;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.ShareSender;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
@@ -88,7 +88,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         final Location location = Utils.jsonToLocation(o);
         int number = o.getInt(USER_NUMBER);
 
-        State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+        State.getInstance().getUsers().forUser(number,new Callable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 myUser.addLocation(location);
@@ -139,7 +139,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 }
                 break;
             case TRACKING_STOP:
-                State.getInstance().getUsers().forAllUsersExceptMe(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.removeViews();
@@ -245,7 +245,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                     case RESPONSE_STATUS_UPDATED:
                         if (o.has(USER_DISMISSED)) {
                             int number = o.getInt(USER_DISMISSED);
-                            State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+                            State.getInstance().getUsers().forUser(number,new Callable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, final MyUser myUser) {
                                     myUser.fire(MAKE_INACTIVE);
@@ -255,7 +255,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         } else if (o.has(USER_JOINED)) {
                             int number = o.getInt(USER_JOINED);
                             State.getInstance().getUsers().addUser(o);
-                            State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+                            State.getInstance().getUsers().forUser(number,new Callable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
                                     if(!myUser.getProperties().isActive()) {
@@ -269,7 +269,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                     case REQUEST_LEAVE:
                         if (o.has(USER_NUMBER)) {
                             int number = o.getInt(USER_NUMBER);
-                            State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                            State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, final MyUser myUser) {
                                     myUser.fire(MAKE_INACTIVE);
@@ -282,7 +282,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         if (o.has(USER_NAME)) {
                             int number = o.getInt(USER_NUMBER);
                             final String name = o.getString(USER_NAME);
-                            State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+                            State.getInstance().getUsers().forUser(number,new Callable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
                                     myUser.fire(CHANGE_NAME,(name != null && name.length()>0) ? name : null);

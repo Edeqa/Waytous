@@ -17,8 +17,8 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -137,7 +137,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 optionsMenu.add(Menu.NONE, R.string.hide_places, Menu.NONE, R.string.hide_places).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(HIDE_PLACE);
@@ -152,7 +152,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 optionsMenu = (Menu) object;
                 final MenuItem menuItemHideNavigations = optionsMenu.findItem(R.string.hide_places);
                 menuItemHideNavigations.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         PlaceView view = ((PlaceView) myUser.getEntity(TYPE));
@@ -171,7 +171,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
                     x.createViews();
                     State.getInstance().fire(USER_JOINED, x);
-                    State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new MyUsers.Callback() {
+                    State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new Callable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             myUser.createViews();
@@ -219,7 +219,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                                 if (x.containsKey("id") && place.getId().equals(x.get("id"))) {
                                     int number = (int) x.get("number");
 
-                                    State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                                    State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                                         @Override
                                         public void call(Integer number, MyUser myUser) {
                                             myUser.fire(MAKE_ACTIVE);

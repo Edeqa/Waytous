@@ -6,9 +6,12 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.edeqa.waytous.State;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
+import com.edeqa.waytousserver.helpers.Constants;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -43,21 +46,12 @@ import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
-import com.edeqa.waytous.State;
-
 import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
 import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
 import static com.edeqa.waytous.State.EVENTS.TRACKING_CONNECTING;
 import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
 import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.holders.MessagesHolder.PRIVATE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_OPTION_WELCOME_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_PRIVATE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_PUBLIC;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_SECTION_USERS_DATA;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_ACTIVE;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_CHANGED;
-import static com.edeqa.waytousserver.helpers.Constants.DATABASE_USER_NAME;
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
@@ -245,9 +239,9 @@ public class MyTrackingFB implements Tracking {
     public void stop() {
         setStatus(TRACKING_DISABLED);
         Map<String, Object> updates = new HashMap<>();
-        updates.put(DATABASE_USER_ACTIVE, false);
-        updates.put(DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
-        ref.child(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
+        updates.put(Constants.DATABASE.USER_ACTIVE, false);
+        updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
+        ref.child(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
 
         for(Map.Entry<DatabaseReference,Object> entry: refs.entrySet()) {
             if(entry.getValue() instanceof ValueEventListener) {
@@ -259,7 +253,7 @@ public class MyTrackingFB implements Tracking {
 // remove public data of this user
         for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
             if(entry.getValue() != null && entry.getValue().isSaveable() && entry.getValue().isEraseable()) {
-                ref.child(DATABASE_SECTION_PUBLIC).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()).removeValue();
+                ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()).removeValue();
             }
         }
 
@@ -337,13 +331,13 @@ public class MyTrackingFB implements Tracking {
             } else if (ref != null) {
                 if(REQUEST_CHANGE_NAME.equals(type)) {
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(DATABASE_USER_NAME, o.get(USER_NAME));
-                    childUpdates.put(DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
-                    ref.child(DATABASE_SECTION_USERS_DATA).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
+                    childUpdates.put(Constants.DATABASE.USER_NAME, o.get(USER_NAME));
+                    childUpdates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
+                    ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
                     return;
                 } else if(REQUEST_WELCOME_MESSAGE.equals(type)) {
                     if(state.getMe().getProperties().getNumber() == 0) {
-                        ref.child(DATABASE_OPTION_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
+                        ref.child(Constants.DATABASE.OPTION_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
                     }
                     return;
                 }
@@ -370,13 +364,13 @@ public class MyTrackingFB implements Tracking {
                     String to = String.valueOf(data.get("to"));
                     data.remove("to");
                     data.put("from", state.getMe().getProperties().getNumber());
-                    path = DATABASE_SECTION_PRIVATE + "/" + type + "/" + to;
+                    path = Constants.DATABASE.SECTION_PRIVATE + "/" + type + "/" + to;
                 } else {
-                    path = DATABASE_SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
+                    path = Constants.DATABASE.SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
                 }
 
                 updates.put(path + "/" + key, data);
-                updates.put(DATABASE_SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/" + DATABASE_USER_CHANGED, ServerValue.TIMESTAMP);
+                updates.put(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/" + Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
                 Task<Void> a = ref.updateChildren(updates);
                 a.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -580,10 +574,10 @@ public class MyTrackingFB implements Tracking {
 
                                         ref = database.getReference().child(getToken());
 
-                                        registerChildListener(ref.child(DATABASE_SECTION_USERS_DATA),usersDataListener, -1);
+                                        registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA),usersDataListener, -1);
                                         for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
                                             if(entry.getValue().isSaveable()) {
-                                                registerChildListener(ref.child(DATABASE_SECTION_PRIVATE).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()),userPrivateDataListener, -1);
+                                                registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()),userPrivateDataListener, -1);
                                             }
                                         }
                                         trackingListener.onAccept(o);
@@ -686,15 +680,15 @@ public class MyTrackingFB implements Tracking {
                     MyUser user = State.getInstance().getUsers().addUser(o);
                     user.setUser(true);
 
-                    registerValueListener(ref.child(DATABASE_SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("name"),usersDataNameListener);
-                    registerValueListener(ref.child(DATABASE_SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("active"),usersDataActiveListener);
+                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("name"),usersDataNameListener);
+                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("active"),usersDataActiveListener);
 
                     usersDataNameListener.onDataChange(dataSnapshot.child("name"));
                     usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
 
                     for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
                         if(entry.getValue().isSaveable()) {
-                            registerChildListener(ref.child(DATABASE_SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
+                            registerChildListener(ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
                         }
                     }
                     trackingListener.onAccept(o);
@@ -801,7 +795,7 @@ public class MyTrackingFB implements Tracking {
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final String name = String.valueOf(dataSnapshot.getValue());
-                state.getUsers().forUser(number, new MyUsers.Callback() {
+                state.getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if (!name.equals(myUser.getProperties().getName())) {
@@ -827,7 +821,7 @@ public class MyTrackingFB implements Tracking {
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final boolean active = Boolean.parseBoolean(String.valueOf(dataSnapshot.getValue()));
-                state.getUsers().forUser(number, new MyUsers.Callback() {
+                state.getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if (myUser.getProperties().isActive() != active) {

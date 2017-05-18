@@ -12,9 +12,9 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.edeqa.waytousserver.helpers.Constants;
 
 import org.json.JSONException;
@@ -141,7 +141,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 if(UserMessage.getItemByFieldValue("key", key) != null) return;
             }
 
-            State.getInstance().getUsers().forUser(number,new MyUsers.Callback() {
+            State.getInstance().getUsers().forUser(number,new Callable2<Integer, MyUser>() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
                     UserMessage m = new UserMessage(context);

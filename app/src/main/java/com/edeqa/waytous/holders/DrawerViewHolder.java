@@ -18,7 +18,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
 import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
@@ -131,7 +131,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    public void setCallback(final SimpleCallback<Integer> callback) {
+    public void setCallback(final Callable1<Integer> callback) {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -158,7 +158,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return rules;
     }
 
-    private SimpleCallback onNavigationDrawerCallback = new SimpleCallback<Integer>() {
+    private Callable1 onNavigationDrawerCallback = new Callable1<Integer>() {
         @Override
         public void call(Integer id) {
             switch(id) {

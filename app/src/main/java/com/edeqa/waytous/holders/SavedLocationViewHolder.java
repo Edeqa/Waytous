@@ -28,11 +28,11 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.SavedLocation;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -184,12 +184,12 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         reloadCursor();
                         //noinspection unchecked
-                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new SimpleCallback() {
+                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Callable1() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
                             }
-                        }).setOnClickListener(new SimpleCallback() {
+                        }).setOnClickListener(new Callable1() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATIONS);
@@ -272,7 +272,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     if(marker.getTag() != null) {
                         int number = b.getInt(RESPONSE_NUMBER);
                         if(number > 10000) {
-                            State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                            State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
                                     myUser.fire(MARKER_CLICK, marker);
@@ -304,7 +304,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         x.createViews();
                         State.getInstance().fire(USER_JOINED, x);
-                        State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new MyUsers.Callback() {
+                        State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.createViews();
@@ -313,12 +313,12 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 //noinspection unchecked
                                 new SystemMessage(context).setText(savedLocation.getUsername() + (
                                         savedLocation.getTitle() != null && savedLocation.getTitle().length() > 0 ? ": "+savedLocation.getTitle() : ""
-                                        )).setAction(context.getString(R.string.edit), new SimpleCallback() {
+                                        )).setAction(context.getString(R.string.edit), new Callable1() {
                                     @Override
                                     public void call(Object arg) {
                                         editLocation(savedLocation);
                                     }
-                                }).setOnClickListener(new SimpleCallback() {
+                                }).setOnClickListener(new Callable1() {
                                     @Override
                                     public void call(Object arg) {
                                         State.getInstance().fire(SHOW_SAVED_LOCATIONS);
@@ -347,7 +347,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         if(adapter != null) adapter.notifyItemRemoved(position);
                     }
                     SavedLocation.getDb().deleteByItem(saved);
-                    State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new MyUsers.Callback() {
+                    State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new Callable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             myUser.fire(HIDE_SAVED_LOCATION);
@@ -394,21 +394,21 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
         context.getSupportLoaderManager().initLoader(1, null, adapter);
 
-        adapter.setOnLeftSwipeListener(new SimpleCallback<Integer>() {
+        adapter.setOnLeftSwipeListener(new Callable1<Integer>() {
             @Override
             public void call(final Integer position) {
                 reloadCursor();
                 editLocation(SavedLocation.getItemByPosition(position));
             }
         });
-        adapter.setOnRightSwipeListener(new SimpleCallback<Integer>() {
+        adapter.setOnRightSwipeListener(new Callable1<Integer>() {
             @Override
             public void call(final Integer position) {
                 State.getInstance().fire(DELETE_SAVED_LOCATION, position);
             }
         });
 
-        adapter.setOnCursorReloadListener(new SimpleCallback<Cursor>() {
+        adapter.setOnCursorReloadListener(new Callable1<Cursor>() {
             @Override
             public void call(Cursor cursor) {
                 if(toolbar != null) {
@@ -419,21 +419,21 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         });
 
         adapter.notifyDataSetChanged();
-        adapter.setOnItemClickListener(new SimpleCallback<SavedLocation>() {
+        adapter.setOnItemClickListener(new Callable1<SavedLocation>() {
             @Override
             public void call(SavedLocation savedLocation) {
                 State.getInstance().fire(SHOW_SAVED_LOCATION, savedLocation);
                 dialog.dismiss();
             }
         });
-        adapter.setOnLocationClickListener(new SimpleCallback<SavedLocation>() {
+        adapter.setOnLocationClickListener(new Callable1<SavedLocation>() {
             @Override
             public void call(final SavedLocation savedLocation) {
                 State.getInstance().fire(SHOW_SAVED_LOCATION, savedLocation);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new MyUsers.Callback() {
+                        State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(SHOW_NAVIGATION);
@@ -461,7 +461,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(R.string.hide_all), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.fire(HIDE_SAVED_LOCATION);
@@ -508,7 +508,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_location);
         searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
 
-        final SimpleCallback<String> setFilter = new SimpleCallback<String>() {
+        final Callable1<String> setFilter = new Callable1<String>() {
             @Override
             public void call(String text) {
                 setFilterAndReload(text);
@@ -578,7 +578,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(etTitle.getText().toString().length() > 0) {
                     savedLocation.setUsername(etTitle.getText().toString());
-                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new MyUsers.Callback() {
+                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Callable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             myUser.fire(CHANGE_NAME, savedLocation.getUsername());
@@ -833,12 +833,12 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         loc.save(context);
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new SimpleCallback() {
+                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Callable1() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
                             }
-                        }).setOnClickListener(new SimpleCallback() {
+                        }).setOnClickListener(new Callable1() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATIONS);
@@ -878,7 +878,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             if(State.getInstance().getUsers().getCountSelected() == 1) {
-                State.getInstance().getUsers().forSelectedUsers(new MyUsers.Callback() {
+                State.getInstance().getUsers().forSelectedUsers(new Callable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.fire(SAVE_LOCATION);

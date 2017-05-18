@@ -10,7 +10,7 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.SupportStreetViewPanoramaFragment;
@@ -138,7 +138,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
             }
         });
 
-        State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
+        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 if(myUser.getProperties().isSelected()) {

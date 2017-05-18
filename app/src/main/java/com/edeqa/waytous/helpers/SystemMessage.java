@@ -5,7 +5,7 @@ import android.support.design.widget.Snackbar;
 
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.holders.SnackbarViewHolder;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
 
 /**
  * Created 12/4/16.
@@ -20,9 +20,9 @@ public class SystemMessage<T> {
     private String delivery;
     private int type;
     private int duration = Snackbar.LENGTH_LONG;
-    private SimpleCallback<T> callback;
-    private SimpleCallback<T> onClickListener;
-    private SimpleCallback<T> action;
+    private Callable1<T> callback;
+    private Callable1<T> onClickListener;
+    private Callable1<T> action;
 
     public SystemMessage(Context context) {
         this.context = context;
@@ -41,7 +41,7 @@ public class SystemMessage<T> {
         return title;
     }
 
-    public SystemMessage setAction(String title, SimpleCallback<T> action) {
+    public SystemMessage setAction(String title, Callable1<T> action) {
         this.title = title;
         this.action = action;
         return this;
@@ -56,11 +56,11 @@ public class SystemMessage<T> {
         return this;
     }
 
-    public SimpleCallback<T> getOnClickListener() {
+    public Callable1<T> getOnClickListener() {
         return onClickListener;
     }
 
-    public SystemMessage setOnClickListener(SimpleCallback<T> callback) {
+    public SystemMessage setOnClickListener(Callable1<T> callback) {
         this.onClickListener = callback;
         return this;
     }
@@ -72,7 +72,7 @@ public class SystemMessage<T> {
         }
     }
 
-    public SimpleCallback getAction() {
+    public Callable1 getAction() {
         return action;
     }
 
@@ -116,11 +116,11 @@ public class SystemMessage<T> {
         return context;
     }
 
-    public SimpleCallback<T> getCallback() {
+    public Callable1<T> getCallback() {
         return callback;
     }
 
-    public SystemMessage setCallback(SimpleCallback<T> callback) {
+    public SystemMessage setCallback(Callable1<T> callback) {
         this.callback = callback;
         return this;
     }

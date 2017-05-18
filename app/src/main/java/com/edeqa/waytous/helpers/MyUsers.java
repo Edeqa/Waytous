@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.edeqa.waytous.State;
+import com.edeqa.waytous.interfaces.Callable2;
 
 import static com.edeqa.waytous.State.EVENTS.CHANGE_COLOR;
 import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
@@ -43,12 +44,12 @@ public class MyUsers {
         return State.getInstance().getMe();
     }
 
-    public void forAllUsers(Callback callback) {
+    public void forAllUsers(Callable2<Integer, MyUser> callback) {
         forMe(callback);
         forAllUsersExceptMe(callback);
     }
 
-    public void forSelectedUsers(Callback callback) {
+    public void forSelectedUsers(Callable2<Integer, MyUser> callback) {
         for (Map.Entry<Integer, MyUser> entry : users.entrySet()) {
             MyUser user = entry.getValue();
             if (user == null || user.getProperties() == null || !user.getProperties().isSelected()) continue;
@@ -56,17 +57,17 @@ public class MyUsers {
         }
     }
 
-    public void forUser(int number,Callback callback) {
+    public void forUser(int number,Callable2<Integer, MyUser> callback) {
         if(users.containsKey(number) && users.get(number) != null){
             callback.call(number,users.get(number));
         }
     }
 
-    public void forMe(Callback callback) {
+    public void forMe(Callable2<Integer, MyUser> callback) {
         forUser(myNumber,callback);
     }
 
-    public void forAllUsersExceptMe(Callback callback) {
+    public void forAllUsersExceptMe(Callable2<Integer, MyUser> callback) {
         try {
             if (myNumber != 0) {
                 forUser(0, callback);
@@ -164,10 +165,6 @@ public class MyUsers {
             }
         }
         return count;
-    }
-
-    public interface Callback {
-        void call(Integer number,MyUser myUser);
     }
 
 }

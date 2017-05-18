@@ -16,8 +16,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
 
 import java.util.Date;
 
@@ -175,9 +176,9 @@ public class UserMessage extends AbstractSavedItem {
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
 
         private Integer fontSize;
-        private SimpleCallback<Integer> onItemDeleteListener;
-        private SimpleCallback<Integer> onItemShareListener;
-        private SimpleCallback<Integer> onItemReplyListener;
+        private Callable1<Integer> onItemDeleteListener;
+        private Callable1<Integer> onItemShareListener;
+        private Callable1<Integer> onItemReplyListener;
 
         public UserMessagesAdapter(Context context, RecyclerView list) {
             super(context, list);
@@ -290,15 +291,15 @@ public class UserMessage extends AbstractSavedItem {
             this.fontSize = fontSize;
         }
 
-        public void setOnItemDeleteListener(SimpleCallback<Integer> onItemDeleteListener) {
+        public void setOnItemDeleteListener(Callable1<Integer> onItemDeleteListener) {
             this.onItemDeleteListener = onItemDeleteListener;
         }
 
-        public void setOnItemShareListener(SimpleCallback<Integer> onItemShareListener) {
+        public void setOnItemShareListener(Callable1<Integer> onItemShareListener) {
             this.onItemShareListener = onItemShareListener;
         }
 
-        public void setOnItemReplyListener(SimpleCallback<Integer> onItemReplyListener) {
+        public void setOnItemReplyListener(Callable1<Integer> onItemReplyListener) {
             this.onItemReplyListener = onItemReplyListener;
         }
 

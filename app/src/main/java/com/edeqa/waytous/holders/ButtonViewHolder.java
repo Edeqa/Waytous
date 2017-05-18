@@ -22,8 +22,8 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
@@ -165,7 +165,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     case DragEvent.ACTION_DROP:
                         ClipData data = dragEvent.getClipData();
                         int number = Integer.valueOf(String.valueOf(data.getItemAt(0).getText()));
-                        State.getInstance().getUsers().forUser(number, new MyUsers.Callback() {
+                        State.getInstance().getUsers().forUser(number, new Callable2() {
                             @Override
                             public void call(Integer number, MyUser user) {
                                     user.fire(DROPPED_TO_USER, myUser);

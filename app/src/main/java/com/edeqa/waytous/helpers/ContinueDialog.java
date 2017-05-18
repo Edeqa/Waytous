@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.edeqa.waytous.interfaces.SimpleCallback;
+import com.edeqa.waytous.interfaces.Callable1;
 
 
 /**
@@ -13,7 +13,7 @@ import com.edeqa.waytous.interfaces.SimpleCallback;
 public class ContinueDialog {
     private final Context context;
     private String message;
-    private SimpleCallback callback;
+    private Callable1 callback;
 
     public ContinueDialog(Context context) {
         this.context = context;
@@ -24,7 +24,7 @@ public class ContinueDialog {
         return this;
     }
 
-    public ContinueDialog setCallback(SimpleCallback callback){
+    public ContinueDialog setCallback(Callable1 callback){
         this.callback = callback;
         return this;
     }
