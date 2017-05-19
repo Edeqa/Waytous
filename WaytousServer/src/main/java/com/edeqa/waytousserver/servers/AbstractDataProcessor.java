@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 /**
  * Created 10/5/16.
  */
@@ -56,7 +55,7 @@ abstract public class AbstractDataProcessor {
                     Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(AbstractDataProcessor.class);
                     registerRequestHolder(ctor.newInstance(this));
                 } catch (Exception e) {
-                    System.out.println("Trying to instantiate "+s);
+                    System.err.println("Trying to instantiate "+s);
                     e.printStackTrace();
                 }
             }
@@ -137,7 +136,6 @@ abstract public class AbstractDataProcessor {
 
     abstract public void deleteGroup(String groupId, Callable1 onsuccess, Callable1 onerror);
 
-
     abstract public void switchPropertyInGroup(String groupId, String property, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
 
     abstract public void modifyPropertyInGroup(String groupId, String property, Serializable value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
@@ -162,14 +160,11 @@ abstract public class AbstractDataProcessor {
         return ipToCheck;
     }
 
-
     public interface Connection {
         boolean isOpen();
         InetSocketAddress getRemoteSocketAddress();
         void send(String string);
-
         void close();
-//        void send();
     }
 
 }

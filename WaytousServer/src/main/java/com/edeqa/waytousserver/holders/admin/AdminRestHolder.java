@@ -25,11 +25,15 @@ import java.net.URI;
 @SuppressWarnings("unused")
 public class AdminRestHolder implements PageHolder {
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private static final String HOLDER_TYPE = "rest";
+    @SuppressWarnings("HardCodedStringLiteral")
+    private static final String LOG = "ARH";
 
     private final MyHttpAdminHandler server;
     private HtmlGenerator html;
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public AdminRestHolder(MyHttpAdminHandler server) {
         this.server = server;
     }
@@ -39,12 +43,13 @@ public class AdminRestHolder implements PageHolder {
         return HOLDER_TYPE;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public boolean perform(HttpExchange exchange) {
 
         URI uri = exchange.getRequestURI();
 
-        Common.log("ARH", exchange.getRemoteAddress(), uri.getPath());
+        Common.log(LOG, exchange.getRemoteAddress(), uri.getPath());
 
         switch(exchange.getRequestMethod()) {
             case HttpMethods.GET:
@@ -101,7 +106,8 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "createGroupV1:", options);
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "createGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
 
@@ -163,7 +169,8 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "deleteGroupV1:", options);
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "deleteGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -203,7 +210,8 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "removeUserV1:", options);
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "removeUserV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -244,7 +252,8 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "switchPropertyInGroupV1:", options);
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "switchPropertyInGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -286,7 +295,8 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "switchPropertyForUserV1:", options);
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "switchPropertyForUserV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -331,7 +341,8 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "modifyPropertyInGroupV1:", options);
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "modifyPropertyInGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);

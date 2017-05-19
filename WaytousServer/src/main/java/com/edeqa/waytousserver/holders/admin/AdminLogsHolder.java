@@ -28,7 +28,10 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 @SuppressWarnings("unused")
 public class AdminLogsHolder implements PageHolder {
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private static final String HOLDER_TYPE = "logs";
+    @SuppressWarnings("HardCodedStringLiteral")
+    private static final String LOG = "ALH";
 
     private final MyHttpAdminHandler server;
     private HtmlGenerator html;
@@ -50,6 +53,7 @@ public class AdminLogsHolder implements PageHolder {
         switch(exchange.getRequestMethod()) {
             case HttpMethods.GET:
                 switch (uri.getPath()) {
+                    //noinspection HardCodedStringLiteral
                     case "/admin/logs/log":
                         printLog(exchange);
                         return true;
@@ -59,6 +63,7 @@ public class AdminLogsHolder implements PageHolder {
                 break;
             case HttpMethods.PUT:
                 switch (uri.getPath()) {
+                    //noinspection HardCodedStringLiteral
                     case "/admin/logs/clear":
                         clearLog(exchange);
                         return true;
@@ -74,10 +79,11 @@ public class AdminLogsHolder implements PageHolder {
         return false;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private void clearLog(HttpExchange exchange) {
         try {
             File file = new File(SENSITIVE.getLogFile());
-            Common.log("Logs", "Clear:", file.getCanonicalPath());
+            Common.log(LOG, "Clear:", file.getCanonicalPath());
 
             PrintWriter writer = new PrintWriter(file);
             writer.close();
@@ -96,14 +102,15 @@ public class AdminLogsHolder implements PageHolder {
         }
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private void printLog(HttpExchange exchange) {
         try {
             File file = new File(SENSITIVE.getLogFile());
 
-            Common.log("Logs","Update:",file.getCanonicalPath());
+            Common.log(LOG,"Update:",file.getCanonicalPath());
 
             if(!file.exists()) {
-                Common.log("Logs","File not found.");
+                Common.log(LOG,"File not found.");
                 exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
                 exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
                 exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");

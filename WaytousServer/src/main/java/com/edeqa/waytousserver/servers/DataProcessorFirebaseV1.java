@@ -57,7 +57,6 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 
 

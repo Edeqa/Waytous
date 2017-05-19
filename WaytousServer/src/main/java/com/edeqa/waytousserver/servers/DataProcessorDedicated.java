@@ -49,7 +49,6 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 
-
 /**
  * Created 10/5/16.
  */

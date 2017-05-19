@@ -5,10 +5,10 @@ import com.edeqa.waytousserver.helpers.MyUser;
 
 import org.json.JSONObject;
 
-
 /**
  * Created 1/16/17.
  */
+
 public interface FlagHolder {
     String getType();
 

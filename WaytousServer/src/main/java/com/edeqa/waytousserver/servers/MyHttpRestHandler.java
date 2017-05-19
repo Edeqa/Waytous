@@ -3,7 +3,6 @@ package com.edeqa.waytousserver.servers;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.google.api.client.http.HttpMethods;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -15,7 +14,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
@@ -57,23 +55,23 @@ public class MyHttpRestHandler implements HttpHandler {
 
 //        switch(exchange.getRequestMethod()) {
 //            case HttpMethods.GET:
-                switch(parts.get(3)) {
-                    case "getApiVersion":
-                        printRes = getApiVersion(json);
-                        break;
-                    case "getSounds":
-                        printRes = getSounds(json);
-                        break;
-                    case "getResources":
-                        printRes = getResources(json, parts.size() > 2 ? parts.get(3) : null);
-                        break;
-                    case "join":
-                        printRes = join(json, exchange);
-                        break;
-                    default:
-                        printRes = noAction(json);
-                        break;
-                }
+        switch(uri.getPath()) {
+            case "/rest/v1/getApiVersion":
+                printRes = getApiVersionV1(json);
+                break;
+            case "/rest/v1/getSounds":
+                printRes = getSoundsV1(json);
+                break;
+            case "/rest/v1/getResources":
+                printRes = getResourcesV1(json, parts.size() > 2 ? parts.get(3) : null);
+                break;
+            case "/rest/v1/join":
+                printRes = joinV1(json, exchange);
+                break;
+            default:
+                printRes = noAction(json);
+                break;
+        }
 //                break;
 //            case HttpMethods.PUT:
 //                break;
@@ -126,7 +124,7 @@ public class MyHttpRestHandler implements HttpHandler {
         }
     }
 
-    private boolean getApiVersion(JSONObject json) {
+    private boolean getApiVersionV1(JSONObject json) {
         json.put("apiVersion", Constants.SERVER_BUILD);
         return true;
     }
@@ -136,7 +134,7 @@ public class MyHttpRestHandler implements HttpHandler {
         return true;
     }
 
-    private boolean getSounds(JSONObject json) {
+    private boolean getSoundsV1(JSONObject json) {
         File dir = new File(SENSITIVE.getWebRootDirectory() + "/sounds");
         File[] files = dir.listFiles(new FilenameFilter() {
             @Override
@@ -155,13 +153,13 @@ public class MyHttpRestHandler implements HttpHandler {
         return true;
     }
 
-    private boolean join(JSONObject json, HttpExchange exchange) {
+    private boolean joinV1(JSONObject json, HttpExchange exchange) {
         try {
             InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(),"utf-8");
             BufferedReader br = new BufferedReader(isr);
             String body = br.readLine();
 
-            Common.log("Rest",exchange.getRemoteAddress().toString(), "join:", body);
+            Common.log("Rest",exchange.getRemoteAddress().toString(), "joinV1:", body);
             getDataProcessor(exchange.getRequestURI().getPath().split("/")[3]).onMessage(new HttpConnection(exchange), body);
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,7 +170,7 @@ public class MyHttpRestHandler implements HttpHandler {
     }
 
 
-    private boolean getResources(final JSONObject json, final String resource) {
+    private boolean getResourcesV1(final JSONObject json, final String resource) {
         File dir = new File(SENSITIVE.getWebRootDirectory() + "/locales");
 
         try {

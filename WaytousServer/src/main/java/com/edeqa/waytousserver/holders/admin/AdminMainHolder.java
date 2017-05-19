@@ -22,7 +22,10 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
 
 public class AdminMainHolder implements PageHolder {
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public static final String HOLDER_TYPE = "main";
+    @SuppressWarnings("HardCodedStringLiteral")
+    private static final String LOG = "AMH";
 
     @SuppressWarnings("unused")
     private final MyHttpAdminHandler server;
@@ -44,7 +47,8 @@ public class AdminMainHolder implements PageHolder {
         return false;
     }
 
-    public HtmlGenerator create(HtmlGenerator html,ArrayList<String> query,HttpExchange exchange) {
+    @SuppressWarnings("HardCodedStringLiteral")
+    public HtmlGenerator create(HtmlGenerator html, ArrayList<String> query, HttpExchange exchange) {
         this.html = html;
         html.clear();
 
