@@ -49,8 +49,6 @@ public class AdminRestHolder implements PageHolder {
         switch(exchange.getRequestMethod()) {
             case HttpMethods.GET:
                 switch (uri.getPath()) {
-                    case "/admin/logs/logaaaaaaaa":
-                        break;
                     default:
                         break;
                 }
@@ -64,22 +62,22 @@ public class AdminRestHolder implements PageHolder {
             case HttpMethods.POST:
                 switch (uri.getPath()) {
                     case "/admin/rest/v1/group/create":
-                        createGroup(exchange);
+                        createGroupV1(exchange);
                         return true;
                     case "/admin/rest/v1/group/delete":
-                        deleteGroup(exchange);
+                        deleteGroupV1(exchange);
                         return true;
                     case "/admin/rest/v1/group/modify":
-                        modifyPropertyInGroup(exchange);
+                        modifyPropertyInGroupV1(exchange);
                         return true;
                     case "/admin/rest/v1/group/switch":
-                        switchPropertyInGroup(exchange);
+                        switchPropertyInGroupV1(exchange);
                         return true;
                     case "/admin/rest/v1/user/remove":
-                        removeUser(exchange);
+                        removeUserV1(exchange);
                         return true;
                     case "/admin/rest/v1/user/switch":
-                        switchPropertyForUser(exchange);
+                        switchPropertyForUserV1(exchange);
                         return true;
                     default:
                         break;
@@ -90,7 +88,7 @@ public class AdminRestHolder implements PageHolder {
         return false;
     }
 
-    private void createGroup(final HttpExchange exchange) {
+    private void createGroupV1(final HttpExchange exchange) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
@@ -103,7 +101,7 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "createGroup:", options);
+            Common.log("ARH", "createGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
 
@@ -152,7 +150,7 @@ public class AdminRestHolder implements PageHolder {
         }
     }
 
-    private void deleteGroup(final HttpExchange exchange) {
+    private void deleteGroupV1(final HttpExchange exchange) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
@@ -165,7 +163,7 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "deleteGroup:", options);
+            Common.log("ARH", "deleteGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -192,7 +190,7 @@ public class AdminRestHolder implements PageHolder {
         }
     }
 
-    private void removeUser(final HttpExchange exchange) {
+    private void removeUserV1(final HttpExchange exchange) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
@@ -205,7 +203,7 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "removeUser:", options);
+            Common.log("ARH", "removeUserV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -233,7 +231,7 @@ public class AdminRestHolder implements PageHolder {
         }
     }
 
-    private void switchPropertyInGroup(final HttpExchange exchange) {
+    private void switchPropertyInGroupV1(final HttpExchange exchange) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
@@ -246,7 +244,7 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "switchPropertyInGroup:", options);
+            Common.log("ARH", "switchPropertyInGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -275,7 +273,7 @@ public class AdminRestHolder implements PageHolder {
 
     }
 
-    private void switchPropertyForUser(final HttpExchange exchange) {
+    private void switchPropertyForUserV1(final HttpExchange exchange) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
@@ -288,7 +286,7 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "switchPropertyForUser:", options);
+            Common.log("ARH", "switchPropertyForUserV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
@@ -319,7 +317,7 @@ public class AdminRestHolder implements PageHolder {
 
     }
 
-    private void modifyPropertyInGroup(final HttpExchange exchange) {
+    private void modifyPropertyInGroupV1(final HttpExchange exchange) {
 
         String options = "";
         try {
@@ -333,7 +331,7 @@ public class AdminRestHolder implements PageHolder {
             is.close();
             options = buf.toString();
 
-            Common.log("ARH", "modifyPropertyInGroup:", options);
+            Common.log("ARH", "modifyPropertyInGroupV1:", options);
 
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
