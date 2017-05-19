@@ -1782,31 +1782,45 @@ function Edequate(options) {
     this.toast = new toast();
 
      function notification(options) {
-        if(!options.persistent && !document.hidden) return;
+//        if(!options.persistent && !document.hidden) return;
         if(load("main:disable_notification")) return;
         if (!("Notification" in window)) {
             console.error("This browser does not support desktop notification");
         } else {
-            navigator.serviceWorker.register("/sw.js");
             Notification.requestPermission(function(result) {
                 if(result == "granted") {
                     var title = options.title;
                     delete options.title;
-                    var notif = new Notification(title, options);
-                    var notif2;
+                    var notif;
+//                    console.log("A");
+                    try {
+//                    console.log("B");
+                        notif = new Notification(title, options);
+                    } catch (e) {
+//                    console.log("C",e);
+                        if(e.name == "TypeError") {
+//                    console.log("D");
+                            navigator.serviceWorker.register("/sw.js").then(function(e){
+//                    console.log("E:"+e);
+
+                                navigator.serviceWorker.ready.then(function(registration) {
+//                        console.log("F",registration);
+                                    notif = registration.showNotification(title, options);
+                                });
+                            });
+                        }
+                    }
+//                    console.log("G",notif);
                     notif.onclick = function(e){
                         notif.close();
                         window.focus();
                         if(options.onclick) options.onclick(e);
                         else {console.warn("Redefine onclick.")}
                     }
-                    navigator.serviceWorker.ready.then(function(registration) {
-                        notif2 = registration.showNotification(title, options);
-                    });
                     if(options.duration) {
                         setTimeout(function(){
                             notif.close();
-                            notif2 && notif2.close();
+//                            notif2 && notif2.close();
                         }, options.duration);
                     }
                 }
