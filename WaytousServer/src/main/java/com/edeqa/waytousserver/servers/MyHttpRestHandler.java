@@ -36,6 +36,7 @@ public class MyHttpRestHandler implements HttpHandler {
         dataProcessor = new HashMap<>();
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
