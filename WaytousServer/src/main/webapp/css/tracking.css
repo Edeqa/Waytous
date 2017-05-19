@@ -774,6 +774,7 @@ p.bottom-desc {
     .user-button-title {
         white-space: nowrap;
         min-width: 40px;
+        max-width: 50px;
         padding: 0px;
     }
     .user-button-subtitle {

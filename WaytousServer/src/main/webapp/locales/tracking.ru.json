@@ -58,6 +58,10 @@
   "hide_distances": "Скрыть расстояния",
   "show_distance": "Расстояние",
   "hide_distance": "Скрыть расстояние",
+  "close_to_s": "Вы близко к %s",
+  "you_are_closer_than_d_to_s": "Вы приблизились менее чем на %d к %s",
+  "away_from_s": "Уходим от %s",
+  "you_are_away_than_d_from_s": "Вы отошли более чем на %d от %s",
 
 
   "// DrawerHolder": "",

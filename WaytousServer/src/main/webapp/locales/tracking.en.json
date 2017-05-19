@@ -64,6 +64,10 @@
   "hide_distances": "Hide distances",
   "show_distance": "Show distance",
   "hide_distance": "Hide distance",
+  "close_to_s": "Close to %s",
+  "you_are_closer_than_d_to_s": "You are closer than %d to %s",
+  "away_from_s": "Away from %s",
+  "you_are_away_than_d_from_s": "You are away than %d from %s",
 
 
   "// DrawerHolder": "",
