@@ -1786,26 +1786,29 @@ function Edequate(options) {
         if(load("main:disable_notification")) return;
         if (!("Notification" in window)) {
             console.error("This browser does not support desktop notification");
-            return;
-        } else if (Notification.permission.toLowerCase() === "granted") { // check if notifications are allowed
-            var title = options.title;
-            delete options.title;
-            var notif = new Notification(title, options);
-            notif.onclick = function(e){
-                notif.close();
-                window.focus();
-                if(options.onclick) options.onclick(e);
-                else {console.warn("Redefine onclick.")}
-            }
-            if(options.duration) {
-                setTimeout(function(){
-                    notif.close();
-                }, options.duration);
-            }
-        } else if (Notification.permission.toLowerCase() !== 'denied') { // request for notifications granted
-            Notification.requestPermission(function (permission) {
-                if (permission.toLowerCase() === "granted") {
-                    notification(options);
+        } else {
+            navigator.serviceWorker.register("/sw.js");
+            Notification.requestPermission(function(result) {
+                if(result == "granted") {
+                    var title = options.title;
+                    delete options.title;
+                    var notif = new Notification(title, options);
+                    var notif2;
+                    notif.onclick = function(e){
+                        notif.close();
+                        window.focus();
+                        if(options.onclick) options.onclick(e);
+                        else {console.warn("Redefine onclick.")}
+                    }
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        notif2 = registration.showNotification(title, options);
+                    });
+                    if(options.duration) {
+                        setTimeout(function(){
+                            notif.close();
+                            notif2 && notif2.close();
+                        }, options.duration);
+                    }
                 }
             });
         }
