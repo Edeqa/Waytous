@@ -15,6 +15,7 @@ function PropertiesHolder(main) {
     this.start = function() {
         dialog = u.dialog({
             title: u.lang.set_my_name,
+            queue: true,
             items: [
                 { type: HTML.INPUT, label: u.lang.name }
             ],

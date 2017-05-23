@@ -339,11 +339,11 @@ function Edequate(options) {
     function EPromise() {
         var eprom = {
             then: function(callback) {
-                this.onResolved = callback;
+                this.onResolved = callback || function(){};
                 return this;
             },
             catch: function(callback) {
-                this.onRejected = callback;
+                this.onRejected = callback || function(){};
             },
             onResolved: function(value) {
                 console.warn("Define '.then(onResolved(value){...})'");
@@ -352,6 +352,9 @@ function Edequate(options) {
             onRejected: function(code, value, error) {
                 console.warn("Define '.catch(onRejected(code, value[, error]){...})'");
                 console.error(code, value, error);
+            },
+            promise: function(newPromise) {
+                return newPromise;
             }
         }
         return eprom;
@@ -550,6 +553,7 @@ function Edequate(options) {
 
 
     function require(name, context) {
+        var origin = name;
         var returned = new EPromise();
         var parts = name.split("/");
         var filename = parts[parts.length-1];
@@ -560,21 +564,36 @@ function Edequate(options) {
             name += ".js";
         }
 
-        create(HTML.SCRIPT, {src: name, async:"", defer:"", instance: needInstantiate ? onlyname : null, onload: function(e) {
-            var a;
-            if(needInstantiate) {
-                if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
-                    a = new window[this.instance](context);
-                    a.moduleName = this.instance;
-                } else {
-                    returned.onRejected(ERRORS.NOT_AN_OBJECT, this.instance, e);
-                    return;
+        var options = {
+            src: name,
+            origin:origin,
+            module:name,
+            instance: needInstantiate ? onlyname : null,
+            onload: function(e) {
+                var a;
+                if(needInstantiate) {
+                    if(this.instance && window[this.instance] && window[this.instance].constructor === Function) {
+                        a = new window[this.instance](context);
+                        a.moduleName = this.instance;
+                        a.module = this.module;
+                        a.origin = this.origin;
+                    } else {
+                        returned.onRejected(ERRORS.NOT_AN_OBJECT, this.instance, e);
+                        return;
+                    }
                 }
+                returned.onResolved(a);
+            },
+             onerror: function(e) {
+                returned.onRejected(ERRORS.NOT_EXISTS, this.instance, e);
             }
-            returned.onResolved(a);
-        }, onerror: function(e) {
-            returned.onRejected(ERRORS.NOT_EXISTS, this.instance, e);
-        }, async:"", defer:""}, document.head);
+        }
+        if(!name.match("firebase")) {
+            options.async = "";
+            options.defer = "";
+        }
+
+        create(HTML.SCRIPT, options, document.head);
 
         return returned;
     }
@@ -1782,7 +1801,7 @@ function Edequate(options) {
     this.toast = new toast();
 
      function notification(options) {
-//        if(!options.persistent && !document.hidden) return;
+        if(!options.persistent && !document.hidden) return;
         if(load("main:disable_notification")) return;
         if (!("Notification" in window)) {
             console.error("This browser does not support desktop notification");
@@ -2218,6 +2237,16 @@ function Edequate(options) {
     }
 
     var progressHolder;
+    /**
+    * progress(options [, appendTo])
+    * options = {
+    *       label,
+    *       className,
+    *       dim: true|*false*,
+    *   }
+    * progress.show([label])
+    * progress.hide()
+    */
     function progress(options, appendTo) {
         options = options || {};
         if(typeof options == "string") {
@@ -2231,23 +2260,136 @@ function Edequate(options) {
         appendTo = appendTo || document.body;
 
         progressHolder = progressHolder || dialog({
-            className: "progress-dialog",
+            className: "progress-dialog" + (options.className ? " "+options.className : ""),
             items: [
                 { type: HTML.DIV, className: "progress-dialog-circle" },
                 { type: HTML.DIV, className: "progress-dialog-title" },
             ]
         }, appendTo)
-        progress.show(options.label);
+//        progress.show(options.label);
     }
-    this.progress = progress;
-    progress.show = function(label) {
-        progressHolder.items[1].innerHTML = label;
+    progress.prototype.show = function(label) {
+        progressHolder.items[1].innerHTML = label || "Loading...";
         progressHolder.open();
     }
-    progress.hide = function() {
-        progressHolder.hide();
+    progress.prototype.hide = function() {
+        progressHolder.close();
     }
+    this.progress = new progress();
 
+
+    /**
+    * eventBus.register(file, options) or eventBus.register(files, options)
+    * options = {
+    *       context,
+    *       onprogress: function((int) loadedFiles)
+    *       validate: function() -> true|false
+    *       onstart: function(),
+    *       onsuccess: function(),
+    *       onerror: function(code, origin, error)
+    *   }
+    * eventBus.fire(event, object) or fire(event, object)
+    * eventBus.chain(callback) - iterate over holders
+    *
+    * File can be presented as the path, ".js" will be added if not exists.
+    * File will be added as a holder if it is based on eventBus.eventHolder or
+    * it has following elements:
+    *   type: String
+    *   onEvent: function(event, object)
+    *   start: function()
+    */
+    function eventBus() {
+        this.events = window.EVENTS = window.EVENTS || {};
+
+        this.eventHolder = function() {
+            return {
+                onEvent:function(){console.warn("DEFINE onEvent(event, object)")},
+                start:function(){console.warn("DEFINE start()")},
+                type:"DEFINE TYPE",
+            }
+        }
+
+        var loaded = 0;
+        this.origins = [];
+        this.modules = [];
+        this.holders = {};
+        this.register = function(module, options) {
+            var promise = new EPromise();
+            if(module.constructor == Array) {
+                for(var i in module) {
+                    self.eventBus.register(module[i], options);
+                }
+            } else {
+                self.eventBus.origins.push(module);
+                var file = module;
+
+                require(file, options.context).then(function(e) {
+                    loaded++;
+                    if(e && e.moduleName && e.type) {
+//                        self.eventBus.holders[e.type.toLowerCase()] = e;
+                        self.eventBus.holders[e.origin] = e;
+                    }
+                    if(options.onprogress) options.onprogress(loaded);
+
+                    if(loaded == self.eventBus.origins.length) {
+                        console.log("Preload finished: "+loaded+" files done.");
+
+                        if(options.validate && !options.validate()) {
+                            return;
+                        }
+
+                        for(var i in self.eventBus.origins) {
+                            var holder = self.eventBus.holders[self.eventBus.origins[i]];
+                            if(holder && holder.type) {
+                                self.eventBus.modules.push(holder.type.toLowerCase());
+                                self.eventBus.holders[holder.type.toLowerCase()] = holder;
+                                delete self.eventBus.holders[holder.origin];
+                            }
+                        }
+
+                        if(options.onstart) options.onstart();
+
+                        for(var i in self.eventBus.modules) {
+                            if(self.eventBus.holders[self.eventBus.modules[i]].start) self.eventBus.holders[self.eventBus.modules[i]].start();
+                        }
+
+                        options.onsuccess();
+                    }
+                }).catch(function(code, e, error){
+                    if(options.onerror) options.onerror(code, module, error);
+                });
+            }
+        };
+
+        this.fire = function(event, object) {
+            if(!event) return;
+            setTimeout(function(){
+                for(var i in self.eventBus.modules) {
+                    var module = self.eventBus.modules[i];
+                    if(self.eventBus.holders[module] && self.eventBus.holders[module].onEvent) {
+                        try {
+                            if (!self.eventBus.holders[module].onEvent(event, object)) break;
+                        } catch(e) {
+                            console.error(module, event, e);
+                        }
+                    }
+                }
+            }, 0);
+        };
+
+        this.chain = function(callback) {
+            for(var i in self.eventBus.modules) {
+                try{
+                    var res = callback(self.eventBus.holders[self.eventBus.modules[i]]);
+                    if(res !== undefined && !res) break;
+                } catch(e) {
+                    console.error(self.eventBus.modules[i], e);
+                }
+            }
+        }
+    }
+    this.eventBus = new eventBus();
+    this.fire = this.eventBus.fire;
 
 
     options = options || {};

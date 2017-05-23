@@ -22,7 +22,6 @@ function Group() {
     var renderInterface = function() {
 
         var ref = database.ref();
-
         u.clear(div);
         u.create(HTML.H2, "Summary", div);
 

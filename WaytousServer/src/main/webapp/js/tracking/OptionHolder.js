@@ -81,7 +81,7 @@ function OptionHolder(main) {
         categories = {};
         options = {};
 
-        var modules = Object.assign({}, {main:main}, main.holders);
+        var modules = Object.assign({}, {main:main}, main.eventBus.holders);
 
         for(var i in modules) {
             if(modules[i] && modules[i].options && modules[i].options().title) {
@@ -134,7 +134,7 @@ function OptionHolder(main) {
     }
 
     function populateOptionsDialog() {
-        var modules = main.holders;
+        var modules = main.eventBus.holders;
         modules.main = main;
         for(var i in options) {
             var path = i.split(":");

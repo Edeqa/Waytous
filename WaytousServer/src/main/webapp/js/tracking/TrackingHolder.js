@@ -317,7 +317,7 @@ function TrackingHolder(main) {
                     main.fire(EVENTS.TOKEN_CREATED, token);
                     u.saveForContext("group", token);
                     window.history.pushState({}, null, "/track/" + token);
-                    main.fire(EVENTS.SHOW_HELP, {module: main.holders.tracking, article: 1});
+                    main.fire(EVENTS.SHOW_HELP, {module: main.eventBus.holders.tracking, article: 1});
                     main.me.fire(EVENTS.SELECT_USER);
                 }
                 if (o[REQUEST.WELCOME_MESSAGE]) {
@@ -412,7 +412,7 @@ function TrackingHolder(main) {
                         break;
                     default:
                         // console.log(type,response,o);
-                        var holder = main.holders[response];
+                        var holder = main.eventBus.holders[response];
                         if (holder && holder.perform) {
                             holder.perform(o);
                         }

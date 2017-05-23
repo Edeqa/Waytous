@@ -8,48 +8,39 @@
 function MyUser(main) {
 
     function fire(EVENT,object) {
-        var self = this;
+        var user = this;
         setTimeout(function(){
-            for(var i in self.views) {
-                if(main.holders[i] && main.holders[i].onEvent) {
-                    try {
-                        if (!main.holders[i].onEvent.call(self, EVENT, object)) break;
-                    } catch(e) {
-                        console.error(i,EVENT,e);
-                    }
+            main.eventBus.chain(function(holder){
+                if(user.views[holder.type] && holder.onEvent) {
+                    return holder.onEvent.call(user, EVENT, object);
                 }
-            }
+            });
         }, 0);
     }
 
     function createViews() {
         var user = this;
         if(user.number != undefined) {
-            for (var i in main.holders) {
-                if (main.holders[i] && main.holders[i].createView && !user.views[i]) {
+            main.eventBus.chain(function(holder){
+                if (holder.createView && !user.views[holder.type]) {
                     try {
-                        var view = main.holders[i].createView(user);
-                        if (view) user.views[i] = view;
+                        var view = holder.createView(user);
+                        if (view) user.views[holder.type] = view;
                     } catch (e) {
-                        console.error(i,e);
+                        console.error(holder.type,e);
                     }
                 }
-            }
+            });
+
         }
     }
 
     function removeViews() {
         var user = this;
         if(user.number != undefined) {
-            for (var i in main.holders) {
-                if (main.holders[i] && user.views[i] && main.holders[i].removeView) {
-                    try {
-                        main.holders[i].removeView(user);
-                    } catch (e) {
-                        console.error(i,e);
-                    }
-                }
-            }
+            main.eventBus.chain(function(holder){
+                if(holder.removeView) holder.removeView(user);
+            });
         }
     }
 
@@ -62,17 +53,11 @@ function MyUser(main) {
     function onChangeLocation() {
         var user = this;
         user.changed = new Date().getTime();
-        setTimeout(function(){
-            for(var i in user.views) {
-                if(main.holders[i] && main.holders[i].onChangeLocation) {
-                    try {
-                        main.holders[i].onChangeLocation.call(user, user.location);
-                    } catch(e) {
-                        console.error(i,e);
-                    }
-                }
-            }
-        }, 0);
+//        setTimeout(function(){
+            main.eventBus.chain(function(holder){
+                if(user.views[holder.type] && holder.onChangeLocation) holder.onChangeLocation.call(user, user.location);
+            });
+//        }, 0);
     }
 
     return {

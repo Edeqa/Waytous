@@ -78,7 +78,7 @@ function GpsHolder(main) {
                         },
                         help: function() {
                             locationRequiredDialog.close();
-                            main.fire(EVENTS.SHOW_HELP, {module:main.holders.gps, article:1})
+                            main.fire(EVENTS.SHOW_HELP, {module:main.eventBus.holders.gps, article:1})
                         }
                     }, main.right);
                     locationRequiredDialog.open();
@@ -155,7 +155,7 @@ function GpsHolder(main) {
                     }
                 },
                 help: function() {
-                    main.fire(EVENTS.SHOW_HELP, {module: main.holders.gps, article: 1});
+                    main.fire(EVENTS.SHOW_HELP, {module: main.eventBus.holders.gps, article: 1});
                  }
             }, main.right).open();
 

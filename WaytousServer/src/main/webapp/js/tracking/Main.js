@@ -34,16 +34,10 @@ function Main() {
     }
 
     function start() {
-//        firebase.auth().signInWithCustomToken(sign.token)
-//        .then(function(e){
-//            window.location.href = "/tracking/home";
-//            return;
-
-            var a = document.createElement("script");
-            a.setAttribute("src","/js/helpers/Edequate.js");
-            a.setAttribute("onload","preloaded()");
-            document.head.appendChild(a);
-//        }
+        var a = document.createElement("script");
+        a.setAttribute("src","/js/helpers/Edequate.js");
+        a.setAttribute("onload","preloaded()");
+        document.head.appendChild(a);
     }
 
     preloaded = function(){
@@ -52,25 +46,26 @@ function Main() {
         main.appName = "${APP_NAME}";
         main.right = main.layout = u.create({className:"layout changeable"}, document.body);
 
-//        main.layout = document.body;
-//        main.layout.classList.add("layout");
-//        main.layout = u.create("div", {className:"layout"}, document.body);
+        u.loading("0%");
+        u.require("/js/helpers/Constants").then(function(e){
 
-        setTimeout(function(){
-            loadResources(function(){
-                u.loading("0%");
+            u.lang.overrideResources({"default":defaultResources, callback: function(){
+                initializeHeader();
+                initializeProperties();
+                loadScripts();
+            }});
+            var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+            var resources = "/locales/tracking."+lang+".json";
+            if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
+
+        });
+
         //        window.onload = function() {
         //            window.scrollTo(0, 1);
         //            document.addEventListener("touchmove", function(e) { e.preventDefault() });
         //        };
 
-                //addConsoleLayer(main.right);
-
-                u.require("/js/helpers/Constants").then(function(e){
-                    initializeHeader.call(main);
-                });
-            });
-        },0);
+        //addConsoleLayer(main.right);
 
     };
 
@@ -138,20 +133,19 @@ function Main() {
             .place(HTML.META, {name:"msapplication-config", content:"/icons/browserconfig.xml"})
             .place(HTML.META, {name:"theme-color", content:"#aaeeee"});
 
-        loadScripts.call(main);
     }
 
-    function loadScripts(){
-
-        main.fire = fire;
+    function initializeProperties() {
         main.help = help;
         main.options = options;
-        main.holders = holders;
         main.me = me;
         main.initialize = initialize;
-
+        main.eventBus = u.eventBus;
+        main.fire = u.fire;
+        main.toast = u.toast;
+        main.right.appendChild(main.toast);
         main.alert = main.alert || u.dialog({
-            queue: true,
+             queue: true,
              className: "alert-dialog",
              items: [
                  { type: HTML.DIV, label: u.lang.error_while_loading_service },
@@ -167,9 +161,30 @@ function Main() {
                 main.fire(EVENTS.SHOW_HELP, {module: main, article: 1});
              }
          }, document.body);
-        main.toast = u.toast;
-        main.right.appendChild(main.toast);
+        main.alpha = u.create("div", {className:"alpha", innerHTML:"&beta;"}, main.right);
+////// FIXME - remove when no alpha
+        var alphaDialog = u.dialog({
+            className: "alert-dialog",
+            items: [
+                { type: HTML.DIV, innerHTML: u.lang.alpha_1 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_2 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_3 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_4 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_5 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_6 },
+                { type: HTML.DIV, innerHTML: u.lang.alpha_7 },
+            ],
+            positive: {
+                label: u.lang.ok,
+                onclick: function(){
+                    alphaDialog.close();
+                }
+            },
+        }, main.right);
+        main.alpha.addEventListener("click", alphaDialog.open.bind(alphaDialog));
+    }
 
+    function loadScripts(){
         var files = [
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js", // https://firebase.google.com/docs/web/setup
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
@@ -179,81 +194,50 @@ function Main() {
             "/js/helpers/MyUser",
             "/js/helpers/MyUsers",
             "/js/helpers/NoSleep.js",
-            "PropertiesHolder", // must be first of holders
-            "AddressHolder",
-            "GpsHolder",
-            "ButtonHolder",
-            "CameraHolder",
-            "DistanceHolder",
-            "DrawerHolder",
-            // "FabHolder",
-            "HelpHolder",
-            "MapHolder",
-            "MarkerHolder",
-            "MessagesHolder",
-            "NavigationHolder",
-            "OptionHolder",
-            "PlaceHolder",
-            "SavedLocationHolder",
-//            "SocialHolder",
-            "StreetViewHolder",
-            "TrackingHolder",
-            "TrackHolder",
-//            "WelcomeHolder",
-//            "SampleHolder",
+            "/js/tracking/PropertiesHolder", // must be first of holders
+            "/js/tracking/AddressHolder",
+            "/js/tracking/GpsHolder",
+            "/js/tracking/ButtonHolder",
+            "/js/tracking/CameraHolder",
+            "/js/tracking/DistanceHolder",
+            "/js/tracking/DrawerHolder",
+            // "/js/tracking/FabHolder",
+            "/js/tracking/HelpHolder",
+            "/js/tracking/MapHolder",
+            "/js/tracking/MarkerHolder",
+            "/js/tracking/MessagesHolder",
+            "/js/tracking/NavigationHolder",
+            "/js/tracking/OptionHolder",
+            "/js/tracking/PlaceHolder",
+            "/js/tracking/SavedLocationHolder",
+//            "/js/tracking/SocialHolder",
+            "/js/tracking/StreetViewHolder",
+            "/js/tracking/TrackingHolder",
+            "/js/tracking/TrackHolder",
+//            "/js/tracking/WelcomeHolder",
+//            "/js/tracking/SampleHolder",
         ];
-        // u.require("https://code.jquery.com/jquery-3.1.1.min.js");
 
-        var ordered = [];
-        for(var i in files) {
-            if(!files[i].match(/[.\/]/)) ordered.push(files[i]);
-        }
-
-        try{
-            var loaded = 0;
-            var failed = false;
-            var inordered = {};
-            for(var i in files) {
-                var file = files[i];
-                if(!file.match(/^(https?:)|\//i)) file = "/js/holders/"+file;
-                var viaXhr = false;// ! file.match(/^https?:/i);
-
-                u.require(file, main).then(function(e) {
-                    if(failed) return;
-                    loaded++;
-                    if(e && e.type) {
-                        inordered[e.moduleName] = e;
-                    }
-                    u.loading(Math.ceil(loaded / files.length * 100) + "%");
-                    if(loaded == u.keys(files).length) {
-                        console.warn("Preload finished: "+loaded+" files done.");
-                        window.utils = new Utils(main);
-
-                        for(var i in ordered) {
-                            holders[inordered[ordered[i]].type] = inordered[ordered[i]];
-                        }
-
-                        utils.getUuid(initialize.bind(main));
-                    }
-                }).catch(function(code, moduleName, event) {
-                    console.log(code, moduleName, event.srcElement.src);
-                    if(failed) return;
-                    failed = true;
-                    u.loading.hide();
-
-                    u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(moduleName,code));
-//                    main.alert.items[1].body.innerHTML = u.lang.error_while_loading_s_code_d.format(moduleName,code);
-                    main.alert.open();
-
-                });
+        u.eventBus.register(files, {
+            context: main,
+            onprogress: function(loaded) {
+                u.loading(Math.ceil(loaded / files.length * 100) + "%");
+            },
+            onstart: function() {
+                window.utils = new Utils(main);
+            },
+            onsuccess: function() {
+                utils.getUuid(initialize);
+            },
+            onerror: function(code, origin, error) {
+                console.error(code, origin, error);
+                u.loading.hide();
+                u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(origin,code));
+                main.alert.open();
             }
-        } catch(e) {
-            u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s.format(e.message));
-            main.alert.open();
-        }
+        });
+
         // main.right.webkitRequestFullScreen();
-
-
         /*window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
             window.scrollTo(0, 1); }, 0);
         });*/
@@ -295,20 +279,8 @@ function Main() {
         }
         firebase.initializeApp(data.firebase_config);
         database = firebase.database();
-//throw new Error("A");
 
         u.loading.hide();
-        main.alpha = u.create("div", {className:"alpha", innerHTML:"&beta;"}, main.right);
-
-        for(var x in holders){
-            try {
-                if(holders[x] && holders[x].start) holders[x].start();
-            } catch (e) {
-                u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_initializing_s_s.format(x,e.stack));
-                main.alert.open();
-                return;
-            }
-        }
 
         setTimeout(function(){
             main.users = users = new MyUsers(main);
@@ -325,12 +297,11 @@ function Main() {
                     me.name = u.load("properties:name");
                 }
             }
-
             users.setMe();
         },0);
 
-//        window.addEventListener("load", hideAddressBar );
-//        window.addEventListener("orientationchange", hideAddressBar );
+        window.addEventListener("load", hideAddressBar );
+        window.addEventListener("orientationchange", hideAddressBar );
 
     }
 
@@ -341,32 +312,6 @@ function Main() {
             }
             setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
         }
-    }
-
-    function fire(EVENT,object) {
-        if(!EVENT) return;
-        setTimeout(function(){
-            for(var i in holders) {
-                if(holders[i] && holders[i].onEvent) {
-                    try {
-                        if (!holders[i].onEvent(EVENT, object)) break;
-                    } catch(e) {
-                        console.error(i,EVENT,e);
-                    }
-                }
-            }
-        }, 0);
-    }
-
-    function loadResources(callback) {
-
-        u.lang.overrideResources({"default":defaultResources});
-        if(callback) callback();
-
-        var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-        var resources = "/locales/tracking."+lang+".json";
-
-        if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
     }
 
     function help(){
@@ -479,7 +424,7 @@ function Main() {
     return {
         start: start,
         main:main,
-        fire:fire,
+//        fire:fire,
         initialize:initialize,
         help:help,
         options:options,

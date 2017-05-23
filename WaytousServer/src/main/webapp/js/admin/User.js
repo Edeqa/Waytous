@@ -208,7 +208,6 @@ function User() {
         }}, buttons);
         u.create(HTML.BUTTON,{innerHTML:"Inactive", onclick: function(){
             switchActive(userNumber, false);
-            WTU.switchTo("/admin/group/" + groupId);
         }}, buttons);
         u.create(HTML.BUTTON,{innerHTML:"Cancel", onclick: function(){
             renderButtons(buttons);
@@ -216,9 +215,11 @@ function User() {
     }
 
     function switchActive(number, active) {
+        u.progress.show("Switching...")
         var ref = database.ref();
         u.post("/admin/rest/v1/user/switch", JSON.stringify({group_id:groupId, user_number:userNumber,property:DATABASE.USER_ACTIVE,value:active}))
         .then(function(){
+            u.progress.hide();
             if(!active) {
                 u.toast.show("User #"+userNumber+" is offline.");
                 WTU.switchTo("/admin/group/" + groupId);
@@ -226,6 +227,7 @@ function User() {
                 u.toast.show("User #"+userNumber+" is online.");
             }
         }).catch(function(code,xhr){
+           u.progress.hide();
            console.warn("Resign because of",code,xhr);
            WTU.resign(updateSummary);
            var res = JSON.parse(xhr.responseText) || {};
@@ -236,15 +238,16 @@ function User() {
     }
 
     function removeUser() {
-
         u.clear(buttons);
         u.create({className:"question", innerHTML: "Are you sure you want to remove user "+userNumber+" from group "+groupId+"?"}, buttons);
         u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: function() {
+            u.progress.show("Removing...");
             u.post("/admin/rest/v1/user/remove", JSON.stringify({group_id:groupId, user_number:userNumber}))
             .then(function(){
-               WTU.switchTo("/admin/groups/" + groupId);
+                u.progress.hide();
                u.toast.show("User #"+userNumber+" was removed.");
             }).catch(function(code,xhr){
+                u.progress.hide();
                console.warn("Resign because of",code,xhr);
                WTU.resign(updateSummary);
                var res = JSON.parse(xhr.responseText) || {};
@@ -256,21 +259,6 @@ function User() {
             renderButtons(buttons);
         }}, buttons);
 
-        /*var ref = database.ref();
-        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(userNumber).remove();
-        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).remove();
-
-        ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS).once("value").then(function(snapshot){
-            var val = snapshot.val();
-            if(!val) return;
-            for(var i in val) {
-                if(""+val[i] == ""+userNumber) {
-                    ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS).child(i).remove();
-                }
-            }
-        });
-
-        WTU.switchTo("/admin/group/" + groupId);*/
     }
 
     return {

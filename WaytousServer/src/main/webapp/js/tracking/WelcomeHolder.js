@@ -18,7 +18,7 @@ function WelcomeHolder(main) {
             case EVENTS.MAP_READY:
                 if(!main.tracking) {
                     main.fire(EVENTS.SHOW_HELP, {
-                        module:main.holders[type],
+                        module:main.eventBus.holders[type],
                         article:1
                     })
                 }

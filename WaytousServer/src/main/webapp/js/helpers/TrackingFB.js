@@ -127,15 +127,11 @@ function TrackingFB(main) {
                                 updateTask = setInterval(updateActive, 60000);
                                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userActiveListener);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
-                                for (var i in main.holders) {
-                                    if (main.holders[i] && main.holders[i].saveable) {
-                                        try {
-                                            registerChildListener(ref.child(DATABASE.SECTION_PRIVATE).child(i).child(main.me.number), userPrivateDataListener, -1);
-                                        } catch (e) {
-                                            console.error(e.message);
-                                        }
+                                main.eventBus.chain(function(holder){
+                                    if(holder.saveable) {
+                                        registerChildListener(ref.child(DATABASE.SECTION_PRIVATE).child(holder.type).child(main.me.number), userPrivateDataListener, -1);
                                     }
-                                }
+                                });
                                 try {
                                     trackingListener.onAccept(o);
                                 } catch (e) {
@@ -299,7 +295,7 @@ function TrackingFB(main) {
                 return;
             }
 
-            var holder = main.holders[type];
+            var holder = main.eventBus.holders[type];
             if(!holder || !holder.saveable) return;
 
             delete jsonMessage[REQUEST.REQUEST];
@@ -409,12 +405,12 @@ function TrackingFB(main) {
                 usersDataNameListener(data.child(DATABASE.USER_NAME));
                 usersDataActiveListener(data.child(DATABASE.USER_ACTIVE));
 
-                for(var i in main.holders) {
-                    if(main.holders[i] && main.holders[i].saveable) {
-                        var loadSaved = main.holders[i].loadsaved || 1;
-                        registerChildListener(ref.child(DATABASE.SECTION_PUBLIC).child(i).child(user.number), userPublicDataListener, loadSaved);
+                main.eventBus.chain(function(holder){
+                    if(holder.saveable) {
+                        var loadSaved = holder.loadsaved || 1;
+                        registerChildListener(ref.child(DATABASE.SECTION_PUBLIC).child(holder.type).child(user.number), userPublicDataListener, loadSaved);
                     }
-                }
+                });
 
                 trackingListener.onAccept(o);
             } catch(e) {

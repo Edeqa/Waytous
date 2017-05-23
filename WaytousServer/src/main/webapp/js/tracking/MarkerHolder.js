@@ -57,10 +57,6 @@ function MarkerHolder(main) {
             marker.setMap(main.map);
         }
 
-        if(user == main.me) {
-            user.fire(EVENTS.SELECT_SINGLE_USER);
-        }
-
         return {
             marker:marker,
             setBearing:setBearing,

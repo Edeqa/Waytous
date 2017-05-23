@@ -54,7 +54,7 @@ function HelpHolder(main) {
                         });
                     }
                 } else {
-                    var modules = Object.assign({}, {main:main}, main.holders);
+                    var modules = Object.assign({}, {main:main}, main.eventBus.holders);
                     for(var i in modules) {
                         console.log(i);
                         if(modules[i] && modules[i].help && modules[i].help().title) {

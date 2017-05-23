@@ -12,7 +12,6 @@ function DrawerHolder(main) {
     var drawer;
     var title;
     var subtitle;
-    var alphaDialog;
     var backButtonAction;
     var actionbar;
 
@@ -25,7 +24,7 @@ function DrawerHolder(main) {
         var dialogAbout = utils.dialogAbout(main.right);
 
         var sections = {};
-        sections[DRAWER.SECTION_MAP] = "Map";
+        sections[DRAWER.SECTION_MAP] = u.lang.map;
 
         drawer = new u.drawer({
             title: main.appName,
@@ -33,7 +32,7 @@ function DrawerHolder(main) {
             logo: {
                 src:"/images/logo.svg",
                 onclick: function(){
-                    alphaDialog.open();
+                    dialogAbout.open();
                 }
             },
             ontogglesize: function() {
@@ -76,29 +75,6 @@ function DrawerHolder(main) {
            drawer.toggle();
         }
 
-////// FIXME - remove when no alpha
-        alphaDialog = alphaDialog || u.dialog({
-            className: "alert-dialog",
-            items: [
-                { type: HTML.DIV, innerHTML: u.lang.alpha_1 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_2 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_3 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_4 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_5 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_6 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_7 },
-            ],
-            positive: {
-                label: u.lang.ok,
-                onclick: function(){
-                    alphaDialog.close();
-                }
-            },
-        }, main.right);
-        main.alpha.addEventListener("click", function(){
-            alphaDialog.open();
-        });
-
     };
 
     var onEvent = function(EVENT,object){
@@ -133,7 +109,7 @@ function DrawerHolder(main) {
                 }
                 break;
             case EVENTS.SELECT_USER:
-            case EVENTS.SELECT_SINGLE_USER:
+//            case EVENTS.SELECT_SINGLE_USER:
                 onChangeLocation.call(this, this.location)
                 break;
         }

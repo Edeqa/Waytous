@@ -35,6 +35,7 @@ html, body {
     font-family: sans-serif;
     font-size: 14px;
     color: darkslategray;
+    -webkit-font-smoothing: antialiased;
 }
 input, textarea {
     -webkit-user-select: text;
@@ -153,7 +154,7 @@ button:active {
     z-index: 1000;
     outline: none;
     max-height: 90%;
-    max-width: 90%;
+    max-width: 70%;
 }
 /* Actionbar */
 .actionbar {
@@ -805,6 +806,7 @@ button:active {
         left: 50% !important;
         top: 50% !important;
         transform: translate(-50%,-50%) !important;
+        max-width: 90%;
     }
     /* Actionbar */
     .actionbar {
