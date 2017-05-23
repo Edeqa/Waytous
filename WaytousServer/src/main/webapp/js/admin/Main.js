@@ -52,7 +52,7 @@ function Main() {
 
         u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons", async:"", defer:""}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/common.css", async:"", defer:""}, document.head);
+        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/edequate.css", async:"", defer:""}, document.head);
         u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css", async:"", defer:""}, document.head);
 
         u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"},document.head);

@@ -38,7 +38,7 @@ function Main() {
         document.head
             .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"})
             .place(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons", async:"", defer:""})
-            .place(HTML.LINK, {rel:"stylesheet", href:"/css/common.css", async:"", defer:""})
+            .place(HTML.LINK, {rel:"stylesheet", href:"/css/edequate.css", async:"", defer:""})
             .place(HTML.LINK, {rel:"stylesheet", href:"/css/index.css", async:"", defer:""})
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"})
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"32x32", href:"/icons/favicon-32x32.png"})

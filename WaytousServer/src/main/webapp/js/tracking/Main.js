@@ -104,7 +104,7 @@ function Main() {
 
         document.head
             .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"})
-            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/common.css"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/edequate.css"})
             .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"})
             .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"})
             .place(HTML.LINK, {rel:"apple-touch-icon", href:"/icons/apple-touch-icon.png"})
