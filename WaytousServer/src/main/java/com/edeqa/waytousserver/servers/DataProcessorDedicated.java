@@ -6,6 +6,7 @@ import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 
 import org.json.JSONException;
@@ -53,6 +54,7 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
  * Created 10/5/16.
  */
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class DataProcessorDedicated extends AbstractDataProcessor {
 
     public static String VERSION = "v1";
@@ -134,7 +136,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     }
 
     @Override
-    public void onClose(AbstractDataProcessor.Connection conn, int code, String reason, boolean remote) {
+    public void onClose(DataProcessorConnection conn, int code, String reason, boolean remote) {
         System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
@@ -169,7 +171,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     }
 
     @Override
-    public void onMessage(AbstractDataProcessor.Connection conn, String message) {
+    public void onMessage(DataProcessorConnection conn, String message) {
         boolean disconnect = false;
         try {
             System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);

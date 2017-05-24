@@ -2,6 +2,7 @@ package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
+import com.edeqa.waytousserver.helpers.HttpDPConnection;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
@@ -13,8 +14,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,14 +58,14 @@ public class MyHttpRestHandler implements HttpHandler {
 //        switch(exchange.getRequestMethod()) {
 //            case HttpMethods.GET:
         switch(uri.getPath()) {
-            case "/rest/v1/getApiVersion":
-                printRes = getApiVersionV1(json);
+            case "/rest/v1/getVersion":
+                printRes = getVersionV1(json);
                 break;
             case "/rest/v1/getSounds":
                 printRes = getSoundsV1(json);
                 break;
             case "/rest/v1/getResources":
-                printRes = getResourcesV1(json, parts.size() > 2 ? parts.get(3) : null);
+                printRes = getResourcesV1(json, exchange);
                 break;
             case "/rest/v1/join":
                 printRes = joinV1(json, exchange);
@@ -96,37 +97,8 @@ public class MyHttpRestHandler implements HttpHandler {
         this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
     }
 
-    class HttpConnection implements AbstractDataProcessor.Connection {
-
-        private final HttpExchange exchange;
-
-        public HttpConnection(HttpExchange exchange) {
-            this.exchange = exchange;
-        }
-
-        @Override
-        public boolean isOpen() {
-            return true;//conn.isOpen();
-        }
-
-        @Override
-        public InetSocketAddress getRemoteSocketAddress() {
-            return exchange.getRemoteAddress();
-        }
-
-        @Override
-        public void send(String string) {
-            Utils.sendResult.call(exchange, 200, Constants.MIME.APPLICATION_JSON, string.getBytes());
-        }
-
-        @Override
-        public void close() {
-//            conn.close();
-        }
-    }
-
-    private boolean getApiVersionV1(JSONObject json) {
-        json.put("apiVersion", Constants.SERVER_BUILD);
+    private boolean getVersionV1(JSONObject json) {
+        json.put("version", Constants.SERVER_BUILD);
         return true;
     }
 
@@ -161,7 +133,7 @@ public class MyHttpRestHandler implements HttpHandler {
             String body = br.readLine();
 
             Common.log("Rest",exchange.getRemoteAddress().toString(), "joinV1:", body);
-            getDataProcessor(exchange.getRequestURI().getPath().split("/")[3]).onMessage(new HttpConnection(exchange), body);
+            getDataProcessor(exchange.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(exchange), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");
@@ -171,37 +143,49 @@ public class MyHttpRestHandler implements HttpHandler {
     }
 
 
-    private boolean getResourcesV1(final JSONObject json, final String resource) {
+    private boolean getResourcesV1(final JSONObject json, final HttpExchange exchange) {
         File dir = new File(SENSITIVE.getWebRootDirectory() + "/locales");
 
         try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = exchange.getRequestBody();
+            int b;
+            while ((b = is.read()) != -1) {
+                buf.append((char) b);
+            }
+
+            is.close();
+            JSONObject options = new JSONObject(buf.toString());
+
             if(!dir.getCanonicalPath().equals(dir.getAbsolutePath())) {
                 return true;
             }
-        } catch (IOException e) {
+
+            File[] files;
+            if(options.has("type")) {
+                final String prefix = options.getString("type");
+                files = dir.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.startsWith(prefix);
+                    }
+                });
+            } else {
+                files = new File[]{};
+            }
+            ArrayList<String> list = new ArrayList<>();
+            if(files != null) {
+                for(File file: files) {
+                    if(!list.contains(file.getName())) list.add(file.getName());
+                }
+            }
+            json.put("files", list);
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
             return true;
         }
 
-        File[] files;
-        if(resource != null) {
-            files = dir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.startsWith(resource);
-                }
-            });
-        } else {
-            files = new File[]{};
-        }
-        ArrayList<String> list = new ArrayList<>();
-        if(files != null) {
-            for(File file: files) {
-                if(!list.contains(file.getName())) list.add(file.getName());
-            }
-        }
-        json.put("files", list);
-        return true;
     }
 
 }

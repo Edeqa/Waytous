@@ -43,6 +43,9 @@ function Groups() {
             placeholder: "No data, try to refresh page."
         }, div);
 
+        u.create("br", null, div);
+        buttons = u.create("div", {className:"buttons"}, div);
+        renderButtons(buttons);
     }
 
 
@@ -115,6 +118,31 @@ function Groups() {
         });
     }
 
+    function renderButtons(div) {
+        u.clear(div);
+        u.create(HTML.BUTTON, { innerHTML:"Clean groups", onclick: cleanGroupsQuestion}, div);
+    }
+
+    function cleanGroupsQuestion(e){
+        u.clear(buttons);
+        u.create({className:"question", innerHTML: "This will check expired users and groups immediately using default options. Continue?"}, buttons);
+        u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: function() {
+           renderButtons(buttons);
+           u.toast.show("Clean groups is performing.");
+           u.put("/admin/rest/v1/groups/clean")
+            .then(function(xhr){
+//               WTU.switchTo("/admin/groups");
+            }).catch(function(code,xhr){
+//               console.warn("Resign because of",code,xhr);
+//               WTU.resign(updateData);
+               var res = JSON.parse(xhr.responseText) || {};
+               u.toast.show(res.message || xhr.statusText);
+             });
+        }}, buttons);
+        u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){
+            renderButtons(buttons);
+        }}, buttons);
+    }
 
     return {
         start: function() {

@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.servers.AbstractDataProcessor;
+import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.json.JSONObject;
@@ -24,7 +24,7 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
 
 @IgnoreExtraProperties
 public class MyUser {
-    transient public AbstractDataProcessor.Connection connection;
+    transient public DataProcessorConnection connection;
     public String name;
     public long created;
     public long changed;
@@ -39,7 +39,7 @@ public class MyUser {
     private String os;
 
 
-    public MyUser(AbstractDataProcessor.Connection connection, String deviceId) {
+    public MyUser(DataProcessorConnection connection, String deviceId) {
         this.connection = connection;
         this.deviceId = deviceId;
         created = new Date().getTime();
@@ -95,7 +95,7 @@ public class MyUser {
 //        return connection;
 //    }
 
-    public void setConnection(AbstractDataProcessor.Connection connection) {
+    public void setConnection(DataProcessorConnection connection) {
         this.connection = connection;
     }
 

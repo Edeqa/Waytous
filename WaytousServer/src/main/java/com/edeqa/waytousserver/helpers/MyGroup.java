@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.servers.AbstractDataProcessor;
+import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -215,7 +215,7 @@ public class MyGroup {
         } else {
 
             for (MyUser x : users) {
-                AbstractDataProcessor.Connection conn = x.connection;//.getConnection();
+                DataProcessorConnection conn = x.connection;//.getConnection();
                 if (conn != null && conn.isOpen()) {
                     conn.send(o.toString());
                 }

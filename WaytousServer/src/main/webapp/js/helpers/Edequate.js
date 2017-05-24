@@ -569,6 +569,8 @@ function Edequate(options) {
             origin:origin,
             module:name,
             instance: needInstantiate ? onlyname : null,
+            async: "",
+            defer: "",
             onload: function(e) {
                 var a;
                 if(needInstantiate) {
@@ -587,10 +589,6 @@ function Edequate(options) {
              onerror: function(e) {
                 returned.onRejected(ERRORS.NOT_EXISTS, this.instance, e);
             }
-        }
-        if(!name.match("firebase")) {
-            options.async = "";
-            options.defer = "";
         }
 
         create(HTML.SCRIPT, options, document.head);
@@ -1433,6 +1431,7 @@ function Edequate(options) {
         var returned = new EPromise();
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
+//        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
         xhr.onreadystatechange = function() { // (3)
             if (xhr.readyState != 4) return;
             if (xhr.status != 200) {

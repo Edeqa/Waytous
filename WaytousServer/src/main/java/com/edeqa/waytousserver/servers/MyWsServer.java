@@ -1,7 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.interfaces.WssServer;
+import com.edeqa.waytousserver.helpers.WSConnection;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
@@ -18,12 +18,11 @@ import java.util.concurrent.TimeUnit;
 
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
 
-
 /**
  * Created 10/5/16.
  */
 
-public class MyWsServer extends WebSocketServer implements WssServer {
+public class MyWsServer extends WebSocketServer {
 
     private final AbstractDataProcessor processor;
     private static boolean validationStarted = false;
@@ -116,35 +115,6 @@ public class MyWsServer extends WebSocketServer implements WssServer {
             return false;
         }
         return true;
-    }
-
-    class WSConnection implements AbstractDataProcessor.Connection {
-
-        private final WebSocket conn;
-
-        public WSConnection(WebSocket conn) {
-            this.conn = conn;
-        }
-
-        @Override
-        public boolean isOpen() {
-            return conn.isOpen();
-        }
-
-        @Override
-        public InetSocketAddress getRemoteSocketAddress() {
-            return conn.getRemoteSocketAddress();
-        }
-
-        @Override
-        public void send(String string) {
-            conn.send(string);
-        }
-
-        @Override
-        public void close() {
-            conn.close();
-        }
     }
 
 

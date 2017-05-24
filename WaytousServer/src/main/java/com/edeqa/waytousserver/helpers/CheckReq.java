@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.servers.AbstractDataProcessor;
+import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 
 import org.json.JSONObject;
 
@@ -90,7 +90,7 @@ public class CheckReq {
         this.user = user;
     }
 
-    public void setUser(AbstractDataProcessor.Connection connection, JSONObject request) {
+    public void setUser(DataProcessorConnection connection, JSONObject request) {
         user = new MyUser(connection, request.getString(REQUEST_DEVICE_ID));
 
         user.setManufacturer(request.getString(REQUEST_MANUFACTURER));

@@ -4,8 +4,7 @@ import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.Callable1;
-import com.edeqa.waytousserver.interfaces.Callable2;
-import com.edeqa.waytousserver.interfaces.Callable3;
+import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
 
@@ -15,7 +14,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -91,7 +89,7 @@ abstract public class AbstractDataProcessor {
         flagHolders.put(holder.getType(), holder);
     }
 
-    final public void onOpen(Connection conn, ClientHandshake handshake) {
+    final public void onOpen(DataProcessorConnection conn, ClientHandshake handshake) {
         try {
 //            conn.send("{\"" + RESPONSE_STATUS + "\":\""+RESPONSE_STATUS_CONNECTED+"\",\"version\":" + SERVER_BUILD + "}");
         } catch(Exception e){
@@ -99,7 +97,7 @@ abstract public class AbstractDataProcessor {
         }
     }
 
-    public void onClose(Connection conn, int code, String reason, boolean remote) {
+    public void onClose(DataProcessorConnection conn, int code, String reason, boolean remote) {
 //        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
@@ -107,9 +105,9 @@ abstract public class AbstractDataProcessor {
 
     }
 
-    abstract public void onMessage(final Connection conn, String message);
+    abstract public void onMessage(final DataProcessorConnection conn, String message);
 
-    final public void onError(Connection conn, Exception ex) {
+    final public void onError(DataProcessorConnection conn, Exception ex) {
         ex.printStackTrace();
         if (conn != null && conn.getRemoteSocketAddress() != null) {
             String ip = conn.getRemoteSocketAddress().toString();
@@ -120,7 +118,7 @@ abstract public class AbstractDataProcessor {
         }
     }
 
-    public void onWebSocketPing(Connection conn, Framedata f) {
+    public void onWebSocketPing(DataProcessorConnection conn, Framedata f) {
         try {
             String ip = conn.getRemoteSocketAddress().toString();
             if (ipToUser.containsKey(ip)) {
@@ -132,9 +130,9 @@ abstract public class AbstractDataProcessor {
         }
     }
 
-    abstract public void createGroup(MyGroup group, Callable1 onsuccess, Callable1 onerror);
+    abstract public void createGroup(MyGroup group, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
 
-    abstract public void deleteGroup(String groupId, Callable1 onsuccess, Callable1 onerror);
+    abstract public void deleteGroup(String groupId, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
 
     abstract public void switchPropertyInGroup(String groupId, String property, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
 
@@ -158,13 +156,6 @@ abstract public class AbstractDataProcessor {
 
     public ConcurrentHashMap<String, CheckReq> getIpToCheck(){
         return ipToCheck;
-    }
-
-    public interface Connection {
-        boolean isOpen();
-        InetSocketAddress getRemoteSocketAddress();
-        void send(String string);
-        void close();
     }
 
 }

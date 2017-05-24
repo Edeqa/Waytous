@@ -132,9 +132,11 @@ public class Utils {
 
         //add reuqest header
         con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        con.setRequestProperty(HttpHeaders.USER_AGENT,
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
 //        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty(HttpHeaders.CONTENT_TYPE, "application/json");
+        con.setRequestProperty(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
 //        String urlParameters = "sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
 
@@ -172,9 +174,9 @@ public class Utils {
         URLConnection feedUrl;
         feedUrl = new URL(url).openConnection();
         feedUrl.setConnectTimeout(5000);
-        feedUrl.setRequestProperty(
-                "User-Agent",
+        feedUrl.setRequestProperty(HttpHeaders.USER_AGENT,
                 "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
+        feedUrl.setRequestProperty(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
         in = feedUrl.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));

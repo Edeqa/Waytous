@@ -106,7 +106,7 @@ public class Constants {
     }
 
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
-    public static final int LIFETIME_INACTIVE_GROUP = 300;
+    public static final int LIFETIME_INACTIVE_GROUP = 600;
     public final static int LIFETIME_INACTIVE_USER = 600;
 
     public static class REST {

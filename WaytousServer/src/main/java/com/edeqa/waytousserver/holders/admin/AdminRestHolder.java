@@ -55,15 +55,18 @@ public class AdminRestHolder implements PageHolder {
             case HttpMethods.GET:
                 switch (uri.getPath()) {
                     default:
-                        break;
+                        actionNotSupported(exchange);
+                        return true;
                 }
-                break;
             case HttpMethods.PUT:
                 switch (uri.getPath()) {
+                    case "/admin/rest/v1/groups/clean":
+                        cleanGroupsV1(exchange);
+                        return true;
                     default:
-                        break;
+                        actionNotSupported(exchange);
+                        return true;
                 }
-                break;
             case HttpMethods.POST:
                 switch (uri.getPath()) {
                     case "/admin/rest/v1/group/create":
@@ -85,12 +88,35 @@ public class AdminRestHolder implements PageHolder {
                         switchPropertyForUserV1(exchange);
                         return true;
                     default:
-                        break;
+                        actionNotSupported(exchange);
+                        return true;
                 }
-                break;
         }
 
         return false;
+    }
+
+    private void cleanGroupsV1(HttpExchange exchange) {
+        try {
+
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "cleanGroupsV1");
+
+            server.getDataProcessor().validateGroups();
+
+            JSONObject json = new JSONObject();
+            json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+            json.put(Constants.REST.MESSAGE, "Clean started.");
+            Utils.sendResultJson.call(exchange, json);
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            JSONObject json = new JSONObject();
+            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+            json.put(Constants.REST.MESSAGE, "Incorrect request.");
+            Utils.sendError.call(exchange, 400, json);
+        }
+
     }
 
     private void createGroupV1(final HttpExchange exchange) {
@@ -240,6 +266,7 @@ public class AdminRestHolder implements PageHolder {
     }
 
     private void switchPropertyInGroupV1(final HttpExchange exchange) {
+
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
@@ -315,6 +342,38 @@ public class AdminRestHolder implements PageHolder {
                     Utils.sendError.call(exchange, 500, json);
                 }
             });
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            JSONObject json = new JSONObject();
+            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+            json.put(Constants.REST.MESSAGE, "Incorrect request.");
+            json.put(Constants.REST.REQUEST, options);
+            Utils.sendError.call(exchange, 400, json);
+        }
+    }
+
+    private void actionNotSupported(final HttpExchange exchange) {
+        String options = "";
+        try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = exchange.getRequestBody();
+            int b;
+            while((b = is.read()) != -1) {
+                buf.append((char) b);
+            }
+
+            is.close();
+            options = buf.toString();
+
+            //noinspection HardCodedStringLiteral
+            Common.log(LOG, "actionNotSupported:", exchange.getRequestURI().getPath());
+
+            JSONObject json = new JSONObject();
+            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+            json.put(Constants.REST.MESSAGE, "Action not supported.");
+            json.put(Constants.REST.REQUEST, options);
+            Utils.sendError.call(exchange, 400, json);
 
         } catch(Exception e) {
             e.printStackTrace();
