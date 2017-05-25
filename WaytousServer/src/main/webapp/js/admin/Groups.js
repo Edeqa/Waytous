@@ -65,11 +65,12 @@ function Groups() {
                 if(!snapshot || !snapshot.val()) return;
 
                 var row = table.add({
+                    id: data.key,
                     className: "highlight",
                     onclick: function(){
                         WTU.switchTo("/admin/group/"+data.key);
                         return false;
-                     },
+                    },
                     cells: [
                         { innerHTML: data.key },
                         { className: "media-hidden", innerHTML:snapshot.val()[DATABASE.OPTION_REQUIRES_PASSWORD] ? "Yes" : "No" },
@@ -116,6 +117,18 @@ function Groups() {
             resign = true;
             WTU.resign(updateData);
         });
+        ref.child(DATABASE.SECTION_GROUPS).on("child_removed", function(data) {
+            for(var i in table.rows) {
+                if(table.rows[i].id == data.key) {
+                    table.body.removeChild(table.rows[i]);
+                    table.rows.splice(i,1);
+                }
+            }
+            u.toast.show("Group "+data.getKey()+" was removed.");
+        }, function(error){
+            console.error("REMOVED",error);
+
+        })
     }
 
     function renderButtons(div) {

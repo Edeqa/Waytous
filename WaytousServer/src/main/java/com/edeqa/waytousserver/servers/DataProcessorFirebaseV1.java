@@ -125,15 +125,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 Common.err(LOG,"onMessage:request"+e.getMessage());
                 return;
             }
-            if (!request.has(REQUEST_TIMESTAMP)) return;
-//            long timestamp = request.getLong(REQUEST_TIMESTAMP);
-        /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
-            Common.log("Main","WSS:ignore request because of timeout");
-//            conn.close(CloseFrame.GOING_AWAY, "Request timeout");
-            return;
-        }*/
-
-            if (!request.has(REQUEST)) return;
+            if (!request.has(REQUEST) || !request.has(REQUEST_TIMESTAMP)) return;
 
             String req = request.getString(REQUEST);
             if (REQUEST_NEW_GROUP.equals(req)) {
@@ -172,26 +164,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     final String groupId = request.getString(REQUEST_TOKEN);
                     final DatabaseReference refGroup = ref.child(groupId);
 
-                    final ValueEventListener userDataListener = new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.getValue() != null) { //already was here
-                                System.out.println("READED:"+dataSnapshot.getValue());
-
-                            } else { // join as new member
-                                System.out.println("REFUSED:"+dataSnapshot.getValue());
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            System.out.println("SINGLEERR3:"+databaseError.getMessage());
-
-                        }
-                    };
-
                     final ValueEventListener[] requestDataPrivateListener = new ValueEventListener[1];
                     requestDataPrivateListener[0] = new ValueEventListener() {
                         @Override
@@ -220,7 +192,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             }
                             if(found) {
                                 final MyGroup group = new MyGroup();
-                                user.number = (int) count;
+                                user.number = count;
                                 registerUser(groupId, user, request);
                             } else {
                                 ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).setValue(user.getUid());
@@ -249,9 +221,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 check.setUser(conn, request);
 
                                 Common.log(LOG,"onMessage:checkRequest:"+conn.getRemoteSocketAddress(),"{ number:"+dataSnapshot.getValue(), "key:"+dataSnapshot.getKey(), "control:"+check.getControl()+" }");
-//                                if (request.has(USER_NAME))
-//                                    check.setName(request.getString(USER_NAME));
-//
+
                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                                 response.put(RESPONSE_CONTROL, check.getControl());
                                 ipToCheck.put(ip, check);
@@ -261,19 +231,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                     e.printStackTrace();
                                 }
 
-//                                long number = (long) dataSnapshot.getValue();
-//                                refGroup.child("/users/data-private/" + number+"/control").setValue(check.control);
-
                             } else { // join as new member
-
                                 refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
-//                                refGroup.child(DATABASE.SECTION_USERS_DATA_PRIVATE).addListenerForSingleValueEvent(requestDataPrivateListener);
-
-//                                System.out.println("ASNEW:"+dataSnapshot.getValue());
-//                                long number = (long) dataSnapshot.getValue();
-//                                refGroup.child(DATABASE.SECTION_USERS_DATA_PRIVATE + "/" + number).addListenerForSingleValueEvent(userDataListener);
                             }
-
                         }
 
                         @Override
@@ -429,7 +389,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         };
 
                         refGroup.child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
-
 
                         return;
                     } else {
@@ -708,32 +667,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //        }
 //    }
 
-    /*public void sendToAll(String text, WebSocket insteadConnection) {
-        Collection<WebSocket> con = connections();
-//        synchronized (con) {
-        for (WebSocket c : con) {
-            if (insteadConnection != null && c == insteadConnection) continue;
-            System.out.println("WSS:to:" + c.getRemoteSocketAddress() + ":" + text);
-            c.send(text);
-        }
-//        }
-    }*/
-
-    /*@Override
-    public void removeUser(String groupId, String id){
-        if(groupId != null && id != null && groups.containsKey(groupId)){
-            MyGroup t = groups.get(groupId);
-            MyUser user = t.users.get(id);
-            if(user != null){
-                JSONObject response = new JSONObject();
-                response.put(RESPONSE_STATUS, USER_DISMISSED);
-                response.put(RESPONSE_MESSAGE,"You have been dismissed.");
-                user.send(response);
-                user.disconnect();
-                t.removeUser(id);
-            }
-        }
-    }*/
 
     @Override
     public void removeUser(final String groupId, final Long userNumber, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
@@ -838,7 +771,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     public void validateGroups() {
-//        if(SENSITIVE.isDebugMode()) return;
 
         Common.log(LOG, "Groups validation is performing, checking online users");
         try {
@@ -859,9 +791,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         Common.log(LOG,"Group found:", group/* + ", leader id:", leader, dataSnapshot.getValue()*/);
 
                         if(value == null) {
-                            Common.log(LOG,"--- corrupted group detected, removing"); //TODO
-//                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
-//                            ref.child(group).removeValue();
+                            Common.log(LOG,"--- corrupted group detected, removing ----- 1"); //TODO
+                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                            ref.child(group).removeValue();
                             return;
                         }
 
@@ -895,17 +827,18 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         ValueEventListener usersValidation = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                Common.log(LOG,"Users validation for", group);
+                                Common.log(LOG,"Users validation for group:", group);
 
                                 ArrayList<Map> users = null;
-//                                try {
-                                users = (ArrayList<Map>) dataSnapshot.getValue();
-//                                } catch(Exception e) {
-//                                    e.printStackTrace();
-//                                }
+                                try {
+                                    users = (ArrayList<Map>) dataSnapshot.getValue();
+                                } catch(Exception e) {
+                                    e.printStackTrace();
+                                }
                                 if(users == null) {
-                                    Common.log(LOG,"--- corrupted group detected, removing ----- 2"); //TODO
-                                    Common.log(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group), ref.child(group));
+                                    Common.log(LOG,"--- corrupted group detected, removing: ----- 2"); //TODO
+                                    ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                    ref.child(group).removeValue();
                                     return;
                                 }
                                 long groupChanged = 0;
@@ -926,7 +859,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                     if(!active) continue;
 
                                     if(dismissInactive) {
-
                                         Long current = new Date().getTime();
                                         if (changed == null) {
                                             Common.log(LOG, "--- user:", i, "name:", name, "is NULL");
@@ -942,10 +874,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 }
 
                                 if(!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000 ) {
-//TODO
-                                    Common.log(LOG,"--- removing expired group "+group+" for:", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000)/1000/60, "minutes");
-                                    Common.log(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group), ref.child(group));
-
+                                    Common.log(LOG,"--- removing group "+group+" expired for", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000)/1000/60, "minutes");
+                                    ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                    ref.child(group).removeValue();
                                 }
 
                             }
@@ -967,7 +898,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     }
                 };
 
-
                 ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS).removeEventListener(groupValidation);
                 ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupValidation);
 
@@ -976,51 +906,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             e.printStackTrace();
         }
 
-
-
-
-//        ref.child(Constants.DATABASE.SECTION_GROUPS).removeEventListener(groupsList);
-//        ref.child(Constants.DATABASE.SECTION_GROUPS).addChildEventListener(groupsList);
-
-/*        while(true) {
-            try {
-                Thread.sleep(LIFETIME_INACTIVE_USER * 1000);
-
-                MyUser user;
-                long currentDate = new Date().getTime();
-                for (Map.Entry<String, MyUser> entry : ipToUser.entrySet()) {
-
-                    user = entry.getValue();
-                    if (user != null) {
-
-                        System.out.println("INACTIVITY: " + user.getName() + ":" + (currentDate - user.getChanged()));
-
-                        if (currentDate - user.getChanged() > LIFETIME_INACTIVE_USER * 1000) {
-                            // dismiss user
-                            JSONObject o = new JSONObject();
-                            if(ipToToken.containsKey(entry.getKey())) {
-                                MyGroup token = ipToToken.get(entry.getKey());
-                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                                o.put(USER_DISMISSED, user.getNumber());
-                                token.sendToAllFrom(o, user);
-                            }
-
-                            if(ipToUser.containsKey(entry.getKey())) ipToUser.remove(entry.getKey());
-                            if(ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
-                            if(ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                            user.connection.close();
-                        }
-
-                    } else {
-                        if (ipToToken.containsKey(entry.getKey())) ipToToken.remove(entry.getKey());
-                        if (ipToCheck.containsKey(entry.getKey())) ipToCheck.remove(entry.getKey());
-                        ipToUser.remove(entry.getKey());
-                    }
-                }
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }*/
     }
 
     @Override

@@ -8,18 +8,19 @@
 
 function HomeHolder(main) {
 
-    function start() {
+    this.type = "home";
+    this.category = "main";
+    this.title = u.lang.home;
+    this.menu = u.lang.home;
+    this.icon = "home";
+
+    this.start = function() {
         console.log("INDEX HOME");
 
     }
 
-
-    return {
-        type: "home",
-        category: "main",
-        title: "Home",
-        start:start,
-        menu: "Home",
-        icon: "home"
+    this.onEvent = function(event, object) {
+        return true;
     }
+
 }

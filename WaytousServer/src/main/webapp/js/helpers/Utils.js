@@ -493,6 +493,7 @@ function Utils(main) {
            items: [
                { innerHTML: "${APP_NAME} v.1.${SERVER_BUILD}" },
                { content: u.create(HTML.DIV)
+                   .place(HTML.A, { className: "about-dialog-link", href: "/", target: "_blank", innerHTML: u.lang.support || "Home"})
                    .place(HTML.A, { className: "about-dialog-link", href: "/support/", target: "_blank", innerHTML: u.lang.support || "Support"})
                    .place(HTML.A, { className: "about-dialog-link", href: "/help/", target: "_blank", innerHTML: u.lang.help || "Help"})
                    .place(HTML.A, { className: "about-dialog-link", href: "/feedback/", target: "_blank", innerHTML: u.lang.feedback || "Feedback" })

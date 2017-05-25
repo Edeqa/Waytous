@@ -1925,8 +1925,13 @@ function Edequate(options) {
                 }
             },
             add: function(row) {
-                 var cells;
-                 var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);
+                  row = row || {};
+                  row.className = "tr" +(row.onclick ? " clickable":"")+(row.className ? " "+row.className : "");
+
+                  var res = create(HTML.DIV, row, table.body);
+                  res.cells = [];
+
+//                 var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);
                  for(var i in row.cells) {
                      var item = row.cells[i];
                      item.className = "td" + (item.className ? " " + item.className : "");

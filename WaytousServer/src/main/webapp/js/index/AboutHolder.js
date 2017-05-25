@@ -6,28 +6,37 @@
  * Created 4/24/17.
  */
 
+EVENTS.ABOUT = "about";
+
 function AboutHolder(main) {
 
-    function start() {
-        console.log("INDEX ABOUT");
+    this.type = "about";
+    this.category = "about";
+    this.title = u.lang.about;
+    this.menu = u.lang.about;
+    this.icon = "info_outline";
 
-        u.progress.show(u.lang.loading);
-        u.get("/texts/lorem.txt").then(function(xhr){
-//            u.clear(main.content);
-
-            u.byId("content").innerHTML = xhr.response;
-            u.byId("content").classList.add("content-about");
-            u.byId("content").parentNode.scrollTop = 0;
-            u.progress.hide();
-        });
+    this.start = function() {
     }
 
-    return {
-        type: "about",
-        category: "about",
-        title: "About",
-        start:start,
-        menu: "About",
-        icon: "info_outline"
+    this.onEvent = function(event, object) {
+
+        switch(event) {
+            case EVENTS.ABOUT:
+                console.log("INDEX ABOUT");
+
+                u.progress.show(u.lang.loading);
+                u.get("/texts/lorem.txt").then(function(xhr){
+        //            u.clear(main.content);
+
+                    u.byId("content").innerHTML = xhr.response;
+                    u.byId("content").classList.add("content-about");
+                    u.byId("content").parentNode.scrollTop = 0;
+                    u.progress.hide();
+                });
+                break;
+        }
+
     }
+
 }

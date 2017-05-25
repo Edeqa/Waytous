@@ -7,13 +7,13 @@ import org.java_websocket.WebSocket;
 import java.net.InetSocketAddress;
 
 /**
- * Created by eduardm on 024, 5/24/2017.
+ * Created 5/24/2017.
  */
-public class WSConnection implements DataProcessorConnection {
+public class WebsocketDPConnection implements DataProcessorConnection {
 
     private final WebSocket conn;
 
-    public WSConnection(WebSocket conn) {
+    public WebsocketDPConnection(WebSocket conn) {
         this.conn = conn;
     }
 

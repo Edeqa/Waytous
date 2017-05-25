@@ -19,6 +19,7 @@ function SupportHolder(main) {
         title: "Support",
         start:start,
         menu: "Support",
-        icon: "add"
+        icon: "add",
+        onEvent: function(){}
     }
 }

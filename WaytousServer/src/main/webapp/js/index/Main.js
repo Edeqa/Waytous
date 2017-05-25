@@ -12,15 +12,17 @@ function Main() {
 
 
     var holders = {};
-    var holderFiles = [
+    var files = [
         "/js/helpers/Utils.js",
-        "/js/helpers/Constants",
+//        "/js/helpers/Constants",
         "/js/index/HomeHolder",
 //        "/js/index/BlablaHolder",
 //        "/js/index/SupportHolder",
         "/js/index/AboutHolder",
     ];
 
+    EVENTS = {
+    };
 
     self.start = function() {
         var a = document.createElement("script");
@@ -45,78 +47,31 @@ function Main() {
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"})
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"});
 
-        var loaded = 0;
-        for(var i in holderFiles) {
-            var file = holderFiles[i];
-            if(!file.match(/^(https?:)|\//i)) file = "/js/admin/"+file;
-            u.require(file, self).then(function(e) {
-                loaded++;
-                if(e && e.moduleName) {
-                    holders[e.type.toLowerCase()] = e;
-                }
-                if(loaded == u.keys(holderFiles).length) {
-                    console.log("Preload finished: "+loaded+" files done.");
-                    window.utils = new Utils();
-
-                    loadResources(resume);
-                }
-            });
-        }
-    }
-
-    function initialize() {
-
-        if(!firebase || !firebase.database || !firebase.auth) {
-            console.error("Failed firebase loading, trying again...");
-//debugger;
-            var files = [];
-            if(!firebase) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js");
-            if(!firebase.database) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js");
-            if(!firebase.auth) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js");
-
-            var loaded = 0;
-            var failed = false;
-            for(var i in files) {
-                var file = files[i];
-                u.require(file).then(function(e) {
-                    if(failed) return;
-                    loaded++;
-                    progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
-                    if(loaded == u.keys(files).length) {
-                        initialize.call(main);
+       u.require("/js/helpers/Constants").then(function(e){
+            u.lang.overrideResources({"default":defaultResources, callback: function(){
+                u.eventBus.register(files, {
+                    context: self,
+                    onprogress: function(loaded) {
+                        u.loading(Math.ceil(loaded / files.length * 100) + "%");
+                    },
+                    onstart: function() {
+                        window.utils = new Utils(self);
+                    },
+                    onsuccess: function() {
+                        holders = u.eventBus.holders;
+                        resume();
+                    },
+                    onerror: function(code, origin, error) {
+                        console.error(code, origin, error);
+                        u.loading.hide();
+                        u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(origin,code));
+                        main.alert.open();
                     }
                 });
-            }
-
-            return;
-        }
-
-        try {
-            firebase.initializeApp(data.firebase_config);
-            database = firebase.database();
-        } catch(e) {
-            console.error(e);
-            resign(resume);
-        }
-
-        resign(resume);
-
-        var a = u.byId("sign");
-        a.parentNode.removeChild(a);
-
-    }
-
-    function resign(callback){
-
-        u.loading(u.lang.signing_in);
-        firebase.auth().signInWithCustomToken(sign.token).then(function(e){
-            callback();
-        //            console.log("AAA",e)
-        }).catch(function(error) {
-                          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          // ...
+            }});
+            var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+            var resources = "/locales/tracking."+lang+".json";
+            if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
         });
     }
 
@@ -211,8 +166,8 @@ var type = "home";
 
                     var item = self.drawer.add(categories[holders[x].category], x, holders[x].menu, holders[x].icon, function(){
                         var holder = holders[this.instance];
-
-                        holder.start();
+                        u.fire(holder.type);
+//                        holder.start();
                         return false;
                   });
                   item.instance = x;
@@ -226,15 +181,6 @@ var type = "home";
         } catch(e) {
             console.error(e);
         }
-    }
-
-    var logout = function() {
-        var to_url = window.location.protocol + "//" + window.location.host + "/";// + window.location.pathname;
-        u.get(window.location.href.replace(/:\/\//, '://log:out@')).then(function() {
-            window.location = to_url;
-        }).catch(function() {
-            window.location = to_url;
-        });
     }
 
     function showPrivacy(e) {

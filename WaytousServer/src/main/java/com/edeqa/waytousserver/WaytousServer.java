@@ -186,31 +186,6 @@ public class WaytousServer {
             e.printStackTrace();
         }
 
-        /*wssServer = new MyWsServer(WSS_PORT);
-        new Thread() {
-            public void run() {
-                try {
-                    WebSocketImpl.DEBUG = false;
-                    wssServer.start();
-                    Common.log("Main", "WSS\t\t\t\t| " + WSS_PORT + "\t|");
-
-                    *//*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
-                    while (true) {
-//                        if(!wssServer.parse(sysin)) break;
-                        String in = sysin.readLine();
-                        Common.log("Main", "READ:" + in);
-//                        s.sendToAll(in);
-                        if (in.equals("exit")) {
-                            wssServer.stop();
-                            break;
-                        }
-                    }*//*
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();*/
-
         HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(SENSITIVE.getHttpPort()), 0);
 
