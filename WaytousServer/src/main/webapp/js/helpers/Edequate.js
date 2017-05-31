@@ -670,6 +670,7 @@ function Edequate(options) {
     *       id,
     *       title: name | {label, className, button},
     *       queue: true|*false*, - if true then post this dialog to the queue and wait
+    *       priority: 0-9, - makes sense with queue=true
     *       modal: true|*false*, - if true then dim all behind the dialog and wait for user
     *       hiding: HIDING.method, - default is HIDING.OPACITY
     *       resizeable: true|*false*,
@@ -714,6 +715,7 @@ function Edequate(options) {
     */
     function dialog(options, appendTo = document.body) {
 //        appendTo = appendTo || document.body;
+        options = options || {};
 
         var dialog = create(HTML.DIV, {
             className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
@@ -939,7 +941,16 @@ function Edequate(options) {
             if(dialog.opened) return;
             if(dialog.options.queue) {
                 if(performingDialogInQueue) {
-                    dialogQueue.push(dialog);
+                    if(dialog.options.priority) {
+                        for(var i in dialogQueue) {
+                            if(dialog.options.priority > (dialogQueue[i].options.priority||0)) {
+                                dialogQueue.splice(i,0,dialog);
+                                break;
+                            }
+                        }
+                    } else {
+                        dialogQueue.push(dialog);
+                    }
                     return;
                 } else {
                     performingDialogInQueue = dialog;
@@ -1204,22 +1215,22 @@ function Edequate(options) {
         var buttons = create(HTML.DIV, {className:"dialog-buttons hidden" + (options.buttonsClassName ? " " + options.buttonsClassName : "")}, dialog);
         if(options.positive && options.positive.label) {
             dialog.positive = create(HTML.BUTTON, {className:"dialog-button-positive", tabindex:98, onclick:function(event){
-                if(options.positive.dismiss == undefined || options.positive.dismiss) dialog.close();
                 if(options.positive.onclick) options.positive.onclick.call(dialog,items,event);
+                if(options.positive.dismiss == undefined || options.positive.dismiss) dialog.close();
             }, innerHTML: options.positive.label}, buttons);
             buttons.show();
         }
         if(options.neutral && options.neutral.label) {
             dialog.neutral = create(HTML.BUTTON, {className:"dialog-button-neutral", tabindex:100, onclick:function(event){
-                if(options.neutral.dismiss == undefined || options.neutral.dismiss) dialog.close();
                 if(options.neutral.onclick) options.neutral.onclick.call(dialog,items,event);
+                if(options.neutral.dismiss == undefined || options.neutral.dismiss) dialog.close();
             }, innerHTML: options.neutral.label}, buttons);
             buttons.show();
         }
         if(options.negative && options.negative.label) {
             dialog.negative = create(HTML.BUTTON, {className:"dialog-button-negative", tabindex:99, onclick:function(event){
-                if(options.negative.dismiss == undefined || options.negative.dismiss) dialog.close();
                 if(options.negative.onclick) options.negative.onclick.call(dialog,items,event);
+                if(options.negative.dismiss == undefined || options.negative.dismiss) dialog.close();
             }, innerHTML: options.negative.label}, buttons);
             buttons.show();
         }
