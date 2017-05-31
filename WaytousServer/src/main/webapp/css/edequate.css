@@ -767,10 +767,13 @@ button:active {
 }
 
 /* media specific classes */
-.media-hidden {
-}
-.desktop-hidden {
-    display: none;
+
+@media screen and (min-width: 1001px) {
+    .media-hidden {
+    }
+    .desktop-hidden {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -1020,7 +1023,6 @@ button:active {
         display: none;
     }
     .desktop-hidden {
-        display: inherit;
     }
 }
 

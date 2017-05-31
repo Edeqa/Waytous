@@ -97,8 +97,9 @@ function Edequate(options) {
     var DRAWER = {
         SECTION_PRIMARY: 0,
         SECTION_COMMUNICATION: 2,
-        SECTION_NAVIGATION: 3,
-        SECTION_VIEWS: 4,
+        SECTION_SHARE: 3,
+        SECTION_NAVIGATION: 5,
+        SECTION_VIEWS: 6,
         SECTION_MAP: 7,
         SECTION_MISCELLANEOUS: 8,
         SECTION_LAST: 9
