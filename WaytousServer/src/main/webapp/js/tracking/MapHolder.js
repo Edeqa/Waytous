@@ -47,9 +47,9 @@ function MapHolder(main) {
     window.initMap = function() {
         // Create a map object and specify the DOM element for display.
         var center = u.load("map:coords") || {};
-        center.lat = center.lat || 38.93421936035156;
-        center.lng = center.lng || -77.35877990722656;
-        center.zoom = center.zoom || 15;
+        center.lat = center.lat || 4.0;
+        center.lng = center.lng || -16.0;
+        center.zoom = center.zoom || 2;
         map = new google.maps.Map(document.getElementById("map"), {
             center: {lat: center.lat, lng: center.lng},
             scrollwheel: true,
