@@ -713,8 +713,8 @@ function Edequate(options) {
     * dialog.open()
     * dialog.close()
     */
-    function dialog(options, appendTo = document.body) {
-//        appendTo = appendTo || document.body;
+    function dialog(options, appendTo) {
+        appendTo = appendTo || document.body;
         options = options || {};
 
         var dialog = create(HTML.DIV, {
@@ -732,9 +732,9 @@ function Edequate(options) {
             dialog.items = [];
         };
 
-        dialog.addItem = function(item, appendTo = dialog.itemsLayout) {
+        dialog.addItem = function(item, appendTo) {
             item = item || {};
-//            appendTo = appendTo || dialog.itemsLayout;
+            appendTo = appendTo || dialog.itemsLayout;
             item.type = item.type || HTML.DIV;
 
             var div,x;

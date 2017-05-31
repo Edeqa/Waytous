@@ -174,8 +174,8 @@ var type = "home";
                 }
             }
 
-            self.actionbar.titleNode.innerHTML = holders[type].title;
-            self.drawer.headerPrimary.innerHTML = holders[type].title;
+            u.lang.updateNode(self.actionbar.titleNode, holders[type].title);
+            u.lang.updateNode(self.drawer.headerPrimary, holders[type].title);
             holders[type].start();
             u.loading.hide();
         } catch(e) {

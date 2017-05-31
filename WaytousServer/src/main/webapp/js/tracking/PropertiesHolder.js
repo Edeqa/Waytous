@@ -44,6 +44,7 @@ function PropertiesHolder(main) {
                 if(!u.load("properties:name") && !u.load("properties:name_asked")) {
                     var askIfNameNotDefinedDialog = u.dialog({
                         queue: true,
+                        priority: 1,
                         items: [
                             { type: HTML.DIV, label: u.lang.your_name_is_not_defined }
                         ],
