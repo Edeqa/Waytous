@@ -9,7 +9,7 @@
 // git filter-branch --force --index-filter "git rm -r --cached --ignore-unmatch WaytousServer/build" --prune-empty --tag-name-filter cat -- --all
 
 function Main() {
-    var firebaseVersion = "3.9.0";
+    var firebaseVersion = "4.1.1";
     var holders = {};
     var users;
     var me;

@@ -7,7 +7,7 @@
  */
 
 function Main() {
-    var firebaseVersion = "3.9.0";
+    var firebaseVersion = "4.1.1";
     var drawer;
     var layout;
     var content;

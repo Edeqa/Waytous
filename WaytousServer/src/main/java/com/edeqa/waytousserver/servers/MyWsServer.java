@@ -81,6 +81,11 @@ public class MyWsServer extends WebSocketServer {
     }
 
     @Override
+    public void onStart() {
+        Common.log("WS","onStart");
+    }
+
+    @Override
     public void onWebsocketPing(WebSocket conn, Framedata f) {
         super.onWebsocketPing(conn, f);
         processor.onWebSocketPing(new WebsocketDPConnection(conn), f);

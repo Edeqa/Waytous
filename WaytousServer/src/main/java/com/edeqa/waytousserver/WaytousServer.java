@@ -12,6 +12,7 @@ import com.edeqa.waytousserver.servers.MyHttpTrackingHandler;
 import com.edeqa.waytousserver.servers.MyWsServer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseCredentials;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
@@ -55,7 +56,7 @@ public class WaytousServer {
 
         try {
             FirebaseApp.initializeApp(new FirebaseOptions.Builder()
-                    .setServiceAccount(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()))
+                    .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
                     .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
                     .build());
         } catch (FileNotFoundException e) {
