@@ -13,25 +13,41 @@ function SocialHolder(main) {
     var shareDialogFacebook;
     var shareDialogWhatsapp;
     var shareDialogTelegram;
+    var shareDialogTwitter;
     var drawerItemShareFacebook;
     var drawerItemShareWhatsapp;
     var drawerItemShareTelegram;
+    var drawerItemShareTwitter;
     var shareBlockedDialog;
     var ic_facebook;
     var ic_whatsapp;
     var ic_telegram;
+    var ic_twitter;
 
     var facebook_svg = {
         xmlns:"http://www.w3.org/2000/svg",
-        viewbox:"0 0 24 24",
+        viewbox:"0 0 487 487",
         version:"1.1",
         className: "menu-item"
     };
     var facebook_path = {
         xmlns:"http://www.w3.org/2000/svg",
         strokeWidth:"2",
-        fill:"transparent",
-        d: "M17,2V2H17V6H15C14.31,6 14,6.81 14,7.5V10H14L17,10V14H14V22H10V14H7V10H10V6A4,4 0 0,1 14,2H17Z"
+        fill:"darkslategray",
+        stroke: "transparent",
+        d: "M243.196,0C108.891,0,0,108.891,0,243.196s108.891,243.196,243.196,243.196 s243.196-108.891,243.196-243.196C486.392,108.861,377.501,0,243.196,0z M306.062,243.165l-39.854,0.03l-0.03,145.917h-54.689 V243.196H175.01v-50.281l36.479-0.03l-0.061-29.609c0-41.039,11.126-65.997,59.431-65.997h40.249v50.311h-25.171 c-18.817,0-19.729,7.022-19.729,20.124l-0.061,25.171h45.234L306.062,243.165z"
+    };
+    var twitter_svg = {
+        xmlns:"http://www.w3.org/2000/svg",
+        viewbox:"0 0 612 612",
+        version:"1.1",
+        className: "menu-item",
+
+    };
+    var twitter_path = {
+        xmlns:"http://www.w3.org/2000/svg",
+        fill: "darkslategray",
+        d: "M612,116.258c-22.525,9.981-46.694,16.75-72.088,19.772c25.929-15.527,45.777-40.155,55.184-69.411 c-24.322,14.379-51.169,24.82-79.775,30.48c-22.907-24.437-55.49-39.658-91.63-39.658c-69.334,0-125.551,56.217-125.551,125.513 c0,9.828,1.109,19.427,3.251,28.606C197.065,206.32,104.556,156.337,42.641,80.386c-10.823,18.51-16.98,40.078-16.98,63.101 c0,43.559,22.181,81.993,55.835,104.479c-20.575-0.688-39.926-6.348-56.867-15.756v1.568c0,60.806,43.291,111.554,100.693,123.104 c-10.517,2.83-21.607,4.398-33.08,4.398c-8.107,0-15.947-0.803-23.634-2.333c15.985,49.907,62.336,86.199,117.253,87.194 c-42.947,33.654-97.099,53.655-155.916,53.655c-10.134,0-20.116-0.612-29.944-1.721c55.567,35.681,121.536,56.485,192.438,56.485 c230.948,0,357.188-191.291,357.188-357.188l-0.421-16.253C573.872,163.526,595.211,141.422,612,116.258z"
     };
     var whatsapp_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -79,6 +95,7 @@ function SocialHolder(main) {
             });
           };
 
+// facebook
           (function(d, s, id){
              var js, fjs = d.getElementsByTagName(s)[0];
              if (d.getElementById(id)) {return;}
@@ -86,17 +103,21 @@ function SocialHolder(main) {
              js.src = "//connect.facebook.net/en_US/sdk.js";
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
+
+
+// twitter
+           !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
     }
 
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.CREATE_DRAWER:
                 ic_facebook = ic_facebook || u.create(HTML.PATH, facebook_path, u.create(HTML.SVG, facebook_svg)).parentNode;
-                drawerItemShareFacebook = drawerItemShareFacebook || object.add(DRAWER.SECTION_SHARE,"facebook","Share to Facebook",ic_facebook,function(){
+                drawerItemShareFacebook = drawerItemShareFacebook || object.add(DRAWER.SECTION_SHARE,"facebook",u.lang.share_to_facebook,ic_facebook,function(){
                     if(shareDialogFacebook) shareDialogFacebook.close();
                     shareDialogFacebook = shareDialogFacebook || u.dialog({
                         items: [
-                            {type:HTML.DIV, innerHTML: u.lang.social_share_to_facebook_dialog },
+                            {type:HTML.DIV, innerHTML: u.lang.share_to_facebook_dialog },
                             {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
                         ],
                         positive: {
@@ -131,12 +152,60 @@ function SocialHolder(main) {
                 });
                 drawerItemShareFacebook.hide();
 
+                ic_twitter = ic_twitter || u.create(HTML.PATH, twitter_path, u.create(HTML.SVG, twitter_svg)).parentNode;
+                drawerItemShareTwitter = drawerItemShareTwitter|| object.add(DRAWER.SECTION_SHARE,"twitter",u.lang.share_to_twitter,ic_twitter,function(){
+                    if(shareDialogTwitter) shareDialogTwitter.close();
+                    shareDialogTwitter = shareDialogTwitter || u.dialog({
+                        items: [
+                            {type:HTML.DIV, innerHTML: u.lang.share_to_twitter_dialog },
+                            {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
+                        ],
+                        positive: {
+                            label: u.lang.share,
+                            onclick: function() {
+                                var popup = window.open("https://twitter.com/intent/tweet?text=Way%20to%20us&url="+main.tracking.getTrackingUri(),"_blank");
+
+                                utils.popupBlockerChecker.check(popup, function() {
+                                    shareBlockedDialog = shareBlockedDialog || u.dialog({
+                                        items: [
+                                            {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
+                                            {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
+                                            {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
+                                            {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
+                                        ],
+                                        positive: {
+                                            label: u.lang.close
+                                        }
+                                    }, main.right);
+                                    shareBlockedDialog.open();
+                                });
+                            }
+                        },
+                        neutral: {
+                            label: u.lang.copy,
+                            dismiss: false,
+                            onclick: function(items) {
+                                if(u.copyToClipboard(items[1])) {
+                                    main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                                }
+                                shareDialogTwitter.close();
+                            }
+                        },
+                        negative: {
+                            label: u.lang.cancel
+                        },
+                        timeout: 20000
+                    }, main.right);
+                    shareDialogTwitter.open();
+                });
+                drawerItemShareTwitter.hide();
+
                 ic_whatsapp = ic_whatsapp || u.create(HTML.PATH, whatsapp_path, u.create(HTML.SVG, whatsapp_svg)).parentNode;
-                drawerItemShareWhatsapp = drawerItemShareWhatsapp|| object.add(DRAWER.SECTION_SHARE,"whatsapp","Share to Whatsapp",ic_whatsapp,function(){
+                drawerItemShareWhatsapp = drawerItemShareWhatsapp|| object.add(DRAWER.SECTION_SHARE,"whatsapp",u.lang.share_to_whatsapp,ic_whatsapp,function(){
                     if(shareDialogWhatsapp) shareDialogWhatsapp.close();
                     shareDialogWhatsapp = shareDialogWhatsapp || u.dialog({
                         items: [
-                            {type:HTML.DIV, innerHTML: u.lang.social_share_to_whatsapp_dialog },
+                            {type:HTML.DIV, innerHTML: u.lang.share_to_whatsapp_dialog },
                             {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
                         ],
                         positive: {
@@ -180,11 +249,11 @@ function SocialHolder(main) {
                 drawerItemShareWhatsapp.hide();
 
                 ic_telegram = ic_telegram || u.create(HTML.PATH, telegram_path, u.create(HTML.SVG, telegram_svg)).parentNode;
-                drawerItemShareTelegram = drawerItemShareTelegram|| object.add(DRAWER.SECTION_SHARE,"telegram","Share to Telegram",ic_telegram,function(){
+                drawerItemShareTelegram = drawerItemShareTelegram|| object.add(DRAWER.SECTION_SHARE,"telegram",u.lang.share_to_telegram,ic_telegram,function(){
                     if(shareDialogTelegram) shareDialogTelegram.close();
                     shareDialogTelegram = shareDialogTelegram || u.dialog({
                         items: [
-                            {type:HTML.DIV, innerHTML: u.lang.social_share_to_telegram_dialog },
+                            {type:HTML.DIV, innerHTML: u.lang.share_to_telegram_dialog },
                             {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
                         ],
                         positive: {
@@ -225,16 +294,19 @@ function SocialHolder(main) {
                     shareDialogTelegram.open();
                 });
                 drawerItemShareTelegram.hide();
+
                 break;
             case EVENTS.TRACKING_CONNECTING:
             case EVENTS.TRACKING_RECONNECTING:
             case EVENTS.TRACKING_ACTIVE:
                 drawerItemShareFacebook.show();
+                drawerItemShareTwitter.show();
                 drawerItemShareWhatsapp.show();
                 drawerItemShareTelegram.show();
                 break;
             case EVENTS.TRACKING_DISABLED:
                 drawerItemShareFacebook.hide();
+                drawerItemShareTwitter.hide();
                 drawerItemShareWhatsapp.hide();
                 drawerItemShareTelegram.hide();
                 break;

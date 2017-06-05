@@ -25,6 +25,7 @@ function DrawerHolder(main) {
 
         var sections = {};
         sections[DRAWER.SECTION_MAP] = u.lang.map;
+        sections[DRAWER.SECTION_SHARE] = u.lang.share;
 
         drawer = new u.drawer({
             title: main.appName,
@@ -51,7 +52,7 @@ function DrawerHolder(main) {
                 }}).place(HTML.SPAN, "\nBuild " + data.version)
             },
             sections: sections,
-            collapsible: [DRAWER.SECTION_MAP, DRAWER.SECTION_VIEWS]
+            collapsible: [DRAWER.SECTION_SHARE, DRAWER.SECTION_MAP, DRAWER.SECTION_VIEWS]
         }, document.body);
 
         actionbar = u.actionBar({
