@@ -76,6 +76,9 @@
   "collapsed_drawer": "Collapsed drawer",
   "map": "Map",
 
+  "share_link_dialog": "Let's share link to this group?<br>Or you may copy the link into clipboard and paste wherever you'd like.",
+
+
   "alpha_1": "Thank you for using the",
   "alpha_2": "BETA version of ${APP_NAME}.",
   "alpha_3": "&nbsp;",
@@ -253,7 +256,7 @@
   "joining_group": "Joining group...",
   "beforeunload": "You are online in the group with your friends. Leaving this page you will exit the group.",
 
-  "tracking_share_link_dialog": "Let your e-mail client compose the message with link to this group?<br>You can add there all your friends you'd like.<br>Or you may copy the link into clipboard and paste wherever you'd like.",
+  "share_by_mail": "Share by mail",
 
   "tracking_help_title": "Tracking",
   "tracking_help_title_1": "You have created new group",

@@ -14,6 +14,9 @@ function DrawerHolder(main) {
     var subtitle;
     var backButtonAction;
     var actionbar;
+    var drawerItemShare;
+    var shareDialog;
+    var itemLink;
 
 
     var target = window; // this can be any scrollable element
@@ -25,7 +28,6 @@ function DrawerHolder(main) {
 
         var sections = {};
         sections[DRAWER.SECTION_MAP] = u.lang.map;
-        sections[DRAWER.SECTION_SHARE] = u.lang.share;
 
         drawer = new u.drawer({
             title: main.appName,
@@ -52,7 +54,7 @@ function DrawerHolder(main) {
                 }}).place(HTML.SPAN, "\nBuild " + data.version)
             },
             sections: sections,
-            collapsible: [DRAWER.SECTION_SHARE, DRAWER.SECTION_MAP, DRAWER.SECTION_VIEWS]
+            collapsible: [DRAWER.SECTION_MAP, DRAWER.SECTION_VIEWS]
         }, document.body);
 
         actionbar = u.actionBar({
@@ -91,17 +93,20 @@ function DrawerHolder(main) {
             case EVENTS.TRACKING_ACTIVE:
                 actionbar.titleNode.innerHTML = main.appName;
                 drawer.headerTitle.innerHTML = main.appName;
+                drawerItemShare.show();
                 break;
             case EVENTS.TRACKING_DISABLED:
                 actionbar.titleNode.innerHTML = main.appName;
                 drawer.headerTitle.innerHTML = main.appName;
                 window.removeEventListener("popstate", backButtonAction);
+                drawerItemShare.hide();
                 break;
             case EVENTS.TRACKING_CONNECTING:
             case EVENTS.TRACKING_RECONNECTING:
                 u.lang.updateNode(actionbar.titleNode, u.lang.connecting);
                 u.lang.updateNode(drawer.headerTitle, u.lang.connecting);
                 window.addEventListener("popstate", backButtonAction);
+                drawerItemShare.show();
                 break;
             case EVENTS.CHANGE_NAME:
             case USER.JOINED:
@@ -112,6 +117,37 @@ function DrawerHolder(main) {
             case EVENTS.SELECT_USER:
 //            case EVENTS.SELECT_SINGLE_USER:
                 onChangeLocation.call(this, this.location)
+                break;
+            case EVENTS.CREATE_DRAWER:
+                drawerItemShare = drawerItemShare || object.add(DRAWER.SECTION_COMMUNICATION, "share", u.lang.share, "share", function(){
+
+                    if(shareDialog) shareDialog.close();
+                    shareDialog = shareDialog || u.dialog({
+                        items: [
+                            {type:HTML.DIV, className: "share-dialog-item-message", innerHTML: u.lang.share_link_dialog },
+                            {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
+                        ],
+                        neutral: {
+                            label: u.lang.copy,
+                            dismiss: false,
+                            onclick: function(items) {
+                                if(u.copyToClipboard(itemLink)) {
+                                    main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                                }
+                                shareDialog.close();
+                            }
+                        },
+                        negative: {
+                            label: u.lang.cancel
+                        },
+                        timeout: 20000
+                    }, main.right);
+                    itemLink = shareDialog.items[1];
+                    main.fire(EVENTS.SHARE_LINK, shareDialog);
+                    shareDialog.open();
+
+                });
+                drawerItemShare.hide();
                 break;
         }
         return true;

@@ -694,6 +694,28 @@ p.bottom-desc {
     text-align: left;
     justify-content: flex-start;
 }
+.share-dialog-item {
+}
+.share-dialog-item-message {
+    padding-bottom: 10px;
+}
+.share-dialog-item-button {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.share-dialog-item-icon {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    font-size: 16px;
+    min-width: 16px;
+    padding-right: 5px;
+    color: darkslategray;
+    width: 16px;
+    height: 16px;
+}
 
 @media screen and (max-width: 1000px) {
 

@@ -15,7 +15,6 @@ function TrackingHolder(main) {
 //    var tracking;
     var progress;
     var progressTitle;
-    var drawerItemShare;
     var drawerItemNew;
     var drawerItemExit;
     var noSleep;
@@ -97,13 +96,6 @@ function TrackingHolder(main) {
                     main.fire(EVENTS.TRACKING_STOP);
                 });
                 drawerItemExit.hide();
-                drawerItemShare = object.add(DRAWER.SECTION_SHARE,EVENTS.SHARE_LINK, u.lang.share_group, "share",function(e){
-                    if(EVENTS.TRACKING_ACTIVE) {
-                        main.fire(EVENTS.SHARE_LINK,e);
-                    }
-                });
-                drawerItemShare.hide();
-                drawerItemShare.disable();
                 break;
             case EVENTS.MAP_READY:
                 drawerItemNew.show();
@@ -126,9 +118,6 @@ function TrackingHolder(main) {
             case EVENTS.TRACKING_ACTIVE:
                 u.context = main.tracking.getToken();
                 document.title = u.lang.s_s.format(main.appName, main.tracking.getToken()).innerHTML;
-                if(main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE && drawerItemShare) {
-                    drawerItemShare.enable();
-                }
                 u.notification({
                     title: u.lang.waytous_online.innerText,
                     body: u.lang.you_have_joined_to_the_group_s.format(main.tracking.getToken()).innerText,
@@ -165,8 +154,6 @@ function TrackingHolder(main) {
 
                 document.title = u.lang.connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
-                drawerItemShare.show();
-                drawerItemShare.enable();
                 drawerItemExit.show();
                 break;
             case EVENTS.TRACKING_RECONNECTING:
@@ -174,15 +161,12 @@ function TrackingHolder(main) {
 
                 document.title = u.lang.connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
-                drawerItemShare.show();
-                drawerItemShare.enable();
                 drawerItemExit.show();
                 break;
             case EVENTS.TRACKING_DISABLED:
                 window.onbeforeunload = null;
 
                 document.title = main.appName;
-                drawerItemShare.disable();
                 drawerItemExit.hide();
                 if (wakeLockEnabled) {
                     noSleep.disable(); // let the screen turn off.
@@ -199,15 +183,15 @@ function TrackingHolder(main) {
                 }
                 break;
             case EVENTS.SHARE_LINK:
-                if(shareDialog) shareDialog.close();
-                shareDialog = shareDialog || u.dialog({
-                    items: [
-                        {type:HTML.DIV, innerHTML: u.lang.tracking_share_link_dialog },
-                        {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
-                    ],
-                    positive: {
-                        label: u.lang.mail,
+                if(object && object.items && !object.itemShare) {
+                    object.itemShare = object.addItem({
+                        type: HTML.DIV,
+                        className: "share-dialog-item"
+                    });
+                    u.create(HTML.BUTTON, {
+                        className: "share-dialog-item-button",
                         onclick: function() {
+                            object.close();
                             var popup = window.open("mailto:?subject=Way%20to%20us&body="+main.tracking.getTrackingUri(),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
@@ -223,24 +207,15 @@ function TrackingHolder(main) {
                                 }, main.right);
                                 shareBlockedDialog.open();
                             });
-                        }
-                    },
-                    neutral: {
-                        label: u.lang.copy,
-                        dismiss: false,
-                        onclick: function(items) {
-                            if(u.copyToClipboard(items[1])) {
-                                main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
-                            }
-                            shareDialog.close();
-                        }
-                    },
-                    negative: {
-                        label: u.lang.cancel
-                    },
-                    timeout: 20000
-                }, main.right);
-                shareDialog.open();
+                         }
+                    }, object.itemShare).place(HTML.DIV, {
+                        className: "share-dialog-item-icon",
+                        innerHTML: "share"
+                    }).place(HTML.DIV, {
+                        innerHTML: u.lang.share_by_mail
+                    });
+                    object.itemsLayout.insertBefore(object.itemShare, object.itemShare.previousSibling);
+                }
                 break;
             default:
                 break;
