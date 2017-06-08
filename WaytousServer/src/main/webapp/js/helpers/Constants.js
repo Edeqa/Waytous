@@ -92,7 +92,6 @@ function Constants() {
         STATUS_CHECK : "check",
         STATUS_ERROR : "error",
 
-
         MESSAGE : "message",
         TOKEN : "token",
         CONTROL : "control",

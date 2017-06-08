@@ -191,7 +191,7 @@ function MessagesHolder(main) {
 //                main.me.fire(EVENTS.USER_MESSAGE, {body: text, timestamp: new Date().getTime()});
             }
             main.tracking.put(REQUEST.DELIVERY_CONFIRMATION, true);
-            main.tracking.put(REQUEST.MESSAGE, text);
+            main.tracking.put(USER.MESSAGE, text);
             main.tracking.send(REQUEST.MESSAGE);
 
         } catch(e) {

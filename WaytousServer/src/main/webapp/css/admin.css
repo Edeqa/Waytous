@@ -130,6 +130,39 @@
 .welcome-input {
     width: 100%;
 }
+.chat-dialog {
+    right: 10px;
+    bottom: 10px;
+    width: 30%;
+    height: 300px;
+}
+.chat-dialog-messages {
+    font-size: x-small;
+}
+.chat-dialog-message {
+    display: block;
+    text-align: left;
+}
+.chat-dialog-message-content {
+    display: flex;
+    flex-wrap: wrap;
+}
+.chat-dialog-message-group {
+    flex: 0 0 80px;
+}
+.chat-dialog-message-name {
+    flex: 0 0 100px;
+    font-weight: bold;
+}
+.chat-dialog-message-timestamp {
+    flex: 1 1;
+    text-align: right;
+}
+.chat-dialog-message-body {
+    padding-bottom: 8px;
+    white-space: pre-wrap;
+    flex: 0 0 100%;
+}
 
 
 @media screen and (max-width: 1000px) {
