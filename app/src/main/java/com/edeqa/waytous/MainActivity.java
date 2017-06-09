@@ -42,14 +42,14 @@ import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_CREATE;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_DESTROY;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_PAUSE;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESULT;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_JOIN;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_CREATE;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_DESTROY;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;

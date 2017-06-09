@@ -196,7 +196,7 @@ public class SensitiveData {
             }
         }
         for(HashMap<String,Serializable> x:commonTypes){
-            types.put(x);
+            types.put(new JSONObject(x));
         }
 
     }
@@ -215,7 +215,7 @@ public class SensitiveData {
             map.set(jsonSample, new LinkedHashMap<>());
             map.setAccessible(false);//return flag
 
-            jsonSample.put("firebase_authorization_key","SAMPL");
+            jsonSample.put("firebase_web_api_key","SAMPL");
             jsonSample.put("firebase_dynamic_link_host","SAMPL");
             jsonSample.put("firebase_private_key_file","SAMPL");
 
@@ -269,8 +269,8 @@ public class SensitiveData {
 
     }
 
-    public String getFirebaseServerKey() {
-        return json.getString("firebase_authorization_key");
+    public String getFirebaseWebApiKey() {
+        return json.getString("firebase_web_api_key");
     }
 
     public String getFirebaseDynamicLinkHost() {

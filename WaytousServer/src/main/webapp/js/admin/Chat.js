@@ -56,7 +56,7 @@ function Chat() {
                         ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("message").child(userNumber);
 
                         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).once("value").then(function(snapshot){
-                            var userName = snapshot.val().name;
+                            var userName = snapshot.val() ? snapshot.val().name : userNumber;
 
                             var on = ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("message").child(userNumber);
                             ons.push(on);

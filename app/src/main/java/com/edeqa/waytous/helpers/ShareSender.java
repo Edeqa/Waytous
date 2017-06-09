@@ -3,6 +3,8 @@ package com.edeqa.waytous.helpers;
 import android.content.Context;
 import android.content.Intent;
 
+import com.edeqa.waytous.R;
+
 
 /**
  * Created 10/12/16.

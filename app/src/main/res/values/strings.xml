@@ -6,7 +6,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_exception">ExceptionActivity</string>
 
-
     <string name="app_information">Information</string>
     <string name="caught_an_exception_s">Caught an exception <b>\"%1$s\"</b></string>
     <string name="email" translatable="false"><![CDATA[ORW support <support@wayto.us]]></string>

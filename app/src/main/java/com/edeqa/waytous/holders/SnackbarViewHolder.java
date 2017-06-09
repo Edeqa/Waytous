@@ -7,19 +7,20 @@ import android.view.View;
 
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SystemMessage;
 
-import static com.edeqa.waytous.State.EVENTS.TOKEN_CREATED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ERROR;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_JOIN;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_NEW;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_STOP;
+import static com.edeqa.waytous.helpers.Events.TOKEN_CREATED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ERROR;
+import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
+import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.holders.MessagesHolder.NEW_MESSAGE;
 import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
 import static com.edeqa.waytous.holders.MessagesViewHolder.SETUP_WELCOME_MESSAGE;

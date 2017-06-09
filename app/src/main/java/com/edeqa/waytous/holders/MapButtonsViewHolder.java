@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -11,7 +12,7 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.google.android.gms.maps.SupportMapFragment;
 
 
-import static com.edeqa.waytous.State.EVENTS.MAP_MY_LOCATION_BUTTON_CLICKED;
+import static com.edeqa.waytous.helpers.Events.MAP_MY_LOCATION_BUTTON_CLICKED;
 
 /**
  * Created 11/29/16.

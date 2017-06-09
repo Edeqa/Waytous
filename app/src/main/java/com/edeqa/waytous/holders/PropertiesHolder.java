@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
@@ -17,19 +18,19 @@ import java.util.HashMap;
 
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_PAUSE;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_COLOR;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NUMBER;
-import static com.edeqa.waytous.State.EVENTS.MAKE_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.MAKE_INACTIVE;
-import static com.edeqa.waytous.State.EVENTS.MOVING_AWAY_FROM;
-import static com.edeqa.waytous.State.EVENTS.MOVING_CLOSE_TO;
-import static com.edeqa.waytous.State.EVENTS.SELECT_SINGLE_USER;
-import static com.edeqa.waytous.State.EVENTS.SELECT_USER;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_STOP;
-import static com.edeqa.waytous.State.EVENTS.UNSELECT_USER;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
+import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
+import static com.edeqa.waytous.helpers.Events.MOVING_AWAY_FROM;
+import static com.edeqa.waytous.helpers.Events.MOVING_CLOSE_TO;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
+import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 

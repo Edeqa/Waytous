@@ -74,6 +74,11 @@
                 <data
                     android:host="*"
                     android:pathPrefix="/track/"
+                    android:scheme="http"/>
+
+                <data
+                    android:host="*"
+                    android:pathPrefix="/track/"
                     android:port="8080"
                     android:scheme="orw"/>
                 <data

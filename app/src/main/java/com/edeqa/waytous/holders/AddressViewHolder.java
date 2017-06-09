@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -17,8 +18,8 @@ import org.json.JSONObject;
 import java.util.Date;
 
 
-import static com.edeqa.waytous.State.EVENTS.SELECT_USER;
-import static com.edeqa.waytous.State.EVENTS.UNSELECT_USER;
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
+import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
 /**
  * Created 11/18/16.

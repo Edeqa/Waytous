@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -26,10 +27,10 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_PAUSE;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 
 /**
  * Created 01/13/17.

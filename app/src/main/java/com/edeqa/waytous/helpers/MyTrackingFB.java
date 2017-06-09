@@ -46,11 +46,11 @@ import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_CONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.holders.MessagesHolder.PRIVATE_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
@@ -535,6 +535,7 @@ public class MyTrackingFB implements Tracking {
 
         @Override
         public void onTextMessage(WebSocket websocket, String message) {
+            Log.i("MyTrackingFB","onTextMessage"+message);
             if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
                 final JSONObject o = new JSONObject(message);
@@ -556,19 +557,25 @@ public class MyTrackingFB implements Tracking {
                         if (o.has(RESPONSE_SIGN)) {
                             String authToken = o.getString(RESPONSE_SIGN);
                             o.remove(RESPONSE_SIGN);
+            System.out.println("A:"+authToken);
 
                             FirebaseAuth.getInstance().signInWithCustomToken(authToken).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
+            System.out.println("A0");
                                     try {
                                         setStatus(TRACKING_ACTIVE);
+            System.out.println("A1");
                                         if (o.has(RESPONSE_TOKEN)) {
                                             setToken(o.getString(RESPONSE_TOKEN));
                                         }
+            System.out.println("A2");
                                         if (o.has(RESPONSE_NUMBER)) {
                                             state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
                                         }
+            System.out.println("A3");
                                         o.put(RESPONSE_INITIAL, true);
+            System.out.println("A4");
 
                                         System.out.println("SNAPSHOT:"+authResult.getUser().getUid());
 
@@ -588,6 +595,8 @@ public class MyTrackingFB implements Tracking {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e1) {
+                                    e1.printStackTrace();
+                                    System.out.println("B");
                                     try {
                                         setStatus(TRACKING_DISABLED);
 

@@ -266,7 +266,7 @@ public class MyGroup {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "key=" + SENSITIVE.getFirebaseServerKey());
+            conn.setRequestProperty("Authorization", "key=" + SENSITIVE.getFirebaseWebApiKey());
             conn.setRequestMethod("POST");
 
             conn.setDoOutput(true);

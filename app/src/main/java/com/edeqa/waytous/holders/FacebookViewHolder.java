@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.holders.FabViewHolder;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -24,8 +24,8 @@ import com.facebook.share.widget.ShareDialog;
 
 import java.util.ArrayList;
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESULT;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_FAB;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
+import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
 import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
 
 

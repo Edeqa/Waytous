@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -27,13 +28,13 @@ import java.util.Locale;
 import java.util.Map;
 
 
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NUMBER;
-import static com.edeqa.waytous.State.EVENTS.CREATE_CONTEXT_MENU;
-import static com.edeqa.waytous.State.EVENTS.MAP_MY_LOCATION_BUTTON_CLICKED;
-import static com.edeqa.waytous.State.EVENTS.MARKER_CLICK;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_FAB;
-import static com.edeqa.waytous.State.EVENTS.SELECT_USER;
-import static com.edeqa.waytous.State.EVENTS.UNSELECT_USER;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
+import static com.edeqa.waytous.helpers.Events.MAP_MY_LOCATION_BUTTON_CLICKED;
+import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
+import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
+import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
@@ -548,7 +549,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         @Override
         public void onCameraMoveStarted(int i) {
             if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
+                //FIXME
+//                scaleView.update(map.getProjection(), map.getCameraPosition());
             }
 //            if(cameraUpdate.zoom != map.getCameraPosition().zoom)
 //                moveFromHardware = true;
@@ -561,7 +563,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         @Override
         public void onCameraIdle() {
             if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
+                //FIXME
+//                scaleView.update(map.getProjection(), map.getCameraPosition());
             }
 
             if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1){
@@ -595,7 +598,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         @Override
         public void onCameraMoveCanceled() {
             if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
+                //FIXME
+//                scaleView.update(map.getProjection(), map.getCameraPosition());
             }
 
 //            System.out.println("onCameraMoveCanceled");
@@ -613,7 +617,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         public void onCameraMove() {
 //            System.out.println("onCameraMove");
             if(scaleView != null) {
-                scaleView.update(map.getProjection(), map.getCameraPosition());
+                //FIXME
+//                scaleView.update(map.getProjection(), map.getCameraPosition());
             }
         }
     };

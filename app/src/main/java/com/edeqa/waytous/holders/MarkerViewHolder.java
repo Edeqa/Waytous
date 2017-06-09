@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -27,9 +28,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NUMBER;
-import static com.edeqa.waytous.State.EVENTS.MARKER_CLICK;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;

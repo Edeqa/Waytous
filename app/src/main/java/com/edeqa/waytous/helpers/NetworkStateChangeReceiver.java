@@ -11,10 +11,10 @@ import android.os.Bundle;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Tracking;
 
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_CONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ERROR;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ERROR;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 
 /**
  * Created 12/30/16.

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.NotificationCompat;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
@@ -25,9 +26,9 @@ import java.util.Date;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_PAUSE;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_JOINED;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_MESSAGE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;

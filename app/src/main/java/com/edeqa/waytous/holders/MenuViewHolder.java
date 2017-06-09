@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -16,9 +17,9 @@ import com.edeqa.waytous.helpers.MyUser;
 
 import java.util.ArrayList;
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;

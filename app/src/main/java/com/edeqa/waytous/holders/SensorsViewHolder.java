@@ -3,6 +3,7 @@ package com.edeqa.waytous.holders;
 import android.view.WindowManager;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -13,10 +14,10 @@ import com.edeqa.waytous.interfaces.Callable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_PAUSE;
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.LightSensorManager.DAY;
 import static com.edeqa.waytous.helpers.LightSensorManager.NIGHT;
 

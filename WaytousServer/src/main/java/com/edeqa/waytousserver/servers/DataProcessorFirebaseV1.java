@@ -774,7 +774,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
         Common.log(LOG, "Groups validation is performing, checking online users");
         try {
-            String res = Utils.getUrl("https://waytous-beta.firebaseio.com/.json?shallow=true&print=pretty&auth="+SENSITIVE.getFirebaseServerKey(),"UTF-8");
+            String res = Utils.getUrl("https://waytous-beta.firebaseio.com/.json?shallow=true&print=pretty&auth="+SENSITIVE.getFirebaseWebApiKey(),"UTF-8");
 
             JSONObject groups = new JSONObject(res);
 

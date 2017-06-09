@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -40,12 +41,12 @@ import com.edeqa.waytous.interfaces.Callable1;
 
 import java.util.ArrayList;
 
-import static com.edeqa.waytous.State.EVENTS.CREATE_CONTEXT_MENU;
-import static com.edeqa.waytous.State.EVENTS.CREATE_DRAWER;
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_DRAWER;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_FAB;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
+import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
+import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;
 import static com.edeqa.waytous.holders.MessagesHolder.NEW_MESSAGE;

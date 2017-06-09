@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -18,11 +19,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import com.google.android.gms.maps.model.StreetViewPanoramaLocation;
 
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.SELECT_SINGLE_USER;
-import static com.edeqa.waytous.State.EVENTS.SELECT_USER;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATE;
 import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 

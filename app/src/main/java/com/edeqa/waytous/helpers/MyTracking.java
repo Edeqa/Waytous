@@ -32,11 +32,11 @@ import javax.net.ssl.SSLContext;
 
 import com.edeqa.waytous.State;
 
-import static com.edeqa.waytous.State.EVENTS.MAKE_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_CONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;

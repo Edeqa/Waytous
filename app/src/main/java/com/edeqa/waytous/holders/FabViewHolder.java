@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -24,16 +25,16 @@ import com.edeqa.waytous.helpers.ShareSender;
 import java.util.ArrayList;
 
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_FAB;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_CONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ERROR;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_EXPIRED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_NEW;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_STOP;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ERROR;
+import static com.edeqa.waytous.helpers.Events.TRACKING_EXPIRED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.InfoViewHolder.SHOW_INFO;
 

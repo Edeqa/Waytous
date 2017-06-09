@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -45,17 +46,17 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NUMBER;
-import static com.edeqa.waytous.State.EVENTS.CREATE_CONTEXT_MENU;
-import static com.edeqa.waytous.State.EVENTS.CREATE_DRAWER;
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.DROPPED_TO_USER;
-import static com.edeqa.waytous.State.EVENTS.MAKE_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.MAKE_INACTIVE;
-import static com.edeqa.waytous.State.EVENTS.MARKER_CLICK;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_DRAWER;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
+import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.DROPPED_TO_USER;
+import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
+import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
+import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATE;
 import static com.edeqa.waytous.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;

@@ -13,9 +13,9 @@ import java.util.Map;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Callable2;
 
-import static com.edeqa.waytous.State.EVENTS.CHANGE_COLOR;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;

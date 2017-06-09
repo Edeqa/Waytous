@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -41,9 +42,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.edeqa.waytous.State.EVENTS.CREATE_CONTEXT_MENU;
-import static com.edeqa.waytous.State.EVENTS.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
+import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;

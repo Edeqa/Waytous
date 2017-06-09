@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -29,17 +30,17 @@ import com.google.android.flexbox.FlexboxLayout;
 import java.util.ArrayList;
 
 
-import static com.edeqa.waytous.State.EVENTS.CHANGE_NAME;
-import static com.edeqa.waytous.State.EVENTS.CREATE_CONTEXT_MENU;
-import static com.edeqa.waytous.State.EVENTS.DROPPED_TO_USER;
-import static com.edeqa.waytous.State.EVENTS.MAKE_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.MAKE_INACTIVE;
-import static com.edeqa.waytous.State.EVENTS.SELECT_SINGLE_USER;
-import static com.edeqa.waytous.State.EVENTS.SELECT_USER;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_STOP;
-import static com.edeqa.waytous.State.EVENTS.UNSELECT_USER;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
+import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
+import static com.edeqa.waytous.helpers.Events.DROPPED_TO_USER;
+import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
+import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_ZOOM;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 
@@ -165,7 +166,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     case DragEvent.ACTION_DROP:
                         ClipData data = dragEvent.getClipData();
                         int number = Integer.valueOf(String.valueOf(data.getItemAt(0).getText()));
-                        State.getInstance().getUsers().forUser(number, new Callable2() {
+                        State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser user) {
                                     user.fire(DROPPED_TO_USER, myUser);

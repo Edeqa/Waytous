@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.edeqa.waytous.R;
+
 
 /**
  * Created 12/11/16.

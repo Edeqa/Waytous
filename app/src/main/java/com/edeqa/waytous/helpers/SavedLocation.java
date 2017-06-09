@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 import com.edeqa.waytous.interfaces.Callable1;
 

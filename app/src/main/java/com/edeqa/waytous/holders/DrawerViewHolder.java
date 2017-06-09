@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.SettingsActivity;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
@@ -24,13 +25,13 @@ import com.google.android.gms.maps.GoogleMap;
 import java.util.ArrayList;
 
 
-import static com.edeqa.waytous.State.EVENTS.ACTIVITY_RESUME;
-import static com.edeqa.waytous.State.EVENTS.CREATE_DRAWER;
-import static com.edeqa.waytous.State.EVENTS.PREPARE_DRAWER;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_ACTIVE;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_CONNECTING;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_DISABLED;
-import static com.edeqa.waytous.State.EVENTS.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
