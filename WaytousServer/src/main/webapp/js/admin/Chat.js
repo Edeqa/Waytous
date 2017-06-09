@@ -12,7 +12,7 @@ function Chat() {
     var ref;
     var ons = [];
     var bound;
-    var maximum = 1000;
+    var maximumMessagesLoad = 1000;
 
     function start() {
         dialogChat = dialogChat || u.dialog({
@@ -60,8 +60,8 @@ function Chat() {
 
                             var on = ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("message").child(userNumber);
                             ons.push(on);
-                            on.limitToLast(maximum).on("child_added", function(message) {
-                                if(dialogChat.items.length > maximum) {
+                            on.limitToLast(maximumMessagesLoad).on("child_added", function(message) {
+                                if(dialogChat.items.length > maximumMessagesLoad) {
                                     dialogChat.itemsLayout.removeChild(dialogChat.itemsLayout.firstChild);
                                     dialogChat.items.shift();
                                 }

@@ -3,6 +3,7 @@ package com.edeqa.waytous.helpers;
 /**
  * Created 6/9/17.
  */
+
 public class Events {
     public static final String SELECT_USER = "select";
     public static final String SELECT_SINGLE_USER = "select_single";
