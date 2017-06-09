@@ -249,6 +249,10 @@ function Group() {
             className: "map-place"
         }, divSummaryMap));
 
+        u.create("br", null, div);
+        buttons = u.create("div", {className:"buttons"}, div);
+        renderButtons(buttons);
+
         u.create(HTML.H2, "Users", div);
 
         tableUsers = u.table({
@@ -266,10 +270,6 @@ function Group() {
             },
             placeholder: "Loading..."
         }, div);
-
-        u.create("br", null, div);
-        buttons = u.create("div", {className:"buttons"}, div);
-        renderButtons(buttons);
 
         if(divMap.offsetHeight) {
             if(!map) {
@@ -403,11 +403,7 @@ function Group() {
                 tableUsers.update();
             });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child(DATABASE.USER_NAME).on("value", function(snapshot){
-                if(snapshot.val()) {
-                    userNameNode.innerHTML = snapshot.val();
-                } else {
-                    userNameNode.innerHTML = "undefined";
-                }
+                userNameNode.innerHTML = snapshot.val() || "&lt;Friend "+userNumber+"&gt;";
                 tableUsers.update();
             });
             if(map) {

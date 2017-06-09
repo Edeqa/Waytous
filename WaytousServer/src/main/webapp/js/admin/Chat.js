@@ -7,7 +7,7 @@
  */
 function Chat() {
 
-    var title = "Mixed chat";
+    var title = "Chat";
     var dialogChat;
     var ref;
     var ons = [];

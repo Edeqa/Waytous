@@ -138,7 +138,7 @@ function User() {
 
             tableSummary.placeholder.hide();
 
-            tableSummary.userNameNode.lastChild.innerHTML = snapshot.val().name;
+            tableSummary.userNameNode.lastChild.innerHTML = snapshot.val().name || "&lt;Friend "+userNumber+"&gt;";;
             tableSummary.userActiveNode.lastChild.innerHTML = snapshot.val().active ? "Yes" : "No";
 
             tableSummary.userColorNode.lastChild.style.backgroundColor = utils.getHexColor(snapshot.val().color);
