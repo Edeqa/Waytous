@@ -51,15 +51,29 @@ function Main() {
         document.title = u.create(HTML.DIV, "${APP_NAME} - Admin").innerHTML;
         u.loading("Loading resources...");
 
-        u.create(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons", async:"", defer:""}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/edequate.css", async:"", defer:""}, document.head);
-        u.create(HTML.LINK, {rel:"stylesheet", href:"/css/admin.css", async:"", defer:""}, document.head);
-
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"32x32", href:"/icons/favicon-32x32.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"},document.head);
-        u.create(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"},document.head);
+        document.head
+            .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/edequate.css"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/admin.css"})
+            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", href:"/icons/apple-touch-icon.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"60x60", href:"/icons/apple-touch-icon-60x60.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"76x76", href:"/icons/apple-touch-icon-76x76.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"120x120", href:"/icons/apple-touch-icon-120x120.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"152x152", href:"/icons/apple-touch-icon-152x152.png"})
+            .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"180x180", href:"/icons/apple-touch-icon.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"192x192", href:"/icons/android-chrome-192x192.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"32x32", href:"/icons/favicon-32x32.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"})
+            .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"})
+            .place(HTML.LINK, {rel:"mask-icon", href:"/icons/safari-pinned-tab.svg", color:"#00aaaa"})
+            .place(HTML.LINK, {rel:"icon",type:"image/x-icon", href:"/icons/favicon.ico"})
+            .place(HTML.LINK, {rel:"shortcut icon", href:"/icons/favicon.ico"})
+            .place(HTML.LINK, {rel:"apple-touch-startup-image", href: "/icons/apple-touch-icon.png"})
+            .place(HTML.META, {name:"msapplication-TileColor", content:"#00aaaa"})
+            .place(HTML.META, {name:"msapplication-TileImage", content:"/icons/mstile-144x144.png"})
+            .place(HTML.META, {name:"msapplication-config", content:"/icons/browserconfig.xml"})
+            .place(HTML.META, {name:"theme-color", content:"#aaeeee"});
 
 
         var loaded = 0;
@@ -169,6 +183,7 @@ function Main() {
             layout = u.create("div", {className:"layout"}, document.body);
 //            content = u.create("div", {className:"content"}, layout);
 
+            var sections = {};
             drawer = new u.drawer({
                 title: "${APP_NAME}",
                 subtitle: "Admin",
@@ -210,7 +225,7 @@ function Main() {
             for(var i in holderFiles) {
                 var x = holderFiles[i].toLowerCase();
                 if(holders[x] && holders[x].menu) {
-                    var item = drawer.add(u.DRAWER.SECTION_PRIMARY, x, holders[x].menu, holders[x].icon, function(){
+                    var item = drawer.add(holders[x].move ? u.DRAWER.SECTION_PRIMARY : u.DRAWER.SECTION_VIEWS, x, holders[x].menu, holders[x].icon, function(){
                         switchTo("/admin/" + holders[this.instance].page);
                         return false;
                     });

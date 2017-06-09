@@ -96,6 +96,7 @@ public class SensitiveData {
         if(!json.has("app_name")) json.put("app_name", "Waytous");
         if(!json.has("app_link")) json.put("app_link", "http://wayto.us");
         if(!json.has("support_email")) json.put("support_email", "support@wayto.us");
+        if(!json.has("gzip")) json.put("gzip", true);
 
 
         if(!json.has("types")) {
@@ -239,6 +240,7 @@ public class SensitiveData {
             jsonSample.put("ssl_certificate_password","SAMPL");
             jsonSample.put("keystore_filename","SAMPL");
             jsonSample.put("debug_mode",false);
+            jsonSample.put("gzip",true);
             jsonSample.put("log_file","waytous.log");
 
             JSONArray jsonMimeTypes = new JSONArray();
@@ -341,6 +343,10 @@ public class SensitiveData {
 
     public boolean isDebugMode() {
         return json.getBoolean("debug_mode");
+    }
+
+    public boolean isGzip() {
+        return json.getBoolean("gzip");
     }
 
     public String getLogFile() {

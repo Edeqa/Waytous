@@ -7,7 +7,7 @@
  */
 function Chat() {
 
-    var title = "Chat";
+    var title = "Mixed chat";
     var dialogChat;
     var ref;
     var ons = [];
@@ -60,7 +60,7 @@ function Chat() {
 
                             var on = ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("message").child(userNumber);
                             ons.push(on);
-                            on.on("child_added", function(message) {
+                            on.limitToLast(maximum).on("child_added", function(message) {
                                 if(dialogChat.items.length > maximum) {
                                     dialogChat.itemsLayout.removeChild(dialogChat.itemsLayout.firstChild);
                                     dialogChat.items.shift();
@@ -73,10 +73,14 @@ function Chat() {
                                     order: post[REQUEST.TIMESTAMP],
                                     content: u.create(HTML.DIV, {className:"chat-dialog-message-content"}).place(HTML.DIV, {
                                         className:"chat-dialog-message-group",
-                                        innerHTML: groupId
+                                        content: u.create(HTML.DIV, {innerHTML: groupId, onclick: function(){
+                                            WTU.switchTo("/admin/group/"+groupId);
+                                        }})
                                     }).place(HTML.DIV, {
                                         className:"chat-dialog-message-name",
-                                        innerHTML: userName ? userName + " (#"+userNumber+")" : "#"+userNumber
+                                        content: u.create(HTML.DIV, {innerHTML: userName ? userName + " (#"+userNumber+")" : "#"+userNumber, onclick: function(){
+                                            WTU.switchTo("/admin/user/"+groupId+"/"+userNumber)
+                                        }})
                                     }).place(HTML.DIV, {
                                         className:"chat-dialog-message-timestamp",
                                         innerHTML: new Date(post[REQUEST.TIMESTAMP]).toLocaleString()

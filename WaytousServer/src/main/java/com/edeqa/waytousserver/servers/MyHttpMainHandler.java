@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
+import sun.misc.Regexp;
+
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 
@@ -99,16 +101,14 @@ public class MyHttpMainHandler implements HttpHandler {
 
                 boolean gzip = false;
                 for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
-                    if (HttpHeaders.ACCEPT_ENCODING.equals(entry.getKey().toLowerCase())) {
+                    if (HttpHeaders.ACCEPT_ENCODING.toLowerCase().equals(entry.getKey().toLowerCase())) {
                         for (String s : entry.getValue()) {
-                            for (String ss : s.split(", ")) {
-                                if ("gzip".equals(ss.toLowerCase())) {
-                                    gzip = true;
-                                    break;
-                                }
+                            if(s.toLowerCase().contains("gzip")) {
+                                gzip = true;
+                                break;
                             }
                         }
-                    } else if (HttpHeaders.IF_NONE_MATCH.equals(entry.getKey().toLowerCase())) {
+                    } else if (HttpHeaders.IF_NONE_MATCH.toLowerCase().equals(entry.getKey().toLowerCase())) {
 
                     }
                 }
@@ -128,11 +128,13 @@ public class MyHttpMainHandler implements HttpHandler {
                         break;
                     }
                 }
+
                 assert json != null;
                 if(type.startsWith("text") || (json.has("text") && json.getBoolean("text"))) text = true;
                 if (json.has("gzip") && !json.getBoolean("gzip")) gzip = false;
+                if(!SENSITIVE.isGzip()) gzip = false;
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
                 dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
                 String lastModified = dateFormat.format(file.lastModified());
 
@@ -165,7 +167,7 @@ public class MyHttpMainHandler implements HttpHandler {
                     }
 
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type);
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
+                    if(!gzip) exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
                     exchange.sendResponseHeaders(resultCode, 0);
                     OutputStream os;
                     if(gzip) {
@@ -178,7 +180,7 @@ public class MyHttpMainHandler implements HttpHandler {
                     os.close();
                 } else {
                     exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type);
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
+                    if(!gzip) exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
                     exchange.sendResponseHeaders(resultCode, 0);
                     OutputStream os;
                     if (gzip) {

@@ -12,13 +12,6 @@
     justify-content: flex-start;
     align-items: flex-start;
 }
-.two_tables {
-    display:flex;
-    justify-content:space-between;
-}
-.two_tables_one {
-    width:48%
-}
 .inactive {
     color: darkgray;
 }
@@ -149,10 +142,18 @@
 }
 .chat-dialog-message-group {
     flex: 0 0 80px;
+    cursor: pointer;
+}
+.chat-dialog-message-group:hover {
+    color: blue;
 }
 .chat-dialog-message-name {
     flex: 0 0 100px;
     font-weight: bold;
+    cursor: pointer;
+}
+.chat-dialog-message-name:hover {
+    color: blue;
 }
 .chat-dialog-message-timestamp {
     flex: 1 1;
@@ -185,18 +186,13 @@
         top: 50px;
         bottom: 50px;
     }
-    .two_tables_one {
-        width:100%
-    }
-    .two_tables {
-        display:inline;
-        justify-content:space-between
-    }
     .buttons {
         text-align: center;
+        width: 100%;
     }
     .td.th {
         width: 50%;
+        min-width: 120px;
     }
     .th.option {
         text-align: left;
@@ -217,6 +213,13 @@
         padding-top: 5px;
         padding-bottom: 5px;
         background-color: antiquewhite;
+    }
+    .table-logs-body {
+        font-size: 12px;
+    }
+    .table-logs-row-cell {
+        padding-top: 3px;
+        padding-bottom: 3px;
     }
 
 
