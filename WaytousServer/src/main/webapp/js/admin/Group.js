@@ -18,6 +18,10 @@ function Group() {
     var buttons;
     var tableSummary;
     var tableUsers;
+    var map;
+    var divMap;
+    var positions;
+    var markers;
 
     var renderInterface = function() {
 
@@ -25,10 +29,13 @@ function Group() {
         u.clear(div);
         u.create(HTML.H2, "Summary", div);
 
+        var divSummaryMap = u.create(HTML.DIV, {className: "two-divs"}, div);
+        var divSummary = u.create(HTML.DIV, {className: "summary-place"}, divSummaryMap);
+
         tableSummary = u.table({
             className: "option",
             placeholder: "Loading..."
-        }, div);
+        }, divSummary);
 
         var url = new URL(window.location.href);
         url = "https://" + url.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT);
@@ -238,6 +245,10 @@ function Group() {
                 { className: "option highlight", innerHTML: 0 }
         ]});
 
+        divMap = u.create(HTML.DIV, {className: "map"}, u.create(HTML.DIV, {
+            className: "map-place"
+        }, divSummaryMap));
+
         u.create(HTML.H2, "Users", div);
 
         tableUsers = u.table({
@@ -259,6 +270,16 @@ function Group() {
         u.create("br", null, div);
         buttons = u.create("div", {className:"buttons"}, div);
         renderButtons(buttons);
+
+        if(divMap.offsetHeight) {
+            if(!map) {
+                u.require("https://maps.googleapis.com/maps/api/js?key="+data.firebase_config.apiKey+"&callback=initMap&libraries=geometry,places").then(function(){});
+            } else {
+                initMap();
+            }
+        } else {
+            updateAll();
+        }
 
     }
 
@@ -330,15 +351,16 @@ function Group() {
                 return;
             }
             reload = false;
+            var userNumber = snapshot.key;
 
             var row = tableUsers.add({
                 className: "highlight" + (snapshot.val()[DATABASE.USER_ACTIVE] ? "" : " inactive"),
                 onclick: function(){
-                    WTU.switchTo("/admin/user/"+groupId+"/"+snapshot.key);
+                    WTU.switchTo("/admin/user/"+groupId+"/"+userNumber);
                     return false;
                  },
                 cells: [
-                    { innerHTML: snapshot.key, sort: parseInt(snapshot.key) },
+                    { innerHTML: userNumber, sort: parseInt(userNumber) },
                     { innerHTML: snapshot.val()[DATABASE.USER_NAME] },
                     { style: { backgroundColor: utils.getHexColor(snapshot.val()[DATABASE.USER_COLOR]), opacity: 0.5 } },
                     { className: "media-hidden", sort: snapshot.val()[DATABASE.USER_CREATED], innerHTML: snapshot.val()[DATABASE.USER_CREATED] ? new Date(snapshot.val()[DATABASE.USER_CREATED]).toLocaleString() : "&#150;" },
@@ -347,10 +369,10 @@ function Group() {
                     { className: "media-hidden", innerHTML: "..." }
                 ]
             });
-            var userName = row.cells[1];
-            var userChanged = row.cells[4];
-            var userOs = row.cells[5];
-            var userDevice = row.cells[6];
+            var userNameNode = row.cells[1];
+            var userChangedNode = row.cells[4];
+            var userOsNode = row.cells[5];
+            var userDeviceNode = row.cells[6];
 
             var usersCount = parseInt(tableSummary.usersNode.lastChild.innerHTML);
             tableSummary.usersNode.lastChild.innerHTML = usersCount + 1;
@@ -359,16 +381,16 @@ function Group() {
                 tableSummary.activeUsersNode.lastChild.innerHTML = ++usersCount;
             }
 
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child(DATABASE.USER_CHANGED).on("value", function(snapshot){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child(DATABASE.USER_CHANGED).on("value", function(snapshot){
                 if(!snapshot.val()) return;
-                userChanged.sort = snapshot.val();
-                userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
+                userChangedNode.sort = snapshot.val();
+                userChangedNode.innerHTML = new Date(snapshot.val()).toLocaleString();
                 if(!initial) row.classList.add("changed");
                 setTimeout(function(){row.classList.remove("changed")}, 5000);
                 tableSummary.changedNode.lastChild.innerHTML = new Date(snapshot.val()).toLocaleString();
                 tableUsers.update();
             });
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child(DATABASE.USER_ACTIVE).on("value", function(snapshot){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child(DATABASE.USER_ACTIVE).on("value", function(snapshot){
                 var active = !!snapshot.val();
                 var wasInactive = row.classList.contains("inactive");
                 row.classList[active ? "remove" : "add"]("inactive");
@@ -380,18 +402,48 @@ function Group() {
                 }
                 tableUsers.update();
             });
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child(DATABASE.USER_NAME).on("value", function(snapshot){
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child(DATABASE.USER_NAME).on("value", function(snapshot){
                 if(snapshot.val()) {
-                    userName.innerHTML = snapshot.val();
+                    userNameNode.innerHTML = snapshot.val();
                 } else {
-                    userName.innerHTML = "undefined";
+                    userNameNode.innerHTML = "undefined";
                 }
                 tableUsers.update();
             });
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(snapshot.key).once("value").then(function(snapshot){
+            if(map) {
+                ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).limitToLast(1).on("child_added", function(snapshot){
+                    var position = snapshot.val();
+                    if(position) {
+                        positions[userNumber] = utils.latLng({coords:{latitude:position[USER.LATITUDE], longitude:position[USER.LONGITUDE]}});
+                        var bounds = new google.maps.LatLngBounds();
+
+                        if(u.keys(positions).length > 1) {
+                            for(var x in positions) {
+                                bounds.extend(positions[x]);
+                            }
+                            map.fitBounds(bounds);
+                        } else {
+                            for(var x in positions) {
+                                map.setCenter(positions[x]);
+                                map.setZoom(15);
+                            }
+                        }
+
+                        if(!markers[userNumber]) {
+                            markers[userNumber] = new google.maps.Marker({
+                                position: positions[userNumber],
+                                map: map,
+                                label: userNumber
+                          });
+                        }
+                        markers[userNumber].setPosition(positions[userNumber]);
+                    }
+                });
+            }
+            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(userNumber).once("value").then(function(snapshot){
                 if(!snapshot.val()) return;
-                userOs.innerHTML = snapshot.val().os;
-                userDevice.innerHTML = snapshot.val().model;
+                userOsNode.innerHTML = snapshot.val().os;
+                userDeviceNode.innerHTML = snapshot.val().model;
                 tableUsers.update();
             }).catch(function(error){
                 if(!reload) {
@@ -435,6 +487,28 @@ function Group() {
         }}, buttons);
     }
 
+    window.initMap = function() {
+        // Create a map object and specify the DOM element for display.
+
+        map = new google.maps.Map(divMap, {
+            scrollwheel: true,
+            panControl: true,
+            zoom: 2,
+            center: {lat: 4.0, lng:-16.0},
+            zoomControl: true,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: false,
+            fullscreenControl: true,
+            overviewMapControl: true,
+            rotateControl: true,
+        });
+        positions = {};
+        markers = {};
+
+        updateAll();
+    }
+
     return {
         start: function(request) {
             if(request) {
@@ -449,8 +523,8 @@ function Group() {
             u.clear(div);
 
             renderInterface();
-            updateSummary();
-            updateData();
+//            updateSummary();
+//            updateData();
         },
         page: "group",
         title: title,

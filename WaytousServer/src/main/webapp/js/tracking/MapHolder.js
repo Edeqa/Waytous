@@ -27,7 +27,7 @@ function MapHolder(main) {
 
     function start() {
         setTimeout(function(){
-            u.require("https://maps.googleapis.com/maps/api/js?key=AIzaSyCRH9g5rmQdvShE4mI2czumO17u_hwUF8Q&callback=initMap&libraries=geometry,places").then(function(){});
+            u.require("https://maps.googleapis.com/maps/api/js?key="+data.firebase_config.apiKey+"&callback=initMap&libraries=geometry,places").then(function(){});
         }, 0);
         buttonRecenter = u.create(HTML.BUTTON, {
             className: "map-recenter shadow hidden",
