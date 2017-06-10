@@ -2,9 +2,15 @@ package com.edeqa.waytous.holders;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.DragEvent;
@@ -238,10 +244,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             }
 
             title = ((TextView) button.findViewById(R.id.tv_button_title));
-            if(myUser.getProperties().isSelected()) title.setTypeface(Typeface.DEFAULT_BOLD);
             String titleText = (myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName();
 
             title.setText(titleText);
+            if(myUser.getLocation() == null) {
+                title.setTextColor(Color.DKGRAY);
+                title.setTypeface(null, Typeface.ITALIC);
+            }
+            if(myUser.getProperties().isSelected()) title.setTypeface(null, Typeface.BOLD);
 
             Drawable drawable = Utils.renderDrawable(context, R.drawable.semi_transparent_background, myUser.getProperties().getColor(), size, size);
 
@@ -258,14 +268,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         @Override
         public boolean dependsOnLocation(){
-            return false;
+            return true;
         }
 
         @Override
         public boolean onEvent(String event, Object object) {
             switch(event){
                 case SELECT_USER:
-                    title.setTypeface(Typeface.DEFAULT_BOLD);
+                    title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);
                     if(layout.getChildCount()>1) {
                         show();
                     } else if(State.getInstance().tracking_disabled()) {
@@ -273,7 +283,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     }
                     break;
                 case UNSELECT_USER:
-                    title.setTypeface(Typeface.DEFAULT);
+                    title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.ITALIC : Typeface.NORMAL);
                     break;
                 case CHANGE_NAME:
                     title.setText((myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName());
@@ -288,6 +298,12 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     break;
             }
             return true;
+        }
+
+        @Override
+        public void onChangeLocation(Location location) {
+            title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextColor));
+            title.setTypeface(null, (myUser.getProperties().isSelected()) ? Typeface.BOLD: Typeface.NORMAL);
         }
 
         private void openContextMenu(View view) {
