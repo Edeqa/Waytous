@@ -96,7 +96,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 resultCode = 404;
                 file = new File(root + "/404.html");
             }
-             {
+            {
                 // Object exists and it is a file: accept with response code 200.
 
                 boolean gzip = false;
@@ -134,7 +134,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 if (json.has("gzip") && !json.getBoolean("gzip")) gzip = false;
                 if(!SENSITIVE.isGzip()) gzip = false;
 
-                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
                 dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
                 String lastModified = dateFormat.format(file.lastModified());
 

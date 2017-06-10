@@ -84,7 +84,7 @@ dependencies {
 //    compile 'org.json:json:20140107'
 //    compile 'org.json:json:20131018'
 //    compile 'org.json:json:20160212'
-    compile 'com.google.firebase:firebase-admin:5.0.0'
+    compile 'com.google.firebase:firebase-admin:5.1.0'
     targetCompatibility = '1.7'
     sourceCompatibility = '1.7'
 }

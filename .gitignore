@@ -22,15 +22,12 @@ app/src/test/
 /debug.jks
 /deploy.sh
 /deploy_debug.sh
-/where-am-i-now-1373-firebase-adminsdk-4dqzv-07038c93b9.json
 /app/src/debug/
 /WaytousServer/build/
-/waytous.log
 /WaytousServer/options_developer_pn.json
-/WaytousServer/where-am-i-now-1373-firebase-adminsdk-4dqzv-0ce407c05d.json
 /gradle/
-/WaytousServer/waytous.log
-/WaytousServer/waytous-beta-firebase-adminsdk-twi5v-a17e79f8af.json
 /WaytousServer/waytous-beta.log
 /app/google-services.json.old1
 /WaytousServer/waytous-beta-firebase-adminsdk-twi5v-a17e79f8afe.json
+/app/libs/
+/captures/

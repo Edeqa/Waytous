@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         classes.add("ButtonViewHolder");
         classes.add("MenuViewHolder");
         classes.add("MarkerViewHolder");
-//        classes.add("AddressViewHolder");
+        classes.add("AddressViewHolder");
         classes.add("CameraViewHolder");
         classes.add("SavedLocationViewHolder");
         classes.add("PlaceViewHolder");
