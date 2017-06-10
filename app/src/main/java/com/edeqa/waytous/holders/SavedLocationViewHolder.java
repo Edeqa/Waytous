@@ -201,7 +201,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        System.out.println("NOADD");
                     }
                 });
                 dialog.show();

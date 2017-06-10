@@ -43,6 +43,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
@@ -52,6 +56,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.holders.MessagesHolder.PRIVATE_MESSAGE;
+import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
@@ -111,6 +116,8 @@ public class MyTrackingFB implements Tracking {
     private String uid;
 
     private boolean newTracking;
+    private ScheduledFuture<?> scheduled;
+
 
     public MyTrackingFB() {
         this("https://" + SENSITIVE.getServerHost(), true);
@@ -179,9 +186,6 @@ public class MyTrackingFB implements Tracking {
 //            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
 
-
-
-
             WebSocketFactory factory = new WebSocketFactory();
             SSLContext context = NaiveSSLContext.getInstance("TLS");
             context.init(null,null,null);
@@ -238,6 +242,12 @@ public class MyTrackingFB implements Tracking {
     @Override
     public void stop() {
         setStatus(TRACKING_DISABLED);
+
+        if(scheduled != null) {
+            scheduled.cancel(true);
+            scheduled = null;
+        }
+
         Map<String, Object> updates = new HashMap<>();
         updates.put(Constants.DATABASE.USER_ACTIVE, false);
         updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
@@ -557,29 +567,34 @@ public class MyTrackingFB implements Tracking {
                         if (o.has(RESPONSE_SIGN)) {
                             String authToken = o.getString(RESPONSE_SIGN);
                             o.remove(RESPONSE_SIGN);
-            System.out.println("A:"+authToken);
-
                             FirebaseAuth.getInstance().signInWithCustomToken(authToken).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
-            System.out.println("A0");
                                     try {
                                         setStatus(TRACKING_ACTIVE);
-            System.out.println("A1");
                                         if (o.has(RESPONSE_TOKEN)) {
                                             setToken(o.getString(RESPONSE_TOKEN));
                                         }
-            System.out.println("A2");
                                         if (o.has(RESPONSE_NUMBER)) {
                                             state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
                                         }
-            System.out.println("A3");
                                         o.put(RESPONSE_INITIAL, true);
-            System.out.println("A4");
 
                                         System.out.println("SNAPSHOT:"+authResult.getUser().getUid());
 
                                         ref = database.getReference().child(getToken());
+
+                                        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                                        scheduled = executor.scheduleAtFixedRate(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if(State.getInstance().tracking_active()) {
+                                                    ref.child(Constants.DATABASE.SECTION_USERS_DATA)
+                                                            .child(""+State.getInstance().getMe().getProperties().getNumber())
+                                                            .child(Constants.DATABASE.USER_CHANGED).setValue(ServerValue.TIMESTAMP);
+                                                }
+                                            }
+                                        }, 0, 1, TimeUnit.MINUTES);
 
                                         registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA),usersDataListener, -1);
                                         for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
@@ -596,7 +611,6 @@ public class MyTrackingFB implements Tracking {
                                 @Override
                                 public void onFailure(@NonNull Exception e1) {
                                     e1.printStackTrace();
-                                    System.out.println("B");
                                     try {
                                         setStatus(TRACKING_DISABLED);
 
