@@ -12,6 +12,7 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
+import com.edeqa.waytous.helpers.Events;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SmoothInterpolated;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
@@ -97,7 +99,11 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                         State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
-                                myUser.fire(MARKER_CLICK);
+                                if(myUser.getProperties().isSelected() && State.getInstance().getUsers().getCountAllSelected() == 1) {
+                                    myUser.fire(MARKER_CLICK);
+                                } else {
+                                    myUser.fire(SELECT_SINGLE_USER);
+                                }
                             }
                         });
                     }

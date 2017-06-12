@@ -436,7 +436,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
                     orientationChanged = true;
                     previousOrientation = orientation;
-                    setOrientation(orientation);
+                    changeOrientation(orientation);
                     onChangeLocation(myUser.getLocation());
                     break;
 //                case ADJUST_ZOOM:
@@ -525,7 +525,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             return orientation;
         }
 
-        public void setOrientation(int orientation) {
+        public void changeOrientation(int orientation) {
             if(this.orientation <= CAMERA_ORIENTATION_LAST){
                 previousOrientation = this.orientation;
             }
@@ -572,7 +572,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 return;
             }
             if(canceled && cameraUpdate.zoom != map.getCameraPosition().zoom){
-                cameraUpdate.setOrientation(cameraUpdate.previousOrientation);
+                cameraUpdate.changeOrientation(cameraUpdate.previousOrientation);
                 moveFromHardware = true;
             } else if(cameraUpdate.zoom != map.getCameraPosition().zoom){
                 moveFromHardware = true;
@@ -584,7 +584,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
 //            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
             if(!moveFromHardware){
-                cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
+                cameraUpdate.changeOrientation(CAMERA_ORIENTATION_STAY);
             }
 
             moveFromHardware = false;
@@ -605,7 +605,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //            System.out.println("onCameraMoveCanceled");
             if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
             if(cameraUpdate.zoom == map.getCameraPosition().zoom){
-                cameraUpdate.setOrientation(CAMERA_ORIENTATION_STAY);
+                cameraUpdate.changeOrientation(CAMERA_ORIENTATION_STAY);
                 moveFromHardware = false;
                 canceled = true;
             }

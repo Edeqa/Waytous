@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -281,6 +282,11 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     } else if(State.getInstance().tracking_disabled()) {
                         hide();
                     }
+//                    if(State.getInstance().getUsers().getCountAllSelected() == 1) {
+//                        if (!button.isShown()) {
+//                            layout.scrollBy(button.getLeft(), 0);
+//                        }
+//                    }
                     break;
                 case UNSELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.ITALIC : Typeface.NORMAL);
