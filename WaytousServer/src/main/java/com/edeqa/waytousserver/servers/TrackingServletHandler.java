@@ -1,8 +1,10 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
@@ -27,34 +29,34 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
 /**
  * Created 1/19/17.
  */
-public class MyHttpTrackingHandler implements HttpHandler {
+public class TrackingServletHandler extends AbstractServletHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
     private volatile AbstractDataProcessor dataProcessor;
 
-    public MyHttpTrackingHandler(){
+    public TrackingServletHandler(){
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void perform(RequestWrapper requestWrapper) throws IOException {
 
-        URI uri = exchange.getRequestURI();
+        URI uri = requestWrapper.getRequestURI();
 
         String host = null;
         try {
-            host = exchange.getRequestHeaders().get(HttpHeaders.HOST).get(0);
+            host = requestWrapper.getRequestHeader(HttpHeaders.HOST).get(0);
             host = host.split(":")[0];
         } catch(Exception e){
             e.printStackTrace();
         }
 
-        Common.log("Tracking",exchange.getRemoteAddress(),host + uri.getPath() );
+        Common.log("Tracking",requestWrapper.getRemoteAddress(),host + uri.getPath() );
 
         ArrayList<String> parts = new ArrayList<>();
         parts.addAll(Arrays.asList(uri.getPath().split("/")));
 
-        File root = new File(SENSITIVE.getWebRootDirectory());
-        File file = new File(root + uri.getPath()).getCanonicalFile();
+//        File root = new File(SENSITIVE.getWebRootDirectory());
+//        File file = new File(root + uri.getPath()).getCanonicalFile();
 
         JSONObject o = new JSONObject();
         o.put("request", parts);
@@ -73,7 +75,7 @@ public class MyHttpTrackingHandler implements HttpHandler {
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WTU = new Main()).start();");
 
-        Utils.sendResult.call(exchange, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
+        Utils.sendResult.call(requestWrapper, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
 
     }
 

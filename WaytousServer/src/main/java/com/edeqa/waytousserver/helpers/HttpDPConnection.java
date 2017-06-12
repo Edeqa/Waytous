@@ -10,10 +10,10 @@ import java.net.InetSocketAddress;
  */
 public class HttpDPConnection implements DataProcessorConnection {
 
-    private final HttpExchange exchange;
+    private final RequestWrapper requestWrapper;
 
-    public HttpDPConnection(HttpExchange exchange) {
-        this.exchange = exchange;
+    public HttpDPConnection(RequestWrapper requestWrapper) {
+        this.requestWrapper = requestWrapper;
     }
 
     @Override
@@ -23,12 +23,12 @@ public class HttpDPConnection implements DataProcessorConnection {
 
     @Override
     public InetSocketAddress getRemoteSocketAddress() {
-        return exchange.getRemoteAddress();
+        return requestWrapper.getRemoteAddress();
     }
 
     @Override
     public void send(String string) {
-        Utils.sendResult.call(exchange, 200, Constants.MIME.APPLICATION_JSON, string.getBytes());
+        Utils.sendResult.call(requestWrapper, 200, Constants.MIME.APPLICATION_JSON, string.getBytes());
     }
 
     @Override

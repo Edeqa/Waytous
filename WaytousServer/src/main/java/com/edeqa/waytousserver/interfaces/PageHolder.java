@@ -1,5 +1,6 @@
 package com.edeqa.waytousserver.interfaces;
 
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
@@ -10,5 +11,5 @@ public interface PageHolder {
 
     String getType();
 
-    boolean perform(HttpExchange parts);
+    boolean perform(RequestWrapper requestWrapper);
 }

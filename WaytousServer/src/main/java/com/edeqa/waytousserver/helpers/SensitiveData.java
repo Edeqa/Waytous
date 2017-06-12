@@ -45,7 +45,7 @@ public class SensitiveData {
             }
             file = new File(args[0]);
         }
-
+        System.out.println("FILE:"+file.getAbsolutePath());
         readWithFile(file);
     }
 

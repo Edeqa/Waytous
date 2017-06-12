@@ -5,8 +5,9 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.sun.net.httpserver.HttpExchange;
 
 import org.json.JSONArray;
@@ -34,10 +35,10 @@ public class AdminSummaryHolder implements PageHolder {
 
     private static final String HOLDER_TYPE = "summary";
 
-    private final MyHttpAdminHandler server;
+    private final AdminServletHandler server;
     private HtmlGenerator html;
 
-    public AdminSummaryHolder(MyHttpAdminHandler server) {
+    public AdminSummaryHolder(AdminServletHandler server) {
         this.server = server;
     }
 
@@ -47,7 +48,7 @@ public class AdminSummaryHolder implements PageHolder {
     }
 
     @Override
-    public boolean perform(HttpExchange parts) {
+    public boolean perform(RequestWrapper requestWrapper) {
         return false;
     }
 

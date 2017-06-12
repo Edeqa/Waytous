@@ -1,8 +1,10 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HttpDPConnection;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.HttpExchange;
@@ -29,27 +31,22 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 /**
  * Created 1/19/17.
  */
-public class MyHttpRestHandler implements HttpHandler {
-
-    private volatile Map<String,AbstractDataProcessor> dataProcessor;
-
-    public MyHttpRestHandler(){
-        dataProcessor = new HashMap<>();
-    }
+public class RestServletHandler extends AbstractServletHandler {
 
     @SuppressWarnings("HardCodedStringLiteral")
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void perform(RequestWrapper requestWrapper)  {
 
-        URI uri = exchange.getRequestURI();
+        System.out.println("REST");
+        URI uri = requestWrapper.getRequestURI();
         String host = null;
         try {
-            host = exchange.getRequestHeaders().get(HttpHeaders.HOST).get(0);
+            host = requestWrapper.getRequestHeader(HttpHeaders.HOST).get(0);
             host = host.split(":")[0];
         } catch(Exception e){
             e.printStackTrace();
         }
-        Common.log("Rest",host + uri.getPath(),exchange.getRemoteAddress().toString());
+        Common.log("Rest",host + uri.getPath(),requestWrapper.getRemoteAddress());
 
         List<String> parts = Arrays.asList(uri.getPath().split("/"));
         JSONObject json = new JSONObject();
@@ -65,10 +62,10 @@ public class MyHttpRestHandler implements HttpHandler {
                 printRes = getSoundsV1(json);
                 break;
             case "/rest/v1/getResources":
-                printRes = getResourcesV1(json, exchange);
+                printRes = getResourcesV1(json, requestWrapper);
                 break;
             case "/rest/v1/join":
-                printRes = joinV1(json, exchange);
+                printRes = joinV1(json, requestWrapper);
                 break;
             default:
                 printRes = noAction(json);
@@ -81,20 +78,8 @@ public class MyHttpRestHandler implements HttpHandler {
 //                break;
 //        }
 
-        if(printRes) Utils.sendResultJson.call(exchange, json);
+        if(printRes) Utils.sendResultJson.call(requestWrapper, json);
 
-    }
-
-    public AbstractDataProcessor getDataProcessor(String version) {
-        if(dataProcessor.containsKey(version)) {
-            return dataProcessor.get(version);
-        } else {
-            return dataProcessor.get("v1");
-        }
-    }
-
-    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
     }
 
     private boolean getVersionV1(JSONObject json) {
@@ -126,29 +111,29 @@ public class MyHttpRestHandler implements HttpHandler {
         return true;
     }
 
-    private boolean joinV1(JSONObject json, HttpExchange exchange) {
+    private boolean joinV1(JSONObject json, RequestWrapper requestWrapper) {
         try {
-            InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(),"utf-8");
+            InputStreamReader isr = new InputStreamReader(requestWrapper.getRequestBody(),"utf-8");
             BufferedReader br = new BufferedReader(isr);
             String body = br.readLine();
 
-            Common.log("Rest",exchange.getRemoteAddress().toString(), "joinV1:", body);
-            getDataProcessor(exchange.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(exchange), body);
+            Common.log("Rest",requestWrapper.getRemoteAddress(), "joinV1:", body);
+            getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");
-            Utils.sendResultJson.call(exchange,json);
+            Utils.sendResultJson.call(requestWrapper,json);
         }
         return false;
     }
 
 
-    private boolean getResourcesV1(final JSONObject json, final HttpExchange exchange) {
+    private boolean getResourcesV1(final JSONObject json, final RequestWrapper requestWrapper) {
         File dir = new File(SENSITIVE.getWebRootDirectory() + "/locales");
 
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while ((b = is.read()) != -1) {
                 buf.append((char) b);

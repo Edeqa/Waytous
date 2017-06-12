@@ -58,7 +58,8 @@ function TrackingFB(main) {
         trackingListener.onStop();
 
         var uri = new URL(serverUri);
-        window.location.href = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) + "/track/";
+        window.location.href = "/track/";
+//        window.location.href = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) + "/track/";
     }
 
     function webSocketListener(link) {
@@ -178,7 +179,8 @@ function TrackingFB(main) {
 
         var xhrModeStart = function(link) {
             var uri = new URL(link);
-            link = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":" + data.HTTPS_PORT) + "/rest/v1/join"/* + uri.pathname*/;
+            link = "/rest/v1/join"/* + uri.pathname*/;
+//            link = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":" + data.HTTPS_PORT) + "/rest/v1/join"/* + uri.pathname*/;
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //

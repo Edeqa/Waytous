@@ -5,12 +5,12 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.MyGroup;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.Callable1;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.google.api.client.http.HttpMethods;
-import com.sun.net.httpserver.HttpExchange;
 
 import org.json.JSONObject;
 
@@ -30,11 +30,11 @@ public class AdminRestHolder implements PageHolder {
     @SuppressWarnings("HardCodedStringLiteral")
     private static final String LOG = "ARH";
 
-    private final MyHttpAdminHandler server;
+    private final AdminServletHandler server;
     private HtmlGenerator html;
 
     @SuppressWarnings("HardCodedStringLiteral")
-    public AdminRestHolder(MyHttpAdminHandler server) {
+    public AdminRestHolder(AdminServletHandler server) {
         this.server = server;
     }
 
@@ -45,50 +45,50 @@ public class AdminRestHolder implements PageHolder {
 
     @SuppressWarnings("HardCodedStringLiteral")
     @Override
-    public boolean perform(HttpExchange exchange) {
+    public boolean perform(RequestWrapper requestWrapper) {
 
-        URI uri = exchange.getRequestURI();
+        URI uri = requestWrapper.getRequestURI();
 
-        Common.log(LOG, exchange.getRemoteAddress(), uri.getPath());
+        Common.log(LOG, requestWrapper.getRemoteAddress(), uri.getPath());
 
-        switch(exchange.getRequestMethod()) {
+        switch(requestWrapper.getRequestMethod()) {
             case HttpMethods.GET:
                 switch (uri.getPath()) {
                     default:
-                        actionNotSupported(exchange);
+                        actionNotSupported(requestWrapper);
                         return true;
                 }
             case HttpMethods.PUT:
                 switch (uri.getPath()) {
                     case "/admin/rest/v1/groups/clean":
-                        cleanGroupsV1(exchange);
+                        cleanGroupsV1(requestWrapper);
                         return true;
                     default:
-                        actionNotSupported(exchange);
+                        actionNotSupported(requestWrapper);
                         return true;
                 }
             case HttpMethods.POST:
                 switch (uri.getPath()) {
                     case "/admin/rest/v1/group/create":
-                        createGroupV1(exchange);
+                        createGroupV1(requestWrapper);
                         return true;
                     case "/admin/rest/v1/group/delete":
-                        deleteGroupV1(exchange);
+                        deleteGroupV1(requestWrapper);
                         return true;
                     case "/admin/rest/v1/group/modify":
-                        modifyPropertyInGroupV1(exchange);
+                        modifyPropertyInGroupV1(requestWrapper);
                         return true;
                     case "/admin/rest/v1/group/switch":
-                        switchPropertyInGroupV1(exchange);
+                        switchPropertyInGroupV1(requestWrapper);
                         return true;
                     case "/admin/rest/v1/user/remove":
-                        removeUserV1(exchange);
+                        removeUserV1(requestWrapper);
                         return true;
                     case "/admin/rest/v1/user/switch":
-                        switchPropertyForUserV1(exchange);
+                        switchPropertyForUserV1(requestWrapper);
                         return true;
                     default:
-                        actionNotSupported(exchange);
+                        actionNotSupported(requestWrapper);
                         return true;
                 }
         }
@@ -96,7 +96,7 @@ public class AdminRestHolder implements PageHolder {
         return false;
     }
 
-    private void cleanGroupsV1(HttpExchange exchange) {
+    private void cleanGroupsV1(RequestWrapper requestWrapper) {
         try {
 
             //noinspection HardCodedStringLiteral
@@ -107,23 +107,23 @@ public class AdminRestHolder implements PageHolder {
             JSONObject json = new JSONObject();
             json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
             json.put(Constants.REST.MESSAGE, "Clean started.");
-            Utils.sendResultJson.call(exchange, json);
+            Utils.sendResultJson.call(requestWrapper, json);
 
         } catch(Exception e) {
             e.printStackTrace();
             JSONObject json = new JSONObject();
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
 
     }
 
-    private void createGroupV1(final HttpExchange exchange) {
+    private void createGroupV1(final RequestWrapper requestWrapper) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -163,12 +163,12 @@ public class AdminRestHolder implements PageHolder {
                 new Callable1<JSONObject>() {
                     @Override
                     public void call(JSONObject json) {
-                        Utils.sendResultJson.call(exchange, json);
+                        Utils.sendResultJson.call(requestWrapper, json);
                     }
                 }, new Callable1<JSONObject>() {
                     @Override
                     public void call(JSONObject json) {
-                        Utils.sendError.call(exchange, 500, json);
+                        Utils.sendError.call(requestWrapper, 500, json);
                     }
                 });
 
@@ -178,15 +178,15 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
     }
 
-    private void deleteGroupV1(final HttpExchange exchange) {
+    private void deleteGroupV1(final RequestWrapper requestWrapper) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -204,12 +204,12 @@ public class AdminRestHolder implements PageHolder {
             server.getDataProcessor().deleteGroup(groupId,new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendResultJson.call(exchange, json);
+                    Utils.sendResultJson.call(requestWrapper, json);
                 }
             }, new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendError.call(exchange, 500, json);
+                    Utils.sendError.call(requestWrapper, 500, json);
                 }
             });
 
@@ -219,15 +219,15 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
     }
 
-    private void removeUserV1(final HttpExchange exchange) {
+    private void removeUserV1(final RequestWrapper requestWrapper) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -246,12 +246,12 @@ public class AdminRestHolder implements PageHolder {
             server.getDataProcessor().removeUser(groupId,userNumber,new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendResultJson.call(exchange, json);
+                    Utils.sendResultJson.call(requestWrapper, json);
                 }
             }, new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendError.call(exchange, 500, json);
+                    Utils.sendError.call(requestWrapper, 500, json);
                 }
             });
 
@@ -261,16 +261,16 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
     }
 
-    private void switchPropertyInGroupV1(final HttpExchange exchange) {
+    private void switchPropertyInGroupV1(final RequestWrapper requestWrapper) {
 
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -289,12 +289,12 @@ public class AdminRestHolder implements PageHolder {
             server.getDataProcessor().switchPropertyInGroup(groupId,property,new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendResultJson.call(exchange, json);
+                    Utils.sendResultJson.call(requestWrapper, json);
                 }
             }, new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendError.call(exchange, 500, json);
+                    Utils.sendError.call(requestWrapper, 500, json);
                 }
             });
 
@@ -304,16 +304,16 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
 
     }
 
-    private void switchPropertyForUserV1(final HttpExchange exchange) {
+    private void switchPropertyForUserV1(final RequestWrapper requestWrapper) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -334,12 +334,12 @@ public class AdminRestHolder implements PageHolder {
             server.getDataProcessor().switchPropertyForUser(groupId,userNumber,property,value,new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendResultJson.call(exchange, json);
+                    Utils.sendResultJson.call(requestWrapper, json);
                 }
             }, new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendError.call(exchange, 500, json);
+                    Utils.sendError.call(requestWrapper, 500, json);
                 }
             });
 
@@ -349,15 +349,15 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
     }
 
-    private void actionNotSupported(final HttpExchange exchange) {
+    private void actionNotSupported(final RequestWrapper requestWrapper) {
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -367,13 +367,13 @@ public class AdminRestHolder implements PageHolder {
             options = buf.toString();
 
             //noinspection HardCodedStringLiteral
-            Common.log(LOG, "actionNotSupported:", exchange.getRequestURI().getPath());
+            Common.log(LOG, "actionNotSupported:", requestWrapper.getRequestURI().getPath());
 
             JSONObject json = new JSONObject();
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Action not supported.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
 
         } catch(Exception e) {
             e.printStackTrace();
@@ -381,17 +381,17 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
 
     }
 
-    private void modifyPropertyInGroupV1(final HttpExchange exchange) {
+    private void modifyPropertyInGroupV1(final RequestWrapper requestWrapper) {
 
         String options = "";
         try {
             StringBuilder buf = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
+            InputStream is = requestWrapper.getRequestBody();
             int b;
             while((b = is.read()) != -1) {
                 buf.append((char) b);
@@ -411,12 +411,12 @@ public class AdminRestHolder implements PageHolder {
             server.getDataProcessor().modifyPropertyInGroup(groupId,property,value,new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendResultJson.call(exchange, json);
+                    Utils.sendResultJson.call(requestWrapper, json);
                 }
             }, new Callable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
-                    Utils.sendError.call(exchange, 500, json);
+                    Utils.sendError.call(requestWrapper, 500, json);
                 }
             });
 
@@ -426,7 +426,7 @@ public class AdminRestHolder implements PageHolder {
             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
             json.put(Constants.REST.MESSAGE, "Incorrect request.");
             json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(exchange, 400, json);
+            Utils.sendError.call(requestWrapper, 400, json);
         }
     }
 

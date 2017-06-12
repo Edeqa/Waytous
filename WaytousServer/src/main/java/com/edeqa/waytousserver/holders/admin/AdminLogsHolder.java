@@ -4,11 +4,11 @@ package com.edeqa.waytousserver.holders.admin;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.google.api.client.http.HttpMethods;
 import com.google.common.net.HttpHeaders;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -33,10 +33,10 @@ public class AdminLogsHolder implements PageHolder {
     @SuppressWarnings("HardCodedStringLiteral")
     private static final String LOG = "ALH";
 
-    private final MyHttpAdminHandler server;
+    private final AdminServletHandler server;
     private HtmlGenerator html;
 
-    public AdminLogsHolder(MyHttpAdminHandler server) {
+    public AdminLogsHolder(AdminServletHandler server) {
         this.server = server;
     }
 
@@ -46,16 +46,16 @@ public class AdminLogsHolder implements PageHolder {
     }
 
     @Override
-    public boolean perform(HttpExchange exchange) {
+    public boolean perform(RequestWrapper requestWrapper) {
 
-        URI uri = exchange.getRequestURI();
+        URI uri = requestWrapper.getRequestURI();
 
-        switch(exchange.getRequestMethod()) {
+        switch(requestWrapper.getRequestMethod()) {
             case HttpMethods.GET:
                 switch (uri.getPath()) {
                     //noinspection HardCodedStringLiteral
                     case "/admin/logs/log":
-                        printLog(exchange);
+                        printLog(requestWrapper);
                         return true;
                     default:
                         break;
@@ -65,7 +65,7 @@ public class AdminLogsHolder implements PageHolder {
                 switch (uri.getPath()) {
                     //noinspection HardCodedStringLiteral
                     case "/admin/logs/clear":
-                        clearLog(exchange);
+                        clearLog(requestWrapper);
                         return true;
                     default:
                         break;
@@ -80,7 +80,7 @@ public class AdminLogsHolder implements PageHolder {
     }
 
     @SuppressWarnings("HardCodedStringLiteral")
-    private void clearLog(HttpExchange exchange) {
+    private void clearLog(RequestWrapper requestWrapper) {
         try {
             File file = new File(SENSITIVE.getLogFile());
             Common.log(LOG, "Clear:", file.getCanonicalPath());
@@ -90,11 +90,11 @@ public class AdminLogsHolder implements PageHolder {
 
             byte[] bytes = "".getBytes();
 
-            exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
-            exchange.sendResponseHeaders(200, bytes.length);
+            requestWrapper.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+            requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+            requestWrapper.sendResponseHeaders(200, bytes.length);
 
-            OutputStream os = exchange.getResponseBody();
+            OutputStream os = requestWrapper.getResponseBody();
             os.write(bytes);
             os.close();
         } catch(Exception e) {
@@ -103,7 +103,7 @@ public class AdminLogsHolder implements PageHolder {
     }
 
     @SuppressWarnings("HardCodedStringLiteral")
-    private void printLog(HttpExchange exchange) {
+    private void printLog(RequestWrapper requestWrapper) {
         try {
             File file = new File(SENSITIVE.getLogFile());
 
@@ -111,15 +111,15 @@ public class AdminLogsHolder implements PageHolder {
 
             if(!file.exists()) {
                 Common.log(LOG,"File not found.");
-                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
-                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
-                exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
+                requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+                requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
+                requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
 
-                exchange.sendResponseHeaders(500, 0);
+                requestWrapper.sendResponseHeaders(500, 0);
 
                 byte[] bytes = (file.toString() + " not found. Fix the key 'log_file' in your options file.").getBytes();
 
-                OutputStream os = exchange.getResponseBody();
+                OutputStream os = requestWrapper.getResponseBody();
                 os.write(bytes);
                 os.close();
                 return;
@@ -127,23 +127,23 @@ public class AdminLogsHolder implements PageHolder {
 
 
             boolean gzip = true;
-            exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
-            exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
-            exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
+            requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+            requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
+            requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
 
             if(gzip){
-                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
+                requestWrapper.setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
             } else {
-                exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
+                requestWrapper.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
             }
 
-            exchange.sendResponseHeaders(200, 0);
+            requestWrapper.sendResponseHeaders(200, 0);
 
             OutputStream os;
             if(gzip) {
-                os = new BufferedOutputStream(new GZIPOutputStream(exchange.getResponseBody()));
+                os = new BufferedOutputStream(new GZIPOutputStream(requestWrapper.getResponseBody()));
             } else {
-                os = exchange.getResponseBody();
+                os = requestWrapper.getResponseBody();
             }
 
             FileInputStream fs = new FileInputStream(file);

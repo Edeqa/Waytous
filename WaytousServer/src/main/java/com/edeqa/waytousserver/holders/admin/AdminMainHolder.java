@@ -1,8 +1,9 @@
 package com.edeqa.waytousserver.holders.admin;
 
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.sun.net.httpserver.HttpExchange;
 
 import org.json.JSONObject;
@@ -28,12 +29,12 @@ public class AdminMainHolder implements PageHolder {
     private static final String LOG = "AMH";
 
     @SuppressWarnings("unused")
-    private final MyHttpAdminHandler server;
+    private final AdminServletHandler server;
     private HtmlGenerator html;
     private String part;
     private ArrayList<String> request;
 
-    public AdminMainHolder(MyHttpAdminHandler server) {
+    public AdminMainHolder(AdminServletHandler server) {
         this.server = server;
     }
 
@@ -43,7 +44,7 @@ public class AdminMainHolder implements PageHolder {
     }
 
     @Override
-    public boolean perform(HttpExchange parts) {
+    public boolean perform(RequestWrapper requestWrapper) {
         return false;
     }
 

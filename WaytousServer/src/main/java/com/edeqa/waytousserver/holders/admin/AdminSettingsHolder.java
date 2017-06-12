@@ -1,9 +1,9 @@
 package com.edeqa.waytousserver.holders.admin;
 
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
-import com.sun.net.httpserver.HttpExchange;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 
 
 /**
@@ -15,10 +15,10 @@ public class AdminSettingsHolder implements PageHolder {
 
     private static final String HOLDER_TYPE = "settings";
 
-    private final MyHttpAdminHandler server;
+    private final AdminServletHandler server;
     private HtmlGenerator html;
 
-    public AdminSettingsHolder(MyHttpAdminHandler server) {
+    public AdminSettingsHolder(AdminServletHandler server) {
         this.server = server;
     }
 
@@ -28,7 +28,7 @@ public class AdminSettingsHolder implements PageHolder {
     }
 
     @Override
-    public boolean perform(HttpExchange parts) {
+    public boolean perform(RequestWrapper requestWrapper) {
         return false;
     }
 

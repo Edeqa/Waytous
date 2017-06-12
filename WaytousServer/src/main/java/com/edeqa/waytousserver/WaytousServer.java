@@ -4,11 +4,11 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
-import com.edeqa.waytousserver.servers.MyHttpAdminHandler;
-import com.edeqa.waytousserver.servers.MyHttpMainHandler;
+import com.edeqa.waytousserver.servers.MainServletHandler;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.edeqa.waytousserver.servers.MyHttpRedirectHandler;
-import com.edeqa.waytousserver.servers.MyHttpRestHandler;
-import com.edeqa.waytousserver.servers.MyHttpTrackingHandler;
+import com.edeqa.waytousserver.servers.RestServletHandler;
+import com.edeqa.waytousserver.servers.TrackingServletHandler;
 import com.edeqa.waytousserver.servers.MyWsServer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -195,16 +195,16 @@ public class WaytousServer {
         server.createContext("/", redirectServer);
 
 
-        MyHttpMainHandler mainServer = new MyHttpMainHandler();
+        MainServletHandler mainServer = new MainServletHandler();
         mainServer.setDataProcessor(dataProcessorFirebaseV1);
 
-        MyHttpRestHandler restServer = new MyHttpRestHandler();
+        RestServletHandler restServer = new RestServletHandler();
         restServer.setDataProcessor(dataProcessorFirebaseV1);
 
-        MyHttpTrackingHandler trackingServer = new MyHttpTrackingHandler();
+        TrackingServletHandler trackingServer = new TrackingServletHandler();
         trackingServer.setDataProcessor(dataProcessorFirebaseV1);
 
-        MyHttpAdminHandler adminServer = new MyHttpAdminHandler();
+        AdminServletHandler adminServer = new AdminServletHandler();
         adminServer.setDataProcessor(dataProcessorFirebaseV1);
 
 

@@ -82,7 +82,7 @@ public class MyWsServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        Common.log("WS","onStart");
+        Common.log("WS","onStart/"+processor.getClass().getSimpleName()+":"+this.getPort());
     }
 
     @Override

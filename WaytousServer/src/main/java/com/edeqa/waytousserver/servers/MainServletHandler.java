@@ -1,12 +1,11 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
-import com.edeqa.waytousserver.helpers.Utils;
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.google.common.net.HttpHeaders;
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import com.sun.javafx.collections.SourceAdapterChange;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,6 +13,7 @@ import org.json.JSONObject;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -23,12 +23,9 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
-
-import sun.misc.Regexp;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
@@ -38,13 +35,12 @@ import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
  * Created 1/19/17.
  */
 @SuppressWarnings("HardCodedStringLiteral")
-public class MyHttpMainHandler implements HttpHandler {
+public class MainServletHandler extends AbstractServletHandler {
 
-    private volatile AbstractDataProcessor dataProcessor;
     private Map<String, String> substitutions;
 
     @SuppressWarnings("HardCodedStringLiteral")
-    public MyHttpMainHandler() {
+    public MainServletHandler() {
 
         substitutions = new LinkedHashMap<>();
         substitutions.put("\\$\\{SERVER_BUILD\\}", ""+ SERVER_BUILD);
@@ -55,13 +51,12 @@ public class MyHttpMainHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void perform(RequestWrapper requestWrapper) {
 
         try {
             String ifModifiedSince = null;
 
-            URI uri = exchange.getRequestURI();
-
+            URI uri = requestWrapper.getRequestURI();
 
             File root = new File(SENSITIVE.getWebRootDirectory());
             File file = new File(root + uri.getPath()).getCanonicalFile();
@@ -84,12 +79,7 @@ public class MyHttpMainHandler implements HttpHandler {
                 file = new File(root + "/304.html");
 //                Utils.sendResult.call(exchange, 304, null, "304 Not Modified\n".getBytes());
             } else if (!uri.getPath().endsWith("/") && !file.exists()) {
-                Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
-                responseHeaders.set(HttpHeaders.DATE, new Date().toString());
-                responseHeaders.set(HttpHeaders.LOCATION, uri.getPath() + "/");
-                exchange.sendResponseHeaders(302, 0);
-                exchange.close();
+                requestWrapper.sendRedirect(uri.getPath() + "/");
                 return;
             } else if (!file.isFile() || path.startsWith("/WEB-INF") || path.startsWith("/META-INF") || path.startsWith("/.idea")) {
                 // Object does not exist or is not a file: reject with 404 error.
@@ -100,16 +90,11 @@ public class MyHttpMainHandler implements HttpHandler {
                 // Object exists and it is a file: accept with response code 200.
 
                 boolean gzip = false;
-                for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
-                    if (HttpHeaders.ACCEPT_ENCODING.toLowerCase().equals(entry.getKey().toLowerCase())) {
-                        for (String s : entry.getValue()) {
-                            if(s.toLowerCase().contains("gzip")) {
-                                gzip = true;
-                                break;
-                            }
-                        }
-                    } else if (HttpHeaders.IF_NONE_MATCH.toLowerCase().equals(entry.getKey().toLowerCase())) {
 
+                for (String s : requestWrapper.getRequestHeader(HttpHeaders.ACCEPT_ENCODING)) {
+                    if(s.toLowerCase().contains("gzip")) {
+                        gzip = true;
+                        break;
                     }
                 }
 
@@ -138,24 +123,27 @@ public class MyHttpMainHandler implements HttpHandler {
                 dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
                 String lastModified = dateFormat.format(file.lastModified());
 
-                exchange.getResponseHeaders().set(HttpHeaders.LAST_MODIFIED, lastModified);
-                exchange.getResponseHeaders().set(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
-                exchange.getResponseHeaders().set(HttpHeaders.ETAG, etag);
-                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
-                exchange.getResponseHeaders().set(HttpHeaders.ACCEPT_RANGES, "bytes");
+                requestWrapper.setHeader(HttpHeaders.LAST_MODIFIED, lastModified);
+                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
+                requestWrapper.setHeader(HttpHeaders.ETAG, etag);
+                requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
+                requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
 
-                if (gzip) {
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
-                } else {
-//                    exchange.getResponseHeaders().set("Content-Length", String.valueOf(file.length()));
-                }
+                requestWrapper.setGzip(gzip);
 
                 if (text) {
                     if(!type.toLowerCase().matches(";\\s*charset\\s*=")) {
                         type += "; charset=UTF-8";
                     }
 
-                    byte[] bytes = Files.readAllBytes(file.toPath());
+                    FileReader reader = new FileReader(file);
+                    int c;
+                    StringBuilder fileContent = new StringBuilder();
+                    while((c=reader.read())!=-1){
+                        fileContent.append((char)c);
+                    }
+
+                    byte[] bytes = fileContent.toString().getBytes(); //Files.readAllBytes(file.toPath());
                     Charset charset = StandardCharsets.ISO_8859_1;
                     if(bytes[0] == -1 && bytes[1] == -2) charset = StandardCharsets.UTF_16;
                     else if(bytes[0] == -2 && bytes[1] == -1) charset = StandardCharsets.UTF_16;
@@ -166,28 +154,23 @@ public class MyHttpMainHandler implements HttpHandler {
                         string = string.replaceAll(x.getKey(), x.getValue());
                     }
 
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type);
-                    if(!gzip) exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
-                    exchange.sendResponseHeaders(resultCode, 0);
-                    OutputStream os;
-                    if(gzip) {
-                        os = new BufferedOutputStream(new GZIPOutputStream(exchange.getResponseBody()));
-                    } else {
-                        os = exchange.getResponseBody();
-                    }
+                    requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, type);
+                    if(!gzip) requestWrapper.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
+                    requestWrapper.sendResponseHeaders(resultCode, 0);
 
-                    os.write(string.getBytes(charset));
-                    os.close();
-                } else {
-                    exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, type);
-                    if(!gzip) exchange.getResponseHeaders().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
-                    exchange.sendResponseHeaders(resultCode, 0);
-                    OutputStream os;
-                    if (gzip) {
-                        os = new BufferedOutputStream(new GZIPOutputStream(exchange.getResponseBody()));
-                    } else {
-                        os = exchange.getResponseBody();
+                    try {
+                        OutputStream os = requestWrapper.getResponseBody();
+                        os.write(string.getBytes(charset));
+                        os.close();
+                    } catch(Exception e){
+                        System.out.println("C:"+requestWrapper.getRequestURI());
+                        e.printStackTrace();
                     }
+                } else {
+                    requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, type);
+                    if(!gzip) requestWrapper.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
+                    requestWrapper.sendResponseHeaders(resultCode, 0);
+                    OutputStream os = requestWrapper.getResponseBody();
 
                     FileInputStream fs = new FileInputStream(file);
                     final byte[] buffer = new byte[0x10000];
@@ -204,15 +187,6 @@ public class MyHttpMainHandler implements HttpHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @SuppressWarnings("unused")
-    public AbstractDataProcessor getDataProcessor() {
-        return dataProcessor;
-    }
-
-    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor = dataProcessor;
     }
 
 

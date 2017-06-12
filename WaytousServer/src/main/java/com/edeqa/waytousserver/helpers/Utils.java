@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
@@ -188,31 +189,31 @@ public class Utils {
         return sb.toString();
     }
 
-    public static Callable2<HttpExchange,JSONObject> sendResultJson = new Callable2<HttpExchange,JSONObject>() {
+    public static Callable2<RequestWrapper,JSONObject> sendResultJson = new Callable2<RequestWrapper,JSONObject>() {
         @Override
-        public void call(HttpExchange exchange, JSONObject json) {
-            sendResult.call(exchange, 200, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
+        public void call(RequestWrapper requestWrapper, JSONObject json) {
+            sendResult.call(requestWrapper, 200, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
-    public static Callable3<HttpExchange,Integer,JSONObject> sendError = new Callable3<HttpExchange,Integer,JSONObject>() {
+    public static Callable3<RequestWrapper,Integer,JSONObject> sendError = new Callable3<RequestWrapper,Integer,JSONObject>() {
         @Override
-        public void call(HttpExchange exchange, Integer code, JSONObject json) {
-            sendResult.call(exchange, code, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
+        public void call(RequestWrapper requestWrapper, Integer code, JSONObject json) {
+            sendResult.call(requestWrapper, code, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
-    public static Callable4<HttpExchange,Integer,String,byte[]> sendResult = new Callable4<HttpExchange,Integer,String,byte[]>() {
+    public static Callable4<RequestWrapper,Integer,String,byte[]> sendResult = new Callable4<RequestWrapper,Integer,String,byte[]>() {
         @Override
-        public void call(HttpExchange exchange, Integer code, String contentType, byte[] bytes) {
+        public void call(RequestWrapper requestWrapper, Integer code, String contentType, byte[] bytes) {
             try {
-                exchange.getResponseHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-                if(contentType != null) exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE, contentType);
-                exchange.getResponseHeaders().set(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
-                exchange.getResponseHeaders().set(HttpHeaders.DATE, new Date().toString());
-                exchange.sendResponseHeaders(code, bytes.length);
+                requestWrapper.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                if(contentType != null) requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
+                requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
+                requestWrapper.setHeader(HttpHeaders.DATE, new Date().toString());
+                requestWrapper.sendResponseHeaders(code, bytes.length);
 
-                OutputStream os = exchange.getResponseBody();
+                OutputStream os = requestWrapper.getResponseBody();
                 os.write(bytes);
                 os.close();
             } catch(Exception e) {

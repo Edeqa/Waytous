@@ -265,8 +265,10 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     };
 
                     if (request.has(REQUEST_DEVICE_ID)) {
+                        System.out.println("A");
                         refGroup.child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
                     } else {
+                        System.out.println("B");
                         CheckReq check = new CheckReq();
                         check.setControl(Utils.getUnique());
                         check.setGroupId(groupId);
@@ -373,8 +375,10 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue() != null) {
+                                    System.out.println("C");
                                     refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child(""+check.getNumber()).addListenerForSingleValueEvent(userCheckListener);
                                 } else {
+                                    System.out.println("D");
                                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                     response.put(RESPONSE_MESSAGE, "This group is expired.");
                                     conn.send(response.toString());
