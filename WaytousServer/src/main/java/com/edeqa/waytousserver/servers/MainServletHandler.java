@@ -1,31 +1,24 @@
 package com.edeqa.waytousserver.servers;
 
-import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.google.common.net.HttpHeaders;
-import com.sun.javafx.collections.SourceAdapterChange;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.zip.GZIPOutputStream;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
@@ -52,7 +45,6 @@ public class MainServletHandler extends AbstractServletHandler {
 
     @Override
     public void perform(RequestWrapper requestWrapper) {
-
         try {
             String ifModifiedSince = null;
 

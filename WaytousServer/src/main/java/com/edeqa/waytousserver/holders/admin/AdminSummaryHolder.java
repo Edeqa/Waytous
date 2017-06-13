@@ -84,7 +84,7 @@ public class AdminSummaryHolder implements PageHolder {
     private JSONArray fetchTokensData() {
         JSONArray a = new JSONArray();
 
-        for (Map.Entry<String, MyGroup> x : server.getDataProcessor().getGroups().entrySet()) {
+        for (Map.Entry<String, MyGroup> x : Common.getInstance().getDataProcessor("v1").getGroups().entrySet()) {
             JSONObject o = new JSONObject();
             a.put(o);
 
@@ -116,7 +116,7 @@ public class AdminSummaryHolder implements PageHolder {
     private JSONArray fetchIpToUserData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyUser> x: server.getDataProcessor().getIpToUser().entrySet()){
+        for(Map.Entry<String,MyUser> x: Common.getInstance().getDataProcessor("v1").getIpToUser().entrySet()){
             JSONArray ua = new JSONArray();
             a.put(ua);
             ua.put(x.getKey());
@@ -128,7 +128,7 @@ public class AdminSummaryHolder implements PageHolder {
     private JSONArray fetchIpToTokenData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,MyGroup> x: server.getDataProcessor().getIpToToken().entrySet()){
+        for(Map.Entry<String,MyGroup> x: Common.getInstance().getDataProcessor("v1").getIpToToken().entrySet()){
             JSONArray ta = new JSONArray();
             a.put(ta);
             ta.put(x.getKey());
@@ -140,7 +140,7 @@ public class AdminSummaryHolder implements PageHolder {
     private JSONArray fetchIpToCheckData() {
         JSONArray a = new JSONArray();
 
-        for(Map.Entry<String,CheckReq> x: server.getDataProcessor().getIpToCheck().entrySet()){
+        for(Map.Entry<String,CheckReq> x: Common.getInstance().getDataProcessor("v1").getIpToCheck().entrySet()){
             JSONArray ca = new JSONArray();
             a.put(ca);
             ca.put(x.getKey());

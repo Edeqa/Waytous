@@ -1,17 +1,12 @@
 package com.edeqa.waytousserver.servers;
 
-import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.internal.NonNull;
-import com.google.firebase.tasks.OnFailureListener;
-import com.google.firebase.tasks.OnSuccessListener;
 import com.google.firebase.tasks.Task;
-import com.google.firebase.tasks.TaskCompletionSource;
 import com.google.firebase.tasks.Tasks;
 
 import org.json.JSONObject;
@@ -67,7 +62,7 @@ public class AdminServletHandler extends AbstractServletHandler {
     @Override
     public void perform(final RequestWrapper requestWrapper) throws IOException {
         try {
-//            System.out.println("Admin server requested");
+            System.out.println("Admin server requested:"+requestWrapper.getRequestURI());
 
             /*if("/".equals(requestWrapper.getRequestURI().getPath())) {
                 requestWrapper.sendRedirect("/admin/");
@@ -164,14 +159,6 @@ public class AdminServletHandler extends AbstractServletHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public AbstractDataProcessor getDataProcessor() {
-        return dataProcessor;
-    }
-
-    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor = dataProcessor;
     }
 
 }

@@ -51,6 +51,6 @@
 
     <context-param>
         <param-name>sensitiveData</param-name>
-        <param-value>WEB-INF/options_developer_pn.json</param-value>
+        <param-value>WEB-INF/options_developer.json</param-value>
     </context-param>
 </web-app>

@@ -21,6 +21,8 @@ import com.google.firebase.tasks.OnCompleteListener;
 import com.google.firebase.tasks.OnFailureListener;
 import com.google.firebase.tasks.OnSuccessListener;
 import com.google.firebase.tasks.Task;
+import com.google.firebase.tasks.TaskCompletionSource;
+import com.google.firebase.tasks.Tasks;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -243,30 +245,25 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         }
                     };
 
-                    ValueEventListener groupOptionsListener = new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.getValue() != null) {
-                                String deviceId = request.getString(REQUEST_DEVICE_ID);
-                                final String uid = Utils.getEncryptedHash(deviceId);
-                                refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
-                            } else {
-                                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                                response.put(RESPONSE_MESSAGE, "This group is expired.");
-                                conn.send(response.toString());
-                                conn.close();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            System.out.println("FAIL5");
-                        }
-                    };
-
                     if (request.has(REQUEST_DEVICE_ID)) {
-                        System.out.println("A");
-                        refGroup.child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
+                         try {
+                             Task<DataSnapshot> task = taskForSingleValueEvent(refGroup.child(Constants.DATABASE.SECTION_OPTIONS));
+                             Tasks.await(task);
+                             DataSnapshot dataSnapshot = task.getResult();
+                             if(dataSnapshot.getValue() != null) {
+                                 String deviceId = request.getString(REQUEST_DEVICE_ID);
+                                 final String uid = Utils.getEncryptedHash(deviceId);
+                                 refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
+                             } else {
+                                 response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                                 response.put(RESPONSE_MESSAGE, "This group is expired.");
+                                 conn.send(response.toString());
+                                 conn.close();
+                             }
+                         } catch(Exception e) {
+                             e.printStackTrace();
+                         }
+//                        refGroup.child(Constants.DATABASE.SECTION_OPTIONS).addListenerForSingleValueEvent(groupOptionsListener);
                     } else {
                         System.out.println("B");
                         CheckReq check = new CheckReq();
@@ -419,6 +416,22 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         if(disconnect) {
             conn.close();
         }
+    }
+
+    public Task<DataSnapshot> taskForSingleValueEvent(final DatabaseReference ref) {
+        final TaskCompletionSource<DataSnapshot> tcs = new TaskCompletionSource<>();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tcs.setResult(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("FAIL5");
+            }
+        });
+        return tcs.getTask();
     }
 
     @Override

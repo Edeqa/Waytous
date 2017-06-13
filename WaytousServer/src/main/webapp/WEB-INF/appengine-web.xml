@@ -16,4 +16,8 @@
         <max-pending-latency>automatic</max-pending-latency>
         <max-concurrent-requests>50</max-concurrent-requests>
     </automatic-scaling>
+
+    <static-files>
+        <exclude path="/**.*" />
+    </static-files>
 </appengine-web-app>

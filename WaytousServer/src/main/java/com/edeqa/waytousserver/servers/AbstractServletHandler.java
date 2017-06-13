@@ -4,8 +4,9 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloWorld
 */
 
-package com.edeqa.waytousserver.helpers;
+package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.servers.AbstractDataProcessor;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MyWsServer;
@@ -34,14 +35,10 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
 
 
     public AbstractServletHandler() {
-        dataProcessor = new HashMap<>();
-        setDataProcessor(new DataProcessorFirebaseV1());
-
     }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         RequestWrapper requestWrapper = new RequestWrapper();
 
         requestWrapper.setHttpServletRequest(req);
@@ -75,18 +72,6 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
         perform(requestWrapper);
     }
 
-
-    public AbstractDataProcessor getDataProcessor(String version) {
-        if(dataProcessor.containsKey(version)) {
-            return dataProcessor.get(version);
-        } else {
-            return dataProcessor.get("v1");
-        }
-    }
-
-    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
-    }
 
 
 }

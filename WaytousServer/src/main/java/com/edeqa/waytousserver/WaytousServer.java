@@ -64,6 +64,7 @@ public class WaytousServer {
         }
 
         DataProcessorFirebaseV1 dataProcessorFirebaseV1 = new DataProcessorFirebaseV1();
+        Common.getInstance().setDataProcessor(dataProcessorFirebaseV1);
         wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), dataProcessorFirebaseV1);
         wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), dataProcessorFirebaseV1);
 
@@ -196,16 +197,12 @@ public class WaytousServer {
 
 
         MainServletHandler mainServer = new MainServletHandler();
-        mainServer.setDataProcessor(dataProcessorFirebaseV1);
 
         RestServletHandler restServer = new RestServletHandler();
-        restServer.setDataProcessor(dataProcessorFirebaseV1);
 
         TrackingServletHandler trackingServer = new TrackingServletHandler();
-        trackingServer.setDataProcessor(dataProcessorFirebaseV1);
 
         AdminServletHandler adminServer = new AdminServletHandler();
-        adminServer.setDataProcessor(dataProcessorFirebaseV1);
 
 
         try {

@@ -1,18 +1,14 @@
 package com.edeqa.waytousserver.servers;
 
-import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -77,14 +73,6 @@ public class TrackingServletHandler extends AbstractServletHandler {
 
         Utils.sendResult.call(requestWrapper, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
 
-    }
-
-    public AbstractDataProcessor getDataProcessor() {
-        return dataProcessor;
-    }
-
-    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor = dataProcessor;
     }
 
 }

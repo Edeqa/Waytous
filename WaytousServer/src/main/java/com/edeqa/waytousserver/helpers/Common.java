@@ -1,5 +1,8 @@
 package com.edeqa.waytousserver.helpers;
 
+import com.edeqa.waytousserver.servers.AbstractDataProcessor;
+import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
+
 import org.json.JSONObject;
 
 import java.io.PrintWriter;
@@ -7,7 +10,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
@@ -20,6 +25,20 @@ public class Common {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
     volatile private static PrintWriter out;
+
+    private volatile Map<String,AbstractDataProcessor> dataProcessor;
+
+
+    private static final Common ourInstance = new Common();
+
+    public static Common getInstance() {
+        return ourInstance;
+    }
+
+    private Common() {
+        dataProcessor = new HashMap<>();
+    }
+
 
     public static JSONObject fetchGeneralInfo() {
         JSONObject o = new JSONObject();
@@ -70,6 +89,19 @@ public class Common {
 
     public static String getWrappedHttpsPort(){
         return SENSITIVE.getHttpsPort() == 443 ? "" : ":" + SENSITIVE.getHttpsPort();
+    }
+
+
+    public AbstractDataProcessor getDataProcessor(String version) {
+        if(dataProcessor.containsKey(version)) {
+            return dataProcessor.get(version);
+        } else {
+            return dataProcessor.get("v1");
+        }
+    }
+
+    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
+        this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
     }
 
 }

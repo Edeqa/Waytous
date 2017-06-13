@@ -142,7 +142,7 @@ function Groups() {
         u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: function() {
            renderButtons(buttons);
            u.toast.show("Groups clean is performing.");
-           u.put("/admin/rest/v1/groups/clean")
+           u.get("/admin/rest/v1/groups/clean")
             .then(function(xhr){
 //               WTU.switchTo("/admin/groups");
             }).catch(function(code,xhr){

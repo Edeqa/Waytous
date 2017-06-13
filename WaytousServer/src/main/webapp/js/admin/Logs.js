@@ -27,9 +27,9 @@ function Logs() {
                 .place(HTML.BUTTON, { className: "question", innerHTML:"Yes, clear logs", onclick: function(){
                    this.parentNode.parentNode.hide();
                    this.parentNode.parentNode.nextSibling.classList.remove("hidden");
-                   u.put("/admin/logs/clear")
-                   .then(updateData);
-               }})
+                   u.get("/admin/logs/clear")
+                        .then(updateData);
+                }})
                 .place(HTML.BUTTON, { innerHTML:"No", onclick: function(){
                    this.parentNode.parentNode.hide();
                    this.parentNode.parentNode.nextSibling.classList.remove("hidden");

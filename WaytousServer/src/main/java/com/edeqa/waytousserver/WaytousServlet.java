@@ -1,5 +1,6 @@
 package com.edeqa.waytousserver;
 
+import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MyWsServer;
@@ -43,5 +44,6 @@ public class WaytousServlet implements ServletContextListener {
             e.printStackTrace();
         }
 
+        Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
     }
 }

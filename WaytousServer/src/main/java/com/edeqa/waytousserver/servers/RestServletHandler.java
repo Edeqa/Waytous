@@ -1,29 +1,23 @@
 package com.edeqa.waytousserver.servers;
 
-import com.edeqa.waytousserver.helpers.AbstractServletHandler;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HttpDPConnection;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.google.common.net.HttpHeaders;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
@@ -118,7 +112,7 @@ public class RestServletHandler extends AbstractServletHandler {
             String body = br.readLine();
 
             Common.log("Rest",requestWrapper.getRemoteAddress(), "joinV1:", body);
-            getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
+            Common.getInstance().getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");
