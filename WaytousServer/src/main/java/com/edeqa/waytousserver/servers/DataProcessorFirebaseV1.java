@@ -253,7 +253,35 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                              if(dataSnapshot.getValue() != null) {
                                  String deviceId = request.getString(REQUEST_DEVICE_ID);
                                  final String uid = Utils.getEncryptedHash(deviceId);
-                                 refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
+                                 System.out.println("A");
+                                 task = taskForSingleValueEvent(refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid));
+                                 Tasks.await(task);
+                                 dataSnapshot = task.getResult();
+                                 if(dataSnapshot.getValue() != null) { //join as existing member, go to check
+                                 System.out.println("B");
+                                     CheckReq check = new CheckReq();
+                                     check.setControl(Utils.getUnique());
+                                     check.setGroupId(groupId);
+                                     check.setUid(dataSnapshot.getKey());
+                                     check.setNumber((long) dataSnapshot.getValue());
+                                     check.setUser(conn, request);
+
+                                     Common.log(LOG,"onMessage:checkRequest:"+conn.getRemoteSocketAddress(),"{ number:"+dataSnapshot.getValue(), "key:"+dataSnapshot.getKey(), "control:"+check.getControl()+" }");
+
+                                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
+                                     response.put(RESPONSE_CONTROL, check.getControl());
+                                     ipToCheck.put(ip, check);
+                                     try {
+                                         conn.send(response.toString());
+                                     } catch(Exception e){
+                                         e.printStackTrace();
+                                     }
+
+                                 } else { // join as new member
+                                 System.out.println("C");
+                                     refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER).addListenerForSingleValueEvent(requestDataPrivateListener[0]);
+                                 }
+//                                 refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid).addListenerForSingleValueEvent(numberForKeyListener);
                              } else {
                                  response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                  response.put(RESPONSE_MESSAGE, "This group is expired.");
