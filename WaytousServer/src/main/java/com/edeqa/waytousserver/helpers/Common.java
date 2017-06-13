@@ -28,7 +28,6 @@ public class Common {
 
     private volatile Map<String,AbstractDataProcessor> dataProcessor;
 
-
     private static final Common ourInstance = new Common();
 
     public static Common getInstance() {

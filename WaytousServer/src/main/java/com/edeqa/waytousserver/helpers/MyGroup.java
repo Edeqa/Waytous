@@ -5,7 +5,6 @@ import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,7 +12,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,11 +47,6 @@ public class MyGroup {
     private int timeToLiveIfEmpty;
     private boolean dismissInactive;
     private int delayToDismiss;
-
-
-    private ArrayList<Color> colors = new ArrayList<>(Arrays.asList(Color.GREEN, Color.RED, Color.MAGENTA, Color.PINK, Color.ORANGE,
-            Color.CYAN, Color.YELLOW
-    ));
 
 
     public MyGroup(){

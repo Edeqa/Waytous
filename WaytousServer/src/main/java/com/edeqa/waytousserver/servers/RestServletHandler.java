@@ -16,8 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
@@ -25,6 +23,7 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 /**
  * Created 1/19/17.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class RestServletHandler extends AbstractServletHandler {
 
     @SuppressWarnings("HardCodedStringLiteral")
@@ -42,9 +41,9 @@ public class RestServletHandler extends AbstractServletHandler {
         }
         Common.log("Rest",host + uri.getPath(),requestWrapper.getRemoteAddress());
 
-        List<String> parts = Arrays.asList(uri.getPath().split("/"));
+//        List<String> parts = Arrays.asList(uri.getPath().split("/"));
         JSONObject json = new JSONObject();
-        boolean printRes = false;
+        boolean printRes;
 
 //        switch(exchange.getRequestMethod()) {
 //            case HttpMethods.GET:

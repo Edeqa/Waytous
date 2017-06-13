@@ -7,34 +7,18 @@
 package com.edeqa.waytousserver.servers;
 
 import com.edeqa.waytousserver.helpers.RequestWrapper;
-import com.edeqa.waytousserver.servers.AbstractDataProcessor;
-import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
-import com.edeqa.waytousserver.servers.MyWsServer;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.FirebaseCredentials;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-
 abstract public class AbstractServletHandler extends HttpServlet implements HttpHandler {
 
-    private volatile Map<String,AbstractDataProcessor> dataProcessor;
-
-
-    public AbstractServletHandler() {
+    AbstractServletHandler() {
     }
 
     @Override

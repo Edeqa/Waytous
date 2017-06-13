@@ -3,13 +3,13 @@ package com.edeqa.waytousserver;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.SensitiveData;
+import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MainServletHandler;
-import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.edeqa.waytousserver.servers.MyHttpRedirectHandler;
+import com.edeqa.waytousserver.servers.MyWsServer;
 import com.edeqa.waytousserver.servers.RestServletHandler;
 import com.edeqa.waytousserver.servers.TrackingServletHandler;
-import com.edeqa.waytousserver.servers.MyWsServer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseCredentials;
@@ -44,6 +44,7 @@ import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
  * Created 10/2/16.
  */
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class WaytousServer {
 
     private static MyWsServer wsServer;
@@ -95,8 +96,7 @@ public class WaytousServer {
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             tmf.init(ks);
 
-            SSLContext sslContext = null;
-            sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance("TLS");
         //    sslContext.init(null, null, null);
             sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 

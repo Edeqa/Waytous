@@ -60,8 +60,6 @@ public class HtmlGenerator {
     public static final String MANIFEST = "manifest";
 
 
-
-
     ArrayList<String> notClosableTags = new ArrayList<>(Arrays.asList(new String[]{BR,META,INPUT}));
     private Tag body;
     private Tag head;

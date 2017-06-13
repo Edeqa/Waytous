@@ -103,10 +103,18 @@ public class Utils {
         int green = randomGenerator.nextInt(256);
         int blue = randomGenerator.nextInt(256);
 
-        return new Color(red,green,blue).getRGB();
+        return getRGB(red,green,blue);
 
 //        int color = colors.get(number).getRGB();
 //        return color;
+    }
+
+    public static int getRGB(int red, int green, int blue) {
+        red = (red << 16) & 0x00FF0000; //Shift red 16-bits and mask out other stuff
+        green = (green << 8) & 0x0000FF00; //Shift Green 8-bits and mask out other stuff
+        blue = blue & 0x000000FF; //Mask out anything not blue.
+
+        return 0xFF000000 | red | green | blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
     }
 
     public static String join(String conjunction, List<String> list) {

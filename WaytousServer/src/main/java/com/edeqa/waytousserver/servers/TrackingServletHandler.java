@@ -25,10 +25,10 @@ import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
 /**
  * Created 1/19/17.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class TrackingServletHandler extends AbstractServletHandler {
 
     private HtmlGenerator html = new HtmlGenerator();
-    private volatile AbstractDataProcessor dataProcessor;
 
     public TrackingServletHandler(){
     }

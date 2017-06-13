@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created 10/5/16.
  */
 
+@SuppressWarnings("HardCodedStringLiteral")
 abstract public class AbstractDataProcessor {
 
     final ConcurrentHashMap<String, MyGroup> groups;
