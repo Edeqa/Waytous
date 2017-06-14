@@ -4,18 +4,15 @@ import com.edeqa.waytousserver.interfaces.Callable2;
 import com.edeqa.waytousserver.interfaces.Callable3;
 import com.edeqa.waytousserver.interfaces.Callable4;
 import com.google.common.net.HttpHeaders;
-import com.sun.net.httpserver.HttpExchange;
 
 import org.json.JSONObject;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;

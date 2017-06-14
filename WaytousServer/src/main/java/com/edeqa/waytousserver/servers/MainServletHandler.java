@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 
@@ -33,8 +35,8 @@ public class MainServletHandler extends AbstractServletHandler {
     private Map<String, String> substitutions;
 
     @SuppressWarnings("HardCodedStringLiteral")
-    public MainServletHandler() {
-
+    public void init() throws ServletException {
+        super.init();
         substitutions = new LinkedHashMap<>();
         substitutions.put("\\$\\{SERVER_BUILD\\}", ""+ SERVER_BUILD);
         substitutions.put("\\$\\{APP_NAME\\}", SENSITIVE.getAppName() + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
@@ -48,7 +50,17 @@ public class MainServletHandler extends AbstractServletHandler {
         try {
             String ifModifiedSince = null;
 
+            Object object = new Object();
             URI uri = requestWrapper.getRequestURI();
+            if ("/_ah/start".equals(uri.getPath())) {
+                System.out.println("AHSTART");
+                requestWrapper.sendResponseHeaders(200,0);
+                return;
+            } else if("/_ah/stop".equals(uri.getPath())) {
+                System.out.println("AHSTOP");
+                object.notify();
+                return;
+            }
 
             File root = new File(SENSITIVE.getWebRootDirectory());
             File file = new File(root + uri.getPath()).getCanonicalFile();

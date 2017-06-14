@@ -14,6 +14,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.servlet.ServletException;
+
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.ONLOAD;

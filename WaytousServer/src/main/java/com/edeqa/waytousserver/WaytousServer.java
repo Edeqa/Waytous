@@ -35,6 +35,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
+import javax.servlet.ServletException;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
@@ -50,7 +51,7 @@ public class WaytousServer {
     private static MyWsServer wsServer;
     private static MyWsServer wssServer;
 
-    public static void main(final String[] args ) throws InterruptedException , IOException {
+    public static void main(final String[] args ) throws InterruptedException, IOException, ServletException {
 
         Common.log("Main", "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);

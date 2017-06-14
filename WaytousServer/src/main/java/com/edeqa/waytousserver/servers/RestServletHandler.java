@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 
+import javax.servlet.ServletException;
+
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 

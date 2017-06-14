@@ -84,7 +84,7 @@ dependencies {
 
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.53'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.53'
-    compile ('com.google.firebase:firebase-admin:5.1.0') {
+    compile ('com.google.firebase:firebase-admin:5.0.0') {
         exclude group: 'com.google.guava'
     }
     compile 'com.google.guava:guava:20.0'

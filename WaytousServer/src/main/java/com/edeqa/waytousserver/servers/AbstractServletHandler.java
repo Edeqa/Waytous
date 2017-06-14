@@ -6,15 +6,25 @@
 
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
+import com.edeqa.waytousserver.helpers.SensitiveData;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseCredentials;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 abstract public class AbstractServletHandler extends HttpServlet implements HttpHandler {
 
@@ -22,7 +32,20 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
     }
 
     @Override
+    public void init() throws ServletException {
+        super.init();
+
+        String sensitiveData = getServletContext().getInitParameter("sensitiveData");
+        SENSITIVE = new SensitiveData(new String[]{sensitiveData});
+
+        Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
+
+    }
+
+
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
         RequestWrapper requestWrapper = new RequestWrapper();
 
         requestWrapper.setHttpServletRequest(req);

@@ -38,7 +38,6 @@ public class Common {
         dataProcessor = new HashMap<>();
     }
 
-
     public static JSONObject fetchGeneralInfo() {
         JSONObject o = new JSONObject();
 
