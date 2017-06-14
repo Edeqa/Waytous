@@ -66,7 +66,7 @@ public class WaytousServer {
         }
 
         DataProcessorFirebaseV1 dataProcessorFirebaseV1 = new DataProcessorFirebaseV1();
-        Common.getInstance().setDataProcessor(dataProcessorFirebaseV1);
+//        Common.getInstance().setDataProcessor(dataProcessorFirebaseV1);
         wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), dataProcessorFirebaseV1);
         wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), dataProcessorFirebaseV1);
 

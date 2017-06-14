@@ -12,11 +12,14 @@ import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseCredentials;
+import com.google.firebase.database.FirebaseDatabase;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -27,8 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 abstract public class AbstractServletHandler extends HttpServlet implements HttpHandler {
+    private volatile Map<String,AbstractDataProcessor> dataProcessor;
 
     AbstractServletHandler() {
+        dataProcessor = new HashMap<>();
     }
 
     @Override
@@ -38,7 +43,6 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
         String sensitiveData = getServletContext().getInitParameter("sensitiveData");
         SENSITIVE = new SensitiveData(new String[]{sensitiveData});
 
-        Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
 
     }
 
@@ -56,6 +60,7 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
 
         RequestWrapper requestWrapper = new RequestWrapper();
         requestWrapper.setHttpServletRequest(req);
@@ -80,5 +85,15 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
     }
 
 
+    public AbstractDataProcessor getDataProcessor(String version) {
+        if(dataProcessor.containsKey(version)) {
+            return dataProcessor.get(version);
+        } else {
+            return dataProcessor.get("v1");
+        }
+    }
 
+    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
+        this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
+    }
 }

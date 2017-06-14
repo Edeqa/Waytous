@@ -11,6 +11,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseCredentials;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.tasks.Task;
 import com.google.firebase.tasks.Tasks;
 
@@ -66,6 +67,42 @@ public class AdminServletHandler extends AbstractServletHandler {
 
     @Override
     public void perform(final RequestWrapper requestWrapper) throws IOException {
+
+        requestWrapper.sendResponseHeaders(200,0);
+
+
+        FirebaseOptions options = null;
+        try {
+            options = new FirebaseOptions.Builder()
+                    .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
+                    .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
+                    .build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            FirebaseApp.getInstance();
+        } catch (Exception e){
+//            Log.info("doesn't exist...");
+//            e.printStackTrace();
+        }
+
+        try {
+//            if(FirebaseApp.getApps().size() < 1) {
+            FirebaseApp.initializeApp(options);
+//            }
+        } catch(Exception e){
+//            Log.info("already exists...");
+//            e.printStackTrace();
+        }
+        try {
+            DataProcessorFirebaseV1 dpf = new DataProcessorFirebaseV1();
+            dpf.setRef(FirebaseDatabase.getInstance().getReference());
+            setDataProcessor(dpf);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
+
         try {
             /*if("/".equals(requestWrapper.getRequestURI().getPath())) {
                 requestWrapper.sendRedirect("/admin/");

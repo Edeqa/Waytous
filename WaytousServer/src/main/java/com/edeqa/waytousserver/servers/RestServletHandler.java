@@ -113,7 +113,7 @@ public class RestServletHandler extends AbstractServletHandler {
             String body = br.readLine();
 
             Common.log("Rest",requestWrapper.getRemoteAddress(), "joinV1:", body);
-            Common.getInstance().getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
+            getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");

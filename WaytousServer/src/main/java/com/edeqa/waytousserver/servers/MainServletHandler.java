@@ -55,6 +55,7 @@ public class MainServletHandler extends AbstractServletHandler {
             if ("/_ah/start".equals(uri.getPath())) {
                 System.out.println("AHSTART");
                 requestWrapper.sendResponseHeaders(200,0);
+                requestWrapper.getOutputStream().close();
                 return;
             } else if("/_ah/stop".equals(uri.getPath())) {
                 System.out.println("AHSTOP");

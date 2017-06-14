@@ -90,33 +90,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             e.printStackTrace();
         }
 
-        FirebaseOptions options = null;
-        try {
-            options = new FirebaseOptions.Builder()
-                    .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
-                    .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
-                    .build();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            FirebaseApp.getInstance();
-        } catch (Exception e){
-            Log.info("doesn't exist...");
-//            e.printStackTrace();
-        }
-
-        try {
-//            if(FirebaseApp.getApps().size() < 1) {
-            FirebaseApp.initializeApp(options);
-//            }
-        } catch(Exception e){
-            Log.info("already exists...");
-//            e.printStackTrace();
-        }
 //        throw new ServletException("SENSITIVE:"+FirebaseDatabase.getInstance());
-
-        ref = FirebaseDatabase.getInstance().getReference();
 
     }
 
@@ -882,4 +856,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     }
 
+    public void setRef(DatabaseReference ref) {
+        this.ref = ref;
+    }
 }

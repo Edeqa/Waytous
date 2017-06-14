@@ -26,7 +26,6 @@ public class Common {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
     volatile private static PrintWriter out;
 
-    private volatile Map<String,AbstractDataProcessor> dataProcessor;
 
     private static final Common ourInstance = new Common();
 
@@ -34,9 +33,9 @@ public class Common {
         return ourInstance;
     }
 
-    private Common() {
-        dataProcessor = new HashMap<>();
-    }
+//    private Common() {
+//        dataProcessor = new HashMap<>();
+//    }
 
     public static JSONObject fetchGeneralInfo() {
         JSONObject o = new JSONObject();
@@ -90,16 +89,5 @@ public class Common {
     }
 
 
-    public AbstractDataProcessor getDataProcessor(String version) {
-        if(dataProcessor.containsKey(version)) {
-            return dataProcessor.get(version);
-        } else {
-            return dataProcessor.get("v1");
-        }
-    }
-
-    public void setDataProcessor(AbstractDataProcessor dataProcessor) {
-        this.dataProcessor.put(DataProcessorFirebaseV1.VERSION, dataProcessor);
-    }
 
 }
