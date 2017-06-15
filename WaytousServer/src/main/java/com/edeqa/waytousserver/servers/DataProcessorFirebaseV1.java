@@ -5,7 +5,6 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
-import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.helpers.TaskSingleValueEventFor;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.Callable1;
@@ -14,7 +13,6 @@ import com.edeqa.waytousserver.interfaces.RequestHolder;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseCredentials;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,8 +28,12 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +42,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -75,13 +76,12 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
-    static Logger Log = Logger.getLogger("com.edeqa.waytousserver.WaytousServlet");
 
     public static String VERSION = "v1";
     private static String LOG = "DPF1";
     private DatabaseReference ref;
 
-    public DataProcessorFirebaseV1() throws ServletException {
+    public DataProcessorFirebaseV1() throws ServletException, IOException {
         super();
 
         try {
@@ -90,8 +90,79 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             e.printStackTrace();
         }
 
+        FirebaseOptions options = createFirebaseOptions();
+
+        try {
+            FirebaseApp.getInstance();
+        } catch (Exception e){
+            Common.log("doesn't exist...");
+//            e.printStackTrace();
+        }
+
+        try {
+//            if(FirebaseApp.getApps().size() < 1) {
+            FirebaseApp.initializeApp(options);
+//            }
+        } catch(Exception e){
+            Common.log("already exists...");
+//            e.printStackTrace();
+        }
+        try {
+            ref = FirebaseDatabase.getInstance().getReference();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 //        throw new ServletException("SENSITIVE:"+FirebaseDatabase.getInstance());
 
+    }
+
+    private FirebaseOptions createFirebaseOptions() throws FileNotFoundException {
+
+        FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
+
+        Class<? extends FirebaseOptions.Builder> builderClass = builder.getClass();
+        Method[] methods = builderClass.getDeclaredMethods();
+        Method method = null;
+        for(Method m:methods) {
+            if("setCredential".equals(m.getName())) {
+                method = m;
+                setServerMode(true);
+                break;
+            } else if("setServiceAccount".equals(m.getName())) {
+                method = m;
+//                break;
+            }
+
+        }
+        if(isServerMode()) {
+            try {
+                Class tempClass = Class.forName("com.google.firebase.auth.FirebaseCredentials");
+                Method fromCertificate = tempClass.getDeclaredMethod("fromCertificate", InputStream.class);
+
+                builder = (FirebaseOptions.Builder) method.invoke(builder, fromCertificate.invoke(null, new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())));
+//                builder = (FirebaseOptions.Builder) method.invoke(builder, FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                builder = (FirebaseOptions.Builder) method.invoke(builder, new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()));
+            } catch (IllegalAccessException | InvocationTargetException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        FirebaseOptions options = builder.setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl()).build();
+//        FirebaseOptions options = new FirebaseOptions.Builder()
+//                .setCredential(com.google.firebase.auth.FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
+//                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
+//                .build();
+
+//        FirebaseOptions options = new FirebaseOptions.Builder()
+//                .setServiceAccount(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()))
+//                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
+//                .build();
+        return options;
     }
 
     @Override
@@ -302,10 +373,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         if(calculatedHash.equals(hash)) {
                                             Common.log(LOG, "onMessage:joinAsExisting:"+conn.getRemoteSocketAddress(),"group:"+check.getGroupId(),"user:{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue()," }");
 
-                                            Task<String> taskCreateToken = FirebaseAuth.getInstance().createCustomToken(check.getUid());
                                             try {
-                                                Tasks.await(taskCreateToken);
-                                                String customToken = taskCreateToken.getResult();
+                                                String customToken = createCustomToken(check.getUid());
+                                                System.out.println("TOKENGET:"+customToken);
 
                                                 Map<String,Object> update = new HashMap<>();
                                                 update.put(Constants.DATABASE.USER_ACTIVE, true);
@@ -400,7 +470,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     @Override
     public void createGroup(final MyGroup group, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
 
         final JSONObject json = new JSONObject();
 
@@ -451,7 +520,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     @Override
     public void deleteGroup(final String groupId, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
         final JSONObject json = new JSONObject();
 
         json.put(Constants.REST.GROUP_ID, groupId);
@@ -483,7 +551,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     @Override
     public void switchPropertyInGroup(final String groupId, final String property, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
 
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
@@ -523,7 +590,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     @Override
     public void modifyPropertyInGroup(final String groupId, final String property, final Serializable value, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
 
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
@@ -550,7 +616,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     private void registerUser(final String groupId, final MyUser user, final JSONObject request) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
         final JSONObject response = new JSONObject();
 
         user.setColor(Utils.selectColor(user.getNumber()));
@@ -594,9 +659,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
             Common.log(LOG, "onMessage:registerUser:"+user.getNumber(),"uid:"+uid,"group:"+groupId);
 
-            Task<String> taskCreateToken = FirebaseAuth.getInstance().createCustomToken(uid);
-            Tasks.await(taskCreateToken);
-            String customToken = taskCreateToken.getResult();
+            String customToken = createCustomToken(uid);
+            System.out.println("TOKENGET2:"+customToken);
+
             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
             if (!REQUEST_JOIN_GROUP.equals(request.getString(REQUEST)) && !REQUEST_CHECK_USER.equals(request.getString(REQUEST))) {
                 response.put(RESPONSE_TOKEN, groupId);
@@ -634,7 +699,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     @Override
     public void removeUser(final String groupId, final Long userNumber, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
 
         final JSONObject json = new JSONObject();
 //        final String user = String.valueOf(userNumber);
@@ -689,7 +753,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     @Override
     public void switchPropertyForUser(final String groupId, final Long userNumber, final String property, final Boolean value, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
 
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
@@ -728,7 +791,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     public void validateGroups() {
-        if(ref == null) ref = FirebaseDatabase.getInstance().getReference();
 
         Common.log(LOG, "Groups validation is performing, checking online users");
         try {
@@ -859,4 +921,25 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void setRef(DatabaseReference ref) {
         this.ref = ref;
     }
+
+    @Override
+    public String createCustomToken(String id) {
+        String customToken = null;
+        if(Common.getInstance().getDataProcessor("v1").isServerMode()) {
+            try {
+                Class tempClass = Class.forName("com.google.firebase.auth.FirebaseAuth");
+                Method method = tempClass.getDeclaredMethod("createCustomToken", String.class);
+                Task<String> taskCreateToken = (Task<String>) method.invoke(FirebaseAuth.getInstance(), id);
+                Tasks.await(taskCreateToken);
+                customToken = taskCreateToken.getResult();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            customToken = String.valueOf(FirebaseAuth.getInstance().createCustomToken("Viewer"));
+        }
+        return customToken;
+    }
+
 }

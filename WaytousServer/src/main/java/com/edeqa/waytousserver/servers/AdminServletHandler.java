@@ -4,20 +4,14 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
-import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseCredentials;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.tasks.Task;
 import com.google.firebase.tasks.Tasks;
 
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.LinkedHashMap;
@@ -62,16 +56,26 @@ public class AdminServletHandler extends AbstractServletHandler {
                 e.printStackTrace();
             }
         }
+    }
 
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION) == null) {
+            try {
+                Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
+            } catch (ServletException | IOException e) {
+                e.printStackTrace();
+//                requestWrapper.sendResponseHeaders(500,0);
+//                requestWrapper.getResponseBody().write(e.getMessage().getBytes());
+            }
+        }
     }
 
     @Override
     public void perform(final RequestWrapper requestWrapper) throws IOException {
 
-        requestWrapper.sendResponseHeaders(200,0);
-
-
-        FirebaseOptions options = null;
+        /*FirebaseOptions options = null;
         try {
             options = new FirebaseOptions.Builder()
                     .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
@@ -79,29 +83,8 @@ public class AdminServletHandler extends AbstractServletHandler {
                     .build();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        try {
-            FirebaseApp.getInstance();
-        } catch (Exception e){
-//            Log.info("doesn't exist...");
-//            e.printStackTrace();
-        }
+        }*/
 
-        try {
-//            if(FirebaseApp.getApps().size() < 1) {
-            FirebaseApp.initializeApp(options);
-//            }
-        } catch(Exception e){
-//            Log.info("already exists...");
-//            e.printStackTrace();
-        }
-        try {
-            DataProcessorFirebaseV1 dpf = new DataProcessorFirebaseV1();
-            dpf.setRef(FirebaseDatabase.getInstance().getReference());
-            setDataProcessor(dpf);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        }
 
         try {
             /*if("/".equals(requestWrapper.getRequestURI().getPath())) {
@@ -119,11 +102,11 @@ public class AdminServletHandler extends AbstractServletHandler {
                 }
             }
 
-            Task<String> task = FirebaseAuth.getInstance().createCustomToken("Viewer");
-            try {
-                Tasks.await(task);
-                String customToken = task.getResult();
 
+            try {
+                String customToken = Common.getInstance().getDataProcessor("v1").createCustomToken("Viewer");
+
+                System.out.println("TOKEN:"+customToken);
 //                    Map<String,Object> update = new HashMap<>();
 //                    update.put(Constants.DATABASE.USER_ACTIVE, false);
 //                    update.put(Constants.DATABASE.USER_COLOR, "black");

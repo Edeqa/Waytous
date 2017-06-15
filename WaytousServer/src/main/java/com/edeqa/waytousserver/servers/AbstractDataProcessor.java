@@ -32,6 +32,7 @@ abstract public class AbstractDataProcessor {
     final ConcurrentHashMap<String, CheckReq> ipToCheck;
     final HashMap<String,RequestHolder> requestHolders;
     protected final HashMap<String,FlagHolder> flagHolders;
+    private boolean serverMode = false;
 
     abstract public void validateGroups();
 
@@ -159,4 +160,13 @@ abstract public class AbstractDataProcessor {
         return ipToCheck;
     }
 
+    public boolean isServerMode() {
+        return serverMode;
+    }
+
+    public void setServerMode(boolean serverMode) {
+        this.serverMode = serverMode;
+    }
+
+    public abstract String createCustomToken(String id);
 }

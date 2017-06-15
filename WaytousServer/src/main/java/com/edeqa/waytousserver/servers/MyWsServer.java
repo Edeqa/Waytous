@@ -24,19 +24,17 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 public class MyWsServer extends WebSocketServer {
 
-    private final AbstractDataProcessor processor;
     private static boolean validationStarted = false;
 
-    public MyWsServer(int port, final AbstractDataProcessor processor) {
+    public MyWsServer(int port) {
         super(new InetSocketAddress(port));
-        this.processor = processor;
 
         if(!validationStarted && !SENSITIVE.isDebugMode()) {
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             executor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    processor.validateGroups();
+                    Common.getInstance().getDataProcessor("v1").validateGroups();
                 }
             }, 0, LIFETIME_INACTIVE_GROUP, TimeUnit.SECONDS);
             validationStarted = true;
@@ -53,19 +51,19 @@ public class MyWsServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         Common.log("WS","onOpen:"+conn.getRemoteSocketAddress(),handshake.getResourceDescriptor() );
-        processor.onOpen(new WebsocketDPConnection(conn), handshake);
+        Common.getInstance().getDataProcessor("v1").onOpen(new WebsocketDPConnection(conn), handshake);
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         Common.log("WS","onClose:"+conn.getRemoteSocketAddress(),"code:"+code, "reason:"+reason);
-        processor.onClose(new WebsocketDPConnection(conn), code, reason, remote);
+        Common.getInstance().getDataProcessor("v1").onClose(new WebsocketDPConnection(conn), code, reason, remote);
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
         Common.log("WS","onMessage:"+conn.getRemoteSocketAddress(), message.length() > 200 ? "("+message.length() + " byte(s))" : message );
-        processor.onMessage(new WebsocketDPConnection(conn), message);
+        Common.getInstance().getDataProcessor("v1").onMessage(new WebsocketDPConnection(conn), message);
     }
 
 //    @Override
@@ -77,18 +75,19 @@ public class MyWsServer extends WebSocketServer {
     @Override
     public void onError(WebSocket conn, Exception ex) {
         Common.log("WS","onError:"+conn.getRemoteSocketAddress(),"exception:"+ex.getMessage());
-        processor.onError(new WebsocketDPConnection(conn), ex);
+        Common.getInstance().getDataProcessor("v1").onError(new WebsocketDPConnection(conn), ex);
     }
 
     @Override
     public void onStart() {
-        Common.log("WS","onStart/"+processor.getClass().getSimpleName()+":"+this.getPort());
+        Common.log("WS","onStart/"+this.getClass().getSimpleName()+":"+this.getPort());
+//        Common.log("WS","onStart/"+Common.getInstance().getDataProcessor("v1").getClass().getSimpleName()+":"+this.getPort());
     }
 
     @Override
     public void onWebsocketPing(WebSocket conn, Framedata f) {
         super.onWebsocketPing(conn, f);
-        processor.onWebSocketPing(new WebsocketDPConnection(conn), f);
+        Common.getInstance().getDataProcessor("v1").onWebSocketPing(new WebsocketDPConnection(conn), f);
     }
 
     public boolean parse(BufferedReader sysin) throws IOException, InterruptedException {

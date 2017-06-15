@@ -11,7 +11,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -28,9 +30,24 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 @SuppressWarnings("HardCodedStringLiteral")
 public class RestServletHandler extends AbstractServletHandler {
 
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION) == null) {
+            try {
+                Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
+            } catch (ServletException | IOException e) {
+                e.printStackTrace();
+//                requestWrapper.sendResponseHeaders(500,0);
+//                requestWrapper.getResponseBody().write(e.getMessage().getBytes());
+            }
+        }
+    }
+
     @SuppressWarnings("HardCodedStringLiteral")
     @Override
-    public void perform(RequestWrapper requestWrapper)  {
+    public void perform(RequestWrapper requestWrapper) throws IOException {
+
 
         System.out.println("REST");
         URI uri = requestWrapper.getRequestURI();
@@ -113,7 +130,7 @@ public class RestServletHandler extends AbstractServletHandler {
             String body = br.readLine();
 
             Common.log("Rest",requestWrapper.getRemoteAddress(), "joinV1:", body);
-            getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
+            Common.getInstance().getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");

@@ -4,15 +4,11 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
-import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MainServletHandler;
 import com.edeqa.waytousserver.servers.MyHttpRedirectHandler;
 import com.edeqa.waytousserver.servers.MyWsServer;
 import com.edeqa.waytousserver.servers.RestServletHandler;
 import com.edeqa.waytousserver.servers.TrackingServletHandler;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.FirebaseCredentials;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
@@ -23,7 +19,6 @@ import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
@@ -56,19 +51,19 @@ public class WaytousServer {
         Common.log("Main", "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);
 
-        try {
+        /*try {
             FirebaseApp.initializeApp(new FirebaseOptions.Builder()
                     .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
                     .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
                     .build());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        DataProcessorFirebaseV1 dataProcessorFirebaseV1 = new DataProcessorFirebaseV1();
-//        Common.getInstance().setDataProcessor(dataProcessorFirebaseV1);
-        wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase(), dataProcessorFirebaseV1);
-        wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase(), dataProcessorFirebaseV1);
+
+//        Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
+        wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase());
+        wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase());
 
         Common.log("Main","Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
 

@@ -34,19 +34,21 @@ public class MainServletHandler extends AbstractServletHandler {
 
     private Map<String, String> substitutions;
 
-    @SuppressWarnings("HardCodedStringLiteral")
-    public void init() throws ServletException {
-        super.init();
-        substitutions = new LinkedHashMap<>();
-        substitutions.put("\\$\\{SERVER_BUILD\\}", ""+ SERVER_BUILD);
-        substitutions.put("\\$\\{APP_NAME\\}", SENSITIVE.getAppName() + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
-        substitutions.put("\\$\\{SUPPORT_EMAIL\\}", SENSITIVE.getSupportEmail());
-        substitutions.put("\\$\\{WEB_PAGE\\}", SENSITIVE.getAppLink());
 
+    private void initSubstitutions() {
+        if(substitutions == null) {
+            substitutions = new LinkedHashMap<>();
+            substitutions.put("\\$\\{SERVER_BUILD\\}", "" + SERVER_BUILD);
+            substitutions.put("\\$\\{APP_NAME\\}", SENSITIVE.getAppName() + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
+            substitutions.put("\\$\\{SUPPORT_EMAIL\\}", SENSITIVE.getSupportEmail());
+            substitutions.put("\\$\\{WEB_PAGE\\}", SENSITIVE.getAppLink());
+        }
     }
 
     @Override
     public void perform(RequestWrapper requestWrapper) {
+        initSubstitutions();
+
         try {
             String ifModifiedSince = null;
 

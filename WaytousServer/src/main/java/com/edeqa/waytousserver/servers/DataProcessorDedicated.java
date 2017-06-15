@@ -492,4 +492,9 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
         // TODO
     }
 
+    @Override
+    public String createCustomToken(String id) {
+        return null;
+    }
+
 }

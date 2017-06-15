@@ -7,14 +7,14 @@ buildscript {
     }
     dependencies {
         classpath 'com.google.appengine:gradle-appengine-plugin:1.9.51'
-        classpath 'com.google.javascript:closure-compiler:v20150609'
-        classpath 'com.yahoo.platform.yui:yuicompressor:2.4.6'
+//        classpath 'com.google.javascript:closure-compiler:v20150609'
+//        classpath 'com.yahoo.platform.yui:yuicompressor:2.4.6'
     }
 }
 
 plugins {
-    id "com.eriwen.gradle.js" version "2.14.1"
-    id "com.eriwen.gradle.css" version "2.14.0"
+//    id "com.eriwen.gradle.js" version "2.14.1"
+//    id "com.eriwen.gradle.css" version "2.14.0"
 }
 
 apply plugin: 'java'
@@ -22,10 +22,10 @@ apply plugin: 'war'
 apply plugin: 'appengine'
 
 configurations {
-    closureCompiler
+//    closureCompiler
 }
 dependencies {
-    closureCompiler 'com.google.javascript:closure-compiler:v20150609'
+//    closureCompiler 'com.google.javascript:closure-compiler:v20150609'
 }
 
 //minifyJs {
@@ -76,24 +76,28 @@ dependencies {
 //    }
 //}
 
-dependencies {
-//    compile 'javax.websocket:javax.websocket-api:1.1'
-//    compile 'org.json:json:20140107'
-//    compile 'org.json:json:20131018'
-//    compile 'org.json:json:20160212'
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
+dependencies {
+
+// common rows
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.53'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.53'
-    compile ('com.google.firebase:firebase-admin:5.0.0') {
-        exclude group: 'com.google.guava'
-    }
-    compile 'com.google.guava:guava:20.0'
-    compile 'com.google.firebase:firebase-server-sdk:3.0.3'
-    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
-//    compile 'javax.servlet:servlet-api:3.1.0'
     compile 'org.java-websocket:Java-WebSocket:1.3.4'
-    targetCompatibility = '1.7'
-    sourceCompatibility = '1.7'
+
+// gae rows
+    compile 'com.google.firebase:firebase-server-sdk:3.0.3'
+    compile 'com.google.guava:guava:20.0'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'org.apache.httpcomponents:httpcomponents-client:4.5.3'
+
+// server rows
+//    compile 'com.google.firebase:firebase-admin:5.1.0'
+//    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+
+//    targetCompatibility = '1.7'
+//    sourceCompatibility = '1.7'
 }
 
 //war {
