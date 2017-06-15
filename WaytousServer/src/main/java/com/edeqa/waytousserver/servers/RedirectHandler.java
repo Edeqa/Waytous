@@ -19,7 +19,9 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 /**
  * Created 10/5/16.
  */
-public class MyHttpRedirectHandler implements HttpHandler {
+public class RedirectHandler implements HttpHandler {
+
+    private final static String LOG = "Redirect";
 
     @Override
     public void handle(final HttpExchange exchange) throws IOException {
@@ -34,7 +36,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
                 host = InetAddress.getLocalHost().getHostAddress();
             }
 
-            Common.log("Redirect",exchange.getRemoteAddress(),host + uri.getPath());
+            Common.log(LOG,exchange.getRemoteAddress(),host + uri.getPath());
 
             ArrayList<String> parts = new ArrayList<>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
@@ -60,7 +62,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
                         + "&sd=Waytous+description"
                         + "&si=https://raw.githubusercontent.com/Edeqa/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
 
-                Common.log("Redirect ->", redirectLink);
+                Common.log(LOG,"->", redirectLink);
 
                 Headers responseHeaders = exchange.getResponseHeaders();
                 responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
@@ -88,7 +90,7 @@ public class MyHttpRedirectHandler implements HttpHandler {
     public void redirect(HttpExchange exchange, String host, String path) throws IOException {
         String newUri = "https://" + host + Common.getWrappedHttpsPort() + path;
 
-        Common.log("Redirect ->", newUri);
+        Common.log(LOG, "->", newUri);
 
         String requestMethod = exchange.getRequestMethod();
         if (requestMethod.equalsIgnoreCase("GET")) {

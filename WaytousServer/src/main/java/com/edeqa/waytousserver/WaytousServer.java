@@ -4,8 +4,9 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.DigestAuthenticator;
 import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
+import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MainServletHandler;
-import com.edeqa.waytousserver.servers.MyHttpRedirectHandler;
+import com.edeqa.waytousserver.servers.RedirectHandler;
 import com.edeqa.waytousserver.servers.MyWsServer;
 import com.edeqa.waytousserver.servers.RestServletHandler;
 import com.edeqa.waytousserver.servers.TrackingServletHandler;
@@ -19,7 +20,7 @@ import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +31,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
-import javax.servlet.ServletException;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
@@ -43,169 +43,92 @@ import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 @SuppressWarnings("HardCodedStringLiteral")
 public class WaytousServer {
 
+    private static final String LOG = "Server";
     private static MyWsServer wsServer;
     private static MyWsServer wssServer;
 
-    public static void main(final String[] args ) throws InterruptedException, IOException, ServletException {
+    public static void main(final String[] args ) throws Exception {
 
-        Common.log("Main", "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
+
+        Common.log(LOG, "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);
 
-        /*try {
-            FirebaseApp.initializeApp(new FirebaseOptions.Builder()
-                    .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
-                    .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
-                    .build());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
+        Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
 
+        if(!Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode()){
+            throw new RuntimeException("\n\nThis configuration can not be runned in stand-alone server mode. Set the installation type in build.gradle with the following property:\n\tdef installationType = 'standalone-server'\n");
+        }
 
-//        Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
         wsServer = new MyWsServer(SENSITIVE.getWsPortFirebase());
         wssServer = new MyWsServer(SENSITIVE.getWssPortFirebase());
 
-        Common.log("Main","Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
+        Common.log(LOG,"Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
 
-        try {
-            String STORETYPE = "JKS";
-            String STOREPASSWORD = SENSITIVE.getSSLCertificatePassword();
-            String KEYPASSWORD = SENSITIVE.getSSLCertificatePassword();
+        String storeType = "JKS";
+        String storePassword = SENSITIVE.getSSLCertificatePassword();
 
-            KeyStore ks = KeyStore.getInstance(STORETYPE);
-            File kf = new File(SENSITIVE.getKeystoreFilename());
-            Common.log("Main","Keystore file: "+kf.getCanonicalPath());
-            ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
+        KeyStore keyStore = KeyStore.getInstance(storeType);
+        File kf = new File(SENSITIVE.getKeystoreFilename());
 
-            Common.log("Main", "Server \t\t\t| Port \t| Path");
-            Common.log("Main", "----------------------------------------------");
+        Common.log(LOG, "Keystore file: " + kf.getCanonicalPath());
+        keyStore.load(new FileInputStream(kf), storePassword.toCharArray());
 
-            //    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        //    kmf.init(ks, KEYPASSWORD.toCharArray());
-        //    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        //    tmf.init(ks);
+        Common.log(LOG, "Server \t\t\t\t| Port \t| Path");
+        Common.log(LOG, "----------------------------------------------");
 
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(keyStore, storePassword.toCharArray());
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        tmf.init(keyStore);
 
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(ks, KEYPASSWORD.toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            tmf.init(ks);
+        DefaultSSLWebSocketServerFactory socket = new DefaultSSLWebSocketServerFactory(sslContext);
+        wssServer.setWebSocketFactory(socket);
 
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-        //    sslContext.init(null, null, null);
-            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        new Thread() {
+            public void run() {
+                try {
+                    WebSocketImpl.DEBUG = false;
+                    Common.log(LOG, "WS FB\t\t\t\t| " + SENSITIVE.getWsPortFirebase() + "\t|");
+                    wsServer.start();
+                    Common.log(LOG, "WSS FB\t\t\t\t| " + SENSITIVE.getWssPortFirebase() + "\t|");
+                    wssServer.start();
 
-            ////////////////*///////////
-         /*   CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        // From https://www.washington.edu/itconnect/security/ca/load-der.crt
-            InputStream caInput = new BufferedInputStream(new FileInputStream("verisign.cert"));
-            Certificate ca;
-            try {
-                ca = cf.generateCertificate(caInput);
-                Common.log("Main", "ca=" + ((X509Certificate) ca).getSubjectDN());
-            } finally {
-                caInput.close();
-            }
-
-                String keyStoreType = KeyStore.getDefaultType();
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            keyStore.load(null, null);
-            keyStore.setCertificateEntry("ca", ca);// my question shows how to get 'ca'
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        // Initialise the TMF as you normally would, for example:
-            tmf.init(keyStore);
-
-            TrustManager[] trustManagers = tmf.getTrustManagers();
-            final X509TrustManager origTrustmanager = (X509TrustManager)trustManagers[0];
-
-            TrustManager[] wrappedTrustManagers = new TrustManager[]{
-                    new X509TrustManager() {
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return origTrustmanager.getAcceptedIssuers();
-                        }
-
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                            try {
-                                origTrustmanager.checkClientTrusted(certs, authType);
-                            } catch (CertificateException e) {
-                                e.printStackTrace();
+                        /*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
+                        while (true) {
+    //                        if(!wssServer.parse(sysin)) break;
+                            String in = sysin.readLine();
+                            Common.log(LOG, "READ:" + in);
+    //                        s.sendToAll(in);
+                            if (in.equals("exit")) {
+                                wssServer.stop();
+                                break;
                             }
-                        }
-
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                            try {
-                                origTrustmanager.checkServerTrusted(certs, authType);
-                            } catch (CertificateExpiredException e) {
-                                e.printStackTrace();
-                            } catch (CertificateException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-            };
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, wrappedTrustManagers, null);
-        */
-
-
-            DefaultSSLWebSocketServerFactory socket = new DefaultSSLWebSocketServerFactory(sslContext);
-        //    socket.setEnabledCipherSuites(sc.getServerSocketFactory().getSupportedCipherSuites());
-            wssServer.setWebSocketFactory(socket);
-
-
-            new Thread() {
-                public void run() {
-                    try {
-                        WebSocketImpl.DEBUG = false;
-                        Common.log("Main", "WS FB\t\t\t\t| " + SENSITIVE.getWsPortFirebase() + "\t|");
-                        wsServer.start();
-                        Common.log("Main", "WSS FB\t\t\t\t| " + SENSITIVE.getWssPortFirebase() + "\t|");
-                        wssServer.start();
-
-                            /*BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
-                            while (true) {
-        //                        if(!wssServer.parse(sysin)) break;
-                                String in = sysin.readLine();
-                                Common.log("Main", "READ:" + in);
-        //                        s.sendToAll(in);
-                                if (in.equals("exit")) {
-                                    wssServer.stop();
-                                    break;
-                                }
-                            }*/
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
+                        }*/
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-            }.start();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+            }
+        }.start();
 
         HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(SENSITIVE.getHttpPort()), 0);
 
-        MyHttpRedirectHandler redirectServer = new MyHttpRedirectHandler();
-        Common.log("Main", "Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
+        RedirectHandler redirectServer = new RedirectHandler();
+        Common.log(LOG, "Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
         server.createContext("/", redirectServer);
 
-
         MainServletHandler mainServer = new MainServletHandler();
-
         RestServletHandler restServer = new RestServletHandler();
-
         TrackingServletHandler trackingServer = new TrackingServletHandler();
-
         AdminServletHandler adminServer = new AdminServletHandler();
 
+        HttpsServer sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsPort()), 0);
+        HttpsServer sslAdminServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsAdminPort()), 0);
 
-        try {
-            HttpsServer sslServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsPort()), 0);
-            HttpsServer sslAdminServer = HttpsServer.create(new InetSocketAddress(SENSITIVE.getHttpsAdminPort()), 0);
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+ /*           SSLContext sslContext = SSLContext.getInstance("TLS");
 
             // initialise the keystore
             char[] password = SENSITIVE.getSSLCertificatePassword().toCharArray();
@@ -223,78 +146,78 @@ public class WaytousServer {
 
             // setup the HTTPS context and parameters
             sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+*/
+        sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+            public void configure(HttpsParameters params) {
+                try {
+                    // initialise the SSL context
+                    SSLContext context = SSLContext.getDefault();
+                    SSLEngine engine = context.createSSLEngine();
+                    params.setNeedClientAuth(false);
+                    params.setCipherSuites(engine.getEnabledCipherSuites());
+                    params.setProtocols(engine.getEnabledProtocols());
 
-            sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-                public void configure(HttpsParameters params) {
-                    try {
-                        // initialise the SSL context
-                        SSLContext c = SSLContext.getDefault();
-                        SSLEngine engine = c.createSSLEngine();
-                        params.setNeedClientAuth(false);
-                        params.setCipherSuites(engine.getEnabledCipherSuites());
-                        params.setProtocols(engine.getEnabledProtocols());
+                    // get the default parameters
+                    SSLParameters defaultSSLParameters = context.getDefaultSSLParameters();
+                    params.setSSLParameters(defaultSSLParameters);
 
-                        // get the default parameters
-                        SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
-                        params.setSSLParameters(defaultSSLParameters);
-
-                    } catch (Exception ex) {
-                        Common.log("Main","Failed to create HTTPS port");
-                    }
+                } catch (Exception ex) {
+                    Common.log(LOG,"Failed to configure SSL server");
                 }
-            });
+            }
+        });
 
-            sslAdminServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-                public void configure(HttpsParameters params) {
-                    try {
-                        // initialise the SSL context
-                        SSLContext c = SSLContext.getDefault();
-                        SSLEngine engine = c.createSSLEngine();
-                        params.setNeedClientAuth(false);
-                        params.setCipherSuites(engine.getEnabledCipherSuites());
-                        params.setProtocols(engine.getEnabledProtocols());
+        sslAdminServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+            public void configure(HttpsParameters params) {
+                try {
+                    // initialise the SSL context
+                    SSLContext context = SSLContext.getDefault();
+                    SSLEngine engine = context.createSSLEngine();
+                    params.setNeedClientAuth(false);
+                    params.setCipherSuites(engine.getEnabledCipherSuites());
+                    params.setProtocols(engine.getEnabledProtocols());
 
-                        // get the default parameters
-                        SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
-                        params.setSSLParameters(defaultSSLParameters);
+                    // get the default parameters
+                    SSLParameters defaultSSLParameters = context.getDefaultSSLParameters();
+                    params.setSSLParameters(defaultSSLParameters);
 
-                    } catch (Exception ex) {
-                        Common.log("Main","Failed to create HTTPS port");
-                    }
+                } catch (Exception ex) {
+                    Common.log(LOG,"Failed to configure admin SSL server");
                 }
-            });
+            }
+        });
 
-            sslServer.createContext("/", mainServer);
-            Common.log("Main", "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
+        sslServer.createContext("/", mainServer);
+        Common.log(LOG, "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
 
-            sslServer.createContext("/track/", trackingServer);
-            Common.log("Main", "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track/");
+        sslServer.createContext("/track/", trackingServer);
+        Common.log(LOG, "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track/");
 
-            sslServer.createContext("/group/", trackingServer);
-            Common.log("Main", "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
+        sslServer.createContext("/group/", trackingServer);
+        Common.log(LOG, "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
 
-            sslServer.createContext("/rest/", restServer);
-            Common.log("Main", "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/rest/");
+        sslServer.createContext("/rest/", restServer);
+        Common.log(LOG, "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/rest/");
 
-            sslAdminServer.createContext("/admin", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
-            sslAdminServer.createContext("/admin/logout", adminServer);
-            Common.log("Main", "Admin HTTPS\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| " + "/");
+        sslAdminServer.createContext("/admin", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
+        sslAdminServer.createContext("/admin/logout", adminServer);
+        Common.log(LOG, "Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| " + "/");
 
-            sslAdminServer.createContext("/", mainServer);
-            Common.log("Main", "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| /, /*");
+        sslAdminServer.createContext("/", mainServer);
+        Common.log(LOG, "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| /, /*");
 
-            ExecutorService executor = Executors.newCachedThreadPool();
-            server.setExecutor(executor);
-            sslServer.setExecutor(executor);
-            sslAdminServer.setExecutor(executor);
+        ExecutorService executor = Executors.newCachedThreadPool();
+        server.setExecutor(executor);
+        sslServer.setExecutor(executor);
+        sslAdminServer.setExecutor(executor);
 
-//            sslServer.setHttpsConfigurator(new HttpsConfigurator(SSLContext.getDefault()));
-            server.start();
-            sslServer.start();
-            sslAdminServer.start();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+        server.start();
+        sslServer.start();
+        sslAdminServer.start();
+
+        Common.log("Web\t\t", "http://" + InetAddress.getLocalHost().getHostAddress() + Common.getWrappedHttpPort());
+        Common.log("Track\t", "http://" + InetAddress.getLocalHost().getHostAddress() + Common.getWrappedHttpPort() + "/track/");
+        Common.log("Admin\t", "https://" + InetAddress.getLocalHost().getHostAddress() + ":" + SENSITIVE.getHttpsAdminPort() + "/admin/");
 
     }
 

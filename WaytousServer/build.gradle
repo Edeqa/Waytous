@@ -17,6 +17,16 @@ plugins {
 //    id "com.eriwen.gradle.css" version "2.14.0"
 }
 
+/**
+ * NOTE!
+ * You must use different run configuraitons depending on this installation type.
+ * "App Engine DevAppServer" ("WaytousServlet") means installation type 'google-appengine'.
+ * "Application" ("WaytousServer") means installation type 'standalone-server'.
+ */
+//def installationType = 'google-appengine'
+def installationType = 'standalone-server'
+
+
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'appengine'
@@ -76,8 +86,8 @@ dependencies {
 //    }
 //}
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+//sourceCompatibility = JavaVersion.VERSION_1_7
+//targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
 
@@ -85,19 +95,28 @@ dependencies {
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.53'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.53'
     compile 'org.java-websocket:Java-WebSocket:1.3.4'
+//    compile 'org.json:json:20160212'
 
-// gae rows
-    compile 'com.google.firebase:firebase-server-sdk:3.0.3'
-    compile 'com.google.guava:guava:20.0'
-    compile 'javax.servlet:javax.servlet-api:3.1.0'
-    compile 'org.apache.httpcomponents:httpcomponents-client:4.5.3'
+// gae servlet rows
+    if (installationType.compareTo('google-appengine') == 0) {
+        compile 'com.google.firebase:firebase-server-sdk:3.0.3'
+        compile 'com.google.guava:guava:20.0'
+        compile 'javax.servlet:javax.servlet-api:3.1.0'
+        compile 'org.apache.httpcomponents:httpcomponents-client:4.5.3'
+    }
 
 // server rows
-//    compile 'com.google.firebase:firebase-admin:5.1.0'
-//    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    if (installationType.compareTo('standalone-server') == 0) {
+        compile 'com.google.firebase:firebase-admin:5.1.0'
+        compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    }
 
-//    targetCompatibility = '1.7'
-//    sourceCompatibility = '1.7'
+    configurations {
+        compile.exclude group: "org.apache.httpcomponents", module: "httpclient"
+//        compile.exclude group: "org.json", module: "json"
+    }
+    targetCompatibility = '1.7'
+    sourceCompatibility = '1.7'
 }
 
 //war {

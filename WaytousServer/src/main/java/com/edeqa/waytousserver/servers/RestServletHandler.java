@@ -36,13 +36,15 @@ public class RestServletHandler extends AbstractServletHandler {
         if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION) == null) {
             try {
                 Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
-            } catch (ServletException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
 //                requestWrapper.sendResponseHeaders(500,0);
 //                requestWrapper.getResponseBody().write(e.getMessage().getBytes());
             }
         }
-    }
+        if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode()){
+            throw new ServletException("\n\nThis configuration can not be runned in Google AppEngine mode. Set the installation type in build.gradle with the following property:\n\tdef installationType = 'google-appengine'\n");
+        }    }
 
     @SuppressWarnings("HardCodedStringLiteral")
     @Override

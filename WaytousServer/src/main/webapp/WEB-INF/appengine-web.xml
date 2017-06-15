@@ -13,16 +13,6 @@
         <instances>1</instances>
     </manual-scaling>
 
-
-    <!--<instance-class>F2</instance-class>
-    <automatic-scaling>
-        <min-idle-instances>5</min-idle-instances>
-        <max-idle-instances>automatic</max-idle-instances>
-        <min-pending-latency>30ms</min-pending-latency>
-        <max-pending-latency>automatic</max-pending-latency>
-        <max-concurrent-requests>50</max-concurrent-requests>
-    </automatic-scaling>-->
-
     <static-files>
         <exclude path="/js/**.*" />
         <exclude path="/css/**.*" />

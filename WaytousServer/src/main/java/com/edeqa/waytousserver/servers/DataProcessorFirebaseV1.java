@@ -95,7 +95,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         try {
             FirebaseApp.getInstance();
         } catch (Exception e){
-            Common.log("doesn't exist...");
+//            Common.log("doesn't exist...");
 //            e.printStackTrace();
         }
 
@@ -104,7 +104,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             FirebaseApp.initializeApp(options);
 //            }
         } catch(Exception e){
-            Common.log("already exists...");
+//            Common.log("already exists...");
 //            e.printStackTrace();
         }
         try {
@@ -116,6 +116,16 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
     }
 
+    /**
+     * This method creates the options for Firebase connecting. Depending on current installation type
+     * it defines the properly request and performs it. Installation type can be defined in gradle.build.
+     *
+     * Current installation type is recognizing by presense of method:
+     * - "setCredential" in stand-alone server mode,
+     * - "setServiceAccount" in Google AppEngine mode.
+     *
+     * Stand-alone server mode extends com.sun.net.httpserver.HttpServer.
+     */
     private FirebaseOptions createFirebaseOptions() throws FileNotFoundException {
 
         FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
@@ -139,6 +149,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 Class tempClass = Class.forName("com.google.firebase.auth.FirebaseCredentials");
                 Method fromCertificate = tempClass.getDeclaredMethod("fromCertificate", InputStream.class);
 
+                assert method != null;
                 builder = (FirebaseOptions.Builder) method.invoke(builder, fromCertificate.invoke(null, new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())));
 //                builder = (FirebaseOptions.Builder) method.invoke(builder, FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())));
             } catch (Exception e) {
@@ -146,13 +157,13 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         } else {
             try {
+                assert method != null;
                 builder = (FirebaseOptions.Builder) method.invoke(builder, new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()));
             } catch (IllegalAccessException | InvocationTargetException | IOException e) {
                 e.printStackTrace();
             }
         }
 
-        FirebaseOptions options = builder.setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl()).build();
 //        FirebaseOptions options = new FirebaseOptions.Builder()
 //                .setCredential(com.google.firebase.auth.FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
 //                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
@@ -162,7 +173,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //                .setServiceAccount(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()))
 //                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
 //                .build();
-        return options;
+        return builder.setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl()).build();
     }
 
     @Override
@@ -211,6 +222,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 if (request.has(REQUEST_DEVICE_ID)) {
                     final MyGroup group = new MyGroup();
                     final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                    //noinspection unchecked
                     final Callable1<JSONObject>[] onresult = new Callable1[2];
                     onresult[0] = new Callable1<JSONObject>() {
                         @Override
@@ -270,7 +282,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 ++count;
                             }
                             if(found) {
-                                final MyGroup group = new MyGroup();
+//                                final MyGroup group = new MyGroup();
                                 user.number = count;
                                 registerUser(groupId, user, request);
                             } else {
@@ -922,17 +934,21 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         this.ref = ref;
     }
 
+
+    /**
+     * This method requests and returns customToken from Firebase. Depending on current installation type
+     * it defines the properly request and performs it. Installation type can be defined in gradle.build.
+     */
     @Override
-    public String createCustomToken(String id) {
+    public String createCustomToken(String uid) {
         String customToken = null;
         if(Common.getInstance().getDataProcessor("v1").isServerMode()) {
             try {
                 Class tempClass = Class.forName("com.google.firebase.auth.FirebaseAuth");
                 Method method = tempClass.getDeclaredMethod("createCustomToken", String.class);
-                Task<String> taskCreateToken = (Task<String>) method.invoke(FirebaseAuth.getInstance(), id);
+                Task<String> taskCreateToken = (Task<String>) method.invoke(FirebaseAuth.getInstance(), uid);
                 Tasks.await(taskCreateToken);
                 customToken = taskCreateToken.getResult();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -19,7 +19,7 @@
 /options_developer.json
 /options_inchem.json
 app/src/test/
-/debug.jks
+/src/main/webapp/WEB-INF/debug.jks
 /deploy.sh
 /deploy_debug.sh
 /app/src/debug/

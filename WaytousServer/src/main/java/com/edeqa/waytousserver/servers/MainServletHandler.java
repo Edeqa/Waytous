@@ -52,16 +52,14 @@ public class MainServletHandler extends AbstractServletHandler {
         try {
             String ifModifiedSince = null;
 
-            Object object = new Object();
             URI uri = requestWrapper.getRequestURI();
             if ("/_ah/start".equals(uri.getPath())) {
-                System.out.println("AHSTART");
                 requestWrapper.sendResponseHeaders(200,0);
                 requestWrapper.getOutputStream().close();
                 return;
             } else if("/_ah/stop".equals(uri.getPath())) {
-                System.out.println("AHSTOP");
-                object.notify();
+                requestWrapper.sendResponseHeaders(200,0);
+                requestWrapper.getOutputStream().close();
                 return;
             }
 

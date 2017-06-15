@@ -6,9 +6,6 @@ import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.tasks.Task;
-import com.google.firebase.tasks.Tasks;
 
 import org.json.JSONObject;
 
@@ -64,27 +61,17 @@ public class AdminServletHandler extends AbstractServletHandler {
         if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION) == null) {
             try {
                 Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
-            } catch (ServletException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
-//                requestWrapper.sendResponseHeaders(500,0);
-//                requestWrapper.getResponseBody().write(e.getMessage().getBytes());
+            }
+            if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode()){
+                throw new ServletException("\n\nThis configuration can not be runned in Google AppEngine mode. Set the installation type in build.gradle with the following property:\n\tdef installationType = 'google-appengine'\n");
             }
         }
     }
 
     @Override
     public void perform(final RequestWrapper requestWrapper) throws IOException {
-
-        /*FirebaseOptions options = null;
-        try {
-            options = new FirebaseOptions.Builder()
-                    .setCredential(FirebaseCredentials.fromCertificate(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile())))
-                    .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
-                    .build();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
 
         try {
             /*if("/".equals(requestWrapper.getRequestURI().getPath())) {
@@ -102,16 +89,8 @@ public class AdminServletHandler extends AbstractServletHandler {
                 }
             }
 
-
             try {
                 String customToken = Common.getInstance().getDataProcessor("v1").createCustomToken("Viewer");
-
-                System.out.println("TOKEN:"+customToken);
-//                    Map<String,Object> update = new HashMap<>();
-//                    update.put(Constants.DATABASE.USER_ACTIVE, false);
-//                    update.put(Constants.DATABASE.USER_COLOR, "black");
-//                    update.put(Constants.DATABASE.USER_CHANGED, new Date().getTime());
-//                    update.put(USER_NAME,"Viewer");
 
                 final JSONObject o = new JSONObject();
                 o.put("version", SERVER_BUILD);
@@ -132,7 +111,6 @@ public class AdminServletHandler extends AbstractServletHandler {
 
                 Utils.sendResult.call(requestWrapper, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
 
-                // Send token back to client
             } catch (Exception e) {
                 e.printStackTrace();
             }

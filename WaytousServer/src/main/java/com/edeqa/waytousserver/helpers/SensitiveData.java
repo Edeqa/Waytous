@@ -45,7 +45,6 @@ public class SensitiveData {
             }
             file = new File(args[0]);
         }
-        System.out.println("FILE:"+file.getAbsolutePath());
         readWithFile(file);
     }
 
@@ -186,10 +185,10 @@ public class SensitiveData {
         for(int i=0; i<types.length(); i++) {
             JSONObject o = types.getJSONObject(i);
             for(HashMap<String,Serializable> x:commonTypes){
-                if(x.containsKey("type") && o.has("type") && ((String)x.get("type")).equals(o.getString("type"))) {
+                if(x.containsKey("type") && o.has("type") && (x.get("type")).equals(o.getString("type"))) {
                     commonTypes.remove(x);
                     break;
-                } else if(x.containsKey("name") && o.has("name") && ((String)x.get("name")).equals(o.getString("name"))) {
+                } else if(x.containsKey("name") && o.has("name") && (x.get("name")).equals(o.getString("name"))) {
                     commonTypes.remove(x);
                     break;
                 }

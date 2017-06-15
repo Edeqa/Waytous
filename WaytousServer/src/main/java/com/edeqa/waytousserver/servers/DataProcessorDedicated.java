@@ -58,7 +58,7 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 public class DataProcessorDedicated extends AbstractDataProcessor {
 
     public static String VERSION = "v1";
-    private HashMap<String,FlagHolder> flagHolders;
+//    private HashMap<String,FlagHolder> flagHolders;
 
     public DataProcessorDedicated() {
         super();
@@ -177,7 +177,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
             System.out.println("WSS:on message:" + conn.getRemoteSocketAddress() + ": " + message);
 
             String ip = conn.getRemoteSocketAddress().toString();
-            JSONObject request = null, response = new JSONObject();
+            JSONObject request, response = new JSONObject();
 
             try {
                 request = new JSONObject(message);
@@ -185,7 +185,7 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
                 System.err.println("WSS:error in request message: "+e.getMessage());
                 return;
             }
-            if (request == null || !request.has(REQUEST_TIMESTAMP)) return;
+            if (!request.has(REQUEST_TIMESTAMP)) return;
 //            long timestamp = request.getLong(REQUEST_TIMESTAMP);
         /*if(new Date().getTime() - timestamp > LIFETIME_REQUEST_TIMEOUT*1000) {
             System.out.println("WSS:ignore request because of timeout");
