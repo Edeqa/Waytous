@@ -298,7 +298,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             .addOnCompleteListener(new Callable1<DataSnapshot>() {
                                 @Override
                                 public void call(DataSnapshot dataSnapshot) {
-                                    System.out.println("DG:" + dataSnapshot.getKey() + ":" + dataSnapshot.getValue());
                                     if(dataSnapshot.getValue() != null) { //join as existing member, go to check
                                         CheckReq check = new CheckReq();
                                         check.setControl(Utils.getUnique());
@@ -327,7 +326,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             .addOnCompleteListener(new Callable1<DataSnapshot>() {
                                 @Override
                                 public void call(DataSnapshot dataSnapshot) {
-                                    System.out.println("DF:" + dataSnapshot.getKey() + ":" + dataSnapshot.getValue());
                                     if (dataSnapshot.getValue() != null) {
                                         String deviceId = request.getString(REQUEST_DEVICE_ID);
                                         final String uid = Utils.getEncryptedHash(deviceId);
@@ -387,7 +385,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                                             try {
                                                 String customToken = createCustomToken(check.getUid());
-                                                System.out.println("TOKENGET:"+customToken);
 
                                                 Map<String,Object> update = new HashMap<>();
                                                 update.put(Constants.DATABASE.USER_ACTIVE, true);
@@ -672,7 +669,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             Common.log(LOG, "onMessage:registerUser:"+user.getNumber(),"uid:"+uid,"group:"+groupId);
 
             String customToken = createCustomToken(uid);
-            System.out.println("TOKENGET2:"+customToken);
 
             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
             if (!REQUEST_JOIN_GROUP.equals(request.getString(REQUEST)) && !REQUEST_CHECK_USER.equals(request.getString(REQUEST))) {
@@ -953,7 +949,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 e.printStackTrace();
             }
         } else {
-            customToken = String.valueOf(FirebaseAuth.getInstance().createCustomToken("Viewer"));
+            customToken = String.valueOf(FirebaseAuth.getInstance().createCustomToken(uid));
         }
         return customToken;
     }

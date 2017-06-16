@@ -18,6 +18,9 @@ import javax.servlet.ServletException;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytousserver.helpers.HtmlGenerator.CONTENT;
+import static com.edeqa.waytousserver.helpers.HtmlGenerator.META;
+import static com.edeqa.waytousserver.helpers.HtmlGenerator.NAME;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.ONLOAD;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SCRIPT;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SRC;
@@ -70,6 +73,7 @@ public class TrackingServletHandler extends AbstractServletHandler {
 
         html.clear();
         html.getHead().add(TITLE).with("Waytous");
+//        html.getHead().add(META).with(NAME, "theme-color").with(CONTENT, "#aaeeee");
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WTU = new Main()).start();");
 

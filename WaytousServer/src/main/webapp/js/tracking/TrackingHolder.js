@@ -121,14 +121,14 @@ function TrackingHolder(main) {
                 u.notification({
                     title: u.lang.waytous_online.innerText,
                     body: u.lang.you_have_joined_to_the_group_s.format(main.tracking.getToken()).innerText,
-                    icon: "/icons/favicon-256x256.png",
+                    icon: "/images/waytous-transparent-256.png",
                     duration: 10000,
                     onclick: function(e){
                         console.log(this,e)
                     }
                 });
 
-                if (!wakeLockEnabled && /android/ig.test(navigator.userAgent)) {
+                /*if (!wakeLockEnabled && /android/ig.test(navigator.userAgent)) {
                     noSleepDialog = noSleepDialog || u.dialog({
                         queue: true,
                         items: [
@@ -147,7 +147,7 @@ function TrackingHolder(main) {
                         timeout: 3000
                     });
                     noSleepDialog.open();
-                }
+                }*/
                 break;
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;

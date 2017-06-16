@@ -98,6 +98,7 @@ function PropertiesHolder(main) {
                         user.fire(EVENTS.UNSELECT_USER);
                     }
                 });
+
 //                main.users.forAllUsers(function(number,user){
 //                    if(myUser != user) {
 //                    }
@@ -125,7 +126,7 @@ function PropertiesHolder(main) {
                 break;
             case EVENTS.MAP_READY:
                 main.me.createViews();
-                main.me.fire(EVENTS.SELECT_USER);
+                main.me.fire(EVENTS.SELECT_SINGLE_USER);
                 main.me.fire(EVENTS.CHANGE_COLOR, "#0000FF");
                 main.me.fire(EVENTS.MAKE_ACTIVE);
                 break;

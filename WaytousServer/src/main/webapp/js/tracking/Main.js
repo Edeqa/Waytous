@@ -20,7 +20,7 @@ function Main() {
     var alert;
     var defaultResources = "/locales/tracking.en.json";
 
-    if ("serviceWorker" in navigator) {
+    if (false && "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("/ServiceWorker.js")
             .then(function(registration) {
@@ -60,6 +60,10 @@ function Main() {
 
         });
 
+        window.addEventListener("load", function() {
+            window. scrollTo(0, 0);
+            document.addEventListener("touchmove", function(e) { e.preventDefault() });
+        });
         //        window.onload = function() {
         //            window.scrollTo(0, 1);
         //            document.addEventListener("touchmove", function(e) { e.preventDefault() });
@@ -124,7 +128,7 @@ function Main() {
             .place(HTML.LINK, {rel:"apple-touch-startup-image", href: "/icons/apple-touch-icon.png"})
             .place(HTML.META, {name:"apple-mobile-web-app-title", content:main.appName})
             .place(HTML.META, {name:"apple-mobile-web-app-capable", content:"yes"})
-//            .place(HTML.META, {name:"apple-mobile-web-app-status-bar-style", content:"black-translucent"})
+            .place(HTML.META, {name:"apple-mobile-web-app-status-bar-style", content:"black-translucent"})
             .place(HTML.META, {name:"mobile-web-app-capable", content:"yes"})
             .place(HTML.META, {name:"application-name", content:main.appName})
             .place(HTML.META, {name:"application-shortName", content:main.appName})

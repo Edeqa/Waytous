@@ -107,6 +107,7 @@ function CameraHolder(main) {
             case EVENTS.MARKER_CLICK:
                 onEvent.call(this,EVENTS.CAMERA_NEXT_ORIENTATION);
                 break;
+/*
             case EVENTS.CAMERA_NEXT_ORIENTATION:
                 console.log("NEXTORIENTATION",this);
                 var camera = this.views.camera;
@@ -126,6 +127,7 @@ function CameraHolder(main) {
                 if(orientation == CAMERA_ORIENTATION_USER) orientation = CAMERA_ORIENTATION_NORTH;
                 onChangeLocation.call(this,this.location);
                 break;
+*/
             case EVENTS.SELECT_USER:
                 orientation = this && this.views && this.views.camera ? this.views.camera.orientation : CAMERA_ORIENTATION_NORTH;
                 onChangeLocation.call(this, this.location);
@@ -138,7 +140,6 @@ function CameraHolder(main) {
 //                menuFitToScreen.classList.remove("disabled");
                 break;
             case EVENTS.CAMERA_ZOOM:
-
                 if(main.users.getCountSelected()==1) {
                     main.users.forAllUsers(function (number, user) {
                         if(user.properties.selected) {

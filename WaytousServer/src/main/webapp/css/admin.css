@@ -11,7 +11,7 @@ h2 {
     padding-right: 5px;
     overflow-y: auto;
     flex: 1 1;
-    display: flex;
+    display: block;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -79,6 +79,9 @@ h2 {
 .logs-header-input {
     margin: 4px;
     width: 30px;
+}
+.table {
+    margin-bottom: 5px;
 }
 .table-logs {
     white-space: pre-wrap;
@@ -206,7 +209,9 @@ h2 {
         padding: 0px;
         position: fixed;
         top: 50px;
-        bottom: 50px;
+        bottom: 0px;
+        min-height: auto;
+        height: auto;
     }
     .buttons {
         text-align: center;
