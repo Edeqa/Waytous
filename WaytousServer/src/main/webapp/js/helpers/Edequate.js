@@ -1982,7 +1982,7 @@ function Edequate(options) {
                table.head.cells[index].firstChild.classList[sort > 0 ? "add" : "remove"]("table-sort-descend");
 
                var rows = [];
-               for(var i = 0; i < table.body.childNodes.length-1; i++) {
+               for(var i = 0; i < table.body.childNodes.length; i++) {
                     rows.push(table.body.childNodes[i]);
                }
 
@@ -1990,7 +1990,7 @@ function Edequate(options) {
                     var aCriteria = a.cells[index].sort == undefined ? a.cells[index].innerText.toLowerCase() : a.cells[index].sort;
                     var bCriteria = b.cells[index].sort == undefined ? b.cells[index].innerText.toLowerCase() : b.cells[index].sort;
 
-                  return aCriteria == bCriteria ? 0 : (aCriteria > bCriteria ? 1 : -1) * sort;
+                    return aCriteria == bCriteria ? 0 : (aCriteria > bCriteria ? 1 : -1) * sort;
                 });
 
 
@@ -2206,7 +2206,6 @@ function Edequate(options) {
         }
 
         table.body = create(HTML.DIV, {className:"tbody" + (options.bodyClassName ? " "+options.bodyClassName : "")}, table);
-
 
         table.placeholder = create(HTML.DIV, {
             className:"table-placeholder",

@@ -136,6 +136,7 @@ public class RestServletHandler extends AbstractServletHandler {
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "Action failed");
+            json.put("message", e.getMessage());
             Utils.sendResultJson.call(requestWrapper,json);
         }
         return false;

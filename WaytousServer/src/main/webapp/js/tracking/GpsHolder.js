@@ -144,13 +144,13 @@ function GpsHolder(main) {
                 positive: {
                     label: u.lang.ok,
                     onclick: function(){
-                        icon.classList.remove("hidden");
+                        icon.show();
                         alert.close();
                     }
                 },
                 negative: {
                     onclick: function(){
-                        icon.classList.remove("hidden");
+                        icon.show();
                         alert.close();
                     }
                 },
@@ -160,7 +160,7 @@ function GpsHolder(main) {
             }, main.right).open();
 
             icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
-                icon.classList.add("hidden");
+                icon.hide();
                 alert.open();
             }}, main.right);
         }, {

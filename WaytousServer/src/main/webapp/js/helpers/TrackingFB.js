@@ -52,7 +52,9 @@ function TrackingFB(main) {
         updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
-        ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);
+        ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates).catch(function(error) {
+            console.error(error);
+        });
 
         firebase.auth().signOut();
         trackingListener.onStop();
@@ -288,7 +290,9 @@ function TrackingFB(main) {
                 updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE1",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
-                ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates);
+                ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates).catch(function(error) {
+                    console.error(error);
+                });
 
                 return;
             } else if(type == REQUEST.WELCOME_MESSAGE) {
@@ -320,7 +324,9 @@ function TrackingFB(main) {
             updates[DATABASE.SECTION_USERS_DATA + "/" + main.me.number + "/" + DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE2",updates);
-            ref.update(updates);
+            ref.update(updates).catch(function(error) {
+               console.error(error);
+           });
 
         }
     }
