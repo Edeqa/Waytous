@@ -7,7 +7,7 @@ import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.TaskSingleValueEventFor;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
 import com.google.firebase.FirebaseApp;
@@ -223,8 +223,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     final MyGroup group = new MyGroup();
                     final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
                     //noinspection unchecked
-                    final Callable1<JSONObject>[] onresult = new Callable1[2];
-                    onresult[0] = new Callable1<JSONObject>() {
+                    final Runnable1<JSONObject>[] onresult = new Runnable1[2];
+                    onresult[0] = new Runnable1<JSONObject>() {
                         @Override
                         public void call(JSONObject json) {
                             ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
@@ -234,7 +234,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             registerUser(group.getId(), user, request);
                         }
                     };
-                    onresult[1] = new Callable1<JSONObject>() {
+                    onresult[1] = new Runnable1<JSONObject>() {
                         @Override
                         public void call(JSONObject json) {
                             group.fetchNewId();
@@ -256,7 +256,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     final DatabaseReference refGroup = ref.child(groupId);
 
                     final TaskSingleValueEventFor[] requestDataPrivateTask = new TaskSingleValueEventFor[1];
-                    requestDataPrivateTask[0] = new TaskSingleValueEventFor().addOnCompleteListener(new Callable1<DataSnapshot>() {
+                    requestDataPrivateTask[0] = new TaskSingleValueEventFor().addOnCompleteListener(new Runnable1<DataSnapshot>() {
                         @Override
                         public void call(DataSnapshot dataSnapshot) {
                             final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
@@ -295,7 +295,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     });
 
                     final TaskSingleValueEventFor numberForKeyTask = new TaskSingleValueEventFor()
-                            .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                            .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                 @Override
                                 public void call(DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.getValue() != null) { //join as existing member, go to check
@@ -323,7 +323,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             });
 
                     TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor()
-                            .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                            .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                 @Override
                                 public void call(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.getValue() != null) {
@@ -373,7 +373,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                         final DatabaseReference refGroup = ref.child(check.getGroupId());
 
-                        final TaskSingleValueEventFor userCheckTask = new TaskSingleValueEventFor().addOnCompleteListener(new Callable1<DataSnapshot>() {
+                        final TaskSingleValueEventFor userCheckTask = new TaskSingleValueEventFor().addOnCompleteListener(new Runnable1<DataSnapshot>() {
                             @Override
                             public void call(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue() != null) { //join as existing member
@@ -434,7 +434,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         });
 
                         TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor()
-                                .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                     @Override
                                     public void call(DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.getValue() != null) {
@@ -478,14 +478,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     @Override
-    public void createGroup(final MyGroup group, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+    public void createGroup(final MyGroup group, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject json = new JSONObject();
 
         Common.log(LOG,"New group ID:",group.getId());
 
         new TaskSingleValueEventFor(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()))
-                .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.getValue() == null) {
@@ -528,7 +528,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     @Override
-    public void deleteGroup(final String groupId, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+    public void deleteGroup(final String groupId, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
         final JSONObject json = new JSONObject();
 
         json.put(Constants.REST.GROUP_ID, groupId);
@@ -559,7 +559,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     @Override
-    public void switchPropertyInGroup(final String groupId, final String property, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+    public void switchPropertyInGroup(final String groupId, final String property, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
@@ -575,7 +575,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         };
 
         new TaskSingleValueEventFor(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
-                .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         Boolean value = (Boolean) dataSnapshot.getValue();
@@ -598,14 +598,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     @Override
-    public void modifyPropertyInGroup(final String groupId, final String property, final Serializable value, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+    public void modifyPropertyInGroup(final String groupId, final String property, final Serializable value, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
         res.put(Constants.REST.VALUE, value);
 
         new TaskSingleValueEventFor(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
-                .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         Serializable oldValue = (Serializable) dataSnapshot.getValue();
@@ -706,7 +706,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
 
     @Override
-    public void removeUser(final String groupId, final Long userNumber, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+    public void removeUser(final String groupId, final Long userNumber, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject json = new JSONObject();
 //        final String user = String.valueOf(userNumber);
@@ -732,7 +732,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         new TaskSingleValueEventFor(ref.child(groupId).child(DATABASE.SECTION_USERS_KEYS))
-                                .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                     @Override
                                     public void call(DataSnapshot dataSnapshot) {
                                         HashMap<String,Serializable> val = (HashMap<String, Serializable>) dataSnapshot.getValue();
@@ -760,7 +760,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     }
 
     @Override
-    public void switchPropertyForUser(final String groupId, final Long userNumber, final String property, final Boolean value, final Callable1<JSONObject> onsuccess, final Callable1<JSONObject> onerror) {
+    public void switchPropertyForUser(final String groupId, final Long userNumber, final String property, final Boolean value, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject res = new JSONObject();
         res.put(Constants.REST.PROPERTY, property);
@@ -776,7 +776,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         };
 
         new TaskSingleValueEventFor(ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property))
-                .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         Boolean oldValue = (Boolean) dataSnapshot.getValue();
@@ -812,7 +812,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 if(Constants.DATABASE.SECTION_GROUPS.equals(group) || "overview".equals(group)) continue;
 
                 new TaskSingleValueEventFor(ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS))
-                        .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                        .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                             @Override
                             public void call(DataSnapshot dataSnapshot) {
                                 Map value = (Map) dataSnapshot.getValue();
@@ -853,7 +853,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 else timeToLiveIfEmpty = 0;
 
                                 new TaskSingleValueEventFor(ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA))
-                                        .addOnCompleteListener(new Callable1<DataSnapshot>() {
+                                        .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                             @Override
                                             public void call(DataSnapshot dataSnapshot) {
                                                 Common.log(LOG, "Users validation for group:", group);

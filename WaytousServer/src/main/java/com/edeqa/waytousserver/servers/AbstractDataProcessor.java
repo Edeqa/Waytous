@@ -3,7 +3,7 @@ package com.edeqa.waytousserver.servers;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
-import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
@@ -132,17 +132,17 @@ abstract public class AbstractDataProcessor {
         }
     }
 
-    abstract public void createGroup(MyGroup group, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+    abstract public void createGroup(MyGroup group, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
-    abstract public void deleteGroup(String groupId, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+    abstract public void deleteGroup(String groupId, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
-    abstract public void switchPropertyInGroup(String groupId, String property, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+    abstract public void switchPropertyInGroup(String groupId, String property, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
-    abstract public void modifyPropertyInGroup(String groupId, String property, Serializable value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+    abstract public void modifyPropertyInGroup(String groupId, String property, Serializable value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
-    abstract public void removeUser(String groupId, Long userNumber, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+    abstract public void removeUser(String groupId, Long userNumber, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
-    abstract public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror);
+    abstract public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
     public ConcurrentHashMap<String, MyGroup> getGroups(){
         return groups;

@@ -1,8 +1,8 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.interfaces.Callable2;
-import com.edeqa.waytousserver.interfaces.Callable3;
-import com.edeqa.waytousserver.interfaces.Callable4;
+import com.edeqa.waytousserver.interfaces.Runnable2;
+import com.edeqa.waytousserver.interfaces.Runnable3;
+import com.edeqa.waytousserver.interfaces.Runnable4;
 import com.google.common.net.HttpHeaders;
 
 import org.json.JSONObject;
@@ -194,21 +194,21 @@ public class Utils {
         return sb.toString();
     }
 
-    public static Callable2<RequestWrapper,JSONObject> sendResultJson = new Callable2<RequestWrapper,JSONObject>() {
+    public static Runnable2<RequestWrapper,JSONObject> sendResultJson = new Runnable2<RequestWrapper,JSONObject>() {
         @Override
         public void call(RequestWrapper requestWrapper, JSONObject json) {
             sendResult.call(requestWrapper, 200, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
-    public static Callable3<RequestWrapper,Integer,JSONObject> sendError = new Callable3<RequestWrapper,Integer,JSONObject>() {
+    public static Runnable3<RequestWrapper,Integer,JSONObject> sendError = new Runnable3<RequestWrapper,Integer,JSONObject>() {
         @Override
         public void call(RequestWrapper requestWrapper, Integer code, JSONObject json) {
             sendResult.call(requestWrapper, code, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
-    public static Callable4<RequestWrapper,Integer,String,byte[]> sendResult = new Callable4<RequestWrapper,Integer,String,byte[]>() {
+    public static Runnable4<RequestWrapper,Integer,String,byte[]> sendResult = new Runnable4<RequestWrapper,Integer,String,byte[]>() {
         @Override
         public void call(RequestWrapper requestWrapper, Integer code, String contentType, byte[] bytes) {
             try {

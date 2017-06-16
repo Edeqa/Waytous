@@ -37,7 +37,7 @@ import com.edeqa.waytous.helpers.SmoothInterpolated;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 
@@ -316,7 +316,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         context.getSupportLoaderManager().initLoader(2, null, adapter);
 
         adapter.setFontSize(fontSize);
-        adapter.setOnRightSwipeListener(new Callable1<Integer>() {
+        adapter.setOnRightSwipeListener(new Runnable1<Integer>() {
             @Override
             public void call(final Integer position) {
                 UserMessage.getDb().deleteByPosition(position);
@@ -332,14 +332,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
         });
 
 
-        adapter.setOnItemClickListener(new Callable1<UserMessage>() {
+        adapter.setOnItemClickListener(new Runnable1<UserMessage>() {
             @Override
             public void call(UserMessage message) {
                 reloadCursor();
             }
         });
 
-        adapter.setOnItemShareListener(new Callable1<Integer>() {
+        adapter.setOnItemShareListener(new Runnable1<Integer>() {
             @Override
             public void call(final Integer position) {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
@@ -348,7 +348,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
             }
         });
-        adapter.setOnItemReplyListener(new Callable1<Integer>() {
+        adapter.setOnItemReplyListener(new Runnable1<Integer>() {
             @Override
             public void call(final Integer position) {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
@@ -361,7 +361,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 }
             }
         });
-        adapter.setOnItemDeleteListener(new Callable1<Integer>() {
+        adapter.setOnItemDeleteListener(new Runnable1<Integer>() {
             @Override
             public void call(final Integer position) {
                 UserMessage.getDb().deleteByPosition(position);
@@ -378,7 +378,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         adapter.setOnItemTouchListener(onTouchListener);
 
-        adapter.setOnCursorReloadListener(new Callable1<Cursor>() {
+        adapter.setOnCursorReloadListener(new Runnable1<Cursor>() {
             @Override
             public void call(Cursor cursor) {
                 if(toolbar != null) {
@@ -433,7 +433,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_message);
         searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
 
-        final Callable1<String> setFilter = new Callable1<String>() {
+        final Runnable1<String> setFilter = new Runnable1<String>() {
             @Override
             public void call(String text) {
                 setFilterAndReload(text);
@@ -480,7 +480,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             placeFooter.setVisibility(View.GONE);
         }
 
-        final Callable1<EditText> sender = new Callable1<EditText>() {
+        final Runnable1<EditText> sender = new Runnable1<EditText>() {
             @Override
             public void call(EditText et) {
                 if (et.getText().toString().length() > 0) {
@@ -547,7 +547,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             drawable.setAlpha(255);
 
         } else {
-            new SmoothInterpolated(new Callable1<Float[]>() {
+            new SmoothInterpolated(new Runnable1<Float[]>() {
                 @Override
                 public void call(final Float[] value) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -608,12 +608,12 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         UserMessage m = (UserMessage) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction(context.getString(R.string.reply),new Callable1() {
+                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction(context.getString(R.string.reply),new Runnable1() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, false,"");
                             }
-                        }).setOnClickListener(new Callable1() {
+                        }).setOnClickListener(new Runnable1() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_MESSAGES);
@@ -630,12 +630,12 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction(context.getString(R.string.reply),new Callable1() {
+                        new SystemMessage(context).setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction(context.getString(R.string.reply),new Runnable1() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, true, "");
                             }
-                        }).setOnClickListener(new Callable1() {
+                        }).setOnClickListener(new Runnable1() {
                             @Override
                             public void call(Object arg) {
                                 State.getInstance().fire(SHOW_MESSAGES);
@@ -663,7 +663,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         }
     }
 
-    private Callable1<MotionEvent> onTouchListener = new Callable1<MotionEvent>() {
+    private Runnable1<MotionEvent> onTouchListener = new Runnable1<MotionEvent>() {
         @Override
         public void call(MotionEvent motionEvent) {
             if(action != null) action.cancel();
@@ -673,7 +673,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         drawable.setAlpha(255);
                         break;
                     case 1:
-                        action = new SmoothInterpolated(new Callable1<Float[]>() {
+                        action = new SmoothInterpolated(new Runnable1<Float[]>() {
                             @Override
                             public void call(final Float[] value) {
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {

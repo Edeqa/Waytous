@@ -55,19 +55,13 @@ public class AdminServletHandler extends AbstractServletHandler {
         }
     }
 
+    /**
+     * Initialize DataProcessorFirebaseV1 for installation type "google-appengine".
+     */
     @Override
     public void init() throws ServletException {
         super.init();
-        if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION) == null) {
-            try {
-                Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode()){
-                throw new ServletException("\n\nThis configuration can not be runned in Google AppEngine mode. Set the installation type in build.gradle with the following property:\n\tdef installationType = 'google-appengine'\n");
-            }
-        }
+        initDataProcessor();
     }
 
     @Override
@@ -82,7 +76,6 @@ public class AdminServletHandler extends AbstractServletHandler {
             String[] parts = requestWrapper.getRequestURI().getPath().split("/");
             if(parts.length >2) {
                 for(Map.Entry<String, PageHolder> x: holders.entrySet()) {
-
                     if(parts[2].equals(x.getValue().getType()) && x.getValue().perform(requestWrapper)) {
                         return;
                     }

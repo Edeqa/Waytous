@@ -9,8 +9,8 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.LightSensorManager;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.Callable1;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
@@ -41,7 +41,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
 
     private GoogleMap map;
 
-    private Callable1<String> onEnvironmentChangeListener = new Callable1<String>() {
+    private Runnable1<String> onEnvironmentChangeListener = new Runnable1<String>() {
         @Override
         public void call(String environment) {
             switch(environment){
@@ -132,14 +132,14 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 if(map != null) map.setMapStyle(null);
                 State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
 
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.removeViews();
                     }
                 });
                 context.setTheme(R.style.DayTheme);
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.createViews();
@@ -153,14 +153,14 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 if(map != null) map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night));
                 State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
 
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.removeViews();
                     }
                 });
                 context.setTheme(R.style.NightTheme);
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.createViews();

@@ -13,7 +13,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -122,7 +122,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 if(State.getInstance().getUsers().getCountAllSelected()==0){
                     State.getInstance().getMe().fire(SELECT_USER);
                 }
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
@@ -139,7 +139,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         @Override
                         public void onClick(View view) {
                             fab.close(true);
-                            State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, MyUser myUser) {
                                     if(myUser.getProperties().isActive()) {
@@ -408,7 +408,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
 
                     if(State.getInstance().getUsers().getCountSelected()==1){
-                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser user) {
                                 if(user.getProperties().isSelected()) {

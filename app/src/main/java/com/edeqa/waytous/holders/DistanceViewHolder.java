@@ -15,8 +15,8 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SmoothInterpolated;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable1;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -88,7 +88,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 optionsMenu.add(Menu.NONE, R.string.show_distances, Menu.NONE, R.string.show_distances).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 State.getInstance().fire(SHOW_DISTANCES);
@@ -101,7 +101,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 optionsMenu.add(Menu.NONE, R.string.hide_distances, Menu.NONE, R.string.hide_distances).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 State.getInstance().fire(HIDE_DISTANCES);
@@ -117,7 +117,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 optionsMenu.findItem(R.string.hide_distances).setVisible(marks.size() > 0);
                 break;
             case SHOW_DISTANCES:
-                State.getInstance().getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, final MyUser user) {
                         user.fire(SHOW_DISTANCE);
@@ -126,7 +126,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 break;
             case TRACKING_DISABLED:
             case HIDE_DISTANCES:
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.fire(HIDE_DISTANCE);
@@ -314,7 +314,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             final LatLng secondUserInitial = line.getPoints().get(1);
 
             if(animate) {
-                new SmoothInterpolated(new Callable1<Float[]>() {
+                new SmoothInterpolated(new Runnable1<Float[]>() {
                     @Override
                     public void call(Float[] value) {
                         if (line != null && marker != null) {

@@ -6,6 +6,7 @@
 
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.sun.net.httpserver.HttpExchange;
@@ -36,35 +37,40 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
         }
     }
 
+    public void initDataProcessor() throws ServletException {
+        if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION) == null) {
+            try {
+                Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode()){
+                throw new ServletException("\n\nThis configuration can not be runned in Google AppEngine mode. Set the installation type in build.gradle with the following property:\n\tdef installationType = 'google-appengine'\n");
+            }
+        }
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         RequestWrapper requestWrapper = new RequestWrapper();
-
         requestWrapper.setHttpServletRequest(req);
         requestWrapper.setHttpServletResponse(resp);
-
         internalPerform(requestWrapper);
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         RequestWrapper requestWrapper = new RequestWrapper();
         requestWrapper.setHttpServletRequest(req);
         requestWrapper.setHttpServletResponse(resp);
-
         internalPerform(requestWrapper);
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
         RequestWrapper requestWrapper = new RequestWrapper();
         requestWrapper.setHttpExchange(exchange);
         internalPerform(requestWrapper);
-
     }
 
     abstract public void perform(RequestWrapper requestWrapper) throws IOException;
@@ -73,5 +79,4 @@ abstract public class AbstractServletHandler extends HttpServlet implements Http
         perform(requestWrapper);
     }
 
-
- }
+}

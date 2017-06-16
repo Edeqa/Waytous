@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.edeqa.waytous.State;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
@@ -56,7 +56,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.holders.MessagesHolder.PRIVATE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
@@ -818,7 +817,7 @@ public class MyTrackingFB implements Tracking {
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final String name = String.valueOf(dataSnapshot.getValue());
-                state.getUsers().forUser(number, new Callable2<Integer, MyUser>() {
+                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if (!name.equals(myUser.getProperties().getName())) {
@@ -844,7 +843,7 @@ public class MyTrackingFB implements Tracking {
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final boolean active = Boolean.parseBoolean(String.valueOf(dataSnapshot.getValue()));
-                state.getUsers().forUser(number, new Callable2<Integer, MyUser>() {
+                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if (myUser.getProperties().isActive() != active) {

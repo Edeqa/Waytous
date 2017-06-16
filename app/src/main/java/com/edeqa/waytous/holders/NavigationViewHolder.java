@@ -23,7 +23,7 @@ import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.NavigationStarter;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -125,7 +125,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 optionsMenu.add(Menu.NONE, R.string.hide_navigations, Menu.NONE, R.string.hide_navigations).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 myUser.fire(HIDE_NAVIGATION);
@@ -139,7 +139,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 optionsMenu = (Menu) object;
                 final MenuItem menuItemHideNavigations = optionsMenu.findItem(R.string.hide_navigations);
                 menuItemHideNavigations.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         NavigationView view = ((NavigationView) myUser.getEntity(TYPE));
@@ -187,7 +187,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     }
 
     private void updateAll() {
-        State.getInstance().getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
+        State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 NavigationView view = (NavigationView) myUser.getEntity(TYPE);
@@ -274,7 +274,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         @Override
         public void onChangeLocation(final Location location) {
             if(myUser == State.getInstance().getMe()) {
-                State.getInstance().getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         NavigationView view = (NavigationView) myUser.getEntity(TYPE);
@@ -300,7 +300,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 marker = null;
             }
             buttonsView.setVisibility(View.INVISIBLE);
-            State.getInstance().getUsers().forAllUsersExceptMe(new Callable2<Integer, MyUser>() {
+            State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
                     if(myUser!= null && myUser.getEntity(TYPE) != null && ((NavigationView)myUser.getEntity(TYPE)).track != null) buttonsView.setVisibility(View.VISIBLE);

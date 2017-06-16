@@ -11,7 +11,7 @@ import android.hardware.TriggerEventListener;
 import android.os.Build;
 import android.util.Log;
 
-import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 
 /**
@@ -33,7 +33,7 @@ public class LightSensorManager implements SensorEventListener {
     private final Sensor lightSensor;
     private final LowPassFilter lowPassFilter;
 
-    private Callable1 environmentChangeCallback;
+    private Runnable1 environmentChangeCallback;
     private Environment currentEnvironment;
 
     public LightSensorManager(Context context) {
@@ -64,7 +64,7 @@ public class LightSensorManager implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
-    public void setOnEnvironmentChangeListener(Callable1 callback){
+    public void setOnEnvironmentChangeListener(Runnable1 callback){
         environmentChangeCallback = callback;
     }
 

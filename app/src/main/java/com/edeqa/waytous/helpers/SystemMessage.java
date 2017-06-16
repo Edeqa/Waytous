@@ -5,7 +5,7 @@ import android.support.design.widget.Snackbar;
 
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.holders.SnackbarViewHolder;
-import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 /**
  * Created 12/4/16.
@@ -20,9 +20,9 @@ public class SystemMessage<T> {
     private String delivery;
     private int type;
     private int duration = Snackbar.LENGTH_LONG;
-    private Callable1<T> callback;
-    private Callable1<T> onClickListener;
-    private Callable1<T> action;
+    private Runnable1<T> callback;
+    private Runnable1<T> onClickListener;
+    private Runnable1<T> action;
 
     public SystemMessage(Context context) {
         this.context = context;
@@ -41,7 +41,7 @@ public class SystemMessage<T> {
         return title;
     }
 
-    public SystemMessage setAction(String title, Callable1<T> action) {
+    public SystemMessage setAction(String title, Runnable1<T> action) {
         this.title = title;
         this.action = action;
         return this;
@@ -56,11 +56,11 @@ public class SystemMessage<T> {
         return this;
     }
 
-    public Callable1<T> getOnClickListener() {
+    public Runnable1<T> getOnClickListener() {
         return onClickListener;
     }
 
-    public SystemMessage setOnClickListener(Callable1<T> callback) {
+    public SystemMessage setOnClickListener(Runnable1<T> callback) {
         this.onClickListener = callback;
         return this;
     }
@@ -72,7 +72,7 @@ public class SystemMessage<T> {
         }
     }
 
-    public Callable1 getAction() {
+    public Runnable1 getAction() {
         return action;
     }
 
@@ -116,11 +116,11 @@ public class SystemMessage<T> {
         return context;
     }
 
-    public Callable1<T> getCallback() {
+    public Runnable1<T> getCallback() {
         return callback;
     }
 
-    public SystemMessage setCallback(Callable1<T> callback) {
+    public SystemMessage setCallback(Runnable1<T> callback) {
         this.callback = callback;
         return this;
     }

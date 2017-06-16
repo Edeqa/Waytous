@@ -7,7 +7,7 @@ import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.PageHolder;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.google.api.client.http.HttpMethods;
@@ -155,12 +155,12 @@ public class AdminRestHolder implements PageHolder {
             }
 
             Common.getInstance().getDataProcessor("v1").createGroup(group,
-                new Callable1<JSONObject>() {
+                new Runnable1<JSONObject>() {
                     @Override
                     public void call(JSONObject json) {
                         Utils.sendResultJson.call(requestWrapper, json);
                     }
-                }, new Callable1<JSONObject>() {
+                }, new Runnable1<JSONObject>() {
                     @Override
                     public void call(JSONObject json) {
                         Utils.sendError.call(requestWrapper, 500, json);
@@ -196,12 +196,12 @@ public class AdminRestHolder implements PageHolder {
             JSONObject json = new JSONObject(options);
             String groupId = json.getString(Constants.REST.GROUP_ID);
 
-            Common.getInstance().getDataProcessor("v1").deleteGroup(groupId,new Callable1<JSONObject>() {
+            Common.getInstance().getDataProcessor("v1").deleteGroup(groupId,new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendResultJson.call(requestWrapper, json);
                 }
-            }, new Callable1<JSONObject>() {
+            }, new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendError.call(requestWrapper, 500, json);
@@ -238,12 +238,12 @@ public class AdminRestHolder implements PageHolder {
             String groupId = json.getString(Constants.REST.GROUP_ID);
             Long userNumber = Long.parseLong(json.get(Constants.REST.USER_NUMBER).toString());
 
-            Common.getInstance().getDataProcessor("v1").removeUser(groupId,userNumber,new Callable1<JSONObject>() {
+            Common.getInstance().getDataProcessor("v1").removeUser(groupId,userNumber,new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendResultJson.call(requestWrapper, json);
                 }
-            }, new Callable1<JSONObject>() {
+            }, new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendError.call(requestWrapper, 500, json);
@@ -281,12 +281,12 @@ public class AdminRestHolder implements PageHolder {
             String groupId = json.getString(Constants.REST.GROUP_ID);
             String property = json.getString(Constants.REST.PROPERTY);
 
-            Common.getInstance().getDataProcessor("v1").switchPropertyInGroup(groupId,property,new Callable1<JSONObject>() {
+            Common.getInstance().getDataProcessor("v1").switchPropertyInGroup(groupId,property,new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendResultJson.call(requestWrapper, json);
                 }
-            }, new Callable1<JSONObject>() {
+            }, new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendError.call(requestWrapper, 500, json);
@@ -326,12 +326,12 @@ public class AdminRestHolder implements PageHolder {
             String property = json.getString(Constants.REST.PROPERTY);
             Boolean value = json.getBoolean(Constants.REST.VALUE);
 
-            Common.getInstance().getDataProcessor("v1").switchPropertyForUser(groupId,userNumber,property,value,new Callable1<JSONObject>() {
+            Common.getInstance().getDataProcessor("v1").switchPropertyForUser(groupId,userNumber,property,value,new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendResultJson.call(requestWrapper, json);
                 }
-            }, new Callable1<JSONObject>() {
+            }, new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendError.call(requestWrapper, 500, json);
@@ -403,12 +403,12 @@ public class AdminRestHolder implements PageHolder {
             String property = json.getString(Constants.REST.PROPERTY);
             String value = json.getString(Constants.REST.VALUE);
 
-            Common.getInstance().getDataProcessor("v1").modifyPropertyInGroup(groupId,property,value,new Callable1<JSONObject>() {
+            Common.getInstance().getDataProcessor("v1").modifyPropertyInGroup(groupId,property,value,new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendResultJson.call(requestWrapper, json);
                 }
-            }, new Callable1<JSONObject>() {
+            }, new Runnable1<JSONObject>() {
                 @Override
                 public void call(JSONObject json) {
                     Utils.sendError.call(requestWrapper, 500, json);

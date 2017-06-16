@@ -23,7 +23,7 @@ import com.edeqa.waytous.holders.MessagesHolder;
 import com.edeqa.waytous.holders.NotificationHolder;
 import com.edeqa.waytous.holders.PropertiesHolder;
 import com.edeqa.waytous.holders.TrackingHolder;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytousserver.helpers.Constants;
@@ -149,7 +149,7 @@ public class State extends MultiDexApplication {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        users.forAllUsers(new Callable2<Integer, MyUser>() {
+        users.forAllUsers(new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
                 myUser.removeViews();

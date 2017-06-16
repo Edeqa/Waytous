@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 public class TaskSingleValueEventFor {
     private DatabaseReference ref;
-    private Callable1<DataSnapshot> onCompleteListener = new Callable1<DataSnapshot>() {
+    private Runnable1<DataSnapshot> onCompleteListener = new Runnable1<DataSnapshot>() {
         @Override
         public void call(DataSnapshot arg) {
             //noinspection HardCodedStringLiteral
@@ -37,7 +37,7 @@ public class TaskSingleValueEventFor {
         return this;
     }
 
-    public TaskSingleValueEventFor addOnCompleteListener(Callable1<DataSnapshot> listener) {
+    public TaskSingleValueEventFor addOnCompleteListener(Runnable1<DataSnapshot> listener) {
         onCompleteListener = listener;
         return this;
     }

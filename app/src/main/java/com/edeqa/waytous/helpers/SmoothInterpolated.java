@@ -5,7 +5,7 @@ import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
@@ -19,9 +19,9 @@ public class SmoothInterpolated {
     private int duration;
     private boolean cancel;
 
-    private Callable1<Float[]> callback;
+    private Runnable1<Float[]> callback;
 
-    public SmoothInterpolated(Callable1<Float[]> callback){
+    public SmoothInterpolated(Runnable1<Float[]> callback){
         this.callback = callback;
         duration = LOCATION_UPDATES_DELAY;
     }

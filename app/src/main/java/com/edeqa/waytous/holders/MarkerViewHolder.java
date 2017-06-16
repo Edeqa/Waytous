@@ -12,13 +12,12 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
-import com.edeqa.waytous.helpers.Events;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SmoothInterpolated;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable1;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
@@ -96,7 +95,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                 if(b.getString(TYPE, null).equals(TYPE)){
                     if(marker.getTag() != null) {
                         int number = b.getInt(RESPONSE_NUMBER);
-                        State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
                                 if(myUser.getProperties().isSelected() && State.getInstance().getUsers().getCountAllSelected() == 1) {
@@ -205,7 +204,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             final double startRadius = circle.getRadius();
             final double finalRadius = location.getAccuracy();
 
-            new SmoothInterpolated(new Callable1<Float[]>() {
+            new SmoothInterpolated(new Runnable1<Float[]>() {
                 @Override
                 public void call(Float[] value) {
                     final LatLng currentPosition = new LatLng(

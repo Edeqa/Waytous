@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
-import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -153,7 +153,7 @@ public class SavedLocation extends AbstractSavedItem {
 
     public void save(final Context context) {
         //noinspection unchecked
-        super.save(new Callable1<SavedLocation>() {
+        super.save(new Runnable1<SavedLocation>() {
             @Override
             public void call(SavedLocation listItem) {
                 if(listItem.getAddress() == null) {
@@ -188,7 +188,7 @@ public class SavedLocation extends AbstractSavedItem {
 
     static public class SavedLocationsAdapter extends AbstractSavedItemsAdapter {
 
-        private Callable1<SavedLocation> onLocationClickListener;
+        private Runnable1<SavedLocation> onLocationClickListener;
 
         public SavedLocationsAdapter(Context context, RecyclerView list) {
             super(context, list);
@@ -253,7 +253,7 @@ public class SavedLocation extends AbstractSavedItem {
                             holder.ibImage.setImageBitmap(item.getBitmap().getCurrentImage());
                             holder.ibImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         } else {
-                            new Thread(new LoadBitmap(context, item, new Callable1<Bitmap>() {
+                            new Thread(new LoadBitmap(context, item, new Runnable1<Bitmap>() {
                                 @Override
                                 public void call(final Bitmap bmp) {
                                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -300,7 +300,7 @@ public class SavedLocation extends AbstractSavedItem {
         }
 
 
-        public void setOnLocationClickListener(Callable1<SavedLocation> onLocationClickListener) {
+        public void setOnLocationClickListener(Runnable1<SavedLocation> onLocationClickListener) {
             this.onLocationClickListener = onLocationClickListener;
         }
 
@@ -361,9 +361,9 @@ public class SavedLocation extends AbstractSavedItem {
     private static class LoadBitmap implements Runnable {
         private SavedLocation savedLocation;
         private Context context;
-        private Callable1<Bitmap> callback;
+        private Runnable1<Bitmap> callback;
 
-        LoadBitmap(Context context, SavedLocation savedLocation, Callable1<Bitmap> callback){
+        LoadBitmap(Context context, SavedLocation savedLocation, Runnable1<Bitmap> callback){
             this.context = context;
             this.savedLocation = savedLocation;
             this.callback = callback;
@@ -397,9 +397,9 @@ public class SavedLocation extends AbstractSavedItem {
     private static class LoadAddress implements Runnable {
         private SavedLocation savedLocation;
         private Context context;
-        private Callable1<String> callback;
+        private Runnable1<String> callback;
 
-        LoadAddress(Context context, SavedLocation savedLocation, Callable1<String> callback){
+        LoadAddress(Context context, SavedLocation savedLocation, Runnable1<String> callback){
             this.context = context;
             this.savedLocation = savedLocation;
             this.callback = callback;

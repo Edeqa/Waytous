@@ -5,16 +5,14 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Callable1;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
-import com.edeqa.waytousserver.interfaces.FlagHolder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -430,22 +428,22 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     }
 
     @Override
-    public void createGroup(MyGroup group, Callable1 onsuccess, Callable1 onerror) {
+    public void createGroup(MyGroup group, Runnable1 onsuccess, Runnable1 onerror) {
         // TODO
     }
 
     @Override
-    public void deleteGroup(String groupId, Callable1 onsuccess, Callable1 onerror) {
+    public void deleteGroup(String groupId, Runnable1 onsuccess, Runnable1 onerror) {
         // TODO
     }
 
     @Override
-    public void switchPropertyInGroup(String groupId, String property, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+    public void switchPropertyInGroup(String groupId, String property, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
         // TODO
     }
 
     @Override
-    public void modifyPropertyInGroup(String groupId, String property, Serializable value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+    public void modifyPropertyInGroup(String groupId, String property, Serializable value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
         // TODO
     }
 
@@ -483,12 +481,12 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     }*/
 
     @Override
-    public void removeUser(String groupId, Long userNumber, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+    public void removeUser(String groupId, Long userNumber, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
         // TODO
     }
 
     @Override
-    public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Callable1<JSONObject> onsuccess, Callable1<JSONObject> onerror) {
+    public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
         // TODO
     }
 

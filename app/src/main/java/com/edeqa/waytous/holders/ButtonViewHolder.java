@@ -2,11 +2,7 @@ package com.edeqa.waytous.holders;
 
 import android.content.ClipData;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -31,7 +27,7 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable2;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
@@ -173,7 +169,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     case DragEvent.ACTION_DROP:
                         ClipData data = dragEvent.getClipData();
                         int number = Integer.valueOf(String.valueOf(data.getItemAt(0).getText()));
-                        State.getInstance().getUsers().forUser(number, new Callable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser user) {
                                     user.fire(DROPPED_TO_USER, myUser);

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.interfaces.Callable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 
 /**
@@ -14,7 +14,7 @@ import com.edeqa.waytous.interfaces.Callable1;
 public class ContinueDialog {
     private final Context context;
     private String message;
-    private Callable1 callback;
+    private Runnable1 callback;
 
     public ContinueDialog(Context context) {
         this.context = context;
@@ -25,7 +25,7 @@ public class ContinueDialog {
         return this;
     }
 
-    public ContinueDialog setCallback(Callable1 callback){
+    public ContinueDialog setCallback(Runnable1 callback){
         this.callback = callback;
         return this;
     }
