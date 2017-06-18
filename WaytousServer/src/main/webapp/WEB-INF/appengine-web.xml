@@ -9,17 +9,31 @@
         <property name="DEFAULT_ENCODING" value="UTF-8"/>
     </system-properties>
 
+    <instance-class>B1</instance-class>
     <manual-scaling>
         <instances>1</instances>
     </manual-scaling>
+    <!--<instance-class>F1</instance-class>
+    <automatic-scaling>
+        <min-idle-instances>5</min-idle-instances>
+        &lt;!&ndash; ‘automatic’ is the default value. &ndash;&gt;
+        <max-idle-instances>automatic</max-idle-instances>
+        &lt;!&ndash; ‘automatic’ is the default value. &ndash;&gt;
+        <min-pending-latency>30ms</min-pending-latency>
+        <max-pending-latency>automatic</max-pending-latency>
+        <max-concurrent-requests>50</max-concurrent-requests>
+    </automatic-scaling>-->
 
     <static-files>
         <exclude path="/js/**.*" />
-        <exclude path="/css/**.*" />
+        <!--<exclude path="/css/**.*" />-->
         <exclude path="/icons/**.*" />
-        <exclude path="/images/**.*" />
+        <!--<exclude path="/images/**.*" />-->
         <exclude path="/locales/**.*" />
-        <exclude path="/sounds/**.*" />
+        <!--<exclude path="/sounds/**.*" />-->
         <exclude path="/texts/**.*" />
     </static-files>
+
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
 </appengine-web-app>

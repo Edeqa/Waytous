@@ -125,7 +125,7 @@ function DrawerHolder(main) {
                     shareDialog = shareDialog || u.dialog({
                         items: [
                             {type:HTML.DIV, className: "share-dialog-item-message", innerHTML: u.lang.share_link_dialog },
-                            {type:HTML.INPUT, className: "dialog-item-input-link", value: main.tracking.getTrackingUri(), readOnly:true }
+                            {type:HTML.INPUT, className: "dialog-item-input-link", readOnly:true }
                         ],
                         neutral: {
                             label: u.lang.copy,
@@ -143,6 +143,7 @@ function DrawerHolder(main) {
                         timeout: 20000
                     }, main.right);
                     itemLink = shareDialog.items[1];
+                    itemLink.value = main.tracking.getTrackingUri();
                     main.fire(EVENTS.SHARE_LINK, shareDialog);
                     shareDialog.open();
 

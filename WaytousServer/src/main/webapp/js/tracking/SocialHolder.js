@@ -215,24 +215,6 @@ function SocialHolder(main) {
         return true;
     }
 
-    function createView(myUser){
-        var view = {};
-        view.user = myUser;
-
-        view.show = u.load("track:show:" + myUser.number);
-
-        if(view.show) {
-            show.call(myUser);
-        }
-        drawerPopulate();
-        return view;
-    }
-
-
-    function onChangeLocation(location) {
-        show.call(this);
-    }
-
     return {
         type:type,
         start:start,

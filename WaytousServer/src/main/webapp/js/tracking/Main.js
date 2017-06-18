@@ -60,14 +60,8 @@ function Main() {
 
         });
 
-        window.addEventListener("load", function() {
-            window. scrollTo(0, 0);
-            document.addEventListener("touchmove", function(e) { e.preventDefault() });
-        });
-        //        window.onload = function() {
-        //            window.scrollTo(0, 1);
-        //            document.addEventListener("touchmove", function(e) { e.preventDefault() });
-        //        };
+        window.addEventListener("load", function() { window. scrollTo(0, 0); });
+        document.addEventListener("touchmove", function(e) { e.preventDefault() });
 
         //addConsoleLayer(main.right);
 

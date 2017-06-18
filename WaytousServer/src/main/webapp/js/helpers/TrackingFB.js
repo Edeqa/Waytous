@@ -230,27 +230,27 @@ function TrackingFB(main) {
             onmessage({data:check});
         };
 
-        var a = {};
+        var webSocket = {};
         try {
             link = link.replace(/#.*/,"");
-            a = new WebSocket(link);
+            webSocket = new WebSocket(link);
             setTimeout(function(){
-                if(a instanceof WebSocket && a.readyState != WebSocket.OPEN) {
-                    a.close();
+                if(webSocket instanceof WebSocket && webSocket.readyState != WebSocket.OPEN) {
+                    webSocket.close();
                 }
-            }, 15000);
+            }, data.isStandAlone ? 15000 : 0);
         } catch(e){
             console.warn(e);
             xhrModeStart(link);
         }
         var opened = false;
 
-        a.onopen = onopen;
-        a.onmessage = onmessage;
-        a.onclose = onclose;
-        a.onerror = onerror;
+        webSocket.onopen = onopen;
+        webSocket.onmessage = onmessage;
+        webSocket.onclose = onclose;
+        webSocket.onerror = onerror;
 
-        return a;
+        return webSocket;
     }
 
 
@@ -371,8 +371,9 @@ function TrackingFB(main) {
     }
 
     function getTrackingUri(){
-        var uri = new URL(serverUri);
-        return "http://" + uri.hostname + (data.HTTP_PORT == 80 ? "" : ":"+data.HTTP_PORT) + "/track/" + token;
+        return window.location.href;
+//        var uri = new URL(serverUri);
+//        return "http://" + uri.hostname + (data.HTTP_PORT == 80 ? "" : ":"+data.HTTP_PORT) + "/track/" + token;
     }
 
     function registerChildListener(ref, listener, limit) {

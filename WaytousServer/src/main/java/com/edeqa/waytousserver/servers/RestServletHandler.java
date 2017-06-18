@@ -41,7 +41,6 @@ public class RestServletHandler extends AbstractServletHandler {
     public void perform(RequestWrapper requestWrapper) throws IOException {
 
 
-        System.out.println("REST");
         URI uri = requestWrapper.getRequestURI();
         String host = null;
         try {

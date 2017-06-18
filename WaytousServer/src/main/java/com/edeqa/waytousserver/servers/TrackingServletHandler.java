@@ -38,6 +38,15 @@ public class TrackingServletHandler extends AbstractServletHandler {
     public TrackingServletHandler(){
     }
 
+    /**
+     * Initialize DataProcessorFirebaseV1 for installation type "google-appengine".
+     */
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        initDataProcessor();
+    }
+
     @Override
     public void perform(RequestWrapper requestWrapper) throws IOException {
 
@@ -69,6 +78,7 @@ public class TrackingServletHandler extends AbstractServletHandler {
         o.put("WS_PORT", SENSITIVE.getWsPortDedicated());
         o.put("WSS_PORT", SENSITIVE.getWssPortDedicated());
         o.put("firebase_config", SENSITIVE.getFirebaseConfig());
+        o.put("isStandAlone", Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode());
 
 
         html.clear();

@@ -38,7 +38,7 @@ function Group() {
         }, divSummary);
 
         var url = new URL(window.location.href);
-        url = "https://" + url.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT);
+        url = "https://" + url.hostname + (url.port ? (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) : "");
 
         var td = u.create()
             .place(HTML.A, { href: url + "/track/"+groupId, innerHTML:groupId, target:"_blank"})
