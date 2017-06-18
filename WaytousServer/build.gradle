@@ -23,8 +23,8 @@ plugins {
  * "App Engine DevAppServer" ("WaytousServlet") means installation type 'google-appengine'.
  * "Application" ("WaytousServer") means installation type 'standalone-server'.
  */
-def installationType = 'google-appengine'
-//def installationType = 'standalone-server'
+//def installationType = 'google-appengine'
+def installationType = 'standalone-server'
 
 
 apply plugin: 'java'

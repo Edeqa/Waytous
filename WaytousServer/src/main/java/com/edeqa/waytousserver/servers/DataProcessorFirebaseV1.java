@@ -57,6 +57,7 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
@@ -65,6 +66,7 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
@@ -218,7 +220,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             if (!request.has(REQUEST) || !request.has(REQUEST_TIMESTAMP)) return;
 
             String req = request.getString(REQUEST);
-            if (REQUEST_NEW_GROUP.equals(req)) {
+            /*if (REQUEST_TRACKING.equals(req)) {
+                response.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                conn.send(response.toString());
+                conn.close();
+                Common.log(LOG,"onMessage:updateCoords:fake",response);
+            } else*/ if (REQUEST_NEW_GROUP.equals(req)) {
                 if (request.has(REQUEST_DEVICE_ID)) {
                     final MyGroup group = new MyGroup();
                     final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));

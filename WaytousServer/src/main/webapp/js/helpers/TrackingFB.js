@@ -107,11 +107,11 @@ function TrackingFB(main) {
                     break;
                 case RESPONSE.STATUS_ACCEPTED:
                     newTracking = false;
+                    send = sendOriginal;
                     if(o[RESPONSE.SIGN]) {
                         var authToken = o[RESPONSE.SIGN];
                         delete o[RESPONSE.SIGN];
 
-                        // console.log("SIGN WITH",authToken);
                         try {
                             firebase.auth().signInWithCustomToken(authToken).then(function (e) {
 
@@ -209,7 +209,6 @@ function TrackingFB(main) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { //
                 if (xhr.readyState != 4) return;
-                send = sendOriginal;
                 onmessage({data:xhr.response});
             };
             send = function(jsonMessage){
@@ -222,7 +221,7 @@ function TrackingFB(main) {
                 try {
                     xhr.send(JSON.stringify(json));
                 } catch(e) {
-                    console.error(e);
+                    console.error(e,xhr);
                 }
                 json = {};
             };
@@ -234,21 +233,22 @@ function TrackingFB(main) {
         try {
             link = link.replace(/#.*/,"");
             webSocket = new WebSocket(link);
+
+            webSocket.onopen = onopen;
+            webSocket.onmessage = onmessage;
+            webSocket.onclose = onclose;
+            webSocket.onerror = onerror;
+
             setTimeout(function(){
                 if(webSocket instanceof WebSocket && webSocket.readyState != WebSocket.OPEN) {
                     webSocket.close();
                 }
-            }, data.isStandAlone ? 15000 : 0);
+            }, data.isStandAlone ? 15000 : 100);
         } catch(e){
-            console.warn(e);
+            console.warn(link,e);
             xhrModeStart(link);
         }
         var opened = false;
-
-        webSocket.onopen = onopen;
-        webSocket.onmessage = onmessage;
-        webSocket.onclose = onclose;
-        webSocket.onerror = onerror;
 
         return webSocket;
     }

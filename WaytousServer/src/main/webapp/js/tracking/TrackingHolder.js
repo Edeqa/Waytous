@@ -244,7 +244,6 @@ function TrackingHolder(main) {
             u.saveForContext("group",a[2]);
         } else {
             progressTitle.innerHTML = u.lang.creating_group;
-            console.log("NEW")
         }
         this.tracking.setTrackingListener(onTrackingListener);
         this.tracking.start();
