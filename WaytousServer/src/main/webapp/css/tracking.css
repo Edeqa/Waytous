@@ -872,14 +872,18 @@ p.bottom-desc {
         position: initial;
         width: 100% !important;
         transform: none !important;
-        height: 60%;
+        height: 60% !important;
         z-index: 0;
         max-width: 100%;
         border-bottom: none;
     }
     .streetview-dialog-view {
-        margin: -12px;
+        margin: -10px;
         padding: 10px;
+        height: 100%;
+    }
+    .streetview-dialog-placeholder {
+        height: 100%;
     }
     .help-dialog {
         left: 0px !important;
