@@ -374,11 +374,9 @@ function Group() {
             var userOsNode = row.cells[5];
             var userDeviceNode = row.cells[6];
 
-            var usersCount = parseInt(tableSummary.usersNode.lastChild.innerHTML);
-            tableSummary.usersNode.lastChild.innerHTML = usersCount + 1;
+            tableSummary.usersNode.lastChild.innerHTML = +tableSummary.usersNode.lastChild.innerHTML + 1;
             if(snapshot.val()[DATABASE.USER_ACTIVE]) {
-                var usersCount = parseInt(tableSummary.activeUsersNode.lastChild.innerHTML);
-                tableSummary.activeUsersNode.lastChild.innerHTML = ++usersCount;
+                tableSummary.activeUsersNode.lastChild.innerHTML = +tableSummary.activeUsersNode.lastChild.innerHTML + 1;
             }
 
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).child(DATABASE.USER_CHANGED).on("value", function(snapshot){
@@ -394,7 +392,7 @@ function Group() {
                 var active = !!snapshot.val();
                 var wasInactive = row.classList.contains("inactive");
                 row.classList[active ? "remove" : "add"]("inactive");
-                var usersCount = parseInt(tableSummary.activeUsersNode.lastChild.innerHTML);
+                var usersCount = +tableSummary.activeUsersNode.lastChild.innerHTML;
                 if(active && wasInactive) {
                     tableSummary.activeUsersNode.lastChild.innerHTML = ++usersCount;
                 } else if(!active && !wasInactive) {
