@@ -77,9 +77,9 @@ public class MainServletHandler extends AbstractServletHandler {
 //                Utils.sendResult.call(exchange, 403, Constants.MIME.TEXT_PLAIN, "403 Forbidden\n".getBytes());
             } else if (file.isDirectory()) {
                 file = new File(file.getCanonicalPath() + "/index.html");
-            } else if (etag.equals(ifModifiedSince)) {
-                resultCode = 304;
-                file = new File(root + "/304.html");
+//            } else if (etag.equals(ifModifiedSince)) {
+//                resultCode = 304;
+//                file = new File(root + "/304.html");
 //                Utils.sendResult.call(exchange, 304, null, "304 Not Modified\n".getBytes());
             } else if (!uri.getPath().endsWith("/") && !file.exists()) {
                 requestWrapper.sendRedirect(uri.getPath() + "/");
