@@ -165,7 +165,7 @@ function ButtonHolder(main) {
                     color = utils.getRGBAColor(color, 0.4)
                     this.views.button.button.style.backgroundColor = color;
                 } else if(object && object.constructor === Number) {
-                    console.log("TODO NUMERIC")
+//                    console.log("TODO NUMERIC")
                 }
                 break;
             default:

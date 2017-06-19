@@ -11,7 +11,8 @@ function Groups() {
 
     var alertArea;
     var trhead;
-    var table;
+    var tableSummary;
+    var tableGroups;
     var user;
     var firebaseToken;
     var div;
@@ -26,7 +27,40 @@ function Groups() {
 //        u.create("h2", "Groups", div);
         ref = database.ref();
 
-        table = u.table({
+
+        u.create(HTML.H2, "Summary", div);
+
+        tableSummary = u.table({
+            className: "option"
+        }, div);
+        tableSummary.groupsItem = tableSummary.add({
+            cells: [
+                { className:"th", innerHTML: "Groups" },
+                { className:"option", innerHTML: 0 }
+            ]
+        });
+        tableSummary.groupsPersistentItem = tableSummary.add({
+            cells: [
+                { className:"th", innerHTML: "&#150; persistent" },
+                { className:"option", innerHTML: 0 },
+            ]
+        });
+        tableSummary.usersTotalItem = tableSummary.add({
+            cells: [
+                { className:"th", innerHTML: "Users total" },
+                { className:"option", innerHTML: 0 },
+            ]
+        });
+        tableSummary.usersOnlineItem = tableSummary.add({
+            cells: [
+                { className:"th", innerHTML: "&#150; online" },
+                { className:"option", innerHTML: 0 },
+            ]
+        });
+
+        u.create(HTML.H2, "Groups", div);
+
+        tableGroups = u.table({
             id: "groups",
             caption: {
                 items: [
@@ -55,8 +89,8 @@ function Groups() {
         setTimeout(function(){initial = false;}, 3000);
         var resign = true;
 
-        table.placeholder.show();
-        u.clear(table.body);
+        tableGroups.placeholder.show();
+        u.clear(tableGroups.body);
 
         ref.child(DATABASE.SECTION_GROUPS).off();
         ref.child(DATABASE.SECTION_GROUPS).on("child_added", function(data) {
@@ -64,7 +98,7 @@ function Groups() {
             ref.child(data.key).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
                 if(!snapshot || !snapshot.val()) return;
 
-                var row = table.add({
+                var row = tableGroups.add({
                     id: data.key,
                     className: "highlight",
                     onclick: function(){
@@ -84,6 +118,7 @@ function Groups() {
                 });
                 var usersNode = row.cells[5]
                 var changedNode = row.cells[7]
+                updateTableSummary();
 
                 ref.child(data.key).child(DATABASE.SECTION_USERS_DATA).on("value", function(snapshot){
                     if(!snapshot.val()) return;
@@ -106,11 +141,12 @@ function Groups() {
                     changedNode.innerHTML = new Date(changed).toLocaleString();
                     if(!initial) row.classList.add("changed");
                     setTimeout(function(){row.classList.remove("changed")}, 5000);
-                    table.update();
+                    tableGroups.update();
+                    updateTableSummary()
                 });
             }).catch(function(error){
                 console.error(error);
-                table.placeholder.show();
+                tableGroups.placeholder.show();
             });
         }, function(e) {
             console.warn("Resign because of",e.message);
@@ -118,14 +154,15 @@ function Groups() {
             WTU.resign(updateData);
         });
         ref.child(DATABASE.SECTION_GROUPS).on("child_removed", function(data) {
-            for(var i in table.rows) {
-                if(table.rows[i].id == data.key) {
-                    table.body.removeChild(table.rows[i]);
-                    table.rows.splice(i,1);
+            for(var i in tableGroups.rows) {
+                if(tableGroups.rows[i].id == data.key) {
+                    tableGroups.body.removeChild(tableGroups.rows[i]);
+                    tableGroups.rows.splice(i,1);
                 }
             }
             u.toast.show("Group "+data.getKey()+" was removed.");
-        }, function(error){
+             updateTableSummary()
+       }, function(error){
             console.error("REMOVED",error);
 
         })
@@ -155,6 +192,27 @@ function Groups() {
         u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){
             renderButtons(buttons);
         }}, buttons);
+    }
+
+    function updateTableSummary() {
+
+        tableSummary.groupsItem.lastChild.innerHTML = tableGroups.rows.length;
+
+        var usersTotal = 0, usersOnline = 0, groupPersistent = 0;
+        for(var i in tableGroups.rows) {
+            if(tableGroups.rows[i].cells[2].innerHTML == "Yes") groupPersistent ++;
+
+            var users = tableGroups.rows[i].cells[5].innerHTML;
+            users = users.split("/");
+            if(users.length > 1) {
+                usersOnline += +users[0];
+                usersTotal += +users[1];
+            }
+        }
+        tableSummary.groupsPersistentItem.lastChild.innerHTML = groupPersistent;
+        tableSummary.usersTotalItem.lastChild.innerHTML = usersTotal;
+        tableSummary.usersOnlineItem.lastChild.innerHTML = usersOnline;
+
     }
 
     return {
