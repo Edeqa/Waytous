@@ -45,6 +45,7 @@ var counter = 0;
                     delayStart = 0;
                 }
 
+console.warn("FETCH",location.coords.latitude);
                 u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1")
                     .then(function(json){
                         user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
@@ -58,16 +59,24 @@ var counter = 0;
     }
 
     function createView(user) {
-        return {};
+        return {
+            lastRequest: 0,
+            lastRequestedCoords: {latitude:0,longitude:0},
+        };
     }
 
     function updateAddress(node) {
         var user = this;
         if(user.location && user.location.coords && node) {
+            var currentTime = new Date().getTime();
+            if(currentTime - user.views[type].lastRequest < 5000) return;
+            if(user.views[type].lastRequestedCoords.latitude == user.location.coords.latitude && user.views[type].lastRequestedCoords.longitude == user.location.coords.longitude) return;
             if(delayStart) {
-                if(new Date().getTime() - (delayStart||0) < delayInError) return;
+                if(currentTime - (delayStart||0) < delayInError) return;
                 delayStart = 0;
             }
+            user.views[type].lastRequest = currentTime;
+            user.views[type].lastRequestedCoords = user.location.coords;
 
 //console.warn(++counter, user.number);
             u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1")

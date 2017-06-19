@@ -46,7 +46,6 @@ function GpsHolder(main) {
             case EVENTS.MAP_READY:
                 var last = u.load("gps:last");
                 if(last && main.me && !main.me.location && last.coords && last.coords.latitude && last.coords.longitude) {
-                console.log("LASTLOC",last);
                     main.me.addLocation(last);
                 }
 

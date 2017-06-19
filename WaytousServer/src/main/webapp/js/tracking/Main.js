@@ -20,7 +20,7 @@ function Main() {
     var alert;
     var defaultResources = "/locales/tracking.en.json";
 
-    if (false && "serviceWorker" in navigator) {
+    if (!data.isStandAlone && "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("/ServiceWorker.js")
             .then(function(registration) {
