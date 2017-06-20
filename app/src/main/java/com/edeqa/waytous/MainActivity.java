@@ -2,6 +2,7 @@ package com.edeqa.waytous;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,8 @@ import android.widget.Toast;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.SavedLocation;
+import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.holders.CameraViewHolder;
 import com.edeqa.waytous.holders.DrawerViewHolder;
 import com.edeqa.waytous.holders.FabViewHolder;
@@ -38,6 +42,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
@@ -163,7 +168,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (holder != null && holder.isDrawerOpen()) {
             holder.closeDrawer();
         } else {
-            super.onBackPressed();
+            if(state.getBooleanPreference("background_alert_shown", false) || state.tracking_disabled()) {
+                super.onBackPressed();
+            } else {
+                final AlertDialog dialog = new AlertDialog.Builder(this).create();
+                dialog.setTitle(getString(R.string.alert));
+                dialog.setMessage("You want to minimize Waytous. Note that the service will be active in background until you stop it. Continue minimizing?");
+
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        state.setPreference("background_alert_shown", true);
+                        MainActivity.super.onBackPressed();
+                    }
+                });
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+                dialog.show();
+            }
         }
     }
 
