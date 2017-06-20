@@ -14,8 +14,10 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,11 +57,13 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     private Handler handlerHideMenu;
     private Runnable runnableHideMenu;
     private LinearLayout layout;
+    private HorizontalScrollView scrollLayout;
     private FlexboxLayout menuLayout;
 
     public ButtonViewHolder(MainActivity context) {
         super(context);
 
+        setScrollLayout((HorizontalScrollView) context.findViewById(R.id.sv_users));
         setLayout((LinearLayout) context.findViewById(R.id.layout_users));
         setMenuLayout((FlexboxLayout) context.findViewById(R.id.layout_context_menu));
     }
@@ -130,6 +134,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         rules.add(new IntroRule().setEvent(TRACKING_ACTIVE).setId("button_intro").setView(layout).setTitle("Top buttons").setDescription("Here are the buttons of group members. Touch any button to switch to this member or long touch for context menu."));
 
         return rules;
+    }
+
+    public void setScrollLayout(HorizontalScrollView scrollLayout) {
+        this.scrollLayout = scrollLayout;
+    }
+
+    public HorizontalScrollView getScrollLayout() {
+        return scrollLayout;
     }
 
     class ButtonView extends AbstractView {
@@ -278,11 +290,16 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     } else if(State.getInstance().tracking_disabled()) {
                         hide();
                     }
-//                    if(State.getInstance().getUsers().getCountAllSelected() == 1) {
-//                        if (!button.isShown()) {
-//                            layout.scrollBy(button.getLeft(), 0);
-//                        }
-//                    }
+
+                    int left = scrollLayout.getScrollX();
+                    int right = scrollLayout.getWidth() + left;
+                    if(State.getInstance().getUsers().getCountAllSelected() == 1) {
+                        if(button.getRight() < left) {
+                            scrollLayout.smoothScrollTo(button.getLeft() - scrollLayout.getWidth()/2, 0);
+                        } else if(button.getLeft() > right) {
+                            scrollLayout.smoothScrollTo(button.getRight() - scrollLayout.getWidth()/2, 0);
+                        }
+                    }
                     break;
                 case UNSELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.ITALIC : Typeface.NORMAL);
