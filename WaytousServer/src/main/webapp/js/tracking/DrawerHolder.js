@@ -15,7 +15,6 @@ function DrawerHolder(main) {
     var backButtonAction;
     var actionbar;
     var drawerItemShare;
-    var shareDialog;
     var itemLink;
 
 
@@ -120,33 +119,7 @@ function DrawerHolder(main) {
                 break;
             case EVENTS.CREATE_DRAWER:
                 drawerItemShare = drawerItemShare || object.add(DRAWER.SECTION_COMMUNICATION, "share", u.lang.share, "share", function(){
-
-                    if(shareDialog) shareDialog.close();
-                    shareDialog = shareDialog || u.dialog({
-                        items: [
-                            {type:HTML.DIV, className: "share-dialog-item-message", innerHTML: u.lang.share_link_dialog },
-                            {type:HTML.INPUT, className: "dialog-item-input-link", readOnly:true }
-                        ],
-                        neutral: {
-                            label: u.lang.copy,
-                            dismiss: false,
-                            onclick: function(items) {
-                                if(u.copyToClipboard(itemLink)) {
-                                    main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
-                                }
-                                shareDialog.close();
-                            }
-                        },
-                        negative: {
-                            label: u.lang.cancel
-                        },
-                        timeout: 20000
-                    }, main.right);
-                    itemLink = shareDialog.items[1];
-                    itemLink.value = main.tracking.getTrackingUri();
-                    main.fire(EVENTS.SHARE_LINK, shareDialog);
-                    shareDialog.open();
-
+                    main.fire(EVENTS.SHARE_LINK, main.tracking.getTrackingUri());
                 });
                 drawerItemShare.hide();
                 break;

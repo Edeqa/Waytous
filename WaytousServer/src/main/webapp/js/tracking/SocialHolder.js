@@ -11,6 +11,7 @@ function SocialHolder(main) {
     var type = "social";
 
     var shareBlockedDialog;
+    var shareDialog;
 
     var facebook_svg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -112,8 +113,33 @@ function SocialHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.SHARE_LINK:
-                if(object && object.items && !object.itemFacebook) {
-                    object.itemFacebook = object.addItem({
+
+                if(shareDialog) shareDialog.close();
+                shareDialog = shareDialog || u.dialog({
+                    className: "share-dialog",
+                    items: [
+                        {type:HTML.DIV, className: "share-dialog-item-message", innerHTML: u.lang.share_link_dialog },
+                        {type:HTML.INPUT, className: "dialog-item-input-link", readOnly:true }
+                    ],
+                    neutral: {
+                        label: u.lang.copy,
+                        dismiss: false,
+                        onclick: function(items) {
+                            if(u.copyToClipboard(itemLink)) {
+                                main.toast.show(u.lang.link_was_copied_into_clipboard, 3000);
+                            }
+                            shareDialog.close();
+                        }
+                    },
+                    negative: {
+                        label: u.lang.cancel
+                    },
+                    timeout: 20000
+                }, main.right);
+                itemLink = shareDialog.items[1];
+
+                if(shareDialog && shareDialog.items && !shareDialog.itemFacebook) {
+                    shareDialog.itemFacebook = shareDialog.addItem({
                         type: HTML.DIV,
                         className: "share-dialog-item"
                     });
@@ -121,26 +147,26 @@ function SocialHolder(main) {
                     u.create(HTML.BUTTON, {
                         className: "share-dialog-item-button",
                         onclick: function() {
-                            object.close();
+                            shareDialog.close();
                             FB.ui({
                                 method: "share",
                                 display: "popup",
-                                href: main.tracking.getTrackingUri(),
+                                href: itemLink.value,
                                 caption: "Follow me at ${WEB_PAGE}",
                             }, function(response){
                                 console.log("A",response);
                             });
                          }
-                    }, object.itemFacebook).place(HTML.DIV, {
+                    }, shareDialog.itemFacebook).place(HTML.DIV, {
                         className: "share-dialog-item-icon",
                         content: icon
                     }).place(HTML.DIV, {
                         innerHTML: u.lang.share_to_facebook
                     });
-                    object.itemsLayout.insertBefore(object.itemFacebook, object.itemFacebook.previousSibling);
+                    shareDialog.itemsLayout.insertBefore(shareDialog.itemFacebook, shareDialog.itemFacebook.previousSibling);
                 }
-                if(object && object.items && !object.itemTwitter) {
-                    object.itemTwitter = object.addItem({
+                if(shareDialog && shareDialog.items && !shareDialog.itemTwitter) {
+                    shareDialog.itemTwitter = shareDialog.addItem({
                         type: HTML.DIV,
                         className: "share-dialog-item"
                     });
@@ -148,22 +174,22 @@ function SocialHolder(main) {
                     u.create(HTML.BUTTON, {
                         className: "share-dialog-item-button",
                         onclick: function() {
-                            object.close();
-                            var popup = window.open("https://twitter.com/intent/tweet?text=Way%20to%20us&url="+main.tracking.getTrackingUri(),"_blank");
+                            shareDialog.close();
+                            var popup = window.open("https://twitter.com/intent/tweet?text=Way%20to%20us&url="+itemLink.value,"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog.open();
                             });
                          }
-                    }, object.itemTwitter).place(HTML.DIV, {
+                    }, shareDialog.itemTwitter).place(HTML.DIV, {
                         className: "share-dialog-item-icon",
                         content: icon
                     }).place(HTML.DIV, {
                         innerHTML: u.lang.share_to_twitter
                     });
-                    object.itemsLayout.insertBefore(object.itemTwitter, object.itemTwitter.previousSibling);
+                    shareDialog.itemsLayout.insertBefore(shareDialog.itemTwitter, shareDialog.itemTwitter.previousSibling);
                 }
-                if(object && object.items && !object.itemWhatsapp) {
-                    object.itemWhatsapp = object.addItem({
+                if(shareDialog && shareDialog.items && !shareDialog.itemWhatsapp) {
+                    shareDialog.itemWhatsapp = shareDialog.addItem({
                         type: HTML.DIV,
                         className: "share-dialog-item desktop-hidden"
                     });
@@ -171,22 +197,22 @@ function SocialHolder(main) {
                     u.create(HTML.BUTTON, {
                         className: "share-dialog-item-button",
                         onclick: function() {
-                            object.close();
-                            var popup = window.open("whatsapp://send?text=Way%20to%20us&body="+main.tracking.getTrackingUri(),"_blank");
+                            shareDialog.close();
+                            var popup = window.open("whatsapp://send?text=Way%20to%20us&body="+itemLink.value,"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog.open();
                             });
                          }
-                    }, object.itemWhatsapp).place(HTML.DIV, {
+                    }, shareDialog.itemWhatsapp).place(HTML.DIV, {
                         className: "share-dialog-item-icon",
                         content: icon
                     }).place(HTML.DIV, {
                         innerHTML: u.lang.share_to_whatsapp
                     });
-                    object.itemsLayout.insertBefore(object.itemWhatsapp, object.itemWhatsapp.previousSibling);
+                    shareDialog.itemsLayout.insertBefore(shareDialog.itemWhatsapp, shareDialog.itemWhatsapp.previousSibling);
                 }
-                if(object && object.items && !object.itemTelegram) {
-                    object.itemTelegram = object.addItem({
+                if(shareDialog && shareDialog.items && !shareDialog.itemTelegram) {
+                    shareDialog.itemTelegram = shareDialog.addItem({
                         type: HTML.DIV,
                         className: "share-dialog-item"
                     });
@@ -194,20 +220,56 @@ function SocialHolder(main) {
                     u.create(HTML.BUTTON, {
                         className: "share-dialog-item-button",
                         onclick: function() {
-                            object.close();
-                            var popup = window.open("https://t.me/share/url?url="+main.tracking.getTrackingUri(),"_blank");
+                            shareDialog.close();
+                            var popup = window.open("https://t.me/share/url?url="+itemLink.value,"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog.open();
                             });
                          }
-                    }, object.itemTelegram).place(HTML.DIV, {
+                    }, shareDialog.itemTelegram).place(HTML.DIV, {
                         className: "share-dialog-item-icon",
                         content: icon
                     }).place(HTML.DIV, {
                         innerHTML: u.lang.share_to_telegram
                     });
-                    object.itemsLayout.insertBefore(object.itemTelegram, object.itemTelegram.previousSibling);
+                    shareDialog.itemsLayout.insertBefore(shareDialog.itemTelegram, shareDialog.itemTelegram.previousSibling);
                 }
+                if(shareDialog && shareDialog.items && !shareDialog.itemShare) {
+                    shareDialog.itemShare = shareDialog.addItem({
+                        type: HTML.DIV,
+                        className: "share-dialog-item"
+                    });
+                    u.create(HTML.BUTTON, {
+                        className: "share-dialog-item-button",
+                        onclick: function() {
+                            shareDialog.close();
+                            var popup = window.open("mailto:?subject=Way%20to%20us&body="+itemLink.value,"_blank");
+                            utils.popupBlockerChecker.check(popup, function() {
+                                shareBlockedDialog = shareBlockedDialog || u.dialog({
+                                    items: [
+                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
+                                        {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
+                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
+                                        {type:HTML.DIV, innerHTML: "..."}
+                                    ],
+                                    positive: {
+                                        label: u.lang.close
+                                    }
+                                }, main.right);
+                                shareBlockedDialog.items[3].innerHTML = itemLink.value;
+                                shareBlockedDialog.open();
+                            });
+                         }
+                    }, shareDialog.itemShare).place(HTML.DIV, {
+                        className: "share-dialog-item-icon",
+                        innerHTML: "share"
+                    }).place(HTML.DIV, {
+                        innerHTML: u.lang.share_by_mail
+                    });
+                    shareDialog.itemsLayout.insertBefore(shareDialog.itemShare, shareDialog.itemShare.previousSibling);
+                }
+                itemLink.value = object;
+                shareDialog.open();
                 break;
             default:
                 break;

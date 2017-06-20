@@ -182,41 +182,6 @@ function TrackingHolder(main) {
                     u.saveForContext("group");
                 }
                 break;
-            case EVENTS.SHARE_LINK:
-                if(object && object.items && !object.itemShare) {
-                    object.itemShare = object.addItem({
-                        type: HTML.DIV,
-                        className: "share-dialog-item"
-                    });
-                    u.create(HTML.BUTTON, {
-                        className: "share-dialog-item-button",
-                        onclick: function() {
-                            object.close();
-                            var popup = window.open("mailto:?subject=Way%20to%20us&body="+main.tracking.getTrackingUri(),"_blank");
-                            utils.popupBlockerChecker.check(popup, function() {
-                                shareBlockedDialog = shareBlockedDialog || u.dialog({
-                                    items: [
-                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
-                                        {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
-                                        {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
-                                        {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
-                                    ],
-                                    positive: {
-                                        label: u.lang.close
-                                    }
-                                }, main.right);
-                                shareBlockedDialog.open();
-                            });
-                         }
-                    }, object.itemShare).place(HTML.DIV, {
-                        className: "share-dialog-item-icon",
-                        innerHTML: "share"
-                    }).place(HTML.DIV, {
-                        innerHTML: u.lang.share_by_mail
-                    });
-                    object.itemsLayout.insertBefore(object.itemShare, object.itemShare.previousSibling);
-                }
-                break;
             default:
                 break;
         }

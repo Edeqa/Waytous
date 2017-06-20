@@ -232,7 +232,7 @@ function SavedLocationHolder(main) {
                 locationDeleteDialog && locationDeleteDialog.close();
                 var loc = u.load("saved_location:"+parseInt(object));
                 if(loc) {
-                    locationShareDialog = locationShareDialog || u.dialog({
+                    /*locationShareDialog = locationShareDialog || u.dialog({
                         items: [
                             {type:HTML.DIV, innerHTML: u.lang.let_your_email_client_compose_the_message_with_link_to_this_location },
                             {type:HTML.INPUT, className: "dialog-item-input-link", readOnly:true },
@@ -273,10 +273,9 @@ function SavedLocationHolder(main) {
                         },
 //                        timeout: 20000
                     }, main.right);
-
-                    locationShareDialog.items[1].value = "http://maps.google.com/maps?q=" + loc.n + "&z=14&ll=" + loc.la + "," + loc.lo;
-
-                    locationShareDialog.open();
+                    locationShareDialog.items[1].value = "http://maps.google.com/maps?z=14&q=loc:=" + loc.la + "," + loc.lo;
+                    locationShareDialog.open();*/
+                    main.fire(EVENTS.SHARE_LINK, "http://maps.google.com/maps?z=14&q=loc:" + loc.la + "," + loc.lo);
                 }
                 break;
             case EVENTS.SEND_SAVED_LOCATION:

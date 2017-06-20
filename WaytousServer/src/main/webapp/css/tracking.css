@@ -694,6 +694,9 @@ p.bottom-desc {
     text-align: left;
     justify-content: flex-start;
 }
+.share-dialog {
+    z-index: 1001;
+}
 .share-dialog-item {
 }
 .share-dialog-item-message {

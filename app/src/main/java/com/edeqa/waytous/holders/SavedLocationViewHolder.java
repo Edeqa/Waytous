@@ -30,6 +30,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SavedLocation;
+import com.edeqa.waytous.helpers.ShareSender;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
@@ -760,8 +761,18 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 */
                     break;
                 case SHARE_SAVED_LOCATION:
-                    System.out.println("SHARE_SAVED_LOCATION");
-                    //TODO
+                    if(isSavedLocation(myUser)){
+                        final MyUser user = (MyUser) object;
+
+                        final SavedLocation savedLocation = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
+
+                        new ShareSender(context).send("Share location to", "Look at " + user.getProperties().getDisplayName(),
+//                                "https://www.google.com/maps/@"+savedLocation.getLatitude()+","+savedLocation.getLongitude()+",14z");
+                                "http://maps.google.com/maps?z=14&q=loc:" + savedLocation.getLatitude() + "," + savedLocation.getLongitude());
+
+//                        http://maps.google.com/maps?z=14&q=loc:38.93440628051758,-77.35896301269531
+//                                "http://maps.google.com/maps?z=14&ll=" + savedLocation.getLatitude() + "," + savedLocation.getLongitude());
+                    }
                     break;
                 case DROPPED_TO_USER:
                     final MyUser toUser = (MyUser) object;

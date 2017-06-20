@@ -114,6 +114,7 @@
     <string name="new_message">New message</string>
     <string name="fit_to_screen">Fit to screen</string>
     <string name="share_link">Share link</string>
+    <string name="share_location">Share location</string>
     <string name="share_to_facebook">Share to Facebook</string>
     <string name="navigate_on_maps">Navigate on maps</string>
     <string name="change_orientation">Change orientation</string>
