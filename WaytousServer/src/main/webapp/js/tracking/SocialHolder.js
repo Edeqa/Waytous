@@ -72,7 +72,7 @@ function SocialHolder(main) {
               version    : 'v2.9'
             });
 //            FB.AppEvents.logPageView();
-            FB.ui({
+            /*FB.ui({
               method: 'share_open_graph',
               action_type: 'og.likes',
               action_properties: JSON.stringify({
@@ -81,7 +81,7 @@ function SocialHolder(main) {
             }, function(response){
               // Debug response (optional)
               console.log(response);
-            });
+            });*/
           };
 
 // facebook
@@ -91,7 +91,7 @@ function SocialHolder(main) {
              js = d.createElement(s); js.id = id;
              js.src = "//connect.facebook.net/en_US/sdk.js";
              fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));
+           }(document, 'script', 'facebook-tejssdk'));
 
 
 // twitter
