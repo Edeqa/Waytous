@@ -673,7 +673,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         try {
             Tasks.await(updateUserTask);
 
-            Common.log(LOG, "onMessage:registerUser:"+user.getNumber(),"uid:"+uid,"group:"+groupId);
+            Common.log(LOG, "onMessage:registerUser:" + user.getNumber(), "uid:" + uid, "group:" + groupId);
 
             String customToken = createCustomToken(uid);
 
@@ -932,11 +932,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void validateUsers() {
 
     }
-
-    public void setRef(DatabaseReference ref) {
-        this.ref = ref;
-    }
-
 
     /**
      * This method requests and returns customToken from Firebase. Depending on current installation type

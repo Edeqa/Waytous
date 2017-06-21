@@ -82,32 +82,39 @@ function SocialHolder(main) {
               // Debug response (optional)
               console.log(response);
             });*/
-          };
+        };
 
 // facebook
-          (function(d, s, id){
-             var js, fjs = d.getElementsByTagName(s)[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement(s); js.id = id;
-             js.src = "//connect.facebook.net/en_US/sdk.js";
-             fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-tejssdk'));
-
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-tejssdk'));
 
 // twitter
-           !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+        !function(d,s,id){
+            var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+            if(!d.getElementById(id)){
+                js=d.createElement(s);
+                js.id=id;
+                js.src=p+'://platform.twitter.com/widgets.js';
+                fjs.parentNode.insertBefore(js,fjs);
+            }
+        }(document, 'script', 'twitter-wjs');
 
-           shareBlockedDialog = u.dialog({
-               items: [
-                   {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
-                   {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
-                   {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
-//                   {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
-               ],
-               positive: {
-                   label: u.lang.close
-               }
-           }, main.right);
+        shareBlockedDialog = u.dialog({
+           items: [
+               {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_1 },
+               {type:HTML.DIV, enclosed:true, innerHTML: u.lang.popup_blocked_dialog_2 },
+               {type:HTML.DIV, innerHTML: u.lang.popup_blocked_dialog_3 },
+        //                   {type:HTML.DIV, innerHTML: main.tracking.getTrackingUri()}
+           ],
+           positive: {
+               label: u.lang.close
+           }
+        }, main.right);
     }
 
     function onEvent(EVENT,object){

@@ -10,6 +10,7 @@ import com.google.common.net.HttpHeaders;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +59,7 @@ public class TrackingServletHandler extends AbstractServletHandler {
             host = host.split(":")[0];
         } catch(Exception e){
             e.printStackTrace();
+            host = InetAddress.getLocalHost().getHostAddress();
         }
 
         Common.log("Tracking",requestWrapper.getRemoteAddress(),host + uri.getPath() );
@@ -67,6 +69,40 @@ public class TrackingServletHandler extends AbstractServletHandler {
 
 //        File root = new File(SENSITIVE.getWebRootDirectory());
 //        File file = new File(root + uri.getPath()).getCanonicalFile();
+
+        if(uri.getPath().startsWith("/track/")) {
+
+            String tokenId = null;
+            if (parts.size() >= 3) {
+                tokenId = parts.get(2);
+            }
+
+            String mobileRedirect, webRedirect, mainLink;
+            if(Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode()){
+                mobileRedirect = "waytous://" + host + "/track/" + tokenId;
+                webRedirect = "https://" + host + Common.getWrappedHttpsPort() + "/group/" + tokenId;
+                mainLink = "https://" + host + Common.getWrappedHttpsPort() + "/group/" + tokenId;
+            } else {
+                mobileRedirect = "waytous://" + host + "/track/" + tokenId;
+                webRedirect = "http://" + requestWrapper.getRequestHeader(HttpHeaders.HOST).get(0) + "/group/" + tokenId;
+                mainLink = "http://" + requestWrapper.getRequestHeader(HttpHeaders.HOST).get(0) + "/group/" + tokenId;
+            }
+
+            String redirectLink = "http://" + SENSITIVE.getFirebaseDynamicLinkHost() + "/?"
+                    + "link=" + mainLink
+                    + "&apn=com.edeqa.waytous"
+                    + "&al=" + mobileRedirect
+                    + "&afl=" + webRedirect
+                    + "&ifl=" + webRedirect
+                    + "&st=Waytous"
+                    + "&sd=Waytous+description"
+                    + "&si=https://raw.githubusercontent.com/Edeqa/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
+
+            Common.log("Tracking", "->", redirectLink);
+
+            requestWrapper.sendRedirect(redirectLink);
+            return;
+        }
 
         JSONObject o = new JSONObject();
         o.put("request", parts);
