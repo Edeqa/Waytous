@@ -154,6 +154,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             public boolean onLongClick(View view) {
 //                context.openContextMenu(view);
 
+                Toast.makeText(context, myUser.getProperties().getDisplayName(), Toast.LENGTH_SHORT).show();
                 openContextMenu(view);
 
                 ClipData data = ClipData.newPlainText(USER_NUMBER, ""+myUser.getProperties().getNumber());
