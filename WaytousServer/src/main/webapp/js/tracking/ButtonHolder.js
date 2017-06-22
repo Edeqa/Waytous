@@ -205,6 +205,7 @@ function ButtonHolder(main) {
                 firstClick = thisClick;
             },
             onlongclick: function() {
+                main.toast.show(user.properties.getDisplayName());
                 openContextMenu(user, true);
             },
 /*
