@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/layout_root"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:minWidth="@dimen/material_dialog_width_minimum"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/material_dialog_content_area_padding_vertical"
+              android:paddingLeft="@dimen/material_dialog_content_area_padding_horizontal"
+              android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal"
+              android:paddingTop="@dimen/material_dialog_content_area_padding_vertical"
+    >
+
+    <!--<android.support.design.widget.TextInputLayout
+        android:id="@+id/vTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">-->
+
+    <!--</android.support.design.widget.TextInputLayout>-->
+
+    <TextView
+        android:id="@+id/textView23"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="How would you like to share this link?"/>
+
+    <TextView
+        android:id="@+id/tvLink"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        tools:text="http://wayto.us/track/DEBUG"
+        android:textSize="12sp"/>
+
+    <Button
+        android:id="@+id/bShareSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_share_black_24dp"
+        android:drawableStart="@drawable/ic_share_black_24dp"
+        android:text="Select..."/>
+
+    <LinearLayout
+        android:id="@+id/layoutShareButtons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bShareByMail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
+        android:drawableStart="@drawable/ic_mail_outline_black_24dp"
+        android:text="E-mail"/>
+
+    <Button
+        android:id="@+id/bCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"/>
+
+</LinearLayout>

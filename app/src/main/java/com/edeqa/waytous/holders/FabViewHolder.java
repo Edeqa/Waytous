@@ -1,9 +1,14 @@
 package com.edeqa.waytous.holders;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +28,8 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.ShareSender;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
@@ -45,7 +52,9 @@ public class FabViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "fab";
 
-    private LinearLayoutCompat fab_buttons;
+    public static final String PREPARE_SHARE_BUTTONS = "prepare_share_buttons";
+
+    private LinearLayoutCompat fabButtons;
     private FloatingActionButton fab;
 
     private boolean isFabMenuOpen = false;
@@ -58,7 +67,7 @@ public class FabViewHolder extends AbstractViewHolder {
     }
 
     public void setView(View view) {
-        fab_buttons = (LinearLayoutCompat) view.findViewById(R.id.fab_buttons);
+        fabButtons = (LinearLayoutCompat) view.findViewById(R.id.fab_buttons);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         close(false);
@@ -67,7 +76,7 @@ public class FabViewHolder extends AbstractViewHolder {
         fab.setImageResource(R.drawable.ic_gps_off_white_24dp);
         fab.setOnClickListener(onInitialClickListener);
 
-        fab_buttons.removeAllViews();
+        fabButtons.removeAllViews();
 
     }
 
@@ -130,7 +139,7 @@ public class FabViewHolder extends AbstractViewHolder {
 
     private void open(boolean animation){
         isFabMenuOpen = true;
-        fab_buttons.setVisibility(View.VISIBLE);
+        fabButtons.setVisibility(View.VISIBLE);
         if(animation) {
             ViewCompat.animate(fab)
                     .rotation(45F)
@@ -151,7 +160,7 @@ public class FabViewHolder extends AbstractViewHolder {
                     .setInterpolator(new OvershootInterpolator(10.0F))
                     .start();
         }
-        fab_buttons.setVisibility(View.GONE);
+        fabButtons.setVisibility(View.GONE);
     }
 
     public View add(int stringResource, int drawableResource) {
@@ -164,7 +173,7 @@ public class FabViewHolder extends AbstractViewHolder {
         button.setLayoutParams(lps);
         button.setId(stringResource);
 
-        fab_buttons.addView(button);
+        fabButtons.addView(button);
         return button;
     }
 
@@ -198,7 +207,7 @@ public class FabViewHolder extends AbstractViewHolder {
                     State.getInstance().fire(TRACKING_STOP);
                     break;
                 case R.string.share_link:
-                    new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
+                    openShareDialog();
                     break;
             }
         }
@@ -211,7 +220,7 @@ public class FabViewHolder extends AbstractViewHolder {
                 close(true);
             } else {
                 if(State.getInstance().tracking_active()){
-                    fab_buttons.removeAllViews();
+                    fabButtons.removeAllViews();
                     add(R.string.share_link, R.drawable.ic_share_black_24dp).setOnClickListener(onClickListener);
                     State.getInstance().fire(PREPARE_FAB, FabViewHolder.this);
                     new Handler().post(new Runnable() {
@@ -229,5 +238,62 @@ public class FabViewHolder extends AbstractViewHolder {
             }
         }
     };
+
+    private void openShareDialog() {
+
+        final AlertDialog dialog = new AlertDialog.Builder(context).create();
+        dialog.setTitle(context.getString(R.string.share_link));
+
+        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_share_link, null);
+
+        LinearLayout layoutButtons = (LinearLayout) content.findViewById(R.id.layoutShareButtons);
+
+        Map<String,Object> m = new HashMap<>();
+        m.put("layout", layoutButtons);
+        m.put("dialog", dialog);
+
+        State.getInstance().fire(PREPARE_SHARE_BUTTONS, m);
+
+        content.findViewById(R.id.bShareSelect).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
+            }
+        });
+        content.findViewById(R.id.bShareByMail).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        intent.setData(Uri.parse("mailto:"));
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_EMAIL, "");
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Waytous at " + State.getInstance().getTracking().getTrackingUri());
+                        intent.putExtra(Intent.EXTRA_TEXT, State.getInstance().getTracking().getTrackingUri());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+
+                        context.startActivity(Intent.createChooser(intent, "Share link to mail"));
+                    }
+                }).start();
+            }
+        });
+        content.findViewById(R.id.bCancel).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.setView(content);
+        dialog.show();
+
+    }
+
 
 }

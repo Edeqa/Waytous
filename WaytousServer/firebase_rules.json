@@ -1,6 +1,6 @@
 {
   "rules": {
-    ".read": "auth.uid === 'Administrator'",
+    ".read": "auth.uid === 'Administrator' || auth.uid === 'Viewer'",
     ".write": "auth.uid === 'Administrator'",
     "_groups":{
       ".read": false,

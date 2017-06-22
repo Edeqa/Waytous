@@ -148,6 +148,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         private LinearLayout button;
         private TextView title;
         private MyUser myUser;
+
         View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {

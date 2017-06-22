@@ -1,9 +1,13 @@
 package com.edeqa.waytous.holders;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -23,9 +27,11 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
+import static com.edeqa.waytous.holders.FabViewHolder.PREPARE_SHARE_BUTTONS;
 import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
 
 
@@ -37,8 +43,9 @@ public class FacebookViewHolder extends AbstractViewHolder {
     public static final String TYPE = "facebook";
 
     private CallbackManager callbackManager;
-    private FabViewHolder fab;
+    private LinearLayout fab;
     private String welcomeMessage;
+    private AlertDialog shareDialog;
 
     public FacebookViewHolder(MainActivity context) {
         super(context);
@@ -69,11 +76,19 @@ public class FacebookViewHolder extends AbstractViewHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
-            case PREPARE_FAB:
-                fab = (FabViewHolder) object;
-                if(State.getInstance().tracking_active()) {
-                    fab.add(R.string.share_to_facebook, R.drawable.ic_facebook_white).setOnClickListener(onClickListener);
-                }
+            case PREPARE_SHARE_BUTTONS:
+                Map<String,Object> d = (Map<String, Object>) object;
+                LinearLayout layout = (LinearLayout) d.get("layout");
+                shareDialog = (AlertDialog) d.get("dialog");
+
+                @SuppressLint("InflateParams") final Button button = (Button) context.getLayoutInflater().inflate(R.layout.view_share_button, null);
+
+                button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_facebook_black, 0, 0, 0);
+                button.setText(R.string.share_to_facebook);
+                button.setOnClickListener(onClickListener);
+
+                layout.addView(button);
+
                 break;
             case ACTIVITY_RESULT:
                 Bundle m = (Bundle) object;
@@ -99,7 +114,8 @@ public class FacebookViewHolder extends AbstractViewHolder {
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            fab.close(true);
+//            fab.close(true);
+            shareDialog.dismiss();
             if (ShareDialog.canShow(ShareLinkContent.class)) {
                 String message = String.format(context.getString(R.string.click_here_to_follow_me_using_s), context.getString(R.string.app_name));
                 if(welcomeMessage != null && welcomeMessage.length() > 0){
