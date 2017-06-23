@@ -197,7 +197,27 @@ console.log("POSITION",position);
     }
 
     function alternativeGeolocation() {
-return;
+        u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js", function(geoip2) {
+            console.log("Alternative geolocation applied",geoip2);
+
+             console.log("GEO",geoip2);
+             geoip2.insights(function(json){
+                console.log("GEOSU",json);
+                var position = {
+                    coords: {
+                        provider: "js.maxmind.com",
+                        latitude: json.location.latitude,
+                        longitude: json.location.longitude,
+                        accuracy: json.location.accuracy_radius
+                    },
+                    timestamp: new Date().getTime()
+                }
+                locationUpdateListener(position);
+             }, function(error){
+                console.error("GEOER",error);
+             }, {})
+        });
+/*
         u.getJSON("https://ipinfo.io/json").then(function(json) {
             console.log("Alternative geolocation applied",json);
             var latlng = json.loc.split(",");
@@ -212,6 +232,7 @@ return;
             }
             locationUpdateListener(position);
         });
+*/
 
     }
 
