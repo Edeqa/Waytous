@@ -354,7 +354,7 @@ function Group() {
             var userNumber = snapshot.key;
 
             var row = tableUsers.add({
-                className: "highlight" + (snapshot.val()[DATABASE.USER_ACTIVE] ? "" : " inactive"),
+                className: "italic highlight" + (snapshot.val()[DATABASE.USER_ACTIVE] ? "" : " inactive"),
                 onclick: function(){
                     WTU.switchTo("/admin/user/"+groupId+"/"+userNumber);
                     return false;
@@ -408,6 +408,8 @@ function Group() {
                 ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).limitToLast(1).on("child_added", function(snapshot){
                     var position = snapshot.val();
                     if(position) {
+                        row.classList.remove("italic");
+
                         positions[userNumber] = utils.latLng({coords:{latitude:position[USER.LATITUDE], longitude:position[USER.LONGITUDE]}});
                         var bounds = new google.maps.LatLngBounds();
 

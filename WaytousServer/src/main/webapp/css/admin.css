@@ -17,6 +17,11 @@ h2 {
     align-items: flex-start;
 }
 .inactive {
+    /*background-color: rgb(240, 240, 250);*/
+    font-style: italic;
+    font-size: smaller;
+}
+.italic {
     color: darkgray;
 }
 .highlight {
@@ -189,7 +194,6 @@ h2 {
     border-style: groove;
     border-width: 1px;
 }
-
 
 @media screen and (max-width: 1000px) {
     button {
