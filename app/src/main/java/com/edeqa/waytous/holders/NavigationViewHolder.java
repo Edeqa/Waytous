@@ -41,6 +41,8 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
@@ -84,10 +86,12 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
     private String mode = NAVIGATION_MODE_DRIVING;
     private int iconNavigationStyle;
+    private Handler handlerHideButtons;
 
     public NavigationViewHolder(MainActivity context) {
         super(context);
         this.map = context.getMap();
+        handlerHideButtons = new Handler();
 
         NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
         if(m != null) {
@@ -117,9 +121,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
-            case CAMERA_UPDATED:
-//                updateAll();
-                break;
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
                 optionsMenu.add(Menu.NONE, R.string.hide_navigations, Menu.NONE, R.string.hide_navigations).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -151,6 +152,20 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 break;
             case SHOW_NAVIGATION:
                 buttonsView.setVisibility(View.VISIBLE);
+                handlerHideButtons.removeCallbacks(hideButtons);
+                handlerHideButtons.postDelayed(hideButtons, 5000);
+                break;
+            case CAMERA_UPDATED:
+                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        if(myUser!= null && myUser.getEntity(TYPE) != null && ((NavigationView)myUser.getEntity(TYPE)).track != null) {
+                            buttonsView.setVisibility(View.VISIBLE);
+                            handlerHideButtons.removeCallbacks(hideButtons);
+                            handlerHideButtons.postDelayed(hideButtons, 5000);
+                        }
+                    }
+                });
                 break;
             case REQUEST_MODE_NIGHT:
                 iconNavigationStyle = R.style.iconNavigationMarkerTextNight;
@@ -303,7 +318,11 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
-                    if(myUser!= null && myUser.getEntity(TYPE) != null && ((NavigationView)myUser.getEntity(TYPE)).track != null) buttonsView.setVisibility(View.VISIBLE);
+                    if(myUser!= null && myUser.getEntity(TYPE) != null && ((NavigationView)myUser.getEntity(TYPE)).track != null) {
+                        buttonsView.setVisibility(View.VISIBLE);
+                        handlerHideButtons.removeCallbacks(hideButtons);
+                        handlerHideButtons.postDelayed(hideButtons, 5000);
+                    }
                 }
             });
         }
@@ -605,6 +624,13 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     break;
             }
             return false;
+        }
+    };
+
+    private Runnable hideButtons = new Runnable() {
+        @Override
+        public void run() {
+            buttonsView.setVisibility(View.INVISIBLE);
         }
     };
 
