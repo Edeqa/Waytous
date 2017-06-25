@@ -726,10 +726,15 @@ button:active {
     width: 250px;
 }
 .about-dialog {
-    padding: 20px;
     width: 300px;
     max-width: 80%;
     z-index: 20000 !important;
+}
+.about-dialog-items {
+    padding-top: 20px;
+}
+.about-dialog-buttons {
+    padding-bottom: 20px;
 }
 .about-dialog-link {
     font-size: x-small;

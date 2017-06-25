@@ -490,6 +490,8 @@ function Utils(main) {
     function dialogAbout(appendTo) {
         return u.dialog({
            className: "about-dialog",
+           itemsClassName: "about-dialog-items",
+           buttonsClassName: "about-dialog-buttons",
            items: [
                { innerHTML: "${APP_NAME} v.1.${SERVER_BUILD}" },
                { content: u.create(HTML.DIV)
