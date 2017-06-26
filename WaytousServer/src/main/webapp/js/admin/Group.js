@@ -433,6 +433,13 @@ function Group() {
                           });
                         }
                         markers[userNumber].setPosition(positions[userNumber]);
+                        markers[userNumber].row = row;
+                        markers[userNumber].addListener("mouseover", function(e){
+                            this.row.classList.add("selected");
+                        });
+                        markers[userNumber].addListener("mouseout", function(e){
+                            this.row.classList.remove("selected");
+                        });
                     }
                 });
             }
