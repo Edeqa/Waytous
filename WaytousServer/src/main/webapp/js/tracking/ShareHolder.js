@@ -6,7 +6,7 @@
  * Created 3/10/17.
  */
 
-function SocialHolder(main) {
+function ShareHolder(main) {
 
     var type = "social";
 

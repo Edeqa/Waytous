@@ -208,7 +208,7 @@ function Main() {
             "/js/tracking/OptionHolder",
             "/js/tracking/PlaceHolder",
             "/js/tracking/SavedLocationHolder",
-            "/js/tracking/SocialHolder",
+            "/js/tracking/ShareHolder",
             "/js/tracking/StreetViewHolder",
             "/js/tracking/TrackingHolder",
             "/js/tracking/TrackHolder",
