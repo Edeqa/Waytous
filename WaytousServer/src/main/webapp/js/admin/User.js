@@ -14,6 +14,12 @@ function User() {
     var groupId;
     var userNumber;
     var tableSummary;
+    var tableLocations;
+    var divMap;
+    var map;
+    var bounds;
+    var drawTrackTask;
+    var track;
 
     var renderInterface = function() {
 
@@ -21,12 +27,15 @@ function User() {
 
         u.create(HTML.H2, "Summary", div);
 
+        var divSummaryMap = u.create(HTML.DIV, {className: "two-divs"}, div);
+        var divSummary = u.create(HTML.DIV, {className: "summary-place"}, divSummaryMap);
+
         tableSummary = u.table({
             className: "option",
             placeholder: "Loading..."
-        }, div);
+        }, divSummary);
 
-       tableSummary.userNumberNode = tableSummary.add({ cells: [
+        tableSummary.userNumberNode = tableSummary.add({ cells: [
             { className: "th", innerHTML: "Number" },
             { className: "option", innerHTML: userNumber }
         ] });
@@ -43,9 +52,9 @@ function User() {
 
         tableSummary.add({
             onclick: function(){
-                 WTU.switchTo("/admin/group/"+groupId);
-                 return false;
-             },
+                WTU.switchTo("/admin/group/"+groupId);
+                return false;
+            },
             cells: [
                 { className: "th", innerHTML: "Group" },
                 { className: "option", innerHTML: groupId }
@@ -59,7 +68,7 @@ function User() {
 
         tableSummary.userColorNode = tableSummary.add({ cells: [
             { className: "th", innerHTML: "Color" },
-                { style: { /*backgroundColor: utils.getHexColor(snapshot.val().color), */opacity: 0.5 } }
+            { style: { /*backgroundColor: utils.getHexColor(snapshot.val().color), */opacity: 0.5 } }
         ]});
 
         tableSummary.userCreatedNode = tableSummary.add({ cells: [
@@ -85,36 +94,75 @@ function User() {
             { className: "option", innerHTML: "..." }
         ]});
 
+        tableSummary.userLocations = tableSummary.add({ cells: [
+            { className: "th", innerHTML: "Locations" },
+            { className: "option", innerHTML: 0 }
+        ]});
+
 
         /*u.create("h2", "Positions", div);
 
-        var table = u.create("div", {id:"users", className:"summary table"}, div);
-        var thead = u.create("div", { className:"thead"}, table);
-        trhead = u.create("div", {className:"tr"}, thead);
+         var table = u.create("div", {id:"users", className:"summary table"}, div);
+         var thead = u.create("div", { className:"thead"}, table);
+         trhead = u.create("div", {className:"tr"}, thead);
 
-        u.create("div", {className:"th", innerHTML:"#", width:"5%"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Name"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Color", width:"5%"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Created"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Updated"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Platform"}, trhead);
-        u.create("div", {className:"th", innerHTML:"Device"}, trhead);
+         u.create("div", {className:"th", innerHTML:"#", width:"5%"}, trhead);
+         u.create("div", {className:"th", innerHTML:"Name"}, trhead);
+         u.create("div", {className:"th", innerHTML:"Color", width:"5%"}, trhead);
+         u.create("div", {className:"th", innerHTML:"Created"}, trhead);
+         u.create("div", {className:"th", innerHTML:"Updated"}, trhead);
+         u.create("div", {className:"th", innerHTML:"Platform"}, trhead);
+         u.create("div", {className:"th", innerHTML:"Device"}, trhead);
 
-        tbody = u.create("tbody", null, table);
-        u.create("td", {
-            colspan: trhead.childElementCount,
-            align: "center",
-            innerHTML: "Loading..."
-        }, u.create("tr", {}, tbody));
-*/
+         tbody = u.create("tbody", null, table);
+         u.create("td", {
+         colspan: trhead.childElementCount,
+         align: "center",
+         innerHTML: "Loading..."
+         }, u.create("tr", {}, tbody));
+         */
+
+        divMap = u.create(HTML.DIV, {className: "map"}, u.create(HTML.DIV, {
+            className: "map-place"
+        }, divSummaryMap));
 
         u.create(HTML.BR, null, div);
         buttons = u.create({className:"buttons"}, div);
         renderButtons(buttons);
 
+
+        u.create(HTML.H2, "Users", div);
+
+        tableLocations = u.table({
+            id: "admin:locations",
+            caption: {
+                items: [
+                    { label: "Timestamp", className: "media-hidden" },
+                    { label: "Provider" },
+                    { label: "Latitude" },
+                    { label: "Longitude" },
+                    { label: "Accuracy", className: "media-hidden" },
+                    { label: "Bearing", className: "media-hidden" },
+                    { label: "Speed", className: "media-hidden" }
+                ]
+            },
+            placeholder: "Loading..."
+        }, div);
+
+        if(divMap.offsetHeight) {
+            if(!map && !(window.google && google.maps)) {
+                window.initMap = initMap;
+                u.require("https://maps.googleapis.com/maps/api/js?key="+data.firebase_config.apiKey+"&callback=initMap&libraries=geometry,places").then(function(){});
+            } else {
+                initMap();
+            }
+        } else {
+            updateAll();
+        }
+        updateAll();
         return div;
 
-    }
+    };
 
     function updateSummary() {
         var ref = database.ref();
@@ -150,44 +198,76 @@ function User() {
 //                setTimeout(function(){userActiveNode.lastChild.classList.remove("changed")}, 5000);
 
         },function(error){
-              console.warn("Resign because of",error.message);
-              WTU.resign(updateSummary);
-          });
+            console.warn("Resign because of",error.message);
+            WTU.resign(updateSummary);
+        });
+    }
+
+    function updateAll() {
+        updateSummary();
+        updateData();
     }
 
     function updateData(){
 
         var ref = database.ref();
-        u.clear(tbody);
+        tableLocations.placeholder.show();
+        u.clear(tableLocations.body);
+        var reload = false;
+        var initial = true;
+        setTimeout(function(){initial = false;}, 3000);
 
-        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).off();
-        ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).on("child_added", function(snapshot) {
-            if(!snapshot || !snapshot.val()) return;
-            var tr = u.create("tr", { className: "highlight " + ((snapshot.val().active ? "" : "inactive"))}, tbody);
+//        tableSummary.usersNode.lastChild.innerHTML = 0;
+//        tableSummary.activeUsersNode.lastChild.innerHTML = 0;
 
-            u.create(HTML.A, { href:"#", onclick: function(){
-                WTU.switchTo("/admin/user/"+groupId+"/"+snapshot.key);
-                return false;
-            }, innerHTML:snapshot.key, style:{
-                display: "block",
-                cursor: "pointer"
-            }}, u.create("td", {}, tr));
-            u.create("td", snapshot.val().name, tr);
-            u.create("td", { style: { backgroundColor: utils.getHexColor(snapshot.val().color), opacity: 0.5 } }, tr);
-            u.create("td", snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;", tr);
-            var userChanged = u.create("td", "...", tr);
-            var userOs = u.create("td", "...", tr);
-            var userDevice = u.create("td", "...", tr);
+        ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).off();
 
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(snapshot.key).child("changed").on("value", function(snapshot){
-                userChanged.innerHTML = new Date(snapshot.val()).toLocaleString();
-                tr.classList.add("changed");
-                setTimeout(function(){tr.classList.remove("changed")}, 2000);
+        ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).on("child_added", function(snapshot) {
+
+            if(!snapshot || !snapshot.val()){
+                tableLocations.placeholder.show("No locations");
+                return;
+            }
+            reload = false;
+//            var userNumber = snapshot.key;
+
+            var lat = snapshot.val()[USER.LATITUDE];
+            var lng = snapshot.val()[USER.LONGITUDE];
+
+            var row = tableLocations.add({
+                className: "highlight"/* + (snapshot.val()[DATABASE.USER_ACTIVE] ? "" : " inactive")*/,
+                cells: [
+                    { className: "media-hidden", innerHTML: new Date(snapshot.val()[REQUEST.TIMESTAMP]).toLocaleString(), sort: snapshot.val()[REQUEST.TIMESTAMP] },
+                    { innerHTML: snapshot.val()[USER.PROVIDER] },
+                    { innerHTML: lat },
+                    { innerHTML: lng },
+                    { className: "media-hidden", innerHTML: snapshot.val()[USER.ACCURACY] },
+                    { className: "media-hidden", innerHTML: snapshot.val()[USER.BEARING] },
+                    { className: "media-hidden", innerHTML: snapshot.val()[USER.SPEED] }
+                ]
             });
-            ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(snapshot.key).once("value").then(function(snapshot){
-                userOs.innerHTML = snapshot.val().os;
-                userDevice.innerHTML = snapshot.val().model;
-            });
+
+            tableSummary.userLocations.lastChild.innerHTML = +tableSummary.userLocations.lastChild.innerHTML + 1;
+
+            var position = utils.latLng({coords:{latitude:lat, longitude:lng}});
+            positions.push(position);
+            bounds.extend(position);
+            clearTimeout(drawTrackTask);
+            drawTrackTask = setTimeout(function(){
+                map.fitBounds(bounds);
+                map.fitBounds(bounds);
+                track = track || new google.maps.Polyline({
+                    geodesic: true,
+                    strokeColor: "blue",
+                    strokeWeight: 2,
+                    map: map
+                });
+                track.setPath(positions);
+            }, 100);
+
+        }, function(error){
+            console.warn("Resign because of",error);
+            WTU.resign(updateAll);
         });
 
     }
@@ -215,25 +295,25 @@ function User() {
     }
 
     function switchActive(number, active) {
-        u.progress.show("Switching...")
+        u.progress.show("Switching...");
         var ref = database.ref();
         u.post("/admin/rest/v1/user/switch", JSON.stringify({group_id:groupId, user_number:userNumber,property:DATABASE.USER_ACTIVE,value:active}))
-        .then(function(){
+            .then(function(){
+                u.progress.hide();
+                if(!active) {
+                    u.toast.show("User #"+userNumber+" is offline.");
+                    WTU.switchTo("/admin/group/" + groupId);
+                } else {
+                    u.toast.show("User #"+userNumber+" is online.");
+                }
+            }).catch(function(code,xhr){
             u.progress.hide();
-            if(!active) {
-                u.toast.show("User #"+userNumber+" is offline.");
-                WTU.switchTo("/admin/group/" + groupId);
-            } else {
-                u.toast.show("User #"+userNumber+" is online.");
-            }
-        }).catch(function(code,xhr){
-           u.progress.hide();
-           console.warn("Resign because of",code,xhr);
-           WTU.resign(updateSummary);
-           var res = JSON.parse(xhr.responseText) || {};
-           u.toast.show(res.message || xhr.statusText);
-           renderButtons(buttons);
-         });
+            console.warn("Resign because of",code,xhr);
+            WTU.resign(updateSummary);
+            var res = JSON.parse(xhr.responseText) || {};
+            u.toast.show(res.message || xhr.statusText);
+            renderButtons(buttons);
+        });
 
     }
 
@@ -243,17 +323,17 @@ function User() {
         u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: function() {
             u.progress.show("Removing...");
             u.post("/admin/rest/v1/user/remove", JSON.stringify({group_id:groupId, user_number:userNumber}))
-            .then(function(){
+                .then(function(){
+                    u.progress.hide();
+                    u.toast.show("User #"+userNumber+" was removed.");
+                }).catch(function(code,xhr){
                 u.progress.hide();
-               u.toast.show("User #"+userNumber+" was removed.");
-            }).catch(function(code,xhr){
-                u.progress.hide();
-               console.warn("Resign because of",code,xhr);
-               WTU.resign(updateSummary);
-               var res = JSON.parse(xhr.responseText) || {};
-               u.toast.show(res.message || xhr.statusText);
-               renderButtons(buttons);
-             });
+                console.warn("Resign because of",code,xhr);
+                WTU.resign(updateSummary);
+                var res = JSON.parse(xhr.responseText) || {};
+                u.toast.show(res.message || xhr.statusText);
+                renderButtons(buttons);
+            });
         }}, buttons);
         u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){
             renderButtons(buttons);
@@ -261,27 +341,48 @@ function User() {
 
     }
 
+    function initMap() {
+        // Create a map object and specify the DOM element for display.
+
+        map = new google.maps.Map(divMap, {
+            scrollwheel: true,
+            panControl: true,
+            zoom: 2,
+            center: {lat: 4.0, lng:-16.0},
+            zoomControl: true,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: false,
+            fullscreenControl: true,
+            overviewMapControl: true,
+            rotateControl: true
+        });
+        positions = [];
+        track = null;
+        bounds = new google.maps.LatLngBounds();
+
+        updateAll();
+    }
+
     return {
         start: function(request) {
-           if(request) {
-               groupId = request[3];
-               userNumber = request[4];
-           } else {
+            if(request) {
+                groupId = request[3];
+                userNumber = request[4];
+            } else {
                 var parts = window.location.pathname.split("/");
-               groupId = parts[3];
-               userNumber = parts[4];
-           }
-           this.page = "user" + "/" + groupId + "/" + userNumber;
-           div = document.getElementsByClassName("layout")[0];
+                groupId = parts[3];
+                userNumber = parts[4];
+            }
+            this.page = "user" + "/" + groupId + "/" + userNumber;
+            div = document.getElementsByClassName("layout")[0];
             u.clear(div);
 
-           renderInterface();
-            updateSummary();
-//           updateData();
+            renderInterface();
         },
         page: "user",
         icon: "navigation",
         title: "User",
-        move:true,
+        move:true
     }
 }

@@ -29,3 +29,14 @@ app/src/test/
 /WaytousServer/src/main/webapp/WEB-INF/debug-keys.jks
 /WaytousServer/src/main/webapp/WEB-INF/options_developer.json
 /WaytousServer/src/main/webapp/WEB-INF/waytous-beta-firebase-adminsdk-twi5v-a17e79f8afe.json
+/WayToUsServer.pem
+/deploy_aws_prod.sh
+WayToUsServer.pem
+WaytousServer/.idea/modules.xml
+WaytousServer/.idea/vcs.xml
+WaytousServer/.idea/workspace.xml
+WaytousServer/src/main/.idea/
+WaytousServer/src/main/webapp/.idea/vcs.xml
+WaytousServer/src/main/webapp/.idea/workspace.xml
+WaytousServer/src/main/webapp/WEB-INF/waytous-beta.log
+/WaytousServer/src/main/webapp/WEB-INF/options_aws.json

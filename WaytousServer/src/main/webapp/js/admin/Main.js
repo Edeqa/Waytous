@@ -107,7 +107,7 @@ function Main() {
               }).open();
           });
         }
-    }
+    };
 
     function initialize() {
 
@@ -126,9 +126,9 @@ function Main() {
                 u.require(file).then(function(e) {
                     if(failed) return;
                     loaded++;
-                    progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
+                    //progress.innerHTML = Math.ceil(loaded / files.length * 100) + "%";
                     if(loaded == u.keys(files).length) {
-                        initialize.call(main);
+                        initialize();
                     }
                 }).catch(function(){
                     u.dialog({
