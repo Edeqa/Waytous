@@ -752,7 +752,7 @@ p.bottom-desc {
         display: flex;
         width: auto !important;
         max-width: 95%;
-        min-width: auto;
+        min-width: inherit;
         position: absolute;
         top: 52px !important;
         right: auto;
@@ -996,11 +996,18 @@ p.bottom-desc {
         font-size: 20px;
     }
     .place-search {
-        top: 5px !important;
-        left: 5px !important;
-        right: 5px !important;
+        top: 0px !important;
+        left: 0px !important;
+        right: 0px !important;
         transform: none !important;
         width: auto !important;
+        max-width: 100%;
+        height: 50px !important;
+        border: none;
+        border-radius: 0px;
+    }
+    .place-search-items {
+        padding: 10px;
     }
     .place-search-input {
     }
@@ -1015,7 +1022,7 @@ p.bottom-desc {
         display: block;
     }
     .options-dialog {
-        min-width: auto;
+        min-width: inherit;
     }
 
     /* shift zoom control */
