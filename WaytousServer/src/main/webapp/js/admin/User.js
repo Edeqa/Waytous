@@ -20,6 +20,7 @@ function User() {
     var bounds;
     var drawTrackTask;
     var track;
+    var limit = 1000;
 
     var renderInterface = function() {
 
@@ -222,7 +223,7 @@ function User() {
 
         ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).off();
 
-        ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).on("child_added", function(snapshot) {
+        ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).limitToLast(limit).on("child_added", function(snapshot) {
 
             if(!snapshot || !snapshot.val()){
                 tableLocations.placeholder.show("No locations");
@@ -248,6 +249,7 @@ function User() {
             });
 
             tableSummary.userLocations.lastChild.innerHTML = +tableSummary.userLocations.lastChild.innerHTML + 1;
+            if((+tableSummary.userLocations.lastChild.innerHTML) == limit) { tableSummary.userLocations.lastChild.innerHTML += " (restricted to " + limit + ")" }
 
             var position = utils.latLng({coords:{latitude:lat, longitude:lng}});
             positions.push(position);
