@@ -182,7 +182,7 @@ function SocialHolder(main) {
                         className: "share-dialog-item-button",
                         onclick: function() {
                             shareDialog.close();
-                            var popup = window.open("https://twitter.com/intent/tweet?text=Way%20to%20us&url="+itemLink.value,"_blank");
+                            var popup = window.open("https://twitter.com/intent/tweet?text=Way%20to%20us&url="+encodeURIComponent(itemLink.value),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog.open();
                             });
@@ -205,7 +205,7 @@ function SocialHolder(main) {
                         className: "share-dialog-item-button",
                         onclick: function() {
                             shareDialog.close();
-                            var popup = window.open("whatsapp://send?text=Way%20to%20us&body="+itemLink.value,"_blank");
+                            var popup = window.open("whatsapp://send?text=Way%20to%20us&body="+encodeURIComponent(itemLink.value),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog.open();
                             });
@@ -228,7 +228,7 @@ function SocialHolder(main) {
                         className: "share-dialog-item-button",
                         onclick: function() {
                             shareDialog.close();
-                            var popup = window.open("https://t.me/share/url?url="+itemLink.value,"_blank");
+                            var popup = window.open("https://t.me/share/url?url="+encodeURIComponent(itemLink.value),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog.open();
                             });
@@ -250,7 +250,7 @@ function SocialHolder(main) {
                         className: "share-dialog-item-button",
                         onclick: function() {
                             shareDialog.close();
-                            var popup = window.open("mailto:?subject=Way%20to%20us&body="+itemLink.value,"_blank");
+                            var popup = window.open("mailto:?subject=Way%20to%20us&body="+encodeURIComponent(itemLink.value),"_blank");
                             utils.popupBlockerChecker.check(popup, function() {
                                 shareBlockedDialog = shareBlockedDialog || u.dialog({
                                     items: [
