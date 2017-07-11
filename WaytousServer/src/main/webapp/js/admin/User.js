@@ -100,29 +100,6 @@ function User() {
             { className: "option", innerHTML: 0 }
         ]});
 
-
-        /*u.create("h2", "Positions", div);
-
-         var table = u.create("div", {id:"users", className:"summary table"}, div);
-         var thead = u.create("div", { className:"thead"}, table);
-         trhead = u.create("div", {className:"tr"}, thead);
-
-         u.create("div", {className:"th", innerHTML:"#", width:"5%"}, trhead);
-         u.create("div", {className:"th", innerHTML:"Name"}, trhead);
-         u.create("div", {className:"th", innerHTML:"Color", width:"5%"}, trhead);
-         u.create("div", {className:"th", innerHTML:"Created"}, trhead);
-         u.create("div", {className:"th", innerHTML:"Updated"}, trhead);
-         u.create("div", {className:"th", innerHTML:"Platform"}, trhead);
-         u.create("div", {className:"th", innerHTML:"Device"}, trhead);
-
-         tbody = u.create("tbody", null, table);
-         u.create("td", {
-         colspan: trhead.childElementCount,
-         align: "center",
-         innerHTML: "Loading..."
-         }, u.create("tr", {}, tbody));
-         */
-
         divMap = u.create(HTML.DIV, {className: "map"}, u.create(HTML.DIV, {
             className: "map-place"
         }, divSummaryMap));
@@ -132,7 +109,7 @@ function User() {
         renderButtons(buttons);
 
 
-        u.create(HTML.H2, "Users", div);
+        u.create(HTML.H2, "Positions", div);
 
         tableLocations = u.table({
             id: "admin:locations",
@@ -180,23 +157,17 @@ function User() {
             WTU.resign(updateSummary);
         });
 
-
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).off();
         ref.child(groupId).child(DATABASE.SECTION_USERS_DATA).child(userNumber).on("value",function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
 
             tableSummary.placeholder.hide();
 
-            tableSummary.userNameNode.lastChild.innerHTML = snapshot.val().name || "&lt;Friend "+userNumber+"&gt;";;
+            tableSummary.userNameNode.lastChild.innerHTML = snapshot.val().name || "&lt;Friend "+userNumber+"&gt;";
             tableSummary.userActiveNode.lastChild.innerHTML = snapshot.val().active ? "Yes" : "No";
-
             tableSummary.userColorNode.lastChild.style.backgroundColor = utils.getHexColor(snapshot.val().color);
-
-            tableSummary.userCreatedNode.lastChild.innerHTML = snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;"
-
-            tableSummary.userUpdatedNode.lastChild.innerHTML = snapshot.val().created ? new Date(snapshot.val().changed).toLocaleString() : "&#150;"
-//                userActiveNode.lastChild.classList.add("changed");
-//                setTimeout(function(){userActiveNode.lastChild.classList.remove("changed")}, 5000);
+            tableSummary.userCreatedNode.lastChild.innerHTML = snapshot.val().created ? new Date(snapshot.val().created).toLocaleString() : "&#150;";
+            tableSummary.userUpdatedNode.lastChild.innerHTML = snapshot.val().created ? new Date(snapshot.val().changed).toLocaleString() : "&#150;";
 
         },function(error){
             console.warn("Resign because of",error.message);
@@ -218,11 +189,7 @@ function User() {
         var initial = true;
         setTimeout(function(){initial = false;}, 3000);
 
-//        tableSummary.usersNode.lastChild.innerHTML = 0;
-//        tableSummary.activeUsersNode.lastChild.innerHTML = 0;
-
         ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).off();
-
         ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).limitToLast(limit).on("child_added", function(snapshot) {
 
             if(!snapshot || !snapshot.val()){
@@ -230,7 +197,6 @@ function User() {
                 return;
             }
             reload = false;
-//            var userNumber = snapshot.key;
 
             var lat = snapshot.val()[USER.LATITUDE];
             var lng = snapshot.val()[USER.LONGITUDE];

@@ -226,7 +226,7 @@ function Group() {
 
         function filterActive(row){
             return !row.classList.contains("inactive");
-        };
+        }
         tableSummary.usersNode = tableSummary.add({
             onclick: function(e){
                 tableUsers.filter.remove(filterActive);
@@ -282,7 +282,7 @@ function Group() {
             updateAll();
         }
 
-    }
+    };
 
     function updateSummary() {
         if(!groupId) {
@@ -291,7 +291,6 @@ function Group() {
         }
 
         var ref = database.ref();
-//        tableSummary.placeholder.show();
 
         ref.child(groupId).child(DATABASE.SECTION_OPTIONS).once("value").then(function(snapshot) {
             if(!snapshot || !snapshot.val()) return;
@@ -511,7 +510,7 @@ function Group() {
         markers = {};
 
         updateAll();
-    };
+    }
 
     return {
         start: function(request) {
@@ -527,12 +526,10 @@ function Group() {
             u.clear(div);
 
             renderInterface();
-//            updateSummary();
-//            updateData();
         },
         page: "group",
         title: title,
-        move:true,
+        move:true
     }
 }
 
