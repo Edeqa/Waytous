@@ -60,13 +60,11 @@ function Edequate(options) {
         SELECT:"select",
         OPTION:"option",
         SUBMIT:"submit",
-        TEXT:"text",
         VALUE:"value",
         MANIFEST:"manifest",
         SPAN:"span",
         BUTTON:"button",
         CLICK:"click",
-        STYLESHEET:"stylesheet",
         SVG:"svg",
         PATH:"path",
         MOUSEOVER:"mouseover",
@@ -81,7 +79,7 @@ function Edequate(options) {
         INNERTEXT:"innerText",
         BLOCK:"block",
         AUTO:"auto",
-        AUDIO:"audio",
+        AUDIO:"audio"
     };
     this.HTML = HTML;
 
@@ -115,7 +113,7 @@ function Edequate(options) {
         SCALE_Y: "scale-y",
         SCALE_Y_TOP: "scale-y-top",
         SCALE_Y_BOTTOM: "scale-y-bottom",
-    }
+    };
     this.HIDING = HIDING;
 
     URL = function(link) {
@@ -139,80 +137,80 @@ function Edequate(options) {
     };
 
     HTMLElement.prototype.show = function(animatedType) {
-        var div = this;
+        var div = this, parent, holder, computedStyle;
         if(!div.classList.contains("hidden")) return;
         clearTimeout(div.hideTask);
         div.isHidden = false;
         if(animatedType) {
             var height,width;
             switch(animatedType) {
-            case HIDING.SCALE_Y:
-            case HIDING.SCALE_Y_TOP:
-            case HIDING.SCALE_Y_BOTTOM:
-                var parent = div.parentNode;
-                var holder = create(HTML.DIV, {style:{display:"none"}});
-                parent.replaceChild(holder,div);
-                document.body.appendChild(div);
-                div.style.position = "fixed";
-                div.style.left = "-10000px";
-                div.classList.remove("hidden");
+                case HIDING.SCALE_Y:
+                case HIDING.SCALE_Y_TOP:
+                case HIDING.SCALE_Y_BOTTOM:
+                    parent = div.parentNode;
+                    holder = create(HTML.DIV, {style:{display:"none"}});
+                    parent.replaceChild(holder,div);
+                    document.body.appendChild(div);
+                    div.style.position = "fixed";
+                    div.style.left = "-10000px";
+                    div.classList.remove("hidden");
 
-                var computedStyle = window.getComputedStyle(div,null);
-                height = computedStyle.height;
+                    computedStyle = window.getComputedStyle(div,null);
+                    height = computedStyle.height;
 
-                div.classList.add("hidden");
-                div.style.position = "";
-                div.style.left = "";
-                parent.replaceChild(div,holder);
-                holder = null;
+                    div.classList.add("hidden");
+                    div.style.position = "";
+                    div.style.left = "";
+                    parent.replaceChild(div,holder);
+                    holder = null;
 
-                div.style.height = "0px";
-                break;
-            case HIDING.SCALE_X:
-            case HIDING.SCALE_X_LEFT:
-            case HIDING.SCALE_X_RIGHT:
-                var parent = div.parentNode;
-                var holder = create(HTML.DIV, {style:{display:"none"}});
-                parent.replaceChild(holder,div);
-                document.body.appendChild(div);
-                div.style.position = "fixed";
-                div.style.left = "-10000px";
-                div.classList.remove("hidden");
+                    div.style.height = "0px";
+                    break;
+                case HIDING.SCALE_X:
+                case HIDING.SCALE_X_LEFT:
+                case HIDING.SCALE_X_RIGHT:
+                    parent = div.parentNode;
+                    holder = create(HTML.DIV, {style:{display:"none"}});
+                    parent.replaceChild(holder,div);
+                    document.body.appendChild(div);
+                    div.style.position = "fixed";
+                    div.style.left = "-10000px";
+                    div.classList.remove("hidden");
 
-                var computedStyle = window.getComputedStyle(div,null);
-                width = computedStyle.width;
+                    computedStyle = window.getComputedStyle(div,null);
+                    width = computedStyle.width;
 
-                div.classList.add("hidden");
-                div.style.position = "";
-                div.style.left = "";
-                parent.replaceChild(div,holder);
-                holder = null;
+                    div.classList.add("hidden");
+                    div.style.position = "";
+                    div.style.left = "";
+                    parent.replaceChild(div,holder);
+                    holder = null;
 
-                div.style.width = "0px";
-                break;
-            case HIDING.SCALE_XY:
-                var parent = div.parentNode;
-                var holder = create(HTML.DIV, {style:{display:"none"}});
-                parent.replaceChild(holder,div);
-                document.body.appendChild(div);
-                div.style.position = "fixed";
-                div.style.left = "-10000px";
-                div.classList.remove("hidden");
+                    div.style.width = "0px";
+                    break;
+                case HIDING.SCALE_XY:
+                    parent = div.parentNode;
+                    holder = create(HTML.DIV, {style:{display:"none"}});
+                    parent.replaceChild(holder,div);
+                    document.body.appendChild(div);
+                    div.style.position = "fixed";
+                    div.style.left = "-10000px";
+                    div.classList.remove("hidden");
 
-                var computedStyle = window.getComputedStyle(div,null);
-                height = computedStyle.height;
+                    computedStyle = window.getComputedStyle(div,null);
+                    height = computedStyle.height;
 
-                div.classList.add("hidden");
-                div.style.position = "";
-                div.style.left = "";
-                parent.replaceChild(div,holder);
-                holder = null;
+                    div.classList.add("hidden");
+                    div.style.position = "";
+                    div.style.left = "";
+                    parent.replaceChild(div,holder);
+                    holder = null;
 
-                width = computedStyle.width;
-                height = computedStyle.height;
-                div.style.width = "0px";
-                div.style.height = "0px";
-                break;
+                    width = computedStyle.width;
+                    height = computedStyle.height;
+                    div.style.width = "0px";
+                    div.style.height = "0px";
+                    break;
             }
 
             div.classList.add("hiding-"+animatedType);
@@ -244,40 +242,40 @@ function Edequate(options) {
     };
 
     HTMLElement.prototype.hide = function(animatedType) {
-        var div = this;
+        var div = this, computedStyle;
         if(div.classList.contains("hidden")) return;
         clearTimeout(div.hideTask);
         div.isHidden = true;
         if(animatedType) {
             var height,width;
             switch(animatedType) {
-            case HIDING.SCALE_Y:
-            case HIDING.SCALE_Y_TOP:
-            case HIDING.SCALE_Y_BOTTOM:
-                var computedStyle = window.getComputedStyle(div,null);
-                height = computedStyle.height;
-                div.style.height = height;
-                break;
-            case HIDING.SCALE_X:
-            case HIDING.SCALE_X_LEFT:
-            case HIDING.SCALE_X_RIGHT:
-                var computedStyle = window.getComputedStyle(div,null);
-                width = computedStyle.width;
-                div.style.width = width;
-                break;
-            case HIDING.SCALE_XY:
-                var computedStyle = window.getComputedStyle(div,null);
-                width = computedStyle.width;
-                height = computedStyle.height;
-                div.style.width = width;
-                div.style.height = height;
-                break;
+                case HIDING.SCALE_Y:
+                case HIDING.SCALE_Y_TOP:
+                case HIDING.SCALE_Y_BOTTOM:
+                    computedStyle = window.getComputedStyle(div,null);
+                    height = computedStyle.height;
+                    div.style.height = height;
+                    break;
+                case HIDING.SCALE_X:
+                case HIDING.SCALE_X_LEFT:
+                case HIDING.SCALE_X_RIGHT:
+                    computedStyle = window.getComputedStyle(div,null);
+                    width = computedStyle.width;
+                    div.style.width = width;
+                    break;
+                case HIDING.SCALE_XY:
+                    computedStyle = window.getComputedStyle(div,null);
+                    width = computedStyle.width;
+                    height = computedStyle.height;
+                    div.style.width = width;
+                    div.style.height = height;
+                    break;
             }
 
             div.classList.add("hiding-animation");
             div.classList.add("hiding-"+animatedType);
 
-            var computedStyle = window.getComputedStyle(div,null);
+            computedStyle = window.getComputedStyle(div,null);
 
             var duration = 200;
             try {
@@ -303,18 +301,13 @@ function Edequate(options) {
     };
 
     HTMLElement.prototype.place = function(type, args) {
-        if(type && typeof type == "object") {
+        if(type && typeof type === "object") {
             args = type;
             type = HTML.DIV;
         } else if(!type) {
             type = HTML.DIV;
         }
         create(type, args, this);
-        return this;
-    };
-
-    HTMLElement.prototype.add = function(args) {
-        this.append(args);
         return this;
     };
 
@@ -325,7 +318,7 @@ function Edequate(options) {
                 for(var x in first) {
                     if(first.hasOwnProperty(x)) target[x] = first[x];
                 }
-                for(var x in second) {
+                for(x in second) {
                     if(second.hasOwnProperty(x)) target[x] = second[x];
                 }
                 return target;
@@ -343,7 +336,7 @@ function Edequate(options) {
     }
 
     function EPromise() {
-        var eprom = {
+        return {
             then: function(callback) {
                 this.onResolved = callback || function(){};
                 return this;
@@ -362,8 +355,7 @@ function Edequate(options) {
             promise: function(newPromise) {
                 return newPromise;
             }
-        }
-        return eprom;
+        };
     }
 
     function byId(id) {
@@ -372,12 +364,12 @@ function Edequate(options) {
     this.byId = byId;
 
     function normalizeName(name) {
-        if(name == HTML.CLASSNAME){
+        if(name === HTML.CLASSNAME){
             name = "class";
         } else if(name in attributable) {
-        } else if(name.toLowerCase() == "viewbox") {
+        } else if(name.toLowerCase() === "viewbox") {
             name = HTML.VIEWBOX;
-        } else if(name != name.toLowerCase()) {
+        } else if(name !== name.toLowerCase()) {
             var ps = name.split(/([A-Z])/);
             name = ps[0];
             for(var i = 1; i < ps.length; i++) {
@@ -397,12 +389,12 @@ function Edequate(options) {
         "fill":1,
         "d":1,
         "tabindex":1,
-        "readOnly":1,
+        "readOnly":1
     };
 
     function create(name, properties, appendTo, position) {
-        var el,namespace,replace = false;;
-        if(name && typeof name == "object") {
+        var el,namespace,replace = false;
+        if(name && typeof name === "object") {
             position = appendTo;
             appendTo = properties;
             properties = name;
@@ -418,7 +410,7 @@ function Edequate(options) {
             el = document.createElement(name);
         }
 
-        if(appendTo && typeof appendTo == "string") {
+        if(appendTo && typeof appendTo === "string") {
             replace = true;
             properties.id = appendTo;
             appendTo = byId(appendTo);
@@ -430,11 +422,12 @@ function Edequate(options) {
                 el.appendChild(properties);
             } else if(properties.constructor === Object) {
                 for(var x in properties) {
-                    if(x == HTML.INNERHTML || x == HTML.INNERTEXT) {
+                    if(!properties.hasOwnProperty(x)) continue;
+                    if(x === HTML.INNERHTML || x === HTML.INNERTEXT) {
                         if(properties[x]) {
                             if(properties[x] instanceof HTMLElement) {
                                 el.appendChild(properties[x]);
-                            } else if(typeof properties[x] == "string") {
+                            } else if(typeof properties[x] === "string") {
                                 properties[x] = properties[x].replace(/\$\{(\w+)\}/g, function(x,y){return u.lang[y] ? u.lang[y].outerHTML : y})
                                 el[x] = properties[x];
                             } else {
@@ -445,12 +438,12 @@ function Edequate(options) {
                         for(var i = 0; i < properties[x].length; i++) {
                             el.appendChild(properties[x][i]);
                         }
-                    } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
-                            el.appendChild(properties[x]);
+                    } else if(x === HTML.CONTENT && properties[x].constructor !== String) {
+                        el.appendChild(properties[x]);
                     } else if(properties[x] instanceof HTMLElement) {
                         el.appendChild(properties[x]);
                         el[x] = properties[x];
-                    } else if(x.toLowerCase() == "onlongclick" && properties[x]) {
+                    } else if(x.toLowerCase() === "onlongclick" && properties[x]) {
                         var mousedown,mouseup;
                         el.longclickFunction = properties[x];
                         mousedown = function(evt){
@@ -466,20 +459,20 @@ function Edequate(options) {
                         };
                         mouseup = function(){
                             clearTimeout(el.longTask);
-                        }
+                        };
                         el.addEventListener("mousedown", mousedown, false);
                         el.addEventListener("touchstart", mousedown, false);
                         el.addEventListener("contextmenu", function(evt){
                             evt.preventDefault();
                             evt.stopPropagation();
                         }, false);
-                    } else if(x.toLowerCase() == "onclick") {
+                    } else if(x.toLowerCase() === "onclick") {
                         el.clickFunction = properties[x];
                         if(el.clickFunction) {
                             var call = function(evt) {
                                 if(el.longTask && el.longTask < 0) return;
                                 el.clickFunction(evt);
-                            }
+                            };
                             el.addEventListener("click", call, false);
                             el.addEventListener("touch", call, false);
                         }
@@ -490,7 +483,7 @@ function Edequate(options) {
                             el.addEventListener(action, call, false);
                         }
                     } else {
-                        var name = normalizeName(x), value = properties[x];
+                        var propertyName = normalizeName(x), value = properties[x];
                         if(value != undefined) {
                             if(value.constructor === Object) {
                                 var v = "";
@@ -499,10 +492,10 @@ function Edequate(options) {
                                 }
                                 value = v;
                             }
-                            if(x == "hide" || x == "show") {
+                            if(x === "hide" || x === "show") {
                                 el[x] = value;
-                            } else if(x in el || name in el || name.substr(0,5) == "data-" || x in attributable) {
-                                el.setAttribute(name, value);
+                            } else if(x in el || propertyName in el || propertyName.substr(0,5) === "data-" || x in attributable) {
+                                el.setAttribute(propertyName, value);
                             } else {
                                 el[x] = value;
                             }
@@ -517,9 +510,8 @@ function Edequate(options) {
             if(replace) {
                 appendTo.parentNode.replaceChild(el, appendTo);
             } else if(appendTo.childNodes.length > 0) {
-                if(position == "first") {
+                if(position === "first") {
                     appendTo.insertBefore(el,appendTo.firstChild);
-//                    appendTo.insertBefore(el,appendTo.childNodes[0]);
                 } else {
                     appendTo.appendChild(el);
                 }
@@ -540,7 +532,7 @@ function Edequate(options) {
     }
     this.clear = clear;
 
-     function destroy(node) {
+    function destroy(node) {
         try {
             clear(node);
             if(node.parentNode) node.parentNode.removeChild(node);
@@ -569,7 +561,7 @@ function Edequate(options) {
         var filename = parts[parts.length-1];
         var onlyname = filename.split(".")[0];
         var needInstantiate = false;
-        if(!filename.match(/\.js$/) && parts[1] == "js") {
+        if(!filename.match(/\.js$/) && parts[1] === "js") {
             needInstantiate = true;
             name += ".js";
         }
@@ -596,10 +588,10 @@ function Edequate(options) {
                 }
                 returned.onResolved(a);
             },
-             onerror: function(e) {
+            onerror: function(e) {
                 returned.onRejected(ERRORS.NOT_EXISTS, this.instance, e);
             }
-        }
+        };
 
         create(HTML.SCRIPT, options, document.head);
 
@@ -609,21 +601,21 @@ function Edequate(options) {
 
 
     function _stringify(key, value) {
-          return typeof value === "function" ? value.toString() : value;
-      }
-      function _parse(key, value) {
-          if (typeof value === "string" && /^function.*?\([\s\S]*?\)\s*\{[\s\S]*\}[\s\S]*$/.test(value)) {
-              var args = value
-                  .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
-                  .match(/\([\s\S]*?\)/m)[0]                      //find argument list
-                  .replace(/^\(|\)$/g, "")                    //remove parens
-                  .match(/[^\s(),]+/g) || [],                //find arguments
-                  body = value.replace(/\n/mg, "").match(/\{([\s\S]*)\}/)[1]          //extract body between curlies
-              return Function.apply(0, args.concat(body));
-          } else {
-              return value;
-          }
-      }
+        return typeof value === "function" ? value.toString() : value;
+    }
+    function _parse(key, value) {
+        if (typeof value === "string" && /^function.*?\([\s\S]*?\)\s*\{[\s\S]*\}[\s\S]*$/.test(value)) {
+            var args = value
+                        .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
+                        .match(/\([\s\S]*?\)/m)[0]                      //find argument list
+                        .replace(/^\(|\)$/g, "")                    //remove parens
+                        .match(/[^\s(),]+/g) || [],                //find arguments
+                body = value.replace(/\n/mg, "").match(/\{([\s\S]*)\}/)[1]          //extract body between curlies
+            return Function.apply(0, args.concat(body));
+        } else {
+            return value;
+        }
+    }
     function save(name, value) {
         if(value) {
             localStorage[self.origin + ":" + name] = JSON.stringify(value, _stringify);
@@ -674,8 +666,8 @@ function Edequate(options) {
     var performingDialogInQueue;
 
     /**
-    * dialog(options [, appendTo])
-    * options = {
+     * dialog(options [, appendTo])
+     * options = {
     *       id,
     *       title: name | {label, className, button},
     *       queue: true|*false*, - if true then post this dialog to the queue and wait
@@ -692,19 +684,19 @@ function Edequate(options) {
     *       timeout, - dialog will be closed automatically after timeout, onclose will be called
     *       help: function, - question mark will be shown on bottom right corner
     *   }
-    * title.button = {
+     * title.button = {
     *       icon,
     *       className,
     *       onclick: function
     *   }
-    * button = {
+     * button = {
     *       label,
     *       className,
     *       onclick,
     *       dismiss: *true*|false, - if false then dialog will keep shown,
     *   }
-    * dialog.addItem(options)
-    * options = {
+     * dialog.addItem(options)
+     * options = {
     *       id,
     *       type: HTML.DIV|HTML.A|HTML.SELECT|*HTML.TEXT*|HTML.NUMBER|HTML.TEXTAREA|HTML.BUTTON|HTML.HIDDEN,
     *       className,
@@ -719,9 +711,9 @@ function Edequate(options) {
     *       default, - actual for HTML.SELECT
     *       onclick: function,
     *   }
-    * dialog.open()
-    * dialog.close()
-    */
+     * dialog.open()
+     * dialog.close()
+     */
     function dialog(options, appendTo) {
         appendTo = appendTo || document.body;
         options = options || {};
@@ -730,7 +722,7 @@ function Edequate(options) {
             className:"modal shadow hidden"+(options.className ? " "+options.className : ""),
             tabindex:-1,
             onblur: options.onblur,
-            onfocus: options.onfocus,
+            onfocus: options.onfocus
         }, appendTo);
         dialog.options = options;
 
@@ -747,7 +739,7 @@ function Edequate(options) {
             item.type = item.type || HTML.DIV;
 
             var div,x;
-            if(item.type == HTML.DIV || item.type == HTML.A) {
+            if(item.type === HTML.DIV || item.type === HTML.A) {
                 if(item.enclosed) {
                     div = x = create(item.type, {
                         className: "dialog-item-enclosed" + (item.className ? " " + item.className : "")
@@ -774,9 +766,9 @@ function Edequate(options) {
                     delete item.type;
                     div = x = create(type, item);
                 }
-            } else if(item.type == HTML.HIDDEN) {
+            } else if(item.type === HTML.HIDDEN) {
                 div = x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""});
-            } else if(item.type == HTML.SELECT) {
+            } else if(item.type === HTML.SELECT) {
                 div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
@@ -800,7 +792,7 @@ function Edequate(options) {
                     type:item.type,
                     className:"dialog-item-input-select" + (item.className ? " "+item.className : ""),
                     tabindex: i,
-                    value:item.value || "",
+                    value:item.value || ""
                 }, div);
                 for(var y in item.values) {
                     u.create(HTML.OPTION, {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
@@ -824,8 +816,8 @@ function Edequate(options) {
                 }
 
                 var type = HTML.INPUT;
-                if(item.type.toLowerCase() == HTML.TEXTAREA) type = HTML.TEXTAREA;
-                else if(item.type.toLowerCase() == HTML.BUTTON) type = HTML.BUTTON;
+                if(item.type.toLowerCase() === HTML.TEXTAREA) type = HTML.TEXTAREA;
+                else if(item.type.toLowerCase() === HTML.BUTTON) type = HTML.BUTTON;
 
                 item.tabindex = i;
                 item.className = "dialog-item-input-"+item.type + (item.className ? " "+item.className : "");
@@ -836,14 +828,14 @@ function Edequate(options) {
                     item.onclick = function(e) { this.focus(); e.stopPropagation(); };
                 }
                 item.onkeyup = function(e){
-                   if(e.keyCode == 13 && this.type != HTML.TEXTAREA) {
-                       dialog.close();
-                       if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
-                   } else if(e.keyCode == 27) {
-                       dialog.close();
-                       if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
-                   }
-               };
+                    if(e.keyCode === 13 && this.type !== HTML.TEXTAREA) {
+                        dialog.close();
+                        if(options.positive && options.positive.onclick) options.positive.onclick.call(dialog,items);
+                    } else if(e.keyCode === 27) {
+                        dialog.close();
+                        if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+                    }
+                };
                 item.value = item.value || "";
                 delete item.label;
                 delete item.labelClassName;
@@ -869,7 +861,7 @@ function Edequate(options) {
             }
 
             return x;
-        }
+        };
 
         dialog.adjustPosition = function() {
             var left,top,width,height;
@@ -891,7 +883,7 @@ function Edequate(options) {
 //                left = dialog.offsetLeft;
                 var outWidth = appendTo.offsetWidth;
 
-                if((dialog.offsetLeft + dialog.offsetWidth) >= outWidth || left == 0) {
+                if((dialog.offsetLeft + dialog.offsetWidth) >= outWidth || left === 0) {
                     dialog.style.left = ((outWidth - dialog.offsetWidth) /2)+"px";
                     dialog.style.top = ((appendTo.offsetHeight - dialog.offsetHeight) /2)+"px";
                     dialog.style.right = "auto";
@@ -901,7 +893,7 @@ function Edequate(options) {
             dialog.focus();
             var focused = false;
             for(var i in items) {
-                if(items[i].constructor === HTMLInputElement && (items[i].type == HTML.TEXT || items[i].type == HTML.NUMBER)) {
+                if(items[i].constructor === HTMLInputElement && (items[i].type === HTML.TEXT || items[i].type === HTML.NUMBER)) {
                     focused = true;
                     items[i].focus();
                     break;
@@ -911,7 +903,7 @@ function Edequate(options) {
                 if(dialog.positive && !options.timeout) dialog.positive.focus();
                 else if(dialog.negative && options.timeout) dialog.negative.focus();
             }
-        }
+        };
 
         if(options.modal) {
             modalBackground = modalBackground || u.create(HTML.DIV, {className:"dim"}, appendTo);
@@ -923,11 +915,11 @@ function Edequate(options) {
             event.preventDefault();
             event.stopPropagation();
             dialog.close();
-        }
+        };
 
         // define the method of animated showing and hiding
         if(options.hiding !== undefined) {
-            if(""+options.hiding == "false") {
+            if(""+options.hiding === "false") {
                 options.hiding = "";
             } else if(options.hiding.constructor === String) {
                 options.hiding = {
@@ -1025,7 +1017,7 @@ function Edequate(options) {
 
         };
         dialog.addEventListener("keyup", function(e) {
-            if(e.keyCode == 27) {
+            if(e.keyCode === 27) {
                 if(options.negative && options.negative.onclick) {
                     dialog.close();
                     options.negative.onclick.call(dialog,items);
@@ -1037,13 +1029,13 @@ function Edequate(options) {
         var items = [];
 
         var defaultCloseButton = {
-             icon: " ",
-             className: "",
-             onclick: function(e){
-                 dialog.close();
-                 if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
-             }
-         };
+            icon: " ",
+            className: "",
+            onclick: function(e){
+                dialog.close();
+                if(options.negative && options.negative.onclick) options.negative.onclick.call(dialog,items);
+            }
+        };
         if(options.title) {
             if(options.title.constructor === String || options.title instanceof HTMLElement) {
                 options.title = {
@@ -1129,7 +1121,7 @@ function Edequate(options) {
                     className: "dialog-filter-input hidden",
                     tabindex: -1,
                     onkeyup: function(evt) {
-                        if(evt.keyCode == 27) {
+                        if(evt.keyCode === 27) {
                             evt.preventDefault();
                             evt.stopPropagation();
                             if(this.value) {
@@ -1343,14 +1335,14 @@ function Edequate(options) {
                 Object.defineProperty(lang, string, {
                     get: function() {
                         lang.$nodes[string] = lang.$nodes[string] || create(HTML.SPAN, {
-                            lang:string,
-                        });
+                                lang:string
+                            });
                         var a = lang.$nodes[string].cloneNode();
                         a.format = function() {
-                              lang.$arguments[this.lang] = arguments;
-                              this.innerHTML = sprintf.call(this.innerHTML, arguments);
-                              return this;
-                          }
+                            lang.$arguments[this.lang] = arguments;
+                            this.innerHTML = sprintf.call(this.innerHTML, arguments);
+                            return this;
+                        };
                         a.innerHTML = lang.$origin[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
 
                         if(lang.$arguments[string]){
@@ -1361,8 +1353,7 @@ function Edequate(options) {
                 });
             }
         }
-        var res = (lang.$origin[string] && lang[string]) || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
-        return res;
+        return (lang.$origin[string] && lang[string]) || (string ? string.substr(0, 1).toUpperCase() + string.substr(1) : "");
     }
     this.lang = lang;
 
@@ -1431,24 +1422,24 @@ function Edequate(options) {
                 lang(x, options.resources.resources[x]);
             }
         }
-    }
+    };
 
     lang.updateNode = function(node, lang) {
-        if(typeof lang == "string") {
+        if(typeof lang === "string") {
             node.innerHTML = lang;
         } else if(node && lang && lang.lang) {
             node.innerHTML = lang.innerHTML;
             node.lang = lang.lang;
         }
-    }
+    };
 
     /**
-        get(url [, post])
-            .then(callback(xhr))
-            .catch(callback(code,xhr));
-    */
+     get(url [, post])
+     .then(callback(xhr))
+     .catch(callback(code,xhr));
+     */
 
-     function rest(method, url, body) {
+    function rest(method, url, body) {
         var returned = new EPromise();
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
@@ -1460,7 +1451,7 @@ function Edequate(options) {
             } else {
                 returned.onResolved(xhr);
             }
-        }
+        };
         try {
             if(body) xhr.send(body);
             else xhr.send();
@@ -1487,18 +1478,18 @@ function Edequate(options) {
     this.put = put;
 
     /**
-        getJSON(url [, post])
-            .then(callback(xhr))
-            .catch(callback(code,xhr));
-    */
+     getJSON(url [, post])
+     .then(callback(xhr))
+     .catch(callback(code,xhr));
+     */
     function getJSON(url, body) {
         var callbacks = {
             then: function(json,xhr) { console.warn("Define .then(callback(json,xhr){...})")},
             "catch": function(code, xhr) { console.error(code, xhr); }
-        }
+        };
         var catchFunction = function(callback) {
             callbacks.catch = callback;
-        }
+        };
         var thenFunction = function(callback) {
             callbacks.then = function(xhr) {
                 try {
@@ -1509,9 +1500,9 @@ function Edequate(options) {
                 } catch(e) {
                     callbacks.catch(ERRORS.INCORRECT_JSON, xhr, e);
                 }
-            }
+            };
             return { "catch": catchFunction };
-        }
+        };
         setTimeout(function(){
             if(body) post(url, body).then(callbacks.then).catch(callbacks.catch);
             else get(url).then(callbacks.then).catch(callbacks.catch);
@@ -1526,14 +1517,13 @@ function Edequate(options) {
         if(options.collapsed == undefined) {
             collapsed = load("drawer:collapsed");
             options.collapsed = "drawer:collapsed";
-        } else if(typeof options.collapsed == "boolean") {
+        } else if(typeof options.collapsed === "boolean") {
             collapsed = options.collapsed;
             options.collapsed = "drawer:collapsed";
         } else {
             collapsed = load(options.collapsed);
         }
 
-        var footerButton;
         var footerButtonCollapseDiv;
         var footerButtonExpandDiv;
 
@@ -1582,7 +1572,7 @@ function Edequate(options) {
                 } else {
                     layout.style.left = "";
                 }
-            }
+            };
             var moveHolder = function(e) {
                 var delta;
                 if(e.changedTouches) touch = e.changedTouches[0];
@@ -1595,30 +1585,30 @@ function Edequate(options) {
 //                    e.preventDefault();
                     e.stopPropagation();
                 }
-            }
+            };
             window.addEventListener("touchend", endHolder);
             window.addEventListener("touchmove", moveHolder);
 
             layout.style.transition = "none";
-        }
+        };
 
 
         var layout = create(HTML.DIV, {
             className:"drawer changeable" + (collapsed ? " drawer-collapsed" : "") + (options.className ? " "+options.className : ""),
             tabindex: -1,
             onblur: function(){
-                 this.close();
-                 return true;
+                this.close();
+                return true;
             },
             open: function() {
-                 this.classList.add("drawer-open");
-                 this.style.left = "";
-                 this.scrollTop = 0;
-                 this.menu.scrollTop = 0;
-                 this.focus();
+                this.classList.add("drawer-open");
+                this.style.left = "";
+                this.scrollTop = 0;
+                this.menu.scrollTop = 0;
+                this.focus();
             },
             close: function(){
-                 this.classList.remove("drawer-open");
+                this.classList.remove("drawer-open");
             },
             toggle: function() {
                 if(this.classList.contains("drawer-open")) {
@@ -1640,45 +1630,45 @@ function Edequate(options) {
             },
             ontouchstart: swipeHolder
 //            onmousedown: swipeHolder
-         });
-         if(typeof appendTo == "string") {
+        });
+        if(typeof appendTo === "string") {
             appendTo = byId(appendTo);
             appendTo.parentNode.replaceChild(layout, appendTo);
-         } else {
+        } else {
             appendTo.insertBefore(layout, appendTo.firstChild);
-         }
+        }
 
-         layout.frame = create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
-         layout.frame.contentWindow.addEventListener("resize",function(){
+        layout.frame = create("iframe", {width:"100%",height:"1%", className:"drawer-iframe"}, layout);
+        layout.frame.contentWindow.addEventListener("resize",function(){
             if(!layout.resizeTask) layout.resizeTask = setTimeout(function(){
                 if(options.ontogglesize) options.ontogglesize();
                 delete layout.resizeTask;
             }, 500);
-         });
+        });
 
-         var layoutHeaderHolder = create(HTML.DIV, {className: "drawer-header-holder changeable"});
-         layout.parentNode.insertBefore(layoutHeaderHolder, layout);
-         layout.header = create(HTML.DIV, { className:"drawer-header changeable" }, layout);
+        var layoutHeaderHolder = create(HTML.DIV, {className: "drawer-header-holder changeable"});
+        layout.parentNode.insertBefore(layoutHeaderHolder, layout);
+        layout.header = create(HTML.DIV, { className:"drawer-header changeable" }, layout);
 
-         if(options.logo) {
-             create(HTML.IMG, {
+        if(options.logo) {
+            create(HTML.IMG, {
                 className:"drawer-header-logo changeable",
                 src:options.logo.src,
                 onclick: options.logo.onclick
-             }, layout.header);
-         }
-         layout.headerPrimary = create(HTML.DIV, {className:"drawer-header-name changeable", onclick: function(evt){
-                layout.blur();
-                if(options.onprimaryclick) options.onprimaryclick();
-            }}, layout.header);
-         layout.headerTitle = create(HTML.DIV, {className:"drawer-header-title changeable", innerHTML:options.title}, layout.header);
-         create(HTML.DIV, {className:"drawer-header-subtitle changeable", innerHTML: options.subtitle }, layout.header);
+            }, layout.header);
+        }
+        layout.headerPrimary = create(HTML.DIV, {className:"drawer-header-name changeable", onclick: function(evt){
+            layout.blur();
+            if(options.onprimaryclick) options.onprimaryclick();
+        }}, layout.header);
+        layout.headerTitle = create(HTML.DIV, {className:"drawer-header-title changeable", innerHTML:options.title}, layout.header);
+        create(HTML.DIV, {className:"drawer-header-subtitle changeable", innerHTML: options.subtitle }, layout.header);
 
 
         layout.menu = create(HTML.DIV, {className:"drawer-menu changeable"}, layout);
         options.sections = options.sections || {};
         for(var i=0;i<10;i++){
-            layout.sections[i] = create({order:i, className:"hidden" + (i==9 ? "" : " drawer-menu-divider")}, layout.menu)
+            layout.sections[i] = create({order:i, className:"hidden" + (i===9 ? "" : " drawer-menu-divider")}, layout.menu)
                 .place({className: "drawer-menu-section-title media-hidden"})
                 .place({});
             if(options.sections[i]) {
@@ -1763,7 +1753,7 @@ function Edequate(options) {
                 hideBadge: function() {
                     this.badge.hide();
                     this.badge.innerHTML = "0";
-                },
+                }
             }, layout.sections[section].lastChild);
 
             if(icon) {
@@ -1783,7 +1773,7 @@ function Edequate(options) {
             layout.sections[section].show();
 
             return th;
-        }
+        };
 
         layout.footer = create(HTML.DIV, { className:"drawer-footer"}, layout);
 
@@ -1806,28 +1796,28 @@ function Edequate(options) {
         toast.content = create(HTML.DIV, {className:"toast shadow"}, toast);
         toast.show = function(text,delay){
             if(!toast.parentNode) document.body.appendChild(toast);
-           clearTimeout(toast.hideTask);
-           lang.updateNode(toast.content, text);
-           HTMLDivElement.prototype.show.call(toast, HIDING.SCALE_Y_BOTTOM);
-           delay = delay || 5000;
-           if(delay > 0) {
-               toast.hideTask = setTimeout(function(){
-                   toast.hide(HIDING.SCALE_Y_BOTTOM);
-               },delay);
-           }
-       };
+            clearTimeout(toast.hideTask);
+            lang.updateNode(toast.content, text);
+            HTMLDivElement.prototype.show.call(toast, HIDING.SCALE_Y_BOTTOM);
+            delay = delay || 5000;
+            if(delay > 0) {
+                toast.hideTask = setTimeout(function(){
+                    toast.hide(HIDING.SCALE_Y_BOTTOM);
+                },delay);
+            }
+        };
         return toast;
     }
     this.toast = new toast();
 
-     function notification(options) {
+    function notification(options) {
         if(!options.persistent && !document.hidden) return;
         if(load("main:disable_notification")) return;
         if (!("Notification" in window)) {
             console.error("This browser does not support desktop notification");
         } else {
             Notification.requestPermission(function(result) {
-                if(result == "granted") {
+                if(result === "granted") {
                     var title = options.title;
                     delete options.title;
                     var notif;
@@ -1837,7 +1827,7 @@ function Edequate(options) {
                         notif = new Notification(title, options);
                     } catch (e) {
 //                    console.log("C",e);
-                        if(e.name == "TypeError") {
+                        if(e.name === "TypeError") {
 //                    console.log("D");
                             navigator.serviceWorker.register("/sw.js").then(function(e){
 //                    console.log("E:"+e);
@@ -1855,7 +1845,7 @@ function Edequate(options) {
                         window.focus();
                         if(options.onclick) options.onclick(e);
                         else {console.warn("Redefine onclick.")}
-                    }
+                    };
                     if(options.duration) {
                         setTimeout(function(){
                             notif.close();
@@ -1885,15 +1875,15 @@ function Edequate(options) {
         actionbar.titleNode = create(HTML.DIV, {className:"actionbar-label-title changeable", innerHTML: options.title || ""}, label);
         actionbar.subtitle = create(HTML.DIV, {className:"actionbar-label-subtitle changeable", innerHTML: options.subtitle || ""}, label);
 
-         if(typeof appendTo == "string") {
+        if(typeof appendTo === "string") {
             appendTo = byId(appendTo);
             appendTo.parentNode.replaceChild(actionbar, appendTo);
-         } else {
+        } else {
             appendTo.insertBefore(actionbar, appendTo.firstChild);
-         }
+        }
 
-         var actionbarHolder = create(HTML.DIV, {className: "actionbar-holder changeable"});
-         actionbar.parentNode.insertBefore(actionbarHolder, actionbar);
+        var actionbarHolder = create(HTML.DIV, {className: "actionbar-holder changeable"});
+        actionbar.parentNode.insertBefore(actionbarHolder, actionbar);
 
 
         return actionbar;
@@ -1946,23 +1936,23 @@ function Edequate(options) {
                 }
             },
             add: function(row) {
-                  row = row || {};
-                  row.className = "tr" +(row.onclick ? " clickable":"")+(row.className ? " "+row.className : "");
+                row = row || {};
+                row.className = "tr" +(row.onclick ? " clickable":"")+(row.className ? " "+row.className : "");
 
-                  var res = create(HTML.DIV, row, table.body);
-                  res.cells = [];
+                var res = create(HTML.DIV, row, table.body);
+                res.cells = [];
 
 //                 var res = create(HTML.DIV, {className:"tr"+(row.onclick ? " clickable":"")+(row.className ? " "+row.className : ""), onclick: row.onclick, cells: [] }, table.body);
-                 for(var i in row.cells) {
-                     var item = row.cells[i];
-                     item.className = "td" + (item.className ? " " + item.className : "");
-                     item.innerHTML = item.innerHTML || item.label;
-                     res.cells.push(create(HTML.DIV, item, res));
-                 }
-                 table.rows.push(res);
-                 table.placeholder.hide();
-                 table.update();
-                 return res;
+                for(var i in row.cells) {
+                    var item = row.cells[i];
+                    item.className = "td" + (item.className ? " " + item.className : "");
+                    item.innerHTML = item.innerHTML || item.label;
+                    res.cells.push(create(HTML.DIV, item, res));
+                }
+                table.rows.push(res);
+                table.placeholder.hide();
+                table.update();
+                return res;
             },
             update: function() {
                 if(!options.caption.items) return;
@@ -1971,29 +1961,29 @@ function Edequate(options) {
                 table.updateTask = setTimeout(function(){
                     table.filter();
                     for(var i in table._sorts) {
-                         try{
-                             var index = table._sorts[i].index;
-                             table.head.cells[index].sort = table._sorts[i].mode;
-                             table.sort(index);
-                         } catch(e) {
-                             console.error(e);
-                         }
+                        try{
+                            var index = table._sorts[i].index;
+                            table.head.cells[index].sort = table._sorts[i].mode;
+                            table.sort(index);
+                        } catch(e) {
+                            console.error(e);
+                        }
                     }
                 }, 0);
 
             },
             sort: function(index) {
-               if(!options.caption.items) return;
+                if(!options.caption.items) return;
 
-               var sort = table.head.cells[index].sort;
+                var sort = table.head.cells[index].sort;
 
-               table.head.cells[index].firstChild.show();
-               table.head.cells[index].firstChild.classList[sort > 0 ? "add" : "remove"]("table-sort-descend");
+                table.head.cells[index].firstChild.show();
+                table.head.cells[index].firstChild.classList[sort > 0 ? "add" : "remove"]("table-sort-descend");
 
-               var rows = [];
-               for(var i = 0; i < table.body.childNodes.length; i++) {
+                var rows = [];
+                for(var i = 0; i < table.body.childNodes.length; i++) {
                     rows.push(table.body.childNodes[i]);
-               }
+                }
 
                 rows.sort(function(a, b) {
                     var aCriteria = a.cells[index].sort == undefined ? a.cells[index].innerText.toLowerCase() : a.cells[index].sort;
@@ -2003,9 +1993,9 @@ function Edequate(options) {
                 });
 
 
-               for(var i in rows) {
+                for(i in rows) {
                     table.body.appendChild(rows[i]);
-               }
+                }
 
             },
             _sorts: [],
@@ -2019,7 +2009,7 @@ function Edequate(options) {
                 }
                 if(options.mode) table._sorts.push(options);
                 table.saveOption("sorts",table._sorts);
-            },
+            }
         });
 
         if(appendTo) appendTo.appendChild(table);
@@ -2049,9 +2039,9 @@ function Edequate(options) {
                 item.ondblclick = function() {
                     this.sort = 0;
                     table.sorts({ index: this.index });
-                   table.head.cells[this.index].firstChild.hide();
+                    table.head.cells[this.index].firstChild.hide();
                     table.update();
-                }
+                };
                 var cell = create(HTML.DIV, item, table.head);
                 cell.place(HTML.DIV,{className:"table-sort hidden", innerHTML:"sort"}).place(HTML.SPAN, {innerHTML: item.innerHTML || item.label});
                 table.head.cells.push(cell);
@@ -2096,7 +2086,7 @@ function Edequate(options) {
                 className: "table-filter-input hidden",
                 tabindex: -1,
                 onkeyup: function(evt) {
-                    if(evt.keyCode == 27) {
+                    if(evt.keyCode === 27) {
                         evt.preventDefault();
                         evt.stopPropagation();
                         if(this.value) {
@@ -2135,22 +2125,6 @@ function Edequate(options) {
                     var counter = 0;
                     table.filter.add(table.filterInput._filter);
                     table.filter();
-    //                    for(var i in dialog.itemsLayout.childNodes) {
-    //                        if(!dialog.itemsLayout.childNodes.hasOwnProperty(i)) continue;
-    //                        if(!this.value || (dialog.itemsLayout.childNodes[i].innerText && dialog.itemsLayout.childNodes[i].innerText.toLowerCase().match(this.value.toLowerCase()))) {
-    //                            dialog.itemsLayout.childNodes[i].show();
-    //                            counter++;
-    //                        } else {
-    //                            dialog.itemsLayout.childNodes[i].hide();
-    //                        }
-    //                    }
-    //                    if(counter) {
-    //                        dialog.filterPlaceholder.hide();
-    //                        dialog.itemsLayout.show();
-    //                    } else {
-    //                        dialog.filterPlaceholder.show();
-    //                        dialog.itemsLayout.hide();
-    //                    }
                 }
             }, table.filterLayout);
             table.filterClear = create(HTML.DIV, {
@@ -2186,7 +2160,7 @@ function Edequate(options) {
                 }
                 table.saveOption("filter",table.filter.options);
                 table.filter();
-            }
+            };
             table.filter.add = function(filterOption) {
                 table.filter.options = table.filter.options || [];
                 var newFilterOption = normalizeFunction(filterOption);
@@ -2195,8 +2169,7 @@ function Edequate(options) {
                 }
                 table.saveOption("filter",table.filter.options);
                 table.filter();
-            }
-
+            };
             table.filter.remove = function(filterOption) {
                 table.filter.options = table.filter.options || [];
                 var newFilterOption = normalizeFunction(filterOption);
@@ -2206,7 +2179,7 @@ function Edequate(options) {
                 }
                 table.saveOption("filter",table.filter.options);
                 table.filter();
-            }
+            };
             table.filter.clear = function() {
                 table.filter.options = null;
                 table.saveOption("filter",table.filter.options);
@@ -2241,13 +2214,13 @@ function Edequate(options) {
     var loadingHolder;
     function loading(progress) {
         loadingHolder = loadingHolder || create("div", {style:{
-            position: "fixed", top: 0, bottom: 0, left: 0, right: 0,
-            zIndex: 10000, backgroundColor: "white", display: "flex", flexDirection: "column",
-            justifyContent: "center", alignItems: "center", fontFamily: "sans-serif"
-        }}, document.body)
-            .place(HTML.DIV, {className:"loading-progress-circle"})
-            .place(HTML.DIV, {className:"loading-progress-title", innerHTML: "Loading, please wait... "})
-            .place(HTML.DIV, {className:"loading-progress-subtitle hidden"});
+                position: "fixed", top: 0, bottom: 0, left: 0, right: 0,
+                zIndex: 10000, backgroundColor: "white", display: "flex", flexDirection: "column",
+                justifyContent: "center", alignItems: "center", fontFamily: "sans-serif"
+            }}, document.body)
+                .place(HTML.DIV, {className:"loading-progress-circle"})
+                .place(HTML.DIV, {className:"loading-progress-title", innerHTML: "Loading, please wait... "})
+                .place(HTML.DIV, {className:"loading-progress-subtitle hidden"});
         if(progress) {
             lang.updateNode(loadingHolder.lastChild, progress);
             loadingHolder.lastChild.show();
@@ -2258,22 +2231,22 @@ function Edequate(options) {
     this.loading = loading;
     loading.hide = function() {
         loadingHolder.hide();
-    }
+    };
 
     var progressHolder;
     /**
-    * progress(options [, appendTo])
-    * options = {
+     * progress(options [, appendTo])
+     * options = {
     *       label,
     *       className,
     *       dim: true|*false*,
     *   }
-    * progress.show([label])
-    * progress.hide()
-    */
-    function progress(options, appendTo) {
+     * progress.show([label])
+     * progress.hide()
+     */
+    function Progress(options, appendTo) {
         options = options || {};
-        if(typeof options == "string") {
+        if(typeof options === "string") {
             options = { label: options };
         } else if(options instanceof HTMLSpanElement) {
             options.label = options.outerHTML;
@@ -2284,27 +2257,27 @@ function Edequate(options) {
         appendTo = appendTo || document.body;
 
         progressHolder = progressHolder || dialog({
-            className: "progress-dialog" + (options.className ? " "+options.className : ""),
-            items: [
-                { type: HTML.DIV, className: "progress-dialog-circle" },
-                { type: HTML.DIV, className: "progress-dialog-title" },
-            ]
-        }, appendTo)
+                className: "progress-dialog" + (options.className ? " "+options.className : ""),
+                items: [
+                    { type: HTML.DIV, className: "progress-dialog-circle" },
+                    { type: HTML.DIV, className: "progress-dialog-title" },
+                ]
+            }, appendTo)
 //        progress.show(options.label);
     }
-    progress.prototype.show = function(label) {
+    Progress.prototype.show = function(label) {
         progressHolder.items[1].innerHTML = label || "Loading...";
         progressHolder.open();
-    }
-    progress.prototype.hide = function() {
+    };
+    Progress.prototype.hide = function() {
         progressHolder.close();
-    }
-    this.progress = new progress();
+    };
+    this.progress = new Progress();
 
 
     /**
-    * eventBus.register(file, options) or eventBus.register(files, options)
-    * options = {
+     * eventBus.register(file, options) or eventBus.register(files, options)
+     * options = {
     *       context,
     *       onprogress: function((int) loadedFiles)
     *       validate: function() -> true|false
@@ -2312,16 +2285,16 @@ function Edequate(options) {
     *       onsuccess: function(),
     *       onerror: function(code, origin, error)
     *   }
-    * eventBus.fire(event, object) or fire(event, object)
-    * eventBus.chain(callback) - iterate over holders
-    *
-    * File can be presented as the path, ".js" will be added if not exists.
-    * File will be added as a holder if it is based on eventBus.eventHolder or
-    * it has following elements:
-    *   type: String
-    *   onEvent: function(event, object)
-    *   start: function()
-    */
+     * eventBus.fire(event, object) or fire(event, object)
+     * eventBus.chain(callback) - iterate over holders
+     *
+     * File can be presented as the path, ".js" will be added if not exists.
+     * File will be added as a holder if it is based on eventBus.eventHolder or
+     * it has following elements:
+     *   type: String
+     *   onEvent: function(event, object)
+     *   start: function()
+     */
     function eventBus() {
         this.events = window.EVENTS = window.EVENTS || {};
 
@@ -2329,9 +2302,9 @@ function Edequate(options) {
             return {
                 onEvent:function(){console.warn("DEFINE onEvent(event, object)")},
                 start:function(){console.warn("DEFINE start()")},
-                type:"DEFINE TYPE",
+                type:"DEFINE TYPE"
             }
-        }
+        };
 
         var loaded = 0;
         this.origins = [];
@@ -2373,7 +2346,7 @@ function Edequate(options) {
 
                         if(options.onstart) options.onstart();
 
-                        for(var i in self.eventBus.modules) {
+                        for(i in self.eventBus.modules) {
                             if(self.eventBus.holders[self.eventBus.modules[i]].start) self.eventBus.holders[self.eventBus.modules[i]].start();
                         }
 

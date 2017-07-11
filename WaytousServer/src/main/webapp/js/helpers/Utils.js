@@ -29,31 +29,31 @@ function Utils(main) {
     }
 
     function getRGBAColor(color, alpha) {
-            if(!color) return;
-            if(color.constructor === String) {
-                if(color.match(/^#/)) {
-                    color = color.replace("#","").split("");
-                    var r = parseInt(color[0]+color[1],16);
-                    var g = parseInt(color[2]+color[3],16);
-                    var b = parseInt(color[4]+color[5],16);
-                    color = (r*256 + g)*256 + b;
-                    if(alpha) {
-                        color = "rgba("+r+", "+g+", "+b+", "+alpha+")";
-                    } else {
-                        color = "rgb("+r+", "+g+", "+b+")";
-                    }
+        if(!color) return;
+        if(color.constructor === String) {
+            if(color.match(/^#/)) {
+                color = color.replace("#","").split("");
+                var r = parseInt(color[0]+color[1],16);
+                var g = parseInt(color[2]+color[3],16);
+                var b = parseInt(color[4]+color[5],16);
+                color = (r*256 + g)*256 + b;
+                if(alpha) {
+                    color = "rgba("+r+", "+g+", "+b+", "+alpha+")";
+                } else {
+                    color = "rgb("+r+", "+g+", "+b+")";
                 }
-            } else if (color.constructor === Number) {
-                color >>>= 0;
-                var b = color & 0xFF,
-                    g = (color & 0xFF00) >>> 8,
-                    r = (color & 0xFF0000) >>> 16,
-                    a = (( (color & 0xFF000000) >>> 24 ) / 255) || 1;
-                    if(alpha) a = alpha;
-                color = "rgba(" + [r, g, b, a].join(",") + ")";
             }
-            return color;
+        } else if (color.constructor === Number) {
+            color >>>= 0;
+            var b = color & 0xFF,
+                g = (color & 0xFF00) >>> 8,
+                r = (color & 0xFF0000) >>> 16,
+                a = (( (color & 0xFF000000) >>> 24 ) / 255) || 1;
+            if(alpha) a = alpha;
+            color = "rgba(" + [r, g, b, a].join(",") + ")";
         }
+        return color;
+    }
 
     function getDecimalColor(color, alpha) {
         if(!color) return;
@@ -398,37 +398,37 @@ function Utils(main) {
         div.appendChild(node);
 
         this.onAdd = function() {
-             var pane = this.getPanes().overlayLayer;
-             pane.appendChild(this.div_);
+            var pane = this.getPanes().overlayLayer;
+            pane.appendChild(this.div_);
 
-             // Ensures the label is redrawn if the text or position is changed.
-             var me = this;
-             this.listeners_ = [
-                 google.maps.event.addListener(this, "position_changed", function() { me.draw(); }),
-                 google.maps.event.addListener(this, "text_changed", function() { me.draw(); })
-             ];
-         };
+            // Ensures the label is redrawn if the text or position is changed.
+            var me = this;
+            this.listeners_ = [
+                google.maps.event.addListener(this, "position_changed", function() { me.draw(); }),
+                google.maps.event.addListener(this, "text_changed", function() { me.draw(); })
+            ];
+        };
         this.draw = function() {
-             var projection = this.getProjection();
-             var position = projection.fromLatLngToDivPixel(this.get('position'));
+            var projection = this.getProjection();
+            var position = projection.fromLatLngToDivPixel(this.get('position'));
 
             if(position) {
-                 var div = this.div_;
-                 div.style.left = position.x + "px";
-                 div.style.top = position.y + "px";
-                 div.style.display = HTML.BLOCK;
+                var div = this.div_;
+                div.style.left = position.x + "px";
+                div.style.top = position.y + "px";
+                div.style.display = HTML.BLOCK;
 
-                 this.span_.innerHTML = this.get("text").toString();
-             }
-         };
-         this.onRemove = function() {
-             this.div_.parentNode.removeChild(this.div_);
+                this.span_.innerHTML = this.get("text").toString();
+            }
+        };
+        this.onRemove = function() {
+            this.div_.parentNode.removeChild(this.div_);
 
-             // Label is removed from the map, stop updating its position/text.
-             for (var i = 0, I = this.listeners_.length; i < I; ++i) {
-                 google.maps.event.removeListener(this.listeners_[i]);
-             }
-         };
+            // Label is removed from the map, stop updating its position/text.
+            for (var i = 0, I = this.listeners_.length; i < I; ++i) {
+                google.maps.event.removeListener(this.listeners_[i]);
+            }
+        };
     };
 
     function findPoint(points, fraction) {
@@ -469,7 +469,7 @@ function Utils(main) {
                 if(/chrome/.test(navigator.userAgent.toLowerCase())){
                     setTimeout(function () {
                         _scope._is_popup_blocked(_scope, popup_window);
-                     },200);
+                    },200);
                 }else{
                     popup_window.onload = function () {
                         _scope._is_popup_blocked(_scope, popup_window);
@@ -489,35 +489,35 @@ function Utils(main) {
 
     function dialogAbout(appendTo) {
         return u.dialog({
-           className: "about-dialog",
-           itemsClassName: "about-dialog-items",
-           buttonsClassName: "about-dialog-buttons",
-           items: [
-               { innerHTML: "${APP_NAME} v.1.${SERVER_BUILD}" },
-               { content: u.create(HTML.DIV)
-                   .place(HTML.A, { className: "about-dialog-link", href: "/", target: "_blank", innerHTML: u.lang.support || "Home"})
-                   .place(HTML.A, { className: "about-dialog-link", href: "/support/", target: "_blank", innerHTML: u.lang.support || "Support"})
-                   .place(HTML.A, { className: "about-dialog-link", href: "/help/", target: "_blank", innerHTML: u.lang.help || "Help"})
-                   .place(HTML.A, { className: "about-dialog-link", href: "/feedback/", target: "_blank", innerHTML: u.lang.feedback || "Feedback" })
-               },
-               { innerHTML: "&nbsp;" },
-               { content: [
-                   u.create(HTML.IMG, {src: "/images/edeqa-logo.svg", className: "about-dialog-edeqa-logo"}),
-                   u.create(HTML.DIV)
-                       .place(HTML.DIV, { innerHTML: "Copyright &copy;2017 Edeqa" })
-                       .place(HTML.A, {className: "about-dialog-edeqa-link", href: "http://www.edeqa.com", target: "_blank", innerHTML: "http://www.edeqa.com" })
-               ]
-               },
-/*
-               { innerHTML: "Copyright &copy;2017 Edeqa" },
-               { type: HTML.A, className: "about-dialog-edeqa-link", href: "http://www.edeqa.com", target: "_blank", innerHTML: "http://www.edeqa.com" },
-*/
-               { enclosed: true, label: u.lang.legal_information || "Legal information", body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." },
-           ],
-           positive: {
-               label: "OK"
-           }
-       });
+            className: "about-dialog",
+            itemsClassName: "about-dialog-items",
+            buttonsClassName: "about-dialog-buttons",
+            items: [
+                { innerHTML: "${APP_NAME} v.1.${SERVER_BUILD}" },
+                { content: u.create(HTML.DIV)
+                    .place(HTML.A, { className: "about-dialog-link", href: "/", target: "_blank", innerHTML: u.lang.support || "Home"})
+                    .place(HTML.A, { className: "about-dialog-link", href: "/support/", target: "_blank", innerHTML: u.lang.support || "Support"})
+                    .place(HTML.A, { className: "about-dialog-link", href: "/help/", target: "_blank", innerHTML: u.lang.help || "Help"})
+                    .place(HTML.A, { className: "about-dialog-link", href: "/feedback/", target: "_blank", innerHTML: u.lang.feedback || "Feedback" })
+                },
+                { innerHTML: "&nbsp;" },
+                { content: [
+                    u.create(HTML.IMG, {src: "/images/edeqa-logo.svg", className: "about-dialog-edeqa-logo"}),
+                    u.create(HTML.DIV)
+                        .place(HTML.DIV, { innerHTML: "Copyright &copy;2017 Edeqa" })
+                        .place(HTML.A, {className: "about-dialog-edeqa-link", href: "http://www.edeqa.com", target: "_blank", innerHTML: "http://www.edeqa.com" })
+                ]
+                },
+                /*
+                               { innerHTML: "Copyright &copy;2017 Edeqa" },
+                               { type: HTML.A, className: "about-dialog-edeqa-link", href: "http://www.edeqa.com", target: "_blank", innerHTML: "http://www.edeqa.com" },
+                */
+                { enclosed: true, label: u.lang.legal_information || "Legal information", body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." },
+            ],
+            positive: {
+                label: "OK"
+            }
+        });
     }
 
     function labelPosition(map, points, mePosition, userPosition) {

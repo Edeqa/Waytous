@@ -942,6 +942,7 @@ button:active {
     .drawer-open {
         display: block;
         outline: none;
+        max-width: 240px;
         box-shadow: 20px 0px 60px 10px rgba(0,0,0,0.75);
     }
     .drawer:focus {
