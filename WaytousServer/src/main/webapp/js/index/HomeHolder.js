@@ -6,6 +6,8 @@
  * Created 4/25/17.
  */
 
+EVENTS.HOME = "home";
+
 function HomeHolder(main) {
 
     this.type = "home";
@@ -16,10 +18,21 @@ function HomeHolder(main) {
 
     this.start = function() {
         console.log("INDEX HOME");
-
-    }
+    };
 
     this.onEvent = function(event, object) {
+        switch(event) {
+            case EVENTS.HOME:
+                console.log("INDEX HOME");
+
+                u.progress.show(u.lang.loading);
+
+                u.byId("content").innerHTML = "Home";
+                u.byId("content").classList.add("content-home");
+                u.byId("content").parentNode.scrollTop = 0;
+                u.progress.hide();
+                break;
+        }
         return true;
     }
 

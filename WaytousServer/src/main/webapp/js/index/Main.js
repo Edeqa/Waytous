@@ -29,7 +29,7 @@ function Main() {
         a.setAttribute("src","/js/helpers/Edequate.js");
         a.setAttribute("onload","preloaded()");
         document.head.appendChild(a);
-    }
+    };
 
     preloaded = function() {
 
@@ -47,7 +47,7 @@ function Main() {
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"16x16", href:"/icons/favicon-16x16.png"})
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"});
 
-       u.require("/js/helpers/Constants").then(function(e){
+        u.require("/js/helpers/Constants").then(function(e){
             u.lang.overrideResources({"default":defaultResources, callback: function(){
                 u.eventBus.register(files, {
                     context: self,
@@ -70,15 +70,15 @@ function Main() {
                 });
             }});
             var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/tracking."+lang+".json";
+            var resources = "/locales/index."+lang+".json";
             if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
         });
-    }
+    };
 
     function resume() {
         try {
 
-var type = "home";
+            var type = "home";
 
             window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
                 window.scrollTo(0, 1); }, 0);
@@ -89,12 +89,12 @@ var type = "home";
             self.actionbar = u.actionBar({
                 title: holders[type].title,
                 onbuttonclick: function(){
-                     try {
-                         self.drawer.open();
-                     } catch(e) {
-                         console.error(e);
-                     }
-                 }
+                    try {
+                        self.drawer.open();
+                    } catch(e) {
+                        console.error(e);
+                    }
+                }
             }, "actionbar");
             var selectLang = u.create(HTML.SELECT, { className: "actionbar-select-lang changeable", onchange: function(e, event) {
                 var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
@@ -113,7 +113,7 @@ var type = "home";
                     if(u.load("lang") == a[1]) selectLang.selectedIndex = count;
                     count++;
                 }
-            })
+            });
 
             self.drawer = new u.drawer({
                 title: "${APP_NAME}",
@@ -132,7 +132,7 @@ var type = "home";
                         .place(HTML.SPAN, { className: "drawer-footer-link", innerHTML: "${APP_NAME} &copy;2017 Edeqa", onclick: function(e){
                             dialogAbout.open();
                             e.preventDefault();
-                            e.stopPropagation;
+                            e.stopPropagation();
                             return false;
                         }})
                 },
@@ -145,14 +145,14 @@ var type = "home";
             var dialogAbout = utils.dialogAbout();
 
             var switchFullDrawer = function(){
-               if(this.parentNode.scrollTop) {
-                   self.drawer.toggleSize(true);
-                   self.actionbar.toggleSize(true);
-               } else {
-                   self.drawer.toggleSize(false);
-                   self.actionbar.toggleSize(false);
-               }
-            }
+                if(this.parentNode.scrollTop) {
+                    self.drawer.toggleSize(true);
+                    self.actionbar.toggleSize(true);
+                } else {
+                    self.drawer.toggleSize(false);
+                    self.actionbar.toggleSize(false);
+                }
+            };
             self.content = u.create(HTML.DIV, {className: "content", onwheel: switchFullDrawer, ontouchmove: switchFullDrawer }, "content");
             u.create(HTML.DIV, {className:"alert"}, out);
 
@@ -162,15 +162,17 @@ var type = "home";
                     var categories = {
                         "main": DRAWER.SECTION_PRIMARY,
                         "about": DRAWER.SECTION_LAST
-                    }
+                    };
 
                     var item = self.drawer.add(categories[holders[x].category], x, holders[x].menu, holders[x].icon, function(){
                         var holder = holders[this.instance];
+                        self.drawer.toggleSize(false);
+                        self.actionbar.toggleSize(false);
                         u.fire(holder.type);
 //                        holder.start();
                         return false;
-                  });
-                  item.instance = x;
+                    });
+                    item.instance = x;
                 }
             }
 
@@ -185,35 +187,35 @@ var type = "home";
 
     function showPrivacy(e) {
         showPrivacy.dialog = showPrivacy.dialog || u.dialog({
-            title: u.lang.privacy_policy,
-            items: [
-                { type: HTML.DIV, className: "privacy-body", innerHTML: u.lang.privacy_policy_body }
-            ],
-            positive: {
-                label: "Close"
-            }
-        });
+                title: u.lang.privacy_policy,
+                items: [
+                    { type: HTML.DIV, className: "privacy-body", innerHTML: u.lang.privacy_policy_body }
+                ],
+                positive: {
+                    label: "Close"
+                }
+            });
 
         showPrivacy.dialog.open();
         e.preventDefault();
-        e.stopPropagation;
+        e.stopPropagation();
         return false;
     }
 
     function showTerms(e) {
         showTerms.dialog = showTerms.dialog || u.dialog({
-            title: u.lang.terms_and_conditions,
-            items: [
-                { type: HTML.DIV, className: "terms-body", innerHTML: u.lang.terms_and_conditions_body }
-            ],
-            positive: {
-                label: "Close"
-            }
-        });
+                title: u.lang.terms_and_conditions,
+                items: [
+                    { type: HTML.DIV, className: "terms-body", innerHTML: u.lang.terms_and_conditions_body }
+                ],
+                positive: {
+                    label: "Close"
+                }
+            });
 
         showTerms.dialog.open();
         e.preventDefault();
-        e.stopPropagation;
+        e.stopPropagation();
         return false;
     }
 
@@ -230,4 +232,4 @@ var type = "home";
 
 }
 //document.addEventListener("DOMContentLoaded", (window.WTU = new Main()).start);
-document.addEventListener("readystatechange", function(){if(document.readyState == "complete"){(window.WTU = new Main()).start()}});
+document.addEventListener("readystatechange", function(){if(document.readyState === "complete"){(window.WTU = new Main()).start()}});

@@ -17,7 +17,7 @@ function AboutHolder(main) {
     this.icon = "info_outline";
 
     this.start = function() {
-    }
+    };
 
     this.onEvent = function(event, object) {
 
@@ -37,6 +37,6 @@ function AboutHolder(main) {
                 break;
         }
 
-    }
+    };
 
 }
