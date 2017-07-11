@@ -241,7 +241,7 @@ function Edequate(options) {
             div.classList.remove("hidden");
         }
         return div;
-    }
+    };
 
     HTMLElement.prototype.hide = function(animatedType) {
         var div = this;
@@ -300,7 +300,7 @@ function Edequate(options) {
             div.classList.add("hidden");
         }
         return div;
-    }
+    };
 
     HTMLElement.prototype.place = function(type, args) {
         if(type && typeof type == "object") {
@@ -311,7 +311,12 @@ function Edequate(options) {
         }
         create(type, args, this);
         return this;
-    }
+    };
+
+    HTMLElement.prototype.add = function(args) {
+        this.append(args);
+        return this;
+    };
 
     if(!Object.assign) {
         Object.defineProperty(Object.prototype, "assign", {
@@ -436,8 +441,12 @@ function Edequate(options) {
                                 el[x] = properties[x];
                             }
                         }
+                    } else if(x == HTML.CONTENT && properties[x].constructor === Array) {
+                        for(var i = 0; i < properties[x].length; i++) {
+                            el.appendChild(properties[x][i]);
+                        }
                     } else if(x == HTML.CONTENT && properties[x].constructor !== String) {
-                        el.appendChild(properties[x]);
+                            el.appendChild(properties[x]);
                     } else if(properties[x] instanceof HTMLElement) {
                         el.appendChild(properties[x]);
                         el[x] = properties[x];

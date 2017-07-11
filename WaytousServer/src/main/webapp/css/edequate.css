@@ -741,6 +741,12 @@ button:active {
     margin: 5px;
     text-decoration: none;
 }
+.about-dialog-edeqa-logo {
+    height: 40px;
+    width: 40px;
+    padding-right: 5px;
+    margin-left: -20px;
+}
 .about-dialog-edeqa-link {
     font-size: small;
     margin: 3px;
