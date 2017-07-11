@@ -525,6 +525,7 @@ button:active {
     background: burlywood;
 }
 .drawer-menu-item {
+    position: relative;
     font-weight: bold;
     text-decoration: none;
     cursor: pointer;
