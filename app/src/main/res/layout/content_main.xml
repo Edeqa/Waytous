@@ -173,5 +173,19 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/buttonRecenter"
+        style="@style/ColoredButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/scale_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Re-center"
+        android:visibility="visible"/>
+
 
 </RelativeLayout>

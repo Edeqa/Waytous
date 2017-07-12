@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -20,6 +21,7 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
@@ -47,12 +50,13 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    private ImageButton ibPrimary;
 
 
     public DrawerViewHolder(MainActivity context){
         super(context);
 
-        setViewAndToolbar(context.findViewById(R.id.drawer_layout),(Toolbar) context.findViewById(R.id.toolbar));
+        setViewAndToolbar(context.findViewById(R.id.drawer_layout), (Toolbar) context.findViewById(R.id.toolbar));
         setCallback(onNavigationDrawerCallback);
 
         if(context.getSupportActionBar() != null) {
@@ -85,7 +89,8 @@ public class DrawerViewHolder extends AbstractViewHolder {
         toggle.syncState();
 
         navigationView = (NavigationView) drawer.findViewById(R.id.nav_view);
-    }
+
+     }
 
     @Override
     public String getType() {
@@ -115,6 +120,19 @@ public class DrawerViewHolder extends AbstractViewHolder {
                 menuItem.setVisible(false);
                 State.getInstance().fire(CREATE_DRAWER, menuItem);
 
+                ibPrimary = (ImageButton) navigationView.findViewById(R.id.ibPrim);
+                ibPrimary.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        State.getInstance().getUsers().forMe(new Runnable2<Integer, MyUser>() {
+                            @Override
+                            public void call(Integer number, MyUser user) {
+                                closeDrawer();
+                                user.fire(SELECT_SINGLE_USER);
+                            }
+                        });
+                    }
+                });
                 break;
             case TRACKING_ACTIVE:
             case TRACKING_DISABLED:
