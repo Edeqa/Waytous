@@ -5,6 +5,7 @@ import android.location.Location;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -84,6 +85,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private boolean moveFromHardware = false;
     private boolean canceled = false;
     private boolean initialStart = true;
+    private Button bRecenter;
 
     public CameraViewHolder(MainActivity context) {
         super(context);
@@ -91,6 +93,14 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
         setMap(context.getMap());
         setScaleView((MapScaleView) context.findViewById(R.id.scale_view));
+        bRecenter = (Button) context.findViewById(R.id.buttonRecenter);
+        bRecenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                State.getInstance().fire(MAP_MY_LOCATION_BUTTON_CLICKED);
+                bRecenter.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -398,6 +408,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         public boolean onEvent(String event, Object object) {
             switch (event) {
                 case SELECT_USER:
+                    bRecenter.setVisibility(View.GONE);
                     orientation = previousOrientation;
                     orientationChanged = true;
                     onChangeLocation(myUser.getLocation());
@@ -548,6 +559,11 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int i) {
+            switch(i) {
+                case GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE:
+                    bRecenter.setVisibility(View.VISIBLE);
+                    break;
+            }
             if(scaleView != null) {
                 //FIXME
 //                scaleView.update(map.getProjection(), map.getCameraPosition());
