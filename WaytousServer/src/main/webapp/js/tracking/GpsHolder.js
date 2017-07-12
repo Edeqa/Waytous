@@ -197,7 +197,7 @@ console.log("POSITION",position);
     }
 
     function alternativeGeolocation() {
-        u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js", function(geoip2) {
+        u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js").then(function(geoip2) {
             console.log("Alternative geolocation applied",geoip2);
 
              console.log("GEO",geoip2);
@@ -211,7 +211,7 @@ console.log("POSITION",position);
                         accuracy: json.location.accuracy_radius
                     },
                     timestamp: new Date().getTime()
-                }
+                };
                 locationUpdateListener(position);
              }, function(error){
                 console.error("GEOER",error);
