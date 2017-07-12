@@ -53,33 +53,33 @@ function GpsHolder(main) {
                     startPositioning();
                 } else if(!u.load("gps:asked")) {
                     locationRequiredDialog = locationRequiredDialog || u.dialog({
-                        queue: true,
-                        className: "gps-required-dialog",
-                        items: [
-                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
-                            { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
-                            { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_3, body: u.lang.gps_location_required_4 },
-                        ],
-                        positive: {
-                            label: u.lang.ok_go_ahead,
-                            onclick: function() {
-                                u.save("gps:asked", true);
-                                startPositioning();
-                                if(!initialized) main.fire(EVENTS.MAP_READY);
+                            queue: true,
+                            className: "gps-required-dialog",
+                            items: [
+                                { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
+                                { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
+                                { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_3, body: u.lang.gps_location_required_4 },
+                            ],
+                            positive: {
+                                label: u.lang.ok_go_ahead,
+                                onclick: function() {
+                                    u.save("gps:asked", true);
+                                    startPositioning();
+                                    if(!initialized) main.fire(EVENTS.MAP_READY);
+                                }
+                            },
+                            negative: {
+                                label: u.lang.maybe_later,
+                                onclick: function() {
+                                    u.save("gps:asked", true);
+                                    if(!initialized) main.fire(EVENTS.MAP_READY);
+                                }
+                            },
+                            help: function() {
+                                locationRequiredDialog.close();
+                                main.fire(EVENTS.SHOW_HELP, {module:main.eventBus.holders.gps, article:1})
                             }
-                        },
-                        negative: {
-                            label: u.lang.maybe_later,
-                            onclick: function() {
-                                u.save("gps:asked", true);
-                                if(!initialized) main.fire(EVENTS.MAP_READY);
-                            }
-                        },
-                        help: function() {
-                            locationRequiredDialog.close();
-                            main.fire(EVENTS.SHOW_HELP, {module:main.eventBus.holders.gps, article:1})
-                        }
-                    }, main.right);
+                        }, main.right);
                     locationRequiredDialog.open();
                     return false;
                 } /*else if(!u.load("gps:allowed")) {
@@ -155,7 +155,7 @@ function GpsHolder(main) {
                 },
                 help: function() {
                     main.fire(EVENTS.SHOW_HELP, {module: main.eventBus.holders.gps, article: 1});
-                 }
+                }
             }, main.right).open();
 
             icon = u.create(HTML.BUTTON, {className:"alert-icon hidden", type: HTML.BUTTON, innerHTML:"warning", onclick: function(){
@@ -179,7 +179,7 @@ function GpsHolder(main) {
             && last.coords
             && last.coords.latitude == position.coords.latitude
             && last.coords.longitude == position.coords.longitude) {
-                return;
+            return;
         }
         if(position.coords.accuracy
             && last
@@ -187,9 +187,9 @@ function GpsHolder(main) {
             && last.coords.accuracy
             && position.coords.accuracy > last.coords.accuracy
             && google.maps.geometry.spherical.computeDistanceBetween(utils.latLng(last), utils.latLng(position)) < position.coords.accuracy) {
-                return;
+            return;
         }
-console.log("POSITION",position);
+        console.log("POSITION",position);
         u.save("gps:last",u.cloneAsObject(position));
         var message = utils.locationToJson(position);
         if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) main.tracking.sendMessage(REQUEST.TRACKING, message);
@@ -197,11 +197,10 @@ console.log("POSITION",position);
     }
 
     function alternativeGeolocation() {
-        u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js").then(function(geoip2) {
+        u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js").then(function() {
             console.log("Alternative geolocation applied",geoip2);
 
-             console.log("GEO",geoip2);
-             geoip2.insights(function(json){
+            geoip2.insights(function(json){
                 console.log("GEOSU",json);
                 var position = {
                     coords: {
@@ -213,26 +212,26 @@ console.log("POSITION",position);
                     timestamp: new Date().getTime()
                 };
                 locationUpdateListener(position);
-             }, function(error){
+            }, function(error){
                 console.error("GEOER",error);
-             }, {})
+            }, {})
         });
-/*
-        u.getJSON("https://ipinfo.io/json").then(function(json) {
-            console.log("Alternative geolocation applied",json);
-            var latlng = json.loc.split(",");
-            var position = {
-                coords: {
-                    provider: "ipinfo.io",
-                    latitude: latlng[0],
-                    longitude: latlng[1],
-                    accuracy: 10000
-                },
-                timestamp: new Date().getTime()
-            }
-            locationUpdateListener(position);
-        });
-*/
+        /*
+                u.getJSON("https://ipinfo.io/json").then(function(json) {
+                    console.log("Alternative geolocation applied",json);
+                    var latlng = json.loc.split(",");
+                    var position = {
+                        coords: {
+                            provider: "ipinfo.io",
+                            latitude: latlng[0],
+                            longitude: latlng[1],
+                            accuracy: 10000
+                        },
+                        timestamp: new Date().getTime()
+                    }
+                    locationUpdateListener(position);
+                });
+        */
 
     }
 
