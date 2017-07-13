@@ -473,7 +473,7 @@ public class MyTracking implements Tracking {
     }
 
     public String getTrackingUri() {
-        return "http://" + serverUri.getHost() + (SENSITIVE.getHttpPort() == 80 ? "" : ":" + SENSITIVE.getHttpPort()) + "/track/" + getToken();
+        return "http://" + serverUri.getHost() + (SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked()) + "/track/" + getToken();
     }
 
     private class ReconnectRunnable implements Runnable {

@@ -200,6 +200,8 @@ function GpsHolder(main) {
         u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js").then(function() {
             console.log("Alternative geolocation applied",geoip2);
 
+
+
             geoip2.insights(function(json){
                 console.log("GEOSU",json);
                 var position = {

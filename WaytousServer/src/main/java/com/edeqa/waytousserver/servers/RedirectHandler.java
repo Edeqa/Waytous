@@ -7,7 +7,10 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
@@ -47,7 +50,26 @@ public class RedirectHandler implements HttpHandler {
                 tokenId = parts.get(2);
             }
 
-            if(uri.getPath().startsWith("/track/") && tokenId != null) {
+            if(uri.getPath().startsWith("/.well-known/")) {
+                Headers responseHeaders = exchange.getResponseHeaders();
+                responseHeaders.set(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+                responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+                exchange.sendResponseHeaders(200, 0);
+                OutputStream os = exchange.getResponseBody();
+
+                File root = new File(SENSITIVE.getWebRootDirectory());
+                File file = new File(root + uri.getPath()).getCanonicalFile();
+
+                FileInputStream fs = new FileInputStream(file);
+
+                final byte[] buffer = new byte[0x10000];
+                int count;
+                while ((count = fs.read(buffer)) >= 0) {
+                    os.write(buffer, 0, count);
+                }
+                fs.close();
+                os.close();
+            } else if(uri.getPath().startsWith("/track/") && tokenId != null) {
                 String mobileRedirect = "waytous://" + host + "/track/" + tokenId;
                 String webRedirect = "https://" + host + Common.getWrappedHttpsPort() + "/group/" + tokenId;
                 String mainLink = "https://" + host + Common.getWrappedHttpsPort() + "/track/" + tokenId;

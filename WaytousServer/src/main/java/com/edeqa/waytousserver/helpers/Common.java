@@ -83,11 +83,11 @@ public class Common {
     }
 
     public static String getWrappedHttpPort(){
-        return SENSITIVE.getHttpPort() == 80 ? "" : ":" + SENSITIVE.getHttpPort();
+        return SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked();
     }
 
     public static String getWrappedHttpsPort(){
-        return SENSITIVE.getHttpsPort() == 443 ? "" : ":" + SENSITIVE.getHttpsPort();
+        return SENSITIVE.getHttpsPortMasked() == 443 ? "" : ":" + SENSITIVE.getHttpsPortMasked();
     }
 
     public AbstractDataProcessor getDataProcessor(String version) {

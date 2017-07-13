@@ -58,8 +58,8 @@ public class AdminMainHolder implements PageHolder {
         JSONObject o = new JSONObject();
         o.put("page", part);
         o.put("version", SERVER_BUILD);
-        o.put("HTTP_PORT", SENSITIVE.getHttpPort());
-        o.put("HTTPS_PORT", SENSITIVE.getHttpsPort());
+        o.put("HTTP_PORT", SENSITIVE.getHttpPortMasked());
+        o.put("HTTPS_PORT", SENSITIVE.getHttpsPortMasked());
         o.put("WS_FB_PORT", SENSITIVE.getWsPortFirebase());
         o.put("WSS_FB_PORT", SENSITIVE.getWssPortFirebase());
         o.put("WS_PORT", SENSITIVE.getWsPortDedicated());

@@ -20,9 +20,12 @@ import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -84,6 +87,26 @@ public class WaytousServer {
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
+
+/////////////
+        InputStream is = new FileInputStream(SENSITIVE.getKeystoreFilename());
+// You could get a resource as a stream instead.
+
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        X509Certificate caCert = (X509Certificate) cf.generateCertificate(is);
+
+        TrustManagerFactory tmf2 = TrustManagerFactory
+                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null); // You don't need the KeyStore instance to come from a file.
+        ks.setCertificateEntry("server", caCert);
+
+        tmf.init(ks);
+///////////////////
+
+        sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, tmf2.getTrustManagers(), null);
+
         DefaultSSLWebSocketServerFactory socket = new DefaultSSLWebSocketServerFactory(sslContext);
         wssServer.setWebSocketFactory(socket);
 
@@ -117,7 +140,7 @@ public class WaytousServer {
         server.bind(new InetSocketAddress(SENSITIVE.getHttpPort()), 0);
 
         RedirectHandler redirectServer = new RedirectHandler();
-        Common.log(LOG, "Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/");
+        Common.log(LOG, "Redirect HTTP\t\t| " + SENSITIVE.getHttpPort() + "\t| " + "/" + (SENSITIVE.getHttpPort() == SENSITIVE.getHttpPortMasked() ? " (masked by "+SENSITIVE.getHttpPortMasked() +")" : ""));
         server.createContext("/", redirectServer);
 
         MainServletHandler mainServer = new MainServletHandler();
@@ -188,16 +211,16 @@ public class WaytousServer {
         });
 
         sslServer.createContext("/", mainServer);
-        Common.log(LOG, "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*");
+        Common.log(LOG, "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /, /*" + (SENSITIVE.getHttpsPort() == SENSITIVE.getHttpsPortMasked() ? " (masked by "+SENSITIVE.getHttpsPortMasked() +")" : ""));
 
         sslServer.createContext("/track/", trackingServer);
-        Common.log(LOG, "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/track/");
+        Common.log(LOG, "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| /track/" + (SENSITIVE.getHttpsPort() == SENSITIVE.getHttpsPortMasked() ? " (masked by "+SENSITIVE.getHttpsPortMasked() +")" : ""));
 
         sslServer.createContext("/group/", trackingServer);
-        Common.log(LOG, "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/group/");
+        Common.log(LOG, "Tracking HTTPS\t\t| " + SENSITIVE.getHttpsPort() + "\t| /group/" + (SENSITIVE.getHttpsPort() == SENSITIVE.getHttpsPortMasked() ? " (masked by "+SENSITIVE.getHttpsPortMasked() +")" : ""));
 
         sslServer.createContext("/rest/", restServer);
-        Common.log(LOG, "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| " + "/rest/");
+        Common.log(LOG, "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /rest/" + (SENSITIVE.getHttpsPort() == SENSITIVE.getHttpsPortMasked() ? " (masked by "+SENSITIVE.getHttpsPortMasked() +")" : ""));
 
         sslAdminServer.createContext("/admin", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
         sslAdminServer.createContext("/admin/logout", adminServer);

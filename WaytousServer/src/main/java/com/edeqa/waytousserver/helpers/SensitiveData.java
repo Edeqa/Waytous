@@ -93,10 +93,12 @@ public class SensitiveData {
         json = new JSONObject(string.toString());
 
         if(!json.has("app_name")) json.put("app_name", "Waytous");
-        if(!json.has("app_link")) json.put("app_link", "http://wayto.us");
-        if(!json.has("support_email")) json.put("support_email", "support@wayto.us");
+        if(!json.has("app_link")) json.put("app_link", "http://waytous.net");
+        if(!json.has("support_email")) json.put("support_email", "support@waytous.net");
         if(!json.has("gzip")) json.put("gzip", true);
 
+        if(!json.has("http_port_masked")) json.put("http_port_masked", json.getInt("http_port"));
+        if(!json.has("http_secured_port_masked")) json.put("http_secured_port_masked", json.getInt("http_secured_port"));
 
         if(!json.has("types")) {
             json.put("types",new JSONArray());
@@ -230,7 +232,9 @@ public class SensitiveData {
             jsonSample.put("admin_password","password");
             jsonSample.put("server_host","localhost");
             jsonSample.put("http_port",8080);
+            jsonSample.put("http_port_masked",8080);
             jsonSample.put("http_secured_port",8443);
+            jsonSample.put("http_secured_port_masked",8443);
             jsonSample.put("http_admin_port",8989);
             jsonSample.put("websocket_port_dedicated",8081);
             jsonSample.put("websocket_secured_port_dedicated",8444);
@@ -326,6 +330,14 @@ public class SensitiveData {
 
     public int getHttpsPort(){
         return json.getInt("http_secured_port");
+    }
+
+    public int getHttpPortMasked(){
+        return json.getInt("http_port_masked");
+    }
+
+    public int getHttpsPortMasked(){
+        return json.getInt("http_secured_port_masked");
     }
 
     public int getHttpsAdminPort(){
