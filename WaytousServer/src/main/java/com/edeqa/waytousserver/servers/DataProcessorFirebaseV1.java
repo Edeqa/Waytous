@@ -97,8 +97,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         try {
             FirebaseApp.getInstance();
         } catch (Exception e){
-//            Common.log("doesn't exist...");
-//            e.printStackTrace();
+            Common.log("doesn't exist...");
+            e.printStackTrace();
         }
 
         try {
@@ -106,14 +106,16 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             FirebaseApp.initializeApp(options);
 //            }
         } catch(Exception e){
-//            Common.log("already exists...");
-//            e.printStackTrace();
+            Common.log("already exists...");
+            e.printStackTrace();
         }
         try {
             ref = FirebaseDatabase.getInstance().getReference();
         }catch (Exception e) {
             e.printStackTrace();
         }
+        Common.log(LOG, "--debug-- init:" + ref);
+
 //        throw new ServletException("SENSITIVE:"+FirebaseDatabase.getInstance());
 
     }
@@ -210,6 +212,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         try {
             final String ip = conn.getRemoteSocketAddress().toString();
             final JSONObject request, response = new JSONObject();
+            Common.log(LOG, "--debug-- onMessage001:" + ip);
 
             try {
                 request = new JSONObject(message);
@@ -218,6 +221,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 return;
             }
             if (!request.has(REQUEST) || !request.has(REQUEST_TIMESTAMP)) return;
+            Common.log(LOG, "--debug-- onMessage002");
 
             String req = request.getString(REQUEST);
             /*if (REQUEST_TRACKING.equals(req)) {
@@ -225,7 +229,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 conn.send(response.toString());
                 conn.close();
                 Common.log(LOG,"onMessage:updateCoords:fake",response);
-            } else*/ if (REQUEST_NEW_GROUP.equals(req)) {
+            } else*/
+            Common.log(LOG, "--debug-- onMessage003:" + req);
+            if (REQUEST_NEW_GROUP.equals(req)) {
                 if (request.has(REQUEST_DEVICE_ID)) {
                     final MyGroup group = new MyGroup();
                     final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
@@ -234,6 +240,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     onresult[0] = new Runnable1<JSONObject>() {
                         @Override
                         public void call(JSONObject json) {
+                            Common.log(LOG, "--debug-- onMessage005:" + json);
                             ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
                             DatabaseReference nodeNumber = ref.child(group.getId()).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
                             nodeNumber.setValue(user.getUid());
@@ -245,9 +252,11 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         @Override
                         public void call(JSONObject json) {
                             group.fetchNewId();
+                            Common.log(LOG, "--debug-- onMessage006:" + json);
                             createGroup(group, onresult[0], onresult[1]);
                         }
                     };
+                    Common.log(LOG, "--debug-- onMessage004:" + group);
                     createGroup(group, onresult[0], onresult[1]);
                 } else {
                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
@@ -495,38 +504,46 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.getValue() == null) {
-                            Map<String, Object> childUpdates = new HashMap<>();
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_PERSISTENT, group.isPersistent());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DISMISS_INACTIVE, group.isDismissInactive());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
-                            ref.child(group.getId()).updateChildren(childUpdates);
-                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(0);
+                        try {
+                            if(dataSnapshot.getValue() == null) {
+                                Map<String, Object> childUpdates = new HashMap<>();
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_PERSISTENT, group.isPersistent());
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_DISMISS_INACTIVE, group.isDismissInactive());
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
+                                childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
+                                        + Constants.DATABASE.OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
+                                ref.child(group.getId()).updateChildren(childUpdates);
+                                ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(0);
 
-                            json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
-                            json.put(Constants.REST.GROUP_ID, group.getId());
+                                json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                                json.put(Constants.REST.GROUP_ID, group.getId());
 
-                            Common.log(LOG, "onMessage:createGroup:created:" + group.getId());
-                            onsuccess.call(json);
+                                Common.log(LOG, "onMessage:createGroup:created:" + group.getId());
+                                onsuccess.call(json);
 
-                        } else {
+                            } else {
+                                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                                json.put(Constants.REST.GROUP_ID, group.getId());
+                                json.put(Constants.REST.MESSAGE, "Group " + group.getId() + " already exists.");
+                                Common.log(LOG, "onMessage:createGroup:alreadyExists:" + group.getId());
+                                if(onerror != null) onerror.call(json);
+                            }
+                        } catch (Exception e) {
+                            Common.err(LOG,"onMessage:createGroup:error:",e);
                             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
                             json.put(Constants.REST.GROUP_ID, group.getId());
-                            json.put(Constants.REST.MESSAGE, "Group " + group.getId() + " already exists.");
-                            Common.log(LOG, "onMessage:createGroup:alreadyExists:" + group.getId());
+                            json.put(Constants.REST.MESSAGE, "Cannot create group: error connecting");
                             if(onerror != null) onerror.call(json);
                         }
                     }
@@ -809,7 +826,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
         Common.log(LOG, "Groups validation is performing, checking online users");
         try {
-            String res = Utils.getUrl("https://waytous-beta.firebaseio.com/.json?shallow=true&print=pretty&auth="+SENSITIVE.getFirebaseWebApiKey(),"UTF-8");
+            String res = Utils.getUrl(SENSITIVE.getFirebaseDatabaseUrl() + "/.json?shallow=true&print=pretty&auth=" + SENSITIVE.getFirebaseWebApiKey(),"UTF-8");
 
             JSONObject groups = new JSONObject(res);
 

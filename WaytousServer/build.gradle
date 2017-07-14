@@ -95,7 +95,7 @@ dependencies {
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.54'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.54'
     compile 'org.java-websocket:Java-WebSocket:1.3.4'
-//    compile 'org.json:json:20160212'
+    compile 'org.json:json:20160212'
     compile 'com.github.edeqa:eventbus:0.3'
 
 // gae servlet rows
