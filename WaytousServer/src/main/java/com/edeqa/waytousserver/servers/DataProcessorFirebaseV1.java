@@ -7,16 +7,18 @@ import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.TaskSingleValueEventFor;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.internal.NonNull;
 import com.google.firebase.tasks.OnFailureListener;
 import com.google.firebase.tasks.OnSuccessListener;
@@ -57,7 +59,6 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
@@ -66,7 +67,6 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
@@ -111,6 +111,19 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         }
         try {
             ref = FirebaseDatabase.getInstance().getReference();
+            ref.child("overview").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Object document = dataSnapshot.getValue();
+                    System.out.println(document);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    System.err.println("ERROR" + error.getMessage());
+                    error.toException().printStackTrace();
+                }
+            });
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -177,7 +190,13 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //                .setServiceAccount(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()))
 //                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
 //                .build();
-        return builder.setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl()).build();
+        Map<String, Object> auth = new HashMap<String, Object>();
+        auth.put("uid", "Administrator");
+
+        return builder
+                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
+                .setDatabaseAuthVariableOverride(auth)
+                .build();
     }
 
     @Override
