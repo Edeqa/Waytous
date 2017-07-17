@@ -434,6 +434,10 @@ function Edequate(options) {
                                 el[x] = properties[x];
                             }
                         }
+                    } else if(x == HTML.CONTENT && properties[x].constructor === Array) {
+                        for(var i = 0; i < properties[x].length; i++) {
+                            el.appendChild(properties[x][i]);
+                        }
                     } else if(x === HTML.CONTENT && properties[x].constructor !== String) {
                         el.appendChild(properties[x]);
                     } else if(properties[x] instanceof HTMLElement) {

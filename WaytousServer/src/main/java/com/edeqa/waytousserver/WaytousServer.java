@@ -6,8 +6,8 @@ import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MainServletHandler;
-import com.edeqa.waytousserver.servers.RedirectHandler;
 import com.edeqa.waytousserver.servers.MyWsServer;
+import com.edeqa.waytousserver.servers.RedirectHandler;
 import com.edeqa.waytousserver.servers.RestServletHandler;
 import com.edeqa.waytousserver.servers.TrackingServletHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -50,7 +50,7 @@ public class WaytousServer {
     public static void main(final String[] args ) throws Exception {
 
 
-        Common.log(LOG, "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa LLC. http://www.edeqa.com ======");
+        Common.log(LOG, "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);
 
         Common.getInstance().setDataProcessor(new DataProcessorFirebaseV1());
@@ -219,6 +219,31 @@ public class WaytousServer {
         Common.log("Track\t", "http://" + InetAddress.getLocalHost().getHostAddress() + Common.getWrappedHttpPort() + "/track/");
         Common.log("Admin\t", "https://" + InetAddress.getLocalHost().getHostAddress() + ":" + SENSITIVE.getHttpsAdminPort() + "/admin/");
 
+    }
+
+
+    static class User {
+
+        public String username;
+        public String email;
+
+        public User() {
+            // Default constructor required for calls to DataSnapshot.getValue(User.class)
+        }
+
+        public User(String username, String email) {
+            this.username = username;
+            this.email = email;
+        }
+
+
+        @Override
+        public String toString() {
+            return "User{" +
+                    "username='" + username + '\'' +
+                    ", email='" + email + '\'' +
+                    '}';
+        }
     }
 
 }
