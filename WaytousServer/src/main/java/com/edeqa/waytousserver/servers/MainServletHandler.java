@@ -4,7 +4,6 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.google.common.net.HttpHeaders;
-import com.sun.net.httpserver.Headers;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,14 +12,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -132,10 +127,22 @@ public class MainServletHandler extends AbstractServletHandler {
                 String lastModified = dateFormat.format(file.lastModified());
 
                 requestWrapper.setHeader(HttpHeaders.LAST_MODIFIED, lastModified);
-                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=120");
+                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=1800" : "max-age=1800");
                 requestWrapper.setHeader(HttpHeaders.ETAG, etag);
                 requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
                 requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
+
+                // FIXME - need to check by https://observatory.mozilla.org/analyze.html?host=waytous.net
+                requestWrapper.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
+                requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
+                requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
+                requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
+                requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
+
+                // FIXME http://nibbler.silktide.com/en_US/reports/waytous.net
+                // FIXME https://gtmetrix.com/reports/waytous.net/6i4B5kR2
+                requestWrapper.setHeader(HttpHeaders.VARY, "Accept-Encoding");
+
 
                 requestWrapper.setGzip(gzip);
 

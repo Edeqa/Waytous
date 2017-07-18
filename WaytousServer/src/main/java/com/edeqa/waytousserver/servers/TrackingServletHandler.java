@@ -19,9 +19,6 @@ import javax.servlet.ServletException;
 
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
-import static com.edeqa.waytousserver.helpers.HtmlGenerator.CONTENT;
-import static com.edeqa.waytousserver.helpers.HtmlGenerator.META;
-import static com.edeqa.waytousserver.helpers.HtmlGenerator.NAME;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.ONLOAD;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SCRIPT;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SRC;
@@ -122,6 +119,17 @@ public class TrackingServletHandler extends AbstractServletHandler {
 //        html.getHead().add(META).with(NAME, "theme-color").with(CONTENT, "#aaeeee");
         html.getHead().add(SCRIPT).with("data", o);
         html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WTU = new Main()).start();");
+
+
+        // FIXME - need to check by https://observatory.mozilla.org/analyze.html?host=waytous.net
+        requestWrapper.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
+        requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
+        requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
+        requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
+        requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
+        requestWrapper.setHeader(HttpHeaders.VARY, "Accept-Encoding");
+        String etag = "W/1976-" + uri.getPath().hashCode();
+        requestWrapper.setHeader(HttpHeaders.ETAG, etag);
 
         Utils.sendResult.call(requestWrapper, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
 

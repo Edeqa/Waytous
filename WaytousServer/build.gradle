@@ -13,7 +13,7 @@ buildscript {
 }
 
 plugins {
-//    id "com.eriwen.gradle.js" version "2.14.1"
+    id "com.eriwen.gradle.js" version "2.14.1"
 //    id "com.eriwen.gradle.css" version "2.14.0"
 }
 
@@ -26,57 +26,13 @@ plugins {
 //def installationType = 'google-appengine'
 def installationType = 'standalone-server'
 
-
+apply plugin: 'js'
 apply plugin: 'java'
 apply plugin: 'war'
-apply plugin: 'appengine'
 
-configurations {
-//    closureCompiler
+if (installationType.compareTo('google-appengine') == 0) {
+    apply plugin: 'appengine'
 }
-dependencies {
-//    closureCompiler 'com.google.javascript:closure-compiler:v20150609'
-}
-
-//minifyJs {
-//    source = file("${projectDir}/src/main/webapp/js/helpers/Constants.js")
-//    dest = file("${buildDir}/exploded-app/js/helpers/Constants.js")
-//    closure {
-//        warningLevel = 'QUIET'
-//        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
-//        compilerOptions.languageIn = 'ECMASCRIPT5'
-//    }
-//}
-//
-//javascript.source {
-//    def sourceDir = "${projectDir}/src/main/webapp/js"
-//    dev {
-//        js {
-//            srcDir sourceDir
-//            include "**/*.js"
-//            exclude "**/*.min.js"
-//        }
-//    }
-//}
-//
-//javascript.source.dev.js.files.eachWithIndex { jsFile, i ->
-//    tasks.create(name: "minifyJs${i}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-//        source  = jsFile.getAbsolutePath()
-//        dest    = "${buildDir}/exploded-app/js/" + jsFile.getParentFile().getName() + "/" + jsFile.getName()
-//        closure {
-//            warningLevel = 'QUIET'
-//            compilationLevel = 'SIMPLE_OPTIMIZATIONS'
-//            compilerOptions.languageIn = 'ECMASCRIPT5'
-//        }
-//    }
-//}
-//task allMinifyJs(dependsOn: tasks.matching
-//    { Task task ->
-//            task.name.startsWith("minifyJs")
-//    }
-//)
-
-
 
 //minifyCss {
 //    source = file("${projectDir}/src/main/webapp/css/tracking.js")
@@ -86,20 +42,17 @@ dependencies {
 //    }
 //}
 
-//sourceCompatibility = JavaVersion.VERSION_1_7
-//targetCompatibility = JavaVersion.VERSION_1_7
-
 dependencies {
-
+    print "Applying dependencies for ${installationType}...\n"
 // common rows
-    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.54'
-    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.54'
     compile 'org.java-websocket:Java-WebSocket:1.3.4'
     compile 'org.json:json:20160212'
 //    compile 'com.github.edeqa:eventbus:0.3'
 
 // gae servlet rows
     if (installationType.compareTo('google-appengine') == 0) {
+        appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.54'
+        compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.54'
         compile 'com.google.firebase:firebase-server-sdk:3.0.3'
         compile 'com.google.guava:guava:20.0'
         compile 'javax.servlet:javax.servlet-api:3.1.0'
@@ -118,18 +71,49 @@ dependencies {
     }
     targetCompatibility = '1.7'
     sourceCompatibility = '1.7'
+    print "Dependencies done.\n"
 }
 
-//war {
-//    webAppDirName = "${buildDir}/exploded-app/"
-//}
-
-appengine {
-    downloadSdk = true
-    appcfg {
-        oauth2 = true
+import com.eriwen.gradle.js.tasks.MinifyJsTask
+task minifyJS {
+    def path = new File("${projectDir}/src/main/webapp");
+    print "Minifying from ${path}\n"
+    print "    to \"${buildDir}/exploded-app\nProcessing:\n"
+    fileTree(path).eachWithIndex { file, index ->
+        def name = file.toString().replace(path.toString(), "")
+        if (!(name.toString() ==~ /.*\.js$/)) { return }
+        print "--- ${name}..."
+        def dynamicTask = "minify$index"
+        task "$dynamicTask" (type: MinifyJsTask) {
+            source = file
+            dest = new File("${buildDir}/exploded-app${name}")
+            closure {
+                warningLevel = 'QUIET'
+                compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+                compilerOptions.languageIn = 'ECMASCRIPT6'
+                compilerOptions.languageOut = 'ECMASCRIPT5'
+            }
+        }
+        tasks."$dynamicTask".execute()
+        print " done.\n"
     }
-    httpAddress = "0.0.0.0"
-    httpPort = 8180
+    print "Minifying done.\n"
+}
 
+war {
+    it.dependsOn minifyJS
+    exclude '**/*.js'
+
+    print "Final stage...\n"
+}
+
+if (installationType.compareTo('google-appengine') == 0) {
+    appengine {
+        downloadSdk = true
+        appcfg {
+            oauth2 = true
+        }
+        httpAddress = "0.0.0.0"
+        httpPort = 8180
+    }
 }

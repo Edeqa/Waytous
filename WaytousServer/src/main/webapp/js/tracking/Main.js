@@ -20,7 +20,7 @@ function Main() {
     var alert;
     var defaultResources = "/locales/tracking.en.json";
 
-    if (!data.isStandAlone && "serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator) {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("/ServiceWorker.js")
             .then(function(registration) {
@@ -188,6 +188,7 @@ function Main() {
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
             "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js", // https://cdnjs.com/libraries/fingerprintjs2
+//            "/js/all.js",
             "/js/helpers/Utils.js",
             "/js/helpers/MyUser",
             "/js/helpers/MyUsers",
