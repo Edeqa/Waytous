@@ -7,9 +7,9 @@ import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.TaskSingleValueEventFor;
 import com.edeqa.waytousserver.helpers.Utils;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.internal.NonNull;
+import com.google.firebase.tasks.OnCompleteListener;
 import com.google.firebase.tasks.OnFailureListener;
 import com.google.firebase.tasks.OnSuccessListener;
 import com.google.firebase.tasks.Task;
@@ -57,6 +58,7 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
@@ -65,6 +67,7 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
@@ -174,13 +177,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 //                .setServiceAccount(new FileInputStream(SENSITIVE.getFirebasePrivateKeyFile()))
 //                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
 //                .build();
-        Map<String, Object> auth = new HashMap<String, Object>();
-        auth.put("uid", "Administrator");
-
-        return builder
-                .setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl())
-                .setDatabaseAuthVariableOverride(auth)
-                .build();
+        return builder.setDatabaseUrl(SENSITIVE.getFirebaseDatabaseUrl()).build();
     }
 
     @Override
@@ -268,7 +265,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                     final DatabaseReference refGroup = ref.child(groupId);
 
                     final TaskSingleValueEventFor[] requestDataPrivateTask = new TaskSingleValueEventFor[1];
-                    requestDataPrivateTask[0] = new TaskSingleValueEventFor().addOnCompleteListener(new Runnable1<DataSnapshot>() {
+                    requestDataPrivateTask[0] = new TaskSingleValueEventFor<DataSnapshot>().addOnCompleteListener(new Runnable1<DataSnapshot>() {
                         @Override
                         public void call(DataSnapshot dataSnapshot) {
                             final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
@@ -306,7 +303,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         }
                     });
 
-                    final TaskSingleValueEventFor numberForKeyTask = new TaskSingleValueEventFor()
+                    final TaskSingleValueEventFor numberForKeyTask = new TaskSingleValueEventFor<DataSnapshot>()
                             .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                 @Override
                                 public void call(DataSnapshot dataSnapshot) {
@@ -334,7 +331,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 }
                             });
 
-                    TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor()
+                    TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor<DataSnapshot>()
                             .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                 @Override
                                 public void call(DataSnapshot dataSnapshot) {
@@ -345,7 +342,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         numberForKeyTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid)).start();
                                     } else {
                                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                                        response.put(RESPONSE_MESSAGE, "This group is expired.");
+                                        response.put(RESPONSE_MESSAGE, "This group is expired. 001:"+dataSnapshot.getRef());
                                         conn.send(response.toString());
                                         conn.close();
                                     }
@@ -385,7 +382,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                         final DatabaseReference refGroup = ref.child(check.getGroupId());
 
-                        final TaskSingleValueEventFor userCheckTask = new TaskSingleValueEventFor().addOnCompleteListener(new Runnable1<DataSnapshot>() {
+                        final TaskSingleValueEventFor userCheckTask = new TaskSingleValueEventFor<DataSnapshot>().addOnCompleteListener(new Runnable1<DataSnapshot>() {
                             @Override
                             public void call(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue() != null) { //join as existing member
@@ -445,7 +442,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             }
                         });
 
-                        TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor()
+                        TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor<DataSnapshot>()
                                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                     @Override
                                     public void call(DataSnapshot dataSnapshot) {
@@ -454,7 +451,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         } else {
                                             System.out.println("D");
                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                                            response.put(RESPONSE_MESSAGE, "This group is expired.");
+                                            response.put(RESPONSE_MESSAGE, "This group is expired. 002");
                                             conn.send(response.toString());
                                             conn.close();
                                         }
@@ -496,7 +493,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
         Common.log(LOG,"New group ID:",group.getId());
 
-        new TaskSingleValueEventFor(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
@@ -586,7 +583,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        new TaskSingleValueEventFor(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
@@ -616,7 +613,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         res.put(Constants.REST.PROPERTY, property);
         res.put(Constants.REST.VALUE, value);
 
-        new TaskSingleValueEventFor(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
@@ -787,7 +784,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         };
 
-        new TaskSingleValueEventFor(ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
@@ -813,8 +810,130 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void validateGroups() {
 
         Common.log(LOG, "Groups validation is performing, checking online users");
-        try {
-            String res = Utils.getUrl(SENSITIVE.getFirebaseDatabaseUrl() + "/.json?shallow=true&print=pretty&auth=" + SENSITIVE.getFirebaseWebApiKey(),"UTF-8");
+        new TaskSingleValueEventFor<JSONObject>(ref.child("/")).setFirebaseRest(true).addOnCompleteListener(new Runnable1<JSONObject>() {
+            @Override
+            public void call(JSONObject groups) {
+                try {
+                    Iterator<String> iter = groups.keys();
+                    while(iter.hasNext()) {
+                        final String group = iter.next();
+                        if(Constants.DATABASE.SECTION_GROUPS.equals(group) || "overview".equals(group)) continue;
+
+                        new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS))
+                                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
+                                    @Override
+                                    public void call(DataSnapshot dataSnapshot) {
+                                        Map value = (Map) dataSnapshot.getValue();
+
+                                        Common.log(LOG, "Group found:", group/* + ", leader id:", leader, dataSnapshot.getValue()*/);
+
+                                        if (value == null) {
+                                            Common.log(LOG, "--- corrupted group detected, removing ----- 1"); //TODO
+                                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                            ref.child(group).removeValue();
+                                            return;
+                                        }
+
+                                        final boolean requiresPassword;
+                                        final boolean dismissInactive;
+                                        final boolean persistent;
+                                        final long delayToDismiss;
+                                        final long timeToLiveIfEmpty;
+
+
+                                        Object object = value.get(Constants.DATABASE.OPTION_REQUIRES_PASSWORD);
+                                        requiresPassword = object != null && (boolean) object;
+
+                                        object = value.get(Constants.DATABASE.OPTION_DISMISS_INACTIVE);
+                                        dismissInactive = object != null && (boolean) object;
+
+                                        object = value.get(Constants.DATABASE.OPTION_PERSISTENT);
+                                        persistent = object != null && (boolean) object;
+
+                                        object = value.get(Constants.DATABASE.OPTION_DELAY_TO_DISMISS);
+                                        if (object != null)
+                                            delayToDismiss = Long.parseLong("0" + object.toString());
+                                        else delayToDismiss = 0;
+
+                                        object = value.get(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY);
+                                        if (object != null)
+                                            timeToLiveIfEmpty = Long.parseLong("0" + object.toString());
+                                        else timeToLiveIfEmpty = 0;
+
+                                        new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA))
+                                                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
+                                                    @Override
+                                                    public void call(DataSnapshot dataSnapshot) {
+                                                        Common.log(LOG, "Users validation for group:", group);
+
+                                                        ArrayList<Map<String, Serializable>> users = null;
+                                                        try {
+                                                            users = (ArrayList<Map<String, Serializable>>) dataSnapshot.getValue();
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                        if (users == null) {
+                                                            Common.log(LOG, "--- corrupted group detected, removing: ----- 2"); //TODO
+                                                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                                            ref.child(group).removeValue();
+                                                            return;
+                                                        }
+                                                        long groupChanged = 0;
+
+                                                        for (int i = 0; i < users.size(); i++) {
+                                                            Map<String, Serializable> user = users.get(i);
+                                                            if (user == null) continue;
+
+                                                            String name = (String) user.get(Constants.DATABASE.USER_NAME);
+                                                            Long changed = (Long) user.get(Constants.DATABASE.USER_CHANGED);
+                                                            if (changed != null && changed > groupChanged)
+                                                                groupChanged = changed;
+                                                            boolean active = false;
+                                                            Object object = user.get(Constants.DATABASE.USER_ACTIVE);
+                                                            if (object != null) {
+                                                                active = (Boolean) object;
+                                                            }
+
+                                                            if (!active) continue;
+
+                                                            if (dismissInactive) {
+                                                                Long current = new Date().getTime();
+                                                                if (changed == null) {
+                                                                    Common.log(LOG, "--- user:", i, "name:", name, "is NULL");
+                                                                    dataSnapshot.getRef().child("" + i).child(Constants.DATABASE.USER_ACTIVE).setValue(false);
+                                                                } else if (current - delayToDismiss * 1000 > changed) {
+                                                                    Common.log(LOG, "--- user:", i, "name:", name, "is EXPIRED for", ((current - delayToDismiss * 1000 - changed) / 1000), "seconds");
+                                                                    dataSnapshot.getRef().child("" + i).child(Constants.DATABASE.USER_ACTIVE).setValue(false);
+                                                                } else {
+                                                                    dataSnapshot.getRef().getParent().getParent().child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CHANGED).setValue(changed);
+                                                                    Common.log(LOG, "--- user:", i, "name:", name, "is OK");
+                                                                }
+                                                            }
+                                                        }
+
+                                                        if (!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000) {
+                                                            Common.log(LOG, "--- removing group " + group + " expired for", (new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000) / 1000 / 60, "minutes");
+                                                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                                            ref.child(group).removeValue();
+                                                        }
+                                                    }
+                                                }).start();
+                                    }
+                                }).start();
+
+
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+        /*try {
+            System.out.println("https://waytous-beta.firebaseio.com/.json?shallow=true&print=pretty&auth="+SENSITIVE.getFirebaseWebApiKey());
+
+            String res = Utils.getUrl("https://waytous-beta.firebaseio.com/.json?shallow=true&print=pretty&auth="+SENSITIVE.getFirebaseWebApiKey(),"UTF-8");
 
             JSONObject groups = new JSONObject(res);
 
@@ -823,13 +942,13 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 final String group = iter.next();
                 if(Constants.DATABASE.SECTION_GROUPS.equals(group) || "overview".equals(group)) continue;
 
-                new TaskSingleValueEventFor(ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS))
+                new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS))
                         .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                             @Override
                             public void call(DataSnapshot dataSnapshot) {
                                 Map value = (Map) dataSnapshot.getValue();
 
-                                Common.log(LOG, "Group found:", group/* + ", leader id:", leader, dataSnapshot.getValue()*/);
+                                Common.log(LOG, "Group found:", group*//* + ", leader id:", leader, dataSnapshot.getValue()*//*);
 
                                 if (value == null) {
                                     Common.log(LOG, "--- corrupted group detected, removing ----- 1"); //TODO
@@ -864,7 +983,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                     timeToLiveIfEmpty = Long.parseLong("0" + object.toString());
                                 else timeToLiveIfEmpty = 0;
 
-                                new TaskSingleValueEventFor(ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA))
+                                new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA))
                                         .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                             @Override
                                             public void call(DataSnapshot dataSnapshot) {
@@ -929,7 +1048,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 

@@ -162,6 +162,7 @@ public class MainServletHandler extends AbstractServletHandler {
                         string = string.replaceAll(x.getKey(), x.getValue());
                     }
 
+                    requestWrapper.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
                     requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, type);
                     if(!gzip) requestWrapper.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(string.length()));
                     requestWrapper.sendResponseHeaders(resultCode, 0);

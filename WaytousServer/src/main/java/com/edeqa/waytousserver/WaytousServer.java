@@ -64,10 +64,9 @@ public class WaytousServer {
 
         Common.log(LOG,"Server web root directory: "+new File(SENSITIVE.getWebRootDirectory()).getCanonicalPath());
 
-        String storeType = "JKS";
         String storePassword = SENSITIVE.getSSLCertificatePassword();
 
-        KeyStore keyStore = KeyStore.getInstance(storeType);
+        KeyStore keyStore = KeyStore.getInstance("JKS");
         File kf = new File(SENSITIVE.getKeystoreFilename());
 
         Common.log(LOG, "Keystore file: " + kf.getCanonicalPath());
@@ -76,9 +75,9 @@ public class WaytousServer {
         Common.log(LOG, "Server \t\t\t\t| Port \t| Path");
         Common.log(LOG, "----------------------------------------------");
 
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509"/*KeyManagerFactory.getDefaultAlgorithm()*/);
         kmf.init(keyStore, storePassword.toCharArray());
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509"/*KeyManagerFactory.getDefaultAlgorithm()*/);
         tmf.init(keyStore);
 
         SSLContext sslContext = SSLContext.getInstance("TLS");
