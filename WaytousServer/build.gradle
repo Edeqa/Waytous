@@ -69,13 +69,34 @@ dependencies {
         compile.exclude group: "org.apache.httpcomponents", module: "httpclient"
 //        compile.exclude group: "org.json", module: "json"
     }
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
     targetCompatibility = '1.7'
     sourceCompatibility = '1.7'
     print "Dependencies done.\n"
 }
 //
 import com.eriwen.gradle.js.tasks.MinifyJsTask
-task minifyJS {
+//import com.eriwen.gradle.js.tasks.MinifyJsTask
+
+def allMin = file("${projectDir}/src/main/webapp/js/all-min.js")
+def allMinMap = file("${projectDir}/src/main/webapp/all.sourcemap.json")
+
+minifyJs {
+    source = "${projectDir}/src/main/webapp/js"
+    dest = allMin
+    sourceMap = allMinMap
+    closure {
+        warningLevel = 'QUIET'
+        compilationLevel = 'WHITESPACE_ONLY'
+        compilerOptions.languageIn = 'ECMASCRIPT6'
+        compilerOptions.languageOut = 'ECMASCRIPT5'
+    }
+}
+
+
+task minifyAllJS {
     def path = new File("${projectDir}/src/main/webapp");
     print "Minifying from ${path}\n"
     print "    to \"${buildDir}/exploded-app\nProcessing:\n"
@@ -101,7 +122,11 @@ task minifyJS {
 }
 
 war {
-    it.dependsOn minifyJS
+    it.dependsOn minifyJs
+    allMin.delete()
+    allMinMap.delete()
+    tasks.minifyJs.execute()
+    it.dependsOn minifyAllJS
 //    exclude '**/*.js'
 
     print "Final stage...\n"

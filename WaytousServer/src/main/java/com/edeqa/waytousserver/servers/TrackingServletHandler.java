@@ -69,7 +69,7 @@ public class TrackingServletHandler extends AbstractServletHandler {
 
         if(uri.getPath().startsWith("/track/")) {
 
-            String tokenId = null;
+            String tokenId = "";
             if (parts.size() >= 3) {
                 tokenId = parts.get(2);
             }
@@ -112,22 +112,23 @@ public class TrackingServletHandler extends AbstractServletHandler {
         o.put("WSS_PORT", SENSITIVE.getWssPortDedicated());
         o.put("firebase_config", SENSITIVE.getFirebaseConfig());
         o.put("isStandAlone", Common.getInstance().getDataProcessor(DataProcessorFirebaseV1.VERSION).isServerMode());
+        if(SENSITIVE.isDebugMode()) o.put("isDebugMode", true);
 
 
         html.clear();
         html.getHead().add(TITLE).with("Waytous");
 //        html.getHead().add(META).with(NAME, "theme-color").with(CONTENT, "#aaeeee");
         html.getHead().add(SCRIPT).with("data", o);
-        html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async","true").with(ONLOAD, "(window.WTU = new Main()).start();");
+        html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async",true).with("defer",true).with(ONLOAD, "(window.WTU = new Main()).start();");
 
 
         // FIXME - need to check by https://observatory.mozilla.org/analyze.html?host=waytous.net
-//        requestWrapper.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
-//        requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
-//        requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
-//        requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
-//        requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
-//        requestWrapper.setHeader(HttpHeaders.VARY, "Accept-Encoding");
+        requestWrapper.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
+        requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
+        requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
+        requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
+        requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
+        requestWrapper.setHeader(HttpHeaders.VARY, "Accept-Encoding");
         String etag = "W/1976-" + uri.getPath().hashCode();
         requestWrapper.setHeader(HttpHeaders.ETAG, etag);
 

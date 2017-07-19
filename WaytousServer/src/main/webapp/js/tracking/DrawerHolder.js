@@ -22,7 +22,6 @@ function DrawerHolder(main) {
     var last_y = 0;
 
     var start = function() {
-
         var dialogAbout = utils.dialogAbout(main.right);
 
         var sections = {};

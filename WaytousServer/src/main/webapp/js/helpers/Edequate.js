@@ -571,8 +571,8 @@ function Edequate(options) {
             origin:origin,
             module:name,
             instance: needInstantiate ? onlyname : null,
-            async: "",
-            defer: "",
+            async: "true",
+            defer: "true",
             onload: function(e) {
                 var a;
                 if(needInstantiate) {
@@ -2301,7 +2301,7 @@ function Edequate(options) {
         this.eventHolder = function() {
             return {
                 onEvent:function(){console.warn("DEFINE onEvent(event, object)")},
-                start:function(){console.warn("DEFINE start()")},
+//                start:function(){console.warn("DEFINE start()")},
                 type:"DEFINE TYPE"
             }
         };
@@ -2335,16 +2335,24 @@ function Edequate(options) {
                             return;
                         }
 
-                        for(var i in self.eventBus.origins) {
-                            var holder = self.eventBus.holders[self.eventBus.origins[i]];
-                            if(holder && holder.type) {
-                                self.eventBus.modules.push(holder.type.toLowerCase());
-                                self.eventBus.holders[holder.type.toLowerCase()] = holder;
-                                delete self.eventBus.holders[holder.origin];
+                        if(options.modules) {
+                            for(i in options.modules) {
+                                if(window[options.modules[i]]) {
+                                    self.eventBus.modules.push(options.modules[i].toLowerCase());
+                                    self.eventBus.holders[options.modules[i].toLowerCase()] = new window[options.modules[i]](options.context);
+                                }
+                            }
+                        } else {
+                            for(var i in self.eventBus.origins) {
+                                var holder = self.eventBus.holders[self.eventBus.origins[i]];
+                                if(holder && holder.type) {
+                                    self.eventBus.modules.push(holder.type.toLowerCase());
+                                    self.eventBus.holders[holder.type.toLowerCase()] = holder;
+                                    delete self.eventBus.holders[holder.origin];
+                                }
                             }
                         }
-
-                        if(options.onstart) options.onstart();
+                        if(options.onstart) options.onstart(self.eventBus.modules);
 
                         for(i in self.eventBus.modules) {
                             if(self.eventBus.holders[self.eventBus.modules[i]].start) self.eventBus.holders[self.eventBus.modules[i]].start();

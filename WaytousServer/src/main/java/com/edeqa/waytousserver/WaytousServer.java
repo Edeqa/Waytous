@@ -198,12 +198,12 @@ public class WaytousServer {
         sslServer.createContext("/rest/", restServer);
         Common.log(LOG, "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /rest/" + (SENSITIVE.getHttpsPort() == SENSITIVE.getHttpsPortMasked() ? " (masked by "+SENSITIVE.getHttpsPortMasked() +")" : ""));
 
-        sslAdminServer.createContext("/admin", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
+        sslAdminServer.createContext("/", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
         sslAdminServer.createContext("/admin/logout", adminServer);
         Common.log(LOG, "Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| " + "/");
 
-        sslAdminServer.createContext("/", mainServer);
-        Common.log(LOG, "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| /, /*");
+//        sslAdminServer.createContext("/", mainServer);
+//        Common.log(LOG, "Main HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| /, /*");
 
         ExecutorService executor = Executors.newCachedThreadPool();
         server.setExecutor(executor);

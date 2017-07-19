@@ -7,7 +7,7 @@
  */
 
 function Main() {
-    var firebaseVersion = "4.1.1";
+    var firebaseVersion = "4.1.3";
     var holders = {};
     var users;
     var me;
@@ -25,6 +25,10 @@ function Main() {
                 console.log("ServiceWorker registration successful with scope:", registration);
             })
             .catch(function(err) {
+                if(err.code == 18) {
+                    console.warn(err);
+                    return;
+                }
                 console.error("ServiceWorker registration failed:", err);
                 throw new Error("ServiceWorker error:",err);
             });
@@ -34,6 +38,8 @@ function Main() {
     function start() {
         var a = document.createElement("script");
         a.setAttribute("src","/js/helpers/Edequate.js");
+        a.setAttribute("defer",true);
+        a.setAttribute("async",true);
         a.setAttribute("onload","preloaded()");
         document.head.appendChild(a);
     }
@@ -100,9 +106,10 @@ function Main() {
 
         document.head
             .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"})
-            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/edequate.css"})
-            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"})
-            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"})
+            .place(HTML.STYLE, {innerHTML: "@import url('/css/edequate.css');@import url('/css/tracking.css');@import url('https://fonts.googleapis.com/icon?family=Material+Icons');"})
+//            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/edequate.css"})
+//            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"})
+//            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"https://fonts.googleapis.com/icon?family=Material+Icons"})
             .place(HTML.LINK, {rel:"apple-touch-icon", href:"/icons/apple-touch-icon.png"})
             .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"60x60", href:"/icons/apple-touch-icon-60x60.png"})
             .place(HTML.LINK, {rel:"apple-touch-icon", sizes:"76x76", href:"/icons/apple-touch-icon-76x76.png"})
@@ -181,12 +188,11 @@ function Main() {
     }
 
     function loadScripts(){
-        var files = [
+        var files = data.isDebugMode ? [
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js", // https://firebase.google.com/docs/web/setup
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
             "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js", // https://cdnjs.com/libraries/fingerprintjs2
-//            "/js/all.js",
             "/js/helpers/Utils.js",
             "/js/helpers/MyUser",
             "/js/helpers/MyUsers",
@@ -213,10 +219,41 @@ function Main() {
             "/js/tracking/TrackHolder",
 //            "/js/tracking/WelcomeHolder",
 //            "/js/tracking/SampleHolder",
+        ] : [
+            "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js", // https://firebase.google.com/docs/web/setup
+            "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
+            "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
+            "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js", // https://cdnjs.com/libraries/fingerprintjs2
+            "/js/all-min.js"
+        ];
+        var modules = data.isDebugMode ? null : [
+            "MyUser",
+            "MyUsers",
+//            "NoSleep",
+            "PropertiesHolder", // must be first of holders
+            "AddressHolder",
+            "GpsHolder",
+            "ButtonHolder",
+            "CameraHolder",
+            "DistanceHolder",
+            "DrawerHolder",
+            "HelpHolder",
+            "MapHolder",
+            "MarkerHolder",
+            "MessagesHolder",
+            "NavigationHolder",
+            "OptionHolder",
+            "PlaceHolder",
+            "SavedLocationHolder",
+            "ShareHolder",
+            "StreetViewHolder",
+            "TrackingHolder",
+            "TrackHolder"
         ];
 
         u.eventBus.register(files, {
             context: main,
+            modules: modules,
             onprogress: function(loaded) {
                 u.loading(Math.ceil(loaded / files.length * 100) + "%");
             },

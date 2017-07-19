@@ -170,6 +170,11 @@ public class HtmlGenerator {
             return this;
         }
 
+        public Tag with(String key,boolean value){
+            properties.put(key,"" + value);
+            return this;
+        }
+
         public Tag with(String key,int value){
             properties.put(key,String.valueOf(value));
             return this;
