@@ -122,12 +122,12 @@ public class TrackingServletHandler extends AbstractServletHandler {
 
 
         // FIXME - need to check by https://observatory.mozilla.org/analyze.html?host=waytous.net
-        requestWrapper.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
-        requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
-        requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
-        requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
-        requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
-        requestWrapper.setHeader(HttpHeaders.VARY, "Accept-Encoding");
+//        requestWrapper.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
+//        requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
+//        requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
+//        requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
+//        requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
+//        requestWrapper.setHeader(HttpHeaders.VARY, "Accept-Encoding");
         String etag = "W/1976-" + uri.getPath().hashCode();
         requestWrapper.setHeader(HttpHeaders.ETAG, etag);
 

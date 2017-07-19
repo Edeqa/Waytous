@@ -53,6 +53,7 @@ function GpsHolder(main) {
                     startPositioning();
                 } else if(!u.load("gps:asked")) {
                     locationRequiredDialog = locationRequiredDialog || u.dialog({
+                            title: "Alert",
                             queue: true,
                             className: "gps-required-dialog",
                             items: [
@@ -68,13 +69,13 @@ function GpsHolder(main) {
                                     if(!initialized) main.fire(EVENTS.MAP_READY);
                                 }
                             },
-                            negative: {
+                            /*negative: {
                                 label: u.lang.maybe_later,
                                 onclick: function() {
                                     u.save("gps:asked", true);
                                     if(!initialized) main.fire(EVENTS.MAP_READY);
                                 }
-                            },
+                            },*/
                             help: function() {
                                 locationRequiredDialog.close();
                                 main.fire(EVENTS.SHOW_HELP, {module:main.eventBus.holders.gps, article:1})
@@ -94,6 +95,7 @@ function GpsHolder(main) {
     }
 
     function startPositioning() {
+        drawerEnableGeoposition.hide();
         navigator.geolocation.getCurrentPosition(function(location){
             drawerEnableGeoposition.hide();
             icon && icon.classList.add("hidden");

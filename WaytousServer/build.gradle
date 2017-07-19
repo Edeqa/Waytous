@@ -73,7 +73,7 @@ dependencies {
     sourceCompatibility = '1.7'
     print "Dependencies done.\n"
 }
-
+//
 import com.eriwen.gradle.js.tasks.MinifyJsTask
 task minifyJS {
     def path = new File("${projectDir}/src/main/webapp");
@@ -102,7 +102,7 @@ task minifyJS {
 
 war {
     it.dependsOn minifyJS
-    exclude '**/*.js'
+//    exclude '**/*.js'
 
     print "Final stage...\n"
 }
