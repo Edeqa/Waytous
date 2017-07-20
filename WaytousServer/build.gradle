@@ -46,7 +46,7 @@ dependencies {
     print "Applying dependencies for ${installationType}...\n"
 // common rows
     compile 'org.java-websocket:Java-WebSocket:1.3.4'
-    compile 'org.json:json:20160212'
+//    compile 'org.json:json:20160212'
 //    compile 'com.github.edeqa:eventbus:0.3'
 
 // gae servlet rows
@@ -80,13 +80,13 @@ dependencies {
 import com.eriwen.gradle.js.tasks.MinifyJsTask
 //import com.eriwen.gradle.js.tasks.MinifyJsTask
 
-def allMin = file("${projectDir}/src/main/webapp/js/all-min.js")
-def allMinMap = file("${projectDir}/src/main/webapp/all.sourcemap.json")
+def all = file("${projectDir}/src/main/webapp/js/all.js")
+def allMap = file("${projectDir}/src/main/webapp/all.sourcemap.json")
 
 minifyJs {
     source = "${projectDir}/src/main/webapp/js"
-    dest = allMin
-    sourceMap = allMinMap
+    dest = all
+    sourceMap = allMap
     closure {
         warningLevel = 'QUIET'
         compilationLevel = 'WHITESPACE_ONLY'
@@ -123,8 +123,8 @@ task minifyAllJS {
 
 war {
     it.dependsOn minifyJs
-    allMin.delete()
-    allMinMap.delete()
+    all.delete()
+    allMap.delete()
     tasks.minifyJs.execute()
     it.dependsOn minifyAllJS
 //    exclude '**/*.js'
