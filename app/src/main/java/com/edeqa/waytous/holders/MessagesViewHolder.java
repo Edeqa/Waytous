@@ -265,7 +265,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                System.out.println("cancel");
+                Utils.log(MessagesViewHolder.this, "newMessage:", "Cancel");
             }
         });
         if(toUser != null && !privateMessage) {
@@ -343,7 +343,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             @Override
             public void call(final Integer position) {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
-                System.out.println("SHARE "+item);
+                Utils.log(MessagesViewHolder.this, "showMessages:", "item="+item);
 
                 new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
             }
@@ -538,7 +538,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         } else {
             UserMessage.getDb().removeRestriction("search");
         }
-        System.out.println("COUNTER:"+adapter.getItemCount());
+        Utils.log(MessagesViewHolder.this, "setFilterAndReload:", "Counter="+adapter.getItemCount());
         reloadCursor();
     }
 
@@ -719,7 +719,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    System.out.println("cancel");
+                    Utils.log(MessagesViewHolder.this, "onMenuItemSetWelcomeMessageClickListener:", "Cancel");
                 }
             });
 

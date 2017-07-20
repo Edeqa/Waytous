@@ -13,6 +13,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SystemMessage;
+import com.edeqa.waytous.helpers.Utils;
 
 import static com.edeqa.waytous.helpers.Events.TOKEN_CREATED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
@@ -74,7 +75,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
         snackbar.setAction(R.string.action, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("SNACKBAR ACTION");
+                Utils.log(SnackbarViewHolder.this, "setLayout:");
             }
         });
         snackbar.addCallback(new Snackbar.Callback() {

@@ -50,13 +50,13 @@ public class LightSensorManager implements SensorEventListener {
                     @SuppressLint("NewApi")
                     @Override
                     public void onTrigger(TriggerEvent triggerEvent) {
-                        System.out.println("TRIGGEREVENT:"+triggerEvent.toString());
+                        Utils.log(this, "enable:", triggerEvent.toString());
                         onLuxValue(triggerEvent.values[0]);
                     }
                 }, lightSensor);
             }
         } else {
-            Log.w(TAG, "Light sensor in not supported");
+            Utils.log(this, "Light sensor in not supported");
         }
     }
 
@@ -87,7 +87,7 @@ public class LightSensorManager implements SensorEventListener {
             currentEnvironment = Environment.DAY;
         }
         if (oldEnvironment != currentEnvironment && environmentChangeCallback != null){
-            Log.i(TAG, "switch on luxLevel=" + luxLevel);
+            Utils.log(this, "onLuxValue:", luxLevel);
             switch (currentEnvironment) {
                 case DAY:
                     //noinspection unchecked

@@ -16,6 +16,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.Utils;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -41,7 +42,6 @@ public class IntroViewHolder extends AbstractViewHolder {
 
     public IntroViewHolder(MainActivity context) {
         super(context);
-        System.out.println("INTRO:SYSTEMCONSTRUCT");
 
         preferences = context.getSharedPreferences("intro", MODE_PRIVATE);
 
@@ -79,7 +79,6 @@ public class IntroViewHolder extends AbstractViewHolder {
 
         rule.setOrder(order);
         if(!preferences.getBoolean(rule.getId(), false)){
-            System.out.println("PERFORM:"+this.context+":"+context);
             TapTarget action = null;
             View view = rule.getView();
             Rect rect = null;
@@ -147,28 +146,25 @@ public class IntroViewHolder extends AbstractViewHolder {
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
                             @Override
                             public void onShowcaseViewHide(ShowcaseView showcaseView) {
-                                System.out.println("VIEWHIDE");
+                                Utils.log(IntroViewHolder.this, "performRule:", "showcaseView");
                             }
 
                             @Override
                             public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
                                 preferences.edit().putBoolean(rule.getId(), true).apply();
 //                                performRule(eventQueue, order + 1);
-                                System.out.println("VIEWDIDHIDE");
-
+                                Utils.log(IntroViewHolder.this, "performRule:", "onShowcaseViewDidHide");
                             }
 
                             @Override
                             public void onShowcaseViewShow(ShowcaseView showcaseView) {
-                                System.out.println("VIEWSHOW");
+                                Utils.log(IntroViewHolder.this, "performRule:", "onShowcaseViewShow");
 //                                showcaseView.setAlpha(0.0f);
-
                             }
 
                             @Override
                             public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
-                                System.out.println("VIEWTOCUHBLOCKED");
-
+                                Utils.log(IntroViewHolder.this, "performRule:", "onShowcaseViewTouchBlocked");
                             }
                         })
 //                        .replaceEndButton(R.layout.view_custom_button)

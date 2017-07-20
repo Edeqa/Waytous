@@ -208,7 +208,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             }
         });
 
-        System.out.println("GOT SAVED:"+o);
+        Utils.log(SavedLocationViewHolder.this, "perform:", "Saved="+o.toString());
 
     }
 
@@ -701,7 +701,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 int number = myUser.getProperties().getNumber() - 10000;
 
 //                                SavedLocation.getItemByPosition(position)
-                                System.out.println("NUMBER:"+number);
+                                Utils.log(SavedLocationView.this, "onEvent:","number="+number);
                                 SavedLocation saved = SavedLocation.getItemByNumber(number);
                                 editLocation(saved);
                                 return false;
@@ -830,7 +830,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 case MARKER_CLICK:
                     if(isSavedLocation(myUser)) {
                         Marker marker = (Marker) object;
-                        System.out.println("CLICKTO:" + myUser.getProperties().getDisplayName());
+                        Utils.log(SavedLocationView.this, "onEvent:","MARKER_CLICK="+ myUser.getProperties().getDisplayName());
                         marker.showInfoWindow();
                     }
                     break;

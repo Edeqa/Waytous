@@ -403,17 +403,17 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        System.out.println("onConnected:"+bundle);
+        Utils.log(PlaceViewHolder.this, "onConnected:");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        System.out.println("onConnectionSuspended:"+i);
+        Utils.log(PlaceViewHolder.this, "onConnectionSuspended:",""+i);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        System.out.println("onConnectionFailed:"+connectionResult);
+        Utils.log(PlaceViewHolder.this, "onConnectionFailed:",""+connectionResult);
     }
 
 }

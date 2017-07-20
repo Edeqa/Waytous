@@ -77,12 +77,12 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
                 if(connected) {
                     switch (tracking.getStatus()) {
                         case TRACKING_ACTIVE:
-                                System.out.println("DISCONNECTED TO RECONNECT");
+                            Utils.log(this, "onReceive:", "TRACKING_ACTIVE");
                             tracking.setStatus(TRACKING_RECONNECTING);
                             State.getInstance().fire(TRACKING_RECONNECTING);
                             break;
                         case TRACKING_CONNECTING:
-                                System.out.println("DISCONNECTED");
+                            Utils.log(this, "onReceive:", "TRACKING_CONNECTING");
                             tracking.setStatus(TRACKING_ERROR);
                             State.getInstance().fire(TRACKING_ERROR);
                             break;

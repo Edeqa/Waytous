@@ -203,7 +203,7 @@ public class UserMessage extends AbstractSavedItem {
                 final UserMessage.UserMessagesAdapter.UserMessageViewHolder holder = (UserMessage.UserMessagesAdapter.UserMessageViewHolder) viewHolder;
 
                 final UserMessage item = UserMessage.getItemByCursor(cursor);
-                System.out.println("MESSAGE:"+item);
+                Utils.log(UserMessagesAdapter.this, "onBindViewHolder:", "userMessage=" + item);
                 String title = "";
                 String from = item.getFrom();
                 if(from != null && item.getTo() != null) {

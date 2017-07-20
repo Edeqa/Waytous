@@ -389,11 +389,11 @@ public class MyTrackingFB implements Tracking {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        System.out.println("FAIL:"+e.getMessage());
+                        Utils.err(MyTrackingFB.this, "send:", e.getMessage(),e);
                     }
                 });
             } else {
-                System.err.println("ERROR SENDING");
+                Utils.log(MyTrackingFB.this, "send:", "Error sending");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -544,7 +544,7 @@ public class MyTrackingFB implements Tracking {
 
         @Override
         public void onTextMessage(WebSocket websocket, String message) {
-            Log.i("MyTrackingFB","onTextMessage"+message);
+            Utils.log(MyTrackingFB.this,"onTextMessage:", "Message="+message);
             if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
                 final JSONObject o = new JSONObject(message);
@@ -579,7 +579,7 @@ public class MyTrackingFB implements Tracking {
                                         }
                                         o.put(RESPONSE_INITIAL, true);
 
-                                        System.out.println("SNAPSHOT:"+authResult.getUser().getUid());
+                                        Utils.log(MyTrackingFB.this, "onTextMessage:", "Snapshot="+authResult.getUser().getUid());
 
                                         ref = database.getReference().child(getToken());
 
@@ -813,7 +813,7 @@ public class MyTrackingFB implements Tracking {
     private ValueEventListener usersDataNameListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            System.out.println("usersDataNameListenerChanged:"+dataSnapshot.getKey()+":"+dataSnapshot.getValue());
+            Utils.log(MyTrackingFB.this, "usersDataNameListenerChanged:", "dataSnapShot="+dataSnapshot);
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final String name = String.valueOf(dataSnapshot.getValue());

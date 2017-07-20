@@ -163,7 +163,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
                 break;
             case TRACKING_ERROR:
-                System.out.println("TRACKING_ERROR");
+                Utils.log(TrackingHolder.this, "onEvent:", "TRACKING_ERROR");
                 break;
             case TOKEN_CREATED:
                 new ShareSender(context).sendLink(tracking.getTrackingUri());

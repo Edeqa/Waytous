@@ -3,6 +3,7 @@ package com.edeqa.waytous.abstracts;
 import android.location.Location;
 
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Entity;
 
 /**
@@ -27,7 +28,7 @@ abstract public class AbstractView implements Entity {
     @Override
     public void onChangeLocation(Location location){
         //noinspection HardCodedStringLiteral
-        System.out.println("onChangeLocation:"+(this.getClass().getSimpleName()));
+        Utils.log(this,"onChangeLocation");
     }
 
 /*

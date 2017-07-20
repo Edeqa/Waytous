@@ -375,7 +375,7 @@ public class SavedLocation extends AbstractSavedItem {
 
             try {
                 URL url = new URL(URL);
-                System.out.println(url);
+                Utils.log(LoadBitmap.this, "run:", "url="+url);
                 InputStream in = url.openStream();
 
                 final Bitmap bmp = BitmapFactory.decodeStream(in);

@@ -14,6 +14,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.Utils;
 
 import java.util.ArrayList;
 
@@ -101,7 +102,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        System.out.println("CANCEL");
+                                        Utils.log(MenuViewHolder.this, "onEvent:", "Cancel");
                                     }
                                 });
 

@@ -179,7 +179,7 @@ public class MyTracking implements Tracking {
         @Override
         public void onError(WebSocket websocket, WebSocketException cause) {
             if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTracking","onError:" + websocket.getState() + ":" + cause.getMessage());
+            Utils.log(this, "onError:", "webSocket=" + websocket.getState(), "cause=" + cause.getMessage());
 
             if(websocket.getState() == WebSocketState.CLOSED) {
                 if(newTracking) {
@@ -195,8 +195,7 @@ public class MyTracking implements Tracking {
         public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
                 WebSocketFrame clientCloseFrame, boolean closedByServer) {
        //     if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTracking","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking);
-            System.out.println("SERVERFRAME:"+serverCloseFrame +", \nCLIENTFRAME:"+clientCloseFrame);
+            Utils.log(this,"onDisconnected:", "serverCloseFrame="+serverCloseFrame.toString(),"clientCloseFrame="+clientCloseFrame.toString(), "loseByServer=" + closedByServer, "isNewTracking="+newTracking);
 
             if (closedByServer) {
             } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
@@ -211,7 +210,7 @@ public class MyTracking implements Tracking {
 
         @Override
         public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
-            Log.i("MyTracking","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage());
+            Utils.log(this, "onUnexpectedError:", "webSocket=" + websocket.getState(), "cause=" + cause.getMessage());
             reconnect();
         }
 
@@ -284,13 +283,13 @@ public class MyTracking implements Tracking {
             setStatus(TRACKING_RECONNECTING);
             trackingListener.onJoining(getToken());
         }
-        System.out.println("CONNECT1");
+        Utils.log(this, "start");
         webSocket.connectAsynchronously();
     }
 
     private void reconnect() {
         if(TRACKING_DISABLED.equals(getStatus())) return;
-        Log.i("MyTracking","reconnect");
+        Utils.log(this,"reconnect");
         setStatus(TRACKING_RECONNECTING);
         trackingListener.onReconnecting();
         try {

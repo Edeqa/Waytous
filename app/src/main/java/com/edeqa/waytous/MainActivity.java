@@ -24,6 +24,7 @@ import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SavedLocation;
 import com.edeqa.waytous.helpers.SystemMessage;
+import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.holders.CameraViewHolder;
 import com.edeqa.waytous.holders.DrawerViewHolder;
 import com.edeqa.waytous.holders.FabViewHolder;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            state.setPreference("intro",false);
         }
 
-        System.out.println("BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE
+        Utils.log(this,"BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE
                 + ", flavor=" + BuildConfig.FLAVOR);
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -339,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // IntroViewHolder must be registered last
 
 //        classes.add("IntroViewHolder");
-        System.out.println("REINITIALISE");
+        Utils.log(this,"Reinitialize");
         for(String s:classes){
             try {
                 //noinspection unchecked
@@ -372,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     loc.setTime(location.getTime());
                     state.getMe().addLocation(loc);
                 }catch(Exception e){
-                    System.out.println("Error setOnMapClickListener: "+e.getMessage());
+                    Utils.err(this, "onMapReadyPermitted:", e.getMessage(), e);
                 }
             }
         });

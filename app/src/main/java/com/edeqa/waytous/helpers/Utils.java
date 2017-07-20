@@ -398,4 +398,19 @@ public class Utils {
         Log.i(tag, str);
     }
 
+    public static void err(Object... text) {
+        String str = "";
+        String tag = "Utils";
+        for (Object aText : text) {
+            if (aText instanceof Throwable) {
+                str += aText + " ";
+            } else if(aText instanceof Serializable) {
+                str += aText + " ";
+            } else {
+                tag = aText.getClass().getSimpleName();
+//                str += aText.getClass().getSimpleName() + ": ";
+            }
+        }
+        Log.e(tag, str);
+    }
 }

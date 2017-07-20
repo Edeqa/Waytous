@@ -16,6 +16,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.Utils;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -135,21 +136,21 @@ public class FacebookViewHolder extends AbstractViewHolder {
                 shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
                     @Override
                     public void onSuccess(Sharer.Result result) {
-                        System.out.println("Facebook onsuccess");
+                        Utils.log(FacebookViewHolder.this, "onClickListener:", "Facebook onsuccess");
                     }
 
                     @Override
                     public void onCancel() {
-                        System.out.println("Facebook oncancel");
+                        Utils.log(FacebookViewHolder.this, "onClickListener:", "Facebook oncancel");
                     }
 
                     @Override
                     public void onError(FacebookException error) {
-                        System.out.println("Facebook onerror");
+                        Utils.log(FacebookViewHolder.this, "onClickListener:", "Facebook onerror");
 
                     }
                 });
-                System.out.println("CALLBACKMANAGER:"+callbackManager);
+                Utils.log(FacebookViewHolder.this, "onClickListener:", "CallbackManager="+callbackManager);
                 shareDialog.show(linkContent);
             }
         }

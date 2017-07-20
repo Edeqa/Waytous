@@ -15,6 +15,7 @@ import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
+import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytousserver.helpers.Constants;
 
@@ -120,11 +121,11 @@ public class MessagesHolder extends AbstractPropertyHolder {
     @Override
     public void perform(final JSONObject o) throws JSONException {
         if(o.has(REQUEST_DELIVERY_CONFIRMATION)) {
-            System.out.println("DELIVERED:"+o);
+            Utils.log(MessagesHolder.this, "perform:", "json="+o.toString());
             try {
                 UserMessage m = UserMessage.getItemByFieldValue("delivery", o.getString(REQUEST_DELIVERY_CONFIRMATION));
 
-                System.out.println("MESSAGEFOUND:" + m);
+                Utils.log(MessagesHolder.this, "perform:", "userMessage="+m);
                 if (m != null) {
                     m.setDelivery("delivered");
                     m.save(null);
