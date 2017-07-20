@@ -900,7 +900,9 @@ p.bottom-desc {
         border: none;
     }
     .help-dialog-buttons {
-        display: none;
+        flex: 1 0 42px;
+        display: flex;
+        align-items: flex-end;
     }
     .saved-locations-dialog {
         left: 0px !important;

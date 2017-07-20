@@ -896,7 +896,7 @@ button:active {
         padding: 15px;
     }
     .dialog-items {
-        flex: 1 1;
+        /*flex: 1 1;*/
     }
     .dialog-item {
     }
