@@ -54,7 +54,11 @@ public class Common {
     public static void log(Object... text) {
         String str = "";
         for (Object aText : text) {
-            str += aText + " ";
+            if (aText instanceof String) {
+                str += aText + " ";
+            } else {
+                str += aText.getClass().getSimpleName() + ": ";
+            }
         }
         System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
     }
@@ -62,7 +66,13 @@ public class Common {
     public static void err(Object... text) {
         String str = "";
         for (Object aText : text) {
-            str += aText + " ";
+            if (aText instanceof String) {
+                str += aText + " ";
+            } else if (aText instanceof Throwable) {
+                str += aText + " ";
+            } else {
+                str += aText.getClass().getSimpleName() + ": ";
+            }
         }
         System.err.println(Common.dateFormat.format(new Date()) + "/" + str);
         /*try {

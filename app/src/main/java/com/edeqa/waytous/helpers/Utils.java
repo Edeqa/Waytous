@@ -9,13 +9,20 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 
+import com.edeqa.waytousserver.helpers.Common;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
@@ -35,6 +42,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -330,6 +338,34 @@ public class Utils {
         return new LatLngBounds(newNortheast,newSouthwest);
     }
 
+    public static void updateMarkerPosition(final GoogleMap map, final Marker marker, final List<LatLng> points) {
+        if(points == null || points.size() < 2) return;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LatLng mePosition = points.get(0);
+                    LatLng userPosition = points.get(points.size() - 1);
+                        LatLng markerPosition = Utils.findPoint(points, .5);
+                        LatLngBounds bounds = Utils.reduce(map.getProjection().getVisibleRegion().latLngBounds, .8);
+                        if (!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
+                            if (!bounds.contains(markerPosition)) {
+                                double fract = 0.5;
+                                while (!bounds.contains(markerPosition)) {
+                                    fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
+                                    if (fract < 0 || fract > 1) break;
+                                    markerPosition = Utils.findPoint(points, fract);
+                                }
+                            }
+                        }
+                        marker.setPosition(markerPosition);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public static void resizeDialog(Activity activity, Dialog dialog, int width, int height) {
         if(width == MATCH_SCREEN || height == MATCH_SCREEN) {
             DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -346,6 +382,20 @@ public class Utils {
 
     public static int adaptedSize(Context context,int size) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, context.getResources().getDisplayMetrics());
+    }
+
+    public static void log(Object... text) {
+        String str = "";
+        String tag = "Utils";
+        for (Object aText : text) {
+            if(aText instanceof Serializable) {
+                str += aText + " ";
+            } else {
+//                str += aText.getClass().getSimpleName() + ": ";
+                tag = aText.getClass().getSimpleName();
+            }
+        }
+        Log.i(tag, str);
     }
 
 }

@@ -323,8 +323,13 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         @Override
         public void onChangeLocation(Location location) {
-            title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextColor));
-            title.setTypeface(null, (myUser.getProperties().isSelected()) ? Typeface.BOLD: Typeface.NORMAL);
+            try {
+
+                title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextColor));
+                title.setTypeface(null, (myUser.getProperties().isSelected()) ? Typeface.BOLD : Typeface.NORMAL);
+            } catch(Exception e) {
+
+            }
         }
 
         private void openContextMenu(View view) {

@@ -23,6 +23,7 @@ import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.NavigationStarter;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Entity;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -163,6 +164,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                             buttonsView.setVisibility(View.VISIBLE);
                             handlerHideButtons.removeCallbacks(hideButtons);
                             handlerHideButtons.postDelayed(hideButtons, 5000);
+                            NavigationView view = (NavigationView) myUser.getEntity(TYPE);
+                            Utils.updateMarkerPosition(map, view.marker, view.points);
                         }
                     }
                 });
@@ -506,7 +509,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                             if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false))
                                 req += "&avoid=ferries";
 
-                            Log.i(TYPE, req);
+                            Utils.log(NavigationView.this, req);
                             final String res = Utils.getUrl(req);
                             JSONObject o = new JSONObject(res);
 
@@ -535,47 +538,39 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                             }
                             previousDistance = distance;
                         }
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    if (track != null) {
-                                        String text = title;
-                                        LatLng markerPosition = Utils.findPoint(points, .5);
-                                        LatLngBounds bounds = Utils.reduce(map.getProjection().getVisibleRegion().latLngBounds, .8);
-                                        if (!bounds.contains(markerPosition) && (bounds.contains(mePosition) || bounds.contains(userPosition))) {
-                                            if (!bounds.contains(markerPosition)) {
-                                                double fract = 0.5;
-                                                while (!bounds.contains(markerPosition)) {
-                                                    fract = fract + (bounds.contains(mePosition) ? -1 : +1) * .01;
-                                                    if (fract < 0 || fract > 1) break;
-                                                    markerPosition = Utils.findPoint(points, fract);
-                                                }
-                                            }
-                                        }
-
-                                        if (points != null) {
-                                            track.setPoints(points);
-                                            trackCenter.setPoints(points);
-                                        }
-                                        bounds = map.getProjection().getVisibleRegion().latLngBounds;
-                                        if (!bounds.contains(mePosition) || !bounds.contains(userPosition)) {
-                                            text += "\n" + myUser.getProperties().getDisplayName();
-                                        }
-                                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
-                                        marker.setPosition(markerPosition);
-                                        marker.setVisible(true);
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
+                        updateMarkerPosition(mePosition, userPosition);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
+        }
+
+        private void updateMarkerPosition(final LatLng mePosition, final LatLng userPosition) {
+            Utils.updateMarkerPosition(map, marker, points);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (track != null) {
+                            String text = title;
+
+                            if (points != null) {
+                                track.setPoints(points);
+                                trackCenter.setPoints(points);
+                            }
+                            LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+                            if (!bounds.contains(mePosition) || !bounds.contains(userPosition)) {
+                                text += "\n" + myUser.getProperties().getDisplayName();
+                            }
+                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)));
+                            marker.setVisible(true);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
 

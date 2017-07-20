@@ -137,6 +137,10 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 for(DistanceMark entry: marks) {
                     if(entry != null) {
                         entry.update(false);
+                        ArrayList<LatLng> points = new ArrayList<>();
+                        points.add(entry.firstPosition());
+                        points.add(entry.secondPosition());
+                        Utils.updateMarkerPosition(map, entry.marker, points);
                     }
                 }
                 break;
@@ -266,7 +270,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         MyUser firstUser;
         MyUser secondUser;
         BitmapDescriptor icon;
-        LatLng markerPosition;
+//        LatLng markerPosition;
         LatLngBounds boundsForName;
         LatLngBounds bounds;
 
@@ -294,10 +298,10 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             marker = map.addMarker(markerOptions);
 
             line.setPoints(Arrays.asList(firstPosition(),secondPosition()));
-            LatLng markerPosition = SphericalUtil.interpolate(firstPosition(), secondPosition(), .5);
+//            LatLng markerPosition = SphericalUtil.interpolate(firstPosition(), secondPosition(), .5);
             double distance = SphericalUtil.computeDistanceBetween(firstPosition(), secondPosition());
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(Utils.formatLengthToLocale(distance))));
-            marker.setPosition(markerPosition);
+//            marker.setPosition(markerPosition);
         }
 
         private LatLng firstPosition(){
@@ -341,27 +345,26 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
 
             bounds = map.getProjection().getVisibleRegion().latLngBounds;
             boundsForName = Utils.reduce(bounds, 0.9);
-            markerPosition = SphericalUtil.interpolate(firstPosition, secondPosition, .5);
 
-            if(!boundsForName.contains(markerPosition) && (bounds.contains(firstPosition) || bounds.contains(secondPosition))) {
-                if(bounds.contains(firstPosition)) {
-                    LatLng position = secondPosition;
-                    int counter = 0;
-                    while(!boundsForName.contains(markerPosition)) {
-                        markerPosition = SphericalUtil.interpolate(firstPosition, position, .5);
-                        position = markerPosition;
-                        if(counter++ > 10) break;
-                    }
-                } else if (bounds.contains(secondPosition)) {
-                    LatLng position = firstPosition;
-                    int counter = 0;
-                    while(!boundsForName.contains(markerPosition)) {
-                        markerPosition = SphericalUtil.interpolate(position, secondPosition, .5);
-                        position = markerPosition;
-                        if(counter++ > 10) break;
-                    }
-                }
-            }
+//            if(!boundsForName.contains(markerPosition) && (bounds.contains(firstPosition) || bounds.contains(secondPosition))) {
+//                if(bounds.contains(firstPosition)) {
+//                    LatLng position = secondPosition;
+//                    int counter = 0;
+//                    while(!boundsForName.contains(markerPosition)) {
+//                        markerPosition = SphericalUtil.interpolate(firstPosition, position, .5);
+//                        position = markerPosition;
+//                        if(counter++ > 10) break;
+//                    }
+//                } else if (bounds.contains(secondPosition)) {
+//                    LatLng position = firstPosition;
+//                    int counter = 0;
+//                    while(!boundsForName.contains(markerPosition)) {
+//                        markerPosition = SphericalUtil.interpolate(position, secondPosition, .5);
+//                        position = markerPosition;
+//                        if(counter++ > 10) break;
+//                    }
+//                }
+//            }
             if(!boundsForName.contains(firstPosition) || !boundsForName.contains(secondPosition)) {
                 title += "\n" + (boundsForName.contains(firstPosition) ? secondUser : firstUser).getProperties().getDisplayName();
             }
@@ -373,10 +376,13 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                         line.setPoints(Arrays.asList(firstPosition, secondPosition));
                     if (marker != null) {
                         marker.setIcon(icon);
-                        marker.setPosition(markerPosition);
                     }
                 }
             });
+            ArrayList<LatLng> points = new ArrayList<>();
+            points.add(firstPosition);
+            points.add(secondPosition);
+            Utils.updateMarkerPosition(map, marker, points);
         }
     }
 

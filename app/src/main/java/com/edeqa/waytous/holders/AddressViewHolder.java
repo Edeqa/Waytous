@@ -12,6 +12,7 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.waytousserver.helpers.Common;
 
 import org.json.JSONObject;
 
@@ -113,11 +114,11 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                     String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
 
                     try {
-                        System.out.println(myUser.getProperties().getNumber() +":"+ req);
+                        Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req);
                         final String res = Utils.getUrl(req);
-                        System.out.println(res);
-                            JSONObject address = new JSONObject(res);
-                            setTitle(address.getString("display_name"));
+                        Utils.log(AddressView.this, "Response:", res);
+                        JSONObject address = new JSONObject(res);
+                        setTitle(address.getString("display_name"));
                     } catch (Exception e) {
                         e.printStackTrace();
                         setTitle(null);

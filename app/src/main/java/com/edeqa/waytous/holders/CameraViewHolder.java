@@ -341,15 +341,11 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             this.location = location;
             switch (orientation){
                 case CAMERA_ORIENTATION_NORTH:
-//                    if(orientationChanged) {
-//                    }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(0);
                     position.tilt(0);
                     break;
                 case CAMERA_ORIENTATION_DIRECTION:
-//                    if(orientationChanged) {
-//                    }
                     position.target(new LatLng(location.getLatitude(), location.getLongitude()));
                     position.bearing(location.getBearing());
                     position.tilt(0);
