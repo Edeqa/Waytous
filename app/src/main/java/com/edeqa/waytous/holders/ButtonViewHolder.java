@@ -46,7 +46,10 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
+import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_ZOOM;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
+import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 
 /**
@@ -87,6 +90,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             case TRACKING_STOP:
             case TRACKING_DISABLED:
                 hide();
+                break;
+            case USER_JOINED:
+            case USER_DISMISSED:
+                if(layout.getChildCount()>1 || !State.getInstance().tracking_disabled()) {
+                    show();
+                } else if(State.getInstance().tracking_disabled()) {
+                    hide();
+                }
                 break;
         }
         return true;
@@ -256,7 +267,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     break;
                 }
             }
-
             if(index >= layout.getChildCount()) {
                 layout.addView(button);
             } else {
@@ -296,11 +306,11 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             switch(event){
                 case SELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);
-                    if(layout.getChildCount()>1) {
+                    /*if(layout.getChildCount()>1) {
                         show();
                     } else if(State.getInstance().tracking_disabled()) {
                         hide();
-                    }
+                    }*/
 
                     int left = scrollLayout.getScrollX();
                     int right = scrollLayout.getWidth() + left;
@@ -318,14 +328,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 case CHANGE_NAME:
                     title.setText((myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName());
                     break;
-                case MAKE_ACTIVE:
+                /*case MAKE_ACTIVE:
                 case MAKE_INACTIVE:
                     if(layout.getChildCount()>1) {
                         show();
                     } else if(State.getInstance().tracking_disabled()) {
                         hide();
                     }
-                    break;
+                    break;*/
             }
             return true;
         }
