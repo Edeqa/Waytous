@@ -248,6 +248,15 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             } else if(index == 0 && index != State.getInstance().getUsers().getMyNumber()){
                 index = 1;
             }
+
+            for(int i = 0; i < layout.getChildCount(); i++) {
+                int number = Integer.valueOf(""+ layout.getChildAt(i).getTag());
+                if(number != State.getInstance().getUsers().getMyNumber() && index < number) {
+                    index = i;
+                    break;
+                }
+            }
+
             if(index >= layout.getChildCount()) {
                 layout.addView(button);
             } else {

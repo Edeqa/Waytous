@@ -408,7 +408,9 @@ p.bottom-desc {
     white-space: pre-wrap;
 }
 .chat-dialog-reply {
-    flex: 0 0 30px;
+    flex: 1 0 30px;
+    display: flex;
+    align-items: flex-end;
 }
 .chat-dialog-reply-input {
     width: 100%;
@@ -862,9 +864,6 @@ p.bottom-desc {
         font-size: 14px;
     }
     .chat-dialog-reply {
-        padding: 8px;
-        display: flex;
-        align-items: stretch;
     }
     .chat-dialog-reply-button {
         min-width: 40px;
@@ -1009,19 +1008,20 @@ p.bottom-desc {
         border-radius: 0px;
     }
     .place-search-items {
-        padding: 10px;
     }
     .place-search-input {
+        height: 30px;
+        font-size: 16px;
     }
     .place-search-label {
         font-family: "Material Icons";
         font-feature-settings: "liga" 1;
         font-style: normal;
-        font-size: 20px;
         outline: none;
-        padding: 5px;
         max-width: 24px;
         display: block;
+        padding: 10px;
+        font-size: 26px;
     }
     .options-dialog {
         min-width: inherit;
