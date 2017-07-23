@@ -32,7 +32,7 @@ function PropertiesHolder(main) {
                 }
             },
             negative: {
-                label: "Cancel"
+                label: u.lang.cancel
             }
         }, main.right);
     };

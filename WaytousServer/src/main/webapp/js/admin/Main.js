@@ -11,6 +11,7 @@ function Main() {
     var drawer;
     var layout;
     var content;
+    var defaultResources = "/locales/admin.en.json";
 
     var holders = {};
     var holderFiles = [
@@ -25,7 +26,7 @@ function Main() {
         "Group",
         "Groups",
         "Chat",
-        "Logs",
+        "Logs"
 //        "Settings",
 //        "Help",
     ];
@@ -44,7 +45,6 @@ function Main() {
             window.location.href = "/admin/home";
             return;
         }
-
 
         window.u = new Edequate({exportConstants:true, origin:"waytous"});
 
@@ -76,37 +76,44 @@ function Main() {
             .place(HTML.META, {name:"theme-color", content:"#aaeeee"});
 
 
-        var loaded = 0;
-        for(var i in holderFiles) {
-            var file = holderFiles[i];
-            if(!file.match(/^(https?:)|\//i)) file = "/js/admin/"+file;
-            u.require(file).then(function(e) {
-                loaded++;
-                if(e && e.moduleName) {
-                    holders[e.moduleName.toLowerCase()] = e;
-                }
-                if(loaded == u.keys(holderFiles).length) {
-                    console.log("Preload finished: "+loaded+" files done.");
-                    window.utils = new Utils();
+        u.require("/js/helpers/Constants").then(function(e){
+            u.lang.overrideResources({"default":defaultResources, callback: function(){
+                var loaded = 0;
+                for(var i in holderFiles) {
+                    var file = holderFiles[i];
+                    if(!file.match(/^(https?:)|\//i)) file = "/js/admin/"+file;
+                    u.require(file).then(function(e) {
+                        loaded++;
+                        if(e && e.moduleName) {
+                            holders[e.moduleName.toLowerCase()] = e;
+                        }
+                        if(loaded == u.keys(holderFiles).length) {
+                            console.log("Preload finished: "+loaded+" files done.");
+                            window.utils = new Utils();
 
-                    initialize();
+                            initialize();
 
+                        }
+                    }).catch(function(){
+                        u.dialog({
+                            title: u.lang.alert,
+                            items: [
+                                { type:HTML.DIV, innerHTML: "Error loading service."}
+                            ],
+                            positive: {
+                                label: u.lang.reload,
+                                onclick: function(){
+                                    window.location = window.location.href;
+                                }
+                            }
+                        }).open();
+                    });
                 }
-            }).catch(function(){
-              u.dialog({
-                  title: "Alert",
-                  items: [
-                      { type:HTML.DIV, innerHTML: "Error loading service."}
-                  ],
-                  positive: {
-                      label: "Reload",
-                      onclick: function(){
-                          window.location = window.location.href;
-                      }
-                  }
-              }).open();
-          });
-        }
+            }});
+            var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+            var resources = "/locales/admin."+lang+".json";
+            if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
+        });
     };
 
     function initialize() {
@@ -163,7 +170,7 @@ function Main() {
 
     function resign(callback){
 
-        u.loading("Signing in...");
+        u.loading(u.lang.signing_in);
         firebase.auth().signInWithCustomToken(data.sign).then(function(e){
             callback();
         }).catch(function(error) {
@@ -186,7 +193,7 @@ function Main() {
             var sections = {};
             drawer = new u.drawer({
                 title: "${APP_NAME}",
-                subtitle: "Admin",
+                subtitle: u.lang.admin,
                 collapsed: "admin:drawer:collapsed",
                 logo: {
                     src:"/images/logo.svg",

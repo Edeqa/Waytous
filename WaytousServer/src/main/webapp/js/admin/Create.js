@@ -55,11 +55,11 @@ function Create() {
                     { type: HTML.NUMBER, itemClassName: "", label: "&#150; delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay, value: 300 },
                 ],
                 positive: {
-                    label: "OK",
+                    label: u.create(HTML.SPAN, "OK"),
                     onclick: validate_submit
                 },
                 negative: {
-                    label: "Cancel"
+                    label: u.create(HTML.SPAN, "Cancel")
                 },
                 help: function() {
                     console.log("HELP");

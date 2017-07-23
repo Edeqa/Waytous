@@ -87,7 +87,7 @@ function Group() {
                             { type:HTML.INPUT, className:"welcome-input", value: tableSummary.welcomeMessageNode.lastChild.innerHTML }
                         ],
                         positive: {
-                            label: "OK",
+                            label: u.create(HTML.SPAN, "OK"),
                             onclick: function(items) {
                                 var newValue = items[0].value;
                                 if(tableSummary.welcomeMessageNode.lastChild.innerHTML != newValue) {
@@ -102,7 +102,7 @@ function Group() {
                                 }
                             }
                         },
-                        negative: { label:"Cancel"}
+                        negative: { label:u.create(HTML.SPAN, "Cancel")}
                     }).open();
                 }).catch(function(error){
                     console.warn("Resign because of",error);
@@ -140,7 +140,7 @@ function Group() {
                         { type:HTML.NUMBER, label:"Time to live, min", value:parseInt(tableSummary.timeToLiveNode.lastChild.innerHTML || 15) }
                     ],
                     positive: {
-                        label: "OK",
+                        label: u.create(HTML.SPAN, "OK"),
                         dismiss: false,
                         onclick: function(items) {
                             var newValue = items[1].value;
@@ -156,7 +156,7 @@ function Group() {
                             }
                         }
                     },
-                    negative: { label:"Cancel"}
+                    negative: { label: u.create(HTML.SPAN, "Cancel")}
                 }).open();
             },
             cells: [
@@ -191,7 +191,7 @@ function Group() {
                         { type:HTML.NUMBER, label:"Delay to dismiss, sec", value:parseInt(tableSummary.delayToDismissNode.lastChild.innerHTML || 300) }
                     ],
                     positive: {
-                        label: "OK",
+                        label: u.create(HTML.SPAN, "OK"),
                         onclick: function(items) {
                             var newValue = items[1].value;
                             if(tableSummary.delayToDismissNode.lastChild.innerHTML != newValue) {
@@ -206,7 +206,7 @@ function Group() {
                             }
                         }
                     },
-                    negative: { label:"Cancel"}
+                    negative: { label: u.create(HTML.SPAN, "Cancel")}
                 }).open();
             },
             cells: [
