@@ -23,13 +23,12 @@ function SupportHolder(main) {
     this.onEvent = function(event, object) {
         switch(event) {
             case EVENTS.SUPPORT:
-                console.log("INDEX SUPPORT");
-
                 u.progress.show(u.lang.loading);
 
                 u.byId("content").innerHTML = u.lang.support_body.innerHTML;
                 u.byId("content").classList.add("content-support");
                 u.byId("content").parentNode.scrollTop = 0;
+
                 u.progress.hide();
                 break;
         }
