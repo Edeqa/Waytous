@@ -20,6 +20,7 @@
     background-color: beige !important;
     color: red;
     padding: 30px;
+    padding-bottom: 20px;
     text-align: center;
     width: 500px;
     max-width: 80%;
@@ -715,6 +716,12 @@ p.bottom-desc {
     width: 100%;
     justify-content: center;
     align-items: center;
+    background-color: #4c93af;
+    color: white;
+    margin: 1px !important;
+}
+.share-dialog-item-button:hover, .share-dialog-item-button:focus {
+    background-color: #2e5d7d;
 }
 .share-dialog-item-icon {
     font-family: "Material Icons";
@@ -723,7 +730,7 @@ p.bottom-desc {
     font-size: 16px;
     min-width: 16px;
     padding-right: 5px;
-    color: darkslategray;
+    color: white;
     width: 16px;
     height: 16px;
 }

@@ -385,6 +385,7 @@ function Main() {
                             type: HTML.BUTTON,
                             label: u.lang.dialogs_positions,
                             itemClassName: "media-hidden",
+                            className: "dialog-button",
                             innerHTML: u.lang.reset,
                             onclick: function(e, event) {
                                 for(var x in localStorage) {

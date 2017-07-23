@@ -277,6 +277,14 @@ button:active {
     width: 50%;
     background-color: antiquewhite;
 }
+.dialog-item-input-button {
+    background-color: #4c93af;
+    color: white;
+    margin: 0 !important;
+}
+.dialog-item-input-button:hover, .dialog-item-input-button:focus {
+    background-color: #2e5d7d;
+}
 .dialog-item-input-link {
     margin-top: 10px;
     width: 100%;
@@ -327,9 +335,68 @@ button:active {
     align-self: center;
     padding: 5px;
 }
+/* material-style button */
+.dialog-button {
+    position: relative;
+    display: inline-block;
+    margin: 10px 1px;
+    padding: 0;
+    overflow: hidden;
+    border-width: 0;
+    outline: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+    transition: background-color .3s;
+}
+.dialog-button:hover, .dialog-button:focus {
+}
+.dialog-button > * {
+    position: relative;
+}
+.dialog-button span {
+    display: block;
+    padding: 8px 16px;
+}
+.dialog-button:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 0;
+    padding-top: 0;
+    border-radius: 100%;
+    background-color: rgba(236, 240, 241, .3);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.dialog-button:active:before {
+    width: 120%;
+    padding-top: 120%;
+    transition: width .2s ease-out, padding-top .2s ease-out;
+}
 .dialog-button-positive {
+    background-color: #4c93af;
+    color: white;
+}
+.dialog-button-positive:hover/*, .dialog-button-positive:focus*/ {
+    background-color: #2e5d7d;
+}
+.dialog-button-neutral {
+    background-color: #4c93af;
+    color: white;
+}
+.dialog-button-neutral:hover/*, .dialog-button-neutral:focus*/ {
+    background-color: #2e5d7d;
 }
 .dialog-button-negative {
+    background-color: #4c93af;
+    color: white;
+}
+.dialog-button-negative:hover/*, .dialog-button-negative:focus*/ {
+    background-color: #2e5d7d;
 }
 .dialog-progress-bar {
     height: 5px;
