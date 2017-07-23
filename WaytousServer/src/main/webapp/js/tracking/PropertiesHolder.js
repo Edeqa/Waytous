@@ -10,10 +10,10 @@ function PropertiesHolder(main) {
     this.type = "properties";
     this.saveable = true;
 
-    var dialog;
+    var setNameDialog;
 
     this.start = function() {
-        dialog = u.dialog({
+        setNameDialog = u.dialog({
             title: u.lang.set_my_name,
             queue: true,
             priority: 9,
@@ -168,9 +168,9 @@ function PropertiesHolder(main) {
     }
 
     function setMyName(name){
-        if(dialog) dialog.close();
-        dialog.items[0].value = main.me.properties.name || "";
-        dialog.open();
+        if(setNameDialog) setNameDialog.close();
+        setNameDialog.items[0].value = main.me.properties.name || "";
+        setNameDialog.open();
     }
 
     this.options = function(){

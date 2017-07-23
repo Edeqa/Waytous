@@ -375,7 +375,7 @@ p.bottom-desc {
 .chat-dialog:active {
     opacity: 1.0;
 }
-.chat-dialog-messages {
+.chat-dialog-message {
     font-size: 10px;
     text-align: left;
     justify-content: flex-start;
@@ -721,6 +721,22 @@ p.bottom-desc {
     width: 16px;
     height: 16px;
 }
+.wizard-dialog {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    max-width: 500px;
+    overflow-y: scroll;
+    border-top-style: solid;
+    border-top-width: 1px;
+    white-space: pre-wrap;
+}
+.wizard-dialog-item {
+
+}
+.wizard-dialog-button-create {
+
+}
 
 @media screen and (max-width: 1000px) {
 
@@ -860,7 +876,7 @@ p.bottom-desc {
         max-width: 100%;
         border: none;
     }
-    .chat-dialog-messages {
+    .chat-dialog-message {
         font-size: 14px;
     }
     .chat-dialog-reply {
@@ -1025,6 +1041,10 @@ p.bottom-desc {
     }
     .options-dialog {
         min-width: inherit;
+    }
+    .wizard-dialog {
+        top: auto !important;
+        bottom: 0px !important;
     }
 
     /* shift zoom control */

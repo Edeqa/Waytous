@@ -27,6 +27,7 @@ function TrackingHolder(main) {
     var sounds;
     var joinSound;
     var defaultSound = "oringz-w427.mp3";
+    var wizardDialog;
 
     var drawerItemNewIconSvg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -47,8 +48,22 @@ function TrackingHolder(main) {
             className: "progress-dialog",
             items: [
                 { type: HTML.DIV, className: "progress-dialog-circle" },
-                { type: HTML.DIV, className: "progress-dialog-title" },
+                { type: HTML.DIV, className: "progress-dialog-title" }
             ]
+        }, main.right);
+        wizardDialog = u.dialog({
+            title: u.lang.information,
+            className: "wizard-dialog",
+            items: [
+                { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_may_create_the_group }
+            ],
+            positive: {
+                label: u.lang.create_group,
+                className: "wizard-dialog-button-create",
+                onclick: function(items) {
+                    main.fire(EVENTS.TRACKING_NEW);
+                }
+            }
         }, main.right);
 
         joinSound = u.load("tracking:sound_on_join") || defaultSound;
@@ -107,6 +122,8 @@ function TrackingHolder(main) {
                     setTimeout(function(){
                         u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
                     }, 0);
+                } else {
+                    wizardDialog.open();
                 }
                 break;
             case EVENTS.TRACKING_NEW:
@@ -151,7 +168,7 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;
-
+                wizardDialog.close();
                 document.title = u.lang.connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
                 drawerItemExit.show();
