@@ -26,7 +26,7 @@ function AboutHolder(main) {
                 console.log("INDEX ABOUT");
 
                 u.progress.show(u.lang.loading.innerHTML);
-                u.get("/texts/lorem.txt").then(function(xhr){
+                u.get("/texts/index-about.txt").then(function(xhr){
         //            u.clear(main.content);
 
                     u.byId("content").innerHTML = xhr.response;
