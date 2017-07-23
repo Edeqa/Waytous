@@ -4,7 +4,7 @@ You may create the group and invite as many your friends as you want.
 
 <img class="image-full-width" src="/images/index/home-01.jpg">
 
-<a class="dialog-button create-dialog-button" href="/track/new"><span>Create group</span></a>
+<a class="dialog-button create-dialog-button" href="/group/new" target="_self"><span>Create group</span></a>
 
 Also, you may get the mobile client and use it with much more abilities.
 

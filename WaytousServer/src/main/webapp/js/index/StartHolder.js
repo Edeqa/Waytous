@@ -36,7 +36,7 @@ function StartHolder(main) {
         switch(event) {
             case EVENTS.START:
                 console.log("INDEX TRACK");
-                window.location.href = "/track/new";
+                window.location.href = "/group/new";
                 break;
         }
         return true;
