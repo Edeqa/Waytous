@@ -14,7 +14,7 @@ function Main() {
     var layout;
     var right;
     var origin;
-    var main = w = this;
+    var main = window.Waytous = this;
     var alert;
     var defaultResources = "/locales/tracking.en.json";
 

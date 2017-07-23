@@ -5,7 +5,6 @@
  * Version 1.${SERVER_BUILD}
  * Created 2/9/17.
  */
-EVENTS.SHARE_LINK = "share_link";
 
 function TrackingHolder(main) {
 
@@ -275,6 +274,7 @@ function TrackingHolder(main) {
                     window.history.pushState({}, null, "/track/" + token);
                     main.fire(EVENTS.SHOW_HELP, {module: main.eventBus.holders.tracking, article: 1});
                     main.me.fire(EVENTS.SELECT_USER);
+                    //main.fire(EVENTS.SHARE_LINK, main.tracking.getTrackingUri());
                 }
                 if (o[REQUEST.WELCOME_MESSAGE]) {
                     main.fire(EVENTS.WELCOME_MESSAGE, o[RESPONSE.WELCOME_MESSAGE]);

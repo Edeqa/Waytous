@@ -12,7 +12,7 @@ EVENTS.USER_MESSAGE = "user_message";
 EVENTS.SHOW_MESSAGES = "show_messages";
 EVENTS.WELCOME_MESSAGE = "welcome_message";
 
-function MessagesHolder(main) {
+function MessageHolder(main) {
 
     var type = "message";
     var chat;
@@ -29,7 +29,7 @@ function MessagesHolder(main) {
     var sound;
 
     function start() {
-        // console.log("MESSAGESHOLDER",main);
+        // console.log("MESSAGEHOLDER",main);
 
         chat = u.dialog({
             title: {
@@ -37,7 +37,7 @@ function MessagesHolder(main) {
                 filter: true
             },
             className: "chat-dialog",
-            itemsClassName: "chat-dialog-messages",
+            itemsClassName: "chat-dialog-message",
             tabindex: 3,
             resizeable: true,
             items: [
@@ -69,7 +69,7 @@ function MessagesHolder(main) {
         }}, reply);
         replyButton = u.create(HTML.BUTTON, {className: "chat-dialog-reply-button", innerHTML:"send", onclick:sendUserMessage}, reply);
 
-        incomingMessageSound = u.load("messages:incoming") || defaultIncomingMessageSound;
+        incomingMessageSound = u.load("message:incoming") || defaultIncomingMessageSound;
         sound = u.create(HTML.AUDIO, {className:"hidden", preload:"", src:"/sounds/"+incomingMessageSound, last:0, playButLast:function(){
             var current = new Date().getTime();
             if(current - this.last > 10) {
@@ -223,12 +223,12 @@ function MessagesHolder(main) {
                     title: u.lang.notifications,
                     items: [
                         {
-                            id:"messages:incoming",
+                            id:"message:incoming",
                             type: HTML.SELECT,
                             label: u.lang.incoming_message,
-                            default: u.load("messages:incoming") || defaultIncomingMessageSound,
+                            default: u.load("message:incoming") || defaultIncomingMessageSound,
                             onaccept: function(e, event) {
-                                u.save("messages:incoming", this.value);
+                                u.save("message:incoming", this.value);
                                 sound.src = "/sounds/" + this.value;
                             },
                             onchange: function(e, event) {

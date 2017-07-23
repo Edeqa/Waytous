@@ -164,17 +164,19 @@ function NavigationHolder(main) {
                 listenerHandler = null;
             }
 //            modeButtons && modeButtons.close();
-            main.users.forAllUsersExceptMe(function (number, user) {
-                if(user.views.navigation) {
-                    if (user.views.navigation.show) {
-                        drawerItemHide && drawerItemHide.show();
-                        if(!listenerHandler) listenerHandler = main.map.addListener("dragstart", showModeButtons);
+            if(main.users) {
+                main.users.forAllUsersExceptMe(function (number, user) {
+                    if(user.views.navigation) {
+                        if (user.views.navigation.show) {
+                            drawerItemHide && drawerItemHide.show();
+                            if(!listenerHandler) listenerHandler = main.map.addListener("dragstart", showModeButtons);
 //                        modeButtons && modeButtons.open();
-                    } else {
-    //                    drawerItemShow.show();
+                        } else {
+                            //                    drawerItemShow.show();
+                        }
                     }
-                }
-            })
+                })
+            }
         },0);
     }
 

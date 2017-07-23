@@ -5,6 +5,7 @@
  * Version 1.${SERVER_BUILD}
  * Created 3/10/17.
  */
+EVENTS.SHARE_LINK = "share_link";
 
 function ShareHolder(main) {
 
@@ -120,7 +121,7 @@ function ShareHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.SHARE_LINK:
-
+                object = object || main.tracking.getTrackingUri();
                 if(shareDialog) shareDialog.close();
                 shareDialog = shareDialog || u.dialog({
                     className: "share-dialog",

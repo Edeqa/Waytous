@@ -106,6 +106,7 @@ function TrackingFB(main) {
                     }
                     break;
                 case RESPONSE.STATUS_ACCEPTED:
+                    var groupCreated = newTracking;
                     newTracking = false;
                     send = sendOriginal;
                     if(o[RESPONSE.SIGN]) {

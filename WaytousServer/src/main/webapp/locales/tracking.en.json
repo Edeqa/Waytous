@@ -260,7 +260,7 @@
 
   "tracking_help_title": "Tracking",
   "tracking_help_title_1": "You have created new group",
-  "tracking_help_body_1": "You have created the new tracking group. Now, you may invite your friends to follow you using their ${APP_NAME} client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. ",
+  "tracking_help_body_1": "You have created the new tracking group. Now, you may invite your friends to follow you using their ${APP_NAME} client or mobile or desktop browser. Click the main menu item to share the link. Or you may use it yourself for some reasons. <p>Note: the group will be deleted after 15 minutes of inactivity. <p><span class='help-dialog-link-inline' onclick='Waytous.fire(EVENTS.HIDE_HELP);Waytous.fire(EVENTS.SHARE_LINK)'>Click here to invite your friends.</span> ",
 
   "sound_on_join": "Sound on join",
   "none": "None",

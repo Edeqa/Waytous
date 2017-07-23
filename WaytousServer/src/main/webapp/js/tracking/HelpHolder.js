@@ -7,6 +7,7 @@
  */
 
 EVENTS.SHOW_HELP = "show_help";
+EVENTS.HIDE_HELP = "hide_help";
 
 function HelpHolder(main) {
 
@@ -24,6 +25,8 @@ function HelpHolder(main) {
                     main.fire(EVENTS.SHOW_HELP);
                 });
                 break;
+            case EVENTS.HIDE_HELP:
+                dialog && dialog.close();
             case EVENTS.SHOW_HELP:
 
                 dialog = dialog || u.dialog({
