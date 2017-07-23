@@ -27,7 +27,7 @@ function SupportHolder(main) {
 
                 u.progress.show(u.lang.loading);
 
-                u.byId("content").innerHTML = u.lang.support.innerHTML;
+                u.byId("content").innerHTML = u.lang.support_body.innerHTML;
                 u.byId("content").classList.add("content-support");
                 u.byId("content").parentNode.scrollTop = 0;
                 u.progress.hide();

@@ -27,7 +27,7 @@ function FeedbackHolder(main) {
 
                 u.progress.show(u.lang.loading);
 
-                u.byId("content").innerHTML = u.lang.feedback.innerHTML;
+                u.byId("content").innerHTML = u.lang.feedback_body.innerHTML;
                 u.byId("content").classList.add("content-feedback");
                 u.byId("content").parentNode.scrollTop = 0;
                 u.progress.hide();
