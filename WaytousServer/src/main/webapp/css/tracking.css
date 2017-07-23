@@ -908,6 +908,9 @@ p.bottom-desc {
         max-width: 100%;
         border-bottom: none;
     }
+    .streetview-dialog-items {
+        flex: 1 1;
+    }
     .streetview-dialog-view {
         margin: -10px;
         padding: 10px;

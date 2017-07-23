@@ -86,6 +86,11 @@ function Main() {
         try {
 
             var type = "home";
+            var path = window.location.pathname.split("/");
+            if(path.length > 1) {
+                type = path[1] || "home";
+            }
+
 
             window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
                 window.scrollTo(0, 1); }, 0);
@@ -194,6 +199,8 @@ function Main() {
                         self.actionbar.toggleSize(false);
                         self.actionbar.setTitle(holder.title);
                         u.fire(holder.type);
+                        window.history.pushState({}, null, "/" + holder.type);
+
 //                        holder.start();
                         return false;
                     });

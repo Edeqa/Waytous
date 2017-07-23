@@ -77,6 +77,7 @@ function StreetViewHolder(main) {
                     className: "media-hidden"
                 },
                 className: "streetview-dialog",
+                itemsClassName: "streetview-dialog-items",
                 tabindex: 1,
                 items: [
                     { type: HTML.DIV, className: "streetview-dialog-placeholder", innerHTML: u.lang.loading },
