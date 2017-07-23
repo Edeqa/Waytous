@@ -334,6 +334,7 @@ button:active {
 .dialog-buttons {
     align-self: center;
     padding: 5px;
+    margin-bottom: 5px;
 }
 /* material-style button */
 .dialog-button {
@@ -341,7 +342,7 @@ button:active {
     border-width: 0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
     display: inline-block;
-    margin: 10px 1px;
+    margin: 0px 1px;
     outline: none;
     overflow: hidden;
     padding: 0;
@@ -804,7 +805,7 @@ button:active {
     padding-top: 20px;
 }
 .about-dialog-buttons {
-    padding-bottom: 20px;
+    padding-bottom: 15px;
 }
 .about-dialog-link {
     font-size: x-small;

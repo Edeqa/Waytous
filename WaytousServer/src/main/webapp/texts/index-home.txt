@@ -1,0 +1,11 @@
+<p>Our service sounds as "way-to-us" and offers the multi-user dynamic navigation.
+
+You may create the group and invite as many your friends as you want.
+
+<img class="image-full-width" src="/images/index/home-01.jpg">
+
+<a class="dialog-button create-dialog-button" href="/track/new"><span>Create group</span></a>
+
+Also, you may get the mobile client and use it with much more abilities.
+
+<a href='https://play.google.com/store/apps/details?id=com.edeqa.waytous&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='240' height='92'/></a>

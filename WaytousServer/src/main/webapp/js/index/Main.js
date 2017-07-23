@@ -16,10 +16,14 @@ function Main() {
         "/js/helpers/Utils.js",
 //        "/js/helpers/Constants",
         "/js/index/HomeHolder",
-        "/js/index/TrackHolder",
+        "/js/index/StartHolder",
+
         "/js/index/HelpHolder",
+        "/js/index/ApiHolder",
+
         "/js/index/SupportHolder",
         "/js/index/FeedbackHolder",
+        "/js/index/ContactHolder",
 //        "/js/index/BlablaHolder",
         "/js/index/AboutHolder"
     ];
@@ -140,8 +144,9 @@ function Main() {
                         }})
                 },
                 sections: {
-                    [DRAWER.SECTION_PRIMARY]: "Main",
-                    [DRAWER.SECTION_LAST]: "About",
+                    [DRAWER.SECTION_PRIMARY]: u.lang.home,
+                    [DRAWER.SECTION_MAP]: u.lang.docs,
+                    [DRAWER.SECTION_LAST]: u.lang.about,
                 }
             }, "drawer");
 
@@ -178,6 +183,7 @@ function Main() {
 
                     var categories = {
                         "main": DRAWER.SECTION_PRIMARY,
+                        "docs": DRAWER.SECTION_MAP,
                         "about": DRAWER.SECTION_LAST
                     };
 
@@ -197,6 +203,7 @@ function Main() {
             u.lang.updateNode(self.actionbar.titleNode, holders[type].title);
             u.lang.updateNode(self.drawer.headerPrimary, holders[type].title);
             holders[type].start();
+            u.fire(type);
             u.loading.hide();
         } catch(e) {
             console.error(e);
@@ -210,7 +217,7 @@ function Main() {
                     { type: HTML.DIV, className: "privacy-body", innerHTML: u.lang.privacy_policy_body }
                 ],
                 positive: {
-                    label: "Close"
+                    label: u.lang.close
                 }
             });
 
@@ -227,7 +234,7 @@ function Main() {
                     { type: HTML.DIV, className: "terms-body", innerHTML: u.lang.terms_and_conditions_body }
                 ],
                 positive: {
-                    label: "Close"
+                    label: u.lang.close
                 }
             });
 

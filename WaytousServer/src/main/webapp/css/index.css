@@ -73,7 +73,10 @@ body {
     padding: 0px;
     white-space: pre-wrap;
     display: flex;
+    flex-direction: column;
     -webkit-overflow-scrolling: touch;
+    width: 600px;
+    max-width: 80%;
 }
 .terms-body, .privacy-body {
     align-items: flex-start;
@@ -93,6 +96,25 @@ body {
     border-width: 1px;
     padding: 8px;
     cursor: pointer;
+    min-width: 10px;
+    outline: none;
+}
+
+.create-dialog-button {
+    background-color: #4c93af;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+.create-dialog-button:hover/*, .dialog-button-positive:focus*/ {
+    background-color: #2e5d7d;
+}
+
+.image-full-width {
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: darkslategray;
 }
 
 @media screen and (min-width: 1001px) {
@@ -158,6 +180,7 @@ body {
         padding: 2px;
         transition: 0.5s ease-in-out font-size;
         cursor: pointer;
+        min-width: 60px;
     }
     .drawer-menu-item-expand {
         display: none;
@@ -271,7 +294,15 @@ body {
         font-size: 16px;
     }
     .actionbar-select-lang {
-        font-size: 20px;
+        font-size: 16px;
+    }
+
+    .button-scroll-top {
+        bottom: 16px;
+    }
+
+    .content {
+        max-width: 90%;
     }
 
     /* Table */
