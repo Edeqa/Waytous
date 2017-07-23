@@ -26,14 +26,11 @@ function AboutHolder(main) {
                 console.log("INDEX ABOUT");
 
                 u.progress.show(u.lang.loading.innerHTML);
-                u.get("/texts/index-about.txt").then(function(xhr){
-        //            u.clear(main.content);
+                u.byId("content").innerHTML = u.lang.about_body.innerHTML;
+                u.byId("content").classList.add("content-help");
+                u.byId("content").parentNode.scrollTop = 0;
 
-                    u.byId("content").innerHTML = xhr.response;
-                    u.byId("content").classList.add("content-about");
-                    u.byId("content").parentNode.scrollTop = 0;
-                    u.progress.hide();
-                });
+                u.progress.hide();
                 break;
         }
 

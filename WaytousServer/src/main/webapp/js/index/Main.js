@@ -122,11 +122,16 @@ function Main() {
                 }
             });
 
+            var sections = {};
+            sections[DRAWER.SECTION_PRIMARY] = u.lang.home;
+            sections[DRAWER.SECTION_MAP] = u.lang.docs;
+            sections[DRAWER.SECTION_LAST] = u.lang.about;
+
             self.drawer = new u.drawer({
                 title: "${APP_NAME}",
                 collapsed: false,
                 logo: {
-                    src:"/images/logo.svg",
+                    src:"/images/logo.svg"
                 },
                 onprimaryclick: function(){
                     console.log("onprimaryclick");
@@ -143,11 +148,7 @@ function Main() {
                             return false;
                         }})
                 },
-                sections: {
-                    [DRAWER.SECTION_PRIMARY]: u.lang.home,
-                    [DRAWER.SECTION_MAP]: u.lang.docs,
-                    [DRAWER.SECTION_LAST]: u.lang.about,
-                }
+                sections: sections
             }, "drawer");
 
             var dialogAbout = utils.dialogAbout();
