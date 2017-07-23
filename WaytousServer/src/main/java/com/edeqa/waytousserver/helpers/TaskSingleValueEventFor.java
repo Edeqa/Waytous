@@ -155,12 +155,16 @@ public class TaskSingleValueEventFor<T> {
             String url = "" + ref.getDatabase().getReference() + ref.getPath() + ".json?shallow=true&print=pretty&access_token=" + customToken;
             Common.log(LOG, "restRequest:"+url);
             String res = Utils.getUrl(url, "UTF-8");
+            if(res == null || res.length() == 0 || res.startsWith("null")) {
+                return;
+            }
+            Common.log(LOG, res);
 
             JSONObject json = new JSONObject(res);
             onCompleteListener.call((T) json);
 
         } catch(Exception e) {
-            Common.err(LOG, "restRequest:error:"+e.getMessage());
+            Common.err(LOG, "restRequest:error:"+ref.getDatabase().getReference() + ref.getPath(), e.getMessage());
             e.printStackTrace();
         }
     }

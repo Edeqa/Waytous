@@ -224,7 +224,7 @@ function Main() {
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-auth.js",
             "https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js",
             "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js", // https://cdnjs.com/libraries/fingerprintjs2
-            "/js/all-min.js"
+            "/js/all.js"
         ];
         var modules = data.isDebugMode ? null : [
             "MyUser",

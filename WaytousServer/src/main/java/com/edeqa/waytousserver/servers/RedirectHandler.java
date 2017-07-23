@@ -39,7 +39,7 @@ public class RedirectHandler implements HttpHandler {
                 host = InetAddress.getLocalHost().getHostAddress();
             }
 
-            Common.log(LOG,exchange.getRemoteAddress(),host + uri.getPath());
+            Common.log(LOG, exchange.getRemoteAddress(), host + uri.getPath());
 
             ArrayList<String> parts = new ArrayList<>();
             parts.addAll(Arrays.asList(uri.getPath().split("/")));
@@ -81,8 +81,8 @@ public class RedirectHandler implements HttpHandler {
                         + "&afl=" + webRedirect
                         + "&ifl=" + webRedirect
                         + "&st=Waytous"
-                        + "&sd=Waytous+description"
-                        + "&si=https://raw.githubusercontent.com/Edeqa/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
+                        + "&sd=Be+always+on+the+same+way+with+your+friends"
+                        + "&si=https://www.waytous.net/images/waytous-transparent-256.png";
 
                 Common.log(LOG,"->", redirectLink);
 
@@ -106,13 +106,23 @@ public class RedirectHandler implements HttpHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            URI uri = exchange.getRequestURI();
+            String host;
+            try {
+                host = exchange.getRequestHeaders().get(HttpHeaders.HOST).get(0);
+                host = host.split(":")[0];
+            } catch(Exception e1){
+                e1.printStackTrace();
+                host = InetAddress.getLocalHost().getHostAddress();
+            }
+            redirect(exchange, host, "/404.html");
         }
     }
 
     public void redirect(HttpExchange exchange, String host, String path) throws IOException {
         String newUri = "https://" + host + Common.getWrappedHttpsPort() + path;
 
-        Common.log(LOG, "->", newUri);
+        Common.log(LOG, exchange.getRemoteAddress(), "->", newUri);
 
         String requestMethod = exchange.getRequestMethod();
         if (requestMethod.equalsIgnoreCase("GET")) {

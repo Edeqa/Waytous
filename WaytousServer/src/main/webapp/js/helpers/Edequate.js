@@ -2338,8 +2338,8 @@ function Edequate(options) {
                         if(options.modules) {
                             for(i in options.modules) {
                                 if(window[options.modules[i]]) {
-                                    self.eventBus.modules.push(options.modules[i].toLowerCase());
-                                    self.eventBus.holders[options.modules[i].toLowerCase()] = new window[options.modules[i]](options.context);
+                                    self.eventBus.modules.push(options.modules[i].toLowerCase().replace("holder",""));
+                                    self.eventBus.holders[options.modules[i].toLowerCase().replace("holder","")] = new window[options.modules[i]](options.context);
                                 }
                             }
                         } else {

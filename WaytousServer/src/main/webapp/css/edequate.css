@@ -242,8 +242,9 @@ button:active {
 }
 .dialog-items {
     padding: 10px;
-    overflow-y: overlay;
+    overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     /*display: flex;
     align-items: center;
     flex-direction: column;
@@ -352,7 +353,7 @@ button:active {
     right: 5px;
     bottom: 5px;
     padding: 0px;
-    min-width: auto;
+    min-width: unset;
     font-size: initial !important;
 }
 .dialog-help-button:hover {

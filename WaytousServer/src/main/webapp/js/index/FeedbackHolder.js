@@ -6,29 +6,29 @@
  * Created 7/23/17.
  */
 
-EVENTS.SUPPORT = "support";
+EVENTS.FEEDBACK = "feedback";
 
-function SupportHolder(main) {
+function FeedbackHolder(main) {
 
-    this.type = "support";
+    this.type = "feedback";
     this.category = "about";
-    this.title = u.lang.support;
-    this.menu = u.lang.support;
-    this.icon = "live_help";
+    this.title = u.lang.feedback;
+    this.menu = u.lang.feedback;
+    this.icon = "feedback";
 
     this.start = function() {
-        console.log("INDEX SUPPORT");
+        console.log("INDEX FEEDBACK");
     };
 
     this.onEvent = function(event, object) {
         switch(event) {
-            case EVENTS.SUPPORT:
-                console.log("INDEX SUPPORT");
+            case EVENTS.FEEDBACK:
+                console.log("INDEX FEEDBACK");
 
                 u.progress.show(u.lang.loading);
 
-                u.byId("content").innerHTML = u.lang.support.innerHTML;
-                u.byId("content").classList.add("content-support");
+                u.byId("content").innerHTML = u.lang.feedback.innerHTML;
+                u.byId("content").classList.add("content-feedback");
                 u.byId("content").parentNode.scrollTop = 0;
                 u.progress.hide();
                 break;

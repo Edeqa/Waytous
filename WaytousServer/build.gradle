@@ -89,7 +89,7 @@ minifyJs {
     sourceMap = allMap
     closure {
         warningLevel = 'QUIET'
-        compilationLevel = 'WHITESPACE_ONLY'
+        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
         compilerOptions.languageIn = 'ECMASCRIPT6'
         compilerOptions.languageOut = 'ECMASCRIPT5'
     }

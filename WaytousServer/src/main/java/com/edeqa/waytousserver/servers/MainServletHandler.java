@@ -107,6 +107,7 @@ public class MainServletHandler extends AbstractServletHandler {
                 types.put(new JSONObject("{\"type\":\"\",\"mime\":\"application/unknown\"}"));
                 JSONObject json = null;
                 for (int i = 0; i < types.length(); i++) {
+                    if(types.isNull(i)) continue;
                     json = types.getJSONObject(i);
                     if (json.has("name") && file.getName().toLowerCase().equals(json.getString("name"))) {
                         type = json.getString("mime");
@@ -127,7 +128,7 @@ public class MainServletHandler extends AbstractServletHandler {
                 String lastModified = dateFormat.format(file.lastModified());
 
                 requestWrapper.setHeader(HttpHeaders.LAST_MODIFIED, lastModified);
-                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=1800" : "max-age=1800");
+                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=2592000" : "max-age=2592000");
                 requestWrapper.setHeader(HttpHeaders.ETAG, etag);
                 requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
                 requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");

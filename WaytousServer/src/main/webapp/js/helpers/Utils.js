@@ -352,7 +352,7 @@ function Utils(main) {
     }
 
     function formatLengthToLocale(meters) {
-        if(navigator.language && navigator.language.toLowerCase() == "en") {
+        if(navigator.language && navigator.language.toLowerCase().slice(0,2) == "en") {
             meters = meters * 3.2808399;
             if(meters < 530) {
                 return u.sprintf.call("%s %s", meters.toFixed(0), "ft");

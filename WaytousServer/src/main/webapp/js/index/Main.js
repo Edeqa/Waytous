@@ -16,9 +16,12 @@ function Main() {
         "/js/helpers/Utils.js",
 //        "/js/helpers/Constants",
         "/js/index/HomeHolder",
+        "/js/index/TrackHolder",
+        "/js/index/FeedbackHolder",
 //        "/js/index/BlablaHolder",
-//        "/js/index/SupportHolder",
-        "/js/index/AboutHolder",
+        "/js/index/HelpHolder",
+        "/js/index/SupportHolder",
+        "/js/index/AboutHolder"
     ];
 
     EVENTS = {

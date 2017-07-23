@@ -9,6 +9,7 @@ var CACHE_NAME = "${APP_NAME}-v${SERVER_BUILD}";
 var urlsToCache = [
   "/",
   "/css/tracking.css",
+  "/css/edequate.css",
   "/images/logo.png",
   "/images/marker.svg",
   "/js/helpers/Constants.js",
@@ -18,35 +19,14 @@ var urlsToCache = [
   "/js/helpers/NoSleep.js",
   "/js/helpers/TrackingFB.js",
   "/js/helpers/Utils.js",
-  "/js/tracking/AddressHolder.js",
-  "/js/tracking/ButtonHolder.js",
-  "/js/tracking/CameraHolder.js",
-  "/js/tracking/DistanceHolder.js",
-  "/js/tracking/DrawerHolder.js",
-  "/js/tracking/FabHolder.js",
-  "/js/tracking/GpsHolder.js",
-  "/js/tracking/HelpHolder.js",
+  "/js/all.js",
   "/js/tracking/Main.js",
-  "/js/tracking/MapHolder.js",
-  "/js/tracking/MarkerHolder.js",
-  "/js/tracking/MessagesHolder.js",
-  "/js/tracking/NavigationHolder.js",
-  "/js/tracking/OptionHolder.js",
-  "/js/tracking/PlaceHolder.js",
-  "/js/tracking/PropertiesHolder.js",
-  "/js/tracking/SavedLocationHolder.js",
-  "/js/tracking/ShareHolder.js",
-  "/js/tracking/StreetViewHolder.js",
-  "/js/tracking/TrackHolder.js",
-  "/js/tracking/TrackingHolder.js",
-  "/js/tracking/WelcomeHolder.js",
-  "/locales/resources.en-us.json"
+  "/locales/tracking.en.json"
 ];
 
 self.addEventListener("install", function(event) {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
+    caches.open(CACHE_NAME).then(function(cache) {
         console.log("Opened cache");
         return cache.addAll(urlsToCache);
       })

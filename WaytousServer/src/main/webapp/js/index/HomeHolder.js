@@ -27,7 +27,7 @@ function HomeHolder(main) {
 
                 u.progress.show(u.lang.loading);
 
-                u.byId("content").innerHTML = "Home";
+                u.byId("content").innerHTML = u.lang.home.innerHTML;
                 u.byId("content").classList.add("content-home");
                 u.byId("content").parentNode.scrollTop = 0;
                 u.progress.hide();

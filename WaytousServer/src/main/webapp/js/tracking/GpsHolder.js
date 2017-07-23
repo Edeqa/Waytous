@@ -105,7 +105,7 @@ function GpsHolder(main) {
             locationUpdateListener(location, true);
             navigator.geolocation.watchPosition(locationUpdateListener, function(error){
                 console.error(error);
-                alternativeGeolocation();
+                //alternativeGeolocation();
             }, {
                 enableHighAccuracy: true,
                 maximumAge: 10000,
@@ -199,6 +199,12 @@ function GpsHolder(main) {
     }
 
     function alternativeGeolocation() {
+        u.getJSON("//www.googleapis.com/geolocation/v1/geolocate?key=" + data.firebase_config.apiKey, {}).then(function(json){
+            console.log("Alternative geolocation applied",json);
+        }).catch(function(error, json) {
+            console.log("Alternative geolocation failed",error,json);
+        });
+        return;
         u.require("//js.maxmind.com/js/apis/geoip2/v2.1/geoip2.js").then(function() {
             console.log("Alternative geolocation applied",geoip2);
 

@@ -128,7 +128,7 @@ h2 {
     display: block;
     width: 100%;
     user-select: initial;
-    -moz-user-select: -moz-initial;
+    -moz-user-select: initial;
     -webkit-user-select: initial;
     border: none;
 }
@@ -217,7 +217,7 @@ h2 {
         position: fixed;
         top: 50px;
         bottom: 0px;
-        min-height: auto;
+        min-height: unset;
         height: auto;
     }
     .buttons {
