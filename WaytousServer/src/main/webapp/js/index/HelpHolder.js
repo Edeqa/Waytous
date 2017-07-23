@@ -11,7 +11,7 @@ EVENTS.HELP = "help";
 function HelpHolder(main) {
 
     this.type = "help";
-    this.category = "about";
+    this.category = "docs";
     this.title = u.lang.help;
     this.menu = u.lang.help;
     this.icon = "help";
@@ -27,7 +27,7 @@ function HelpHolder(main) {
 
                 u.progress.show(u.lang.loading);
 
-                u.byId("content").innerHTML = u.lang.help.innerHTML;
+                u.byId("content").innerHTML = u.lang.help_body.innerHTML;
                 u.byId("content").classList.add("content-help");
                 u.byId("content").parentNode.scrollTop = 0;
                 u.progress.hide();
