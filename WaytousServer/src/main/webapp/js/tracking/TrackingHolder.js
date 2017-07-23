@@ -113,14 +113,20 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.MAP_READY:
                 drawerItemNew.show();
-                var group = window.location.pathname.split("/")[2];
+                var path = window.location.pathname.split("/");
+                var group = path[2];
 //                var groupOld = u.loadForContext("group");
                 if(group) {
-                    u.context = group;
-                    var self = this;
-                    setTimeout(function(){
-                        u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
-                    }, 0);
+                    if(group.toUpperCase() == "NEW") {
+                        window.history.pushState({}, null, path[0] + "/" + path[1]);
+                        main.fire(EVENTS.TRACKING_NEW);
+                    } else {
+                        u.context = group;
+                        var self = this;
+                        setTimeout(function () {
+                            u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
+                        }, 0);
+                    }
                 } else {
                     wizardDialog.open();
                 }
@@ -222,7 +228,7 @@ function TrackingHolder(main) {
 
             main.fire(EVENTS.TRACKING_JOIN, window.location.href);
             this.tracking.setLink(window.location.href);
-            u.saveForContext("group",a[2]);
+            u.saveForContext("group", a[2]);
         } else {
             progressTitle.innerHTML = u.lang.creating_group;
         }
@@ -303,7 +309,7 @@ function TrackingHolder(main) {
             progress.close();
             u.saveForContext("group");
 
-             u.dialog({
+            u.dialog({
                 queue: true,
                 className: "alert-dialog",
                 modal: true,
