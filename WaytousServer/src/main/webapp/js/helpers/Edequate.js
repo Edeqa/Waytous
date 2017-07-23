@@ -1708,7 +1708,7 @@ function Edequate(options) {
                 onclick: function (event) {
                     var self = this;
                     setTimeout(function () {
-                        layout.blur();
+                        layout.close();
                         callback.call(self,event);
                     }, 100);
                 },
@@ -1868,6 +1868,13 @@ function Edequate(options) {
                 actionbar.classList[collapsed ? "add" : "remove"]("actionbar-collapsed");
                 actionbarHolder.classList[collapsed ? "add" : "remove"]("actionbar-collapsed");
                 if(options.ontogglesize) options.ontogglesize(force);
+            },
+            setTitle: function(text) {
+                if(text instanceof HTMLElement) {
+                    actionbar.titleNode.innerHTML = text.innerHTML;
+                } else {
+                    actionbar.titleNode.innerHTML = text;
+                }
             }
         });
         create(HTML.SPAN, {innerHTML:"menu", className:"actionbar-button", onclick: options.onbuttonclick, onfocus:function(){}}, actionbar);
@@ -2402,6 +2409,7 @@ function Edequate(options) {
         window.HTML = HTML;
         window.ERRORS = ERRORS;
         window.DRAWER = DRAWER;
+        window.HIDING = HIDING;
     }
 
     this.context = options.context || "";

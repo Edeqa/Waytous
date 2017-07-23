@@ -1057,7 +1057,8 @@ p.bottom-desc {
     }
     .wizard-dialog {
         top: auto !important;
-        bottom: 0px !important;
+        bottom: 20px !important;
+        transform: translate(-50%,0%) !important;
     }
 
     /* shift zoom control */

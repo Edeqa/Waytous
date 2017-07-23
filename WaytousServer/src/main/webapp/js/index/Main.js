@@ -17,10 +17,10 @@ function Main() {
 //        "/js/helpers/Constants",
         "/js/index/HomeHolder",
         "/js/index/TrackHolder",
-        "/js/index/FeedbackHolder",
-//        "/js/index/BlablaHolder",
         "/js/index/HelpHolder",
         "/js/index/SupportHolder",
+        "/js/index/FeedbackHolder",
+//        "/js/index/BlablaHolder",
         "/js/index/AboutHolder"
     ];
 
@@ -151,13 +151,27 @@ function Main() {
                 if(this.parentNode.scrollTop) {
                     self.drawer.toggleSize(true);
                     self.actionbar.toggleSize(true);
+                    self.buttonScrollTop.show(HIDING.OPACITY);
+                    clearTimeout(self.buttonScrollTop.hideTimeout);
+                    self.buttonScrollTop.hideTimeout = setTimeout(function(){
+                        self.buttonScrollTop.hide(HIDING.OPACITY);
+                    }, 1500);
                 } else {
                     self.drawer.toggleSize(false);
                     self.actionbar.toggleSize(false);
+                    self.buttonScrollTop.hide(HIDING.OPACITY);
                 }
             };
             self.content = u.create(HTML.DIV, {className: "content", onwheel: switchFullDrawer, ontouchmove: switchFullDrawer }, "content");
             u.create(HTML.DIV, {className:"alert"}, out);
+            self.buttonScrollTop = u.create(HTML.BUTTON, {
+                className: "button-scroll-top changeable hidden",
+                onclick: function() {
+                    self.content.scrollIntoView({block:"start", behaviour: "smooth"});
+                    switchFullDrawer.call(self.content);
+                },
+                innerHTML: "keyboard_arrow_up"
+            }, out);
 
             for(var x in holders) {
                 if(holders[x] && holders[x].menu) {
@@ -171,6 +185,7 @@ function Main() {
                         var holder = holders[this.instance];
                         self.drawer.toggleSize(false);
                         self.actionbar.toggleSize(false);
+                        self.actionbar.setTitle(holder.title);
                         u.fire(holder.type);
 //                        holder.start();
                         return false;

@@ -36,13 +36,20 @@ function TrackHolder(main) {
         switch(event) {
             case EVENTS.TRACK:
                 console.log("INDEX TRACK");
+                u.progress.show(u.lang.loading.innerHTML);
+                u.get("/texts/track.txt").then(function(xhr){
+                    //            u.clear(main.content);
 
-                u.progress.show(u.lang.loading);
-
-                u.byId("content").innerHTML = u.lang.track.innerHTML;
-                u.byId("content").classList.add("content-track");
-                u.byId("content").parentNode.scrollTop = 0;
-                u.progress.hide();
+                    u.byId("content").innerHTML = xhr.response;
+                    u.byId("content").classList.add("content-track");
+                    u.byId("content").parentNode.scrollTop = 0;
+                    u.progress.hide();
+                }).catch(function(error, json) {
+                    u.byId("content").innerHTML = "Error";
+                    u.byId("content").classList.add("content-feedback");
+                    u.byId("content").parentNode.scrollTop = 0;
+                    u.progress.hide();
+                });
                 break;
         }
         return true;

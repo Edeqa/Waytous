@@ -164,27 +164,6 @@ function Main() {
                 main.fire(EVENTS.SHOW_HELP, {module: main, article: 1});
              }
          }, document.body);
-        main.alpha = u.create("div", {className:"alpha", innerHTML:"&beta;"}, main.right);
-////// FIXME - remove when no alpha
-        var alphaDialog = u.dialog({
-            className: "alert-dialog",
-            items: [
-                { type: HTML.DIV, innerHTML: u.lang.alpha_1 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_2 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_3 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_4 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_5 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_6 },
-                { type: HTML.DIV, innerHTML: u.lang.alpha_7 },
-            ],
-            positive: {
-                label: u.lang.ok,
-                onclick: function(){
-                    alphaDialog.close();
-                }
-            },
-        }, main.right);
-        main.alpha.addEventListener("click", alphaDialog.open.bind(alphaDialog));
     }
 
     function loadScripts(){

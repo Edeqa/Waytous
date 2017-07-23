@@ -77,7 +77,7 @@ function ButtonHolder(main) {
                 buttons.close();
                 break;
             case EVENTS.SELECT_USER:
-                this.views.button.button.scrollIntoView();
+                this.views.button.button.scrollIntoView({behaviour: "smooth"});
                 this.views.button.button.classList.add("user-button-selected");
                 break;
             case EVENTS.UNSELECT_USER:
@@ -125,7 +125,7 @@ function ButtonHolder(main) {
                     var value = parseInt(this.views.button.badge.innerHTML);
                     value = value || 0;
                     this.views.button.badge.innerHTML = ""+(++value);
-                    this.views.button.button.scrollIntoView();
+                    this.views.button.button.scrollIntoView({behaviour: "smooth"});
                 } else {
                     this.views.button.badge.innerHTML = object || "";
                 }

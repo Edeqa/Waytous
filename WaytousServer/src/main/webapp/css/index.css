@@ -80,6 +80,20 @@ body {
     text-align: left;
 }
 
+.button-scroll-top {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    font-size: xx-large;
+    background-color: white;
+    position: fixed;
+    right: 16px;
+    bottom: 32px;
+    border-radius: 40px;
+    border-width: 1px;
+    padding: 8px;
+    cursor: pointer;
+}
 
 @media screen and (min-width: 1001px) {
     .drawer {

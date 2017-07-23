@@ -337,14 +337,15 @@ button:active {
 }
 /* material-style button */
 .dialog-button {
-    position: relative;
+    border-radius: 1px;
+    border-width: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
     display: inline-block;
     margin: 10px 1px;
-    padding: 0;
-    overflow: hidden;
-    border-width: 0;
     outline: none;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+    overflow: hidden;
+    padding: 0;
+    position: relative;
     transition: background-color .3s;
 }
 .dialog-button:hover, .dialog-button:focus {
@@ -970,6 +971,9 @@ button:active {
     }
     .dialog-buttons {
         text-align: center;
+    }
+    .dialog-button {
+        padding: 5px;
     }
     .dialog-title-button {
         padding: 15px;
