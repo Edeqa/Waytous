@@ -342,7 +342,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         numberForKeyTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid)).start();
                                     } else {
                                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                                        response.put(RESPONSE_MESSAGE, "This group is expired. 001:"+dataSnapshot.getRef());
+                                        response.put(RESPONSE_MESSAGE, "This group is expired. (001)");
                                         conn.send(response.toString());
                                         conn.close();
                                     }
@@ -451,7 +451,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         } else {
                                             System.out.println("D");
                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                                            response.put(RESPONSE_MESSAGE, "This group is expired. 002");
+                                            response.put(RESPONSE_MESSAGE, "This group is expired. (002)");
                                             conn.send(response.toString());
                                             conn.close();
                                         }

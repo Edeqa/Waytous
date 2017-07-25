@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
@@ -595,6 +596,7 @@ public class MyTrackingFB implements Tracking {
                                             }
                                         }, 0, 1, TimeUnit.MINUTES);
 
+                                        registerValueListener(ref.child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CREATED),groupListener);
                                         registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA),usersDataListener, -1);
                                         for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
                                             if(entry.getValue().isSaveable()) {
@@ -683,6 +685,27 @@ public class MyTrackingFB implements Tracking {
         public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
             Log.i("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage());
             reconnect();
+        }
+    };
+
+    private ValueEventListener groupListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            try {
+                switch (databaseError.getCode()) {
+                    case DatabaseError.PERMISSION_DENIED:
+                        setStatus(TRACKING_DISABLED);
+                        String reason = state.getString(R.string.group_has_been_removed);
+                        trackingListener.onReject(reason);
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 

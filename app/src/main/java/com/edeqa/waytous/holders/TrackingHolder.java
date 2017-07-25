@@ -248,9 +248,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             int number = o.getInt(USER_DISMISSED);
                             State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, final MyUser myUser) {
-                                    myUser.fire(MAKE_INACTIVE);
-                                    State.getInstance().fire(USER_DISMISSED,myUser);
+                                public void call(Integer number, final MyUser user) {
+                                    user.fire(MAKE_INACTIVE);
+                                    State.getInstance().fire(USER_DISMISSED,user);
                                 }
                             });
                         } else if (o.has(USER_JOINED)) {
@@ -258,10 +258,10 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             State.getInstance().getUsers().addUser(o);
                             State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser myUser) {
-                                    if(!myUser.getProperties().isActive()) {
-                                        myUser.fire(MAKE_ACTIVE);
-                                        State.getInstance().fire(USER_JOINED, myUser);
+                                public void call(Integer number, MyUser user) {
+                                    if(!user.getProperties().isActive()) {
+                                        user.fire(MAKE_ACTIVE);
+                                        State.getInstance().fire(USER_JOINED, user);
                                     }
                                 }
                             });
@@ -272,9 +272,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             int number = o.getInt(USER_NUMBER);
                             State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, final MyUser myUser) {
-                                    myUser.fire(MAKE_INACTIVE);
-                                    State.getInstance().fire(USER_LEFT,myUser);
+                                public void call(Integer number, final MyUser user) {
+                                    user.fire(MAKE_INACTIVE);
+                                    State.getInstance().fire(USER_LEFT,user);
                                 }
                             });
                         }
@@ -285,8 +285,8 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             final String name = o.getString(USER_NAME);
                             State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser myUser) {
-                                    myUser.fire(CHANGE_NAME,(name != null && name.length()>0) ? name : null);
+                                public void call(Integer number, MyUser user) {
+                                    user.fire(CHANGE_NAME,(name != null && name.length()>0) ? name : null);
                                 }
                             });
                         }
