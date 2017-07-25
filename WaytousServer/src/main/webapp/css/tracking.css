@@ -30,14 +30,14 @@
     font-family: "Material Icons";
     font-feature-settings: "liga" 1;
     position: absolute;
-    top: 50px;
+    top: 5px;
+    left: 5px;
     z-index: 10000;
     background-color: transparent;
     font-size: 40px;
     border: none;
     outline: none;
     color: red;
-    left: 10px;
 }
 .alert-icon:hover {
     background: none;
@@ -762,7 +762,7 @@ p.bottom-desc {
         margin: 0px;
     }
     .alert-icon {
-        right: 32px;
+        right: -10px;
         top: -4px;
         left: auto;
     }

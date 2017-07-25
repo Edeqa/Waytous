@@ -129,6 +129,7 @@ function TrackingFB(main) {
                                 ref = database.ref().child(getToken());
 
                                 updateTask = setInterval(updateActive, 60000);
+                                registerValueListener(ref.child(DATABASE.SECTION_OPTIONS).child(DATABASE.OPTION_DATE_CREATED), groupListener, groupErrorListener);
                                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userActiveListener);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
                                 main.eventBus.chain(function(holder){
@@ -386,14 +387,27 @@ function TrackingFB(main) {
         // refs[ref] = listener;
     }
 
-    function registerValueListener(ref, listener) {
-        ref.on("value", listener);
+    function registerValueListener(ref, listener, errorListener) {
+        ref.on("value", listener, errorListener);
         // refs[ref] = listener;
     }
 
     function userActiveListener(data) {
         if(!data.val()) {
             stop();
+        }
+    }
+
+    function groupListener(data, data2) {
+    }
+
+    function groupErrorListener(error) {
+        switch (error.code) {
+            case "PERMISSION_DENIED":
+                setStatus(EVENTS.TRACKING_DISABLED);
+                var reason = u.lang.group_has_been_removed;
+                trackingListener.onReject(reason);
+                break
         }
     }
 
