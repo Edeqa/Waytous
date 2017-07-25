@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.app.NotificationCompat;
 
 import com.edeqa.waytous.MainActivity;
@@ -26,10 +27,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
+import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_JOINED;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_MESSAGE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;
@@ -64,6 +67,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
     private ArrayList<UserMessage> messages = new ArrayList<>();
     private boolean showNotifications = true;
     private Notification result;
+    private long becomesActive = 0;
 
     public MessagesHolder(Context context) {
         this.context = context;
@@ -235,6 +239,9 @@ public class MessagesHolder extends AbstractPropertyHolder {
         public boolean onEvent(String event, Object object) {
             if(!myUser.isUser()) return true;
             switch (event){
+                case TRACKING_ACTIVE:
+                    becomesActive = new Date().getTime();
+                    break;
                 case USER_MESSAGE:
                     UserMessage m = (UserMessage) object;
                     if(m != null) {
@@ -262,11 +269,16 @@ public class MessagesHolder extends AbstractPropertyHolder {
                                 .setWhen(new Date().getTime());
 
                         if(showNotifications) {
-                            notification.setDefaults(DEFAULT_ALL);
+                            if(new Date().getTime() - becomesActive > 30 * 1000) {
+                                notification.setDefaults(DEFAULT_ALL);
+                                notification.setPriority(Notification.PRIORITY_HIGH);
+                            } else {
+                                notification.setDefaults(DEFAULT_LIGHTS);
+                                notification.setPriority(Notification.PRIORITY_LOW);
+                            }
+//                            notification.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.youve_been_informed));
                         }
-
                         State.getInstance().fire(SHOW_CUSTOM_NOTIFICATION, notification.build());
-
                     }
 
                     break;

@@ -59,6 +59,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
     private long lastCloseNotifyTime = 0;
     private long lastAwayNotifyTime = 0;
     private boolean showNotifications = true;
+    private long becomesActive = 0;
 
     public NotificationHolder(State state) {
         this.state = state;
@@ -114,16 +115,18 @@ public class NotificationHolder extends AbstractPropertyHolder {
 //                notification = null;
                 break;
             case TRACKING_ACTIVE:
+                becomesActive = new Date().getTime();
                 updateIcon(R.drawable.ic_notification_twinks);
-                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, PRIORITY_HIGH);
                 break;
             case USER_JOINED:
                 MyUser user = (MyUser) object;
-                if(user != null && user.isUser()) {
-                    long lastOffline = ((NotificationUpdate)user.getEntity(TYPE)).lastOfflineTime;
+                long currentTime = new Date().getTime();
+                if(currentTime - becomesActive > 30 * 1000 && user != null && user.isUser()) {
+                    long lastOffline = ((NotificationUpdate) user.getEntity(TYPE)).lastOfflineTime;
                     if(lastOffline == 0) {
                         update(state.getString(R.string.s_has_joined, user.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH);
-                    } else if(new Date().getTime() - lastOffline > 15 * 60 * 1000) {
+                    } else if(currentTime - lastOffline > 15 * 60 * 1000) {
                         update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH);
                     } else {
                         update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW);

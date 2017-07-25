@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:id="@+id/layout_root"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -34,12 +35,11 @@
         tools:text="http://wayto.us/track/DEBUG"
         android:textSize="12sp"/>
 
-    <Button
+    <com.edeqa.waytous.helpers.CustomButton
         android:id="@+id/bShareSelect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_share_black_24dp"
-        android:drawableStart="@drawable/ic_share_black_24dp"
+        app:drawableLeftCompat="@drawable/ic_share_black_24dp"
         android:text="Select..."/>
 
     <LinearLayout
@@ -48,15 +48,13 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical">
-
     </LinearLayout>
 
-    <Button
+    <com.edeqa.waytous.helpers.CustomButton
         android:id="@+id/bShareByMail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
-        android:drawableStart="@drawable/ic_mail_outline_black_24dp"
+        app:drawableLeftCompat="@drawable/ic_mail_outline_black_24dp"
         android:text="E-mail"/>
 
     <Button

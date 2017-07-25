@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SupportMapFragment mapFragment;
     private State state;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
