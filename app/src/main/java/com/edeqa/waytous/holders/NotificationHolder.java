@@ -19,11 +19,11 @@ import com.edeqa.waytous.helpers.MyUser;
 
 import java.util.Date;
 
-
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
+import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.MOVING_AWAY_FROM;
@@ -41,8 +41,11 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
  */
 public class NotificationHolder extends AbstractPropertyHolder {
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public static final String TYPE = "notification";
+    @SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
     public static final String SHOW_CUSTOM_NOTIFICATION = "show_custom_notification";
+    @SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
 
     private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
@@ -117,13 +120,21 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case USER_JOINED:
                 MyUser user = (MyUser) object;
                 if(user != null && user.isUser()) {
-                    update(state.getString(R.string.s_has_joined, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_HIGH);
+                    long lastOffline = ((NotificationUpdate)user.getEntity(TYPE)).lastOfflineTime;
+                    if(lastOffline == 0) {
+                        update(state.getString(R.string.s_has_joined, user.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH);
+                    } else if(new Date().getTime() - lastOffline > 15 * 60 * 1000) {
+                        update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH);
+                    } else {
+                        update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW);
+                    }
                 }
                 break;
             case USER_DISMISSED:
                 user = (MyUser) object;
                 if(user != null && user.isUser()) {
-                    update(state.getString(R.string.s_has_left, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_DEFAULT);
+                    update(state.getString(R.string.user_s_is_offline, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW);
+                    ((NotificationUpdate)user.getEntity(TYPE)).lastOfflineTime = new Date().getTime();
                 }
                 break;
             case ACTIVITY_RESUME:
@@ -211,9 +222,13 @@ public class NotificationHolder extends AbstractPropertyHolder {
         }
     };
 
+    @SuppressWarnings("WeakerAccess")
     public class NotificationUpdate extends AbstractProperty {
+        private long lastOfflineTime = 0;
+
         NotificationUpdate(MyUser myUser) {
             super(myUser);
+
         }
 
         @Override
