@@ -22,7 +22,7 @@ sudo iptables -A OUTPUT -p tcp --sport 8080 -m state --state ESTABLISHED -j ACCE
 sudo iptables -A INPUT -p tcp --dport 8443 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --sport 8443 -m state --state ESTABLISHED -j ACCEPT
 
-# allow all ports rules
+# allow all ports rules - for production version
 sudo iptables -A INPUT -p tcp --dport 8100 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --sport 8100 -m state --state ESTABLISHED -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 8101 -m state --state NEW,ESTABLISHED -j ACCEPT
@@ -33,6 +33,22 @@ sudo iptables -A INPUT -p tcp --dport 8201 -m state --state NEW,ESTABLISHED -j A
 sudo iptables -A OUTPUT -p tcp --sport 8201 -m state --state ESTABLISHED -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 8989 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --sport 8989 -m state --state ESTABLISHED -j ACCEPT
+
+# allow all ports rules - for debug version
+sudo iptables -A INPUT -p tcp --dport 8090 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8090 -m state --state ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8453 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8453 -m state --state ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8110 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8110 -m state --state ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8111 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8111 -m state --state ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8210 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8210 -m state --state ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8211 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8211 -m state --state ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8999 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 8999 -m state --state ESTABLISHED -j ACCEPT
 
 # limit ssh connects to 10 every 10 seconds
 # change the port 22 if ssh is listening on a different port (which it should be)

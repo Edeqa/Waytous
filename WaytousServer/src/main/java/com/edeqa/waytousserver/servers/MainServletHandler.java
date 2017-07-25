@@ -67,7 +67,7 @@ public class MainServletHandler extends AbstractServletHandler {
 
             Common.log("Main", uri.getPath(), "[" + (file.exists() ? file.length() + " byte(s)" : "not found") + "]");
 
-            String etag = "W/1976" + ("" + file.lastModified()).hashCode();
+            String etag = "W/1976-" + ("" + file.lastModified()).hashCode();
 
             String path = uri.getPath().toLowerCase();
             if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {

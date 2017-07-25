@@ -27,6 +27,7 @@ plugins {
 def installationType = 'standalone-server'
 
 apply plugin: 'js'
+//apply plugin: 'css'
 apply plugin: 'java'
 apply plugin: 'war'
 
@@ -94,7 +95,6 @@ minifyJs {
         compilerOptions.languageOut = 'ECMASCRIPT5'
     }
 }
-
 
 task minifyAllJS {
     def path = new File("${projectDir}/src/main/webapp");
