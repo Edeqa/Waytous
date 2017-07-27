@@ -185,30 +185,31 @@ public class Utils {
         feedUrl.setRequestProperty(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
         in = feedUrl.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));
-        while ((line = reader.readLine()) != null) {
-            sb.append(new String(line.getBytes("UTF-8"))).append("\n");
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset))) {
+            while ((line = reader.readLine()) != null) {
+                sb.append(new String(line.getBytes("UTF-8"))).append("\n");
+            }
         }
         in.close();
 
         return sb.toString();
     }
 
-    public static Runnable2<RequestWrapper,JSONObject> sendResultJson = new Runnable2<RequestWrapper,JSONObject>() {
+    public static final Runnable2<RequestWrapper,JSONObject> sendResultJson = new Runnable2<RequestWrapper,JSONObject>() {
         @Override
         public void call(RequestWrapper requestWrapper, JSONObject json) {
             sendResult.call(requestWrapper, 200, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
-    public static Runnable3<RequestWrapper,Integer,JSONObject> sendError = new Runnable3<RequestWrapper,Integer,JSONObject>() {
+    public static final Runnable3<RequestWrapper,Integer,JSONObject> sendError = new Runnable3<RequestWrapper,Integer,JSONObject>() {
         @Override
         public void call(RequestWrapper requestWrapper, Integer code, JSONObject json) {
             sendResult.call(requestWrapper, code, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
-    public static Runnable4<RequestWrapper,Integer,String,byte[]> sendResult = new Runnable4<RequestWrapper,Integer,String,byte[]>() {
+    public static final Runnable4<RequestWrapper,Integer,String,byte[]> sendResult = new Runnable4<RequestWrapper,Integer,String,byte[]>() {
         @Override
         public void call(RequestWrapper requestWrapper, Integer code, String contentType, byte[] bytes) {
             try {

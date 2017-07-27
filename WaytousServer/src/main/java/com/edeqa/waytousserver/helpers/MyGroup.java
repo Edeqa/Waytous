@@ -108,15 +108,16 @@ public class MyGroup {
     }
 
     public String toString(){
-        String res = "";
-        res += "{ Group id:"+id+", owner:"+owner+", created:"+new Date(created) ;
+//        String res = "";
+        StringBuffer buf = new StringBuffer();
+        buf.append("{ Group id:"+id+", owner:"+owner+", created:"+new Date(created));
 
         for (Map.Entry<String,MyUser> x: users.entrySet()) {
-            res += ", \n\tuser: ["+x.getValue().toString()+"]";
+            buf.append(", \n\tuser: ["+x.getValue().toString()+"]");
         }
-        res += "}";
+        buf.append("}");
 
-        return res;
+        return buf.toString();
     }
 
     public Long getChanged() {
@@ -228,22 +229,23 @@ public class MyGroup {
                 JSONObject notificationSection = new JSONObject();
                 notificationSection.put("title", json.getString("title"));
 
-                String body = "";
+//                String body = "";
+                StringBuffer buf = new StringBuffer();
                 if(json.has("body")) {
                     try{
                         LinkedHashMap<String,String> map = (LinkedHashMap<String, String>) json.get("body");
                         if(map != null && map.size()>0) {
                             for(Map.Entry<String,String> entry: map.entrySet()){
                                 String value = entry.getValue().replace("[\\r\\n]+", "\\n");
-                                body += entry.getKey() +": "+ value;
+                                buf.append(entry.getKey() +": "+ value);
                             }
                         }
                     } catch(Exception e){
                         e.printStackTrace();
-                        body = json.get("body").toString();
+                        buf.append(json.get("body").toString());
                     }
                 }
-                notificationSection.put("body", body + " ");
+                notificationSection.put("body", buf.append(" ").toString());
                 notificationSection.put("badge", 1);
                 notificationSection.put("click_action", category);
                 dataSection.remove("title");

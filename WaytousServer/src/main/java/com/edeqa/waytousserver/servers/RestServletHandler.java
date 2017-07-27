@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,6 +118,7 @@ public class RestServletHandler extends AbstractServletHandler {
             InputStreamReader isr = new InputStreamReader(requestWrapper.getRequestBody(),"utf-8");
             BufferedReader br = new BufferedReader(isr);
             String body = br.readLine();
+            br.close();
 
             Common.log("Rest",requestWrapper.getRemoteAddress(), "joinV1:", body);
             Common.getInstance().getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);

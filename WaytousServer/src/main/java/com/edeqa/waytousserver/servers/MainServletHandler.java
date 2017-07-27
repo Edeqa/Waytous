@@ -128,7 +128,7 @@ public class MainServletHandler extends AbstractServletHandler {
                 String lastModified = dateFormat.format(file.lastModified());
 
                 requestWrapper.setHeader(HttpHeaders.LAST_MODIFIED, lastModified);
-                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=2592000" : "max-age=2592000");
+                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=2592000");
                 requestWrapper.setHeader(HttpHeaders.ETAG, etag);
                 requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
                 requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
@@ -155,9 +155,10 @@ public class MainServletHandler extends AbstractServletHandler {
                     FileReader reader = new FileReader(file);
                     int c;
                     StringBuilder fileContent = new StringBuilder();
-                    while((c=reader.read())!=-1){
-                        fileContent.append((char)c);
+                    while ((c = reader.read()) != -1) {
+                        fileContent.append((char) c);
                     }
+                    reader.close();
 
                     byte[] bytes = fileContent.toString().getBytes(); //Files.readAllBytes(file.toPath());
                     Charset charset = StandardCharsets.ISO_8859_1;

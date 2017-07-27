@@ -5,7 +5,6 @@ import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 
 import org.json.JSONObject;
 
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -24,7 +23,7 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 public class Common {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
-    volatile private static PrintWriter out;
+//    volatile private static PrintWriter out;
 
     private volatile Map<String,AbstractDataProcessor> dataProcessor;
 
@@ -52,31 +51,36 @@ public class Common {
     }
 
     public static void log(Object... text) {
-        String str = "";
+//        String str = "";
+        StringBuffer buf = new StringBuffer();
         for (Object aText : text) {
 //            String cl = ((Object)aText).getClass().getSimpleName();
 //            if (aText instanceof String || "String".equals(cl) || "Boolean".equals(cl) || "Integer".equals(cl) || "Double".equals(cl) || "Float".equals(cl)) {
-                str += aText + " ";
+            buf.append(aText + " ");
+//            str += aText + " ";
 //            } else {
 //                str += aText.getClass().getSimpleName() + ": ";
 //            }
         }
-        System.out.println(Common.dateFormat.format(new Date()) + "/" + str);
+        System.out.println(Common.dateFormat.format(new Date()) + "/" + buf.toString());
     }
 
     public static void err(Object... text) {
-        String str = "";
+//        String str = "";
+        StringBuffer buf = new StringBuffer();
         for (Object aText : text) {
 //            String cl = ((Object)aText).getClass().getSimpleName();
             /*if (aText instanceof String || "String".equals(cl) || "Boolean".equals(cl) || "Integer".equals(cl) || "Double".equals(cl) || "Float".equals(cl)) {
                 str += aText + " ";
             } else */if (aText instanceof Throwable) {
-                str += aText + " ";
+                buf.append(aText + " ");
+//                str += aText + " ";
             } else {
-                str += aText.getClass().getSimpleName() + ": ";
+                buf.append(aText.getClass().getSimpleName() + ": ");
+//                str += aText.getClass().getSimpleName() + ": ";
             }
         }
-        System.err.println(Common.dateFormat.format(new Date()) + "/" + str);
+        System.err.println(Common.dateFormat.format(new Date()) + "/" + buf.toString());
         /*try {
             if(out == null) {
                 File log = new File("WaytousServer/WTU.log");

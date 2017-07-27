@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,13 +69,11 @@ public class SensitiveData {
             return;
         }
 
-        try {
+        try(FileReader reader = new FileReader(file)) {
             Common.log("SD","Read config from options file:",file.getAbsoluteFile());
-            FileReader reader = new FileReader(file);
             readWithFileReader(reader);
         } catch (Exception e) {
-            System.err.println("Options file "+file.getAbsolutePath()+" is corrupted or damaged.\nRun with key -g for generate the sample.\n");
-            e.printStackTrace();
+            Common.err("SD","Options file "+file.getAbsolutePath()+" is corrupted or damaged.\nRun with key -g for generate the sample.\n", e);
         }
     }
 
@@ -204,10 +201,10 @@ public class SensitiveData {
 
     private void generateSampleOptions() {
         File file = new File("options.json");
-        FileWriter writer = null;
+//        FileWriter writer = null;
 
-        try {
-            writer = new FileWriter(file);
+        try(FileWriter writer = new FileWriter(file)) {
+
 
             JSONObject jsonSample = new JSONObject();
 
@@ -260,12 +257,12 @@ public class SensitiveData {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//        } finally {
+//            try {
+//                writer.close();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
         }
 
         System.out.println("Sample options file was generated into "+file.getAbsolutePath()+".\nModify it using your custom options and run again.\n");

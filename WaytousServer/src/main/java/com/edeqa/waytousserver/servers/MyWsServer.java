@@ -29,7 +29,7 @@ public class MyWsServer extends WebSocketServer {
     public MyWsServer(int port) {
         super(new InetSocketAddress(port));
 
-        if(!validationStarted && !SENSITIVE.isDebugMode()) {
+        if(!MyWsServer.isValidationStarted() && !SENSITIVE.isDebugMode()) {
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             executor.scheduleAtFixedRate(new Runnable() {
                 @Override
@@ -37,7 +37,7 @@ public class MyWsServer extends WebSocketServer {
                     Common.getInstance().getDataProcessor("v1").validateGroups();
                 }
             }, 0, LIFETIME_INACTIVE_GROUP, TimeUnit.SECONDS);
-            validationStarted = true;
+            MyWsServer.setValidationStarted(true);
         }
     }
 
@@ -105,5 +105,12 @@ public class MyWsServer extends WebSocketServer {
         return true;
     }
 
+    public static void setValidationStarted(boolean validationStarted) {
+        MyWsServer.validationStarted = validationStarted;
+    }
+
+    public static boolean isValidationStarted() {
+        return validationStarted;
+    }
 
 }

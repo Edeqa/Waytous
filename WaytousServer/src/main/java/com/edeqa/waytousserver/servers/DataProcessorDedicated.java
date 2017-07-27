@@ -55,7 +55,7 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 @SuppressWarnings("HardCodedStringLiteral")
 public class DataProcessorDedicated extends AbstractDataProcessor {
 
-    public static String VERSION = "v1";
+    public static final String VERSION = "v1";
 //    private HashMap<String,FlagHolder> flagHolders;
 
     public DataProcessorDedicated() {

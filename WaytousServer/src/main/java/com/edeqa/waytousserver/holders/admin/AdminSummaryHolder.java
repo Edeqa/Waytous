@@ -166,10 +166,10 @@ public class AdminSummaryHolder implements PageHolder {
 
         if("del".equals(action)){
 
-            String token=null,id=null;
+//            String token=null,id=null;
 
-            if(query.containsKey("token")) token = query.get("token").get(0);
-            if(query.containsKey("id")) id = query.get("id").get(0);
+//            if(query.containsKey("token")) token = query.get("token").get(0);
+//            if(query.containsKey("id")) id = query.get("id").get(0);
 
 //            server.getDataProcessor().removeUser(token,id);
 

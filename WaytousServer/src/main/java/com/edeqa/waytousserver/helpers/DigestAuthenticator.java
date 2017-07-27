@@ -280,7 +280,7 @@ public class DigestAuthenticator extends Authenticator {
         return ret;
     }
 
-    private class DigestContext {
+    private static class DigestContext {
         private HttpPrincipal principal = null;
 
         boolean isAuthenticated() {

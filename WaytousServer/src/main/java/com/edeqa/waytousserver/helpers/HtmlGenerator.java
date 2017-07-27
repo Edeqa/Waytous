@@ -111,7 +111,7 @@ public class HtmlGenerator {
 
     public class Tag {
         String tag;
-        String text;
+//        String text;
 
         ArrayList<Object> inner = new ArrayList<>();
         Map<String,String> properties = new HashMap<>();
@@ -127,10 +127,12 @@ public class HtmlGenerator {
         }
 
         public String build(){
-            String res = "\n";
-            for(int i=0;i<level;i++) res += "   ";
+//            String res = "\n";
+            StringBuffer buf = new StringBuffer();
+            buf.append("\n");
+            for(int i=0;i<level;i++) buf.append("   ");
 
-            res += "<"+tag;
+            buf.append("<"+tag);
 
             if(!properties.isEmpty()){
                 for(Map.Entry<String,String> x:properties.entrySet()){
@@ -138,31 +140,31 @@ public class HtmlGenerator {
                     String value = x.getValue();
                     key = key.replaceAll("\\\"","&quot;");
                     value = value.replaceAll("\\\"","&quot;");
-                    res += " "+key+"=\""+ value +"\"";
+                    buf.append(" "+key+"=\""+ value +"\"");
                 }
             }
 
-            res += ">";
+            buf.append(">");
             boolean indent = false;
             for(Object x:inner){
                 if(x instanceof Tag) {
                     indent = true;
                     level ++;
-                    res += ((Tag)x).build();
+                    buf.append(((Tag)x).build());
                     level --;
                 } else if(x instanceof String){
-                    res += x;
+                    buf.append(x);
                 }
             }
-            if(text != null) res += text;
+//            if(text != null) buf.append(text);
             if(indent) {
-                res += "\n";
-                for (int i = 0; i < level; i++) res += "   ";
+                buf.append("\n");
+                for (int i = 0; i < level; i++) buf.append("   ");
             }
             if(!notClosableTags.contains(tag)) {
-                res += "</" + tag + ">";
+                buf.append("</" + tag + ">");
             }
-            return res;
+            return buf.toString();
         }
 
         public Tag with(String key,String value){

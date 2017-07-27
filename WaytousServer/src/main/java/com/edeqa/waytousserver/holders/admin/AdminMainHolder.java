@@ -30,7 +30,6 @@ public class AdminMainHolder implements PageHolder {
 
     @SuppressWarnings("unused")
     private final AdminServletHandler server;
-    private HtmlGenerator html;
     private String part;
     private ArrayList<String> request;
 
@@ -50,13 +49,12 @@ public class AdminMainHolder implements PageHolder {
 
     @SuppressWarnings("HardCodedStringLiteral")
     public HtmlGenerator create(HtmlGenerator html, ArrayList<String> query, HttpExchange exchange) {
-        this.html = html;
         html.clear();
 
         html.getHead().add(TITLE).with("Admin");
 
         JSONObject o = new JSONObject();
-        o.put("page", part);
+//        o.put("page", part);
         o.put("version", SERVER_BUILD);
         o.put("HTTP_PORT", SENSITIVE.getHttpPortMasked());
         o.put("HTTPS_PORT", SENSITIVE.getHttpsPortMasked());
