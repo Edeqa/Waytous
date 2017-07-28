@@ -14,7 +14,9 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 
@@ -23,6 +25,7 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 
@@ -111,6 +114,17 @@ public class MenuViewHolder extends AbstractViewHolder {
                     }
                 });
                 break;
+            case PREPARE_SETTINGS:
+                Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
+                adder.call(new SettingItem.Group("info").setTitle("Info"));
+                adder.call(new SettingItem.Text("my_name").setTitle(context.getString(R.string.menu_set_my_name)).setGroupId("info").setCallback(new Runnable1<String>() {
+                    @Override
+                    public void call(String arg) {
+                        State.getInstance().getMe().fire(CHANGE_NAME,arg);
+                    }
+                }));
+                break;
+
         }
         return true;
     }
