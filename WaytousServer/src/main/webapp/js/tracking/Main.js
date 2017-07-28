@@ -18,7 +18,7 @@ function Main() {
     var alert;
     var defaultResources = "/locales/tracking.en.json";
 
-    if ("serviceWorker" in navigator) {
+    if (!data.isDebugVersion && "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("/ServiceWorker.js")
             .then(function(registration) {
