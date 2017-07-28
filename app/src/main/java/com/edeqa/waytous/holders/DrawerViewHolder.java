@@ -51,9 +51,20 @@ public class DrawerViewHolder extends AbstractViewHolder {
     private NavigationView navigationView;
     private ImageButton ibPrimary;
 
+    private static int[] ids = new int[]{
+            R.id.drawer_section_primary,
+            R.id.drawer_section_communication,
+            R.id.drawer_section_share,
+            R.id.drawer_section_navigation,
+            R.id.drawer_section_views,
+            R.id.drawer_section_miscellaneous,
+            R.id.drawer_section_last
+    };
 
     public DrawerViewHolder(MainActivity context){
         super(context);
+
+
 
         setViewAndToolbar(context.findViewById(R.id.drawer_layout), (Toolbar) context.findViewById(R.id.toolbar));
         setCallback(onNavigationDrawerCallback);
@@ -76,8 +87,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
                         navigationView.getMenu().findItem(R.id.nav_terrain).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_TERRAIN);
                         navigationView.getMenu().findItem(R.id.nav_traffic).setChecked(context.getMap().isTrafficEnabled());
 
-                        MenuItem menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
-                        menuItem.setVisible(false);
+                        for(int id:ids) {
+                            navigationView.getMenu().findItem(id).setVisible(false);
+                        }
                         State.getInstance().fire(PREPARE_DRAWER, navigationView);
                     }
                     drawer.invalidate();
@@ -115,8 +127,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case ACTIVITY_RESUME:
-                MenuItem menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
-                menuItem.setVisible(false);
+                for(int id:ids) {
+                    navigationView.getMenu().findItem(id).setVisible(false);
+                }
                 State.getInstance().fire(CREATE_DRAWER, navigationView);
 
                 ibPrimary = (ImageButton) navigationView.findViewById(R.id.ibPrim);
