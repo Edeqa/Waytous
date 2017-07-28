@@ -238,6 +238,8 @@
     <string name="disconnected_trying_to_reconnect">Disconnected. Trying to reconnect</string>
     <string name="new_group">New group</string>
     <string name="group_has_been_removed">Group has been removed.</string>
+    <string name="marker">Marker</string>
+    <string name="accuracy_circle">Accuracy circle</string>
 
 
 </resources>

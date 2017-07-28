@@ -14,6 +14,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.SmoothInterpolated;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
@@ -34,6 +35,7 @@ import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
+import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 
 
@@ -43,6 +45,10 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
 
     public static final String TYPE = "marker";
+
+    public static final String PREFERENCES_MARKER = "marker";
+    public static final String PREFERENCE_MARKER_ACCURACY = "marker_accuracy";
+    private final boolean showAccuracy;
 
     private GoogleMap map;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
@@ -59,6 +65,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
         super(context);
 
         setMap(context.getMap());
+        showAccuracy = State.getInstance().getSharedPreferences().getBoolean(PREFERENCE_MARKER_ACCURACY, false);
     }
 
     @Override
@@ -107,6 +114,11 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                         });
                     }
                 }
+                break;
+            case PREPARE_SETTINGS:
+                Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
+                adder.call(new SettingItem.Group(PREFERENCES_MARKER).setTitle(context.getString(R.string.marker)));
+                adder.call(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(PREFERENCES_MARKER).setMessage("Shows accuracy circle around the marker on map."));
                 break;
         }
         return true;
@@ -167,10 +179,12 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                     .flat(true)
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
 
-            CircleOptions circleOptions = new CircleOptions()
-                    .center(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude())).radius(myUser.getLocation().getAccuracy())
-                    .fillColor(Color.TRANSPARENT).strokeColor(myUser.getProperties().getColor()).strokeWidth(3f);
-            circle = map.addCircle(circleOptions);
+            if(showAccuracy) {
+                CircleOptions circleOptions = new CircleOptions()
+                        .center(new LatLng(myUser.getLocation().getLatitude(), myUser.getLocation().getLongitude())).radius(myUser.getLocation().getAccuracy())
+                        .fillColor(Color.TRANSPARENT).strokeColor(myUser.getProperties().getColor()).strokeWidth(3f);
+                circle = map.addCircle(circleOptions);
+            }
 
             Bundle b = new Bundle();
             b.putString(TYPE, TYPE);
