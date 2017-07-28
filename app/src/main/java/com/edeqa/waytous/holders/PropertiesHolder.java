@@ -41,6 +41,9 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 public class PropertiesHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = "properties";
+
+    public static final String PREFERENCE_MY_NAME = "my_name";
+
     private static final String SELECTED = "selected";
     private static final String IMAGE_RESOURCE = "image_resource";
     private static final int DISTANCE_MOVING_CLOSE = 50;
@@ -231,7 +234,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                 case CHANGE_NAME:
                     name = (String) object;
                     if(myUser == State.getInstance().getMe()){
-                        State.getInstance().setPreference("my_name", name);
+                        State.getInstance().setPreference(PREFERENCE_MY_NAME, name);
                         if(State.getInstance().getTracking() != null){
                             if(name == null) name = "";
                             State.getInstance().getTracking().put(USER_NAME,name).send(REQUEST_CHANGE_NAME);

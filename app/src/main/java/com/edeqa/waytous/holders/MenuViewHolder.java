@@ -36,6 +36,9 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 public class MenuViewHolder extends AbstractViewHolder {
     private static final String TYPE = "menu";
 
+    public static final String PREFERENCES_INFO = "info";
+
+
     private boolean day = true;
 
     public MenuViewHolder(MainActivity context) {
@@ -82,7 +85,7 @@ public class MenuViewHolder extends AbstractViewHolder {
 
                         builder.setView(layoutDialogSetMyName);
                         final EditText etMyName = (EditText) layoutDialogSetMyName.findViewById(R.id.et_my_name);
-                        String name = State.getInstance().getStringPreference("my_name","");
+                        String name = State.getInstance().getStringPreference(PropertiesHolder.PREFERENCE_MY_NAME,"");
 
                         if(name != null && name.length()>0){
                             etMyName.setText(name);
@@ -116,8 +119,8 @@ public class MenuViewHolder extends AbstractViewHolder {
                 break;
             case PREPARE_SETTINGS:
                 Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
-                adder.call(new SettingItem.Group("info").setTitle("Info"));
-                adder.call(new SettingItem.Text("my_name").setTitle(context.getString(R.string.menu_set_my_name)).setGroupId("info").setCallback(new Runnable1<String>() {
+                adder.call(new SettingItem.Group(PREFERENCES_INFO).setTitle("Info"));
+                adder.call(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(context.getString(R.string.menu_set_my_name)).setGroupId(PREFERENCES_INFO).setCallback(new Runnable1<String>() {
                     @Override
                     public void call(String arg) {
                         State.getInstance().getMe().fire(CHANGE_NAME,arg);
