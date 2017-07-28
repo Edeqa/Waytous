@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +21,9 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.NavigationStarter;
+import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Entity;
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -42,8 +42,6 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
@@ -51,6 +49,7 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
 
 
 /**
@@ -61,7 +60,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
     static final long serialVersionUID = -6395904747332820058L;
 
-    private static final String TYPE = "Navigation";
+    public static final String TYPE = "Navigation";
 
     @SuppressWarnings("WeakerAccess")
     public static final String SHOW_NAVIGATION = "show_navigation";
@@ -175,6 +174,13 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 break;
             case REQUEST_MODE_DAY:
                 iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
+                break;
+            case PREPARE_SETTINGS:
+                Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
+                adder.call(new SettingItem.Group(TYPE).setTitle("Navigation"));
+                adder.call(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle("Avoid highways").setGroupId(TYPE));
+                adder.call(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle("Avoid tolls").setGroupId(TYPE));
+                adder.call(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle("Avoid ferries").setGroupId(TYPE));
                 break;
         }
         return true;
