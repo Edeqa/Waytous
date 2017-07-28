@@ -44,4 +44,6 @@ public class Events {
 
     public static final String MOVING_CLOSE_TO = "moving_close_to";
     public static final String MOVING_AWAY_FROM = "moving_away_from";
+
+
 }

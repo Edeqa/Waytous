@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -241,7 +242,8 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 optionsMenu.findItem(R.string.save_location).setVisible(State.getInstance().getUsers().getCountSelected() == 1);
                 break;
             case CREATE_DRAWER:
-                MenuItem menuItem = (MenuItem) object;
+                NavigationView navigationView = (NavigationView) object;
+                MenuItem menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
                 Menu navigationMenu = menuItem.getSubMenu();
                 MenuItem item = navigationMenu.findItem(R.string.locations);
                 if(item == null) {
@@ -257,7 +259,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         });
                 break;
             case PREPARE_DRAWER:
-                menuItem = (MenuItem) object;
+                navigationView = (NavigationView) object;
+                menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
+
                 navigationMenu = menuItem.getSubMenu();
                 SavedLocation.getDb().removeRestriction("search");
                 int count = SavedLocation.getCount();

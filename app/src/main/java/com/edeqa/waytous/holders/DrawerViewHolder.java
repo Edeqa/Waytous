@@ -1,6 +1,5 @@
 package com.edeqa.waytous.holders;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,7 +13,6 @@ import android.widget.ImageButton;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.SettingsActivity;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -46,6 +44,7 @@ import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_TRAFFIC;
 public class DrawerViewHolder extends AbstractViewHolder {
 
     public static final String TYPE = "drawer";
+
     private ActionBar actionBar;
 
     private DrawerLayout drawer;
@@ -77,9 +76,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
                         navigationView.getMenu().findItem(R.id.nav_terrain).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_TERRAIN);
                         navigationView.getMenu().findItem(R.id.nav_traffic).setChecked(context.getMap().isTrafficEnabled());
 
-                        MenuItem menuItem = navigationView.getMenu().findItem(R.id.nav_custom);
+                        MenuItem menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
                         menuItem.setVisible(false);
-                        State.getInstance().fire(PREPARE_DRAWER, menuItem);
+                        State.getInstance().fire(PREPARE_DRAWER, navigationView);
                     }
                     drawer.invalidate();
                 }
@@ -116,9 +115,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case ACTIVITY_RESUME:
-                MenuItem menuItem = navigationView.getMenu().findItem(R.id.nav_custom);
+                MenuItem menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
                 menuItem.setVisible(false);
-                State.getInstance().fire(CREATE_DRAWER, menuItem);
+                State.getInstance().fire(CREATE_DRAWER, navigationView);
 
                 ibPrimary = (ImageButton) navigationView.findViewById(R.id.ibPrim);
                 ibPrimary.setOnClickListener(new View.OnClickListener() {
@@ -181,9 +180,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
         @Override
         public void call(Integer id) {
             switch(id) {
-                case R.id.nav_settings:
-                    context.startActivity(new Intent(context, SettingsActivity.class));
-                    break;
+//                case R.id.nav_settings:
+//                    context.startActivity(new Intent(context, SettingsActivity.class));
+//                    break;
                 case R.id.nav_traffic:
                     State.getInstance().fire(REQUEST_MODE_TRAFFIC);
                     break;

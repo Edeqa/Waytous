@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -150,7 +151,10 @@ public class MessagesViewHolder extends AbstractViewHolder {
 //                }
 //                break;
             case CREATE_DRAWER:
-                MenuItem menuItem = (MenuItem) object;
+                NavigationView drawerView = (NavigationView) object;
+                MenuItem menuItem = drawerView.getMenu().findItem(R.id.drawer_section_primary);
+                menuItem.setVisible(true);
+
                 Menu generalMenu = menuItem.getSubMenu();
                 MenuItem item = generalMenu.findItem(R.string.chat);
                 if(item == null) {
@@ -166,10 +170,12 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         });
                 break;
             case PREPARE_DRAWER:
-                menuItem = (MenuItem) object;
+                drawerView = (NavigationView) object;
+                menuItem = drawerView.getMenu().findItem(R.id.drawer_section_primary);
                 generalMenu = menuItem.getSubMenu();
                 UserMessage.getDb().removeRestriction("search");
                 int count = UserMessage.getCount();
+                menuItem.setVisible(count > 0);
                 generalMenu.findItem(R.string.chat).setVisible(count > 0);
                 if(count>0) {
                     menuItem.setVisible(true);

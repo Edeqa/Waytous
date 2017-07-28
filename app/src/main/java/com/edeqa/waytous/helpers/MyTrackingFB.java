@@ -482,6 +482,7 @@ public class MyTrackingFB implements Tracking {
 
     private DatabaseReference registerChildListener(DatabaseReference ref, ChildEventListener listener, int limit) {
         if(limit >=0) {
+            if(limit > 1000) limit = 1000;
             ref.limitToLast(limit).addChildEventListener(listener);
         } else {
             ref.addChildEventListener(listener);

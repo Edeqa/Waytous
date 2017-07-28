@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/nav_custom"
-        android:title="@string/general">
+    <item android:id="@+id/drawer_section_primary"
+          android:title="@string/general">
+        <menu>
+        </menu>
+    </item>
+    <item android:id="@+id/drawer_section_communication"
+          android:title="@string/general">
+        <menu>
+        </menu>
+    </item>
+    <item android:id="@+id/drawer_section_share"
+          android:title="@string/general">
+        <menu>
+        </menu>
+    </item>
+    <item android:id="@+id/drawer_section_navigation"
+          android:title="@string/general">
+        <menu>
+        </menu>
+    </item>
+    <item android:id="@+id/drawer_section_views"
+          android:title="@string/general">
         <menu>
         </menu>
     </item>
@@ -21,12 +41,19 @@
             android:icon="@drawable/ic_terrain_black_24dp"
             android:title="@string/terrain" />
     </group>
-    <group
-        android:id="@+id/nav_other"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings_black_24dp"
-            android:title="@string/settings" />
-    </group>
+    <!--   <item android:id="@+id/drawer_section_map"
+                android:title="@string/general">
+       <menu>
+       </menu>
+   </item>-->
+    <item android:id="@+id/drawer_section_miscellaneous"
+          android:title="@string/general">
+        <menu>
+        </menu>
+    </item>
+    <item android:id="@+id/drawer_section_last"
+          android:title="@string/settings">
+        <menu>
+        </menu>
+    </item>
 </menu>
