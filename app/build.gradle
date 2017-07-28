@@ -4,9 +4,9 @@ android {
     signingConfigs {
         config {
             keyPassword 'richard'
-            storeFile file('/Users/tujger/Documents/Devel/Android/keystore')
+            storeFile file('../WaytousServer/conf/android.jks')
             storePassword 'richard'
-            keyAlias 'wtiger'
+            keyAlias 'Waytous'
         }
     }
     compileSdkVersion 25
@@ -31,6 +31,7 @@ android {
         debug {
             debuggable true
             minifyEnabled false
+            signingConfig signingConfigs.config
         }
     }
     targetCompatibility = '1.7'

@@ -42,7 +42,7 @@
             <!--<Preference
                 android:key="info"
                 android:layout="@layout/preference_info"
-                android:summary="@string/odyssey_legal_information_summary"
+                android:message="@string/odyssey_legal_information_summary"
                 >
             </Preference>-->
         </PreferenceScreen>

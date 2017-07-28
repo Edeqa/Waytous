@@ -43,6 +43,7 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
+import static com.edeqa.waytous.holders.PropertiesHolder.PREFERENCE_MY_NAME;
 
 public class State extends MultiDexApplication {
 
@@ -57,6 +58,7 @@ public class State extends MultiDexApplication {
 
     private Tracking tracking;
     private WaytousService service;
+
     private SharedPreferences sharedPreferences;
     private MyUsers users;
     private MyUser me;
@@ -118,7 +120,7 @@ public class State extends MultiDexApplication {
             me.setUser(true);
             me.fire(SELECT_USER, 0);
 
-            String name = getStringPreference("my_name",null);
+            String name = getStringPreference(PREFERENCE_MY_NAME,null);
             me.fire(CHANGE_NAME, name);
             me.fire(CHANGE_COLOR, Color.BLUE);
         }
@@ -454,6 +456,10 @@ public class State extends MultiDexApplication {
 
     public void setTracking(Tracking tracking) {
         this.tracking = tracking;
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
     }
 
 }

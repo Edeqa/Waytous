@@ -17,9 +17,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.edeqa.waytousserver.helpers.Common;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -42,7 +40,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -387,12 +384,17 @@ public class Utils {
     public static void log(Object... text) {
         String str = "";
         String tag = "Utils";
+        int count = 0;
         for (Object aText : text) {
             if(aText instanceof Serializable) {
-                str += aText + " ";
-            } else {
+                str += aText.toString() + " ";
+            } else if((count++) == 0) {
 //                str += aText.getClass().getSimpleName() + ": ";
                 tag = aText.getClass().getSimpleName();
+            } else if(aText == null) {
+                str += "null ";
+            } else {
+                str += aText.toString() + " ";
             }
         }
         Log.i(tag, str);
@@ -401,14 +403,19 @@ public class Utils {
     public static void err(Object... text) {
         String str = "";
         String tag = "Utils";
+        int count = 0;
         for (Object aText : text) {
             if (aText instanceof Throwable) {
                 str += aText + " ";
             } else if(aText instanceof Serializable) {
-                str += aText + " ";
-            } else {
+                str += aText.toString() + " ";
+            } else if((count++) == 0) {
                 tag = aText.getClass().getSimpleName();
 //                str += aText.getClass().getSimpleName() + ": ";
+            } else if(aText == null) {
+                str += "null ";
+            } else {
+                str += aText.toString() + " ";
             }
         }
         Log.e(tag, str);

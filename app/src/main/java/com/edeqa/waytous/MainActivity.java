@@ -22,15 +22,13 @@ import android.widget.Toast;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.SavedLocation;
-import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.holders.CameraViewHolder;
 import com.edeqa.waytous.holders.DrawerViewHolder;
 import com.edeqa.waytous.holders.FabViewHolder;
 import com.edeqa.waytous.holders.FacebookViewHolder;
 import com.edeqa.waytous.holders.MapButtonsViewHolder;
-import com.edeqa.waytous.holders.SettingsHolder;
+import com.edeqa.waytous.holders.SettingsViewHolder;
 import com.edeqa.waytous.holders.SnackbarViewHolder;
 import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytous.interfaces.Runnable2;
@@ -44,7 +42,6 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new DrawerViewHolder(this),this);
         state.registerEntityHolder(new SnackbarViewHolder(this),this);
         state.registerEntityHolder(new FacebookViewHolder(this),this);
-        state.registerEntityHolder(new SettingsHolder(this),this);
+        state.registerEntityHolder(new SettingsViewHolder(this),this);
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -376,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     loc.setTime(location.getTime());
                     state.getMe().addLocation(loc);
                 }catch(Exception e){
-                    Utils.err(this, "onMapReadyPermitted:", e.getMessage(), e);
+                    Utils.err(MainActivity.this, "onMapReadyPermitted:", e.getMessage(), e);
                 }
             }
         });

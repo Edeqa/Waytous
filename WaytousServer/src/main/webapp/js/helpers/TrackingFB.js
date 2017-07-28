@@ -373,7 +373,9 @@ function TrackingFB(main) {
     }
 
     function getTrackingUri(){
-        return window.location.href;
+        var uri = window.location.href;
+        uri = uri.replace("/group/", "/track/");
+        return uri;
 //        var uri = new URL(serverUri);
 //        return "http://" + uri.hostname + (data.HTTP_PORT == 80 ? "" : ":"+data.HTTP_PORT) + "/track/" + token;
     }
