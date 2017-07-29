@@ -176,11 +176,11 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
                 break;
             case PREPARE_SETTINGS:
-                Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
-                adder.call(new SettingItem.Group(TYPE).setTitle("Navigation"));
-                adder.call(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle("Avoid highways").setGroupId(TYPE));
-                adder.call(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle("Avoid tolls").setGroupId(TYPE));
-                adder.call(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle("Avoid ferries").setGroupId(TYPE));
+                SettingItem.Page item = (SettingItem.Page) object;
+                item.add(new SettingItem.Group(TYPE).setTitle("Navigation"));
+                item.add(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle("Avoid highways").setGroupId(TYPE));
+                item.add(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle("Avoid tolls").setGroupId(TYPE));
+                item.add(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle("Avoid ferries").setGroupId(TYPE));
                 break;
         }
         return true;
