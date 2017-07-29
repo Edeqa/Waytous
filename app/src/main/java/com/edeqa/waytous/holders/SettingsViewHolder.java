@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.SettingsActivity;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -34,36 +33,47 @@ import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 
 
 /**
- * Created 11/24/16.
+ * Created 7/28/17.
  */
 
 public class SettingsViewHolder extends AbstractViewHolder {
     private static final String TYPE = "settingsMap";
 
     public static final String SHOW_SETTINGS = "show_settings";
+    public static final String CREATE_SETTINGS = "create_settings";
     public static final String PREPARE_SETTINGS = "prepare_settings";
+    public static final String PREFERENCES_GENERAL = "general";
 
     private AlertDialog dialog;
     private RecyclerView list;
     private Toolbar toolbar;
     private SettingsAdapter adapter;
-    private static Map<String, ArrayList<SettingItem>> settingsMap = new TreeMap<>();
-    private ArrayList<SettingItem> settings = new ArrayList<>();
+    private SettingItem.Page settingItem;
+    private SettingItem.Page currentSettingItem;
+    private ArrayList<SettingItem.Page> queue = new ArrayList<>();
+    private boolean settingsPrepared = false;
 
     public SettingsViewHolder(MainActivity context) {
         super(context);
         SettingItem.setSharedPreferences(State.getInstance().getSharedPreferences());
         SettingItem.setContext(context);
 
-        setting.call(new SettingItem.Group("general").setTitle("General"));
+        settingItem = new SettingItem.Page(PREFERENCES_GENERAL);
+        settingItem.setCallback(new Runnable1() {
+            @Override
+            public void call(Object arg) {
+                if(adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }).setTitle(R.string.settings);
+//        settingItem.add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle("General"));
     }
 
     @Override
@@ -101,13 +111,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
                                 return false;
                             }
                         });
-                menuItem.getSubMenu().add(Menu.NONE, R.string.setting_up, Menu.NONE, context.getString(R.string.setting_up)).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        context.startActivity(new Intent(context, SettingsActivity.class));
-                        return false;
-                    }
-                });
                 break;
             case PREPARE_DRAWER:
                 drawerView = (NavigationView) object;
@@ -115,8 +118,13 @@ public class SettingsViewHolder extends AbstractViewHolder {
                 menuItem.setVisible(true);
                 break;
             case SHOW_SETTINGS:
+                currentSettingItem = settingItem;
+                if(!settingsPrepared) {
+                    State.getInstance().fire(CREATE_SETTINGS, settingItem);
+                    settingsPrepared = true;
+                }
+                State.getInstance().fire(PREPARE_SETTINGS, settingItem);
                 showSettings();
-                State.getInstance().fire(PREPARE_SETTINGS, setting);
                 break;
 
         }
@@ -167,63 +175,20 @@ public class SettingsViewHolder extends AbstractViewHolder {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.dismiss();
-                dialog = null;
+                if(queue.size() > 0) {
+                    currentSettingItem = queue.remove(queue.size()-1);
+                    toolbar.setTitle(currentSettingItem.getTitle());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    dialog.dismiss();
+                    dialog = null;
+                }
             }
         });
-        toolbar.setTitle(R.string.settings);
+        toolbar.setTitle(currentSettingItem.getTitle());
 
         return layoutToolbar;
     }
-
-     Runnable1<SettingItem> setting = new Runnable1<SettingItem>() {
-        @Override
-        public void call(SettingItem item) {
-            Utils.log(SettingsViewHolder.this,item);
-            switch (item.getType()) {
-                case SettingItem.GROUP:
-                    if(!settingsMap.containsKey(item.getId())) {
-                        ArrayList<SettingItem> list = new ArrayList<>();
-                        list.add(item);
-                        settingsMap.put(item.getId(), list);
-                    }
-                    break;
-                case SettingItem.LABEL:
-                case SettingItem.TEXT:
-                case SettingItem.CHECKBOX:
-                case SettingItem.LIST:
-                    ArrayList<SettingItem> list = settingsMap.get("general");
-                    String id = item.getGroupId();
-                    if(settingsMap.containsKey(id)) {
-                        list = settingsMap.get(item.getGroupId());
-                    }
-                    addUnique(list,item);
-                    break;
-            }
-            settings.clear();
-            for(Map.Entry<String,ArrayList<SettingItem>> g: settingsMap.entrySet()) {
-                if(g.getValue().size() > 1) {
-                    for (SettingItem x : g.getValue()) {
-                        settings.add(x);
-                    }
-                }
-            }
-
-            if(adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
-        }
-        private void addUnique(ArrayList<SettingItem> list, SettingItem item) {
-            boolean exists = false;
-            for(SettingItem x:list) {
-                if(x.fetchId().equals(item.fetchId())) {
-                    exists = true;
-                    break;
-                }
-            }
-            if(!exists) list.add(item);
-        }
-    };
 
 
     class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingViewHolder> {
@@ -259,11 +224,12 @@ public class SettingsViewHolder extends AbstractViewHolder {
 
         @Override
         public void onBindViewHolder(final SettingViewHolder holder, int position) {
-            final SettingItem item = settings.get(position);
+            final SettingItem item = currentSettingItem.getItems().get(position);
 
             holder.layoutHeader.setVisibility(View.GONE);
-            holder.layoutWidget.setVisibility(View.GONE);
             holder.layoutPreference.setVisibility(View.VISIBLE);
+            holder.layoutWidget.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(null);
 
             if(item.fetchSummary() != null) {
                 holder.tvHeaderSummary.setText(item.fetchSummary());
@@ -283,7 +249,15 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     break;
                 case SettingItem.LABEL:
                     holder.tvTitle.setText(item.getTitle());
-                    break;
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            SettingItem.Label x = (SettingItem.Label) item;
+                            if(x.getIntent() != null) {
+                                context.startActivity(x.getIntent());
+                            }
+                        }
+                    });break;
                 case SettingItem.TEXT:
                     holder.tvTitle.setText(item.getTitle());
 //                    holder.tvSummary.setText(((SettingItem.Text)item).fetchSummary());
@@ -301,10 +275,11 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     });
                     break;
                 case SettingItem.CHECKBOX:
+                    holder.ivRightArrow.setVisibility(View.GONE);
+                    holder.cbCheckbox.setVisibility(View.VISIBLE);
                     holder.layoutWidget.setVisibility(View.VISIBLE);
                     holder.tvTitle.setText(item.getTitle());
                     holder.cbCheckbox.setChecked(((SettingItem.Checkbox)item).isChecked());
-                    holder.cbCheckbox.setVisibility(View.VISIBLE);
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -320,18 +295,42 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     break;
                 case SettingItem.LIST:
                     holder.tvTitle.setText(item.getTitle());
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ((SettingItem.List)item).onClick(new Runnable1<String>() {
+                                @Override
+                                public void call(String arg) {
+                                    System.out.println("CLICKED:"+item+":"+arg);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    });
                     break;
                 case SettingItem.PAGE:
+                    holder.tvHeaderTitle.setText(item.getTitle());
+                    holder.cbCheckbox.setVisibility(View.GONE);
+                    holder.ivRightArrow.setVisibility(View.VISIBLE);
                     holder.layoutPreference.setVisibility(View.GONE);
                     holder.layoutHeader.setVisibility(View.VISIBLE);
-                    holder.ivRightArrow.setVisibility(View.VISIBLE);
+                    holder.layoutWidget.setVisibility(View.VISIBLE);
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            queue.add(currentSettingItem);
+                            currentSettingItem = (SettingItem.Page) item;
+                            toolbar.setTitle(currentSettingItem.getTitle());
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                     break;
             }
         }
 
         @Override
         public int getItemCount() {
-            return settings.size();
+            return currentSettingItem.getItems().size();
         }
 
         class SettingViewHolder extends RecyclerView.ViewHolder {
@@ -359,6 +358,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                 cbCheckbox = (CheckBox) view.findViewById(R.id.cb_checkbox);
             }
         }
+
     }
 
 }

@@ -1,12 +1,15 @@
 package com.edeqa.waytous.holders;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.edeqa.waytous.BuildConfig;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -25,6 +28,7 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static com.edeqa.waytous.holders.SettingsViewHolder.PREFERENCES_GENERAL;
 import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
@@ -36,7 +40,7 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 public class MenuViewHolder extends AbstractViewHolder {
     private static final String TYPE = "menu";
 
-    public static final String PREFERENCES_INFO = "info";
+    public static final String PREFERENCES_ABOUT = "about";
 
 
     private boolean day = true;
@@ -118,14 +122,47 @@ public class MenuViewHolder extends AbstractViewHolder {
                 });
                 break;
             case PREPARE_SETTINGS:
-                Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
-                adder.call(new SettingItem.Group(PREFERENCES_INFO).setTitle("Info"));
-                adder.call(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(context.getString(R.string.menu_set_my_name)).setGroupId(PREFERENCES_INFO).setCallback(new Runnable1<String>() {
+                SettingItem.Page item = (SettingItem.Page) object;
+                item.add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100));
+                item.add(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(R.string.menu_set_my_name).setGroupId(PREFERENCES_GENERAL).setCallback(new Runnable1<String>() {
                     @Override
                     public void call(String arg) {
                         State.getInstance().getMe().fire(CHANGE_NAME,arg);
                     }
                 }));
+
+                SettingItem.Page about = new SettingItem.Page(PREFERENCES_ABOUT).setTitle(R.string.about).setPriority(0)
+                        .add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100))
+                        .add(new SettingItem.Label("waytous")
+                                .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://play.google.com/store/apps/details?id=com.edeqa.waytous")))
+                                .setTitle(R.string.app_name).setMessage("Version " + BuildConfig.VERSION_NAME + "." + BuildConfig.VERSION_CODE))
+                        .add(new SettingItem.Label("waytous_web")
+                                .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://www.waytous.net")))
+                                .setTitle("Waytous web service").setMessage("http://www.waytous.net"))
+                        .add(new SettingItem.Label("copyright")
+                                .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://www.edeqa.com")))
+                                .setTitle("Copyright (c) 2017 Edeqa").setMessage("http://www.edeqa.com"))
+                        .add(new SettingItem.Page("legal_information").setTitle("Legal information")
+                                .add(new SettingItem.Label("legal_text").setTitle(R.string.legal_information_body)))
+                        .add(new SettingItem.Page("third_party").setTitle("Third party components").setPriority(0)
+                                .add(new SettingItem.Label("sll")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/mrmans0n/smart-location-lib")))
+                                        .setTitle("Smart Location Library"))
+                                .add(new SettingItem.Label("jws")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TooTallNate/Java-WebSocket")))
+                                        .setTitle("Java WebSockets"))
+                                .add(new SettingItem.Label("msv")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/pengrad/MapScaleView")))
+                                        .setTitle("Map Scale View"))
+                                .add(new SettingItem.Label("ttv")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/KeepSafe/TapTargetView")))
+                                        .setTitle("TapTargetView"))
+                                .add(new SettingItem.Label("amis")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TangoAgency/material-intro-screen")))
+                                        .setTitle("Android Material Intro Screen")));
+
+                item.add(about);
+
                 break;
 
         }

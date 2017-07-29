@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:gravity="center_horizontal"
-    android:orientation="horizontal"
-    android:padding="0dp">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_horizontal"
+              android:background="?android:attr/selectableItemBackground"
+              android:orientation="horizontal"
+              android:textAppearance="?android:attr/textAppearanceSmall"
+              android:padding="0dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -15,119 +16,108 @@
         android:orientation="vertical"
         android:layout_weight="1">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:id="@+id/layout_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:attr/activatedBackgroundIndicator"
             android:clipToPadding="false"
             android:gravity="center_vertical"
-            android:minHeight="?attr/listPreferredItemHeightSmall"
-            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-            android:paddingLeft="?android:attr/listPreferredItemPaddingStart"
-            android:paddingRight="?android:attr/listPreferredItemPaddingEnd"
-            android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+            android:orientation="vertical"
+            android:minHeight="@dimen/material_subheader_height"
+            android:paddingLeft="@dimen/material_subheader_padding_start"
+            android:paddingStart="@dimen/material_subheader_padding_start"
+            android:paddingRight="@dimen/material_list_text_last_position_margin_end"
+            android:paddingEnd="@dimen/material_list_text_last_position_margin_end"
+            android:paddingBottom="@dimen/material_list_normal_padding_vertical"
+            android:paddingTop="@dimen/material_list_normal_padding_vertical">
 
-            <RelativeLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tv_header_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp">
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:textSize="@dimen/material_subheader_text_size"
+                android:textColor="?attr/colorAccent"
+                tools:text="Title" />
 
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/tv_header_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:fadingEdge="horizontal"
-                    android:maxLines="1"
-                    android:textColor="?attr/colorAccent"
-                    tools:text="Title" />
+            <TextView
+                android:id="@+id/tv_header_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_header_title"
+                android:layout_alignStart="@id/tv_header_title"
+                android:layout_below="@id/tv_header_title"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textSize="@dimen/material_list_dense_secondary_text_size"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="Summary" />
+            <!--<TextView
+                android:id="@+id/tv_header_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:maxLines="1"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                tools:text="Title" />
 
-                <TextView
-                    android:id="@+id/tv_header_summary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_header_title"
-                    android:layout_alignStart="@id/tv_header_title"
-                    android:layout_below="@id/tv_header_title"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    tools:text="Summary" />
-                <!--<TextView
-                    android:id="@+id/tv_header_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:fadingEdge="horizontal"
-                    android:maxLines="1"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/colorPrimary"
-                    android:textStyle="bold"
-                    tools:text="Title" />
+            <TextView
+                android:id="@+id/tv_header_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_header_title"
+                android:layout_alignStart="@+id/tv_header_title"
+                android:layout_below="@+id/tv_header_title"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="Summary" />-->
 
-                <TextView
-                    android:id="@+id/tv_header_summary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/tv_header_title"
-                    android:layout_alignStart="@+id/tv_header_title"
-                    android:layout_below="@+id/tv_header_title"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    tools:text="Summary" />-->
-
-            </RelativeLayout>
 
         </LinearLayout>
 
         <!-- Preference should place its actual preference widget here. -->
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:id="@+id/layout_preference"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:attr/activatedBackgroundIndicator"
             android:clipToPadding="false"
             android:gravity="center_vertical"
-            android:minHeight="?attr/listPreferredItemHeightSmall"
-            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-            android:paddingLeft="?android:attr/listPreferredItemPaddingStart"
-            android:paddingRight="?android:attr/listPreferredItemPaddingEnd"
-            android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+            android:orientation="vertical"
+            android:minHeight="@dimen/material_list_two_line_normal_height"
+            android:paddingLeft="@dimen/material_list_text_first_position_margin_start"
+            android:paddingStart="@dimen/material_list_text_first_position_margin_start"
+            android:paddingRight="@dimen/material_list_text_last_position_margin_end"
+            android:paddingEnd="@dimen/material_list_text_last_position_margin_end"
+            android:paddingBottom="@dimen/material_list_normal_padding_vertical"
+            android:paddingTop="@dimen/material_list_normal_padding_vertical">
 
-            <RelativeLayout
-                android:layout_width="0dp"
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp">
+                android:ellipsize="marquee"
+                android:textSize="@dimen/material_list_normal_primary_text_size"
+                android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+                tools:text="Title" />
 
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:maxLines="1"
-                    android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-                    tools:text="Title" />
-
-                <TextView
-                    android:id="@+id/tv_summary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_title"
-                    android:layout_alignStart="@id/tv_title"
-                    android:layout_below="@id/tv_title"
-                    android:ellipsize="end"
-                    android:maxLines="10"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
-                    tools:text="Summary" />
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_title"
+                android:layout_alignStart="@id/tv_title"
+                android:layout_below="@id/tv_title"
+                android:ellipsize="end"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/material_list_normal_secondary_text_size"
+                tools:text="Summary" />
             <!-- Preference should place its actual preference widget here. -->
         </LinearLayout>
 
@@ -141,13 +131,13 @@
         android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
-        android:paddingRight="?android:attr/listPreferredItemPaddingEnd"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingRight="@dimen/material_list_text_last_position_margin_end"
+        android:paddingEnd="@dimen/material_list_text_last_position_margin_end"
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_weight="0">
 
-        <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+        <CheckBox
             android:id="@+id/cb_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

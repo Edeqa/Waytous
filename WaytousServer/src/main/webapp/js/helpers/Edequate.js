@@ -1568,7 +1568,7 @@ function Edequate(options) {
                 var x = parseInt(layout.style.left || 0)
                 if(lastDelta < -20 || (lastDelta <=0 && x < -layout.offsetWidth/2)) {
                     layout.style.left = (-layout.offsetWidth*1.5)+"px";
-                    setTimeout(function(){layout.blur()},500);
+                    setTimeout(function(){layout.close()},500);
                 } else {
                     layout.style.left = "";
                 }
@@ -1597,7 +1597,7 @@ function Edequate(options) {
             className:"drawer changeable" + (collapsed ? " drawer-collapsed" : "") + (options.className ? " "+options.className : ""),
             tabindex: -1,
             onblur: function(){
-                this.close();
+                layout.close();
                 return true;
             },
             open: function() {
@@ -1708,8 +1708,8 @@ function Edequate(options) {
                 onclick: function (event) {
                     var self = this;
                     setTimeout(function () {
-                        layout.close();
                         callback.call(self,event);
+                        layout.blur();
                     }, 100);
                 },
                 hide: function() {

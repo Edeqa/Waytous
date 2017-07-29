@@ -106,10 +106,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dialog"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name="com.edeqa.waytous.SettingsActivity"
-            android:label="@string/settings"
-            android:theme="@style/AppTheme" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

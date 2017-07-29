@@ -430,8 +430,8 @@ button:active {
 }
 .dialog-resize {
     position: absolute;
-    bottom: 0px;
-    right: 0px;
+    bottom: 0;
+    right: 0;
     width: 10px;
     height: 10px;
     cursor: se-resize;
@@ -443,11 +443,11 @@ button:active {
     max-width: 240px;
     border-width: 1px;
     background-color: azure;
-    left: 0px;
+    left: 0;
     position: relative;
     height: 100%;
-    top: 0px;
-    bottom: 0px;
+    top: 0;
+    bottom: 0;
     overflow: hidden;
     z-index: 10000;
 }
@@ -1010,7 +1010,7 @@ button:active {
         top: 0px;
         bottom: 0px;
         background-color: white;
-        display:none;
+        display: none;
         z-index: 10000;
     }
     .drawer-open {

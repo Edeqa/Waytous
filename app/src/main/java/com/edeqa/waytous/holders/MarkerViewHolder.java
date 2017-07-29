@@ -45,9 +45,8 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
 
     public static final String TYPE = "marker";
-
-    public static final String PREFERENCES_MARKER = "marker";
     public static final String PREFERENCE_MARKER_ACCURACY = "marker_accuracy";
+
     private final boolean showAccuracy;
 
     private GoogleMap map;
@@ -116,9 +115,9 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                 }
                 break;
             case PREPARE_SETTINGS:
-                Runnable1<SettingItem> adder = (Runnable1<SettingItem>) object;
-                adder.call(new SettingItem.Group(PREFERENCES_MARKER).setTitle(context.getString(R.string.marker)));
-                adder.call(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(PREFERENCES_MARKER).setMessage("Shows accuracy circle around the marker on map."));
+                SettingItem.Page item = (SettingItem.Page) object;
+                item.add(new SettingItem.Group(TYPE).setTitle(context.getString(R.string.marker)));
+                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(TYPE).setMessage("Shows accuracy circle around the marker on map."));
                 break;
         }
         return true;
@@ -197,8 +196,10 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
         public void remove() {
             marker.remove();
             marker = null;
-            circle.remove();
-            circle = null;
+            if(circle != null) {
+                circle.remove();
+                circle = null;
+            }
         }
 
         @Override
@@ -215,8 +216,12 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             final float startRotation = marker.getRotation();
             final float finalRotation = location.getBearing();
 
-            final double startRadius = circle.getRadius();
-            final double finalRadius = location.getAccuracy();
+            final double[] circleValues = new double[3];
+            final double finalRadius;
+            if(circle != null) {
+                circleValues[0] = circle.getRadius(); // startradius
+                circleValues[1] = location.getAccuracy(); //finalradius
+            }
 
             new SmoothInterpolated(new Runnable1<Float[]>() {
                 @Override
@@ -226,7 +231,10 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                             startPosition.longitude*(1-value[TIME_ELAPSED])+finalPosition.longitude*value[TIME_ELAPSED]);
 
                     final float rot = value[CURRENT_VALUE] * finalRotation + (1 - value[CURRENT_VALUE]) * startRotation;
-                    final float currentRadius = (float) (value[CURRENT_VALUE] * finalRadius + (1 - value[CURRENT_VALUE]) * startRadius);
+
+                    if(circle != null) {
+                        circleValues[2] = (float) (value[CURRENT_VALUE] * circleValues[1] + (1 - value[CURRENT_VALUE]) * circleValues[0]);
+                    }
 
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         public void run() {
@@ -234,8 +242,10 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                                 marker.setRotation(-rot > 180 ? rot / 2 : rot);
                                 marker.setPosition(currentPosition);
 
-                                circle.setCenter(currentPosition);
-                                circle.setRadius(currentRadius);
+                                if(circle != null) {
+                                    circle.setCenter(currentPosition);
+                                    circle.setRadius(circleValues[2]);
+                                }
                             }
                         }
                     });

@@ -4,9 +4,9 @@ android {
     signingConfigs {
         config {
             keyPassword 'richard'
-            storeFile file('../WaytousServer/conf/android.jks')
+            storeFile file('/Users/tujger/Documents/Devel/Android/keystore')
             storePassword 'richard'
-            keyAlias 'Waytous'
+            keyAlias 'wtiger'
         }
     }
     compileSdkVersion 25
@@ -31,7 +31,6 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            signingConfig signingConfigs.config
         }
     }
     targetCompatibility = '1.7'
@@ -73,7 +72,7 @@ dependencies {
     compile 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     compile 'com.github.pengrad:mapscaleview:1.2.1'
-    compile 'com.google.android:flexbox:0.3.0'
+    compile 'com.google.android:flexbox:0.2.6'
     compile 'com.google.android.gms:play-services-base:10.2.6'
     compile 'com.google.android.gms:play-services-maps:10.2.6'
     compile 'com.google.android.gms:play-services-places:10.2.6'

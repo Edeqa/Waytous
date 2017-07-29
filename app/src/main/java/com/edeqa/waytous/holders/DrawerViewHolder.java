@@ -193,9 +193,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
         @Override
         public void call(Integer id) {
             switch(id) {
-//                case R.id.nav_settings:
-//                    context.startActivity(new Intent(context, SettingsActivity.class));
-//                    break;
                 case R.id.nav_traffic:
                     State.getInstance().fire(REQUEST_MODE_TRAFFIC);
                     break;

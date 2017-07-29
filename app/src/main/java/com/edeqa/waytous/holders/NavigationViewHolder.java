@@ -49,6 +49,8 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static com.edeqa.waytous.holders.SettingsViewHolder.CREATE_SETTINGS;
+import static com.edeqa.waytous.holders.SettingsViewHolder.PREFERENCES_GENERAL;
 import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
 
 
@@ -71,6 +73,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private static final String NAVIGATION_MODE_BICYCLING = "navigation_mode_bicycling";
 
     private static final String PREFERENCE_MODE = "navigation_mode";
+    private static final String PREFERENCE_OPTIONS = "navigation_type";
+
 
     private static final String PREFERENCE_AVOID_HIGHWAYS = "navigation_avoid_highways";
     private static final String PREFERENCE_AVOID_TOLLS = "navigation_avoid_tolls";
@@ -92,6 +96,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         super(context);
         this.map = context.getMap();
         handlerHideButtons = new Handler();
+
+        mode = State.getInstance().getStringPreference(PREFERENCE_MODE, null);
 
         NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
         if(m != null) {
@@ -175,12 +181,46 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             case REQUEST_MODE_DAY:
                 iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
                 break;
-            case PREPARE_SETTINGS:
+            case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
-                item.add(new SettingItem.Group(TYPE).setTitle("Navigation"));
-                item.add(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle("Avoid highways").setGroupId(TYPE));
-                item.add(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle("Avoid tolls").setGroupId(TYPE));
-                item.add(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle("Avoid ferries").setGroupId(TYPE));
+
+                item.add(new SettingItem.Page(TYPE).setTitle(R.string.navigation)
+                        .add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle(R.string.general).setGroupId(TYPE))
+                        .add(new SettingItem.List(PREFERENCE_MODE)
+                                .add(NAVIGATION_MODE_DRIVING, R.string.driving)
+                                .add(NAVIGATION_MODE_WALKING, R.string.walking)
+                                .add(NAVIGATION_MODE_BICYCLING, R.string.bicycling)
+                                .setValue(mode)
+                                .setTitle(R.string.mode).setGroupId(PREFERENCES_GENERAL)
+                                .setMessage("Select your preferred navigation mode.")
+                                .setCallback(new Runnable1<String>() {
+                                    @Override
+                                    public void call(String arg) {
+                                        View v = new View(context);
+                                        switch (arg) {
+                                            case NAVIGATION_MODE_WALKING:
+                                                v.setId(R.id.ib_navigation_walking);
+                                                break;
+                                            case NAVIGATION_MODE_BICYCLING:
+                                                v.setId(R.id.ib_navigation_bicycling);
+                                                break;
+                                            default:
+                                                v.setId(R.id.ib_navigation_driving);
+                                        }
+                                        onClickListener.onClick(v);
+                                    }
+                                }))
+                        .add(new SettingItem.Group(PREFERENCE_OPTIONS).setTitle(R.string.options).setGroupId(TYPE))
+                        .add(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle(R.string.avoid_highways).setGroupId(PREFERENCE_OPTIONS))
+                        .add(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle(R.string.avoid_tolls).setGroupId(PREFERENCE_OPTIONS))
+                        .add(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle(R.string.avoid_ferries).setGroupId(PREFERENCE_OPTIONS)));
+                break;
+            case PREPARE_SETTINGS:
+                SettingItem settings = (SettingItem) object;
+                settings.update(PREFERENCE_MODE, mode);
+                settings.update(PREFERENCE_AVOID_HIGHWAYS, State.getInstance().getBooleanPreference(PREFERENCE_AVOID_HIGHWAYS, false));
+                settings.update(PREFERENCE_AVOID_TOLLS, State.getInstance().getBooleanPreference(PREFERENCE_AVOID_TOLLS, false));
+                settings.update(PREFERENCE_AVOID_FERRIES, State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false));
                 break;
         }
         return true;
@@ -278,7 +318,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         private String title;
         private List<LatLng> points;
 
-
         NavigationView(MyUser myUser){
             this.myUser = myUser;
 
@@ -314,7 +353,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         @Override
         public void remove() {
-//            System.out.println("REMOVENAVVIEW:"+myUser.getProperties().getDisplayName()+":"+track);
             if(track != null){
                 track.remove();
                 track = null;
