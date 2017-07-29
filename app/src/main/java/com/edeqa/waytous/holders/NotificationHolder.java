@@ -16,6 +16,7 @@ import com.edeqa.waytous.WaytousService;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.SettingItem;
 
 import java.util.Date;
 
@@ -33,6 +34,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
@@ -50,6 +52,10 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
     private static final int DELAY_BEFORE_CLEAR_NOTIFICATION = 5;
+    private static final String PREFERENCE_NOTIFICATION_NEW_MESSAGE = "notification_new_message";
+    private static final String PREFERENCE_NOTIFICATION_USER_ONLINE = "notification_user_online";
+    private static final String PREFERENCE_NOTIFICATION_CLOSE_TO_USER = "notification_close_to_user";
+    private static final String PREFERENCE_NOTIFICATION_AWAY_FROM_USER = "notification_away_from_user";
 
     private final State state;
 
@@ -161,6 +167,14 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case HIDE_CUSTOM_NOTIFICATION:
                 NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancel(1977);
+                break;
+            case PREPARE_SETTINGS:
+                SettingItem.Page item = (SettingItem.Page) object;
+                item.add(new SettingItem.Page(TYPE).setTitle("Notifications")
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_USER_ONLINE).setTitle("User online").setGroupId(TYPE).setMessage("Default"))
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_CLOSE_TO_USER).setTitle("Close to user").setGroupId(TYPE).setMessage("Default"))
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_AWAY_FROM_USER).setTitle("Away from user").setGroupId(TYPE).setMessage("Default"))
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_NEW_MESSAGE).setTitle("New message").setGroupId(TYPE).setMessage("Default")));
                 break;
         }
 
