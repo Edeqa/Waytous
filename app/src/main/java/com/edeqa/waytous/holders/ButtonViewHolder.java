@@ -4,20 +4,24 @@ import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,19 +38,15 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 
-
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.DROPPED_TO_USER;
-import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
-import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_ZOOM;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
@@ -89,6 +89,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 break;
             case TRACKING_STOP:
             case TRACKING_DISABLED:
+                updateBackgroundColors(null);
                 hide();
                 break;
             case USER_JOINED:
@@ -306,6 +307,8 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             switch(event){
                 case SELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);
+
+                    updateBackgroundColors(myUser);
                     /*if(layout.getChildCount()>1) {
                         show();
                     } else if(State.getInstance().tracking_disabled()) {
@@ -395,6 +398,30 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     handlerHideMenu.postDelayed(runnableHideMenu, 3000);
                 }
             }, 0);
+        }
+
+    }
+
+    private void updateBackgroundColors(MyUser user) {
+        if(State.getInstance().tracking_active() && user != null) {
+            if (Build.VERSION.SDK_INT >= 21) {
+                Window window = context.getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.setStatusBarColor((user.getProperties().getColor() & 0x00FFFFFF) | (0x20 << 24));
+            }
+            context.getSupportActionBar().setBackgroundDrawable(new ColorDrawable((user.getProperties().getColor() & 0x00FFFFFF) | (0x40 << 24)));
+        } else {
+            if (Build.VERSION.SDK_INT >= 21) {
+                Window window = context.getWindow();
+                window.clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+            int color = typedValue.data;
+
+            context.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
         }
 
     }
