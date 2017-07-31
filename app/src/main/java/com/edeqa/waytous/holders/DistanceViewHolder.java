@@ -153,7 +153,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         private boolean show = false;
 
         DistanceView(final MyUser myUser){
-            this.myUser = myUser;
+            super(myUser);
 
             Serializable value = myUser.getProperties().loadFor(TYPE);
             if(value != null && (Boolean) value) {

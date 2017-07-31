@@ -27,6 +27,7 @@ import com.edeqa.waytous.holders.CameraViewHolder;
 import com.edeqa.waytous.holders.DrawerViewHolder;
 import com.edeqa.waytous.holders.FabViewHolder;
 import com.edeqa.waytous.holders.FacebookViewHolder;
+import com.edeqa.waytous.holders.LoggerViewHolder;
 import com.edeqa.waytous.holders.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.SettingsViewHolder;
 import com.edeqa.waytous.holders.SnackbarViewHolder;
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        state.registerEntityHolder(new LoggerViewHolder(this),this);
         state.registerEntityHolder(new FabViewHolder(this),this);
         state.registerEntityHolder(new DrawerViewHolder(this),this);
         state.registerEntityHolder(new SnackbarViewHolder(this),this);
@@ -352,6 +354,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 e.printStackTrace();
             }
         }
+
+        System.out.println("SYSTEMPROPERTY"+ State.getInstance().getSystemPropertyBus().getHolders());
+        System.out.println("SYSTEMVIEW"+ State.getInstance().getSystemViewBus().getHolders());
+        System.out.println("USERHOLDERS"+ State.getInstance().getUserHolders());
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());

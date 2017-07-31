@@ -109,7 +109,6 @@ public class MyTrackingFB implements Tracking {
     private JSONObject builder;
     private FirebaseDatabase database;
     private DatabaseReference ref;
-    private Handler handler = new Handler(Looper.myLooper());
 
     private String status = TRACKING_DISABLED;
     private String token;
@@ -231,6 +230,7 @@ public class MyTrackingFB implements Tracking {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Handler handler = new Handler(Looper.myLooper());
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {

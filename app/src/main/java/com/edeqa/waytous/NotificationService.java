@@ -1,7 +1,7 @@
 package com.edeqa.waytous;
 
 
-import com.edeqa.waytous.interfaces.EntityHolder;
+import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -38,7 +38,7 @@ public class NotificationService extends FirebaseMessagingService {
 
                     String responseStatus = json.getString(RESPONSE_STATUS);
                     json.put(REQUEST_PUSH, true);
-                    EntityHolder holder = State.getInstance().getEntityHolder(responseStatus);
+                    AbstractPropertyHolder holder = (AbstractPropertyHolder) State.getInstance().getEntityHolder(responseStatus);
                     if(holder != null) {
                         holder.perform(json);
                     }

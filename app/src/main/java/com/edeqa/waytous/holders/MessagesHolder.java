@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.support.v7.app.NotificationCompat;
 
 import com.edeqa.waytous.MainActivity;
@@ -70,6 +69,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
     private long becomesActive = 0;
 
     public MessagesHolder(Context context) {
+        super(context);
         this.context = context;
         UserMessage.init(context);
 
@@ -232,7 +232,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
     private class Messages extends AbstractProperty {
 
         Messages(MyUser myUser) {
-            super(myUser);
+            super(MessagesHolder.this.context, myUser);
         }
 
         @Override

@@ -3,15 +3,15 @@ package com.edeqa.waytous.helpers;
 import android.annotation.SuppressLint;
 import android.location.Location;
 
+import com.edeqa.waytous.State;
+import com.edeqa.waytous.interfaces.Runnable2;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import com.edeqa.waytous.State;
-import com.edeqa.waytous.interfaces.Runnable2;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
@@ -26,12 +26,12 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
  */
 
 public class MyUsers {
-    private HashMap<Integer,MyUser> users;
+    private Map<Integer,MyUser> users;
     private int myNumber = 0;
 
     @SuppressLint("UseSparseArrays")
     public MyUsers(){
-        users = new HashMap<>();
+        users = new ConcurrentHashMap<>();
     }
 
     public MyUser setMe() {
@@ -72,7 +72,8 @@ public class MyUsers {
             if (myNumber != 0) {
                 forUser(0, callback);
             }
-            for (Map.Entry<Integer, MyUser> entry : users.entrySet()) {
+            for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry<Integer, MyUser> entry = iterator.next();
                 if (entry.getKey() == myNumber || entry.getKey() == 0) continue;
                 forUser(entry.getKey(), callback);
             }
@@ -108,6 +109,7 @@ public class MyUsers {
         MyUser myUser;
         if (!users.containsKey(o.getInt(RESPONSE_NUMBER))) {
             myUser = new MyUser();
+            myUser.getProperties().setNumber(o.getInt(RESPONSE_NUMBER));
             if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
             if(o.has(USER_NAME)) myUser.fire(CHANGE_NAME,o.getString(USER_NAME));
             if(o.has(USER_PROVIDER)) {
@@ -124,13 +126,14 @@ public class MyUsers {
         return myUser;
     }
 
-    public synchronized HashMap<Integer,MyUser> getUsers(){
+    public Map<Integer,MyUser> getUsers(){
         return users;
     }
 
     public MyUser findUserByName(String name) {
-        for(Map.Entry<Integer, MyUser> entry:users.entrySet()) {
-            if(name.equals(entry.getValue().getProperties().getDisplayName())) {
+        for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, MyUser> entry = iterator.next();
+            if (name.equals(entry.getValue().getProperties().getDisplayName())) {
                 return entry.getValue();
             }
         }
@@ -139,9 +142,10 @@ public class MyUsers {
 
     public int getCountActive(){
         int count = 0;
-        for(Map.Entry<Integer,MyUser> x: users.entrySet()){
-            if(x.getValue().getProperties().isActive() && (x.getValue().isUser() || x.getValue().getProperties().getNumber() == myNumber)){
-                count ++;
+        for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, MyUser> x = iterator.next();
+            if (x.getValue().getProperties().isActive() && (x.getValue().isUser() || x.getValue().getProperties().getNumber() == myNumber)) {
+                count++;
             }
         }
         return count;
@@ -149,9 +153,10 @@ public class MyUsers {
 
     public int getCountSelected(){
         int count = 0;
-        for(Map.Entry<Integer,MyUser> x: users.entrySet()){
-            if(x.getValue().getProperties().isSelected() && (x.getValue().isUser() || x.getValue().getProperties().getNumber() == myNumber)){
-                count ++;
+        for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, MyUser> x = iterator.next();
+            if (x.getValue().getProperties().isSelected() && (x.getValue().isUser() || x.getValue().getProperties().getNumber() == myNumber)) {
+                count++;
             }
         }
         return count;
@@ -159,9 +164,10 @@ public class MyUsers {
 
     public int getCountAllSelected(){
         int count = 0;
-        for(Map.Entry<Integer,MyUser> x: users.entrySet()){
-            if(x.getValue().getProperties().isSelected()){
-                count ++;
+        for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, MyUser> x = iterator.next();
+            if (x.getValue().getProperties().isSelected()) {
+                count++;
             }
         }
         return count;

@@ -12,12 +12,10 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
-import com.edeqa.waytousserver.helpers.Common;
 
 import org.json.JSONObject;
 
 import java.util.Date;
-
 
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
@@ -51,7 +49,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     @Override
     public AddressView create(MyUser myUser) {
         if (myUser == null) return null;
-        return new AddressView(myUser);
+        return new AddressView(context, myUser);
     }
 
     public AddressViewHolder setCallback(Runnable1<String> callback) {
@@ -70,8 +68,8 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     class AddressView extends AbstractView {
         private long lastRequestTimestamp;
 
-        AddressView(MyUser myUser) {
-            super(myUser);
+        AddressView(MainActivity context, MyUser myUser) {
+            super(context, myUser);
         }
 
         @Override

@@ -260,7 +260,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         private Marker marker;
 
         PlaceView(MyUser myUser){
-            this.myUser = myUser;
+            super(PlaceViewHolder.this.context, myUser);
 
             Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
 
@@ -272,7 +272,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         private void createMarker() {
             myUser.getProperties().setButtonView(R.layout.view_navigation_button);
 
-            int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
+            int size = PlaceViewHolder.this. context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Bitmap bitmap = Utils.renderBitmap(context,R.drawable.ic_place_black_24dp,myUser.getProperties().getColor(),size,size);
 
             MarkerOptions markerOptions = new MarkerOptions()

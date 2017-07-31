@@ -581,7 +581,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
     private class MessagesView extends AbstractView {
 
         MessagesView(MyUser myUser) {
-            super(myUser);
+            super(MessagesViewHolder.this.context, myUser);
         }
 
         @Override

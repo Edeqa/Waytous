@@ -15,13 +15,11 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.ShareSender;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable2;
-import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
@@ -59,12 +57,11 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 public class TrackingHolder extends AbstractPropertyHolder {
     private static final String TYPE = REQUEST_TRACKING;
 
-    private final Context context;
-
     private Tracking tracking;
 
     public TrackingHolder(Context context) {
-        this.context = context;
+        super(context);
+//        this.context = context;
 //        intentService = new Intent(context, WaytousService.class);
         tracking = null;
     }
@@ -260,6 +257,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                                 @Override
                                 public void call(Integer number, MyUser user) {
                                     if(!user.getProperties().isActive()) {
+                                        System.out.println("MAKE_ACTIVE:"+user);
                                         user.fire(MAKE_ACTIVE);
                                         State.getInstance().fire(USER_JOINED, user);
                                     }
@@ -292,7 +290,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         }
                         break;
                     default:
-                        EntityHolder holder = State.getInstance().getEntityHolder(responseStatus);
+                        AbstractPropertyHolder holder = (AbstractPropertyHolder) State.getInstance().getEntityHolder(responseStatus);
                         if(holder != null) {
                             holder.perform(o);
                         }

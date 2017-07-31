@@ -14,7 +14,9 @@ import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -52,6 +54,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     private HashMap<String, Serializable> external = new HashMap<>();
 
     public PropertiesHolder(Context context){
+        super(context);
         this.context = context;
         sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE);
     }
@@ -162,12 +165,25 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         private double previousDistance;
 
         Properties(MyUser myUser) {
-            super(myUser);
+            super(PropertiesHolder.this.context, myUser);
+        }
+
+        @Override
+        public String getType() {
+            return PropertiesHolder.this.getType();
         }
 
         @Override
         public boolean dependsOnLocation(){
             return true;
+        }
+
+        @Override
+        public List<String> events() {
+            List<String> list = new ArrayList<>();
+            list.add(CHANGE_NAME);
+            list.add(CHANGE_COLOR);
+            return list;
         }
 
         @Override
@@ -269,6 +285,10 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             return number;
         }
 
+        public void setNumber(int number) {
+            this.number = number;
+        }
+
         public boolean isSelected() {
             return selected;
         }
@@ -324,6 +344,17 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             } catch (Exception e){
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public String toString() {
+            return "Properties{" +
+                    "name='" + name + '\'' +
+                    ", number=" + number +
+                    ", color=" + color +
+                    ", selected=" + selected +
+                    ", active=" + active +
+                    '}';
         }
     }
 

@@ -160,6 +160,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
     class StreetsView extends AbstractView {
 
         StreetsView(MyUser myUser){
+            super(myUser);
             this.myUser = myUser;
         }
 

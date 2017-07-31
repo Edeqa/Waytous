@@ -13,12 +13,16 @@ import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.edeqa.eventbus.AbstractEntityHolder;
+import com.edeqa.eventbus.EventBus;
+import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.Events;
 import com.edeqa.waytous.helpers.GeoTrackFilter;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.holders.GpsHolder;
+import com.edeqa.waytous.holders.LoggerHolder;
 import com.edeqa.waytous.holders.MessagesHolder;
 import com.edeqa.waytous.holders.NotificationHolder;
 import com.edeqa.waytous.holders.PropertiesHolder;
@@ -65,6 +69,7 @@ public class State extends MultiDexApplication {
     private GeoTrackFilter gpsFilter;
     private Notification notification;
     private AtomicBoolean continueFiring = new AtomicBoolean();
+    private EventBus bus;
 
     private String deviceId;
     private String token;
@@ -81,6 +86,10 @@ public class State extends MultiDexApplication {
             serviceBound = false;
         }
     };
+    private EventBus<AbstractPropertyHolder> systemPropertyBus;
+    private EventBus<AbstractViewHolder> systemViewBus;
+    private EventBus.Runner androidRunner;
+    private LinkedHashMap<String, AbstractPropertyHolder> userHolders;
 
     public static State getInstance() {
         return instance ;
@@ -104,9 +113,23 @@ public class State extends MultiDexApplication {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        systemPropertyBus = new EventBus("SystemEntityHolder");
+        systemViewBus = new EventBus("SystemViewHolder");
+        userHolders = new LinkedHashMap<>();
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+        androidRunner = new EventBus.Runner() {
+            @Override
+            public void post(Runnable runnable) {
+                handler.post(runnable);
+            }
+        };
+
+        systemViewBus.setRunner(androidRunner);
+
         registerEntityHolder(new PropertiesHolder(this),null); // ---> need to be first!
         registerEntityHolder(new TrackingHolder(this),null); // ---> need to be second!
-//        registerEntityHolder(new LoggerHolder(),null);
+        registerEntityHolder(new LoggerHolder(),null);
         registerEntityHolder(new MessagesHolder(this),null); // ---> need to be before NotificationHolder
         registerEntityHolder(new NotificationHolder(this),null); // ---> need to be after MessagesHolder
         registerEntityHolder(new GpsHolder(this),null);
@@ -276,7 +299,64 @@ public class State extends MultiDexApplication {
         this.me = me;
     }
 
-    public void registerEntityHolder(EntityHolder holder, MainActivity context) {
+    public void registerEntityHolder(AbstractPropertyHolder holder, MainActivity context) {
+//        bus.register(holder); // ---> need to be first!
+
+
+/*
+        bus.register(new TrackingHolder(this)); // ---> need to be second!
+        bus.register(new LoggerHolder());
+        bus.register(new MessagesHolder(this)); // ---> need to be before NotificationHolder
+        bus.register(new NotificationHolder(this)); // ---> need to be after MessagesHolder
+        bus.register(new GpsHolder(this));
+*/
+
+        /*if(holder.getType() != null) {
+
+            if (holder.dependsOnUser()) {
+                userHolders.put(holder.getType(), holder);
+            } else if (holder instanceof AbstractViewHolder) {
+                getSystemViewBus().register(holder);
+            } else if (holder instanceof AbstractPropertyHolder) {
+                getSystemPropertyBus().register(holder);
+            }
+        }*/
+
+        if(holder.getType() != null) {
+            if (holder instanceof AbstractViewHolder) {
+                if (holder.dependsOnEvent()) {
+                    systemViewBus.register(holder);
+
+/*
+                    if(viewHolders.containsKey(holder.getType()) && viewHolders.get(holder.getType()) != null) {
+                        viewHolders.get(holder.getType()).setContext(context);
+                    } else {
+                        viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                    }
+*/
+                }
+                if (holder.dependsOnUser()) {
+                    userHolders.put(holder.getType(), holder);
+
+/*
+                    if(userViewHolders.containsKey(holder.getType()) && userViewHolders.get(holder.getType()) != null) {
+                        userViewHolders.get(holder.getType()).setContext(context);
+                    } else {
+                        userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
+                    }
+*/
+                }
+            } else {
+                if (holder.dependsOnEvent()) {
+                    systemPropertyBus.register(holder);
+                }
+                if (holder.dependsOnUser()) {
+                    userHolders.put(holder.getType(), holder);
+                }
+            }
+        }
+
+/*
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {
                 if (holder.dependsOnEvent()) {
@@ -302,6 +382,7 @@ public class State extends MultiDexApplication {
                 }
             }
         }
+*/
     }
 
     public HashMap<String,EntityHolder> getEntityHolders(){
@@ -344,11 +425,18 @@ public class State extends MultiDexApplication {
 //        userViewEvents.clear();
     }
 
-    public EntityHolder getEntityHolder(String type){
+    public AbstractEntityHolder getEntityHolder(String type){
+        if(getSystemPropertyBus().getHolder(type) != null) return getSystemPropertyBus().getHolder(type);
+//        if(getUserPropertyBus().getHolder(type) != null) return getUserPropertyBus().getHolder(type);
+        if(getSystemViewBus().getHolder(type) != null) return getSystemViewBus().getHolder(type);
+//        if(getUserViewBus().getHolder(type) != null) return getUserViewBus().getHolder(type);
+
+/*
         if(entityHolders.containsKey(type)) return entityHolders.get(type);
         if(userEntityHolders.containsKey(type)) return userEntityHolders.get(type);
         if(viewHolders.containsKey(type)) return viewHolders.get(type);
         if(userViewHolders.containsKey(type)) return userViewHolders.get(type);
+*/
         return null;
     }
 
@@ -382,6 +470,9 @@ public class State extends MultiDexApplication {
     }*/
 
     public void fire(final String EVENT, final Object object){
+        systemPropertyBus.post(EVENT, object);
+        systemViewBus.post(EVENT, object);
+/*
         continueFiring.set(true);
         for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
             if(entry.getValue() != null){
@@ -407,16 +498,18 @@ public class State extends MultiDexApplication {
                 }
             }
         });
+*/
     }
 
     public void fire(final String EVENT){
         switch(EVENT){
             case Events.ACTIVITY_DESTROY:
                 if(tracking_disabled() || tracking_error() || tracking_expired()) {
-                    clearViewHolders();
-                    entityHolders.clear();
+
+//                    clearViewHolders();
+//                    entityHolders.clear();
 //                    entityEvents.clear();
-                    userEntityHolders.clear();
+//                    userEntityHolders.clear();
 //                    userEntityEvents.clear();
 
                     Intent intent = new Intent(State.this, WaytousService.class);
@@ -431,11 +524,14 @@ public class State extends MultiDexApplication {
     }
 
     public PropertiesHolder getPropertiesHolder(){
+        return (PropertiesHolder) getSystemPropertyBus().getHolder(PropertiesHolder.TYPE);
+/*
         if(entityHolders.containsKey(PropertiesHolder.TYPE)) {
             return (PropertiesHolder) entityHolders.get(PropertiesHolder.TYPE);
         } else {
             return null;
         }
+*/
     }
 
     public GeoTrackFilter getGpsFilter() {
@@ -461,5 +557,23 @@ public class State extends MultiDexApplication {
     public SharedPreferences getSharedPreferences() {
         return sharedPreferences;
     }
+
+
+    public EventBus<AbstractPropertyHolder> getSystemPropertyBus() {
+        return systemPropertyBus;
+    }
+
+    public EventBus<AbstractViewHolder> getSystemViewBus() {
+        return systemViewBus;
+    }
+
+    public LinkedHashMap<String, AbstractPropertyHolder> getUserHolders() {
+        return userHolders;
+    }
+
+    public EventBus.Runner getAndroidRunner() {
+        return androidRunner;
+    }
+
 
 }

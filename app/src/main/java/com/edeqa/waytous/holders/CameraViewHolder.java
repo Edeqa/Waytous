@@ -111,7 +111,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     @Override
     public CameraUpdateView create(MyUser myUser) {
         if (myUser == null || myUser.getLocation() == null) return null;
-        return new CameraUpdateView(myUser);
+        return new CameraUpdateView(context, myUser);
     }
 
     @Override
@@ -274,8 +274,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         private boolean orientationChanged;
         private boolean perspectiveNorth;
 
-        CameraUpdateView(MyUser myUser) {
-            this.myUser = myUser;
+        CameraUpdateView(MainActivity context, MyUser myUser) {
+            super(context, myUser);
             number = myUser.getProperties().getNumber();
 
             HashMap<String, Double> props = (HashMap<String, Double>) myUser.getProperties().loadFor(TYPE);

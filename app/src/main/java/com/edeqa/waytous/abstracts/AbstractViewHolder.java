@@ -3,7 +3,6 @@ package com.edeqa.waytous.abstracts;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.EntityHolder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,11 +13,12 @@ import java.util.ArrayList;
 /**
  * Created 11/18/16.
  */
-abstract public class AbstractViewHolder<T extends AbstractView> implements EntityHolder<AbstractView> {
+abstract public class AbstractViewHolder<T extends AbstractView> extends AbstractPropertyHolder {
 
     protected MainActivity context;
 
     protected AbstractViewHolder(MainActivity context) {
+        super(context);
         this.context = context;
     }
 

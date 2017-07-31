@@ -319,7 +319,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         private List<LatLng> points;
 
         NavigationView(MyUser myUser){
-            this.myUser = myUser;
+            super(NavigationViewHolder.this.context, myUser);
 
             Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
             showNavigation = !(props == null || !props);

@@ -76,6 +76,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
     private long becomesActive = 0;
 
     public NotificationHolder(State state) {
+        super(state);
         this.state = state;
 
         Intent notificationIntent = new Intent(state, MainActivity.class);

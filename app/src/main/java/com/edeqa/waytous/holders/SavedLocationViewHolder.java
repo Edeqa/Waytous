@@ -45,7 +45,9 @@ import com.google.maps.android.ui.IconGenerator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
@@ -610,8 +612,15 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         private Marker marker;
         private MyUser myUser;
 
+        @Override
+        public List<String> events() {
+            List<String> list = new ArrayList<>();
+            list.add(CHANGE_NAME);
+            return list;
+        }
+
         SavedLocationView(MyUser myUser){
-            this.myUser = myUser;
+            super(SavedLocationViewHolder.this.context, myUser);
             if(isSavedLocation(myUser)) {
                 createMarker();
             }

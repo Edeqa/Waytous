@@ -5,12 +5,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.edeqa.eventbus.EventBus;
+import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
+import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.holders.PropertiesHolder;
 import com.edeqa.waytous.interfaces.Entity;
-import com.edeqa.waytous.interfaces.EntityHolder;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 
@@ -21,16 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.edeqa.waytous.State;
-
 /**
  * Created 9/18/16.
  */
 public class MyUser {
 
     private static final int SIMPLIFY_AFTER_EACH = 100;
+    private final EventBus<AbstractView> viewBus;
+    private final EventBus<AbstractProperty> propertyBus;
 
-    private LinkedHashMap<String,Entity> entities;
+    volatile private LinkedHashMap<String,Entity> entities;
     private ArrayList<Location> locations;
     private Location location;
     private AtomicBoolean continueFiring = new AtomicBoolean();
@@ -40,9 +42,16 @@ public class MyUser {
     public MyUser(){
         locations = new ArrayList<>();
         entities = new LinkedHashMap<>();
+
+        propertyBus = new EventBus<>(String.valueOf(this.hashCode()));
+        viewBus = new EventBus<>(String.valueOf(this.hashCode()));
+//        propertyBus.setRunner(State.getInstance().getAndroidRunner());
+        viewBus.setRunner(State.getInstance().getAndroidRunner());
+
         counter = 0;
         createProperties();
         user = false;
+
     }
 
         /*CircleOptions circleOptions = new CircleOptions()
@@ -119,6 +128,34 @@ public class MyUser {
     }
 
     private void createProperties(){
+        Iterator<String> iter = State.getInstance().getUserHolders().keySet().iterator();
+
+        while(iter.hasNext()) {
+            String type = iter.next();
+            if(entities.containsKey(type)) continue;
+
+            AbstractPropertyHolder holder = (AbstractPropertyHolder) State.getInstance().getUserHolders().get(type);
+            if(!(holder instanceof AbstractViewHolder)) {
+                AbstractProperty property = holder.create(this);
+                if (property != null) {
+                    entities.put(holder.getType(), property);
+                    propertyBus.register(property);
+                }
+            }
+        }
+
+/*
+        for(AbstractPropertyHolder holder: State.getInstance().getUserPropertyBus().getHolders()){
+            System.out.println("NEXT:"+holder.getType());
+            if(entities.containsKey(holder.getType())) continue;
+            AbstractProperty property = holder.create(this);
+            if(property != null){
+                entities.put(holder.getType(),property);
+                State.getInstance().getUserPropertyBus().register(property);
+            }
+        }
+*/
+/*
         for(Map.Entry<String, EntityHolder> entry: State.getInstance().getUserEntityHolders().entrySet()){
             if(entities.containsKey(entry.getKey())) continue;
             Entity property = entry.getValue().create(this);
@@ -126,21 +163,53 @@ public class MyUser {
                 entities.put(entry.getKey(),property);
             }
         }
+*/
     }
 
     public void createViews(){
+        System.out.println("CREATEVIEWS:"+getProperties().getNumber());
         if(getProperties().isActive()) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 public void run() {
-                    for(Map.Entry<String, AbstractViewHolder> entry: State.getInstance().getUserViewHolders().entrySet()){
-                        if(entities.containsKey(entry.getKey()) && entities.get(entry.getKey()) != null){
-                            entities.get(entry.getKey()).remove();
+
+                    /*Iterator<Map.Entry<String, Entity>> iter = entities.entrySet().iterator();
+
+                    while(iter.hasNext()) {
+                        Map.Entry<String, Entity> entry = iter.next();
+                        if(entry.getValue() instanceof AbstractView) {
+                            entry.getValue().remove();
+                            iter.remove();
                         }
-                        entities.put(entry.getKey(), entry.getValue().create(MyUser.this));
+                    }*/
+
+                    Iterator<Map.Entry<String, AbstractPropertyHolder>> iterator = State.getInstance().getUserHolders().entrySet().iterator();
+
+                    while(iterator.hasNext()) {
+                        Map.Entry<String, AbstractPropertyHolder> entry = iterator.next();
+                        String type = entry.getKey();
+                        if(entities.containsKey(type)) continue;
+
+                        AbstractPropertyHolder holder = State.getInstance().getUserHolders().get(type);
+
+                        if(holder == null) continue;
+                        if(holder instanceof AbstractViewHolder) {
+                            if(entities.containsKey(type) && entities.get(type) != null){
+                                entities.get(type).remove();
+                            }
+                            AbstractView property = ((AbstractViewHolder) holder).create(MyUser.this);
+                            if (property != null) {
+                                System.out.println("ADDVIEW:"+getProperties().getNumber()+":"+getProperties().getDisplayName()+":"+property);
+                                entities.put(holder.getType(), property);
+                                propertyBus.register(property);
+                            }
+                        }
                     }
+                    System.out.println("VIEWSCREATED:"+MyUser.this);
+
                 }
             });
         }
+
     }
 
     public void fire(final String EVENT){
@@ -148,7 +217,11 @@ public class MyUser {
     }
 
     public void fire(final String EVENT, final Object object){
-        continueFiring.set(true);
+        propertyBus.post(EVENT, object);
+        viewBus.post(EVENT, object);
+
+
+/*        continueFiring.set(true);
         for(Map.Entry<String,Entity> entry: entities.entrySet()){
             if(entry.getValue() instanceof AbstractProperty){
                 try {
@@ -172,7 +245,7 @@ public class MyUser {
                     }
                 }
             }
-        });
+        });*/
     }
 
     public void onChangeLocation(){
@@ -249,5 +322,14 @@ public class MyUser {
 
     public void setUser(boolean user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "MyUser{" +
+                "entities=" + entities +
+                ", location=" + location +
+                ", user=" + user +
+                "} " + (getProperties() != null ? getProperties().toString() : "");
     }
 }

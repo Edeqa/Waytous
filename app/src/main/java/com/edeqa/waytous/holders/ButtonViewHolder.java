@@ -37,6 +37,7 @@ import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
@@ -159,7 +160,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     class ButtonView extends AbstractView {
         private LinearLayout button;
         private TextView title;
-        private MyUser myUser;
+
 
         View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
             @Override
@@ -211,6 +212,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             }
         };
         private volatile boolean clicked;
+
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,6 +220,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     myUser.fire(CAMERA_ZOOM);
                     clicked = false;
                 } else {
+                    System.out.println("BUTTON:"+ButtonView.this+":"+myUser);
                     myUser.fire(SELECT_SINGLE_USER);
                     clicked = true;
                     new Handler().postDelayed(new Runnable() {
@@ -233,8 +236,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         };
 
         public ButtonView(MyUser myUser){
-
-            this.myUser = myUser;
+            super(ButtonViewHolder.this.context, myUser);
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int buttonView = myUser.getProperties().getImageResource();
@@ -295,6 +297,13 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         public void remove() {
             layout.removeView(button);
             button = null;
+        }
+
+        @Override
+        public List<String> events() {
+            List<String> list = new ArrayList<>();
+            list.add(CHANGE_NAME);
+            return list;
         }
 
         @Override

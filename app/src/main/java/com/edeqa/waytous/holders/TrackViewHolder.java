@@ -136,7 +136,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
         private int counter;
 
         TrackView(MyUser myUser){
-            this.myUser = myUser;
+            super(myUser);
             Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
             showtrack = !(props == null || !props);
             if(showtrack){

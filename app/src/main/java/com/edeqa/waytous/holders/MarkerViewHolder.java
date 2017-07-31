@@ -163,10 +163,9 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
     class MarkerView extends AbstractView {
         private Circle circle;
         private Marker marker;
-//        private MyUser myUser;
 
         MarkerView(MyUser myUser){
-//            this.myUser = myUser;
+            super(myUser);
 
             int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Bitmap bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getProperties().getColor(),size,size);

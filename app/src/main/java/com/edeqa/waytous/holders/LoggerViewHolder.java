@@ -3,20 +3,21 @@ package com.edeqa.waytous.holders;
 import android.location.Location;
 import android.util.Log;
 
-import com.edeqa.waytous.abstracts.AbstractProperty;
-import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
+import com.edeqa.waytous.MainActivity;
+import com.edeqa.waytous.abstracts.AbstractView;
+import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 
 
 /**
  * Created 11/30/16.
  */
-public class LoggerHolder extends AbstractPropertyHolder {
-    private static final String TYPE = "LoggerHolder";
+public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.LoggerView> {
+    private static final String TYPE = "LoggerViewHolder";
 
-    public LoggerHolder() {
-        super(null);
-        Log.i(TYPE,"LoggerHolder:init");
+    public LoggerViewHolder(MainActivity context) {
+        super(context);
+        Log.i(TYPE,"LoggerViewHolder:init");
     }
 
     @Override
@@ -25,10 +26,10 @@ public class LoggerHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public LoggerProperty create(MyUser myUser) {
+    public LoggerView create(MyUser myUser) {
         if (myUser == null) return null;
-        Log.i(TYPE,"createProperty:"+myUser);
-        return new LoggerProperty(myUser);
+        Log.i(TYPE,"createView:"+myUser);
+        return new LoggerView(myUser);
     }
 
     @Override
@@ -49,21 +50,21 @@ public class LoggerHolder extends AbstractPropertyHolder {
         return true;
     }
 
-    private class LoggerProperty extends AbstractProperty {
-        LoggerProperty(MyUser myUser) {
+    public class LoggerView extends AbstractView {
+        LoggerView(MyUser myUser) {
             super(myUser);
-            Log.i(TYPE,"LoggerProperty:init");
+            Log.i(TYPE,"LoggerView:init:"+myUser);
         }
 
         @Override
         public boolean onEvent(String event, Object object) {
-            Log.i(TYPE,"onEvent:property:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
+            Log.i(TYPE,"onEvent:view:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
             return true;
         }
 
         @Override
         public boolean dependsOnLocation() {
-            Log.i(TYPE,"dependsOnLocation:"+myUser.getClass());
+            Log.i(TYPE,"dependsOnLocation:"+myUser);
             return true;
         }
 

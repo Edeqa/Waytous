@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 
+import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
@@ -18,7 +19,6 @@ import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
-import com.edeqa.waytous.State;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
@@ -39,6 +39,7 @@ public class GpsHolder extends AbstractPropertyHolder {
     private long lastGps = 0;
 
     public GpsHolder(Context context) {
+        super(context);
         provider = new LocationGooglePlayServicesProvider();
         provider.setCheckLocationSettings(true);
 
@@ -119,6 +120,7 @@ public class GpsHolder extends AbstractPropertyHolder {
     };
 
     private void sendLocation(Location location) {
+        if(location == null) return;
         if(State.getInstance().tracking_active()) {
             try {
                 JSONObject message = Utils.locationToJson(location);

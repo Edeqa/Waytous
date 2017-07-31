@@ -79,7 +79,7 @@ public class InfoViewHolder extends AbstractViewHolder<InfoViewHolder.InfoView> 
 
     class InfoView extends AbstractView {
         InfoView(MyUser myUser){
-            this.myUser = myUser;
+            super(myUser);
         }
 
         @Override
