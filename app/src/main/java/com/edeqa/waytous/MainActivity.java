@@ -348,6 +348,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
                 state.registerEntityHolder(ctor.newInstance(this), MainActivity.this);
             } catch (Exception e) {
+                System.err.println("with " + s);
                 e.printStackTrace();
             }
         }

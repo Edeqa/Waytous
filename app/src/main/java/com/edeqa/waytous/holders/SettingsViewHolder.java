@@ -29,6 +29,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
+import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
 
@@ -95,15 +96,8 @@ public class SettingsViewHolder extends AbstractViewHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case CREATE_DRAWER:
-                NavigationView drawerView = (NavigationView) object;
-                MenuItem menuItem = drawerView.getMenu().findItem(R.id.drawer_section_last);
-                menuItem.setVisible(true);
-
-                MenuItem item = menuItem.getSubMenu().findItem(R.string.settings);
-                if(item == null) {
-                    item = menuItem.getSubMenu().add(Menu.NONE, R.string.settings, Menu.NONE, context.getString(R.string.settings));
-                }
-                item.setIcon(R.drawable.ic_settings_black_24dp)
+                DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
+                adder.add(R.id.drawer_section_miscellaneous, R.string.settings, R.string.settings, R.drawable.ic_settings_black_24dp)
                         .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -112,11 +106,10 @@ public class SettingsViewHolder extends AbstractViewHolder {
                             }
                         });
                 break;
-            case PREPARE_DRAWER:
-                drawerView = (NavigationView) object;
-                menuItem = drawerView.getMenu().findItem(R.id.drawer_section_last);
-                menuItem.setVisible(true);
-                break;
+//            case PREPARE_DRAWER:
+//                adder = (DrawerViewHolder.ItemsHolder) object;
+//                adder.findItem(R.string.chat).setVisible(true);
+//                break;
             case SHOW_SETTINGS:
                 currentSettingItem = settingItem;
                 if(!settingsPrepared) {

@@ -151,6 +151,17 @@ public class MessagesViewHolder extends AbstractViewHolder {
 //                }
 //                break;
             case CREATE_DRAWER:
+                DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
+                adder.add(R.id.drawer_section_communication, R.string.chat, R.string.chat, R.drawable.ic_chat_black_24dp)
+                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                State.getInstance().fire(SHOW_MESSAGES);
+                                return false;
+                            }
+                        });
+
+/*
                 NavigationView drawerView = (NavigationView) object;
                 MenuItem menuItem = drawerView.getMenu().findItem(R.id.drawer_section_primary);
                 menuItem.setVisible(true);
@@ -168,8 +179,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
                                 return false;
                             }
                         });
+*/
                 break;
             case PREPARE_DRAWER:
+                adder = (DrawerViewHolder.ItemsHolder) object;
+                UserMessage.getDb().removeRestriction("search");
+                int count = UserMessage.getCount();
+                adder.findItem(R.string.chat).setVisible(count > 0);
+/*
                 drawerView = (NavigationView) object;
                 menuItem = drawerView.getMenu().findItem(R.id.drawer_section_primary);
                 generalMenu = menuItem.getSubMenu();
@@ -180,6 +197,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 if(count>0) {
                     menuItem.setVisible(true);
                 }
+*/
                 break;
             case PREPARE_FAB:
                 final FabViewHolder fab = (FabViewHolder) object;

@@ -1,5 +1,7 @@
 package com.edeqa.waytous.holders;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.edeqa.waytous.MainActivity;
@@ -16,6 +18,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
+import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.LightSensorManager.DAY;
@@ -196,6 +200,47 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 map.setTrafficEnabled(state);
                 State.getInstance().getPropertiesHolder().saveFor(TYPE + "_traffic", state);
                 break;
+            case CREATE_DRAWER:
+                DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
+                adder.add(R.id.drawer_section_map, R.string.traffic, R.string.traffic, R.drawable.ic_traffic_black_24dp)
+                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                State.getInstance().fire(REQUEST_MODE_TRAFFIC);
+                                return false;
+                            }
+                        });
+                adder.add(R.id.drawer_section_map, R.string.satellite, R.string.satellite, R.drawable.ic_satellite_black_24dp)
+                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
+                                    State.getInstance().fire(REQUEST_MODE_SATELLITE);
+                                } else {
+                                    State.getInstance().fire(REQUEST_MODE_NORMAL);
+                                }
+                                return false;
+                            }
+                        });
+                adder.add(R.id.drawer_section_map, R.string.terrain, R.string.terrain, R.drawable.ic_terrain_black_24dp)
+                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
+                                    State.getInstance().fire(REQUEST_MODE_TERRAIN);
+                                else
+                                    State.getInstance().fire(REQUEST_MODE_NORMAL);
+                                return false;
+                            }
+                        });
+                break;
+            case PREPARE_DRAWER:
+                adder = (DrawerViewHolder.ItemsHolder) object;
+                adder.findItem(R.string.satellite).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_SATELLITE);
+                adder.findItem(R.string.terrain).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_TERRAIN);
+                adder.findItem(R.string.traffic).setChecked(context.getMap().isTrafficEnabled());
+                break;
+
         }
         return true;
     }

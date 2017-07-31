@@ -7,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -50,6 +51,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private ImageButton ibPrimary;
+    private ItemsHolder itemsHolder;
 
     private static int[] ids = new int[]{
             R.id.drawer_section_primary,
@@ -57,6 +59,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
             R.id.drawer_section_share,
             R.id.drawer_section_navigation,
             R.id.drawer_section_views,
+            R.id.drawer_section_map,
             R.id.drawer_section_miscellaneous,
             R.id.drawer_section_last
     };
@@ -64,10 +67,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public DrawerViewHolder(MainActivity context){
         super(context);
 
-
-
         setViewAndToolbar(context.findViewById(R.id.drawer_layout), (Toolbar) context.findViewById(R.id.toolbar));
-        setCallback(onNavigationDrawerCallback);
+
+        itemsHolder = new ItemsHolder();
 
         if(context.getSupportActionBar() != null) {
             actionBar = context.getSupportActionBar();
@@ -83,14 +85,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_SETTLING) {
                     if (!isDrawerOpen()) {
-                        navigationView.getMenu().findItem(R.id.nav_satellite).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_SATELLITE);
-                        navigationView.getMenu().findItem(R.id.nav_terrain).setChecked(context.getMap().getMapType() == GoogleMap.MAP_TYPE_TERRAIN);
-                        navigationView.getMenu().findItem(R.id.nav_traffic).setChecked(context.getMap().isTrafficEnabled());
-
-                        for(int id:ids) {
-                            navigationView.getMenu().findItem(id).setVisible(false);
-                        }
-                        State.getInstance().fire(PREPARE_DRAWER, navigationView);
+                        State.getInstance().fire(PREPARE_DRAWER, itemsHolder);
                     }
                     drawer.invalidate();
                 }
@@ -100,6 +95,21 @@ public class DrawerViewHolder extends AbstractViewHolder {
         toggle.syncState();
 
         navigationView = (NavigationView) drawer.findViewById(R.id.nav_view);
+
+        for(int i = 0; i < ids.length; i++) {
+            if(navigationView.getMenu().findItem(ids[i]) == null) {
+                MenuItem item = navigationView.getMenu().add(ids[i], ids[i], i * 100, null);
+                navigationView.getMenu().setGroupEnabled(ids[i], true);
+                item.setVisible(false);
+            }
+        }
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                drawer.closeDrawer(GravityCompat.START);
+                return false;
+            }
+        });
 
      }
 
@@ -127,10 +137,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case ACTIVITY_RESUME:
-                for(int id:ids) {
-                    navigationView.getMenu().findItem(id).setVisible(false);
-                }
-                State.getInstance().fire(CREATE_DRAWER, navigationView);
+                State.getInstance().fire(CREATE_DRAWER, itemsHolder);
 
                 ibPrimary = (ImageButton) navigationView.findViewById(R.id.ibPrim);
                 ibPrimary.setOnClickListener(new View.OnClickListener() {
@@ -162,17 +169,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    public void setCallback(final Runnable1<Integer> callback) {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                callback.call(item.getItemId());
-                drawer.closeDrawer(GravityCompat.START);
-                return false;
-            }
-        });
-    }
-
     public boolean isDrawerOpen() {
         return drawer != null && drawer.isDrawerOpen(GravityCompat.START);
     }
@@ -189,28 +185,31 @@ public class DrawerViewHolder extends AbstractViewHolder {
         return rules;
     }
 
-    private Runnable1 onNavigationDrawerCallback = new Runnable1<Integer>() {
-        @Override
-        public void call(Integer id) {
-            switch(id) {
-                case R.id.nav_traffic:
-                    State.getInstance().fire(REQUEST_MODE_TRAFFIC);
-                    break;
-                case R.id.nav_satellite:
-                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
-                        State.getInstance().fire(REQUEST_MODE_SATELLITE);
-                    } else {
-                        State.getInstance().fire(REQUEST_MODE_NORMAL);
-                    }
-                    break;
-                case R.id.nav_terrain:
-                    if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
-                        State.getInstance().fire(REQUEST_MODE_TERRAIN);
-                    else
-                        State.getInstance().fire(REQUEST_MODE_NORMAL);
-                    break;
-            }
+    public class ItemsHolder {
+        public MenuItem add(int groupId, int itemId, int titleResId, int iconResId) {
+            return add(groupId, itemId, context.getString(titleResId), iconResId);
         }
-    };
+        public MenuItem add(int groupId, int itemId, String title, int iconResId) {
+            int order = 0;
 
+            MenuItem item = findItem(itemId);
+            if(item == null) {
+                if (groupId > 0) {
+                    for (int i = 0; i < navigationView.getMenu().size(); i++) {
+                        if (navigationView.getMenu().getItem(i).getGroupId() == groupId) {
+                            order = navigationView.getMenu().getItem(i).getOrder();
+                            break;
+                        }
+                    }
+                }
+                item = navigationView.getMenu().add(groupId, itemId, order, title);
+                item.setIcon(iconResId);
+            }
+            return item;
+        }
+
+        public MenuItem findItem(int itemId) {
+            return navigationView.getMenu().findItem(itemId);
+        }
+    }
 }

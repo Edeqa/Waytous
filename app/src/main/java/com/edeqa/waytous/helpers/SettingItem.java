@@ -460,7 +460,7 @@ public class SettingItem<T> {
             value = sharedPreferences.getString(id, null);
         }
 
-        public SettingItem setItems(Map<String, String> items) {
+        public SettingItem.List setItems(Map<String, String> items) {
             this.items = items;
             return this;
         }
@@ -576,8 +576,9 @@ public class SettingItem<T> {
             return getMessage();
         }
 
-        public void setOnItemSelectedCallback(Runnable1<String> onItemSelectedCallback) {
+        public SettingItem.List setOnItemSelectedCallback(Runnable1<String> onItemSelectedCallback) {
             this.onItemSelectedCallback = onItemSelectedCallback;
+            return this;
         }
     }
 

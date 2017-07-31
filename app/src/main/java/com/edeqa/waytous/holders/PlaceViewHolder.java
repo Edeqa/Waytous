@@ -6,10 +6,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edeqa.waytous.MainActivity;
@@ -18,6 +21,7 @@ import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.common.ConnectionResult;
@@ -47,9 +51,11 @@ import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
+import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
+import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
@@ -163,6 +169,21 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     }
                 });
                 break;
+            case CREATE_DRAWER:
+                DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
+                adder.add(R.id.drawer_section_navigation, R.string.search, R.string.search, R.drawable.ic_search_black_24dp)
+                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                onSearchClickListener.onClick(null);
+                                return false;
+                            }
+                        });
+                break;
+//            case PREPARE_DRAWER:
+//                adder = (DrawerViewHolder.ItemsHolder) object;
+//                adder.findItem(R.string.chat).setVisible(true);
+//                break;
             case SHOW_PLACE:
                 Map map = (Map) object;
                 try {
@@ -383,23 +404,25 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
             }
         });*/
 
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(context);
-                    context.startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE_PLACE);
-                } catch (GooglePlayServicesRepairableException e) {
-                    GoogleApiAvailability.getInstance().getErrorDialog(context, e.getConnectionStatusCode(), 0 /* requestCode */).show();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    String message = context.getString(R.string.google_play_services_is_not_available_s, GoogleApiAvailability.getInstance().getErrorString(e.errorCode));
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                }
+        toolbar.setOnClickListener(onSearchClickListener);
+    }
+
+    private View.OnClickListener onSearchClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            try {
+                Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(context);
+                context.startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE_PLACE);
+            } catch (GooglePlayServicesRepairableException e) {
+                GoogleApiAvailability.getInstance().getErrorDialog(context, e.getConnectionStatusCode(), 0 /* requestCode */).show();
+            } catch (GooglePlayServicesNotAvailableException e) {
+                String message = context.getString(R.string.google_play_services_is_not_available_s, GoogleApiAvailability.getInstance().getErrorString(e.errorCode));
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            }
 
 //                searchItem.expandActionView();
-            }
-        });
-    }
+        }
+    };
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {

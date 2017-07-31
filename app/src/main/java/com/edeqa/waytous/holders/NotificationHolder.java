@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
+import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -183,10 +185,30 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
                 item.add(new SettingItem.Page(TYPE).setTitle("Notifications")
                         .add(new SettingItem.Group(PREFERENCE_NOTIFICATION_SOUNDS).setTitle("Sounds"))
-                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_USER_ONLINE).setItems(items).setTitle("User online").setGroupId(PREFERENCE_NOTIFICATION_SOUNDS).setMessage("Default"))
-                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_CLOSE_TO_USER).setItems(items).setTitle("Close to user").setGroupId(PREFERENCE_NOTIFICATION_SOUNDS).setMessage("Default"))
-                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_AWAY_FROM_USER).setItems(items).setTitle("Away from user").setGroupId(PREFERENCE_NOTIFICATION_SOUNDS).setMessage("Default"))
-                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_NEW_MESSAGE).setItems(items).setTitle("New message").setGroupId(PREFERENCE_NOTIFICATION_SOUNDS).setMessage("Default")));
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_USER_ONLINE)
+                                .setItems(items)
+                                .setOnItemSelectedCallback(previewSound)
+                                .setTitle("User online")
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
+                                .setMessage("Default"))
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_CLOSE_TO_USER)
+                                .setItems(items)
+                                .setOnItemSelectedCallback(previewSound)
+                                .setTitle("Close to user")
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
+                                .setMessage("Default"))
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_AWAY_FROM_USER)
+                                .setItems(items)
+                                .setOnItemSelectedCallback(previewSound)
+                                .setTitle("Away from user")
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
+                                .setMessage("Default"))
+                        .add(new SettingItem.List(PREFERENCE_NOTIFICATION_NEW_MESSAGE)
+                                .setItems(items)
+                                .setOnItemSelectedCallback(previewSound)
+                                .setTitle("New message")
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
+                                .setMessage("Default")));
                 break;
         }
 
@@ -249,6 +271,22 @@ public class NotificationHolder extends AbstractPropertyHolder {
             NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
 //            notificationManager.notify(1976, notification.build());
             notificationManager.cancel(1976);
+        }
+    };
+
+    private Runnable1 previewSound = new Runnable1<String>() {
+
+        public Ringtone player;
+
+        @Override
+        public void call(String arg) {
+            if(arg != null && arg.length() > 0) {
+                if(player != null) {
+                    player.stop();
+                }
+                player = RingtoneManager.getRingtone(state, Uri.parse(arg));
+                player.play();
+            }
         }
     };
 

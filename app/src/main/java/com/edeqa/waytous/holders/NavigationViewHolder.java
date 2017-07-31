@@ -97,7 +97,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         this.map = context.getMap();
         handlerHideButtons = new Handler();
 
-        mode = State.getInstance().getStringPreference(PREFERENCE_MODE, null);
+        mode = State.getInstance().getStringPreference(PREFERENCE_MODE, NAVIGATION_MODE_DRIVING);
 
         NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
         if(m != null) {

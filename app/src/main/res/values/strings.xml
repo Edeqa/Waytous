@@ -180,6 +180,8 @@
     <string name="walking">Walking</string>
     <string name="bicycling">Bicycling</string>
     <string name="mode">Mode</string>
-
+    <string name="communication">Communication</string>
+    <string name="views">Views</string>
+    <string name="miscellaneous">Miscellaneous</string>
 
 </resources>
