@@ -11,7 +11,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -45,7 +44,6 @@ import java.util.ArrayList;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
@@ -160,45 +158,15 @@ public class MessagesViewHolder extends AbstractViewHolder {
                                 return false;
                             }
                         });
-
-/*
-                NavigationView drawerView = (NavigationView) object;
-                MenuItem menuItem = drawerView.getMenu().findItem(R.id.drawer_section_primary);
-                menuItem.setVisible(true);
-
-                Menu generalMenu = menuItem.getSubMenu();
-                MenuItem item = generalMenu.findItem(R.string.chat);
-                if(item == null) {
-                    item = generalMenu.add(Menu.NONE, R.string.chat, Menu.NONE, context.getString(R.string.chat));
-                }
-                item.setIcon(R.drawable.ic_chat_black_24dp)
-                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                State.getInstance().fire(SHOW_MESSAGES);
-                                return false;
-                            }
-                        });
-*/
                 break;
+/*
             case PREPARE_DRAWER:
                 adder = (DrawerViewHolder.ItemsHolder) object;
                 UserMessage.getDb().removeRestriction("search");
                 int count = UserMessage.getCount();
                 adder.findItem(R.string.chat).setVisible(count > 0);
-/*
-                drawerView = (NavigationView) object;
-                menuItem = drawerView.getMenu().findItem(R.id.drawer_section_primary);
-                generalMenu = menuItem.getSubMenu();
-                UserMessage.getDb().removeRestriction("search");
-                int count = UserMessage.getCount();
-                menuItem.setVisible(count > 0);
-                generalMenu.findItem(R.string.chat).setVisible(count > 0);
-                if(count>0) {
-                    menuItem.setVisible(true);
-                }
-*/
                 break;
+*/
             case PREPARE_FAB:
                 final FabViewHolder fab = (FabViewHolder) object;
                 if(State.getInstance().tracking_active()) {

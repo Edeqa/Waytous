@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -33,7 +32,6 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SavedLocation;
 import com.edeqa.waytous.helpers.ShareSender;
 import com.edeqa.waytous.helpers.SystemMessage;
-import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytous.interfaces.Runnable2;
@@ -251,40 +249,13 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 showLocations();
                                 return false;
                             }
-                        });
-                /*NavigationView navigationView = (NavigationView) object;
-                MenuItem menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
-                Menu navigationMenu = menuItem.getSubMenu();
-                MenuItem item = navigationMenu.findItem(R.string.locations);
-                if(item == null) {
-                    item = navigationMenu.add(Menu.NONE, R.string.locations, Menu.NONE, context.getString(R.string.locations));
-                }
-                item.setIcon(R.drawable.ic_pin_drop_black_24dp)
-                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                showLocations();
-                                return false;
-                            }
-                        });*/
+                        }).setVisible(false);
                 break;
             case PREPARE_DRAWER:
                 adder = (DrawerViewHolder.ItemsHolder) object;
                 SavedLocation.getDb().removeRestriction("search");
                 int count = SavedLocation.getCount();
                 adder.findItem(R.string.locations).setVisible(count > 0);
-/*
-                navigationView = (NavigationView) object;
-                menuItem = navigationView.getMenu().findItem(R.id.drawer_section_primary);
-
-                navigationMenu = menuItem.getSubMenu();
-                SavedLocation.getDb().removeRestriction("search");
-                int count = SavedLocation.getCount();
-                navigationMenu.findItem(R.string.locations).setVisible(count > 0);
-                if(count>0) {
-                    menuItem.setVisible(true);
-                }
-*/
                 break;
             case MARKER_CLICK:
                 final Marker marker = (Marker) object;
@@ -390,7 +361,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         this.map = map;
 
 //        map.setOnMarkerClickListener(onMarkerClickListener);
-//
 //        map.setInfoWindowAdapter(infoWindowAdapter);
 
         return this;

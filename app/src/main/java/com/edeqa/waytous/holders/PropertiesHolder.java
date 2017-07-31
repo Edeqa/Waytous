@@ -16,7 +16,6 @@ import com.google.maps.android.SphericalUtil;
 import java.io.Serializable;
 import java.util.HashMap;
 
-
 import static android.content.Context.MODE_PRIVATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;

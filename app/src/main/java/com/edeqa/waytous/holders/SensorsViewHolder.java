@@ -1,6 +1,5 @@
 package com.edeqa.waytous.holders;
 
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
@@ -202,37 +201,35 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 break;
             case CREATE_DRAWER:
                 DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
-                adder.add(R.id.drawer_section_map, R.string.traffic, R.string.traffic, R.drawable.ic_traffic_black_24dp)
-                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                State.getInstance().fire(REQUEST_MODE_TRAFFIC);
-                                return false;
-                            }
-                        });
-                adder.add(R.id.drawer_section_map, R.string.satellite, R.string.satellite, R.drawable.ic_satellite_black_24dp)
-                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
-                                    State.getInstance().fire(REQUEST_MODE_SATELLITE);
-                                } else {
-                                    State.getInstance().fire(REQUEST_MODE_NORMAL);
-                                }
-                                return false;
-                            }
-                        });
-                adder.add(R.id.drawer_section_map, R.string.terrain, R.string.terrain, R.drawable.ic_terrain_black_24dp)
-                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN)
-                                    State.getInstance().fire(REQUEST_MODE_TERRAIN);
-                                else
-                                    State.getInstance().fire(REQUEST_MODE_NORMAL);
-                                return false;
-                            }
-                        });
+                adder.add(R.id.drawer_section_map, R.string.traffic, R.string.traffic, R.drawable.ic_traffic_black_24dp).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        State.getInstance().fire(REQUEST_MODE_TRAFFIC);
+                        return false;
+                    }
+                });
+                adder.add(R.id.drawer_section_map, R.string.satellite, R.string.satellite, R.drawable.ic_satellite_black_24dp).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_SATELLITE) {
+                            State.getInstance().fire(REQUEST_MODE_SATELLITE);
+                        } else {
+                            State.getInstance().fire(REQUEST_MODE_NORMAL);
+                        }
+                        return false;
+                    }
+                });
+                adder.add(R.id.drawer_section_map, R.string.terrain, R.string.terrain, R.drawable.ic_terrain_black_24dp).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        if (context.getMap() != null && context.getMap().getMapType() != GoogleMap.MAP_TYPE_TERRAIN) {
+                            State.getInstance().fire(REQUEST_MODE_TERRAIN);
+                        } else {
+                            State.getInstance().fire(REQUEST_MODE_NORMAL);
+                        }
+                        return false;
+                    }
+                });
                 break;
             case PREPARE_DRAWER:
                 adder = (DrawerViewHolder.ItemsHolder) object;
@@ -250,4 +247,4 @@ public class SensorsViewHolder extends AbstractViewHolder {
         return this;
     }
 
- }
+}

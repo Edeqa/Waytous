@@ -11,7 +11,6 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v7.app.NotificationCompat;
 
 import com.edeqa.waytous.MainActivity;
@@ -24,7 +23,6 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.interfaces.Runnable1;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -7,7 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,12 +18,9 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytous.interfaces.Runnable2;
-import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
-
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
@@ -34,10 +30,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NORMAL;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_SATELLITE;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_TERRAIN;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_TRAFFIC;
 
 /**
  * Created 11/27/16.
