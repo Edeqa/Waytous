@@ -183,5 +183,6 @@
     <string name="communication">Communication</string>
     <string name="views">Views</string>
     <string name="miscellaneous">Miscellaneous</string>
+    <string name="d_users_selected">%d user(s) selected</string>
 
 </resources>

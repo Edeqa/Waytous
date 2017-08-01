@@ -25,7 +25,7 @@ import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
  */
 @SuppressWarnings("WeakerAccess")
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
-    
+
     private static final String TYPE = "address";
     private Runnable1<String> callback;
 
@@ -88,7 +88,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 case SELECT_USER:
                 case UNSELECT_USER:
                     if(State.getInstance().getUsers().getCountAllSelected() > 1){
-                        callback.call(null);
+                        callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountAllSelected()));
                         return true;
                     } else {
                         callback.call("...");
@@ -100,7 +100,10 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         }
 
         private void resolveAddress(final Location location) {
-            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountAllSelected() > 1){
+            if (State.getInstance().getUsers().getCountAllSelected() > 1) {
+                setTitle(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountAllSelected()));
+                return;
+            } else if(!myUser.getProperties().isSelected() || location == null){
                 return;
             }
             long currentTimestamp = new Date().getTime();
