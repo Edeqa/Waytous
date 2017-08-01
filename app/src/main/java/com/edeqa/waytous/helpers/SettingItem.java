@@ -9,22 +9,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.interfaces.Entity;
 import com.edeqa.waytous.interfaces.Runnable1;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -414,6 +407,7 @@ public class SettingItem<T> {
 //                    if(x.getType() == SettingItem.PAGE) break;
                 }
             }
+            if(callback != null) callback.call(this);
             return this;
 
         }

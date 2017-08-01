@@ -1,11 +1,9 @@
 package com.edeqa.waytous.holders;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,14 +26,13 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
-import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
-import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 
 
 /**
@@ -97,25 +93,27 @@ public class SettingsViewHolder extends AbstractViewHolder {
         switch(event){
             case CREATE_DRAWER:
                 DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
-                adder.add(R.id.drawer_section_miscellaneous, R.string.settings, R.string.settings, R.drawable.ic_settings_black_24dp)
-                        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                State.getInstance().fire(SHOW_SETTINGS);
-                                return false;
-                            }
-                        });
+                adder.add(R.id.drawer_section_miscellaneous, R.string.settings, R.string.settings, R.drawable.ic_settings_black_24dp).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        State.getInstance().fire(SHOW_SETTINGS);
+                        return false;
+                    }
+                });
                 break;
 //            case PREPARE_DRAWER:
 //                adder = (DrawerViewHolder.ItemsHolder) object;
 //                adder.findItem(R.string.chat).setVisible(true);
 //                break;
-            case SHOW_SETTINGS:
+            case ACTIVITY_RESUME:
                 currentSettingItem = settingItem;
                 if(!settingsPrepared) {
                     State.getInstance().fire(CREATE_SETTINGS, settingItem);
                     settingsPrepared = true;
                 }
+                break;
+            case SHOW_SETTINGS:
+                currentSettingItem = settingItem;
                 State.getInstance().fire(PREPARE_SETTINGS, settingItem);
                 showSettings();
                 break;
@@ -250,7 +248,8 @@ public class SettingsViewHolder extends AbstractViewHolder {
                                 context.startActivity(x.getIntent());
                             }
                         }
-                    });break;
+                    });
+                    break;
                 case SettingItem.TEXT:
                     holder.tvTitle.setText(item.getTitle());
 //                    holder.tvSummary.setText(((SettingItem.Text)item).fetchSummary());

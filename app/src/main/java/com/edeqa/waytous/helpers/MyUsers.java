@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
@@ -106,23 +107,26 @@ public class MyUsers {
     }
 
     public MyUser addUser(JSONObject o) throws JSONException {
-        MyUser myUser;
+        MyUser myUser = null;
         if (!users.containsKey(o.getInt(RESPONSE_NUMBER))) {
-            myUser = new MyUser();
-            myUser.getProperties().setNumber(o.getInt(RESPONSE_NUMBER));
-            if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
-            if(o.has(USER_NAME)) myUser.fire(CHANGE_NAME,o.getString(USER_NAME));
-            if(o.has(USER_PROVIDER)) {
-                Location location = Utils.jsonToLocation(o);
-                myUser.addLocation(location);
+            try {
+                myUser = new MyUser();
+                myUser.getProperties().setNumber(o.getInt(RESPONSE_NUMBER));
+                if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
+                if(o.has(USER_NAME)) myUser.fire(CHANGE_NAME,o.getString(USER_NAME));
+                if(o.has(USER_PROVIDER)) {
+                    Location location = Utils.jsonToLocation(o);
+                    myUser.addLocation(location);
+                }
+                users.put(o.getInt(RESPONSE_NUMBER), myUser);
+                myUser.fire(CHANGE_NUMBER,o.getInt(RESPONSE_NUMBER));
+            } catch (TooManyListenersException e) {
+                e.printStackTrace();
             }
-            users.put(o.getInt(RESPONSE_NUMBER), myUser);
-            myUser.fire(CHANGE_NUMBER,o.getInt(RESPONSE_NUMBER));
         } else {
             myUser = users.get(o.getInt(RESPONSE_NUMBER));
             if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
         }
-//        myUser.fire(MAKE_ACTIVE);
         return myUser;
     }
 

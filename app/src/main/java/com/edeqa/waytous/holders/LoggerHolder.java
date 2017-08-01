@@ -39,7 +39,7 @@ public class LoggerHolder extends AbstractPropertyHolder {
 
     @Override
     public boolean onEvent(String event, Object object) {
-        Log.i(TYPE,"onEvent:MAIN:"+event+":"+object);
+        Log.i(TYPE,"onEvent:MAIN:"+this.hashCode()+":"+event+":"+object);
         return true;
     }
 
@@ -57,7 +57,7 @@ public class LoggerHolder extends AbstractPropertyHolder {
 
         @Override
         public boolean onEvent(String event, Object object) {
-            Log.i(TYPE,"onEvent:PROPERTY:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
+            Log.i(TYPE,"onEvent:PROPERTY:"+this.hashCode()+":"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
             return true;
         }
 

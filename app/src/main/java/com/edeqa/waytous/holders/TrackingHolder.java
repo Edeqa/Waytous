@@ -3,7 +3,6 @@ package com.edeqa.waytous.holders;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Handler;
 import android.util.Log;
 
 import com.edeqa.waytous.R;
@@ -123,7 +122,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         State.getInstance().setTracking(tracking);
                         tracking.setTrackingListener(onTrackingListener);
                         tracking.start();
-                    } else if(State.getInstance().tracking_active()){
+                    }/* else if(State.getInstance().tracking_active()){
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -131,7 +130,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             }
                         },0);
                         return false;
-                    }
+                    }*/
 //                } else {
 //                    State.getInstance().fire(TRACKING_ACTIVE);
                 }

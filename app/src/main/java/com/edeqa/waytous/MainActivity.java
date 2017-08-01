@@ -27,7 +27,6 @@ import com.edeqa.waytous.holders.CameraViewHolder;
 import com.edeqa.waytous.holders.DrawerViewHolder;
 import com.edeqa.waytous.holders.FabViewHolder;
 import com.edeqa.waytous.holders.FacebookViewHolder;
-import com.edeqa.waytous.holders.LoggerViewHolder;
 import com.edeqa.waytous.holders.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.SettingsViewHolder;
 import com.edeqa.waytous.holders.SnackbarViewHolder;
@@ -162,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         state.fire(ACTIVITY_DESTROY);
-        state.clearViewHolders();
+        state.getSystemViewBus().clear();
     }
 
     @Override
@@ -355,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        state.registerEntityHolder(new LoggerViewHolder(this),this); //FIXME
+//        state.registerEntityHolder(new LoggerViewHolder(this),this);
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());

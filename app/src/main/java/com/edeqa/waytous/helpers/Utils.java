@@ -36,8 +36,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.List;
@@ -221,21 +221,24 @@ public class Utils {
     public static String getUrl(String url, String urlCharset) throws IOException {
         String line;
         StringBuilder sb = new StringBuilder();
-        InputStream in;
-        URLConnection feedUrl;
-        feedUrl = new URL(url).openConnection();
+        InputStream in = null;
+        HttpURLConnection feedUrl;
+        feedUrl = (HttpURLConnection) new URL(url).openConnection();
         feedUrl.setConnectTimeout(5000);
-        feedUrl.setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
+        feedUrl.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
+        feedUrl.setRequestProperty("Accept", "*/*");
 
-        in = feedUrl.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));
-        while ((line = reader.readLine()) != null) {
-            sb.append(new String(line.getBytes("UTF-8"))).append("\n");
+        int status = feedUrl.getResponseCode();
+        if(status >= 200 && status < 300) {
+            in = feedUrl.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));
+            while ((line = reader.readLine()) != null) {
+                sb.append(new String(line.getBytes("UTF-8"))).append("\n");
+            }
+            in.close();
+        } else {
+            log("Utils","getUrl:status:"+status);
         }
-        in.close();
-
         return sb.toString();
     }
 
@@ -403,10 +406,12 @@ public class Utils {
     public static void err(Object... text) {
         String str = "";
         String tag = "Utils";
+        Throwable e = null;
         int count = 0;
         for (Object aText : text) {
             if (aText instanceof Throwable) {
                 str += aText + " ";
+                e = (Throwable) aText;
             } else if(aText instanceof Serializable) {
                 str += aText.toString() + " ";
             } else if((count++) == 0) {
@@ -419,5 +424,6 @@ public class Utils {
             }
         }
         Log.e(tag, str);
+        if(e != null) e.printStackTrace();
     }
 }

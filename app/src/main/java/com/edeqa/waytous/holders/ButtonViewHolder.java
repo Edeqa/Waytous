@@ -219,7 +219,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     myUser.fire(CAMERA_ZOOM);
                     clicked = false;
                 } else {
-                    System.out.println("BUTTON:"+ButtonView.this+":"+myUser);
                     myUser.fire(SELECT_SINGLE_USER);
                     clicked = true;
                     new Handler().postDelayed(new Runnable() {
@@ -313,7 +312,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         @Override
         public boolean onEvent(String event, Object object) {
 
-            System.out.println("BUTTTTT:"+this+":"+myUser);
             switch(event){
                 case SELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);
@@ -413,7 +411,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     }
 
     private void updateBackgroundColors(MyUser user) {
-        if(State.getInstance().tracking_active() && user != null) {
+        if(State.getInstance().tracking_active() && user != null && State.getInstance().getUsers().getCountAllSelected() == 1) {
             if (Build.VERSION.SDK_INT >= 21) {
                 Window window = context.getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

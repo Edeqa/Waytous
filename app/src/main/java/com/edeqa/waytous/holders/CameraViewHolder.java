@@ -412,7 +412,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     if(State.getInstance().getUsers().getCountAllSelected()==0){
                         State.getInstance().getMe().fire(SELECT_USER);
                     }
+                    CameraViewHolder.this.update();
 
+/*
                     if(State.getInstance().getUsers().getCountSelected()==1){
                         State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                             @Override
@@ -425,6 +427,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     } else {
                         CameraViewHolder.this.update();
                     }
+*/
                     break;
                 case MARKER_CLICK:
                     onEvent(CAMERA_NEXT_ORIENTATION, null);

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
@@ -30,7 +29,6 @@ import com.edeqa.waytous.helpers.ShareSender;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
@@ -207,7 +205,7 @@ public class FabViewHolder extends AbstractViewHolder {
                     State.getInstance().fire(TRACKING_STOP);
                     break;
                 case R.string.share_link:
-                    openShareDialog();
+                    openShareDialog(State.getInstance().getTracking().getTrackingUri());
                     break;
             }
         }
@@ -239,7 +237,7 @@ public class FabViewHolder extends AbstractViewHolder {
         }
     };
 
-    private void openShareDialog() {
+    private void openShareDialog(final String link) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
         dialog.setTitle(context.getString(R.string.share_link));
@@ -252,13 +250,15 @@ public class FabViewHolder extends AbstractViewHolder {
         m.put("layout", layoutButtons);
         m.put("dialog", dialog);
 
+        ((TextView)content.findViewById(R.id.tvLink)).setText(link);
+
         State.getInstance().fire(PREPARE_SHARE_BUTTONS, m);
 
         content.findViewById(R.id.bShareSelect).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                new ShareSender(context).sendLink(State.getInstance().getTracking().getTrackingUri());
+                new ShareSender(context).sendLink(link);
             }
         });
         content.findViewById(R.id.bShareByMail).setOnClickListener(new OnClickListener() {
@@ -272,8 +272,8 @@ public class FabViewHolder extends AbstractViewHolder {
                         intent.setData(Uri.parse("mailto:"));
                         intent.setType("text/plain");
                         intent.putExtra(Intent.EXTRA_EMAIL, "");
-                        intent.putExtra(Intent.EXTRA_SUBJECT, "Waytous at " + State.getInstance().getTracking().getTrackingUri());
-                        intent.putExtra(Intent.EXTRA_TEXT, State.getInstance().getTracking().getTrackingUri());
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Waytous at " + link);
+                        intent.putExtra(Intent.EXTRA_TEXT, link);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
@@ -289,10 +289,8 @@ public class FabViewHolder extends AbstractViewHolder {
             }
         });
 
-
         dialog.setView(content);
         dialog.show();
-
     }
 
 

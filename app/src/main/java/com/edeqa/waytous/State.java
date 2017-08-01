@@ -15,21 +15,17 @@ import android.util.Log;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.eventbus.EventBus;
-import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
-import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.Events;
 import com.edeqa.waytous.helpers.GeoTrackFilter;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.MyUsers;
 import com.edeqa.waytous.holders.GpsHolder;
-import com.edeqa.waytous.holders.LoggerHolder;
 import com.edeqa.waytous.holders.MessagesHolder;
 import com.edeqa.waytous.holders.NotificationHolder;
 import com.edeqa.waytous.holders.PropertiesHolder;
 import com.edeqa.waytous.holders.TrackingHolder;
-import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytousserver.helpers.Constants;
@@ -43,6 +39,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TooManyListenersException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
@@ -56,11 +53,6 @@ public class State extends MultiDexApplication {
     public static final int API = 1;
 
     private static State instance = null;
-
-    private HashMap<String, EntityHolder> entityHolders = new LinkedHashMap<>();
-    private HashMap<String, EntityHolder> userEntityHolders = new LinkedHashMap<>();
-    private HashMap<String, AbstractViewHolder> viewHolders = new LinkedHashMap<>();
-    private HashMap<String, AbstractViewHolder> userViewHolders = new LinkedHashMap<>();
 
     private Tracking tracking;
     private WaytousService service;
@@ -116,8 +108,12 @@ public class State extends MultiDexApplication {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        systemPropertyBus = new EventBus("SystemEntityHolder");
-        systemViewBus = new EventBus("SystemViewHolder");
+        try {
+            systemPropertyBus = new EventBus("SystemPropertyHolder");
+            systemViewBus = new EventBus("SystemViewHolder");
+        } catch (TooManyListenersException e) {
+            e.printStackTrace();
+        }
         userPropertyHolders = new LinkedHashMap<>();
         userViewHolders2 = new LinkedHashMap<>();
 
@@ -136,13 +132,17 @@ public class State extends MultiDexApplication {
         registerEntityHolder(new MessagesHolder(this),null); // ---> need to be before NotificationHolder
         registerEntityHolder(new NotificationHolder(this),null); // ---> need to be after MessagesHolder
         registerEntityHolder(new GpsHolder(this),null);
-        registerEntityHolder(new LoggerHolder(),null);
+//        registerEntityHolder(new LoggerHolder(),null);
 
         gpsFilter = new GeoTrackFilter(1.);
 
         MyUser me = State.getInstance().getMe();
         if(me == null){
-            me = new MyUser();
+            try {
+                me = new MyUser();
+            } catch (TooManyListenersException e) {
+                e.printStackTrace();
+            }
             setMe(me);
             me.setUser(true);
             me.fire(SELECT_USER, 0);
@@ -304,51 +304,14 @@ public class State extends MultiDexApplication {
     }
 
     public void registerEntityHolder(AbstractPropertyHolder holder, MainActivity context) {
-//        bus.register(holder); // ---> need to be first!
-
-
-/*
-        bus.register(new TrackingHolder(this)); // ---> need to be second!
-        bus.register(new LoggerHolder());
-        bus.register(new MessagesHolder(this)); // ---> need to be before NotificationHolder
-        bus.register(new NotificationHolder(this)); // ---> need to be after MessagesHolder
-        bus.register(new GpsHolder(this));
-*/
-
-        /*if(holder.getType() != null) {
-
-            if (holder.dependsOnUser()) {
-                userPropertyHolders.put(holder.getType(), holder);
-            } else if (holder instanceof AbstractViewHolder) {
-                getSystemViewBus().register(holder);
-            } else if (holder instanceof AbstractPropertyHolder) {
-                getSystemPropertyBus().register(holder);
-            }
-        }*/
 
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {
                 if (holder.dependsOnEvent()) {
                     systemViewBus.register(holder);
-
-/*
-                    if(viewHolders.containsKey(holder.getType()) && viewHolders.get(holder.getType()) != null) {
-                        viewHolders.get(holder.getType()).setContext(context);
-                    } else {
-                        viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
-                    }
-*/
                 }
                 if (holder.dependsOnUser()) {
                     userViewHolders2.put(holder.getType(), (AbstractViewHolder) holder);
-
-/*
-                    if(userViewHolders.containsKey(holder.getType()) && userViewHolders.get(holder.getType()) != null) {
-                        userViewHolders.get(holder.getType()).setContext(context);
-                    } else {
-                        userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
-                    }
-*/
                 }
             } else {
                 if (holder.dependsOnEvent()) {
@@ -359,68 +322,15 @@ public class State extends MultiDexApplication {
                 }
             }
         }
-
-/*
-        if(holder.getType() != null) {
-            if (holder instanceof AbstractViewHolder) {
-                if (holder.dependsOnEvent()) {
-                    if(viewHolders.containsKey(holder.getType()) && viewHolders.get(holder.getType()) != null) {
-                        viewHolders.get(holder.getType()).setContext(context);
-                    } else {
-                        viewHolders.put(holder.getType(), (AbstractViewHolder) holder);
-                    }
-                }
-                if (holder.dependsOnUser()) {
-                    if(userViewHolders.containsKey(holder.getType()) && userViewHolders.get(holder.getType()) != null) {
-                        userViewHolders.get(holder.getType()).setContext(context);
-                    } else {
-                        userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
-                    }
-                }
-            } else {
-                if (holder.dependsOnEvent()) {
-                    entityHolders.put(holder.getType(), holder);
-                }
-                if (holder.dependsOnUser()) {
-                    userEntityHolders.put(holder.getType(), holder);
-                }
-            }
-        }
-*/
     }
 
-    public HashMap<String,EntityHolder> getEntityHolders(){
-        return entityHolders;
-    }
-
-    public HashMap<String,EntityHolder> getUserEntityHolders(){
-        return userEntityHolders;
-    }
-
-    public HashMap<String,AbstractViewHolder> getViewHolders(){
-        return viewHolders;
-    }
-
-    public HashMap<String,AbstractViewHolder> getUserViewHolders(){
-        return userViewHolders;
-    }
 
     public HashMap<String,AbstractPropertyHolder> getAllHolders(){
         HashMap<String,AbstractPropertyHolder> res = new LinkedHashMap<>();
-        for(AbstractPropertyHolder item: systemPropertyBus.getHolders()){
-            res.put(item.getType(), item);
+        for(Map.Entry<String, AbstractEntityHolder> entry: systemPropertyBus.getHolders().entrySet()){
+            res.put(entry.getKey(), (AbstractPropertyHolder) entry.getValue());
         }
-//        for(AbstractPropertyHolder item: userPropertyHolders.getHolders()){
-//            res.put(item.getType(), item);
-//        }
         return res;
-    }
-
-    public void clearViewHolders(){
-        viewHolders.clear();
-//        viewEvents.clear();
-        userViewHolders.clear();
-//        userViewEvents.clear();
     }
 
     public AbstractEntityHolder getEntityHolder(String type){
@@ -429,87 +339,15 @@ public class State extends MultiDexApplication {
         if(getSystemViewBus().getHolder(type) != null) return getSystemViewBus().getHolder(type);
 //        if(getUserViewBus().getHolder(type) != null) return getUserViewBus().getHolder(type);
 
-/*
-        if(entityHolders.containsKey(type)) return entityHolders.get(type);
-        if(userEntityHolders.containsKey(type)) return userEntityHolders.get(type);
-        if(viewHolders.containsKey(type)) return viewHolders.get(type);
-        if(userViewHolders.containsKey(type)) return userViewHolders.get(type);
-*/
         return null;
     }
 
- /*   private void updateEvents(){
-        entityEvents.clear();
-        userEntityEvents.clear();
-        viewEvents.clear();
-        userViewEvents.clear();
-
-        userViewEvents.addAll(Arrays.asList(SELECT_USER, UNSELECT_USER,
-                CHANGE_NUMBER,CHANGE_COLOR,
-                CREATE_CONTEXT_MENU, PREPARE_OPTIONS_MENU,
-                MAKE_ACTIVE,MAKE_INACTIVE));
-
-        for(Map.Entry<String, EntityHolder> entry: getEntityHolders().entrySet()){
-            entityEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
-        }
-        for(Map.Entry<String, EntityHolder> entry: getUserEntityHolders().entrySet()){
-            userEntityEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
-        }
-        for(Map.Entry<String, AbstractViewHolder> entry: getViewHolders().entrySet()){
-            viewEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
-        }
-        for(Map.Entry<String, AbstractViewHolder> entry: getUserViewHolders().entrySet()){
-            userViewEvents.addAll(Arrays.asList(entry.getValue().exportOwnEvents()));
-        }
-        System.out.println("ENTITYACTIONS:"+ entityEvents);
-        System.out.println("USERENTITYACTIONS:"+ userEntityEvents);
-        System.out.println("VIEWACTIONS:"+ viewEvents);
-        System.out.println("USERVIEWACTIONS:"+ userViewEvents);
-    }*/
 
     public void fire(final String EVENT, final Object object){
-        systemPropertyBus.post(EVENT, object);
-        systemViewBus.post(EVENT, object);
-/*
-        continueFiring.set(true);
-        for(Map.Entry<String,EntityHolder> entry: getEntityHolders().entrySet()){
-            if(entry.getValue() != null){
-                try {
-                    if(!continueFiring.get()) break;
-                    continueFiring.set(entry.getValue().onEvent(EVENT, object));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                for(Map.Entry<String,AbstractViewHolder> entry: getViewHolders().entrySet()){
-                    if(entry.getValue() != null){
-                        try {
-                            if(!continueFiring.get()) break;
-                            continueFiring.set(entry.getValue().onEvent(EVENT, object));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-*/
-    }
-
-    public void fire(final String EVENT){
+        Log.i("State","====>>> "+EVENT+":"+object);
         switch(EVENT){
             case Events.ACTIVITY_DESTROY:
                 if(tracking_disabled() || tracking_error() || tracking_expired()) {
-
-//                    clearViewHolders();
-//                    entityHolders.clear();
-//                    entityEvents.clear();
-//                    userEntityHolders.clear();
-//                    userEntityEvents.clear();
-
                     Intent intent = new Intent(State.this, WaytousService.class);
                     stopService(intent);
                     System.exit(0);
@@ -518,18 +356,16 @@ public class State extends MultiDexApplication {
             default:
                 break;
         }
+        systemPropertyBus.post(EVENT, object);
+        systemViewBus.post(EVENT, object);
+    }
+
+    public void fire(final String EVENT){
         fire(EVENT, null);
     }
 
     public PropertiesHolder getPropertiesHolder(){
         return (PropertiesHolder) getSystemPropertyBus().getHolder(PropertiesHolder.TYPE);
-/*
-        if(entityHolders.containsKey(PropertiesHolder.TYPE)) {
-            return (PropertiesHolder) entityHolders.get(PropertiesHolder.TYPE);
-        } else {
-            return null;
-        }
-*/
     }
 
     public GeoTrackFilter getGpsFilter() {

@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TooManyListenersException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,6 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MyUser {
 
     private static final int SIMPLIFY_AFTER_EACH = 100;
+
+    private static final String TYPE = "MyUser";
+
     private final EventBus<AbstractView> viewBus;
     private final EventBus<AbstractProperty> propertyBus;
 
@@ -40,26 +44,21 @@ public class MyUser {
     private long counter;
     private boolean user;
 
-    public MyUser(){
+    public MyUser() throws TooManyListenersException {
         locations = new ArrayList<>();
         properties = new LinkedHashMap<>();
         views = new LinkedHashMap<>();
 
-        propertyBus = new EventBus<>(String.valueOf(this.hashCode()));
-        viewBus = new EventBus<>(String.valueOf(this.hashCode()));
-//        propertyBus.setRunner(State.getInstance().getAndroidRunner());
+        propertyBus = new EventBus<>("properties_" + String.valueOf(this.hashCode()));
+        viewBus = new EventBus<>("views_" + String.valueOf(this.hashCode()));
         viewBus.setRunner(State.getInstance().getAndroidRunner());
+//        propertyBus.setRunner(State.getInstance().getAndroidRunner());
 
         counter = 0;
         createProperties();
         user = false;
 
     }
-
-        /*CircleOptions circleOptions = new CircleOptions()
-                .center(new LatLng(location.getLatitude(), location.getLongitude())).radius(location.getAccuracy())
-                .fillColor(Color.CYAN).strokeColor(Color.BLUE).strokeWidth(2f);
-        circle = map.addCircle(circleOptions);*/
 
     public MyUser addLocation(Location location) {
         locations.add(location);
@@ -104,7 +103,7 @@ public class MyUser {
                                 iterLocs.remove();
                             }
                         }
-                        Log.i("MyUser","Simplified locations {user:"+getProperties().getDisplayName()+", counter:"+counter+", size before:"+sizeBefore+", size after:"+locations.size()+"}");
+                        Log.i(TYPE,"Simplified locations {user:"+getProperties().getDisplayName()+", counter:"+counter+", size before:"+sizeBefore+", size after:"+locations.size()+"}");
                     } catch(Exception e){
                         e.printStackTrace();
                     }
@@ -145,73 +144,38 @@ public class MyUser {
                 }
             }
         }
-
-/*
-        for(AbstractPropertyHolder holder: State.getInstance().getUserPropertyBus().getHolders()){
-            System.out.println("NEXT:"+holder.getType());
-            if(properties.containsKey(holder.getType())) continue;
-            AbstractProperty property = holder.create(this);
-            if(property != null){
-                properties.put(holder.getType(),property);
-                State.getInstance().getUserPropertyBus().register(property);
-            }
-        }
-*/
-/*
-        for(Map.Entry<String, EntityHolder> entry: State.getInstance().getUserEntityHolders().entrySet()){
-            if(properties.containsKey(entry.getKey())) continue;
-            Entity property = entry.getValue().create(this);
-            if(property != null){
-                properties.put(entry.getKey(),property);
-            }
-        }
-*/
     }
 
     public void createViews(){
-        System.out.println("CREATEVIEWS:"+getProperties().getNumber()+":"+getProperties().getDisplayName());
         if(getProperties().isActive()) {
+//            removeViews();
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 public void run() {
-
-                    /*Iterator<Map.Entry<String, AbstractProperty>> iter = properties.entrySet().iterator();
-                    while(iter.hasNext()) {
-                        Map.Entry<String, AbstractProperty> entry = iter.next();
-                        if(entry.getValue() != null && entry.getValue() instanceof AbstractView) {
-                            entry.getValue().remove();
-                            propertyBus.unregister(entry.getValue());
-                            iter.remove();
-                        }
-                    }*/
+                    Log.v(TYPE,"createViews:"+getProperties().getNumber()+":"+getProperties().getDisplayName());
 
                     Iterator<Map.Entry<String, AbstractViewHolder>> iterator = State.getInstance().getUserViewHolders2().entrySet().iterator();
                     while(iterator.hasNext()) {
                         Map.Entry<String, AbstractViewHolder> entry = iterator.next();
                         String type = entry.getKey();
-//                        if(views.containsKey(type)) continue;
 
                         if(views.containsKey(type) && views.get(type) != null){
-                            System.out.println("REMOVEVIEW:"+type+":"+getProperties().getNumber()+":"+views.get(type));
+                            Log.v(TYPE, "remove:" + type + ":"+getProperties().getNumber()+":"+views.get(type));
                             views.get(type).remove();
-//                            propertyBus.unregister(views.get(type));
-//                            views.remove(type);
                         }
                         AbstractPropertyHolder holder = entry.getValue();
                         if(holder == null) continue;
-                        removeViews();
                         AbstractView view = ((AbstractViewHolder) holder).create(MyUser.this);
                         if (view != null) {
-                            System.out.println("ADDVIEW:" + type + ":" + getProperties().getNumber() + ":" + view);
                             if(views.containsKey(type)) {
-                                propertyBus.update(view);
+                                Log.v(TYPE, "update:" + type + ":" + getProperties().getNumber() + ":" + view);
+                                viewBus.update(view);
                             } else {
-                                propertyBus.register(view);
+                                Log.v(TYPE, "create:" + type + ":" + getProperties().getNumber() + ":" + view);
+                                viewBus.register(view);
                             }
                             views.put(type, view);
                         }
                     }
-                    System.out.println("VIEWSCREATED:"+MyUser.this);
-
                 }
             });
         }
@@ -223,6 +187,7 @@ public class MyUser {
     }
 
     public void fire(final String EVENT, final Object object){
+        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object);
         propertyBus.post(EVENT, object);
         viewBus.post(EVENT, object);
 
@@ -268,10 +233,10 @@ public class MyUser {
             public void run() {
                 for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
                     if (getProperties().isActive() && entry.getValue() == null) {
-                        AbstractViewHolder holder = State.getInstance().getUserViewHolders().get(entry.getKey());
-                        if(holder != null) {
+                        AbstractViewHolder holder = State.getInstance().getUserViewHolders2().get(entry.getKey());
+//                        if(holder != null) {
                             entry.setValue(holder.create(MyUser.this));
-                        }
+//                        }
                     }
                     if (entry.getValue().dependsOnLocation() && getLocation() != null) {
                         try {
@@ -286,17 +251,20 @@ public class MyUser {
     }
 
     public void removeViews(){
-        /*new Handler(Looper.getMainLooper()).post(new Runnable() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                Iterator<Map.Entry<String,AbstractView>> iter = views.entrySet().iterator();
-                while(iter.hasNext()){
-                    Map.Entry<String,AbstractView> entry = iter.next();
-                    entry.getValue().remove();
-                    propertyBus.unregister(entry.getValue());
-                    iter.remove();
+                Log.v(TYPE,"removeViews:" + getProperties().getNumber() + ":" + getProperties().getDisplayName());
+                for (Map.Entry<String, AbstractViewHolder> entry : State.getInstance().getUserViewHolders2().entrySet()) {
+                    String type = entry.getKey();
+                    if (views.containsKey(type) && views.get(type) != null) {
+                        Log.v(TYPE, "remove:" + type + ":" + getProperties().getNumber() + ":" + views.get(type));
+                        views.get(type).remove();
+                        viewBus.unregister(views.get(type));
+                        views.remove(type);
+                    }
                 }
             }
-        });*/
+        });
     }
 
     public PropertiesHolder.Properties getProperties(){
@@ -335,7 +303,7 @@ public class MyUser {
     @Override
     public String toString() {
         return "MyUser {" +
-                "\nproperties=" + properties +
+                "properties=" + properties +
                 ", \nviews=" + views +
                 ", \nlocation=" + location +
                 ", user=" + user +

@@ -42,6 +42,8 @@ public class SensorsViewHolder extends AbstractViewHolder {
 
     private final LightSensorManager lightSensor;
 
+    private String currentEnvironment = DAY;
+
     private GoogleMap map;
 
     private Runnable1<String> onEnvironmentChangeListener = new Runnable1<String>() {
@@ -49,10 +51,16 @@ public class SensorsViewHolder extends AbstractViewHolder {
         public void call(String environment) {
             switch(environment){
                 case DAY:
-                    State.getInstance().fire(REQUEST_MODE_DAY);
+                    if(!DAY.equals(currentEnvironment)) {
+                        currentEnvironment = DAY;
+                        State.getInstance().fire(REQUEST_MODE_DAY);
+                    }
                     break;
                 case NIGHT:
-                    State.getInstance().fire(REQUEST_MODE_NIGHT);
+                    if(!NIGHT.equals(currentEnvironment)) {
+                        currentEnvironment = NIGHT;
+                        State.getInstance().fire(REQUEST_MODE_NIGHT);
+                    }
                     break;
             }
         }
@@ -77,7 +85,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
             }
         }
         m = State.getInstance().getPropertiesHolder().loadFor(TYPE + "_traffic");
-        if(m != null) {
+        if(m != null && (Boolean)m) {
             State.getInstance().fire(REQUEST_MODE_TRAFFIC, m);
         }
 

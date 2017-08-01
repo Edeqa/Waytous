@@ -610,7 +610,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
     class SavedLocationView extends AbstractView {
         private Marker marker;
-        private MyUser myUser;
 
         @Override
         public List<String> events() {

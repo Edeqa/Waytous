@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -25,7 +26,6 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -45,11 +45,11 @@ public class IntroViewHolder extends AbstractViewHolder {
 
         preferences = context.getSharedPreferences("intro", MODE_PRIVATE);
 
-        HashMap<String, AbstractViewHolder> holders = State.getInstance().getViewHolders();
+        Map<String, AbstractEntityHolder> holders = State.getInstance().getSystemViewBus().getHolders();
         queue = new HashMap<>();
-        for(Map.Entry<String, AbstractViewHolder> entry: holders.entrySet()) {
+        for(Map.Entry<String, AbstractEntityHolder> entry: holders.entrySet()) {
             if(entry.getValue() == null) continue;
-            ArrayList<IntroRule> rules = entry.getValue().getIntro();
+            ArrayList<IntroRule> rules = ((AbstractViewHolder) entry.getValue()).getIntro();
             if(rules == null) continue;
 
             for(IntroRule x: rules) {

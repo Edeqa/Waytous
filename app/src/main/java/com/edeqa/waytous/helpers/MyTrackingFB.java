@@ -6,12 +6,11 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
+import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 import com.edeqa.waytousserver.helpers.Constants;
@@ -728,18 +727,18 @@ public class MyTrackingFB implements Tracking {
                     MyUser user = State.getInstance().getUsers().addUser(o);
                     user.setUser(true);
 
-                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("name"),usersDataNameListener);
-                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child("active"),usersDataActiveListener);
+                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_NAME),usersDataNameListener);
+                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_ACTIVE),usersDataActiveListener);
 
-                    usersDataNameListener.onDataChange(dataSnapshot.child("name"));
-                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
+//                    usersDataNameListener.onDataChange(dataSnapshot.child(Constants.DATABASE.USER_NAME));
+//                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
 
                     for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
                         if(entry.getValue().isSaveable()) {
                             registerChildListener(ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
                         }
                     }
-                    trackingListener.onAccept(o);
+//                    trackingListener.onAccept(o);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

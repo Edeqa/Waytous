@@ -100,10 +100,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         }
 
         private void resolveAddress(final Location location) {
-            if (State.getInstance().getUsers().getCountAllSelected() > 1) {
-                setTitle(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountAllSelected()));
-                return;
-            } else if(!myUser.getProperties().isSelected() || location == null){
+            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountAllSelected() > 1){
                 return;
             }
             long currentTimestamp = new Date().getTime();
@@ -118,8 +115,10 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                         Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req);
                         final String res = Utils.getUrl(req);
                         Utils.log(AddressView.this, "Response:", res);
-                        JSONObject address = new JSONObject(res);
-                        setTitle(address.getString("display_name"));
+                        if(res != null && res.length() > 0) {
+                            JSONObject address = new JSONObject(res);
+                            setTitle(address.getString("display_name"));
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         setTitle(null);
