@@ -111,7 +111,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     @Override
     public CameraUpdateView create(MyUser myUser) {
         if (myUser == null || myUser.getLocation() == null) return null;
-        return new CameraUpdateView(context, myUser);
+        return new CameraUpdateView(myUser);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
-                            setCameraUpdate((CameraUpdateView) myUser.getEntity(CameraViewHolder.TYPE));
+                            setCameraUpdate((CameraUpdateView) myUser.getView(CameraViewHolder.TYPE));
                             update();
                         }
                     }
@@ -167,7 +167,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 if(cameraUpdate.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
                     cameraUpdate.perspectiveNorth = !cameraUpdate.perspectiveNorth;
                 }
-                cameraUpdate.myUser.fire(SELECT_USER);
+                cameraUpdate.getUser().fire(SELECT_USER);
                 break;
         }
         return true;
@@ -261,7 +261,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
         static final long serialVersionUID =-6395904747332820026L;
 
-        private transient MyUser myUser;
         private transient CameraPosition.Builder position;
         private transient Location location;
 
@@ -274,8 +273,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         private boolean orientationChanged;
         private boolean perspectiveNorth;
 
-        CameraUpdateView(MainActivity context, MyUser myUser) {
-            super(context, myUser);
+        CameraUpdateView(MyUser myUser) {
+            super(CameraViewHolder.this.context, myUser);
             number = myUser.getProperties().getNumber();
 
             HashMap<String, Double> props = (HashMap<String, Double>) myUser.getProperties().loadFor(TYPE);
@@ -550,6 +549,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             return location;
         }
 
+        public MyUser getUser() {
+            return myUser;
+        }
     }
 
     private GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
@@ -601,7 +603,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
             moveFromHardware = false;
             canceled = false;
-            State.getInstance().fire(CAMERA_UPDATED, cameraUpdate.myUser);
+            State.getInstance().fire(CAMERA_UPDATED, cameraUpdate.getUser());
 //            System.out.println("onCameraIdle");
         }
     };

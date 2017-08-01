@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
+import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
@@ -50,6 +51,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
     private final boolean showAccuracy;
 
     private GoogleMap map;
+
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(final Marker marker) {
@@ -57,8 +59,6 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             return true;
         }
     };
-
-
 
     public MarkerViewHolder(MainActivity context) {
         super(context);
@@ -165,7 +165,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
         private Marker marker;
 
         MarkerView(MyUser myUser){
-            super(myUser);
+            super(MarkerViewHolder.this.context, myUser);
 
             int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
             Bitmap bitmap = Utils.renderBitmap(context,R.drawable.navigation_marker,myUser.getProperties().getColor(),size,size);

@@ -53,6 +53,7 @@ import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
@@ -103,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        state.registerEntityHolder(new LoggerViewHolder(this),this);
         state.registerEntityHolder(new FabViewHolder(this),this);
         state.registerEntityHolder(new DrawerViewHolder(this),this);
         state.registerEntityHolder(new SnackbarViewHolder(this),this);
@@ -355,9 +355,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        System.out.println("SYSTEMPROPERTY"+ State.getInstance().getSystemPropertyBus().getHolders());
-        System.out.println("SYSTEMVIEW"+ State.getInstance().getSystemViewBus().getHolders());
-        System.out.println("USERHOLDERS"+ State.getInstance().getUserHolders());
+        state.registerEntityHolder(new LoggerViewHolder(this),this); //FIXME
 
         state.getUsers().setMe();
         state.getMe().addLocation(SmartLocation.with(MainActivity.this).location().getLastLocation());
@@ -400,6 +398,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         state.fire(REQUEST_LOCATION_SINGLE);
         state.fire(ACTIVITY_RESUME, this);
+        state.fire(MAP_READY, map);
 
         onNewIntent(getIntent());
     }
@@ -453,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 int number = o.getInt(USER_JOINED);
                                 state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                                     @Override
-                                    public void call(Integer number, MyUser myUser) {
+                                    public void call(Integer number, final MyUser myUser) {
                                         myUser.createViews();
                                     }
                                 });

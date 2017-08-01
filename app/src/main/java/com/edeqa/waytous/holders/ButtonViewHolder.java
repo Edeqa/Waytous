@@ -161,7 +161,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         private LinearLayout button;
         private TextView title;
 
-
         View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -313,6 +312,8 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         @Override
         public boolean onEvent(String event, Object object) {
+
+            System.out.println("BUTTTTT:"+this+":"+myUser);
             switch(event){
                 case SELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);

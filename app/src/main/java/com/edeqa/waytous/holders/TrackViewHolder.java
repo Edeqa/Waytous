@@ -106,7 +106,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        TrackView trackView = ((TrackView) myUser.getEntity(TYPE));
+                        TrackView trackView = ((TrackView) myUser.getView(TYPE));
                         if(trackView != null && !trackView.showtrack) {
                             menuItemShowTracks.setVisible(true);
                         }
@@ -117,7 +117,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        TrackView trackView = ((TrackView) myUser.getEntity(TYPE));
+                        TrackView trackView = ((TrackView) myUser.getView(TYPE));
                         if(trackView != null && trackView.showtrack) {
                             menuItemHideTracks.setVisible(true);
                         }

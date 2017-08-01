@@ -40,7 +40,7 @@ public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.Logger
 
     @Override
     public boolean onEvent(String event, Object object) {
-        Log.i(TYPE,"onEvent:main:"+event+":"+object);
+        Log.i(TYPE,"onEvent:MAIN:"+event+":"+object);
         return true;
     }
 
@@ -53,12 +53,12 @@ public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.Logger
     public class LoggerView extends AbstractView {
         LoggerView(MyUser myUser) {
             super(myUser);
-            Log.i(TYPE,"LoggerView:init:"+myUser);
+            Log.i(TYPE,"LoggerView:init");
         }
 
         @Override
         public boolean onEvent(String event, Object object) {
-            Log.i(TYPE,"onEvent:view:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
+            Log.i(TYPE,"onEvent:VIEW:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
             return true;
         }
 
@@ -70,7 +70,7 @@ public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.Logger
 
         @Override
         public void onChangeLocation(Location location) {
-            Log.i(TYPE,"onChangeLocation:"+myUser);
+            Log.i(TYPE,"onChangeLocation:"+myUser.getClass());
         }
 
         @Override

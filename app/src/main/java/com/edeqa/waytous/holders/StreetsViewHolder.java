@@ -143,7 +143,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
             @Override
             public void call(Integer number, MyUser myUser) {
                 if(myUser.getProperties().isSelected()) {
-                    myUser.getEntity(StreetsViewHolder.TYPE).onChangeLocation(myUser.getLocation());
+                    myUser.getView(StreetsViewHolder.TYPE).onChangeLocation(myUser.getLocation());
                 }
             }
         });

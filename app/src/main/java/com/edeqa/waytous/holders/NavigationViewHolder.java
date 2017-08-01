@@ -149,7 +149,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        NavigationView view = ((NavigationView) myUser.getEntity(TYPE));
+                        NavigationView view = ((NavigationView) myUser.getView(TYPE));
                         if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
                         }
@@ -165,11 +165,11 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        if(myUser!= null && myUser.getEntity(TYPE) != null && ((NavigationView)myUser.getEntity(TYPE)).track != null) {
+                        if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
                             buttonsView.setVisibility(View.VISIBLE);
                             handlerHideButtons.removeCallbacks(hideButtons);
                             handlerHideButtons.postDelayed(hideButtons, 5000);
-                            NavigationView view = (NavigationView) myUser.getEntity(TYPE);
+                            NavigationView view = (NavigationView) myUser.getView(TYPE);
                             Utils.updateMarkerPosition(map, view.marker, view.points);
                         }
                     }
@@ -254,7 +254,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                NavigationView view = (NavigationView) myUser.getEntity(TYPE);
+                NavigationView view = (NavigationView) myUser.getView(TYPE);
                 if(view != null && view.showNavigation){
                     view.previousLocation = null;
                     view.update();
@@ -340,7 +340,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        NavigationView view = (NavigationView) myUser.getEntity(TYPE);
+                        NavigationView view = (NavigationView) myUser.getView(TYPE);
                         if(view != null && view.showNavigation) {
                             view.update();
                         }
@@ -365,7 +365,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
-                    if(myUser!= null && myUser.getEntity(TYPE) != null && ((NavigationView)myUser.getEntity(TYPE)).track != null) {
+                    if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
                         buttonsView.setVisibility(View.VISIBLE);
                         handlerHideButtons.removeCallbacks(hideButtons);
                         handlerHideButtons.postDelayed(hideButtons, 5000);

@@ -6,8 +6,10 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
+import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Tracking;
@@ -261,7 +263,7 @@ public class MyTrackingFB implements Tracking {
             }
         }
 // remove public data of this user
-        for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
+        for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
             if(entry.getValue() != null && entry.getValue().isSaveable() && entry.getValue().isEraseable()) {
                 ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()).removeValue();
             }
@@ -599,7 +601,7 @@ public class MyTrackingFB implements Tracking {
 
                                         registerValueListener(ref.child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CREATED),groupListener);
                                         registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA),usersDataListener, -1);
-                                        for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
+                                        for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
                                             if(entry.getValue().isSaveable()) {
                                                 registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()),userPrivateDataListener, -1);
                                             }
@@ -732,7 +734,7 @@ public class MyTrackingFB implements Tracking {
                     usersDataNameListener.onDataChange(dataSnapshot.child("name"));
                     usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
 
-                    for(Map.Entry<String,EntityHolder> entry: state.getAllHolders().entrySet()) {
+                    for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
                         if(entry.getValue().isSaveable()) {
                             registerChildListener(ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
                         }

@@ -33,6 +33,8 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
+import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 
 /**
@@ -122,6 +124,15 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             case TRACKING_STOP:
                 sharedPreferences.edit().clear().apply();
                 break;
+            case USER_JOINED:
+                MyUser myUser = (MyUser) object;
+                myUser.createViews();
+                break;
+            case USER_DISMISSED:
+                myUser = (MyUser) object;
+                myUser.removeViews();
+                break;
+
         }
         return true;
     }

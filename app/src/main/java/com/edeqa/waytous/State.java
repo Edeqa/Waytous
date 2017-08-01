@@ -15,7 +15,9 @@ import android.util.Log;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.eventbus.EventBus;
+import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
+import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.Events;
 import com.edeqa.waytous.helpers.GeoTrackFilter;
@@ -89,7 +91,8 @@ public class State extends MultiDexApplication {
     private EventBus<AbstractPropertyHolder> systemPropertyBus;
     private EventBus<AbstractViewHolder> systemViewBus;
     private EventBus.Runner androidRunner;
-    private LinkedHashMap<String, AbstractPropertyHolder> userHolders;
+    private LinkedHashMap<String, AbstractPropertyHolder> userPropertyHolders;
+    private LinkedHashMap<String, AbstractViewHolder> userViewHolders2;
 
     public static State getInstance() {
         return instance ;
@@ -115,7 +118,8 @@ public class State extends MultiDexApplication {
 
         systemPropertyBus = new EventBus("SystemEntityHolder");
         systemViewBus = new EventBus("SystemViewHolder");
-        userHolders = new LinkedHashMap<>();
+        userPropertyHolders = new LinkedHashMap<>();
+        userViewHolders2 = new LinkedHashMap<>();
 
         final Handler handler = new Handler(Looper.getMainLooper());
         androidRunner = new EventBus.Runner() {
@@ -129,10 +133,10 @@ public class State extends MultiDexApplication {
 
         registerEntityHolder(new PropertiesHolder(this),null); // ---> need to be first!
         registerEntityHolder(new TrackingHolder(this),null); // ---> need to be second!
-        registerEntityHolder(new LoggerHolder(),null);
         registerEntityHolder(new MessagesHolder(this),null); // ---> need to be before NotificationHolder
         registerEntityHolder(new NotificationHolder(this),null); // ---> need to be after MessagesHolder
         registerEntityHolder(new GpsHolder(this),null);
+        registerEntityHolder(new LoggerHolder(),null);
 
         gpsFilter = new GeoTrackFilter(1.);
 
@@ -314,7 +318,7 @@ public class State extends MultiDexApplication {
         /*if(holder.getType() != null) {
 
             if (holder.dependsOnUser()) {
-                userHolders.put(holder.getType(), holder);
+                userPropertyHolders.put(holder.getType(), holder);
             } else if (holder instanceof AbstractViewHolder) {
                 getSystemViewBus().register(holder);
             } else if (holder instanceof AbstractPropertyHolder) {
@@ -336,7 +340,7 @@ public class State extends MultiDexApplication {
 */
                 }
                 if (holder.dependsOnUser()) {
-                    userHolders.put(holder.getType(), holder);
+                    userViewHolders2.put(holder.getType(), (AbstractViewHolder) holder);
 
 /*
                     if(userViewHolders.containsKey(holder.getType()) && userViewHolders.get(holder.getType()) != null) {
@@ -351,7 +355,7 @@ public class State extends MultiDexApplication {
                     systemPropertyBus.register(holder);
                 }
                 if (holder.dependsOnUser()) {
-                    userHolders.put(holder.getType(), holder);
+                    userPropertyHolders.put(holder.getType(), holder);
                 }
             }
         }
@@ -401,20 +405,14 @@ public class State extends MultiDexApplication {
         return userViewHolders;
     }
 
-    public HashMap<String,EntityHolder> getAllHolders(){
-        HashMap<String,EntityHolder> res = new LinkedHashMap<>();
-        for(Map.Entry<String,EntityHolder> entry: entityHolders.entrySet()){
-            res.put(entry.getKey(),entry.getValue());
+    public HashMap<String,AbstractPropertyHolder> getAllHolders(){
+        HashMap<String,AbstractPropertyHolder> res = new LinkedHashMap<>();
+        for(AbstractPropertyHolder item: systemPropertyBus.getHolders()){
+            res.put(item.getType(), item);
         }
-        for(Map.Entry<String,EntityHolder> entry: userEntityHolders.entrySet()){
-            res.put(entry.getKey(),entry.getValue());
-        }
-        for(Map.Entry<String,AbstractViewHolder> entry: viewHolders.entrySet()){
-            res.put(entry.getKey(),entry.getValue());
-        }
-        for(Map.Entry<String,AbstractViewHolder> entry: userViewHolders.entrySet()){
-            res.put(entry.getKey(),entry.getValue());
-        }
+//        for(AbstractPropertyHolder item: userPropertyHolders.getHolders()){
+//            res.put(item.getType(), item);
+//        }
         return res;
     }
 
@@ -567,8 +565,12 @@ public class State extends MultiDexApplication {
         return systemViewBus;
     }
 
-    public LinkedHashMap<String, AbstractPropertyHolder> getUserHolders() {
-        return userHolders;
+    public LinkedHashMap<String, AbstractPropertyHolder> getUserPropertyHolders() {
+        return userPropertyHolders;
+    }
+
+    public LinkedHashMap<String, AbstractViewHolder> getUserViewHolders2() {
+        return userViewHolders2;
     }
 
     public EventBus.Runner getAndroidRunner() {

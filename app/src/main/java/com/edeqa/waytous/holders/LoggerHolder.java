@@ -39,7 +39,7 @@ public class LoggerHolder extends AbstractPropertyHolder {
 
     @Override
     public boolean onEvent(String event, Object object) {
-        Log.i(TYPE,"onEvent:main:"+event+":"+object);
+        Log.i(TYPE,"onEvent:MAIN:"+event+":"+object);
         return true;
     }
 
@@ -57,7 +57,7 @@ public class LoggerHolder extends AbstractPropertyHolder {
 
         @Override
         public boolean onEvent(String event, Object object) {
-            Log.i(TYPE,"onEvent:property:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
+            Log.i(TYPE,"onEvent:PROPERTY:"+event+":"+object+":"+myUser.getProperties().getNumber()+":"+myUser.getProperties().getDisplayName());
             return true;
         }
 
@@ -69,7 +69,7 @@ public class LoggerHolder extends AbstractPropertyHolder {
 
         @Override
         public void onChangeLocation(Location location) {
-            Log.i(TYPE,"onChangeLocation:"+myUser);
+            Log.i(TYPE,"onChangeLocation:"+myUser.getClass());
         }
 
         @Override

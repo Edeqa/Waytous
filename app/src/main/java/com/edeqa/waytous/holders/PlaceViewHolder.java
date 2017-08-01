@@ -157,7 +157,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        PlaceView view = ((PlaceView) myUser.getEntity(TYPE));
+                        PlaceView view = ((PlaceView) myUser.getView(TYPE));
                         /*if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
                         }*/

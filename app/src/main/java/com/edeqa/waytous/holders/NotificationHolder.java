@@ -138,7 +138,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 MyUser user = (MyUser) object;
                 long currentTime = new Date().getTime();
                 if(currentTime - becomesActive > 30 * 1000 && user != null && user.isUser()) {
-                    long lastOffline = ((NotificationUpdate) user.getEntity(TYPE)).lastOfflineTime;
+                    long lastOffline = ((NotificationUpdate) user.getProperty(TYPE)).lastOfflineTime;
                     String s = State.getInstance().getStringPreference(PREFERENCE_NOTIFICATION_USER_ONLINE, null);
                     if(lastOffline == 0) {
                         update(state.getString(R.string.s_has_joined, user.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH, s != null ? Uri.parse(s) : null);
@@ -153,7 +153,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 user = (MyUser) object;
                 if(user != null && user.isUser()) {
                     update(state.getString(R.string.user_s_is_offline, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW, null);
-                    ((NotificationUpdate)user.getEntity(TYPE)).lastOfflineTime = new Date().getTime();
+                    ((NotificationUpdate)user.getProperty(TYPE)).lastOfflineTime = new Date().getTime();
                 }
                 break;
             case ACTIVITY_RESUME:

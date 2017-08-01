@@ -160,7 +160,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
                 break;
             case TRACKING_ERROR:
-                Utils.log(TrackingHolder.this, "onEvent:", "TRACKING_ERROR");
+                Utils.log(TYPE, "onEvent:", "TRACKING_ERROR");
                 break;
             case TOKEN_CREATED:
                 new ShareSender(context).sendLink(tracking.getTrackingUri());
@@ -237,7 +237,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         @Override
         public void onMessage(final JSONObject o) {
             try {
-                Log.i(TYPE, o.toString());
+                Log.i(TYPE, "onMessage: " + o.toString());
                 String responseStatus = o.getString(RESPONSE_STATUS);
                 switch (responseStatus) {
                     case RESPONSE_STATUS_UPDATED:
@@ -257,7 +257,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
                                 @Override
                                 public void call(Integer number, MyUser user) {
                                     if(!user.getProperties().isActive()) {
-                                        System.out.println("MAKE_ACTIVE:"+user);
                                         user.fire(MAKE_ACTIVE);
                                         State.getInstance().fire(USER_JOINED, user);
                                     }
