@@ -128,7 +128,6 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     onEnvironmentChangeListener.call(DAY);
                 }
                 break;
-/*
             case REQUEST_MODE_DAY:
                 if(context.getMap() != null && map.getMapType() == GoogleMap.MAP_TYPE_SATELLITE){
                     break;
@@ -171,7 +170,6 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     }
                 });
                 break;
-*/
             case REQUEST_MODE_NORMAL:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
