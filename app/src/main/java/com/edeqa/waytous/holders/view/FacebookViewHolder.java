@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -32,16 +32,14 @@ import java.util.Map;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
-import static com.edeqa.waytous.holders.FabViewHolder.PREPARE_SHARE_BUTTONS;
-import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
 
 
 /**
  * Created 12/03/16.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class FacebookViewHolder extends AbstractViewHolder {
-
-    public static final String TYPE = "facebook";
 
     private CallbackManager callbackManager;
     private LinearLayout fab;
@@ -52,11 +50,6 @@ public class FacebookViewHolder extends AbstractViewHolder {
         super(context);
         FacebookSdk.sdkInitialize(context.getApplicationContext());
         AppEventsLogger.activateApp(context);
-    }
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -77,7 +70,8 @@ public class FacebookViewHolder extends AbstractViewHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
-            case PREPARE_SHARE_BUTTONS:
+            case FabViewHolder.PREPARE_SHARE_BUTTONS:
+                //noinspection unchecked
                 Map<String,Object> d = (Map<String, Object>) object;
                 LinearLayout layout = (LinearLayout) d.get("layout");
                 shareDialog = (AlertDialog) d.get("dialog");

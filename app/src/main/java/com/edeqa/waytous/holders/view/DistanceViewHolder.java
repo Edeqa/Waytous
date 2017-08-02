@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.graphics.Color;
 import android.location.Location;
@@ -39,20 +39,19 @@ import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
 
 
 /**
  * Created 11/24/16.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.DistanceView> {
-    private static final String TYPE = "distance";
 
-    private static final String SHOW_DISTANCE = "show_distance";
-    private static final String HIDE_DISTANCE = "hide_distance";
-    private static final String SHOW_DISTANCES = "show_distances";
-    private static final String HIDE_DISTANCES = "hide_distances";
+    private static final String SHOW_DISTANCE = "show_distance"; //NON-NLS
+    private static final String HIDE_DISTANCE = "hide_distance"; //NON-NLS
+    private static final String SHOW_DISTANCES = "show_distances"; //NON-NLS
+    private static final String HIDE_DISTANCES = "hide_distances"; //NON-NLS
 
     private GoogleMap map;
     private ArrayList<DistanceMark> marks;
@@ -61,11 +60,6 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         super(context);
         this.map = context.getMap();
         marks = new ArrayList<>();
-    }
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -133,7 +127,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                     }
                 });
                 break;
-            case CAMERA_UPDATED:
+            case CameraViewHolder.CAMERA_UPDATED:
                 for(DistanceMark entry: marks) {
                     if(entry != null) {
                         entry.update(false);
@@ -155,7 +149,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         DistanceView(final MyUser myUser){
             super(myUser);
 
-            Serializable value = myUser.getProperties().loadFor(TYPE);
+            Serializable value = myUser.getProperties().loadFor(getType());
             if(value != null && (Boolean) value) {
                 show = true;
                 fetchDistanceMark(State.getInstance().getMe(),myUser);
@@ -225,7 +219,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                     break;
                 case SHOW_DISTANCE:
                     show = true;
-                    myUser.getProperties().saveFor(TYPE, true);
+                    myUser.getProperties().saveFor(getType(), true);
                     fetchDistanceMark(State.getInstance().getMe(),myUser);
                     /*State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(),new MyUsers.Callback() {
                         @Override
@@ -249,7 +243,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 case HIDE_DISTANCE:
                     remove();
                     show = false;
-                    myUser.getProperties().saveFor(TYPE, null);
+                    myUser.getProperties().saveFor(getType(), null);
                     break;
 //                case SELECT_USER:
 //                case UNSELECT_USER:

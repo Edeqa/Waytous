@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -23,7 +23,7 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
         super(context);
         try {
             SupportMapFragment mapFragment = (SupportMapFragment) context.getSupportFragmentManager().findFragmentById(R.id.map);
-            View myLocationButton = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+            View myLocationButton = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton"); //NON-NLS
 
             if(myLocationButton != null) {
                 myLocationButton.setVisibility(View.VISIBLE);
@@ -35,7 +35,7 @@ public class MapButtonsViewHolder extends AbstractViewHolder {
                     }
                 });
 
-                View zoomButtons = (View) mapFragment.getView().findViewWithTag("GoogleMapZoomInButton").getParent();
+                View zoomButtons = (View) mapFragment.getView().findViewWithTag("GoogleMapZoomInButton").getParent(); //NON-NLS
 
                 int positionWidth = zoomButtons.getLayoutParams().width;
                 int positionHeight = zoomButtons.getLayoutParams().height;

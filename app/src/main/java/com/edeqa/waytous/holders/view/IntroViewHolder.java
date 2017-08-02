@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -32,6 +32,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * Created 12/31/16.
  */
+@SuppressWarnings({"WeakerAccess", "HardCodedStringLiteral"})
 public class IntroViewHolder extends AbstractViewHolder {
     private static final String TYPE = "intro";
 
@@ -49,6 +50,7 @@ public class IntroViewHolder extends AbstractViewHolder {
         queue = new HashMap<>();
         for(Map.Entry<String, AbstractEntityHolder> entry: holders.entrySet()) {
             if(entry.getValue() == null) continue;
+            //noinspection unchecked
             ArrayList<IntroRule> rules = ((AbstractViewHolder) entry.getValue()).getIntro();
             if(rules == null) continue;
 

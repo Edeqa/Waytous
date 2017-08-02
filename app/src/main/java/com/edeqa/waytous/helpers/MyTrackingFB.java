@@ -57,7 +57,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
-import static com.edeqa.waytous.holders.MessagesHolder.PRIVATE_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.PRIVATE_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
@@ -66,6 +66,7 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRM
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_KEY;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
@@ -79,6 +80,7 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_PRIVATE;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_SIGN;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
@@ -90,6 +92,7 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
+import static org.apache.http.conn.ssl.SSLSocketFactory.TLS;
 
 /**
  * Created 1/29/17.
@@ -120,7 +123,7 @@ public class MyTrackingFB implements Tracking {
 
 
     public MyTrackingFB() {
-        this("https://" + SENSITIVE.getServerHost(), true);
+        this("https://" + SENSITIVE.getServerHost(), true); //NON-NLS
     }
 
     public MyTrackingFB(String host) {
@@ -128,11 +131,11 @@ public class MyTrackingFB implements Tracking {
     }
 
     private MyTrackingFB(String stringUri, final boolean isNewTracking) {
-        Log.i("MyTrackingFB","create:" + stringUri);
+        Log.i("MyTrackingFB","create:" + stringUri); //NON-NLS
 
         try {
             URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + SENSITIVE.getWsPortFirebase() + uri.getPath());
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + SENSITIVE.getWsPortFirebase() + uri.getPath()); //NON-NLS
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -187,12 +190,12 @@ public class MyTrackingFB implements Tracking {
 
 
             WebSocketFactory factory = new WebSocketFactory();
-            SSLContext context = NaiveSSLContext.getInstance("TLS");
+            SSLContext context = NaiveSSLContext.getInstance(TLS);
             context.init(null,null,null);
             factory.setSSLContext(context);
             webSocket = factory.createSocket(serverUri.toString());
 
-            Log.i("MyTrackingFB","createWebSocket:" + webSocket + ", uri:" + serverUri.toString());
+            Log.i("MyTrackingFB","createWebSocket:" + webSocket + ", uri:" + serverUri.toString()); //NON-NLS
             webSocket.addListener(webSocketListener);
 
             webSocket.setPingInterval(LIFETIME_INACTIVE_USER / 2 * 1000);
@@ -223,7 +226,7 @@ public class MyTrackingFB implements Tracking {
 
     private void reconnect() {
         if(TRACKING_DISABLED.equals(getStatus())) return;
-        Log.i("MyTrackingFB","reconnect");
+        Log.i("MyTrackingFB","reconnect"); //NON-NLS
         setStatus(TRACKING_RECONNECTING);
         trackingListener.onReconnecting();
         try {
@@ -371,9 +374,9 @@ public class MyTrackingFB implements Tracking {
                 data.remove(REQUEST_DELIVERY_CONFIRMATION);
 
                 String path;
-                if(data.containsKey("to")) {
-                    String to = String.valueOf(data.get("to"));
-                    data.remove("to");
+                if(data.containsKey(RESPONSE_PRIVATE)) {
+                    String to = String.valueOf(data.get(RESPONSE_PRIVATE));
+                    data.remove(RESPONSE_PRIVATE);
                     data.put("from", state.getMe().getProperties().getNumber());
                     path = Constants.DATABASE.SECTION_PRIVATE + "/" + type + "/" + to;
                 } else {
@@ -391,11 +394,11 @@ public class MyTrackingFB implements Tracking {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Utils.err(MyTrackingFB.this, "send:", e.getMessage(),e);
+                        Utils.err(MyTrackingFB.this, "send:", e.getMessage(),e); //NON-NLS
                     }
                 });
             } else {
-                Utils.log(MyTrackingFB.this, "send:", "Error sending");
+                Utils.log(MyTrackingFB.this, "send:", "Error sending"); //NON-NLS
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -478,7 +481,7 @@ public class MyTrackingFB implements Tracking {
 
     @Override
     public String getTrackingUri() {
-        return "http://" + serverUri.getHost() + (SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked()) + "/track/" + getToken();
+        return "http://" + serverUri.getHost() + (SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked()) + "/track/" + getToken(); //NON-NLS
     }
 
     private DatabaseReference registerChildListener(DatabaseReference ref, ChildEventListener listener, int limit) {
@@ -502,10 +505,10 @@ public class MyTrackingFB implements Tracking {
         public void run() {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
-                Log.i("MyTrackingFB","reconnectRunnable");
+                Log.i("MyTrackingFB","reconnectRunnable"); //NON-NLS
                 webSocket.connect();
             } catch (WebSocketException e) {
-                Log.e("MyTrackingFB","reconnectRunnable:error:" + e.getMessage());
+                Log.e("MyTrackingFB","reconnectRunnable:error:" + e.getMessage()); //NON-NLS
                 reconnect();
             }
         }
@@ -517,7 +520,7 @@ public class MyTrackingFB implements Tracking {
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
             super.onConnected(websocket, headers);
             if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTrackingFB","onConnected");
+            Log.i("MyTrackingFB","onConnected"); //NON-NLS
             if(newTracking) {
                 put(REQUEST, REQUEST_NEW_GROUP);
             } else {
@@ -547,7 +550,7 @@ public class MyTrackingFB implements Tracking {
 
         @Override
         public void onTextMessage(WebSocket websocket, String message) {
-            Utils.log(MyTrackingFB.this,"onTextMessage:", "Message="+message);
+            Utils.log(MyTrackingFB.this,"onTextMessage:", "Message="+message); //NON-NLS
             if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
                 final JSONObject o = new JSONObject(message);
@@ -582,7 +585,7 @@ public class MyTrackingFB implements Tracking {
                                         }
                                         o.put(RESPONSE_INITIAL, true);
 
-                                        Utils.log(MyTrackingFB.this, "onTextMessage:", "Snapshot="+authResult.getUser().getUid());
+                                        Utils.log(MyTrackingFB.this, "onTextMessage:", "Snapshot="+authResult.getUser().getUid()); //NON-NLS
 
                                         ref = database.getReference().child(getToken());
 
@@ -630,7 +633,7 @@ public class MyTrackingFB implements Tracking {
                         } else {
                             setStatus(TRACKING_DISABLED);
 
-                            String reason = "Old version of server";
+                            String reason = state.getString(R.string.old_version_of_server);
                             trackingListener.onReject(reason);
                         }
                         break;
@@ -670,7 +673,7 @@ public class MyTrackingFB implements Tracking {
         @Override
         public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
                                    WebSocketFrame clientCloseFrame, boolean closedByServer) {
-            Log.i("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking);
+            Log.i("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking); //NON-NLS
 
             if (closedByServer) {
             } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
@@ -685,7 +688,7 @@ public class MyTrackingFB implements Tracking {
 
         @Override
         public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
-            Log.i("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage());
+            Log.i("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage()); //NON-NLS
             reconnect();
         }
     };
@@ -720,6 +723,7 @@ public class MyTrackingFB implements Tracking {
 
             if(!(state.getMe().getProperties().getNumber()+"").equals(dataSnapshot.getKey())) {
                 try {
+                    //noinspection unchecked
                     JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
                     o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getKey()));
                     o.put(RESPONSE_INITIAL, true);
@@ -768,10 +772,11 @@ public class MyTrackingFB implements Tracking {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 //            System.out.println("userDependentListenerADDED:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
             try {
+                //noinspection unchecked
                 JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
                 o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getRef().getParent().getKey()));
                 o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
-                o.put("key", dataSnapshot.getKey());
+                o.put(REQUEST_KEY, dataSnapshot.getKey());
 
                 trackingListener.onMessage(o);
             } catch (Exception e) {
@@ -801,13 +806,14 @@ public class MyTrackingFB implements Tracking {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 //            System.out.println("userPrivateAdded:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
             try {
+                //noinspection unchecked
                 JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
 
                 int from = Integer.parseInt(o.getString("from"));
                 o.remove("from");
                 o.put(RESPONSE_NUMBER, from);
                 o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
-                o.put("key", dataSnapshot.getKey());
+                o.put(REQUEST_KEY, dataSnapshot.getKey());
                 o.put(PRIVATE_MESSAGE, true);
 
                 trackingListener.onMessage(o);
@@ -838,7 +844,7 @@ public class MyTrackingFB implements Tracking {
     private ValueEventListener usersDataNameListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            Utils.log(MyTrackingFB.this, "usersDataNameListenerChanged:", "dataSnapShot="+dataSnapshot);
+            Utils.log(MyTrackingFB.this, "usersDataNameListenerChanged:", "dataSnapShot="+dataSnapshot); //NON-NLS
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final String name = String.valueOf(dataSnapshot.getValue());

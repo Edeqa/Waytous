@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.graphics.Color;
 import android.location.Location;
@@ -38,20 +38,17 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
-import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static com.edeqa.waytous.holders.property.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 
 /**
  * Created 11/20/16.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "WeakerAccess", "HardCodedStringLiteral"})
 public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraView> {
 
-    public static final String TYPE = "camera";
+    public static final String TYPE = CameraViewHolder.class.getSimpleName();
 
     public static final String CAMERA_UPDATE = "camera_update";
     public static final String CAMERA_UPDATED = "camera_updated";
@@ -125,10 +122,10 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
-            case REQUEST_MODE_DAY:
+            case SensorsViewHolder.REQUEST_MODE_DAY:
                 scaleView.setColor(Color.BLACK);
                 break;
-            case REQUEST_MODE_NIGHT:
+            case SensorsViewHolder.REQUEST_MODE_NIGHT:
                 scaleView.setColor(Color.WHITE);
                 break;
             case CAMERA_UPDATE:
@@ -139,7 +136,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
-                            setCameraView((CameraView) myUser.getView(CameraViewHolder.TYPE));
+                            setCameraView((CameraView) myUser.getView(CameraViewHolder.this.getType()));
                             update();
                         }
                     }
@@ -284,7 +281,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
             number = myUser.getProperties().getNumber();
 
-            HashMap<String, Double> props = (HashMap<String, Double>) myUser.getProperties().loadFor(TYPE);
+            HashMap<String, Double> props = (HashMap<String, Double>) myUser.getProperties().loadFor(getType());
 
             double latitude;
             double longitude;
@@ -331,7 +328,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             props.put(LATITUDE, myUser.getLocation().getLatitude());
             props.put(LONGITUDE, myUser.getLocation().getLongitude());
 
-            myUser.getProperties().saveFor(TYPE, props);
+            myUser.getProperties().saveFor(getType(), props);
         }
 
         @Override

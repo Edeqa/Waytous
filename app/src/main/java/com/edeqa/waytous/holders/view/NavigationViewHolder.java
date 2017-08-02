@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -46,23 +46,21 @@ import java.util.List;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
-import static com.edeqa.waytous.holders.SettingsViewHolder.CREATE_SETTINGS;
-import static com.edeqa.waytous.holders.SettingsViewHolder.PREFERENCES_GENERAL;
-import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
+import static com.edeqa.waytous.holders.view.CameraViewHolder.CAMERA_UPDATED;
+import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_DAY;
+import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_NIGHT;
+import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
+import static com.edeqa.waytous.holders.view.SettingsViewHolder.PREPARE_SETTINGS;
 
 
 /**
  * Created 12/29/16.
  */
 
+@SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
 public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolder.NavigationView> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820058L;
-
-    public static final String TYPE = "Navigation";
 
     @SuppressWarnings("WeakerAccess")
     public static final String SHOW_NAVIGATION = "show_navigation";
@@ -99,18 +97,13 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         mode = State.getInstance().getStringPreference(PREFERENCE_MODE, NAVIGATION_MODE_DRIVING);
 
-        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
+        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(getType());
         if(m != null) {
             mode = m.mode;
         }
 
         iconNavigationStyle = R.style.iconNavigationMarkerTextDay;
         setButtonsView(context.findViewById(R.id.layout_navigation_mode));
-    }
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -149,7 +142,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        NavigationView view = ((NavigationView) myUser.getView(TYPE));
+                        NavigationView view = ((NavigationView) myUser.getView(getType()));
                         if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
                         }
@@ -165,11 +158,11 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
+                        if(myUser!= null && myUser.getView(getType()) != null && ((NavigationView)myUser.getView(getType())).track != null) {
                             buttonsView.setVisibility(View.VISIBLE);
                             handlerHideButtons.removeCallbacks(hideButtons);
                             handlerHideButtons.postDelayed(hideButtons, 5000);
-                            NavigationView view = (NavigationView) myUser.getView(TYPE);
+                            NavigationView view = (NavigationView) myUser.getView(getType());
                             Utils.updateMarkerPosition(map, view.marker, view.points);
                         }
                     }
@@ -184,14 +177,14 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
 
-                item.add(new SettingItem.Page(TYPE).setTitle(R.string.navigation)
-                        .add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle(R.string.general).setGroupId(TYPE))
+                item.add(new SettingItem.Page(getType()).setTitle(R.string.navigation)
+                        .add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setGroupId(getType()))
                         .add(new SettingItem.List(PREFERENCE_MODE)
                                 .add(NAVIGATION_MODE_DRIVING, R.string.driving)
                                 .add(NAVIGATION_MODE_WALKING, R.string.walking)
                                 .add(NAVIGATION_MODE_BICYCLING, R.string.bicycling)
                                 .setValue(mode)
-                                .setTitle(R.string.mode).setGroupId(PREFERENCES_GENERAL)
+                                .setTitle(R.string.mode).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL)
                                 .setMessage("Select your preferred navigation mode.")
                                 .setCallback(new Runnable1<String>() {
                                     @Override
@@ -210,7 +203,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                         onClickListener.onClick(v);
                                     }
                                 }))
-                        .add(new SettingItem.Group(PREFERENCE_OPTIONS).setTitle(R.string.options).setGroupId(TYPE))
+                        .add(new SettingItem.Group(PREFERENCE_OPTIONS).setTitle(R.string.options).setGroupId(getType()))
                         .add(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle(R.string.avoid_highways).setGroupId(PREFERENCE_OPTIONS))
                         .add(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle(R.string.avoid_tolls).setGroupId(PREFERENCE_OPTIONS))
                         .add(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle(R.string.avoid_ferries).setGroupId(PREFERENCE_OPTIONS)));
@@ -254,7 +247,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                NavigationView view = (NavigationView) myUser.getView(TYPE);
+                NavigationView view = (NavigationView) myUser.getView(getType());
                 if(view != null && view.showNavigation){
                     view.previousLocation = null;
                     view.update();
@@ -321,7 +314,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         NavigationView(MyUser myUser){
             super(NavigationViewHolder.this.context, myUser);
 
-            Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
+            Boolean props = (Boolean) myUser.getProperties().loadFor(getType());
             showNavigation = !(props == null || !props);
             if(showNavigation){
                 update();//onChangeLocation(myUser.getLocation());
@@ -340,7 +333,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        NavigationView view = (NavigationView) myUser.getView(TYPE);
+                        NavigationView view = (NavigationView) myUser.getView(getType());
                         if(view != null && view.showNavigation) {
                             view.update();
                         }
@@ -365,7 +358,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
-                    if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
+                    if(myUser!= null && myUser.getView(getType()) != null && ((NavigationView)myUser.getView(getType())).track != null) {
                         buttonsView.setVisibility(View.VISIBLE);
                         handlerHideButtons.removeCallbacks(hideButtons);
                         handlerHideButtons.postDelayed(hideButtons, 5000);
@@ -411,7 +404,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 case SHOW_NAVIGATION:
                     showNavigation = true;
                     if(myUser == State.getInstance().getMe()) break;
-                    myUser.getProperties().saveFor(TYPE, showNavigation);
+                    myUser.getProperties().saveFor(getType(), showNavigation);
 
                     onChangeLocation(myUser.getLocation());
 
@@ -420,7 +413,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 case HIDE_NAVIGATION:
                     showNavigation = false;
                     previousLocation = null;
-                    myUser.getProperties().saveFor(TYPE, null);
+                    myUser.getProperties().saveFor(getType(), null);
                     remove();
 
                     break;

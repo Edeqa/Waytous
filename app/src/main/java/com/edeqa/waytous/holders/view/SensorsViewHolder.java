@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -31,14 +31,12 @@ import static com.edeqa.waytous.helpers.LightSensorManager.NIGHT;
 @SuppressWarnings("WeakerAccess")
 public class SensorsViewHolder extends AbstractViewHolder {
 
-    public static final String TYPE = "sensors";
-
-    public static final String REQUEST_MODE_DAY = "request_mode_day";
-    public static final String REQUEST_MODE_NIGHT = "request_mode_night";
-    public static final String REQUEST_MODE_NORMAL = "request_mode_normal";
-    public static final String REQUEST_MODE_SATELLITE = "request_mode_satellite";
-    public static final String REQUEST_MODE_TERRAIN = "request_mode_terrain";
-    public static final String REQUEST_MODE_TRAFFIC = "request_mode_traffic";
+    public static final String REQUEST_MODE_DAY = "request_mode_day"; //NON-NLS
+    public static final String REQUEST_MODE_NIGHT = "request_mode_night"; //NON-NLS
+    public static final String REQUEST_MODE_NORMAL = "request_mode_normal"; //NON-NLS
+    public static final String REQUEST_MODE_SATELLITE = "request_mode_satellite"; //NON-NLS
+    public static final String REQUEST_MODE_TERRAIN = "request_mode_terrain"; //NON-NLS
+    public static final String REQUEST_MODE_TRAFFIC = "request_mode_traffic"; //NON-NLS
 
     private final LightSensorManager lightSensor;
 
@@ -73,7 +71,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
         lightSensor = new LightSensorManager(context);
         lightSensor.setOnEnvironmentChangeListener(onEnvironmentChangeListener);
 
-        Object m = State.getInstance().getPropertiesHolder().loadFor(TYPE);
+        Object m = State.getInstance().getPropertiesHolder().loadFor(getType());
         if(m != null) {
             switch ((int) m) {
                 case GoogleMap.MAP_TYPE_SATELLITE:
@@ -84,17 +82,12 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     break;
             }
         }
-        m = State.getInstance().getPropertiesHolder().loadFor(TYPE + "_traffic");
+        m = State.getInstance().getPropertiesHolder().loadFor(getType() + "_traffic"); //NON-NLS
         if(m != null && (Boolean)m) {
             State.getInstance().fire(REQUEST_MODE_TRAFFIC, m);
         }
 
         setMap(context.getMap());
-    }
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -141,7 +134,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     break;
                 }
                 if(map != null) map.setMapStyle(null);
-                State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
+                State.getInstance().getPropertiesHolder().saveFor(getType(), null);
 
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
@@ -162,7 +155,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     break;
                 }
                 if(map != null) map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night));
-                State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
+                State.getInstance().getPropertiesHolder().saveFor(getType(), null);
 
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
@@ -180,7 +173,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 break;
             case REQUEST_MODE_NORMAL:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                State.getInstance().getPropertiesHolder().saveFor(TYPE, null);
+                State.getInstance().getPropertiesHolder().saveFor(getType(), null);
 
                 lightSensor.enable();
                 onEvent(REQUEST_MODE_DAY, null);
@@ -190,12 +183,12 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     lightSensor.disable();
                     onEvent(REQUEST_MODE_NIGHT, null);
                     map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                    State.getInstance().getPropertiesHolder().saveFor(TYPE, GoogleMap.MAP_TYPE_SATELLITE);
+                    State.getInstance().getPropertiesHolder().saveFor(getType(), GoogleMap.MAP_TYPE_SATELLITE);
                 }
                 break;
             case REQUEST_MODE_TERRAIN:
                 if(map != null) map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                State.getInstance().getPropertiesHolder().saveFor(TYPE, GoogleMap.MAP_TYPE_TERRAIN);
+                State.getInstance().getPropertiesHolder().saveFor(getType(), GoogleMap.MAP_TYPE_TERRAIN);
                 lightSensor.disable();
                 onEvent(REQUEST_MODE_DAY, null);
                 break;
@@ -205,7 +198,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     state = (boolean) object;
                 }
                 map.setTrafficEnabled(state);
-                State.getInstance().getPropertiesHolder().saveFor(TYPE + "_traffic", state);
+                State.getInstance().getPropertiesHolder().saveFor(getType() + "_traffic", state); //NON-NLS
                 break;
             case CREATE_DRAWER:
                 DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;

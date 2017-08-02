@@ -11,7 +11,7 @@ import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
-import com.edeqa.waytous.holders.PropertiesHolder;
+import com.edeqa.waytous.holders.property.PropertiesHolder;
 import com.edeqa.waytous.interfaces.Entity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created 9/18/16.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class MyUser {
 
     private static final int SIMPLIFY_AFTER_EACH = 100;
@@ -117,7 +118,6 @@ public class MyUser {
                 }
             }).start();
         } else {
-            System.out.println("ADDLOC:"+location + ":"+MyUser.this);
             onChangeLocation();
         }
         return this;
@@ -194,10 +194,9 @@ public class MyUser {
     }
 
     public void fire(final String EVENT, final Object object){
-        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object);
+        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]);
         propertyBus.post(EVENT, object);
         viewBus.post(EVENT, object);
-
 
 /*        continueFiring.set(true);
         for(Map.Entry<String,Entity> entry: properties.entrySet()){
@@ -307,6 +306,7 @@ public class MyUser {
         this.user = user;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isShown() {
         return (views != null && views.keySet().size() > 0);
     }

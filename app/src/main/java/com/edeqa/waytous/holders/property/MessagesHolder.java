@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.property;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -22,7 +22,6 @@ import com.edeqa.waytousserver.helpers.Constants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
@@ -37,8 +36,7 @@ import static com.edeqa.waytous.helpers.UserMessage.TYPE_MESSAGE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_USER_JOINED;
-import static com.edeqa.waytous.holders.MessagesViewHolder.SHOW_MESSAGES;
-import static com.edeqa.waytous.holders.NotificationHolder.SHOW_CUSTOM_NOTIFICATION;
+import static com.edeqa.waytous.holders.view.MessagesViewHolder.SHOW_MESSAGES;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
@@ -51,21 +49,21 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 /**
  * Created 11/27/16.
  */
+@SuppressWarnings("unchecked")
 public class MessagesHolder extends AbstractPropertyHolder {
 
     public static final String TYPE = REQUEST_MESSAGE;
 
-    public static final String NEW_MESSAGE = "new_message";
-    public static final String SEND_MESSAGE = "send_message";
-    public static final String PRIVATE_MESSAGE = "private";
-    public static final String USER_MESSAGE = "user_message";
-    public static final String WELCOME_MESSAGE = "welcome_message";
+    public static final String NEW_MESSAGE = "new_message"; //NON-NLS
+    public static final String SEND_MESSAGE = "send_message"; //NON-NLS
+    public static final String PRIVATE_MESSAGE = "private"; //NON-NLS
+    public static final String USER_MESSAGE = "user_message"; //NON-NLS
+    public static final String WELCOME_MESSAGE = "welcome_message"; //NON-NLS
     private final Context context;
     private final android.support.v4.app.NotificationCompat.Builder notification;
 
-    private ArrayList<UserMessage> messages = new ArrayList<>();
+//    private ArrayList<UserMessage> messages = new ArrayList<>();
     private boolean showNotifications = true;
-    private Notification result;
     private long becomesActive = 0;
 
     public MessagesHolder(Context context) {
@@ -122,6 +120,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
     }
 
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public void perform(final JSONObject o) throws JSONException {
         if(o.has(REQUEST_DELIVERY_CONFIRMATION)) {
@@ -182,7 +181,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                     m = new UserMessage(mm);
                     m.save(mm.getCallback());
 
-                    messages.add(m);
+//                    messages.add(m);
                     State.getInstance().getTracking()
                             .put(Constants.USER_MESSAGE, m.getBody())
                             .put(REQUEST_PUSH, true)
@@ -198,7 +197,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 m.setFrom(user);
                 m.setType(TYPE_USER_JOINED);
                 m.save(null);
-                messages.add(m);
+//                messages.add(m);
                 break;
             case USER_DISMISSED:
                 user = (MyUser) object;
@@ -208,7 +207,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 m.setFrom(user);
                 m.setType(TYPE_USER_DISMISSED);
                 m.save(null);
-                messages.add(m);
+//                messages.add(m);
                 break;
             case WELCOME_MESSAGE:
                 String text = (String) object;
@@ -217,7 +216,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 m.setFrom(State.getInstance().getUsers().getUsers().get(0));
                 m.setType(TYPE_JOINED);
                 m.save(null);
-                messages.add(m);
+//                messages.add(m);
                 break;
             case ACTIVITY_RESUME:
                 showNotifications = false;
@@ -235,6 +234,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
             super(MessagesHolder.this.context, myUser);
         }
 
+        @SuppressWarnings("HardCodedStringLiteral")
         @Override
         public boolean onEvent(String event, Object object) {
             if(!myUser.isUser()) return true;
@@ -246,7 +246,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                     UserMessage m = (UserMessage) object;
                     if(m != null) {
                         m.save(null);
-                        messages.add(m);
+//                        messages.add(m);
 
                         Intent viewIntent = new Intent(context, MainActivity.class);
                         viewIntent.putExtra("action", "fire");
@@ -278,7 +278,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                             }
 //                            notification.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.youve_been_informed));
                         }
-                        State.getInstance().fire(SHOW_CUSTOM_NOTIFICATION, notification.build());
+                        State.getInstance().fire(NotificationHolder.SHOW_CUSTOM_NOTIFICATION, notification.build());
                     }
 
                     break;
@@ -288,7 +288,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                         m = new UserMessage(mm);
                         m.save(mm.getCallback());
 
-                        messages.add(m);
+//                        messages.add(m);
                         State.getInstance().getTracking()
                                 .put(RESPONSE_PRIVATE, mm.getToUser().getProperties().getNumber())
                                 .put(Constants.USER_MESSAGE, m.getBody())

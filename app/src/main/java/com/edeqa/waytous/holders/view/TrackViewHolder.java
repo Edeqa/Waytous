@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.location.Location;
 import android.os.Handler;
@@ -33,11 +33,12 @@ import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
  * Created 11/24/16.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackView> {
-    private static final String TYPE = "track";
+    private static final String TYPE = "track"; //NON-NLS
 
-    private static final String SHOW_TRACK = "show_track";
-    private static final String HIDE_TRACK = "hide_track";
+    private static final String SHOW_TRACK = "show_track"; //NON-NLS
+    private static final String HIDE_TRACK = "hide_track"; //NON-NLS
 
     private GoogleMap map;
 

@@ -21,11 +21,11 @@ import com.edeqa.waytous.helpers.Events;
 import com.edeqa.waytous.helpers.GeoTrackFilter;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.MyUsers;
-import com.edeqa.waytous.holders.GpsHolder;
-import com.edeqa.waytous.holders.MessagesHolder;
-import com.edeqa.waytous.holders.NotificationHolder;
-import com.edeqa.waytous.holders.PropertiesHolder;
-import com.edeqa.waytous.holders.TrackingHolder;
+import com.edeqa.waytous.holders.property.GpsHolder;
+import com.edeqa.waytous.holders.property.MessagesHolder;
+import com.edeqa.waytous.holders.property.NotificationHolder;
+import com.edeqa.waytous.holders.property.PropertiesHolder;
+import com.edeqa.waytous.holders.property.TrackingHolder;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytousserver.helpers.Constants;
@@ -46,7 +46,7 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
-import static com.edeqa.waytous.holders.PropertiesHolder.PREFERENCE_MY_NAME;
+import static com.edeqa.waytous.holders.property.PropertiesHolder.PREFERENCE_MY_NAME;
 
 public class State extends MultiDexApplication {
 
@@ -95,7 +95,7 @@ public class State extends MultiDexApplication {
 
 //        Constants.SENSITIVE = new SensitiveData(new String[]{""+BuildConfig.DEBUG});
         try {
-            InputStream stream = getAssets().open("options.json");
+            InputStream stream = getAssets().open("options.json"); //NON-NLS
 
             Reader reader = new InputStreamReader(stream);
             Constants.SENSITIVE = new SensitiveData(reader);
@@ -109,8 +109,8 @@ public class State extends MultiDexApplication {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
-            systemPropertyBus = new EventBus("SystemPropertyHolder");
-            systemViewBus = new EventBus("SystemViewHolder");
+            systemPropertyBus = new EventBus<>("SystemPropertyHolder"); //NON-NLS
+            systemViewBus = new EventBus<>("SystemViewHolder"); //NON-NLS
         } catch (TooManyListenersException e) {
             e.printStackTrace();
         }
@@ -158,7 +158,7 @@ public class State extends MultiDexApplication {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
-                Log.e("Waytous", "State", paramThrowable);
+                Log.e("Waytous", "State", paramThrowable); //NON-NLS
 
                 Intent intent = new Intent(State.this, ExceptionActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -349,7 +349,8 @@ public class State extends MultiDexApplication {
     }
 
     public void fire(String EVENT, Object object){
-        Log.i("State","====>>> "+EVENT+":"+object);
+
+        Log.i("State","====>>> "+EVENT+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]); //NON-NLS
         switch(EVENT){
             case Events.ACTIVITY_DESTROY:
                 if(tracking_disabled() || tracking_error() || tracking_expired()) {

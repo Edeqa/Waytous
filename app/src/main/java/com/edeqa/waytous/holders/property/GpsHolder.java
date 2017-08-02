@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.property;
 
 import android.content.Context;
 import android.location.Location;
@@ -29,9 +29,8 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
  * Created 01/13/17.
  */
 public class GpsHolder extends AbstractPropertyHolder {
-    private static final String TYPE = "Gps";
 
-    public static final String REQUEST_LOCATION_SINGLE = "request_location_single";
+    public static final String REQUEST_LOCATION_SINGLE = "request_location_single"; //NON-NLS
 
     private final LocationGooglePlayServicesProvider provider;
     private final SmartLocation.LocationControl smartLocation;
@@ -45,11 +44,6 @@ public class GpsHolder extends AbstractPropertyHolder {
 
         LocationParams.Builder params = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(3).setInterval(1000);
         smartLocation = new SmartLocation.Builder(context).build().location().config(params.build());
-    }
-
-    @Override
-    public String getType(){
-        return TYPE;
     }
 
     @Override

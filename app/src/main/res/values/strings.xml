@@ -134,14 +134,14 @@
     <string name="reply_to_s">Reply to %s</string>
     <string name="chat_d">Chat (%d)</string>
     <string name="options">Options</string>
-    <string name="setting_up">Setting up...</string>
-    <string name="creating_group">Creating group...</string>
-    <string name="joining_group">Joining group...</string>
+    <string name="setting_up">Setting up…</string>
+    <string name="creating_group">Creating group…</string>
+    <string name="joining_group">Joining group…</string>
     <string name="you_have_joined">You have joined.</string>
     <string name="s_has_joined">%s has joined.</string>
     <string name="s_has_left">%s has left.</string>
     <string name="stop">Stop</string>
-    <string name="reconnecting">Reconnecting...</string>
+    <string name="reconnecting">Reconnecting…</string>
     <string name="d_users_online">%d user(s) online.</string>
     <string name="close_to_s">Close to %s</string>
     <string name="away_from_s">Away from %s</string>
@@ -162,7 +162,7 @@
     <string name="link_to_the_group">Link to the group</string>
     <string name="follow_me_at_s">Follow me at %s</string>
     <string name="invite_a_friend">Invite a friend</string>
-    <string name="starting">Starting...</string>
+    <string name="starting">Starting…</string>
     <string name="action">Action</string>
     <string name="cancel">Cancel</string>
     <string name="you_have_created_the_group">You have created the group</string>
@@ -184,5 +184,29 @@
     <string name="views">Views</string>
     <string name="miscellaneous">Miscellaneous</string>
     <string name="d_users_selected">%d user(s) selected</string>
+    <string name="version_s_d" formatted="false">Version %s.%d</string>
+    <string name="waytous_web_service">Waytous web service</string>
+    <string name="legal_information">Legal information</string>
+    <string name="third_party_components">Third party components</string>
+    <string name="smart_location_library">Smart Location Library</string>
+    <string name="java_websockets">Java WebSockets</string>
+    <string name="map_scale_view">Map Scale View</string>
+    <string name="taptargetview">TapTargetView</string>
+    <string name="android_material_intro_screen">Android Material Intro Screen</string>
+    <string name="notifications">Notifications</string>
+    <string name="sounds">Sounds</string>
+    <string name="user_online">User online</string>
+    <string name="default_string">Default</string>
+    <string name="close_to_user">Close to user</string>
+    <string name="away_from_user">Away from user</string>
+    <string name="none">None</string>
+    <string name="youre_going_to_send_the_location_s_to_s_continue" formatted="false">You\'re going to send the location %s to %s. Continue?</string>
+    <string name="all">all</string>
+    <string name="share_location_to">Share location to</string>
+    <string name="look_at_s">Look at %s</string>
+    <string name="you_want_to_minimize_waytous">You want to minimize Waytous. Note that the service will be active in background until you stop it. Continue minimizing?</string>
+    <string name="old_version_of_server">Old version of server</string>
+    <string name="shows_accuracy_circle_around_the_marker_on_map">Shows accuracy circle around the marker on map.</string>
+    <string name="youve_got_the_location_from_s" formatted="false">You\'ve got the location from %s: %s%s%s. Add it to your saved locations list?</string>
 
 </resources>

@@ -1,14 +1,9 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
-import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -44,13 +39,13 @@ import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
  * Created 7/28/17.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class SettingsViewHolder extends AbstractViewHolder {
-    private static final String TYPE = "settingsMap";
 
-    public static final String SHOW_SETTINGS = "show_settings";
-    public static final String CREATE_SETTINGS = "create_settings";
-    public static final String PREPARE_SETTINGS = "prepare_settings";
-    public static final String PREFERENCES_GENERAL = "general";
+    public static final String SHOW_SETTINGS = "show_settings"; //NON-NLS
+    public static final String CREATE_SETTINGS = "create_settings"; //NON-NLS
+    public static final String PREPARE_SETTINGS = "prepare_settings"; //NON-NLS
+    public static final String PREFERENCES_GENERAL = "general"; //NON-NLS
 
     private AlertDialog dialog;
     private RecyclerView list;
@@ -67,6 +62,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
         SettingItem.setContext(context);
 
         settingItem = new SettingItem.Page(PREFERENCES_GENERAL);
+        //noinspection unchecked
         settingItem.setCallback(new Runnable1() {
             @Override
             public void call(Object arg) {
@@ -76,11 +72,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
             }
         }).setTitle(R.string.settings);
 //        settingItem.add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle("General"));
-    }
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -164,8 +155,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
-        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,7 +200,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println("CLICKED:"+view.getId());
+                    System.out.println("CLICKED:"+view.getId()); //NON-NLS
                 }
             });
             return new SettingViewHolder(v);
@@ -263,7 +253,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                             ((SettingItem.Text)item).onClick(new Runnable1<String>() {
                                 @Override
                                 public void call(String arg) {
-                                    System.out.println("CLICKED:"+arg+":"+item);
+                                    System.out.println("CLICKED:"+arg+":"+item); //NON-NLS
                                     adapter.notifyDataSetChanged();
                                 }
                             });
@@ -282,7 +272,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                             ((SettingItem.Checkbox)item).onClick(new Runnable1<Boolean>() {
                                 @Override
                                 public void call(Boolean arg) {
-                                    System.out.println("CLICKED:"+item);
+                                    System.out.println("CLICKED:"+item); //NON-NLS
                                     adapter.notifyDataSetChanged();
                                 }
                             });
@@ -297,7 +287,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                             ((SettingItem.List)item).onClick(new Runnable1<String>() {
                                 @Override
                                 public void call(String arg) {
-                                    System.out.println("CLICKED:"+item+":"+arg);
+                                    System.out.println("CLICKED:"+item+":"+arg); //NON-NLS
                                     adapter.notifyDataSetChanged();
                                 }
                             });

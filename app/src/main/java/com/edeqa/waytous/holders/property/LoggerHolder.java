@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.property;
 
 import android.location.Location;
 import android.util.Log;
@@ -11,6 +11,7 @@ import com.edeqa.waytous.helpers.MyUser;
 /**
  * Created 11/30/16.
  */
+@SuppressWarnings("HardCodedStringLiteral")
 public class LoggerHolder extends AbstractPropertyHolder {
     private static final String TYPE = "LoggerHolder";
 

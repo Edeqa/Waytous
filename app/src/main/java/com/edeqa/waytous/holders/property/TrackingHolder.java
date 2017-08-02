@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.property;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +33,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
-import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST_MESSAGE;
@@ -88,7 +87,6 @@ public class TrackingHolder extends AbstractPropertyHolder {
         State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                System.out.println("PERFORM2:"+number+":"+location+":"+myUser);
                 myUser.addLocation(location);
             }
         });
@@ -160,7 +158,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
                 break;
             case TRACKING_ERROR:
-                Utils.log(TYPE, "onEvent:", "TRACKING_ERROR");
+                Utils.log(TYPE, "onEvent:", "TRACKING_ERROR"); //NON-NLS
                 break;
             case TOKEN_CREATED:
                 new ShareSender(context).sendLink(tracking.getTrackingUri());
@@ -206,7 +204,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
                     State.getInstance().fire(TOKEN_CREATED, o.getString(RESPONSE_TOKEN));
                 }
                 if (o.has(REQUEST_WELCOME_MESSAGE)) {
-                    State.getInstance().fire(WELCOME_MESSAGE, o.getString(REQUEST_WELCOME_MESSAGE));
+                    State.getInstance().fire(MessagesHolder.WELCOME_MESSAGE, o.getString(REQUEST_WELCOME_MESSAGE));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -237,7 +235,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         @Override
         public void onMessage(final JSONObject o) {
             try {
-                Log.i(TYPE, "onMessage: " + o.toString());
+                Log.i(TYPE, "onMessage: " + o.toString()); //NON-NLS
                 String responseStatus = o.getString(RESPONSE_STATUS);
                 switch (responseStatus) {
                     case RESPONSE_STATUS_UPDATED:

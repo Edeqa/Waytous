@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -35,21 +35,28 @@ import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
-import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
+import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 
 
 /**
  * Created 11/18/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.MarkerView> {
 
-    public static final String TYPE = "marker";
-    public static final String PREFERENCE_MARKER_ACCURACY = "marker_accuracy";
+    public static final String TYPE = "marker"; //NON-NLS
+
+    public static final String PREFERENCE_MARKER_ACCURACY = "marker_accuracy"; //NON-NLS
 
     private final boolean showAccuracy;
 
     private GoogleMap map;
+
+    @Override
+    public String getType() {
+        return TYPE;
+    }
 
     private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
@@ -64,11 +71,6 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
         setMap(context.getMap());
         showAccuracy = State.getInstance().getSharedPreferences().getBoolean(PREFERENCE_MARKER_ACCURACY, false);
-    }
-
-    @Override
-    public String getType(){
-        return TYPE;
     }
 
     @Override
@@ -97,7 +99,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             case MARKER_CLICK:
                 Marker marker = (Marker) object;
                 Bundle b = (Bundle) marker.getTag();
-                if(b.getString(TYPE, null).equals(TYPE)){
+                if(b.getString(getType(), null).equals(getType())){
                     if(marker.getTag() != null) {
                         int number = b.getInt(RESPONSE_NUMBER);
                         State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
@@ -113,10 +115,10 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                     }
                 }
                 break;
-            case PREPARE_SETTINGS:
+            case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
-                item.add(new SettingItem.Group(TYPE).setTitle(context.getString(R.string.marker)));
-                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(TYPE).setMessage("Shows accuracy circle around the marker on map."));
+                item.add(new SettingItem.Group(getType()).setTitle(context.getString(R.string.marker)));
+                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(getType()).setMessage(context.getString(R.string.shows_accuracy_circle_around_the_marker_on_map)));
                 break;
         }
         return true;
@@ -130,6 +132,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
         ArrayList<IntroRule> rules = new ArrayList<>();
 
+        //noinspection HardCodedStringLiteral
         rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("marker_intro").setViewId(R.id.map).setLinkTo(IntroRule.LINK_TO_CENTER_OF_VIEW).setTitle("Marker").setDescription("This one shows your position or positions of your friends on the map. Each marker has a different color but your color is always blue. Try to click on the marker a couple of times."));
 //        rules.put(new IntroRule().setEvent(PREPARE_FAB).setId("fab_intro_menu").setView(fab_buttons).setTitle("Click any item to perform some action"));
 //        rules.put(new IntroRule().setId("menu_set_name").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Click menu"));
@@ -184,7 +187,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             }
 
             Bundle b = new Bundle();
-            b.putString(TYPE, TYPE);
+            b.putString(MarkerViewHolder.this.getType(), MarkerViewHolder.this.getType());
             b.putInt(RESPONSE_NUMBER, myUser.getProperties().getNumber());
             marker.setTag(b);
 
@@ -258,7 +261,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                 case CHANGE_NUMBER:
                     int number = (int) object;
                     Bundle b = new Bundle();
-                    b.putString(TYPE, TYPE);
+                    b.putString(MarkerViewHolder.this.getType(), MarkerViewHolder.this.getType());
                     b.putInt(RESPONSE_NUMBER, number);
                     marker.setTag(b);
                     break;

@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.content.ClipData;
 import android.content.Context;
@@ -48,7 +48,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_ZOOM;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
@@ -56,8 +55,9 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 /**
  * Created 11/18/16.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.ButtonView> {
-    private static final String TYPE = "Button";
+
     private Handler handlerHideMenu;
     private Runnable runnableHideMenu;
     private LinearLayout layout;
@@ -70,11 +70,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         setScrollLayout((HorizontalScrollView) context.findViewById(R.id.sv_users));
         setLayout((LinearLayout) context.findViewById(R.id.layout_users));
         setMenuLayout((FlexboxLayout) context.findViewById(R.id.layout_context_menu));
-    }
-
-    @Override
-    public String getType(){
-        return TYPE;
     }
 
     @Override
@@ -144,6 +139,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     @Override
     public ArrayList<IntroRule> getIntro() {
         ArrayList<IntroRule> rules = new ArrayList<>();
+        //noinspection HardCodedStringLiteral
         rules.add(new IntroRule().setEvent(TRACKING_ACTIVE).setId("button_intro").setView(layout).setTitle("Top buttons").setDescription("Here are the buttons of group members. Touch any button to switch to this member or long touch for context menu."));
 
         return rules;
@@ -216,7 +212,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             @Override
             public void onClick(View view) {
                 if(clicked) {
-                    myUser.fire(CAMERA_ZOOM);
+                    myUser.fire(CameraViewHolder.CAMERA_ZOOM);
                     clicked = false;
                 } else {
                     myUser.fire(SELECT_SINGLE_USER);
@@ -348,8 +344,8 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         @Override
         public void onChangeLocation(Location location) {
+            //noinspection EmptyCatchBlock
             try {
-
                 title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextColor));
                 title.setTypeface(null, (myUser.getProperties().isSelected()) ? Typeface.BOLD : Typeface.NORMAL);
             } catch(Exception e) {
@@ -381,7 +377,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Log.i(TYPE,"Perform menu item { id=" + item.getItemId() +", title="+item.getTitle() + ", username=" + myUser.getProperties().getDisplayName() + "}");
+                                Log.i(getType(),"Perform menu item { id=" + item.getItemId() +", title="+item.getTitle() + ", username=" + myUser.getProperties().getDisplayName() + "}"); //NON-NLS
                                 popup.getMenu().performIdentifierAction(item.getItemId(),item.getGroupId());
                                 handlerHideMenu.removeCallbacks(runnableHideMenu);
                                 menuLayout.setVisibility(View.GONE);
@@ -405,6 +401,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void updateBackgroundColors(MyUser user) {
         if(State.getInstance().tracking_active() && user != null && State.getInstance().getUsers().getCountSelectedTotal() == 1) {
             if (Build.VERSION.SDK_INT >= 21) {

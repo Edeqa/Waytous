@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -40,17 +40,14 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_EXPIRED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATED;
-import static com.edeqa.waytous.holders.InfoViewHolder.SHOW_INFO;
 
 /**
  * Created 11/27/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class FabViewHolder extends AbstractViewHolder {
 
-    public static final String TYPE = "fab";
-
-    public static final String PREPARE_SHARE_BUTTONS = "prepare_share_buttons";
+    public static final String PREPARE_SHARE_BUTTONS = "prepare_share_buttons"; //NON-NLS
 
     private LinearLayoutCompat fabButtons;
     private FloatingActionButton fab;
@@ -76,11 +73,6 @@ public class FabViewHolder extends AbstractViewHolder {
 
         fabButtons.removeAllViews();
 
-    }
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -126,7 +118,7 @@ public class FabViewHolder extends AbstractViewHolder {
         }
         switch(event){
             case PREPARE_FAB:
-            case SHOW_INFO:
+            case InfoViewHolder.SHOW_INFO:
                 break;
             default:
                 close(true);
@@ -174,6 +166,7 @@ public class FabViewHolder extends AbstractViewHolder {
         return button;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public ArrayList<IntroRule> getIntro() {
 
@@ -236,6 +229,7 @@ public class FabViewHolder extends AbstractViewHolder {
         }
     };
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private void openShareDialog(final String link) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();

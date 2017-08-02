@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.location.Location;
 import android.view.Menu;
@@ -24,7 +24,6 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATE;
 import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 
@@ -34,17 +33,11 @@ import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
 
 @SuppressWarnings("WeakerAccess")
 public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.StreetsView> implements OnStreetViewPanoramaReadyCallback {
-    private static final String TYPE = "streets";
 
     private View streetViewLayout;
     private SupportStreetViewPanoramaFragment streetView;
     private StreetViewPanorama panorama;
     private StreetViewPanoramaCamera camera;
-
-    @Override
-    public String getType() {
-        return TYPE;
-    }
 
     @Override
     public StreetsView create(MyUser myUser) {
@@ -87,7 +80,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                         streetViewLayout.getLayoutParams().height = (int) (State.getInstance().getResources().getDisplayMetrics().heightPixels / 2.5);
                         streetView.getStreetViewPanoramaAsync(StreetsViewHolder.this);
                         streetViewLayout.setVisibility(View.VISIBLE);
-                        State.getInstance().fire(CAMERA_UPDATE);
+                        State.getInstance().fire(CameraViewHolder.CAMERA_UPDATE);
 //                        .setMinimumHeight(height);
 
                         return false;
@@ -97,7 +90,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         streetViewLayout.setVisibility(View.GONE);
-                        State.getInstance().fire(CAMERA_UPDATE);
+                        State.getInstance().fire(CameraViewHolder.CAMERA_UPDATE);
                         return false;
                     }
                 }).setVisible(false);
@@ -143,7 +136,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
             @Override
             public void call(Integer number, MyUser myUser) {
                 if(myUser.getProperties().isSelected()) {
-                    myUser.getView(StreetsViewHolder.TYPE).onChangeLocation(myUser.getLocation());
+                    myUser.getView(getType()).onChangeLocation(myUser.getLocation());
                 }
             }
         });

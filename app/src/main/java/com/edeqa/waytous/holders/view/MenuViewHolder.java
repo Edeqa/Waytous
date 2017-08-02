@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.holders.property.PropertiesHolder;
 import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
@@ -26,33 +27,22 @@ import java.util.ArrayList;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
-import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
-import static com.edeqa.waytous.holders.SettingsViewHolder.PREFERENCES_GENERAL;
-import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
+import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 
 /**
  * Created 11/18/16.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class MenuViewHolder extends AbstractViewHolder {
-    private static final String TYPE = "menu";
 
-    public static final String PREFERENCES_ABOUT = "about";
-
+    public static final String PREFERENCES_ABOUT = "about"; //NON-NLS
 
     private boolean day = true;
 
     public MenuViewHolder(MainActivity context) {
         super(context);
-    }
-
-
-    @Override
-    public String getType() {
-        return TYPE;
     }
 
     @Override
@@ -65,6 +55,7 @@ public class MenuViewHolder extends AbstractViewHolder {
         return true;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
@@ -74,7 +65,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                     optionsMenu.add("Switch day/night mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
-                            State.getInstance().fire((day = !day) ? REQUEST_MODE_DAY : REQUEST_MODE_NIGHT);
+                            State.getInstance().fire((day = !day) ? SensorsViewHolder.REQUEST_MODE_DAY : SensorsViewHolder.REQUEST_MODE_NIGHT);
                             return true;
                         }
                     });
@@ -112,7 +103,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        Utils.log(MenuViewHolder.this, "onEvent:", "Cancel");
+                                        Utils.log(MenuViewHolder.this, "onEvent:", "Cancel"); //NON-NLS
                                     }
                                 });
 
@@ -121,10 +112,10 @@ public class MenuViewHolder extends AbstractViewHolder {
                     }
                 });
                 break;
-            case PREPARE_SETTINGS:
+            case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
-                item.add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100));
-                item.add(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(R.string.menu_set_my_name).setGroupId(PREFERENCES_GENERAL).setCallback(new Runnable1<String>() {
+                item.add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100));
+                item.add(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(R.string.menu_set_my_name).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL).setCallback(new Runnable1<String>() {
                     @Override
                     public void call(String arg) {
                         State.getInstance().getMe().fire(CHANGE_NAME,arg);
@@ -132,34 +123,34 @@ public class MenuViewHolder extends AbstractViewHolder {
                 }));
 
                 SettingItem.Page about = new SettingItem.Page(PREFERENCES_ABOUT).setTitle(R.string.about).setPriority(0)
-                        .add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100))
+                        .add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100))
                         .add(new SettingItem.Label("waytous")
                                 .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://play.google.com/store/apps/details?id=com.edeqa.waytous")))
-                                .setTitle(R.string.app_name).setMessage("Version " + BuildConfig.VERSION_NAME + "." + BuildConfig.VERSION_CODE))
+                                .setTitle(R.string.app_name).setMessage(context.getString(R.string.version_s_d, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)))
                         .add(new SettingItem.Label("waytous_web")
                                 .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://www.waytous.net")))
-                                .setTitle("Waytous web service").setMessage("http://www.waytous.net"))
+                                .setTitle(context.getString(R.string.waytous_web_service)).setMessage("http://www.waytous.net"))
                         .add(new SettingItem.Label("copyright")
                                 .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://www.edeqa.com")))
                                 .setTitle("Copyright (c) 2017 Edeqa").setMessage("http://www.edeqa.com"))
-                        .add(new SettingItem.Page("legal_information").setTitle("Legal information")
+                        .add(new SettingItem.Page("legal_information").setTitle(context.getString(R.string.legal_information))
                                 .add(new SettingItem.Label("legal_text").setTitle(R.string.legal_information_body)))
-                        .add(new SettingItem.Page("third_party").setTitle("Third party components").setPriority(0)
-                                .add(new SettingItem.Label("sll")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/mrmans0n/smart-location-lib")))
-                                        .setTitle("Smart Location Library"))
-                                .add(new SettingItem.Label("jws")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TooTallNate/Java-WebSocket")))
-                                        .setTitle("Java WebSockets"))
-                                .add(new SettingItem.Label("msv")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/pengrad/MapScaleView")))
-                                        .setTitle("Map Scale View"))
-                                .add(new SettingItem.Label("ttv")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/KeepSafe/TapTargetView")))
-                                        .setTitle("TapTargetView"))
+                        .add(new SettingItem.Page("third_party").setTitle(context.getString(R.string.third_party_components)).setPriority(0)
                                 .add(new SettingItem.Label("amis")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TangoAgency/material-intro-screen")))
-                                        .setTitle("Android Material Intro Screen")));
+                                        .setTitle(context.getString(R.string.android_material_intro_screen)))
+                                .add(new SettingItem.Label("jws")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TooTallNate/Java-WebSocket")))
+                                        .setTitle(context.getString(R.string.java_websockets)))
+                                .add(new SettingItem.Label("msv")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/pengrad/MapScaleView")))
+                                        .setTitle(context.getString(R.string.map_scale_view)))
+                                .add(new SettingItem.Label("sll")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/mrmans0n/smart-location-lib")))
+                                        .setTitle(context.getString(R.string.smart_location_library)))
+                                .add(new SettingItem.Label("ttv")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/KeepSafe/TapTargetView")))
+                                        .setTitle(context.getString(R.string.taptargetview))));
 
                 item.add(about);
 
@@ -178,6 +169,7 @@ public class MenuViewHolder extends AbstractViewHolder {
     public ArrayList<IntroRule> getIntro() {
         ArrayList<IntroRule> rules = new ArrayList<>();
 //        rules.put(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_show_context").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.menu_set_my_name).setTitle("Here you can").setDescription("Change your name in group."));
+        //noinspection HardCodedStringLiteral
         rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("menu_intro_option").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setTitle("Main menu").setDescription("Here you can access general actions to this group. And something else..."));
 
         return rules;

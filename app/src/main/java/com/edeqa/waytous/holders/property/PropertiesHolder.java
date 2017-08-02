@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.property;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -45,12 +44,12 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 @SuppressWarnings("unchecked")
 public class PropertiesHolder extends AbstractPropertyHolder {
 
-    public static final String TYPE = "properties";
+    public static final String TYPE = "properties"; //NON-NLS
 
-    public static final String PREFERENCE_MY_NAME = "my_name";
+    public static final String PREFERENCE_MY_NAME = "my_name"; //NON-NLS
 
-    private static final String SELECTED = "selected";
-    private static final String IMAGE_RESOURCE = "image_resource";
+    private static final String SELECTED = "selected"; //NON-NLS
+    private static final String IMAGE_RESOURCE = "image_resource"; //NON-NLS
     private static final int DISTANCE_MOVING_CLOSE = 50;
     private static final int DISTANCE_MOVING_AWAY = 100;
     private final SharedPreferences sharedPreferences;
@@ -60,7 +59,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     public PropertiesHolder(Context context){
         super(context);
         this.context = context;
-        sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences("tracking_active", MODE_PRIVATE); //NON-NLS
     }
 
     @Override
@@ -371,6 +370,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             }
         }
 
+        @SuppressWarnings("HardCodedStringLiteral")
         @Override
         public String toString() {
             return "Properties{" +

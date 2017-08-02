@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -22,10 +22,8 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
-import static com.edeqa.waytous.holders.MessagesHolder.NEW_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesViewHolder.SETUP_WELCOME_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesViewHolder.SHOW_MESSAGES;
+import static com.edeqa.waytous.holders.property.MessagesHolder.NEW_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
@@ -34,8 +32,9 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
  */
 public class SnackbarViewHolder extends AbstractViewHolder {
 
-    public static final String TYPE = "snackbar";
-    public static final String CUSTOM_SNACK = "custom_snack";
+    public static final String TYPE = "snackbar"; //NON-NLS
+
+    public static final String CUSTOM_SNACK = "custom_snack"; //NON-NLS
 
     private Snackbar snackbar;
 
@@ -75,7 +74,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
         snackbar.setAction(R.string.action, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utils.log(SnackbarViewHolder.this, "setLayout:");
+                Utils.log(SnackbarViewHolder.this, "setLayout:"); //NON-NLS
             }
         });
         snackbar.addCallback(new Snackbar.Callback() {
@@ -112,7 +111,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 snackbar.setText(R.string.you_have_created_the_group).setDuration(10000).setAction(context.getString(R.string.set_welcome_message), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        State.getInstance().fire(SETUP_WELCOME_MESSAGE);
+                        State.getInstance().fire(MessagesViewHolder.SETUP_WELCOME_MESSAGE);
                     }
                 }).show();
                 break;
@@ -136,7 +135,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                 snackbar.setText(message).setDuration(Snackbar.LENGTH_LONG).setAction(context.getString(R.string.show), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        State.getInstance().fire(SHOW_MESSAGES);
+                        State.getInstance().fire(MessagesViewHolder.SHOW_MESSAGES);
                     }
                 }).show();
                 break;

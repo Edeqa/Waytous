@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.location.Location;
 import android.os.Handler;
@@ -17,7 +17,6 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
 /**
@@ -26,7 +25,7 @@ import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 @SuppressWarnings("WeakerAccess")
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
 
-    private static final String TYPE = "address";
+    private static final String TYPE = "address"; //NON-NLS
     private Runnable1<String> callback;
 
     public AddressViewHolder(final MainActivity context) {
@@ -85,8 +84,6 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         @Override
         public boolean onEvent(String event, Object object) {
             switch(event){
-                case SELECT_USER:
-                    System.out.println("ADDRESSSELECT");
                 case UNSELECT_USER:
                     try {
                         if (State.getInstance().getUsers().getCountSelected() > 1) {
@@ -116,12 +113,12 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                     String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
 
                     try {
-                        Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req);
+                        Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req); //NON-NLS
                         final String res = Utils.getUrl(req);
-                        Utils.log(AddressView.this, "Response:", res);
-                        if(res != null && res.length() > 0) {
+                        Utils.log(AddressView.this, "Response:", res); //NON-NLS
+                        if(res.length() > 0) {
                             JSONObject address = new JSONObject(res);
-                            setTitle(address.getString("display_name"));
+                            setTitle(address.getString("display_name")); //NON-NLS
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

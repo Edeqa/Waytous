@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -60,9 +60,8 @@ import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATE;
-import static com.edeqa.waytous.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_KEY;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_SAVED_LOCATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
@@ -87,17 +86,18 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
 /**
  * Created 11/27/16.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationViewHolder.SavedLocationView> {
 
     public static final String TYPE = REQUEST_SAVED_LOCATION;
 
-    private static final String SAVE_LOCATION = "save_location";
-    private static final String SHOW_SAVED_LOCATION = "show_saved_location";
-    private static final String HIDE_SAVED_LOCATION = "hide_saved_location";
-    private static final String DELETE_SAVED_LOCATION = "delete_saved_location";
-    private static final String SHOW_SAVED_LOCATIONS = "show_saved_locations";
-    private static final String SHARE_SAVED_LOCATION = "share_saved_locations";
-    private static final String SEND_SAVED_LOCATION = "send_saved_locations";
+    private static final String SAVE_LOCATION = "save_location"; //NON-NLS
+    private static final String SHOW_SAVED_LOCATION = "show_saved_location"; //NON-NLS
+    private static final String HIDE_SAVED_LOCATION = "hide_saved_location"; //NON-NLS
+    private static final String DELETE_SAVED_LOCATION = "delete_saved_location"; //NON-NLS
+    private static final String SHOW_SAVED_LOCATIONS = "show_saved_locations"; //NON-NLS
+    private static final String SHARE_SAVED_LOCATION = "share_saved_locations"; //NON-NLS
+    private static final String SEND_SAVED_LOCATION = "send_saved_locations"; //NON-NLS
 
     private GoogleMap map;
     private SavedLocation.SavedLocationsAdapter adapter;
@@ -154,9 +154,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         if(o.has(USER_ADDRESS)) address = o.getString(USER_ADDRESS);
         if(o.has(USER_DESCRIPTION)) description = o.getString(USER_DESCRIPTION);
 
-        if(o.has("key")){
-            key = o.getString("key");
-            if(SavedLocation.getItemByFieldValue("key", key) != null) return;
+        if(o.has(REQUEST_KEY)){
+            key = o.getString(REQUEST_KEY);
+            if(SavedLocation.getItemByFieldValue(REQUEST_KEY, key) != null) return;
         }
 
         final String finalAddress = address;
@@ -170,8 +170,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                 final AlertDialog dialog = new AlertDialog.Builder(context).create();
                 dialog.setTitle(context.getString(R.string.add_location));
-                dialog.setMessage("You've got the location from " + State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName()
-                        + ": " + (finalName == null ? "" : finalName) + (finalAddress == null ? "" : ", address: " + finalAddress) + (finalDescription == null ? "" : ", description: " + finalDescription) + ". Add it to your saved locations list?");
+                dialog.setMessage(context.getString(R.string.youve_got_the_location_from_s, State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName(), finalName == null ? "" : finalName, finalAddress == null ? "" : ", address: " + finalAddress, finalDescription == null ? "" : ", description: " + finalDescription));
 
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
@@ -210,7 +209,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             }
         });
 
-        Utils.log(SavedLocationViewHolder.this, "perform:", "Saved="+o.toString());
+        Utils.log(SavedLocationViewHolder.this, "perform:", "Saved="+o.toString()); //NON-NLS
 
     }
 
@@ -372,6 +371,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         return user != null && user.getLocation() != null && user.getLocation().getProvider().equals(TYPE);
     }
 
+    @SuppressWarnings("unchecked")
     private void showLocations() {
 
         dialog = new AlertDialog.Builder(context).create();
@@ -429,7 +429,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
-                                myUser.fire(SHOW_NAVIGATION);
+                                myUser.fire(NavigationViewHolder.SHOW_NAVIGATION);
                             }
                         });
 
@@ -488,8 +488,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
-        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -499,7 +498,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
         toolbar.inflateMenu(R.menu.dialog_saved_locations_menu);
         final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_location);
-        searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
+        searchItem.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
         final Runnable1<String> setFilter = new Runnable1<String>() {
             @Override
@@ -699,7 +698,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 int number = myUser.getProperties().getNumber() - 10000;
 
 //                                SavedLocation.getItemByPosition(position)
-                                Utils.log(SavedLocationView.this, "onEvent:","number="+number);
+                                Utils.log(SavedLocationView.this, "onEvent:","number="+number); //NON-NLS
                                 SavedLocation saved = SavedLocation.getItemByNumber(number);
                                 editLocation(saved);
                                 return false;
@@ -741,7 +740,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         myUser.fire(MAKE_INACTIVE);
                         State.getInstance().fire(USER_DISMISSED, myUser);
 //                        myUser.fire(USER_DISMISSED);
-                        State.getInstance().fire(CAMERA_UPDATE);
+                        State.getInstance().fire(CameraViewHolder.CAMERA_UPDATE);
                     }
 /*
                     State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
@@ -764,9 +763,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         final SavedLocation savedLocation = SavedLocation.getItemByNumber(myUser.getProperties().getNumber() - 10000);
 
-                        new ShareSender(context).send("Share location to", "Look at " + user.getProperties().getDisplayName(),
+                        new ShareSender(context).send(context.getString(R.string.share_location_to), context.getString(R.string.look_at_s, user.getProperties().getDisplayName()),
 //                                "https://www.google.com/maps/@"+savedLocation.getLatitude()+","+savedLocation.getLongitude()+",14z");
-                                "http://maps.google.com/maps?z=14&q=loc:" + savedLocation.getLatitude() + "," + savedLocation.getLongitude());
+                                String.format("http://maps.google.com/maps?z=14&q=loc:%s,%s", savedLocation.getLatitude(), savedLocation.getLongitude()));
 
 //                        http://maps.google.com/maps?z=14&q=loc:38.93440628051758,-77.35896301269531
 //                                "http://maps.google.com/maps?z=14&ll=" + savedLocation.getLatitude() + "," + savedLocation.getLongitude());
@@ -786,8 +785,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         final AlertDialog dialog = new AlertDialog.Builder(context).create();
                         dialog.setTitle(context.getString(R.string.send_location));
-                        dialog.setMessage("You're going to send the location " + myUser.getProperties().getDisplayName()
-                                + " to " + (user == null ? "all" : user.getProperties().getDisplayName()) + ". Continue?");
+                        dialog.setMessage(context.getString(R.string.youre_going_to_send_the_location_s_to_s_continue, myUser.getProperties().getDisplayName(), user == null ? context.getString(R.string.all) : user.getProperties().getDisplayName()));
 
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
@@ -828,7 +826,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 case MARKER_CLICK:
                     if(isSavedLocation(myUser)) {
                         Marker marker = (Marker) object;
-                        Utils.log(SavedLocationView.this, "onEvent:","MARKER_CLICK="+ myUser.getProperties().getDisplayName());
+                        Utils.log(SavedLocationView.this, "onEvent:","MARKER_CLICK="+ myUser.getProperties().getDisplayName()); //NON-NLS
                         marker.showInfoWindow();
                     }
                     break;

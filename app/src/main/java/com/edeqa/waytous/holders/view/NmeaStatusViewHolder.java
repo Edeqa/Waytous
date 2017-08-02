@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -35,12 +35,11 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 /**
  * Created 01/13/17.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "WeakerAccess"})
 public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatus.Listener {
-    private static final String TYPE = "NmeaStatus";
 
-    public static final String SHOW_NMEA_STATUS = "show_nmea_status";
-    public static final String HIDE_NMEA_STATUS = "hide_nmea_status";
+    public static final String SHOW_NMEA_STATUS = "show_nmea_status"; //NON-NLS
+    public static final String HIDE_NMEA_STATUS = "hide_nmea_status"; //NON-NLS
 
     private boolean showStatus = false;
     private ViewGroup layoutSatellites;
@@ -77,16 +76,11 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
 
 //        height = Utils.adaptedSize(context, 180);
 
-        Serializable object = State.getInstance().getPropertiesHolder().loadFor(TYPE);
+        Serializable object = State.getInstance().getPropertiesHolder().loadFor(getType());
         if(object != null) {
             showStatus = (boolean) object;
             if(showStatus) State.getInstance().fire(SHOW_NMEA_STATUS);
         }
-    }
-
-    @Override
-    public String getType(){
-        return TYPE;
     }
 
     @Override
@@ -119,7 +113,7 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         showStatus = true;
                         State.getInstance().fire(SHOW_NMEA_STATUS);
-                        State.getInstance().getPropertiesHolder().saveFor(TYPE, showStatus);
+                        State.getInstance().getPropertiesHolder().saveFor(getType(), showStatus);
                         return false;
                     }
                 });
@@ -128,7 +122,7 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         showStatus = false;
                         State.getInstance().fire(HIDE_NMEA_STATUS);
-                        State.getInstance().getPropertiesHolder().saveFor(TYPE, showStatus);
+                        State.getInstance().getPropertiesHolder().saveFor(getType(), showStatus);
                         return false;
                     }
                 });
@@ -212,8 +206,8 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
 
                     TextView number = (TextView) view.findViewById(R.id.number);
                     TextView snr = (TextView) view.findViewById(R.id.snr);
-                    snr.setText(""+entry.getSnr());
-                    number.setText(""+entry.getPrn());//+"\n"+/*entry.getAzimuth()+"\n"+*/entry.getElevation()+"\n"+
+                    snr.setText(String.valueOf(entry.getSnr()));
+                    number.setText(String.valueOf(entry.getPrn()));//+"\n"+/*entry.getAzimuth()+"\n"+*/entry.getElevation()+"\n"+
 //                            (entry.usedInFix() ? "F" : "-") +
 //                            (entry.hasAlmanac() ? "A" : "-")+
 //                            (entry.hasEphemeris() ? "E" : "-"));
@@ -247,8 +241,8 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
 
                     TextView number = (TextView) view.findViewById(R.id.number);
                     TextView snr = (TextView) view.findViewById(R.id.snr);
-                    snr.setText(""+entry.getSnr());
-                    number.setText(""+entry.getPrn());//+"\n"+/*entry.getAzimuth()+"\n"+*/entry.getElevation()+"\n"+
+                    snr.setText(String.valueOf(+entry.getSnr()));
+                    number.setText(String.valueOf(entry.getPrn()));//+"\n"+/*entry.getAzimuth()+"\n"+*/entry.getElevation()+"\n"+
 //                            (entry.usedInFix() ? "F" : "-") +
 //                            (entry.hasAlmanac() ? "A" : "-")+
 //                            (entry.hasEphemeris() ? "E" : "-"));
@@ -258,10 +252,10 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
                     snr.setTextColor(Color.GRAY);
                 }
 
-                ((TextView)layoutGpsStatus.findViewById(R.id.total)).setText(""+total);
-                ((TextView)layoutGpsStatus.findViewById(R.id.active)).setText(""+active);
-                ((TextView)layoutGpsStatus.findViewById(R.id.fix)).setText(""+fix);
-                ((TextView)layoutGpsStatus.findViewById(R.id.max_snr)).setText(""+maxSnr);
+                ((TextView)layoutGpsStatus.findViewById(R.id.total)).setText(String.valueOf(total));
+                ((TextView)layoutGpsStatus.findViewById(R.id.active)).setText(String.valueOf(active));
+                ((TextView)layoutGpsStatus.findViewById(R.id.fix)).setText(String.valueOf(fix));
+                ((TextView)layoutGpsStatus.findViewById(R.id.max_snr)).setText(String.valueOf(maxSnr));
 
 //                info = "gps satellite status: " + i;
 //                tvAlt.setText(info);

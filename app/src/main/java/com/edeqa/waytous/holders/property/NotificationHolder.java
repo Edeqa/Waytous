@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.property;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -41,20 +41,17 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
-import static com.edeqa.waytous.holders.SettingsViewHolder.PREPARE_SETTINGS;
+import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
 /**
  * Created 11/29/16.
  */
+@SuppressWarnings({"WeakerAccess", "HardCodedStringLiteral"})
 public class NotificationHolder extends AbstractPropertyHolder {
 
-    @SuppressWarnings("HardCodedStringLiteral")
-    public static final String TYPE = "notification";
-    @SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
     public static final String SHOW_CUSTOM_NOTIFICATION = "show_custom_notification";
-    @SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
 
     private static final int MIN_INTERVAL_BETWEEN_DISTANCE_NOTIFICATIONS = 300;
@@ -101,11 +98,6 @@ public class NotificationHolder extends AbstractPropertyHolder {
     }
 
     @Override
-    public String getType(){
-        return TYPE;
-    }
-
-    @Override
     public NotificationUpdate create(MyUser myUser) {
         if (myUser == null) return null;
         return new NotificationUpdate(myUser);
@@ -138,7 +130,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 MyUser user = (MyUser) object;
                 long currentTime = new Date().getTime();
                 if(currentTime - becomesActive > 30 * 1000 && user != null && user.isUser()) {
-                    long lastOffline = ((NotificationUpdate) user.getProperty(TYPE)).lastOfflineTime;
+                    long lastOffline = ((NotificationUpdate) user.getProperty(getType())).lastOfflineTime;
                     String s = State.getInstance().getStringPreference(PREFERENCE_NOTIFICATION_USER_ONLINE, null);
                     if(lastOffline == 0) {
                         update(state.getString(R.string.s_has_joined, user.getProperties().getDisplayName()), DEFAULT_ALL, PRIORITY_HIGH, s != null ? Uri.parse(s) : null);
@@ -155,7 +147,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 user = (MyUser) object;
                 if(user != null && user.isUser()) {
                     update(state.getString(R.string.user_s_is_offline, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW, null);
-                    ((NotificationUpdate)user.getProperty(TYPE)).lastOfflineTime = new Date().getTime();
+                    ((NotificationUpdate)user.getProperty(getType())).lastOfflineTime = new Date().getTime();
                 }
                 break;
             case ACTIVITY_RESUME:
@@ -180,36 +172,36 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancel(1977);
                 break;
-            case PREPARE_SETTINGS:
+            case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
                 Map<String,String> items = getNotificationSounds();
 
-                item.add(new SettingItem.Page(TYPE).setTitle("Notifications")
-                        .add(new SettingItem.Group(PREFERENCE_NOTIFICATION_SOUNDS).setTitle("Sounds"))
+                item.add(new SettingItem.Page(getType()).setTitle(state.getString(R.string.notifications))
+                        .add(new SettingItem.Group(PREFERENCE_NOTIFICATION_SOUNDS).setTitle(state.getString(R.string.sounds)))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_USER_ONLINE)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
-                                .setTitle("User online")
+                                .setTitle(state.getString(R.string.user_online))
                                 .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage("Default"))
+                                .setMessage(state.getString(R.string.default_string)))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_CLOSE_TO_USER)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
-                                .setTitle("Close to user")
+                                .setTitle(state.getString(R.string.close_to_user))
                                 .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage("Default"))
+                                .setMessage(state.getString(R.string.default_string)))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_AWAY_FROM_USER)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
-                                .setTitle("Away from user")
+                                .setTitle(state.getString(R.string.away_from_user))
                                 .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage("Default"))
+                                .setMessage(state.getString(R.string.default_string)))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_NEW_MESSAGE)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
-                                .setTitle("New message")
+                                .setTitle(state.getString(R.string.new_message))
                                 .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage("Default")));
+                                .setMessage(state.getString(R.string.default_string))));
                 break;
         }
 
@@ -275,7 +267,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         }
     };
 
-    private Runnable1 previewSound = new Runnable1<String>() {
+    private Runnable1<String> previewSound = new Runnable1<String>() {
 
         public Ringtone player;
 
@@ -335,7 +327,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         manager.setType(RingtoneManager.TYPE_NOTIFICATION);
         Cursor cursor = manager.getCursor();
 
-        items.put("None", "");
+        items.put(state.getString(R.string.none), "");
         while (cursor.moveToNext()) {
             String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
             String id = cursor.getString(RingtoneManager.ID_COLUMN_INDEX);

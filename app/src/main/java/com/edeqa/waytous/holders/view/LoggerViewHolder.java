@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.location.Location;
 import android.util.Log;
@@ -12,6 +12,7 @@ import com.edeqa.waytous.helpers.MyUser;
 /**
  * Created 11/30/16.
  */
+@SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
 public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.LoggerView> {
     private static final String TYPE = "LoggerViewHolder";
 
@@ -50,6 +51,7 @@ public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.Logger
         return true;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public class LoggerView extends AbstractView {
         LoggerView(MyUser myUser) {
             super(myUser);

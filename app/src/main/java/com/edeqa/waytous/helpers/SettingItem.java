@@ -25,6 +25,7 @@ import java.util.Set;
  * Created 7/28/17.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class SettingItem<T> {
 
     public static final int GROUP = 0;
@@ -140,6 +141,7 @@ public class SettingItem<T> {
         return internalId;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public String toString() {
         return "SettingItem{" +
@@ -253,6 +255,11 @@ public class SettingItem<T> {
 
     public static class Label extends SettingItem {
         private Intent intent;
+
+        public Label(Item id) {
+            super("" + id);
+        }
+
         public Label(String id) {
             super(id);
             setType(LABEL);
@@ -344,6 +351,9 @@ public class SettingItem<T> {
 
         private ArrayList<SettingItem> items = new ArrayList<>();
 
+        public Page(Item id) {
+            super("" + id);
+        }
 
         public Page(String id) {
             super(id);
@@ -576,5 +586,8 @@ public class SettingItem<T> {
         }
     }
 
+    public interface Item {
+
+    }
 
 }

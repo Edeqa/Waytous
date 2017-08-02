@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -36,10 +36,9 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
  */
 public class DrawerViewHolder extends AbstractViewHolder {
 
-    public static final String TYPE = "drawer";
+    public static final String TYPE = DrawerViewHolder.class.getSimpleName();
 
     private ActionBar actionBar;
-
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private ImageButton ibPrimary;
@@ -66,6 +65,11 @@ public class DrawerViewHolder extends AbstractViewHolder {
         if(context.getSupportActionBar() != null) {
             actionBar = context.getSupportActionBar();
         }
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 
     public void setViewAndToolbar(View view, final Toolbar toolbar) {
@@ -104,11 +108,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
         });
 
      }
-
-    @Override
-    public String getType() {
-        return TYPE;
-    }
 
     @Override
     public boolean dependsOnUser() {
@@ -173,10 +172,12 @@ public class DrawerViewHolder extends AbstractViewHolder {
     public ArrayList<IntroRule> getIntro() {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
+        //noinspection HardCodedStringLiteral
         rules.add(new IntroRule().setEvent(ACTIVITY_RESUME).setId("drawer_intro").setLinkTo(IntroRule.LINK_TO_DRAWER_BUTTON).setTitle("Drawer").setDescription("Open left drawer to access main preferences."));
         return rules;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public class ItemsHolder {
         public MenuItem add(int groupId, int itemId, int titleResId, int iconResId) {
             return add(groupId, itemId, context.getString(titleResId), iconResId);

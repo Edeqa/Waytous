@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
@@ -48,26 +48,27 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;
-import static com.edeqa.waytous.holders.MessagesHolder.NEW_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesHolder.PRIVATE_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesHolder.SEND_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesHolder.USER_MESSAGE;
-import static com.edeqa.waytous.holders.MessagesHolder.WELCOME_MESSAGE;
-import static com.edeqa.waytous.holders.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
+import static com.edeqa.waytous.holders.property.MessagesHolder.NEW_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.PRIVATE_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.SEND_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.USER_MESSAGE;
+import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
+import static com.edeqa.waytous.holders.property.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 
 
 /**
  * Created 11/27/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class MessagesViewHolder extends AbstractViewHolder {
 
-    public static final String SHOW_MESSAGES = "show_messages";
-    public static final String SETUP_WELCOME_MESSAGE = "setup_welcome_message";
+    public static final String SHOW_MESSAGES = "show_messages"; //NON-NLS
+    public static final String SETUP_WELCOME_MESSAGE = "setup_welcome_message"; //NON-NLS
 
-    private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messages_hide_system_messages";
-    private static final String PREFERENCE_FONT_SIZE = "messages_font_size";
-    private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent";
+    private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messages_hide_system_messages"; //NON-NLS
+    private static final String PREFERENCE_FONT_SIZE = "messages_font_size"; //NON-NLS
+    private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent"; //NON-NLS
 
 
     private UserMessage.UserMessagesAdapter adapter;
@@ -107,11 +108,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 return false;
             }
         });
-    }
-
-    @Override
-    public String getType() {
-        return "MessagesView";
     }
 
     @Override
@@ -257,7 +253,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Utils.log(MessagesViewHolder.this, "newMessage:", "Cancel");
+                Utils.log(MessagesViewHolder.this, "newMessage:", "Cancel"); //NON-NLS
             }
         });
         if(toUser != null && !privateMessage) {
@@ -280,6 +276,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         dialog.show();
     }
 
+    @SuppressWarnings("unchecked")
     public void showMessages() {
         State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
 
@@ -524,6 +521,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         return layoutFooter;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private void setFilterAndReload(String filter) {
         if(filter != null && filter.length() > 0) {
             UserMessage.getDb().addRestriction("search","from_ LIKE ? OR to_ LIKE ? OR body_ LIKE ?", new String[]{"%"+filter+"%", "%"+filter+"%", "%"+filter+"%"});
@@ -572,6 +570,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
     public ArrayList<IntroRule> getIntro() {
 
         ArrayList<IntroRule> rules = new ArrayList<>();
+        //noinspection HardCodedStringLiteral
         rules.add(new IntroRule().setEvent(PREPARE_FAB).setId("fab_messages").setViewId(R.string.new_message).setTitle("Here you can").setDescription("Write and send message to the group or private message to anybody."));
 //        rules.put(new IntroRule().setEvent(PREPARE_OPTIONS_MENU).setId("menu_set_welcome").setLinkTo(IntroRule.LINK_TO_OPTIONS_MENU).setViewId(R.string.set_welcome_message).setTitle("Here you can").setDescription("Set welcome message to this group."));
 
@@ -711,7 +710,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Utils.log(MessagesViewHolder.this, "onMenuItemSetWelcomeMessageClickListener:", "Cancel");
+                    Utils.log(MessagesViewHolder.this, "onMenuItemSetWelcomeMessageClickListener:", "Cancel"); //NON-NLS
                 }
             });
 

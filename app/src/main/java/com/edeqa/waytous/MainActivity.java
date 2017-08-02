@@ -23,13 +23,13 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.holders.CameraViewHolder;
-import com.edeqa.waytous.holders.DrawerViewHolder;
-import com.edeqa.waytous.holders.FabViewHolder;
-import com.edeqa.waytous.holders.FacebookViewHolder;
-import com.edeqa.waytous.holders.MapButtonsViewHolder;
-import com.edeqa.waytous.holders.SettingsViewHolder;
-import com.edeqa.waytous.holders.SnackbarViewHolder;
+import com.edeqa.waytous.holders.view.CameraViewHolder;
+import com.edeqa.waytous.holders.view.DrawerViewHolder;
+import com.edeqa.waytous.holders.view.FabViewHolder;
+import com.edeqa.waytous.holders.view.FacebookViewHolder;
+import com.edeqa.waytous.holders.view.MapButtonsViewHolder;
+import com.edeqa.waytous.holders.view.SettingsViewHolder;
+import com.edeqa.waytous.holders.view.SnackbarViewHolder;
 import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,7 +56,7 @@ import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
-import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
+import static com.edeqa.waytous.holders.property.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST_MESSAGE;
@@ -73,6 +73,9 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public final static int REQUEST_PERMISSION_LOCATION = 1;
+
+    public final static String PREFERENCE_INTRO = "intro";  //NON-NLS
+    public final static String PREFERENCE_BACKGROUND_ALERT_SHOWN = "background_alert_shown";  //NON-NLS
 
     private GoogleMap map;
     private SupportMapFragment mapFragment;
@@ -98,8 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            state.setPreference("intro",false);
         }
 
-        Utils.log(this,"BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE
-                + ", flavor=" + BuildConfig.FLAVOR);
+        Utils.log(this,"BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE + ", flavor=" + BuildConfig.FLAVOR); //NON-NLS
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -125,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         registerReceiver(receiver, intentFilter);
 
-        if(!state.getBooleanPreference("intro",false)){
-            state.setPreference("intro",true);
+        if(!state.getBooleanPreference(PREFERENCE_INTRO,false)){
+            state.setPreference(PREFERENCE_INTRO,true);
             startActivityForResult(new Intent(MainActivity.this, IntroActivity.class), 1);
             return;
         }
@@ -171,17 +173,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (holder != null && holder.isDrawerOpen()) {
             holder.closeDrawer();
         } else {
-            if(state.getBooleanPreference("background_alert_shown", false) || state.tracking_disabled()) {
+            if(state.getBooleanPreference(PREFERENCE_BACKGROUND_ALERT_SHOWN, false) || state.tracking_disabled()) {
                 super.onBackPressed();
             } else {
                 final AlertDialog dialog = new AlertDialog.Builder(this).create();
                 dialog.setTitle(getString(R.string.alert));
-                dialog.setMessage("You want to minimize Waytous. Note that the service will be active in background until you stop it. Continue minimizing?");
+                dialog.setMessage(getString(R.string.you_want_to_minimize_waytous));
 
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        state.setPreference("background_alert_shown", true);
+                        state.setPreference(PREFERENCE_BACKGROUND_ALERT_SHOWN, true);
                         MainActivity.super.onBackPressed();
                     }
                 });
@@ -208,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -218,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.fire(ACTIVITY_RESULT, m);
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     protected void onNewIntent(Intent newIntent) {
         super.onNewIntent(newIntent);
@@ -305,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public void onMapReadyPermitted() {
         if(map == null) return;
 
@@ -346,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         for(String s:classes){
             try {
                 //noinspection unchecked
-                Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("com.edeqa.waytous.holders."+s);
+                Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("com.edeqa.waytous.holders.view."+s);
                 Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
                 state.registerEntityHolder(ctor.newInstance(this), MainActivity.this);
             } catch (Exception e) {

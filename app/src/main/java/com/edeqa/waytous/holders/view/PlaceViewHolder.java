@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -54,9 +54,6 @@ import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
-import static com.edeqa.waytous.holders.CameraViewHolder.CAMERA_UPDATE;
-import static com.edeqa.waytous.holders.NavigationViewHolder.HIDE_NAVIGATION;
-import static com.edeqa.waytous.holders.NavigationViewHolder.SHOW_NAVIGATION;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.USER_ADDRESS;
@@ -78,10 +75,8 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
     transient static final long serialVersionUID = -6395904747342820059L;
 
-    private transient static final String SHOW_PLACE = "show_place";
-    private transient static final String HIDE_PLACE = "hide_place";
-
-    transient private static final String TYPE = "place";
+    private transient static final String SHOW_PLACE = "show_place"; //NON-NLS
+    private transient static final String HIDE_PLACE = "hide_place"; //NON-NLS
 
     transient private static final int REQUEST_CODE_AUTOCOMPLETE_PLACE = 3;
 
@@ -97,11 +92,6 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
     }
 
     @Override
-    public String getType() {
-        return TYPE;
-    }
-
-    @Override
     public PlaceView create(MyUser myUser) {
         if (myUser == null) return null;
         return new PlaceView(myUser);
@@ -110,7 +100,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
     public PlaceViewHolder setMap(GoogleMap map) {
         this.map = map;
 
-        PlaceViewHolder m = (PlaceViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
+        PlaceViewHolder m = (PlaceViewHolder) State.getInstance().getPropertiesHolder().loadFor(getType());
         if(m != null) {
             places = m.places;
             if(places != null) {
@@ -131,6 +121,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         return true;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
@@ -157,7 +148,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        PlaceView view = ((PlaceView) myUser.getView(TYPE));
+                        PlaceView view = ((PlaceView) myUser.getView(getType()));
                         /*if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
                         }*/
@@ -218,7 +209,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                         if(place != null) {
                             Map<String, Serializable> mm = new HashMap<>();
 
-                            mm.put(USER_PROVIDER, TYPE);
+                            mm.put(USER_PROVIDER, getType());
                             mm.put(USER_LATITUDE, place.getLatLng().latitude);
                             mm.put(USER_LONGITUDE, place.getLatLng().longitude);
                             mm.put(USER_NUMBER, REQUEST_CODE_AUTOCOMPLETE_PLACE * 10000 + places.size());
@@ -237,7 +228,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                                         public void call(Integer number, MyUser myUser) {
                                             myUser.fire(MAKE_ACTIVE);
                                             myUser.fire(SELECT_USER);
-                                            myUser.fire(SHOW_NAVIGATION);
+                                            myUser.fire(NavigationViewHolder.SHOW_NAVIGATION);
                                         }
                                     });
                                     return true;
@@ -245,7 +236,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                             }
 
                             places.add(mm);
-                            State.getInstance().getPropertiesHolder().saveFor(TYPE, this);
+                            State.getInstance().getPropertiesHolder().saveFor(getType(), this);
 
                             State.getInstance().fire(SHOW_PLACE, mm);
                         }
@@ -262,7 +253,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         PlaceView(MyUser myUser){
             super(PlaceViewHolder.this.context, myUser);
 
-            Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
+            Boolean props = (Boolean) myUser.getProperties().loadFor(getType());
 
             if(isPlace(myUser)){
                 createMarker();
@@ -285,10 +276,10 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
             marker.setAlpha(.5F);
 
             Bundle b = new Bundle();
-            b.putString(MarkerViewHolder.TYPE, TYPE);
+            b.putString(MarkerViewHolder.TYPE, getType());
             b.putInt(RESPONSE_NUMBER, myUser.getProperties().getNumber());
             marker.setTag(b);
-            myUser.fire(SHOW_NAVIGATION);
+            myUser.fire(NavigationViewHolder.SHOW_NAVIGATION);
         }
 
 
@@ -324,14 +315,14 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     break;
                 case HIDE_PLACE:
                     myUser.removeViews();
-                    myUser.fire(HIDE_NAVIGATION);
+                    myUser.fire(NavigationViewHolder.HIDE_NAVIGATION);
                     myUser.fire(MAKE_INACTIVE);
                     myUser.fire(UNSELECT_USER);
 
 //                    State.getInstance().fire(USER_DISMISSED, myUser);
 //                    myUser.fire(USER_DISMISSED);
                     State.getInstance().getUsers().getUsers().remove(myUser.getProperties().getNumber());
-                    State.getInstance().fire(CAMERA_UPDATE);
+                    State.getInstance().fire(CameraViewHolder.CAMERA_UPDATE);
 
                     for(int i=0;i<places.size();i++){
                         if(((int) places.get(i).get("number")) == myUser.getProperties().getNumber()) {
@@ -339,7 +330,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                             break;
                         }
                     }
-                    State.getInstance().getPropertiesHolder().saveFor(TYPE, PlaceViewHolder.this);
+                    State.getInstance().getPropertiesHolder().saveFor(getType(), PlaceViewHolder.this);
                     break;
             }
             return true;
@@ -347,7 +338,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
     }
 
     private boolean isPlace(MyUser user) {
-        return user != null && user.getLocation() != null && user.getLocation().getProvider().equals(TYPE);
+        return user != null && user.getLocation() != null && user.getLocation().getProvider().equals(getType());
     }
 
 
@@ -417,17 +408,17 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Utils.log(PlaceViewHolder.this, "onConnected:");
+        Utils.log(PlaceViewHolder.this, "onConnected:"); //NON-NLS
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Utils.log(PlaceViewHolder.this, "onConnectionSuspended:",""+i);
+        Utils.log(PlaceViewHolder.this, "onConnectionSuspended:",""+i); //NON-NLS
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Utils.log(PlaceViewHolder.this, "onConnectionFailed:",""+connectionResult);
+        Utils.log(PlaceViewHolder.this, "onConnectionFailed:",""+connectionResult); //NON-NLS
     }
 
 }

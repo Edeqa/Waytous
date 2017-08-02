@@ -1,4 +1,4 @@
-package com.edeqa.waytous.holders;
+package com.edeqa.waytous.holders.view;
 
 import android.location.Location;
 import android.os.Handler;
@@ -17,10 +17,11 @@ import com.edeqa.waytous.helpers.MyUser;
  * Created 11/24/16.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class InfoViewHolder extends AbstractViewHolder<InfoViewHolder.InfoView> {
 
-    public static final String SHOW_INFO = "show_info";
-    private static final String TYPE = "info";
+    public static final String SHOW_INFO = "show_info"; //NON-NLS
+    private static final String TYPE = "info"; //NON-NLS
     private static final int DELAY_BEFORE_HIDE = 5;
 
 
