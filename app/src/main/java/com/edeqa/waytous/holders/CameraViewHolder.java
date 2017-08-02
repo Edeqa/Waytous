@@ -32,8 +32,10 @@ import java.util.Map;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.MAP_MY_LOCATION_BUTTON_CLICKED;
+import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
@@ -41,12 +43,13 @@ import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 
 /**
  * Created 11/20/16.
  */
 @SuppressWarnings("deprecation")
-public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraUpdateView> {
+public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraView> {
 
     public static final String TYPE = "camera";
 
@@ -78,7 +81,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private final static String PREVIOUS_ORIENTATION = "previous_orientation";
     private final static String PERSPECTIVE_NORTH = "perspective_north";
 
-    private CameraUpdateView cameraUpdate;
+    private CameraView cameraView;
     private MapScaleView scaleView;
     private GoogleMap map;
     private int padding;
@@ -109,9 +112,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     }
 
     @Override
-    public CameraUpdateView create(MyUser myUser) {
+    public CameraView create(MyUser myUser) {
         if (myUser == null || myUser.getLocation() == null) return null;
-        return new CameraUpdateView(myUser);
+        return new CameraView(myUser);
     }
 
     @Override
@@ -129,14 +132,14 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 scaleView.setColor(Color.WHITE);
                 break;
             case CAMERA_UPDATE:
-                if(State.getInstance().getUsers().getCountAllSelected()==0){
+                if(State.getInstance().getUsers().getCountSelectedTotal()==0){
                     State.getInstance().getMe().fire(SELECT_USER);
                 }
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
-                            setCameraUpdate((CameraUpdateView) myUser.getView(CameraViewHolder.TYPE));
+                            setCameraView((CameraView) myUser.getView(CameraViewHolder.TYPE));
                             update();
                         }
                     }
@@ -162,12 +165,15 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 }
                 break;
             case MAP_MY_LOCATION_BUTTON_CLICKED:
-                if(cameraUpdate == null) return false;
+                if(cameraView == null) return false;
                 State.getInstance().fire(REQUEST_LOCATION_SINGLE);
-                if(cameraUpdate.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
-                    cameraUpdate.perspectiveNorth = !cameraUpdate.perspectiveNorth;
+                if(cameraView.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
+                    cameraView.perspectiveNorth = !cameraView.perspectiveNorth;
                 }
-                cameraUpdate.getUser().fire(SELECT_USER);
+                cameraView.getUser().fire(SELECT_USER);
+                break;
+            case MAP_READY:
+                setMap((GoogleMap) object);
                 break;
         }
         return true;
@@ -175,11 +181,11 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     private void update() {
         try {
-            if (cameraUpdate == null) return;
+            if (cameraView == null) return;
             CameraUpdate camera;
             MyUser user;
-//                System.out.println("PERSPECTIVE:"+((CameraUpdateView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
-            if (State.getInstance().getUsers().getCountAllSelected() > 1) {
+//                System.out.println("PERSPECTIVE:"+((CameraView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
+            if (State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                 double lat1 = 0f, lat2 = 0f, lng1 = 0f, lng2 = 0f;
                 //noinspection LoopStatementThatDoesntLoop
                 for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
@@ -206,7 +212,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
                 camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
             } else {
-                camera = CameraUpdateFactory.newCameraPosition(cameraUpdate.getCameraPosition().build());
+                camera = CameraUpdateFactory.newCameraPosition(cameraView.getCameraPosition().build());
             }
             moveFromHardware = true;
 
@@ -244,8 +250,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         return this;
     }
 
-    private void setCameraUpdate(CameraUpdateView cameraUpdate) {
-        this.cameraUpdate = cameraUpdate;
+    private void setCameraView(CameraView cameraView) {
+        this.cameraView = cameraView;
     }
 
     private CameraViewHolder setScaleView(MapScaleView scaleView) {
@@ -257,7 +263,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     }
 
     @SuppressWarnings("unchecked")
-    class CameraUpdateView extends AbstractView implements Serializable{
+    class CameraView extends AbstractView implements Serializable{
 
         static final long serialVersionUID =-6395904747332820026L;
 
@@ -273,32 +279,33 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         private boolean orientationChanged;
         private boolean perspectiveNorth;
 
-        CameraUpdateView(MyUser myUser) {
+        CameraView(MyUser myUser) {
             super(CameraViewHolder.this.context, myUser);
+
             number = myUser.getProperties().getNumber();
 
             HashMap<String, Double> props = (HashMap<String, Double>) myUser.getProperties().loadFor(TYPE);
 
             double latitude;
             double longitude;
-                try {
-                    tilt = props.get(TILT).floatValue();
-                    bearing = props.get(BEARING).floatValue();
-                    zoom = props.get(ZOOM).floatValue();
-                    orientation = props.get(ORIENTATION).intValue();
-                    previousOrientation = props.get(PREVIOUS_ORIENTATION).intValue();
-                    perspectiveNorth = props.get(PERSPECTIVE_NORTH).intValue() == 1;
-                    latitude = props.get(LATITUDE);
-                    longitude = props.get(LONGITUDE);
-                }catch (Exception e) {
-                    tilt = CAMERA_DEFAULT_TILT;
-                    bearing = CAMERA_DEFAULT_BEARING;
-                    zoom = CAMERA_DEFAULT_ZOOM;
-                    orientation = CAMERA_ORIENTATION_NORTH;
-                    previousOrientation = CAMERA_ORIENTATION_NORTH;
-                    perspectiveNorth = true;
-                    latitude = myUser.getLocation().getLatitude();
-                    longitude = myUser.getLocation().getLongitude();
+            try {
+                tilt = props.get(TILT).floatValue();
+                bearing = props.get(BEARING).floatValue();
+                zoom = props.get(ZOOM).floatValue();
+                orientation = props.get(ORIENTATION).intValue();
+                previousOrientation = props.get(PREVIOUS_ORIENTATION).intValue();
+                perspectiveNorth = props.get(PERSPECTIVE_NORTH).intValue() == 1;
+                latitude = props.get(LATITUDE);
+                longitude = props.get(LONGITUDE);
+            } catch (Exception e) {
+                tilt = CAMERA_DEFAULT_TILT;
+                bearing = CAMERA_DEFAULT_BEARING;
+                zoom = CAMERA_DEFAULT_ZOOM;
+                orientation = CAMERA_ORIENTATION_NORTH;
+                previousOrientation = CAMERA_ORIENTATION_NORTH;
+                perspectiveNorth = true;
+                latitude = myUser.getLocation().getLatitude();
+                longitude = myUser.getLocation().getLongitude();
             }
 
             padding = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
@@ -306,9 +313,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             position = new CameraPosition.Builder().bearing(bearing).tilt(tilt).zoom(zoom);
             position.target(new LatLng(latitude, longitude));
 
-            if(myUser.getProperties().isSelected()) {
+            /*if (myUser.getProperties().isSelected()) {
                 myUser.fire(SELECT_USER);
-            }
+            }*/
         }
 
         @Override
@@ -395,7 +402,8 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 }
             }*/
             orientationChanged = false;
-            CameraViewHolder.this.setCameraUpdate(this);
+
+            CameraViewHolder.this.setCameraView(this);
             CameraViewHolder.this.update();
         }
 
@@ -409,25 +417,10 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     onChangeLocation(myUser.getLocation());
                     break;
                 case UNSELECT_USER:
-                    if(State.getInstance().getUsers().getCountAllSelected()==0){
-                        State.getInstance().getMe().fire(SELECT_USER);
+                    if(State.getInstance().getUsers().getCountSelectedTotal()==0){
+                        State.getInstance().getMe().fire(SELECT_SINGLE_USER);
                     }
                     CameraViewHolder.this.update();
-
-/*
-                    if(State.getInstance().getUsers().getCountSelected()==1){
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
-                            @Override
-                            public void call(Integer number, MyUser user) {
-                                if(user.getProperties().isSelected()) {
-                                    user.fire(SELECT_USER);
-                                }
-                            }
-                        });
-                    } else {
-                        CameraViewHolder.this.update();
-                    }
-*/
                     break;
                 case MARKER_CLICK:
                     onEvent(CAMERA_NEXT_ORIENTATION, null);
@@ -569,7 +562,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 //FIXME
 //                scaleView.update(map.getProjection(), map.getCameraPosition());
             }
-//            if(cameraUpdate.zoom != map.getCameraPosition().zoom)
+//            if(cameraView.zoom != map.getCameraPosition().zoom)
 //                moveFromHardware = true;
 
 //            System.out.println("onCameraMoveStarted");
@@ -584,29 +577,29 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //                scaleView.update(map.getProjection(), map.getCameraPosition());
             }
 
-            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1){
+            if(cameraView == null || State.getInstance().getUsers().getCountSelected() != 1){
                 State.getInstance().fire(CAMERA_UPDATED);
                 return;
             }
-            if(canceled && cameraUpdate.zoom != map.getCameraPosition().zoom){
-                cameraUpdate.changeOrientation(cameraUpdate.previousOrientation);
+            if(canceled && cameraView.zoom != map.getCameraPosition().zoom){
+                cameraView.changeOrientation(cameraView.previousOrientation);
                 moveFromHardware = true;
-            } else if(cameraUpdate.zoom != map.getCameraPosition().zoom){
+            } else if(cameraView.zoom != map.getCameraPosition().zoom){
                 moveFromHardware = true;
             }
 
-            cameraUpdate.zoom = map.getCameraPosition().zoom;
-            cameraUpdate.bearing = map.getCameraPosition().bearing;
-            cameraUpdate.tilt = map.getCameraPosition().tilt;
+            cameraView.zoom = map.getCameraPosition().zoom;
+            cameraView.bearing = map.getCameraPosition().bearing;
+            cameraView.tilt = map.getCameraPosition().tilt;
 
 //            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
             if(!moveFromHardware){
-                cameraUpdate.changeOrientation(CAMERA_ORIENTATION_STAY);
+                cameraView.changeOrientation(CAMERA_ORIENTATION_STAY);
             }
 
             moveFromHardware = false;
             canceled = false;
-            State.getInstance().fire(CAMERA_UPDATED, cameraUpdate.getUser());
+            State.getInstance().fire(CAMERA_UPDATED, cameraView.getUser());
 //            System.out.println("onCameraIdle");
         }
     };
@@ -620,9 +613,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             }
 
 //            System.out.println("onCameraMoveCanceled");
-            if(cameraUpdate == null || State.getInstance().getUsers().getCountSelected() != 1) return;
-            if(cameraUpdate.zoom == map.getCameraPosition().zoom){
-                cameraUpdate.changeOrientation(CAMERA_ORIENTATION_STAY);
+            if(cameraView == null || State.getInstance().getUsers().getCountSelected() != 1) return;
+            if(cameraView.zoom == map.getCameraPosition().zoom){
+                cameraView.changeOrientation(CAMERA_ORIENTATION_STAY);
                 moveFromHardware = false;
                 canceled = true;
             }

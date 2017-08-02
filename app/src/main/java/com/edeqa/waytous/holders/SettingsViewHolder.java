@@ -1,9 +1,14 @@
 package com.edeqa.waytous.holders;
 
+import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -140,8 +145,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new SettingsAdapter(list);
-//        adapter = new UserMessage.UserMessagesAdapter(context, list);
-//        adapter.setEmptyView(content.findViewById(R.id.tv_placeholder));
 
         dialog.setCustomTitle(setupToolbar());
 
@@ -181,7 +184,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
         return layoutToolbar;
     }
 
-
     class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingViewHolder> {
 
         private final RecyclerView list;
@@ -194,6 +196,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
 
             list.setLayoutManager(layoutManager);
             DividerItemDecoration divider = new DividerItemDecoration(list.getContext(), ((LinearLayoutManager) list.getLayoutManager()).getOrientation());
+
             list.addItemDecoration(divider);
 
             list.setItemAnimator(new DefaultItemAnimator());
@@ -232,6 +235,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                 holder.tvSummary.setVisibility(View.GONE);
             }
 
+            holder.itemView.setTag(item.getType());
             switch(item.getType()) {
                 case SettingItem.GROUP:
                     holder.tvHeaderTitle.setText(item.getTitle());

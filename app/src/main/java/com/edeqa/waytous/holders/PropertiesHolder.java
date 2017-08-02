@@ -17,9 +17,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
@@ -120,6 +122,17 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                         myUser.getProperties().saveFor(TYPE,m);
                     }
                 });
+                break;
+            case ACTIVITY_RESUME:
+                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        if(myUser.getProperties().selected) {
+                            myUser.fire(SELECT_USER);
+                        }
+                    }
+                });
+
                 break;
             case TRACKING_STOP:
                 sharedPreferences.edit().clear().apply();
@@ -227,10 +240,11 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     selected = true;
                     break;
                 case SELECT_SINGLE_USER:
+                    myUser.getProperties().selected = true;
                     State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
-                            myUser.getProperties().selected = false;
+                        public void call(Integer number, MyUser user) {
+                            if(user != myUser) user.getProperties().selected = false;
                         }
                     });
                     myUser.fire(SELECT_USER);

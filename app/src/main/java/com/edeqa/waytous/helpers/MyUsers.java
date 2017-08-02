@@ -155,6 +155,17 @@ public class MyUsers {
         return count;
     }
 
+    public int getCountActiveTotal(){
+        int count = 0;
+        for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, MyUser> x = iterator.next();
+            if (x.getValue().getProperties().isActive()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public int getCountSelected(){
         int count = 0;
         for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
@@ -166,7 +177,7 @@ public class MyUsers {
         return count;
     }
 
-    public int getCountAllSelected(){
+    public int getCountSelectedTotal(){
         int count = 0;
         for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<Integer, MyUser> x = iterator.next();
@@ -176,5 +187,17 @@ public class MyUsers {
         }
         return count;
     }
+
+    public int getCountShown(){
+        int count = 0;
+        for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, MyUser> x = iterator.next();
+            if (x.getValue().isShown() && x.getValue().isUser()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 
 }

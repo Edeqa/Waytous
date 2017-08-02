@@ -317,15 +317,10 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);
 
                     updateBackgroundColors(myUser);
-                    /*if(layout.getChildCount()>1) {
-                        show();
-                    } else if(State.getInstance().tracking_disabled()) {
-                        hide();
-                    }*/
 
                     int left = scrollLayout.getScrollX();
                     int right = scrollLayout.getWidth() + left;
-                    if(State.getInstance().getUsers().getCountAllSelected() == 1) {
+                    if(State.getInstance().getUsers().getCountSelectedTotal() == 1) {
                         if(button.getRight() < left) {
                             scrollLayout.smoothScrollTo(button.getLeft() - scrollLayout.getWidth()/2, 0);
                         } else if(button.getLeft() > right) {
@@ -411,7 +406,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
     }
 
     private void updateBackgroundColors(MyUser user) {
-        if(State.getInstance().tracking_active() && user != null && State.getInstance().getUsers().getCountAllSelected() == 1) {
+        if(State.getInstance().tracking_active() && user != null && State.getInstance().getUsers().getCountSelectedTotal() == 1) {
             if (Build.VERSION.SDK_INT >= 21) {
                 Window window = context.getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

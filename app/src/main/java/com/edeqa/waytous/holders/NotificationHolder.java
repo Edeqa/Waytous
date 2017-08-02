@@ -147,6 +147,8 @@ public class NotificationHolder extends AbstractPropertyHolder {
                     } else {
                         update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW, null);
                     }
+                } else {
+                    update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW, null);
                 }
                 break;
             case USER_DISMISSED:

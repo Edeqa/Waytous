@@ -104,7 +104,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
-                if(State.getInstance().getUsers().getCountAllSelected() != 1) {
+                if(State.getInstance().getUsers().getCountSelectedTotal() != 1) {
                     optionsMenu.findItem(R.string.show_street_view).setVisible(false);
                     optionsMenu.findItem(R.string.hide_street_view).setVisible(false);
                 } else if(streetViewLayout.getVisibility() == View.GONE) {
@@ -171,7 +171,7 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
 
         @Override
         public void onChangeLocation(final Location location) {
-            if(State.getInstance().getUsers().getCountAllSelected() != 1) {
+            if(State.getInstance().getUsers().getCountSelectedTotal() != 1) {
                 streetViewLayout.setVisibility(View.GONE);
                 return;
             }
@@ -196,14 +196,14 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
 
             switch(event) {
                 case SELECT_SINGLE_USER:
-                    if(State.getInstance().getUsers().getCountAllSelected() == 1) {
+                    if(State.getInstance().getUsers().getCountSelectedTotal() == 1) {
                         onChangeLocation(myUser.getLocation());
                     }
                     break;
                 case SELECT_USER:
-                    if(State.getInstance().getUsers().getCountAllSelected() > 1) {
+                    if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                         streetViewLayout.setVisibility(View.GONE);
-                    } else if(State.getInstance().getUsers().getCountAllSelected() == 1) {
+                    } else if(State.getInstance().getUsers().getCountSelectedTotal() == 1) {
                         onChangeLocation(myUser.getLocation());
                     }
                     break;

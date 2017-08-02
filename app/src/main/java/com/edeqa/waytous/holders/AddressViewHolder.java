@@ -86,13 +86,17 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         public boolean onEvent(String event, Object object) {
             switch(event){
                 case SELECT_USER:
+                    System.out.println("ADDRESSSELECT");
                 case UNSELECT_USER:
-                    if(State.getInstance().getUsers().getCountAllSelected() > 1){
-                        callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountAllSelected()));
-                        return true;
-                    } else {
-                        callback.call("...");
-                        onChangeLocation(myUser.getLocation());
+                    try {
+                        if (State.getInstance().getUsers().getCountSelected() > 1) {
+                            callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                        } else {
+                            callback.call("...");
+                            onChangeLocation(myUser.getLocation());
+                        }
+                    } catch(Exception e) {
+                        e.printStackTrace();
                     }
                     break;
             }
@@ -100,7 +104,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         }
 
         private void resolveAddress(final Location location) {
-            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountAllSelected() > 1){
+            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountSelectedTotal() > 1){
                 return;
             }
             long currentTimestamp = new Date().getTime();

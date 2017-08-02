@@ -61,8 +61,14 @@ public class MyUser {
     }
 
     public MyUser addLocation(Location location) {
+        if(location == null) return this;
         locations.add(location);
-        setLocation(location);
+        if(getLocation() == null) {
+            setLocation(location);
+            createViews();
+        } else {
+            setLocation(location);
+        }
         if((++counter) % SIMPLIFY_AFTER_EACH == 0 && counter > 1) { // simplifying locations
             new Thread(new Runnable() {
                 @Override
@@ -111,6 +117,7 @@ public class MyUser {
                 }
             }).start();
         } else {
+            System.out.println("ADDLOC:"+location + ":"+MyUser.this);
             onChangeLocation();
         }
         return this;
@@ -153,7 +160,7 @@ public class MyUser {
                 public void run() {
                     Log.v(TYPE,"createViews:"+getProperties().getNumber()+":"+getProperties().getDisplayName());
 
-                    Iterator<Map.Entry<String, AbstractViewHolder>> iterator = State.getInstance().getUserViewHolders2().entrySet().iterator();
+                    Iterator<Map.Entry<String, AbstractViewHolder>> iterator = State.getInstance().getUserViewHolders().entrySet().iterator();
                     while(iterator.hasNext()) {
                         Map.Entry<String, AbstractViewHolder> entry = iterator.next();
                         String type = entry.getKey();
@@ -233,7 +240,7 @@ public class MyUser {
             public void run() {
                 for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
                     if (getProperties().isActive() && entry.getValue() == null) {
-                        AbstractViewHolder holder = State.getInstance().getUserViewHolders2().get(entry.getKey());
+                        AbstractViewHolder holder = State.getInstance().getUserViewHolders().get(entry.getKey());
 //                        if(holder != null) {
                             entry.setValue(holder.create(MyUser.this));
 //                        }
@@ -254,7 +261,7 @@ public class MyUser {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 Log.v(TYPE,"removeViews:" + getProperties().getNumber() + ":" + getProperties().getDisplayName());
-                for (Map.Entry<String, AbstractViewHolder> entry : State.getInstance().getUserViewHolders2().entrySet()) {
+                for (Map.Entry<String, AbstractViewHolder> entry : State.getInstance().getUserViewHolders().entrySet()) {
                     String type = entry.getKey();
                     if (views.containsKey(type) && views.get(type) != null) {
                         Log.v(TYPE, "remove:" + type + ":" + getProperties().getNumber() + ":" + views.get(type));
@@ -298,6 +305,10 @@ public class MyUser {
 
     public void setUser(boolean user) {
         this.user = user;
+    }
+
+    public boolean isShown() {
+        return (views != null && views.keySet().size() > 0);
     }
 
     @Override

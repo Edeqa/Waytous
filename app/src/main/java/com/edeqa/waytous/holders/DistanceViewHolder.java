@@ -70,7 +70,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
 
     @Override
     public DistanceView create(MyUser myUser) {
-        if (myUser == null) return null;
+        if (myUser == null || myUser.getLocation() == null) return null;
         return new DistanceView(myUser);
     }
 
@@ -113,7 +113,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 break;
             case PREPARE_OPTIONS_MENU:
                 optionsMenu = (Menu) object;
-                optionsMenu.findItem(R.string.show_distances).setVisible(State.getInstance().getUsers().getCountAllSelected()>1);
+                optionsMenu.findItem(R.string.show_distances).setVisible(State.getInstance().getUsers().getCountSelectedTotal()>1);
                 optionsMenu.findItem(R.string.hide_distances).setVisible(marks.size() > 0);
                 break;
             case SHOW_DISTANCES:

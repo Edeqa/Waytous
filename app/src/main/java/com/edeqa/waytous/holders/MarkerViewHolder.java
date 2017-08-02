@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
-import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
@@ -104,7 +103,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                         State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
-                                if(myUser.getProperties().isSelected() && State.getInstance().getUsers().getCountAllSelected() == 1) {
+                                if(myUser.getProperties().isSelected() && State.getInstance().getUsers().getCountSelectedTotal() == 1) {
                                     myUser.fire(MARKER_CLICK);
                                 } else {
                                     myUser.fire(SELECT_SINGLE_USER);

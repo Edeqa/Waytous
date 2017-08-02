@@ -126,7 +126,6 @@ public class FabViewHolder extends AbstractViewHolder {
         }
         switch(event){
             case PREPARE_FAB:
-            case CAMERA_UPDATED:
             case SHOW_INFO:
                 break;
             default:

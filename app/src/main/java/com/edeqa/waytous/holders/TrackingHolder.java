@@ -88,6 +88,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
+                System.out.println("PERFORM2:"+number+":"+location+":"+myUser);
                 myUser.addLocation(location);
             }
         });

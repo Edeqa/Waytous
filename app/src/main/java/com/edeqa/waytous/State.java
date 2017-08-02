@@ -84,7 +84,7 @@ public class State extends MultiDexApplication {
     private EventBus<AbstractViewHolder> systemViewBus;
     private EventBus.Runner androidRunner;
     private LinkedHashMap<String, AbstractPropertyHolder> userPropertyHolders;
-    private LinkedHashMap<String, AbstractViewHolder> userViewHolders2;
+    private LinkedHashMap<String, AbstractViewHolder> userViewHolders;
 
     public static State getInstance() {
         return instance ;
@@ -115,7 +115,7 @@ public class State extends MultiDexApplication {
             e.printStackTrace();
         }
         userPropertyHolders = new LinkedHashMap<>();
-        userViewHolders2 = new LinkedHashMap<>();
+        userViewHolders = new LinkedHashMap<>();
 
         final Handler handler = new Handler(Looper.getMainLooper());
         androidRunner = new EventBus.Runner() {
@@ -311,7 +311,7 @@ public class State extends MultiDexApplication {
                     systemViewBus.register(holder);
                 }
                 if (holder.dependsOnUser()) {
-                    userViewHolders2.put(holder.getType(), (AbstractViewHolder) holder);
+                    userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
                 }
             } else {
                 if (holder.dependsOnEvent()) {
@@ -342,8 +342,13 @@ public class State extends MultiDexApplication {
         return null;
     }
 
+    public void fire(Runnable runnable) {
+        systemPropertyBus.postRunnable(runnable);
+        systemViewBus.postRunnable(runnable);
 
-    public void fire(final String EVENT, final Object object){
+    }
+
+    public void fire(String EVENT, Object object){
         Log.i("State","====>>> "+EVENT+":"+object);
         switch(EVENT){
             case Events.ACTIVITY_DESTROY:
@@ -360,7 +365,7 @@ public class State extends MultiDexApplication {
         systemViewBus.post(EVENT, object);
     }
 
-    public void fire(final String EVENT){
+    public void fire(String EVENT){
         fire(EVENT, null);
     }
 
@@ -405,8 +410,8 @@ public class State extends MultiDexApplication {
         return userPropertyHolders;
     }
 
-    public LinkedHashMap<String, AbstractViewHolder> getUserViewHolders2() {
-        return userViewHolders2;
+    public LinkedHashMap<String, AbstractViewHolder> getUserViewHolders() {
+        return userViewHolders;
     }
 
     public EventBus.Runner getAndroidRunner() {

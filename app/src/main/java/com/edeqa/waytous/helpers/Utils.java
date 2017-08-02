@@ -339,7 +339,7 @@ public class Utils {
     }
 
     public static void updateMarkerPosition(final GoogleMap map, final Marker marker, final List<LatLng> points) {
-        if(points == null || points.size() < 2) return;
+        if(marker == null || points == null || points.size() < 2) return;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

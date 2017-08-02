@@ -54,6 +54,7 @@ import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.holders.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
@@ -446,6 +447,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         myUser.removeViews();
                                     }
                                 });
+                                if(State.getInstance().getUsers().getCountSelectedTotal() == 0) {
+                                    State.getInstance().getMe().fire(SELECT_SINGLE_USER);
+                                }
                             }
                             if (o.has(USER_JOINED)) {
                                 int number = o.getInt(USER_JOINED);
