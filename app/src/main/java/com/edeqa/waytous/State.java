@@ -308,7 +308,7 @@ public class State extends MultiDexApplication {
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {
                 if (holder.dependsOnEvent()) {
-                    systemViewBus.register(holder);
+                    systemViewBus.register((AbstractViewHolder) holder);
                 }
                 if (holder.dependsOnUser()) {
                     userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
@@ -327,16 +327,16 @@ public class State extends MultiDexApplication {
 
     public HashMap<String,AbstractPropertyHolder> getAllHolders(){
         HashMap<String,AbstractPropertyHolder> res = new LinkedHashMap<>();
-        for(Map.Entry<String, AbstractEntityHolder> entry: systemPropertyBus.getHolders().entrySet()){
-            res.put(entry.getKey(), (AbstractPropertyHolder) entry.getValue());
+        for(Map.Entry<String, AbstractPropertyHolder> entry: systemPropertyBus.getHolders().entrySet()){
+            res.put(entry.getKey(), entry.getValue());
         }
         return res;
     }
 
     public AbstractEntityHolder getEntityHolder(String type){
-        if(getSystemPropertyBus().getHolder(type) != null) return getSystemPropertyBus().getHolder(type);
+        if(getSystemPropertyBus().getHolder(type) != null) return (AbstractEntityHolder) getSystemPropertyBus().getHolder(type);
 //        if(getUserPropertyBus().getHolder(type) != null) return getUserPropertyBus().getHolder(type);
-        if(getSystemViewBus().getHolder(type) != null) return getSystemViewBus().getHolder(type);
+        if(getSystemViewBus().getHolder(type) != null) return (AbstractEntityHolder) getSystemViewBus().getHolder(type);
 //        if(getUserViewBus().getHolder(type) != null) return getUserViewBus().getHolder(type);
 
         return null;

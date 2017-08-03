@@ -41,6 +41,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.holders.property.TrackingHolder.PREFERENCE_TERMS_OF_SERVICE_CONFIRMED;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
@@ -112,10 +113,14 @@ public class NotificationHolder extends AbstractPropertyHolder {
     public boolean onEvent(String event, Object object) {
         switch (event){
             case TRACKING_NEW:
-                update(state.getString(R.string.creating_group), DEFAULT_LIGHTS, PRIORITY_DEFAULT, null);
+                if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
+                    update(state.getString(R.string.creating_group), DEFAULT_LIGHTS, PRIORITY_DEFAULT, null);
+                }
                 break;
             case TRACKING_JOIN:
-                update(state.getString(R.string.joining_group), DEFAULT_LIGHTS, PRIORITY_DEFAULT, null);
+                if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
+                    update(state.getString(R.string.joining_group), DEFAULT_LIGHTS, PRIORITY_DEFAULT, null);
+                }
                 break;
             case TRACKING_DISABLED:
 //                state.setNotification(null);

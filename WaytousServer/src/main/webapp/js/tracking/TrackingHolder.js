@@ -231,7 +231,7 @@ function TrackingHolder(main) {
                 title: u.lang.information,
                 className: "wizard-dialog",
                 items: [
-                    { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_re_going_to_join_the_group },
+                    { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_are_joining_the_group },
                     { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: u.lang.terms_of_service, body: u.lang.terms_of_service_body },
                     { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: u.lang.i_have_read_and_agree_with_terms_of_service, onclick: function() {
                         if(this.checked) {

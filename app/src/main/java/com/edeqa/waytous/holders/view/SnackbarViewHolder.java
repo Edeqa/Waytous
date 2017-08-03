@@ -24,6 +24,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.holders.property.MessagesHolder.NEW_MESSAGE;
 import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
+import static com.edeqa.waytous.holders.property.TrackingHolder.PREFERENCE_TERMS_OF_SERVICE_CONFIRMED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
@@ -91,20 +92,24 @@ public class SnackbarViewHolder extends AbstractViewHolder {
         final MyUser user;
         switch(event){
             case TRACKING_NEW:
-                snackbar.setText(context.getString(R.string.creating_group)).setAction(R.string.cancel, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        State.getInstance().fire(TRACKING_STOP);
-                    }
-                }).show();
+                if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
+                    snackbar.setText(context.getString(R.string.creating_group)).setAction(R.string.cancel, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            State.getInstance().fire(TRACKING_STOP);
+                        }
+                    }).show();
+                }
                 break;
             case TRACKING_JOIN:
-                snackbar.setText(context.getString(R.string.joining_group)).setAction(context.getString(R.string.cancel), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        State.getInstance().fire(TRACKING_STOP);
-                    }
-                }).show();
+                if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
+                    snackbar.setText(context.getString(R.string.joining_group)).setAction(context.getString(R.string.cancel), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            State.getInstance().fire(TRACKING_STOP);
+                        }
+                    }).show();
+                }
                 break;
             case TOKEN_CREATED:
                 tokenCreatedShown = true;

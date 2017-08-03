@@ -30,6 +30,7 @@ import com.edeqa.waytous.holders.view.FacebookViewHolder;
 import com.edeqa.waytous.holders.view.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.view.SettingsViewHolder;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
+import com.edeqa.waytous.holders.view.TrackingViewHolder;
 import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new SnackbarViewHolder(this),this);
         state.registerEntityHolder(new FacebookViewHolder(this),this);
         state.registerEntityHolder(new SettingsViewHolder(this),this);
+        state.registerEntityHolder(new TrackingViewHolder(this),this);
 
         state.fire(ACTIVITY_CREATE, this);
     }

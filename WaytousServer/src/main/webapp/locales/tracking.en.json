@@ -256,7 +256,7 @@
   "beforeunload": "You are online in the group with your friends. Leaving this page you will exit the group.",
   "information": "Information",
   "you_may_create_the_group": "You may create the group and invite your friends for real-time sharing your locations. Any time you can leave the group and join back until somebody is online there. Are you agree?",
-  "you_re_going_to_join_the_group": "You're going to join the group. Are you agree that online members of this group will be able to watch your position until you leave the group or it will be finished?",
+  "you_are_joining_the_group": "You're joining the group. Are you agree that online members of this group will be able to watch your position until you leave the group or it will be finished?",
 
   "share_by_mail": "Share by mail",
 

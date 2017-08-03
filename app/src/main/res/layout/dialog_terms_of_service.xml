@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:minWidth="@dimen/material_dialog_width_minimum"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/material_dialog_content_area_padding_vertical"
+    android:paddingLeft="@dimen/material_dialog_content_area_padding_horizontal"
+    android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal"
+    android:paddingTop="@dimen/material_dialog_content_area_padding_vertical">
+
+
+    <TextView
+        android:id="@+id/tv_message_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/material_list_normal_padding_vertical"
+        android:text="@string/you_are_creating_the_group"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/tv_message_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/material_list_normal_padding_vertical"
+        android:text="@string/you_are_joining_the_group"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/material_list_normal_padding_vertical"
+                android:text="@string/legal_information_body"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <CheckBox
+        android:id="@+id/cb_terms_of_service_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/material_list_normal_padding_vertical"
+        android:text="@string/i_have_read_and_agree_with_terms_of_service" />
+
+</LinearLayout>

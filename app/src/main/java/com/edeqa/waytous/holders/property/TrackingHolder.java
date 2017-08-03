@@ -33,6 +33,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
+import static com.edeqa.waytous.holders.view.TrackingViewHolder.TRACKING_TERMS_OF_SERVICE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST_MESSAGE;
@@ -54,6 +55,8 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
  */
 public class TrackingHolder extends AbstractPropertyHolder {
     private static final String TYPE = REQUEST_TRACKING;
+
+    public static final String PREFERENCE_TERMS_OF_SERVICE_CONFIRMED = "terms_of_service_confirmed"; //NON-NLS
 
     private Tracking tracking;
 
@@ -101,27 +104,30 @@ public class TrackingHolder extends AbstractPropertyHolder {
     public boolean onEvent(String event, Object object) {
         switch (event) {
             case TRACKING_NEW:
-                tracking = new MyTrackingFB();
-                State.getInstance().setTracking(tracking);
-                tracking.setTrackingListener(onTrackingListener);
-                tracking.start();
-
+                if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
+                    tracking = new MyTrackingFB();
+                    State.getInstance().setTracking(tracking);
+                    tracking.setTrackingListener(onTrackingListener);
+                    tracking.start();
+                } else {
+                    State.getInstance().fire(TRACKING_TERMS_OF_SERVICE);
+                }
                 break;
             case TRACKING_JOIN:
                 String link  = (String) object;
+                if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
+                    if(link != null) {
+                        if(!link.equals(State.getInstance().getStringPreference(TRACKING_URI, null)) || State.getInstance().tracking_disabled()) {
+                            State.getInstance().setPreference(TRACKING_URI, link);
+                            if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
+                                State.getInstance().fire(TRACKING_STOP);
+                            }
 
-                if(link != null) {
-                    if(!link.equals(State.getInstance().getStringPreference(TRACKING_URI, null)) || State.getInstance().tracking_disabled()) {
-                        State.getInstance().setPreference(TRACKING_URI, link);
-                        if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
-                            State.getInstance().fire(TRACKING_STOP);
-                        }
-
-                        tracking = new MyTrackingFB(link);
-                        State.getInstance().setTracking(tracking);
-                        tracking.setTrackingListener(onTrackingListener);
-                        tracking.start();
-                    }/* else if(State.getInstance().tracking_active()){
+                            tracking = new MyTrackingFB(link);
+                            State.getInstance().setTracking(tracking);
+                            tracking.setTrackingListener(onTrackingListener);
+                            tracking.start();
+                        }/* else if(State.getInstance().tracking_active()){
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -132,6 +138,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                     }*/
 //                } else {
 //                    State.getInstance().fire(TRACKING_ACTIVE);
+                    }
+                } else {
+                    State.getInstance().fire(TRACKING_TERMS_OF_SERVICE, link);
                 }
                 break;
             case TRACKING_STOP:

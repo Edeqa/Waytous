@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -46,12 +45,12 @@ public class IntroViewHolder extends AbstractViewHolder {
 
         preferences = context.getSharedPreferences("intro", MODE_PRIVATE);
 
-        Map<String, AbstractEntityHolder> holders = State.getInstance().getSystemViewBus().getHolders();
+        Map<String, AbstractViewHolder> holders = State.getInstance().getSystemViewBus().getHolders();
         queue = new HashMap<>();
-        for(Map.Entry<String, AbstractEntityHolder> entry: holders.entrySet()) {
+        for(Map.Entry<String, AbstractViewHolder> entry: holders.entrySet()) {
             if(entry.getValue() == null) continue;
             //noinspection unchecked
-            ArrayList<IntroRule> rules = ((AbstractViewHolder) entry.getValue()).getIntro();
+            ArrayList<IntroRule> rules = entry.getValue().getIntro();
             if(rules == null) continue;
 
             for(IntroRule x: rules) {
