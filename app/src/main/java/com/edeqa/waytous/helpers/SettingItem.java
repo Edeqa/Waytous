@@ -343,7 +343,7 @@ public class SettingItem<T> {
     }
 
     public static class Page extends SettingItem {
-        private Map<String, ArrayList<SettingItem>> itemsMap = new LinkedHashMap<>();
+        private Map<String, SettingItem> itemsMap = new LinkedHashMap<>();
 
         public ArrayList<SettingItem> getItems() {
             return items;
@@ -369,67 +369,83 @@ public class SettingItem<T> {
             switch (item.getType()) {
                 case SettingItem.GROUP:
                 case SettingItem.PAGE:
-                    if(!itemsMap.containsKey(item.getId())) {
-                        ArrayList<SettingItem> list = new ArrayList<>();
-                        list.add(item);
-                        if(item.getPriority() > 0) {
-                            LinkedHashMap<String, ArrayList<SettingItem>> newMap = new LinkedHashMap<>();
-                            boolean added = false;
-
-                            for (Map.Entry<String, ArrayList<SettingItem>> entry : itemsMap.entrySet()) {
-                                if(item.getPriority() > entry.getValue().get(0).getPriority()) {
-                                    newMap.put(item.getId(), list);
-                                    added = true;
-                                }
-                                newMap.put(entry.getKey(),entry.getValue());
-                            }
-                            if(!added) {
-                                newMap.put(item.getId(), list);
-                            }
-                            itemsMap = newMap;
-                        } else {
-                            itemsMap.put(item.getId(), list);
-                        }
-                        raw.put(item.fetchId(), item);
+                    SettingItem map;
+                    boolean contains = itemsMap.containsKey(item.fetchId());
+                    if(contains) {
+                        map = itemsMap.get(item.fetchId());
+                    } else {
+                        map = item;
                     }
+
+                    if(item.getPriority() > 0) {
+                        LinkedHashMap<String, SettingItem> newMap = new LinkedHashMap<>();
+                        boolean added = false;
+
+
+                        itemsMap.putAll(((Page) item).itemsMap);
+
+                        for (Map.Entry<String, SettingItem> entry : itemsMap.entrySet()) {
+                            if(item.getPriority() > entry.getValue().getPriority()) {
+                                newMap.put(item.fetchId(), map);
+                                added = true;
+                            }
+                            newMap.put(entry.getKey(),entry.getValue());
+                        }
+                        if(!added) {
+                            newMap.put(item.fetchId(), map);
+                        }
+                        itemsMap = newMap;
+                    } else {
+//System.out.println("ITEMSMAP:"+item.fetchId()+":"+itemsMap.containsKey(item.fetchId()));
+//                        if(itemsMap.containsKey(item.fetchId())) {
+//                            ArrayList<SettingItem> current = itemsMap.get(item.fetchId());
+//                            current.addAll(list);
+//                            list = current;
+//                        }
+                        itemsMap.put(item.fetchId(), map);
+                    }
+                    raw.put(item.fetchId(), item);
                     break;
                 case SettingItem.LABEL:
                 case SettingItem.TEXT:
                 case SettingItem.CHECKBOX:
                 case SettingItem.LIST:
 //                    ArrayList<SettingItem> list = itemsMap.get("general");
-                    ArrayList<SettingItem> list;
                     String id = item.getGroupId();
                     if(itemsMap.containsKey(id)) {
-                        list = itemsMap.get(item.getGroupId());
+                        map = itemsMap.get(item.getGroupId());
                     } else {
-                        list = new ArrayList<SettingItem>();
-                        itemsMap.put(item.getGroupId(), list);
+                        map = item;
+                        itemsMap.put(item.getGroupId(), map);
                         raw.put(item.fetchId(), item);
                     }
-                    addUnique(list,item);
+                    addUnique(map,item);
                     break;
             }
             items.clear();
-            for(Map.Entry<String,ArrayList<SettingItem>> g: itemsMap.entrySet()) {
-                for (SettingItem x : g.getValue()) {
-                    items.add(x);
-//                    if(x.getType() == SettingItem.PAGE) break;
-                }
+            for(Map.Entry<String,SettingItem> g: itemsMap.entrySet()) {
+                items.add(g.getValue());
+//                if(g.getValue().getType() == GROUP) {
+//                    for (SettingItem x : ((SettingItem.Group)g)) {
+////                    if(x.getType() == SettingItem.PAGE) break;
+//                    }
+//
+//                }
             }
             if(callback != null) callback.call(this);
             return this;
 
         }
-        private void addUnique(ArrayList<SettingItem> list, SettingItem item) {
+
+        private void addUnique(SettingItem map, SettingItem item) {
             boolean exists = false;
-            for(SettingItem x:list) {
-                if(x.fetchId().equals(item.fetchId())) {
-                    exists = true;
-                    break;
-                }
-            }
-            if(!exists) list.add(item);
+//            for(SettingItem x:map) {
+//                if(x.fetchId().equals(item.fetchId())) {
+//                    exists = true;
+//                    break;
+//                }
+//            }
+//            if(!exists) list.add(item);
         }
 
         @Override
