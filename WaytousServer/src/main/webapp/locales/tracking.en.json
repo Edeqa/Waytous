@@ -276,6 +276,12 @@
   "do_you_want_to_keep_screen_on_during_group_is_active": "Do you want to keep screen on during group is active?",
   "group_has_been_removed": "Group has been removed.",
 
+  "terms_of_service": "Terms of service (click for expand/collapse)",
+  "terms_of_service_body": "Terms of service (click for expand/collapse)",
+  "i_have_read_and_agree_with_terms_of_service": "I've read and agree with terms of service",
+
+
+
   "// Sample": "",
 
   "sample_item": "Sample item",

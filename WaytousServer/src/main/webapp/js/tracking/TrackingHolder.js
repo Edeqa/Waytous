@@ -56,8 +56,8 @@ function TrackingHolder(main) {
             className: "wizard-dialog",
             items: [
                 { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_may_create_the_group },
-                { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: "Terms of service (click for expand/collapse)", body: "Terms of service body" },
-                { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: "I've read and agree with terms of service", onclick: function() {
+                { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: u.lang.terms_of_service, body: u.lang.terms_of_service_body },
+                { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: u.lang.i_have_read_and_agree_with_terms_of_service, onclick: function() {
                     if(this.checked) {
                         u.lang.updateNode(wizardDialog.positive, u.lang.create_group);
                     } else {
@@ -232,8 +232,8 @@ function TrackingHolder(main) {
                 className: "wizard-dialog",
                 items: [
                     { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_re_going_to_join_the_group },
-                    { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: "Terms of service (click for expand/collapse)", body: "Terms of service body" },
-                    { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: "I've read and agree with terms of service", onclick: function() {
+                    { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: u.lang.terms_of_service, body: u.lang.terms_of_service_body },
+                    { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: u.lang.i_have_read_and_agree_with_terms_of_service, onclick: function() {
                         if(this.checked) {
                             u.lang.updateNode(agreementDialog.positive, u.lang.join_group);
                         } else {
