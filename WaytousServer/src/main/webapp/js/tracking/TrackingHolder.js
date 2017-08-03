@@ -27,6 +27,7 @@ function TrackingHolder(main) {
     var joinSound;
     var defaultSound = "oringz-w427.mp3";
     var wizardDialog;
+    var agreementDialog;
 
     var drawerItemNewIconSvg = {
         xmlns:"http://www.w3.org/2000/svg",
@@ -54,13 +55,24 @@ function TrackingHolder(main) {
             title: u.lang.information,
             className: "wizard-dialog",
             items: [
-                { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_may_create_the_group }
+                { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_may_create_the_group },
+                { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: "Terms of service (click for expand/collapse)", body: "Terms of service body" },
+                { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: "I've read and agree with terms of service", onclick: function() {
+                    if(this.checked) {
+                        u.lang.updateNode(wizardDialog.positive, u.lang.create_group);
+                    } else {
+                        u.lang.updateNode(wizardDialog.positive, u.lang.close);
+                    }
+                } },
             ],
             positive: {
-                label: u.lang.create_group,
+                label: u.lang.close,
                 className: "wizard-dialog-button-create",
                 onclick: function(items) {
-                    main.fire(EVENTS.TRACKING_NEW);
+                    if(items[2].checked) {
+                        u.save("tracking:terms_of_service_confirmed", true);
+                        main.fire(EVENTS.TRACKING_NEW);
+                    }
                 }
             }
         }, main.right);
@@ -210,7 +222,45 @@ function TrackingHolder(main) {
         return true;
     }
 
-    function startTracking(){
+    function startTracking() {
+
+        if(u.load("tracking:terms_of_service_confirmed")) {
+            startTrackingReady();
+        } else {
+            agreementDialog = agreementDialog || u.dialog({
+                title: u.lang.information,
+                className: "wizard-dialog",
+                items: [
+                    { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_re_going_to_join_the_group },
+                    { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: "Terms of service (click for expand/collapse)", body: "Terms of service body" },
+                    { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: "I've read and agree with terms of service", onclick: function() {
+                        if(this.checked) {
+                            u.lang.updateNode(agreementDialog.positive, u.lang.join_group);
+                        } else {
+                            u.lang.updateNode(agreementDialog.positive, u.lang.close);
+                        }
+                    } },
+
+                ],
+                positive: {
+                    label: u.lang.close,
+                    className: "wizard-dialog-button-create",
+                    onclick: function(items) {
+                        if(items[2].checked) {
+                            u.save("tracking:terms_of_service_confirmed", true);
+                            startTrackingReady();
+                        } else {
+                            window.location = "/";
+                        }
+                    }
+                }
+            }, main.right);
+            agreementDialog.open();
+        }
+    }
+
+
+    function startTrackingReady(){
 
         progress.open();
 

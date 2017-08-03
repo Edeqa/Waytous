@@ -747,6 +747,12 @@ p.bottom-desc {
 .wizard-dialog-item {
 
 }
+.wizard-dialog-item-agree {
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}
 .wizard-dialog-button-create {
 
 }

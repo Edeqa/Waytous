@@ -769,7 +769,8 @@ function Edequate(options) {
             } else if(item.type === HTML.HIDDEN) {
                 div = x = create(HTML.INPUT, {type:HTML.HIDDEN, value:item.value || ""});
             } else if(item.type === HTML.SELECT) {
-                div = create(HTML.DIV, {className:"dialog-item dialog-item-input", onclick: function(){this.firstChild.nextSibling.click();}});
+                item.itemClassName = "dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : "");
+                div = create(HTML.DIV, {className: item.itemClassName, onclick: function(){this.firstChild.nextSibling.click();}});
 
                 if(item.label) {
                     var labelOptions = {
@@ -798,7 +799,8 @@ function Edequate(options) {
                     u.create(HTML.OPTION, {value:y, innerHTML:item.values[y], selected: item.default == y}, x);
                 }
             } else {
-                div = create(HTML.DIV, {className:"dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : ""), onclick: function(){this.lastChild.click();}});
+                item.itemClassName = "dialog-item dialog-item-input" + (item.itemClassName ? " " + item.itemClassName : "");
+                div = create(HTML.DIV, {className:item.itemClassName, onclick: function(){this.lastChild.click();}});
 
                 if(item.label) {
                     var labelOptions = {
@@ -1330,12 +1332,11 @@ function Edequate(options) {
         if(value) {
             var prev = lang.$origin[string];
             lang.$origin[string] = value;
-            lang.$origin[string] = value;
             if(!prev) {
                 Object.defineProperty(lang, string, {
                     get: function() {
                         lang.$nodes[string] = lang.$nodes[string] || create(HTML.SPAN, {
-                                lang:string
+                                lang: string
                             });
                         var a = lang.$nodes[string].cloneNode();
                         a.format = function() {
@@ -1344,10 +1345,10 @@ function Edequate(options) {
                             return this;
                         };
                         a.innerHTML = lang.$origin[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
-
                         if(lang.$arguments[string]){
                             a.innerHTML = sprintf.call(a.innerHTML, lang.$arguments[string]);
                         }
+                        a.lang = string;
                         return a;
                     }
                 });
@@ -1428,8 +1429,7 @@ function Edequate(options) {
         if(typeof lang === "string") {
             node.innerHTML = lang;
         } else if(node && lang && lang.lang) {
-            node.innerHTML = lang.innerHTML;
-            node.lang = lang.lang;
+            node.innerHTML = lang.outerHTML;
         }
     };
 
