@@ -8,7 +8,7 @@
 
 function Main() {
     var self = this;
-    var defaultResources = "/locales/index.en.json";
+    var defaultResources = "/locales/index.json";
 
 
     var holders = {};
@@ -18,11 +18,11 @@ function Main() {
         "/js/index/HomeHolder",
         "/js/index/StartHolder",
 
-        "/js/index/HelpHolder",
-        "/js/index/ApiHolder",
+//        "/js/index/HelpHolder",
+//        "/js/index/ApiHolder",
 
-        "/js/index/SupportHolder",
-        "/js/index/FeedbackHolder",
+//        "/js/index/SupportHolder",
+//        "/js/index/FeedbackHolder",
         "/js/index/ContactHolder",
 //        "/js/index/BlablaHolder",
         "/js/index/AboutHolder"
@@ -77,7 +77,7 @@ function Main() {
                 });
             }});
             var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/index."+lang+".json";
+            var resources = "/locales/"+lang+"/index.json";
             if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
         });
     };
@@ -111,7 +111,7 @@ function Main() {
             var selectLang = u.create(HTML.SELECT, { className: "actionbar-select-lang changeable", onchange: function(e, event) {
                 var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
                 u.save("lang", lang);
-                var resources = "/locales/index."+lang+".json";
+                var resources = "/locales/index.json";
                 u.lang.overrideResources({"default":defaultResources, resources: resources});
             }}, self.actionbar).place(HTML.OPTION, { name: u.lang.loading, value:"" });
 
@@ -198,10 +198,16 @@ function Main() {
                         self.drawer.toggleSize(false);
                         self.actionbar.toggleSize(false);
                         self.actionbar.setTitle(holder.title);
-                        u.fire(holder.type);
+                        u.lang.updateNode(self.drawer.headerPrimary, holder.title);
+
+                        u.progress.show(u.lang.loading.innerHTML);
+                        u.fire(holder.type, function() {
+                            u.byId("content").parentNode.scrollTop = 0;
+                            u.progress.hide();
+                        });
                         window.history.pushState({}, null, "/" + holder.type);
 
-//                        holder.start();
+                        self.drawer.close();
                         return false;
                     });
                     item.instance = x;

@@ -24,19 +24,14 @@ function HomeHolder(main) {
         switch(event) {
             case EVENTS.HOME:
                 console.log("INDEX HOME");
-                u.progress.show(u.lang.loading.innerHTML);
-                u.get("/texts/index-home.txt").then(function(xhr){
-                    //            u.clear(main.content);
-
+                u.get("/content/index-home.txt").then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-home");
-                    u.byId("content").parentNode.scrollTop = 0;
-                    u.progress.hide();
+                    if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
                     u.byId("content").classList.add("content-home");
-                    u.byId("content").parentNode.scrollTop = 0;
-                    u.progress.hide();
+                    if(object) object();
                 });
                 break;
         }

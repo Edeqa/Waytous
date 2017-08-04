@@ -101,6 +101,12 @@ public class SensitiveData {
             json.put("types",new JSONArray());
         }
 
+        // normalize the path to web root directory tfor avoiding substrings like \.\
+        String path = new File(getWebRootDirectory()).getAbsolutePath();
+        path = path.replaceAll("([\\\\/])\\.\\1", "$1").replaceAll("([\\\\/])\\.$", "");
+        json.put("web_root_directory", path);
+
+
         // add default MIME-types if they are not added in options-file
 
         JSONArray types = json.getJSONArray("types");

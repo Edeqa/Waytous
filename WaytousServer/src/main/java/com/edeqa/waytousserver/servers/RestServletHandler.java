@@ -9,14 +9,18 @@ import com.google.common.net.HttpHeaders;
 
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 
@@ -28,6 +32,8 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
  */
 @SuppressWarnings("HardCodedStringLiteral")
 public class RestServletHandler extends AbstractServletHandler {
+
+    private static final String LOG = "RSH";
 
     @Override
     public void init() throws ServletException {
@@ -62,6 +68,9 @@ public class RestServletHandler extends AbstractServletHandler {
                 break;
             case "/rest/v1/getSounds":
                 printRes = getSoundsV1(json);
+                break;
+            case "/rest/v1/getContent":
+                printRes = getContentV1(json, requestWrapper);
                 break;
             case "/rest/v1/getResources":
                 printRes = getResourcesV1(json, requestWrapper);
@@ -170,6 +179,93 @@ public class RestServletHandler extends AbstractServletHandler {
             }
             json.put("files", list);
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+
+    }
+
+    private boolean getContentV1(final JSONObject json, final RequestWrapper requestWrapper) {
+        File dir = new File(SENSITIVE.getWebRootDirectory());
+
+        try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = requestWrapper.getRequestBody();
+            int b;
+            while ((b = is.read()) != -1) {
+                buf.append((char) b);
+            }
+            is.close();
+
+            JSONObject options = new JSONObject(buf.toString());
+            Common.log(LOG,"Content requested: " + options);
+
+            ArrayList<File> files = new ArrayList<>();
+
+            if(options.has("type")) {
+                if (options.has("locale") && options.has("resource")) {
+                    files.add(new File(SENSITIVE.getWebRootDirectory() + "/" + options.getString("type") + "/" + options.getString("locale") + "/" + options.getString("resource")));
+                }
+                if (options.has("resource")) {
+                    files.add(new File(SENSITIVE.getWebRootDirectory() + "/" + options.getString("type") + "/" + options.getString("resource")));
+                }
+            } else {
+                if (options.has("locale") && options.has("resource")) {
+                    files.add(new File(SENSITIVE.getWebRootDirectory() + "/content/" + options.getString("locale") + "/" + options.getString("resource")));
+                }
+                if (options.has("resource")) {
+                    files.add(new File(SENSITIVE.getWebRootDirectory() + "/content/" + options.getString("resource")));
+                }
+            }
+
+            boolean exists = false;
+            File file = null;
+            for (File f : files) {
+                if (f.getCanonicalPath().equals(f.getAbsolutePath()) && f.exists()) {
+                    file = f;
+                    exists = true;
+                    break;
+                }
+            }
+
+            if(exists) {
+                Common.log(LOG,"File found: " + file.toString());
+                boolean gzip = true;
+                requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+                requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
+                requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
+
+                if(gzip){
+                    requestWrapper.setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
+                } else {
+                    requestWrapper.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()));
+                }
+
+                requestWrapper.sendResponseHeaders(200, 0);
+
+                OutputStream os;
+                if(gzip) {
+                    os = new BufferedOutputStream(new GZIPOutputStream(requestWrapper.getResponseBody()));
+                } else {
+                    os = requestWrapper.getResponseBody();
+                }
+
+                FileInputStream fs = new FileInputStream(file);
+                final byte[] buffer = new byte[0x10000];
+
+                int count = 0;
+                while ((count = fs.read(buffer)) >= 0) {
+                    os.write(buffer, 0, count);
+                }
+                fs.close();
+                os.close();
+                return false;
+            } else {
+                Common.log(LOG,"Content not found.");
+                return true;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return true;

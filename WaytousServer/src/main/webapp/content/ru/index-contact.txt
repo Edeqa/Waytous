@@ -1,0 +1,5 @@
+<p>Контактная информация:
+
+Адрес: Рестон, Вирджиния, 20191, США
+
+E-mail: <a href="mailto:support@edeqa.com" target="_blank">support@edeqa.com</a>

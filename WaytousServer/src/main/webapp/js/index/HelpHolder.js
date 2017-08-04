@@ -24,13 +24,9 @@ function HelpHolder(main) {
         switch(event) {
             case EVENTS.HELP:
                 console.log("INDEX HELP");
-
-                u.progress.show(u.lang.loading);
-
                 u.byId("content").innerHTML = u.lang.help_body.innerHTML;
                 u.byId("content").classList.add("content-help");
-                u.byId("content").parentNode.scrollTop = 0;
-                u.progress.hide();
+                if(object) object();
                 break;
         }
         return true;

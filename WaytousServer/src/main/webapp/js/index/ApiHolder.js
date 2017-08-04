@@ -24,13 +24,9 @@ function ApiHolder(main) {
         switch(event) {
             case EVENTS.API:
                 console.log("INDEX API");
-
-                u.progress.show(u.lang.loading);
-
                 u.byId("content").innerHTML = u.lang.api_body.innerHTML;
                 u.byId("content").classList.add("content-api");
-                u.byId("content").parentNode.scrollTop = 0;
-                u.progress.hide();
+                if(object) object();
                 break;
         }
         return true;

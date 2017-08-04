@@ -24,13 +24,9 @@ function AboutHolder(main) {
         switch(event) {
             case EVENTS.ABOUT:
                 console.log("INDEX ABOUT");
-
-                u.progress.show(u.lang.loading.innerHTML);
                 u.byId("content").innerHTML = u.lang.about_body.innerHTML;
-                u.byId("content").classList.add("content-help");
-                u.byId("content").parentNode.scrollTop = 0;
-
-                u.progress.hide();
+                u.byId("content").classList.add("content-about");
+                if(object) object();
                 break;
         }
 

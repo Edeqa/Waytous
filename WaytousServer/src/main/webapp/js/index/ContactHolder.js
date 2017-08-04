@@ -24,21 +24,15 @@ function ContactHolder(main) {
         switch(event) {
             case EVENTS.CONTACT:
                 console.log("INDEX CONTACT");
-
-                u.progress.show(u.lang.loading);
-
-                u.get("/texts/index-contact.txt").then(function(xhr){
-                    //            u.clear(main.content);
-
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "index-contact.txt", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-contact");
-                    u.byId("content").parentNode.scrollTop = 0;
-                    u.progress.hide();
+                    if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
                     u.byId("content").classList.add("content-contact");
-                    u.byId("content").parentNode.scrollTop = 0;
-                    u.progress.hide();
+                    if(object) object();
                 });
                 break;
         }

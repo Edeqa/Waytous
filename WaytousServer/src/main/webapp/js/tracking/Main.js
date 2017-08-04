@@ -16,7 +16,7 @@ function Main() {
     var origin;
     var main = window.Waytous = this;
     var alert;
-    var defaultResources = "/locales/tracking.en.json";
+    var defaultResources = "/locales/tracking.json";
 
     if (!data.isDebugMode && "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
@@ -59,7 +59,7 @@ function Main() {
                 loadScripts();
             }});
             var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/tracking."+lang+".json";
+            var resources = "/locales/"+lang+"/tracking.json";
             if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
 
         });
@@ -354,8 +354,8 @@ function Main() {
                             onaccept: function(e, event) {
                                 var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
                                 u.save("lang", lang);
-                                var resources = "/locales/tracking."+lang+".json";
-                                u.lang.overrideResources({"default":defaultResources, resources: resources});
+                                var resources = "/locales/"+lang+"/tracking.json";
+                                u.lang.overrideResources({"default":defaultResources, resources: resources, type: "locales", resource: "tracking.json", locale: lang});
                             },
                             values: {"": u.lang.default, "en": u.lang.english, "ru": u.lang.russian }
                         },

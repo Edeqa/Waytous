@@ -1453,7 +1453,12 @@ function Edequate(options) {
             }
         };
         try {
-            if(body) xhr.send(body);
+            if(body) {
+                if(body.constructor === Object) {
+                    body = JSON.stringify(body);
+                }
+                xhr.send(body);
+            }
             else xhr.send();
         } catch(e) {
             returned.onRejected(ERRORS.ERROR_SENDING_REQUEST, xhr);
@@ -1468,7 +1473,7 @@ function Edequate(options) {
     this.get = get;
 
     function post(url, body) {
-        return rest("POST",url, body);
+        return rest("POST", url, body);
     }
     this.post = post;
 

@@ -11,7 +11,7 @@ function Main() {
     var drawer;
     var layout;
     var content;
-    var defaultResources = "/locales/admin.en.json";
+    var defaultResources = "/locales/admin.json";
 
     var holders = {};
     var holderFiles = [
@@ -111,7 +111,7 @@ function Main() {
                 }
             }});
             var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/admin."+lang+".json";
+            var resources = "/locales/"+lang+"/admin.json";
             if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
         });
     };

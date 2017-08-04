@@ -23,13 +23,9 @@ function FeedbackHolder(main) {
     this.onEvent = function(event, object) {
         switch(event) {
             case EVENTS.FEEDBACK:
-                u.progress.show(u.lang.loading);
-
                 u.byId("content").innerHTML = u.lang.feedback_body.innerHTML;
                 u.byId("content").classList.add("content-feedback");
-                u.byId("content").parentNode.scrollTop = 0;
-
-                u.progress.hide();
+                if(object) object();
                 break;
         }
         return true;
