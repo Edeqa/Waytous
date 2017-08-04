@@ -74,9 +74,10 @@ public class TrackingViewHolder extends AbstractViewHolder<TrackingViewHolder.Tr
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
                 SettingItem.Page about = new SettingItem.Page(PREFERENCES_ABOUT).setTitle(R.string.about).setPriority(0)
-                        .add(new SettingItem.Label("offer").setTitle(R.string.you_must_read_and_confirm_your_agreement_with_terms_of_service))
-                        .add(new SettingItem.Label("tos").setMessage(R.string.terms_of_service))
-                        .add(new SettingItem.Checkbox(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED).setTitle(R.string.i_have_read_and_agree_with_terms_of_service));
+                        .add(new SettingItem.Page("tos").setTitle(R.string.terms_of_service).setPriority(0)
+                                .add(new SettingItem.Label("offer").setTitle(R.string.you_must_read_and_confirm_your_agreement_with_terms_of_service))
+                                .add(new SettingItem.Label("tos").setMessage(R.string.legal_information_body))
+                                .add(new SettingItem.Checkbox(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED).setTitle(R.string.i_have_read_and_agree_with_terms_of_service)));
                 item.add(about);
                 break;
         }

@@ -170,7 +170,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                 final AlertDialog dialog = new AlertDialog.Builder(context).create();
                 dialog.setTitle(context.getString(R.string.add_location));
-                dialog.setMessage(context.getString(R.string.youve_got_the_location_from_s, State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName(), finalName == null ? "" : finalName, finalAddress == null ? "" : ", address: " + finalAddress, finalDescription == null ? "" : ", description: " + finalDescription));
+                dialog.setMessage(context.getString(R.string.you_have_got_the_location_from_s, State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName(), finalName == null ? "" : finalName, finalAddress == null ? "" : ", address: " + finalAddress, finalDescription == null ? "" : ", description: " + finalDescription));
 
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override

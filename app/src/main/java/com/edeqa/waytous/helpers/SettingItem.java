@@ -242,6 +242,18 @@ public class SettingItem<T> {
     }
 
     public static class Group extends SettingItem {
+        protected Map<String, SettingItem> itemsMap = new LinkedHashMap<>();
+
+        public ArrayList<SettingItem> getItems() {
+            return items;
+        }
+
+        private ArrayList<SettingItem> items = new ArrayList<>();
+
+        public Group(Item id) {
+            super("" + id);
+        }
+
         public Group(String id) {
             super(id);
             setType(GROUP);
@@ -251,6 +263,91 @@ public class SettingItem<T> {
         public void onClick(Runnable1 runnable) {
 
         }
+
+        public Group add(SettingItem item) {
+            switch (item.getType()) {
+                case SettingItem.GROUP:
+                case SettingItem.PAGE:
+                    if(itemsMap.containsKey(item.fetchId())) {
+                        SettingItem current = itemsMap.get(item.fetchId());
+                        if(item.getType() == PAGE || item.getType() == GROUP) {
+                            for(Map.Entry<String, SettingItem> entry:((Group)item).itemsMap.entrySet())
+                            ((Group)current).add(entry.getValue());
+                        } else {
+                            itemsMap.put(item.fetchId(), item);
+                        }
+                    } else {
+                        if(item.getPriority() > 0) {
+                            LinkedHashMap<String, SettingItem> newMap = new LinkedHashMap<>();
+                            boolean added = false;
+
+                            for (Map.Entry<String, SettingItem> entry : itemsMap.entrySet()) {
+                                if(item.getPriority() > entry.getValue().getPriority()) {
+                                    newMap.put(item.fetchId(), item);
+                                    added = true;
+                                }
+                                newMap.put(entry.getKey(),entry.getValue());
+                            }
+                            if(!added) {
+                                newMap.put(item.fetchId(), item);
+                            }
+                            itemsMap = newMap;
+                        } else {
+                            itemsMap.put(item.fetchId(), item);
+                        }
+
+                    }
+
+                    raw.put(item.fetchId(), item);
+                    break;
+                case SettingItem.LABEL:
+                case SettingItem.TEXT:
+                case SettingItem.CHECKBOX:
+                case SettingItem.LIST:
+                    String id = item.getGroupId();
+                    Group group;
+                    if(itemsMap.containsKey(id)) {
+                        group = (Group) itemsMap.get(id);
+                    } else {
+                        group = this;
+                    }
+                    group.itemsMap.put(item.fetchId(), item);
+                    raw.put(item.fetchId(), item);
+                    break;
+            }
+            items.clear();
+            for(Map.Entry<String,SettingItem> g: itemsMap.entrySet()) {
+                items.add(g.getValue());
+                if(g.getValue().getType() == GROUP) {
+                    for (Map.Entry<String, SettingItem> x : ((Group)g.getValue()).itemsMap.entrySet()) {
+                        items.add(x.getValue());
+                    }
+
+                }
+            }
+            if(callback != null) callback.call(this);
+            return this;
+
+        }
+
+        @Override
+        public SettingItem.Group setTitle(String title) {
+            super.setTitle(title);
+            return this;
+        }
+
+        @Override
+        public SettingItem.Group setTitle(int resId) {
+            super.setTitle(resId);
+            return this;
+        }
+
+        @Override
+        public SettingItem.Group setPriority(int priority) {
+            super.setPriority(priority);
+            return this;
+        }
+
     }
 
     public static class Label extends SettingItem {
@@ -342,110 +439,21 @@ public class SettingItem<T> {
 
     }
 
-    public static class Page extends SettingItem {
-        private Map<String, SettingItem> itemsMap = new LinkedHashMap<>();
-
-        public ArrayList<SettingItem> getItems() {
-            return items;
-        }
-
-        private ArrayList<SettingItem> items = new ArrayList<>();
-
-        public Page(Item id) {
-            super("" + id);
-        }
+    public static class Page extends Group {
 
         public Page(String id) {
             super(id);
             setType(PAGE);
         }
 
+        public Page(Item id) {
+            this("" + id);
+        }
+
         @Override
-        public void onClick(Runnable1 runnable) {
-
-        }
-
         public Page add(SettingItem item) {
-            switch (item.getType()) {
-                case SettingItem.GROUP:
-                case SettingItem.PAGE:
-                    SettingItem map;
-                    boolean contains = itemsMap.containsKey(item.fetchId());
-                    if(contains) {
-                        map = itemsMap.get(item.fetchId());
-                    } else {
-                        map = item;
-                    }
-
-                    if(item.getPriority() > 0) {
-                        LinkedHashMap<String, SettingItem> newMap = new LinkedHashMap<>();
-                        boolean added = false;
-
-
-                        itemsMap.putAll(((Page) item).itemsMap);
-
-                        for (Map.Entry<String, SettingItem> entry : itemsMap.entrySet()) {
-                            if(item.getPriority() > entry.getValue().getPriority()) {
-                                newMap.put(item.fetchId(), map);
-                                added = true;
-                            }
-                            newMap.put(entry.getKey(),entry.getValue());
-                        }
-                        if(!added) {
-                            newMap.put(item.fetchId(), map);
-                        }
-                        itemsMap = newMap;
-                    } else {
-//System.out.println("ITEMSMAP:"+item.fetchId()+":"+itemsMap.containsKey(item.fetchId()));
-//                        if(itemsMap.containsKey(item.fetchId())) {
-//                            ArrayList<SettingItem> current = itemsMap.get(item.fetchId());
-//                            current.addAll(list);
-//                            list = current;
-//                        }
-                        itemsMap.put(item.fetchId(), map);
-                    }
-                    raw.put(item.fetchId(), item);
-                    break;
-                case SettingItem.LABEL:
-                case SettingItem.TEXT:
-                case SettingItem.CHECKBOX:
-                case SettingItem.LIST:
-//                    ArrayList<SettingItem> list = itemsMap.get("general");
-                    String id = item.getGroupId();
-                    if(itemsMap.containsKey(id)) {
-                        map = itemsMap.get(item.getGroupId());
-                    } else {
-                        map = item;
-                        itemsMap.put(item.getGroupId(), map);
-                        raw.put(item.fetchId(), item);
-                    }
-                    addUnique(map,item);
-                    break;
-            }
-            items.clear();
-            for(Map.Entry<String,SettingItem> g: itemsMap.entrySet()) {
-                items.add(g.getValue());
-//                if(g.getValue().getType() == GROUP) {
-//                    for (SettingItem x : ((SettingItem.Group)g)) {
-////                    if(x.getType() == SettingItem.PAGE) break;
-//                    }
-//
-//                }
-            }
-            if(callback != null) callback.call(this);
+            super.add(item);
             return this;
-
-        }
-
-        private void addUnique(SettingItem map, SettingItem item) {
-            boolean exists = false;
-//            for(SettingItem x:map) {
-//                if(x.fetchId().equals(item.fetchId())) {
-//                    exists = true;
-//                    break;
-//                }
-//            }
-//            if(!exists) list.add(item);
         }
 
         @Override
@@ -465,7 +473,6 @@ public class SettingItem<T> {
             super.setPriority(priority);
             return this;
         }
-
     }
 
     public static class List extends SettingItem<String> {
