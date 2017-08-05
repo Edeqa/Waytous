@@ -22,9 +22,14 @@ function HomeHolder(main) {
 
     this.onEvent = function(event, object) {
         switch(event) {
+            case EVENTS.RELOAD:
+                if(object != this.type) {
+                    break;
+                }
             case EVENTS.HOME:
                 console.log("INDEX HOME");
-                u.get("/content/index-home.txt").then(function(xhr){
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "index-home.txt", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-home");
                     if(object) object();

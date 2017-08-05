@@ -16,7 +16,7 @@ function Main() {
     var origin;
     var main = window.Waytous = this;
     var alert;
-    var defaultResources = "/locales/tracking.json";
+    var defaultResources = "/resources/en/tracking.json";
 
     if (!data.isDebugMode && "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
@@ -52,16 +52,11 @@ function Main() {
 
         u.loading("0%");
         u.require("/js/helpers/Constants").then(function(e){
-
-            u.lang.overrideResources({"default":defaultResources, callback: function(){
+            loadResources("tracking.json", function() {
                 initializeHeader();
                 initializeProperties();
                 loadScripts();
-            }});
-            var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/"+lang+"/tracking.json";
-            if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
-
+            });
         });
 
         window.addEventListener("load", function() { window. scrollTo(0, 0); });
@@ -105,7 +100,7 @@ function Main() {
     function initializeHeader() {
 
         document.head
-            .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"})
+            .place(HTML.META, {name:"viewport", content:"width=device-width, initial-scale=1, maximum-scale=5, user-scalable=no"})
             .place(HTML.STYLE, {innerHTML: "@import url('/css/edequate.css');@import url('/css/tracking.css');@import url('https://fonts.googleapis.com/icon?family=Material+Icons');"})
 //            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/edequate.css"})
 //            .place(HTML.LINK, {rel:HTML.STYLESHEET, href:"/css/tracking.css"})
@@ -354,8 +349,7 @@ function Main() {
                             onaccept: function(e, event) {
                                 var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
                                 u.save("lang", lang);
-                                var resources = "/locales/"+lang+"/tracking.json";
-                                u.lang.overrideResources({"default":defaultResources, resources: resources, type: "locales", resource: "tracking.json", locale: lang});
+                                loadResources("tracking.json");
                             },
                             values: {"": u.lang.default, "en": u.lang.english, "ru": u.lang.russian }
                         },
@@ -433,6 +427,22 @@ function Main() {
                 }
             ]
         }
+    }
+
+    function loadResources(resource, locale, callback) {
+        if(locale && locale.constructor !== String) {
+            callback = locale;
+            locale = null;
+        }
+        var lang = (locale || u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+        u.lang.overrideResources({
+            "default": "/resources/en/" + resource,
+            resources: "/rest/v1/getContent",
+            type: "resources",
+            resource: resource,
+            locale: lang,
+            callback: callback
+        });
     }
 
     return {

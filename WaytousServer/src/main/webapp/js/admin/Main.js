@@ -77,7 +77,7 @@ function Main() {
 
 
         u.require("/js/helpers/Constants").then(function(e){
-            u.lang.overrideResources({"default":defaultResources, callback: function(){
+            loadResources("admin.json", function(){
                 var loaded = 0;
                 for(var i in holderFiles) {
                     var file = holderFiles[i];
@@ -109,10 +109,7 @@ function Main() {
                         }).open();
                     });
                 }
-            }});
-            var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/"+lang+"/admin.json";
-            if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
+            });
         });
     };
 
@@ -280,7 +277,20 @@ function Main() {
                 window.history.pushState({}, null, "/admin/" + holders[parts[2]].page);
             }
         }
+    };
+
+    function loadResources(resource, callback) {
+        var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+        u.lang.overrideResources({
+            "default": "/resources/en/" + resource,
+            resources: "/rest/v1/getContent",
+            type: "resources",
+            resource: resource,
+            locale: lang,
+            callback: callback
+        });
     }
+
 
     return {
         start: start,

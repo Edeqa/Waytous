@@ -7,10 +7,8 @@
  */
 
 function Main() {
+
     var self = this;
-    var defaultResources = "/locales/index.json";
-
-
     var holders = {};
     var files = [
         "/js/helpers/Utils.js",
@@ -27,9 +25,7 @@ function Main() {
 //        "/js/index/BlablaHolder",
         "/js/index/AboutHolder"
     ];
-
-    EVENTS = {
-    };
+    var type = "home";
 
     self.start = function() {
         var a = document.createElement("script");
@@ -55,42 +51,40 @@ function Main() {
             .place(HTML.LINK, {rel:"icon", type:"image/png", sizes:"194x194", href:"/icons/favicon-194x194.png"});
 
         u.require("/js/helpers/Constants").then(function(e){
-            u.lang.overrideResources({"default":defaultResources, callback: function(){
+
+            EVENTS.RELOAD = "reload";
+
+            loadResources("index.json", function() {
                 u.eventBus.register(files, {
                     context: self,
-                    onprogress: function(loaded) {
+                    onprogress: function (loaded) {
                         u.loading(Math.ceil(loaded / files.length * 100) + "%");
                     },
-                    onstart: function() {
+                    onstart: function () {
                         window.utils = new Utils(self);
                     },
-                    onsuccess: function() {
+                    onsuccess: function () {
                         holders = u.eventBus.holders;
                         resume();
                     },
-                    onerror: function(code, origin, error) {
+                    onerror: function (code, origin, error) {
                         console.error(code, origin, error);
                         u.loading.hide();
-                        u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(origin,code));
+                        u.lang.updateNode(main.alert.items[1].body, u.lang.error_while_loading_s_code_s.format(origin, code));
                         main.alert.open();
                     }
                 });
-            }});
-            var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-            var resources = "/locales/"+lang+"/index.json";
-            if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
+            });
         });
     };
 
     function resume() {
         try {
 
-            var type = "home";
             var path = window.location.pathname.split("/");
             if(path.length > 1) {
                 type = path[1] || "home";
             }
-
 
             window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
                 window.scrollTo(0, 1); }, 0);
@@ -111,18 +105,18 @@ function Main() {
             var selectLang = u.create(HTML.SELECT, { className: "actionbar-select-lang changeable", onchange: function(e, event) {
                 var lang = (this.value || navigator.language).toLowerCase().slice(0,2);
                 u.save("lang", lang);
-                var resources = "/locales/index.json";
-                u.lang.overrideResources({"default":defaultResources, resources: resources});
+                loadResources("index.json");
+                u.fire.call(EVENTS.RELOAD, type);
             }}, self.actionbar).place(HTML.OPTION, { name: u.lang.loading, value:"" });
 
-            u.getJSON("/rest/v1/getResources",JSON.stringify({type:"index"})).then(function(json){
+            //u.post("/rest/v1/getContent", {resource: "index-contact.txt", locale: lang}).then(function(xhr){
+            u.getJSON("/rest/v1/getLocales").then(function(json){
                 u.clear(selectLang);
                 var count = 1;
-                selectLang.place(HTML.OPTION, { innerHTML: "Default", value: "" });
-                for(var i in json.files) {
-                    var a = json.files[i].split(".");
-                    selectLang.place(HTML.OPTION, { innerHTML: a[1].toUpperCase(), value: a[1] });
-                    if(u.load("lang") == a[1]) selectLang.selectedIndex = count;
+                selectLang.place(HTML.OPTION, { innerHTML: "Default", value: "en" });
+                for(var x in json.locales) {
+                    selectLang.place(HTML.OPTION, { innerHTML: json.locales[x], value: x });
+                    if(u.load("lang") == x) selectLang.selectedIndex = count;
                     count++;
                 }
             });
@@ -207,6 +201,7 @@ function Main() {
                         });
                         window.history.pushState({}, null, "/" + holder.type);
 
+                        type = holder.type;
                         self.drawer.close();
                         return false;
                     });
@@ -258,16 +253,17 @@ function Main() {
         return false;
     }
 
-    function loadResources(callback) {
-
-        u.lang.overrideResources({"default":defaultResources, callback: callback});
-
+    function loadResources(resource, callback) {
         var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-        var resources = "/locales/index."+lang+".json";
-
-        if(resources != defaultResources) u.lang.overrideResources({"default":defaultResources, resources: resources});
+        u.lang.overrideResources({
+            "default": "/resources/en/" + resource,
+            resources: "/rest/v1/getContent",
+            type: "resources",
+            resource: resource,
+            locale: lang,
+            callback: callback
+        });
     }
-
 
 }
 //document.addEventListener("DOMContentLoaded", (window.WTU = new Main()).start);

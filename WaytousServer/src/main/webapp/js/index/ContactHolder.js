@@ -22,6 +22,10 @@ function ContactHolder(main) {
 
     this.onEvent = function(event, object) {
         switch(event) {
+            case EVENTS.RELOAD:
+                if(object != this.type) {
+                    break;
+                }
             case EVENTS.CONTACT:
                 console.log("INDEX CONTACT");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);

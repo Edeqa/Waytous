@@ -24,9 +24,16 @@ function AboutHolder(main) {
         switch(event) {
             case EVENTS.ABOUT:
                 console.log("INDEX ABOUT");
-                u.byId("content").innerHTML = u.lang.about_body.innerHTML;
-                u.byId("content").classList.add("content-about");
-                if(object) object();
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "index-about.txt", locale: lang}).then(function(xhr){
+                    u.byId("content").innerHTML = xhr.response;
+                    u.byId("content").classList.add("content-about");
+                    if(object) object();
+                }).catch(function(error, json) {
+                    u.byId("content").innerHTML = "Error";
+                    u.byId("content").classList.add("content-about");
+                    if(object) object();
+                });
                 break;
         }
 

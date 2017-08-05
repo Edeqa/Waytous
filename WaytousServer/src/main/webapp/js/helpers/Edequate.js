@@ -867,7 +867,7 @@ function Edequate(options) {
 
         dialog.adjustPosition = function() {
             var left,top,width,height;
-            var id = options.id || (options.title && options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
+            var id = options.id || (options.title && options.title.label && (options.title.label.dataset.lang ? options.title.label.dataset.lang : options.title.label));
             if(id) {
                 left = load("dialog:"+id+":left");
                 top = load("dialog:"+id+":top");
@@ -1063,7 +1063,7 @@ function Edequate(options) {
                     function mouseup(e){
                         window.removeEventListener(HTML.MOUSEUP, mouseup, false);
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
-                        var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
+                        var id = options.id || (options.title.label && (options.title.label.dataset.lang ? options.title.label.dataset.lang : options.title.label));
                         if(id && moved) {
                             if(dialog.style.left) save("dialog:"+id+":left", dialog.style.left);
                             if(dialog.style.top) save("dialog:"+id+":top", dialog.style.top);
@@ -1085,7 +1085,7 @@ function Edequate(options) {
                     e.preventDefault();
                 },
                 ondblclick: function(e) {
-                    var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
+                    var id = options.id || (options.title.label && (options.title.label.dataset.lang ? options.title.label.dataset.lang : options.title.label));
                     save("dialog:"+id+":left");
                     save("dialog:"+id+":top");
                     save("dialog:"+id+":width");
@@ -1253,7 +1253,7 @@ function Edequate(options) {
                         window.removeEventListener(HTML.MOUSEUP, mouseup, false);
                         window.removeEventListener(HTML.MOUSEMOVE, mousemove, false);
                         if((options.id || options.title.label) && moved) {
-                            var id = options.id || (options.title.label && (options.title.label.lang ? options.title.label.lang : options.title.label));
+                            var id = options.id || (options.title.label && (options.title.label.dataset.lang ? options.title.label.dataset.lang : options.title.label));
                             if(dialog.style.width) save("dialog:"+id+":width", dialog.style.width);
                             if(dialog.style.height) save("dialog:"+id+":height", dialog.style.height);
                         }
@@ -1297,8 +1297,8 @@ function Edequate(options) {
             if (value.constructor === String || value.constructor === Number) {
                 replace = value;
             } else if(value.constructor === HTMLSpanElement) {
-                if(value.lang && lang.$origin[value.lang]) {
-                    replace = lang[value.lang].outerText;
+                if(value.dataset.lang && lang.$origin[value.dataset.lang]) {
+                    replace = lang[value.dataset.lang].outerText;
                 } else {
                     replace = value.outerText;
                 }
@@ -1336,11 +1336,11 @@ function Edequate(options) {
                 Object.defineProperty(lang, string, {
                     get: function() {
                         lang.$nodes[string] = lang.$nodes[string] || create(HTML.SPAN, {
-                                lang: string
+                                dataLang: string
                             });
                         var a = lang.$nodes[string].cloneNode();
                         a.format = function() {
-                            lang.$arguments[this.lang] = arguments;
+                            lang.$arguments[this.dataset.lang] = arguments;
                             this.innerHTML = sprintf.call(this.innerHTML, arguments);
                             return this;
                         };
@@ -1348,7 +1348,7 @@ function Edequate(options) {
                         if(lang.$arguments[string]){
                             a.innerHTML = sprintf.call(a.innerHTML, lang.$arguments[string]);
                         }
-                        a.lang = string;
+                        a.dataset.lang = string;
                         return a;
                     }
                 });
@@ -1362,8 +1362,24 @@ function Edequate(options) {
     lang.$origin = lang.$origin || {};
     lang.$arguments = lang.$arguments || {};
 
-
     lang.overrideResources = function(options) {
+        if(options.locale == "en") {
+            lang._overrideResources(options);
+        } else {
+            lang._overrideResources({
+                "default": options.default,
+                resources: options.default,
+                type: options.type,
+                resource: options.resource,
+                locale: "en",
+                callback: function() {
+                    lang._overrideResources(options);
+                }
+            });
+        }
+    };
+
+    lang._overrideResources = function(options) {
         if(!options || !options.default) {
             console.error("Not defined default resources");
             return;
@@ -1372,9 +1388,9 @@ function Edequate(options) {
         options.resources = options.resources || options.default;
 
         if(options.resources.constructor === String) {
-            getJSON(options.resources).then(function(json){
+            getJSON(options.resources, options).then(function(json){
                 var nodes = document.getElementsByTagName(HTML.SPAN);
-                console.warn("Switching to resources \""+options.resources+"\".");
+                console.warn("Switching to resources \""+options.locale+"\".");
                 for(var x in json) {
 //                            if(lang.$origin[x]) {
 //                                console.warn("Overrided resources: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );
@@ -1382,8 +1398,8 @@ function Edequate(options) {
                     lang(x, json[x]);
                 }
                 for(var i = 0; i < nodes.length; i++) {
-                    if(nodes[i].lang) {
-                        nodes[i].parentNode.replaceChild(lang[nodes[i].lang],nodes[i]);
+                    if(nodes[i].dataset.lang) {
+                        nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
                     }
                 }
                 if(options.callback) options.callback();
@@ -1393,14 +1409,14 @@ function Edequate(options) {
                         console.warn("Error fetching resources for \""+options.resources+"\":",xhr.status + ': ' + xhr.statusText);
                         if(options.default != options.resources){
                             console.warn("Switching to default resources \""+options.default+"\".");
-                            lang.overrideResources({"default":options.default});
+                            lang._overrideResources({"default":options.default});
                         }
                         break;
                     case ERRORS.INCORRECT_JSON:
                         console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",error,xhr);
                         if(options.default != options.resources){
                             console.warn("Switching to default resources \""+options.default+"\".");
-                            lang.overrideResources({"default":options.default});
+                            lang._overrideResources({"default":options.default});
                         }
                         break;
                     default:
@@ -1409,7 +1425,7 @@ function Edequate(options) {
                 }
                 if(options.default != options.resources){
                     console.warn("Switching to default resources \""+options.default+"\".");
-                    lang.overrideResources({"default":options.default});
+                    lang._overrideResources({"default":options.default});
                 } else {
                     if(options.callback) options.callback();
                 }
@@ -1428,7 +1444,7 @@ function Edequate(options) {
     lang.updateNode = function(node, lang) {
         if(typeof lang === "string") {
             node.innerHTML = lang;
-        } else if(node && lang && lang.lang) {
+        } else if(node && lang && lang.dataset && lang.dataset.lang) {
             node.innerHTML = lang.outerHTML;
         }
     };

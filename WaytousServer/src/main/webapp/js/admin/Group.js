@@ -41,9 +41,9 @@ function Group() {
         url = "https://" + url.hostname + (url.port ? (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) : "");
 
         var td = u.create()
-            .place(HTML.A, { href: url + "/track/"+groupId, innerHTML:groupId, target:"_blank"})
+            .place(HTML.A, { href: url + "/track/"+groupId, innerHTML:groupId, target:"_blank", rel:"noopener"})
             .place(HTML.SPAN, " ")
-            .place(HTML.A, { href: url + "/group/"+groupId, innerHTML:"(Force open in browser)", target:"_blank"});
+            .place(HTML.A, { href: url + "/group/"+groupId, innerHTML:"(Force open in browser)", target:"_blank", rel:"noopener"});
 
         tableSummary.add({ cells: [
             { className: "th", innerHTML: "ID" },
