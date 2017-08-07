@@ -109,6 +109,7 @@ public class SensitiveData {
         }
 
 
+
         // add default MIME-types if they are not added in options-file
 
         JSONArray types = json.getJSONArray("types");

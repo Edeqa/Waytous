@@ -1390,7 +1390,7 @@ function Edequate(options) {
         if(options.resources.constructor === String) {
             getJSON(options.resources, options).then(function(json){
                 var nodes = document.getElementsByTagName(HTML.SPAN);
-                console.warn("Switching to resources \""+options.locale+"\".");
+                console.warn("Switching to resources \""+(options.locale || options.resources)+"\".");
                 for(var x in json) {
 //                            if(lang.$origin[x]) {
 //                                console.warn("Overrided resources: " + x + ":", json[x] ? (json[x].length > 30 ? json[x].substr(0,30)+"..." : json[x]) : "" );

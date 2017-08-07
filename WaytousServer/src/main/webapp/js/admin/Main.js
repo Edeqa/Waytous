@@ -11,7 +11,6 @@ function Main() {
     var drawer;
     var layout;
     var content;
-    var defaultResources = "/locales/admin.json";
 
     var holders = {};
     var holderFiles = [

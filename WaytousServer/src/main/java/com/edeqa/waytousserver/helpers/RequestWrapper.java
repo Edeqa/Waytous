@@ -1,5 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -241,4 +242,31 @@ public class RequestWrapper  {
     public void setGzip(boolean gzip) {
         this.gzip = gzip;
     }
+
+    public void processBody(Runnable1<StringBuilder> callback, Runnable1<Exception> fallback) {
+
+        StringBuilder buf = new StringBuilder();
+        try {
+            InputStream is = this.getInputStream();
+
+            int b;
+            while ((b = is.read()) != -1) {
+                System.out.println("BUF:"+b);
+
+                buf.append((char) b);
+            }
+            is.close();
+
+            if(buf.length() > 0) {
+                callback.call(buf);
+            } else {
+                fallback.call(new IllegalArgumentException("Empty body"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if(fallback != null) fallback.call(e);
+        }
+
+    }
+
 }
