@@ -867,7 +867,7 @@ function Edequate(options) {
 
         dialog.adjustPosition = function() {
             var left,top,width,height;
-            var id = options.id || (options.title && options.title.label && (options.title.label.dataset.lang ? options.title.label.dataset.lang : options.title.label));
+            var id = options.id || (options.title && options.title.label && (options.title.label.dataset && options.title.label.dataset.lang ? options.title.label.dataset.lang : options.title.label));
             if(id) {
                 left = load("dialog:"+id+":left");
                 top = load("dialog:"+id+":top");
@@ -1458,6 +1458,7 @@ function Edequate(options) {
     function rest(method, url, body) {
         var returned = new EPromise();
         var xhr = new XMLHttpRequest();
+
         xhr.open(method, url, true);
 //        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
         xhr.onreadystatechange = function() { // (3)
@@ -1474,8 +1475,9 @@ function Edequate(options) {
                     body = JSON.stringify(body);
                 }
                 xhr.send(body);
+            } else {
+                xhr.send();
             }
-            else xhr.send();
         } catch(e) {
             returned.onRejected(ERRORS.ERROR_SENDING_REQUEST, xhr);
             return;

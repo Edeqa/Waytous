@@ -404,12 +404,12 @@ function Group() {
                 userNameNode.innerHTML = snapshot.val() || "&lt;Friend "+userNumber+"&gt;";
                 tableUsers.update();
             });
-            if(map) {
-                ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).limitToLast(1).on("child_added", function(snapshot){
-                    var position = snapshot.val();
-                    if(position) {
-                        row.classList.remove("italic");
+            ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("tracking").child(userNumber).limitToLast(1).on("child_added", function(snapshot){
+                var position = snapshot.val();
+                if(position) {
+                    row.classList.remove("italic");
 
+                    if(map) {
                         positions[userNumber] = utils.latLng({coords:{latitude:position[USER.LATITUDE], longitude:position[USER.LONGITUDE]}});
                         var bounds = new google.maps.LatLngBounds();
 
@@ -441,8 +441,8 @@ function Group() {
                             this.row.classList.remove("selected");
                         });
                     }
-                });
-            }
+                }
+            });
             ref.child(groupId).child(DATABASE.SECTION_USERS_DATA_PRIVATE).child(userNumber).once("value").then(function(snapshot){
                 if(!snapshot.val()) return;
                 userOsNode.innerHTML = snapshot.val().os;

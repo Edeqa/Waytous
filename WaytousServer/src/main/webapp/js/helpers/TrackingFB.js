@@ -39,7 +39,7 @@ function TrackingFB(main) {
             setStatus(EVENTS.TRACKING_RECONNECTING);
             trackingListener.onJoining()
         }
-        webSocketListener = webSocketListener(serverUri);
+        webSocketListener = WebSocketListener(serverUri);
 
     }
 
@@ -64,7 +64,7 @@ function TrackingFB(main) {
 //        window.location.href = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) + "/track/";
     }
 
-    function webSocketListener(link) {
+    function WebSocketListener(link) {
 
         var sendOriginal = send;
         var onopen =  function(event) {
@@ -395,8 +395,21 @@ function TrackingFB(main) {
     }
 
     function userActiveListener(data) {
-        if(!data.val()) {
+        if(data.val() == undefined) {
             stop();
+        } else if(!data.val()) {
+            switch(webSocketListener.readyState) {
+            case WebSocket.CLOSED:
+                setStatus(EVENTS.TRACKING_RECONNECTING);
+                trackingListener.onJoining();
+                try {
+                    webSocketListener.close();
+                } catch(e) {
+                    console.warn(e);
+                }
+                webSocketListener = WebSocketListener(serverUri);
+                break;
+            }
         }
     }
 

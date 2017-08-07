@@ -217,21 +217,23 @@ function User() {
             tableSummary.userLocations.lastChild.innerHTML = +tableSummary.userLocations.lastChild.innerHTML + 1;
             if((+tableSummary.userLocations.lastChild.innerHTML) == limit) { tableSummary.userLocations.lastChild.innerHTML += " (restricted to " + limit + ")" }
 
-            var position = utils.latLng({coords:{latitude:lat, longitude:lng}});
-            positions.push(position);
-            bounds.extend(position);
-            clearTimeout(drawTrackTask);
-            drawTrackTask = setTimeout(function(){
-                map.fitBounds(bounds);
-                map.fitBounds(bounds);
-                track = track || new google.maps.Polyline({
-                    geodesic: true,
-                    strokeColor: "blue",
-                    strokeWeight: 2,
-                    map: map
-                });
-                track.setPath(positions);
-            }, 100);
+            if(map) {
+                var position = utils.latLng({coords:{latitude:lat, longitude:lng}});
+                positions.push(position);
+                bounds.extend(position);
+                clearTimeout(drawTrackTask);
+                drawTrackTask = setTimeout(function(){
+                    map.fitBounds(bounds);
+                    map.fitBounds(bounds);
+                    track = track || new google.maps.Polyline({
+                        geodesic: true,
+                        strokeColor: "blue",
+                        strokeWeight: 2,
+                        map: map
+                    });
+                    track.setPath(positions);
+                }, 100);
+            }
 
         }, function(error){
             console.warn("Resign because of",error);

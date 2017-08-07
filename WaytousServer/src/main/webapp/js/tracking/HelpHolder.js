@@ -34,7 +34,6 @@ function HelpHolder(main) {
                         label: u.lang.help,
                         filter: true,
                     },
-                    className: "help-dialog",
                     buttonsClassName: "help-dialog-buttons",
                     negative: {
                         label: u.lang.close,
@@ -42,6 +41,9 @@ function HelpHolder(main) {
                     }
                 }, main.right);
                 if(dialog.opened) break;
+                if(!object) {
+                    dialog.classList.add("help-dialog");
+                }
                 dialog.clearItems();
                 if(object) {
                     if(object["module"].help) {
