@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +23,7 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
+import com.edeqa.waytous.helpers.PreferenceDividerDecoration;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
@@ -185,7 +185,8 @@ public class SettingsViewHolder extends AbstractViewHolder {
             layoutManager = new LinearLayoutManager(context);
 
             list.setLayoutManager(layoutManager);
-            DividerItemDecoration divider = new DividerItemDecoration(list.getContext(), ((LinearLayoutManager) list.getLayoutManager()).getOrientation());
+//            DividerItemDecoration divider = new DividerItemDecoration(list.getContext(), ((LinearLayoutManager) list.getLayoutManager()).getOrientation());
+            PreferenceDividerDecoration divider = new PreferenceDividerDecoration(list.getContext());
 
             list.addItemDecoration(divider);
 
@@ -214,6 +215,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
             holder.layoutPreference.setVisibility(View.VISIBLE);
             holder.layoutWidget.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(null);
+            holder.itemView.setEnabled(true);
 
             if(item.fetchSummary() != null) {
                 holder.tvHeaderSummary.setText(item.fetchSummary());
@@ -231,6 +233,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     holder.tvHeaderTitle.setText(item.getTitle());
                     holder.layoutPreference.setVisibility(View.GONE);
                     holder.layoutHeader.setVisibility(View.VISIBLE);
+                    holder.itemView.setEnabled(false);
                     break;
                 case SettingItem.LABEL:
                     holder.tvTitle.setText(item.getTitle());

@@ -23,7 +23,7 @@
             android:clipToPadding="false"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:minHeight="@dimen/material_subheader_height"
+            android:minHeight="@dimen/material_list_two_line_dense_height"
             android:paddingLeft="@dimen/material_subheader_padding_start"
             android:paddingStart="@dimen/material_subheader_padding_start"
             android:paddingRight="@dimen/material_list_text_last_position_margin_end"

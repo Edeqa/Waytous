@@ -187,26 +187,22 @@ public class NotificationHolder extends AbstractPropertyHolder {
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
                                 .setTitle(state.getString(R.string.user_online))
-                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage(state.getString(R.string.default_string)))
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_CLOSE_TO_USER)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
                                 .setTitle(state.getString(R.string.close_to_user))
-                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage(state.getString(R.string.default_string)))
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_AWAY_FROM_USER)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
                                 .setTitle(state.getString(R.string.away_from_user))
-                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage(state.getString(R.string.default_string)))
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS))
                         .add(new SettingItem.List(PREFERENCE_NOTIFICATION_NEW_MESSAGE)
                                 .setItems(items)
                                 .setOnItemSelectedCallback(previewSound)
                                 .setTitle(state.getString(R.string.new_message))
-                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)
-                                .setMessage(state.getString(R.string.default_string))));
+                                .setGroupId(PREFERENCE_NOTIFICATION_SOUNDS)));
                 break;
         }
 
