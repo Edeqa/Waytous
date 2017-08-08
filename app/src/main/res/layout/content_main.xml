@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/app_bar_main">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:background="@color/material_color_white"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:context=".MainActivity"
+                tools:showIn="@layout/app_bar_main">
 
     <RelativeLayout
         android:id="@+id/street_view_layout"
@@ -52,7 +53,7 @@
             android:background="@drawable/semi_transparent_background"
             android:padding="10dp"
             app:srcCompat="@drawable/ic_clear_white_24dp"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
 
     </RelativeLayout>
 
@@ -66,7 +67,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="true"
-        tools:layout="@android:layout/simple_gallery_item" />
+        tools:layout="@android:layout/simple_gallery_item"/>
 
     <HorizontalScrollView
         android:id="@+id/sv_users"
@@ -104,7 +105,7 @@
         app:flexWrap="wrap"
         app:justifyContent="center">
 
-        </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 
     <com.github.pengrad.mapscaleview.MapScaleView
         android:id="@+id/scale_view"
@@ -115,7 +116,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginBottom="24dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp" />
+        android:layout_marginStart="4dp"/>
 
     <TextView
         android:id="@+id/tv_info"
@@ -134,7 +135,7 @@
         android:textStyle="normal|bold"
         android:visibility="gone"
         tools:text="Info"
-        tools:visibility="visible" />
+        tools:visibility="visible"/>
 
     <LinearLayout
         android:id="@+id/layout_navigation_mode"
@@ -153,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_directions_car_black_24dp"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
 
         <ImageButton
             android:id="@+id/ib_navigation_walking"
@@ -161,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_directions_walk_black_24dp"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
 
         <ImageButton
             android:id="@+id/ib_navigation_bicycling"
@@ -169,7 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_directions_bike_black_24dp"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
 
     </LinearLayout>
 
