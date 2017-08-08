@@ -179,6 +179,9 @@ p.bottom-desc {
     border-width: 2px;
     padding: 3px;
 }
+.user-button-away {
+    opacity: .6;
+}
 .user-button-hover {
     /*background-color: #dddd99;*/
     border-color: cyan;

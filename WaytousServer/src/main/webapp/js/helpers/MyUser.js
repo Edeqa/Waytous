@@ -7,7 +7,12 @@
  */
 function MyUser(main) {
 
-    function fire(EVENT,object) {
+    this.locations = [];
+    this.views = {};
+    this.location = null;
+    this.properties = null;
+
+    this.fire = function(EVENT,object) {
         var user = this;
         setTimeout(function(){
             main.eventBus.chain(function(holder){
@@ -16,9 +21,9 @@ function MyUser(main) {
                 }
             });
         }, 0);
-    }
+    };
 
-    function createViews() {
+    this.createViews = function() {
         var user = this;
         if(user.number != undefined) {
             main.eventBus.chain(function(holder){
@@ -31,45 +36,32 @@ function MyUser(main) {
                     }
                 }
             });
-
         }
-    }
+    };
 
-    function removeViews() {
+    this.removeViews = function() {
         var user = this;
         if(user.number != undefined) {
             main.eventBus.chain(function(holder){
                 if(holder.removeView) holder.removeView(user);
             });
         }
-    }
+        clearInterval(this.taskLocationUpdate);
+    };
 
-    function addLocation(location) {
+    this.addLocation = function(location) {
+        if(!location) return;
+
         this.locations.push(location);
         this.location = location;
         this.onChangeLocation();
-    }
+    };
 
-    function onChangeLocation() {
+    this.onChangeLocation = function() {
         var user = this;
-        user.changed = new Date().getTime();
-//        setTimeout(function(){
-            main.eventBus.chain(function(holder){
-                if(user.views[holder.type] && holder.onChangeLocation) holder.onChangeLocation.call(user, user.location);
-            });
-//        }, 0);
-    }
+        main.eventBus.chain(function(holder){
+            if(user.views[holder.type] && holder.onChangeLocation) holder.onChangeLocation.call(user, user.location);
+        });
+    };
 
-    return {
-        locations: [],
-        views: {},
-        location: null,
-        user: null,
-        properties: null,
-        fire:fire,
-        createViews:createViews,
-        removeViews:removeViews,
-        addLocation:addLocation,
-        onChangeLocation:onChangeLocation,
-    }
 }

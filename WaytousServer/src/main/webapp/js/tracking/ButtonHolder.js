@@ -90,8 +90,11 @@ function ButtonHolder(main) {
                 this.views.button.button.dataset.number = parseInt(object);
                 break;
             case EVENTS.MAKE_ACTIVE:
-                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.show();
-                u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()))
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList){
+                    this.views.button.button.show();
+                }
+
+                u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()));
 
 //                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
                 if(main.users.getCountActive() > 1) {
@@ -120,6 +123,18 @@ function ButtonHolder(main) {
 //                    subtitle.hide();
 //                }
 //                break;
+            case EVENTS.MAKE_ENABLED:
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
+                    this.views.button.button.classList.remove("user-button-away");
+                    this.fire(EVENTS.UPDATE_MENU_SUFFIX, "");
+                }
+                break;
+            case EVENTS.MAKE_DISABLED:
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
+                    this.views.button.button.classList.add("user-button-away");
+                    this.fire(EVENTS.UPDATE_MENU_SUFFIX, object);
+                }
+                break;
             case EVENTS.SHOW_BADGE:
                 if(object == EVENTS.INCREASE_BADGE) {
                     var value = parseInt(this.views.button.badge.innerHTML);
@@ -188,7 +203,7 @@ function ButtonHolder(main) {
         var task;
         var onlyTouch,clicked,firstClick;
         var b = u.create(HTML.DIV, {
-            className:"user-button" + (user.locations && user.locations.length > 0 ? "" : " disabled") +(user.properties.active ? "" : " hidden"),
+            className:"user-button" + (user.locations && user.locations.length > 0 ? "" : " disabled") +(user.properties.active ? "" : " hidden") + " user-button-away",
             dataNumber:user.number,
             style:{backgroundColor:color},
             onclick: function() {
@@ -359,6 +374,7 @@ function ButtonHolder(main) {
     function onChangeLocation(location) {
         updateSubtitle.call(this);
         this.views.button.button.classList.remove("disabled");
+        this.views.button.button.classList.remove("user-button-away");
     }
 
     function updateSubtitle() {

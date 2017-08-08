@@ -409,6 +409,10 @@ function TrackingHolder(main) {
                             main.fire(USER.JOINED, user);
 
                             // console.log("JOINED",number);
+                        } else {
+                            var number = o[RESPONSE.NUMBER];
+                            var user = main.users.users[number];
+                            user.fire(EVENTS.MAKE_ENABLED, o[REQUEST.TIMESTAMP]);
                         }
                         break;
                     case RESPONSE.LEAVE:

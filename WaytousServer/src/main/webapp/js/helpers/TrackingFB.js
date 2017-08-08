@@ -17,6 +17,7 @@ function TrackingFB(main) {
     var serverUri;
     var ref;
     var updateTask;
+    var updateFocusTask;
 
     function start() {
         status = EVENTS.TRACKING_DISABLED;
@@ -57,6 +58,8 @@ function TrackingFB(main) {
         });
 
         firebase.auth().signOut();
+        window.removeEventListener("focus", updateActive);
+        document.removeEventListener("visibilitychange", updateActive);
         trackingListener.onStop();
 
         var uri = new URL(serverUri);
@@ -129,6 +132,8 @@ function TrackingFB(main) {
                                 ref = database.ref().child(getToken());
 
                                 updateTask = setInterval(updateActive, 60000);
+                                window.addEventListener("focus", updateActive);
+                                document.addEventListener("visibilitychange", updateActive);
                                 registerValueListener(ref.child(DATABASE.SECTION_OPTIONS).child(DATABASE.OPTION_DATE_CREATED), groupListener, groupErrorListener);
                                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userActiveListener);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
@@ -440,6 +445,7 @@ function TrackingFB(main) {
                 //registers
                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_NAME), usersDataNameListener);
                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_ACTIVE), usersDataActiveListener);
+                registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_CHANGED), usersDataChangedListener);
 
                 usersDataNameListener(data.child(DATABASE.USER_NAME));
                 usersDataActiveListener(data.child(DATABASE.USER_ACTIVE));
@@ -517,6 +523,22 @@ function TrackingFB(main) {
                 o[RESPONSE.NUMBER] = number;
                 trackingListener.onMessage(o);
             }
+        } catch(e) {
+            console.error(e.message);
+        }
+    }
+
+    function usersDataChangedListener(data) {
+        try {
+            var number = parseInt(data.ref.parent.getKey());
+            //var user = main.users.users[number];
+            //if(user && user.properties && active != user.properties.active) {
+                var o = {};
+                o[RESPONSE.STATUS] = RESPONSE.STATUS_UPDATED;
+                o[RESPONSE.NUMBER] = number;
+                o[REQUEST.TIMESTAMP] = data.val();
+                trackingListener.onMessage(o);
+            //}
         } catch(e) {
             console.error(e.message);
         }

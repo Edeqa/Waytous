@@ -119,10 +119,15 @@ function PropertiesHolder(main) {
                 if(this.number == main.me.number) this.properties.color = "#0000FF";
                 break;
             case EVENTS.MAKE_ACTIVE:
-                if(this.properties) this.properties.active = true;
+                if(this.properties) {
+                    this.properties.active = true;
+                }
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.properties) this.properties.active = false;
+                break;
+            case EVENTS.MAKE_ENABLED:
+                if(this.properties) this.properties.changed = object;
                 break;
             case EVENTS.MAP_READY:
                 main.me.createViews();
@@ -144,6 +149,7 @@ function PropertiesHolder(main) {
             number: myUser.number,
             active: myUser.active,
             selected: myUser.selected,
+            changed: 0,
             getDisplayName: getDisplayName.bind(myUser),
         };
 
@@ -152,7 +158,20 @@ function PropertiesHolder(main) {
         delete myUser.active;
         delete myUser.selected;
         myUser.properties = view;
+
+        clearInterval(view.taskChanged);
+        view.taskChanged = setInterval(function() {
+            var delta = parseInt((new Date().getTime() - myUser.properties.changed) / 1000);
+            if(delta > 120) {
+                myUser.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
+            }
+        }, 5000);
+
         return view;
+    };
+
+    this.removeView = function(myUser) {
+        clearInterval(myUser.properties.taskChanged);
     };
 
     function getDisplayName(){

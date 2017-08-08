@@ -13,6 +13,8 @@ function Constants() {
         UNSELECT_USER: "unselect",
         MAKE_ACTIVE: "make_active",
         MAKE_INACTIVE: "make_inactive",
+        MAKE_ENABLED: "make_enabled",
+        MAKE_DISABLED: "make_disabled",
         CHANGE_NAME: "change_name",
         CHANGE_NUMBER: "change_number",
         CHANGE_COLOR: "change_color",
