@@ -10,7 +10,6 @@ function Main() {
     var firebaseVersion = "4.1.3";
     var drawer;
     var layout;
-    var content;
 
     var holders = {};
     var holderFiles = [
@@ -40,6 +39,7 @@ function Main() {
 
 
     preloaded = function() {
+        var self = this;
         if(window.location.pathname == "/admin" || window.location.pathname == "/admin/") {
             window.location.href = "/admin/home";
             return;
@@ -88,7 +88,7 @@ function Main() {
                         }
                         if(loaded == u.keys(holderFiles).length) {
                             console.log("Preload finished: "+loaded+" files done.");
-                            window.utils = new Utils();
+                            window.utils = new Utils(self);
 
                             initialize();
 
@@ -116,7 +116,7 @@ function Main() {
 
         if(!firebase || !firebase.database || !firebase.auth) {
             console.error("Failed firebase loading, trying again...");
-//debugger;
+
             var files = [];
             if(!firebase) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-app.js");
             if(!firebase.database) files.push("https://www.gstatic.com/firebasejs/"+firebaseVersion+"/firebase-database.js");
