@@ -29,7 +29,7 @@ function HelpHolder(main) {
             case EVENTS.HELP:
                 console.log("INDEX HELP");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-                u.post("/rest/v1/getContent", {resource: "index-help.txt", locale: lang}).then(function(xhr){
+                u.post("/rest/v1/getContent", {resource: "index-help.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-help");
                     if(object) object();

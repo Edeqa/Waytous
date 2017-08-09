@@ -11,7 +11,7 @@ EVENTS.ABOUT = "about";
 function AboutHolder(main) {
 
     this.type = "about";
-    this.category = "about";
+    this.category = "info";
     this.title = u.lang.about;
     this.menu = u.lang.about;
     this.icon = "info_outline";
@@ -29,7 +29,7 @@ function AboutHolder(main) {
             case EVENTS.ABOUT:
                 console.log("INDEX ABOUT");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-                u.post("/rest/v1/getContent", {resource: "index-about.txt", locale: lang}).then(function(xhr){
+                u.post("/rest/v1/getContent", {resource: "index-about.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-about");
                     if(object) object();

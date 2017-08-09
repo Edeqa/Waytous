@@ -11,7 +11,7 @@ EVENTS.FEEDBACK = "feedback";
 function FeedbackHolder(main) {
 
     this.type = "feedback";
-    this.category = "about";
+    this.category = "info";
     this.title = u.lang.feedback;
     this.menu = u.lang.feedback;
     this.icon = "feedback";
@@ -29,7 +29,7 @@ function FeedbackHolder(main) {
             case EVENTS.FEEDBACK:
                 console.log("INDEX FEEBACK");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-                u.post("/rest/v1/getContent", {resource: "index-feedback.txt", locale: lang}).then(function(xhr){
+                u.post("/rest/v1/getContent", {resource: "index-feedback.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-feedback");
                     if(object) object();

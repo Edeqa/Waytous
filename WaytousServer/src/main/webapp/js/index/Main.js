@@ -109,7 +109,7 @@ function Main() {
                 u.fire.call(EVENTS.RELOAD, type);
             }}, self.actionbar).place(HTML.OPTION, { name: u.lang.loading, value:"" });
 
-            //u.post("/rest/v1/getContent", {resource: "index-contact.txt", locale: lang}).then(function(xhr){
+            //u.post("/rest/v1/getContent", {resource: "index-contact.html", locale: lang}).then(function(xhr){
             u.getJSON("/rest/v1/getLocales").then(function(json){
                 u.clear(selectLang);
                 var count = 1;
@@ -124,7 +124,7 @@ function Main() {
             var sections = {};
             sections[DRAWER.SECTION_PRIMARY] = u.lang.home;
             sections[DRAWER.SECTION_MAP] = u.lang.docs;
-            sections[DRAWER.SECTION_LAST] = u.lang.about;
+            sections[DRAWER.SECTION_LAST] = u.lang.info;
 
             self.drawer = new u.drawer({
                 title: "${APP_NAME}",
@@ -184,7 +184,7 @@ function Main() {
                     var categories = {
                         "main": DRAWER.SECTION_PRIMARY,
                         "docs": DRAWER.SECTION_MAP,
-                        "about": DRAWER.SECTION_LAST
+                        "info": DRAWER.SECTION_LAST
                     };
 
                     var item = self.drawer.add(categories[holders[x].category], x, holders[x].menu, holders[x].icon, function(){

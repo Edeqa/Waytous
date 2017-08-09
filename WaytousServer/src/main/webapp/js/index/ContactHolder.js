@@ -11,7 +11,7 @@ EVENTS.CONTACT = "contact";
 function ContactHolder(main) {
 
     this.type = "contact";
-    this.category = "about";
+    this.category = "info";
     this.title = u.lang.contact;
     this.menu = u.lang.contact;
     this.icon = "mail_outline";
@@ -29,7 +29,7 @@ function ContactHolder(main) {
             case EVENTS.CONTACT:
                 console.log("INDEX CONTACT");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-                u.post("/rest/v1/getContent", {resource: "index-contact.txt", locale: lang}).then(function(xhr){
+                u.post("/rest/v1/getContent", {resource: "index-contact.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-contact");
                     if(object) object();

@@ -73,9 +73,6 @@ body {
     position: initial;
     height: 100%;
     padding: 0px;
-    white-space: pre-wrap;
-    display: flex;
-    flex-direction: column;
     -webkit-overflow-scrolling: touch;
     width: 600px;
     max-width: 80%;
@@ -88,6 +85,10 @@ body {
     padding-top: 10px;
     padding-bottom: 20px;
     flex: 0 0;
+}
+
+.content-support, .content-home {
+    white-space: normal;
 }
 
 .terms-body, .privacy-body {

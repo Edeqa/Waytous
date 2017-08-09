@@ -11,7 +11,7 @@ EVENTS.SUPPORT = "support";
 function SupportHolder(main) {
 
     this.type = "support";
-    this.category = "about";
+    this.category = "info";
     this.title = u.lang.support;
     this.menu = u.lang.support;
     this.icon = "live_help";
@@ -29,7 +29,7 @@ function SupportHolder(main) {
             case EVENTS.SUPPORT:
                 console.log("INDEX SUPPORT");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-                u.post("/rest/v1/getContent", {resource: "index-support.txt", locale: lang}).then(function(xhr){
+                u.post("/rest/v1/getContent", {resource: "index-support.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-support");
                     if(object) object();

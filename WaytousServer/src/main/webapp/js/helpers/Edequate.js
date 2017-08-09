@@ -1399,7 +1399,11 @@ function Edequate(options) {
                 }
                 for(var i = 0; i < nodes.length; i++) {
                     if(nodes[i].dataset.lang) {
-                        nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
+                        try {
+                            nodes[i].parentNode.replaceChild(lang[nodes[i].dataset.lang],nodes[i]);
+                        } catch(e) {
+                            console.warn("Resource not found: " + nodes[i].dataset.lang);
+                        }
                     }
                 }
                 if(options.callback) options.callback();

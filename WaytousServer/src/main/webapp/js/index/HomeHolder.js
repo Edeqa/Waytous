@@ -29,7 +29,7 @@ function HomeHolder(main) {
             case EVENTS.HOME:
                 console.log("INDEX HOME");
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
-                u.post("/rest/v1/getContent", {resource: "index-home.txt", locale: lang}).then(function(xhr){
+                u.post("/rest/v1/getContent", {resource: "index-home.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
                     u.byId("content").classList.add("content-home");
                     if(object) object();
