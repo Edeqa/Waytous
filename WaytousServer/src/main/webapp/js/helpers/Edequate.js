@@ -945,12 +945,15 @@ function Edequate(options) {
             if(dialog.options.queue) {
                 if(performingDialogInQueue) {
                     if(dialog.options.priority) {
+                        var addedToQueue = false;
                         for(var i in dialogQueue) {
                             if(dialog.options.priority > (dialogQueue[i].options.priority||0)) {
                                 dialogQueue.splice(i,0,dialog);
+                                addedToQueue = true;
                                 break;
                             }
                         }
+                        if(!addedToQueue) dialogQueue.push(dialog);
                     } else {
                         dialogQueue.push(dialog);
                     }
