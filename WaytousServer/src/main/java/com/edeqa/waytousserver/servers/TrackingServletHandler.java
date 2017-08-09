@@ -92,8 +92,8 @@ public class TrackingServletHandler extends AbstractServletHandler {
                     + "&afl=" + webRedirect
                     + "&ifl=" + webRedirect
                     + "&st=Waytous"
-                    + "&sd=Waytous+description"
-                    + "&si=https://raw.githubusercontent.com/Edeqa/Waytous/master/WaytousServer/src/main/webapp/icons/android-chrome-512x512.png";
+                    + "&sd=Be+always+on+the+same+way+with+your+friends"
+                    + "&si=https://www.waytous.net/icons/favicon-256x256.png";
 
             Common.log("Tracking", "->", redirectLink);
 
