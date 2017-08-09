@@ -47,11 +47,11 @@ function Chat() {
                 var on = ref.child(DATABASE.SECTION_GROUPS);
                 ons.push(on);
                 on.on("child_added", function(group) {
-                    var groupId = group.getKey();
+                    var groupId = group.key;
                     var on = ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("message");
                     ons.push(on);
                     on.on("child_added", function(user) {
-                        var userNumber = user.getKey();
+                        var userNumber = user.key;
 
                         ref.child(groupId).child(DATABASE.SECTION_PUBLIC).child("message").child(userNumber);
 

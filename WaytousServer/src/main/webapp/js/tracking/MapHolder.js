@@ -30,7 +30,7 @@ function MapHolder(main) {
             u.require("https://maps.googleapis.com/maps/api/js?key="+data.firebase_config.apiKey+"&callback=initMap&libraries=geometry,places").then(function(){});
         }, 0);
         buttonRecenter = u.create(HTML.BUTTON, {
-            className: "map-recenter shadow hidden",
+            className: "map-recenter shadow hidden dialog-button dialog-button-positive",
             innerHTML: u.lang.re_center,
             onclick: function() {
                 main.fire(EVENTS.CAMERA_UPDATE);

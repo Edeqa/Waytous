@@ -1406,21 +1406,21 @@ function Edequate(options) {
             }).catch(function(code, xhr, error){
                 switch(code) {
                     case ERRORS.ERROR_LOADING:
-                        console.warn("Error fetching resources for \""+options.resources+"\":",xhr.status + ': ' + xhr.statusText);
+                        console.warn("Error fetching resources for",options,xhr.status + ': ' + xhr.statusText);
                         if(options.default != options.resources){
                             console.warn("Switching to default resources \""+options.default+"\".");
                             lang._overrideResources({"default":options.default});
                         }
                         break;
                     case ERRORS.INCORRECT_JSON:
-                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",error,xhr);
+                        console.warn("Incorrect, empty or damaged resources file for",options,error,xhr);
                         if(options.default != options.resources){
                             console.warn("Switching to default resources \""+options.default+"\".");
                             lang._overrideResources({"default":options.default});
                         }
                         break;
                     default:
-                        console.warn("Incorrect, empty or damaged resources file for \""+options.resources+"\":",error,xhr);
+                        console.warn("Incorrect, empty or damaged resources file for",options,error,xhr);
                         break;
                 }
                 if(options.default != options.resources){
@@ -1894,7 +1894,7 @@ function Edequate(options) {
             },
             setTitle: function(text) {
                 if(text instanceof HTMLElement) {
-                    actionbar.titleNode.innerHTML = text.innerHTML;
+                    actionbar.titleNode.innerHTML = text.outerHTML;
                 } else {
                     actionbar.titleNode.innerHTML = text;
                 }

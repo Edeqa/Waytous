@@ -84,7 +84,10 @@ body {
 .content-center {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    align-items: flex-start;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    flex: 0 0;
 }
 
 .terms-body, .privacy-body {

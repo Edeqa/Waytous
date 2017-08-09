@@ -160,7 +160,7 @@ function Groups() {
                     tableGroups.rows.splice(i,1);
                 }
             }
-            u.toast.show("Group "+data.getKey()+" was removed.");
+            u.toast.show("Group "+data.key+" was removed.");
              updateTableSummary()
        }, function(error){
             console.error("REMOVED",error);

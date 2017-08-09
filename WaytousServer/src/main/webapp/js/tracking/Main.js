@@ -7,7 +7,7 @@
  */
 
 function Main() {
-    var firebaseVersion = "4.1.3";
+    var firebaseVersion = "4.2.0";
     var holders = {};
     var users;
     var me;

@@ -22,11 +22,22 @@ function HelpHolder(main) {
 
     this.onEvent = function(event, object) {
         switch(event) {
+            case EVENTS.RELOAD:
+                if(object != this.type) {
+                    break;
+                }
             case EVENTS.HELP:
                 console.log("INDEX HELP");
-                u.byId("content").innerHTML = u.lang.help_body.innerHTML;
-                u.byId("content").classList.add("content-help");
-                if(object) object();
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "index-help.txt", locale: lang}).then(function(xhr){
+                    u.byId("content").innerHTML = xhr.response;
+                    u.byId("content").classList.add("content-help");
+                    if(object) object();
+                }).catch(function(error, json) {
+                    u.byId("content").innerHTML = "Error";
+                    u.byId("content").classList.add("content-help");
+                    if(object) object();
+                });
                 break;
         }
         return true;

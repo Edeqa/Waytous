@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyPassword 'richard'
-            storeFile file('/Users/tujger/Documents/Devel/Android/keystore')
+            keyPassword '7B1BB527FD7B1BB527FD'
+            storeFile file('/Users/tujger/Documents/Devel/Android/Waytous/conf/keystore_release.jks')
             storePassword 'richard'
-            keyAlias 'wtiger'
+            keyAlias 'com.edeqa.waytous'
         }
     }
     compileSdkVersion 25

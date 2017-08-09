@@ -165,7 +165,7 @@ function PropertiesHolder(main) {
             if(delta > 120) {
                 myUser.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
             }
-        }, 5000);
+        }, 10000);
 
         return view;
     };

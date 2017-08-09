@@ -432,10 +432,10 @@ function TrackingFB(main) {
     }
 
     function usersDataListener(data){
-//        if(main.me.number != parseInt(data.getKey())) {
+//        if(main.me.number != parseInt(data.key)) {
             try{
                 var o = data.val();
-                o[RESPONSE.NUMBER] = parseInt(data.getKey());
+                o[RESPONSE.NUMBER] = parseInt(data.key);
                 o[RESPONSE.INITIAL] = true;
                 delete o.active;
 
@@ -468,9 +468,9 @@ function TrackingFB(main) {
     function userPublicDataListener(data) {
         try {
             var o = data.val();
-            o[RESPONSE.NUMBER] = parseInt(data.ref.parent.getKey());
-            o[RESPONSE.STATUS] = data.ref.parent.parent.getKey();
-            o["key"] = data.getKey();
+            o[RESPONSE.NUMBER] = parseInt(data.ref.parent.key);
+            o[RESPONSE.STATUS] = data.ref.parent.parent.key;
+            o["key"] = data.key;
 
             trackingListener.onMessage(o);
         } catch(e) {
@@ -485,8 +485,8 @@ function TrackingFB(main) {
             delete o["from"];
 
             o[RESPONSE.NUMBER] = from;
-            o[RESPONSE.STATUS] = data.ref.parent.parent.getKey();
-            o["key"] = data.getKey();
+            o[RESPONSE.STATUS] = data.ref.parent.parent.key;
+            o["key"] = data.key;
             o[EVENTS.PRIVATE_MESSAGE] = true;
 
             trackingListener.onMessage(o);
@@ -499,7 +499,7 @@ function TrackingFB(main) {
 
     function usersDataNameListener(data) {
         try {
-            var number = parseInt(data.ref.parent.getKey());
+            var number = parseInt(data.ref.parent.key);
             var name = data.val();
             main.users.forUser(number, function(number, user, name){
                 if(user.number != main.me.number && user.properties && name != user.properties.name) {
@@ -513,7 +513,7 @@ function TrackingFB(main) {
 
     function usersDataActiveListener(data) {
         try {
-            var number = parseInt(data.ref.parent.getKey());
+            var number = parseInt(data.ref.parent.key);
             var active = data.val();
             var user = main.users.users[number];
             if(user && user.properties && active != user.properties.active) {
@@ -530,7 +530,7 @@ function TrackingFB(main) {
 
     function usersDataChangedListener(data) {
         try {
-            var number = parseInt(data.ref.parent.getKey());
+            var number = parseInt(data.ref.parent.key);
             //var user = main.users.users[number];
             //if(user && user.properties && active != user.properties.active) {
                 var o = {};

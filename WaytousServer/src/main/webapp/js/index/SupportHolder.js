@@ -22,10 +22,22 @@ function SupportHolder(main) {
 
     this.onEvent = function(event, object) {
         switch(event) {
+            case EVENTS.RELOAD:
+                if(object != this.type) {
+                    break;
+                }
             case EVENTS.SUPPORT:
-                u.byId("content").innerHTML = u.lang.support_body.innerHTML;
-                u.byId("content").classList.add("content-support");
-                if(object) object();
+                console.log("INDEX SUPPORT");
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "index-support.txt", locale: lang}).then(function(xhr){
+                    u.byId("content").innerHTML = xhr.response;
+                    u.byId("content").classList.add("content-support");
+                    if(object) object();
+                }).catch(function(error, json) {
+                    u.byId("content").innerHTML = "Error";
+                    u.byId("content").classList.add("content-support");
+                    if(object) object();
+                });
                 break;
         }
         return true;

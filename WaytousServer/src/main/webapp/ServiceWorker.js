@@ -21,7 +21,7 @@ var urlsToCache = [
   "/js/helpers/Utils.js",
   "/js/all.js",
   "/js/tracking/Main.js",
-  "/locales/tracking.en.json"
+  "/resources/en/tracking.json"
 ];
 
 self.addEventListener("install", function(event) {

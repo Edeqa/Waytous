@@ -306,7 +306,9 @@ public class RestServletHandler extends AbstractServletHandler {
                 boolean exists = false;
                 File file = null;
                 for (File f : files) {
-                    if (f.getCanonicalPath().equals(f.getAbsolutePath()) && f.exists()) {
+                    Common.log(LOG,"Content: " + f.getCanonicalPath() +":"+f.getAbsolutePath());
+//                    if (f.getCanonicalPath().equals(f.getAbsolutePath()) && f.exists()) {
+                    if (f.exists()) {
                         file = f;
                         exists = true;
                         break;
@@ -319,7 +321,7 @@ public class RestServletHandler extends AbstractServletHandler {
                     requestWrapper.sendRedirect(path);
                     return false;
                 } else {
-                    Common.log(LOG,"Content not found.");
+                    Common.log(LOG,"Content not found: " + files);
                     return true;
                 }
 

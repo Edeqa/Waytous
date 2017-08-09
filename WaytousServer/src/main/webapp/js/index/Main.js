@@ -16,11 +16,11 @@ function Main() {
         "/js/index/HomeHolder",
         "/js/index/StartHolder",
 
-//        "/js/index/HelpHolder",
+        "/js/index/HelpHolder",
 //        "/js/index/ApiHolder",
 
-//        "/js/index/SupportHolder",
-//        "/js/index/FeedbackHolder",
+        "/js/index/SupportHolder",
+        "/js/index/FeedbackHolder",
         "/js/index/ContactHolder",
 //        "/js/index/BlablaHolder",
         "/js/index/AboutHolder"
@@ -192,6 +192,7 @@ function Main() {
                         self.drawer.toggleSize(false);
                         self.actionbar.toggleSize(false);
                         self.actionbar.setTitle(holder.title);
+                        //u.lang.updateNode(self.actionbar.titleNode, holder.title);
                         u.lang.updateNode(self.drawer.headerPrimary, holder.title);
 
                         u.progress.show(u.lang.loading.innerHTML);
