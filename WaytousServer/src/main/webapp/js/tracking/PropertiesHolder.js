@@ -159,13 +159,18 @@ function PropertiesHolder(main) {
         delete myUser.selected;
         myUser.properties = view;
 
-        clearInterval(view.taskChanged);
-        view.taskChanged = setInterval(function() {
-            var delta = parseInt((new Date().getTime() - myUser.properties.changed) / 1000);
-            if(delta > 120) {
-                myUser.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
+        function disableIfOffline() {
+            if(myUser.type == "user") {
+                var delta = parseInt((new Date().getTime() - myUser.properties.changed) / 1000);
+                if (delta > 120) {
+                    myUser.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
+                }
             }
-        }, 10000);
+        }
+
+        clearInterval(view.taskChanged);
+        setTimeout(disableIfOffline, 1);
+        view.taskChanged = setInterval(disableIfOffline, 10000);
 
         return view;
     };

@@ -203,7 +203,7 @@ function ButtonHolder(main) {
         var task;
         var onlyTouch,clicked,firstClick;
         var b = u.create(HTML.DIV, {
-            className:"user-button" + (user.locations && user.locations.length > 0 ? "" : " disabled") +(user.properties.active ? "" : " hidden") + " user-button-away",
+            className:"user-button" + (user.locations && user.locations.length > 0 ? "" : " disabled") +(user.properties.active ? "" : " hidden") + (user.type == "user" ? " user-button-away" : ""),
             dataNumber:user.number,
             style:{backgroundColor:color},
             onclick: function() {

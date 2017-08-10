@@ -377,8 +377,7 @@ function SavedLocationHolder(main) {
                             type: HTML.DIV,
                             className: "saved-location-item",
                         });
-
-                        var url = "https://maps.google.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo;
+                        var url = "https://maps.googleapis.com/maps/api/staticmap?center=" +loc.la + "," + loc.lo + "&zoom=15&size=200x200&sensor=false" + "&markers=color:darkgreen|"+loc.la+","+loc.lo + "&key="+data.firebase_config.apiKey;
 
                         u.create(HTML.IMG, {
                             src: url,
