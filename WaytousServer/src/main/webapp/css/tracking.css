@@ -492,7 +492,7 @@ p.bottom-desc {
     font-feature-settings: "liga" 1;
     font-style: normal;
     top: auto !important;
-    bottom: 10px !important;
+    bottom: 40px !important;
     background-color: rgba(255, 250, 240, 0.7);
 }
 .navigation-mode-items {
@@ -1027,7 +1027,7 @@ p.bottom-desc {
     .navigation-mode {
         width: auto !important;
         height: 40px !important;
-        bottom: 10px;
+        bottom: 10px !important;
         position: absolute;
         top: auto !important;
         transform: translate(-50%) !important;

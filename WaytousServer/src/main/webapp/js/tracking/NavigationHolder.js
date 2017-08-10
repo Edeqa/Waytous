@@ -105,6 +105,7 @@ function NavigationHolder(main) {
                 main.toast.show(u.lang.setting_up_direction, -1);
 
                 update.call(this);
+                showModeButtons(this);
 
                 break;
             case EVENTS.HIDE_NAVIGATION:
@@ -163,14 +164,12 @@ function NavigationHolder(main) {
                 listenerHandler.remove();
                 listenerHandler = null;
             }
-//            modeButtons && modeButtons.close();
             if(main.users) {
                 main.users.forAllUsersExceptMe(function (number, user) {
                     if(user.views.navigation) {
                         if (user.views.navigation.show) {
                             drawerItemHide && drawerItemHide.show();
                             if(!listenerHandler) listenerHandler = main.map.addListener("dragstart", showModeButtons);
-//                        modeButtons && modeButtons.open();
                         } else {
                             //                    drawerItemShow.show();
                         }
@@ -186,7 +185,7 @@ function NavigationHolder(main) {
 
         var user = this;
         var req = "https://crossorigin.me/https://maps.googleapis.com/maps/api/directions/json?"
-//        var req = "https://maps.googleapis.com/maps/api/directions/json?"
+            //        var req = "https://maps.googleapis.com/maps/api/directions/json?"
             + "origin=" + main.me.location.coords.latitude + "," + main.me.location.coords.longitude + "&"
             + "destination=" + this.location.coords.latitude + "," + this.location.coords.longitude + "&"
             + "alternatives=false&"
@@ -258,175 +257,7 @@ function NavigationHolder(main) {
 
         updateLabel.call(this);
 
-        if(!modeButtons) {
-            modeButtons = u.dialog({
-                className: "navigation-mode",
-                itemsClassName: "navigation-mode-items",
-                items: [
-                    {
-                        type: HTML.DIV,
-                        className: "navigation-mode-item",
-                        innerHTML: "directions_car",
-                        ondblclick: function(){modeDialog.open(NAVIGATION_MODE_DRIVING)},
-                        onclick: function(){
-                            if(modeDialog.preventClick) {
-                                modeDialog.preventClick = false;
-                            } else {
-                                u.save("navigation:mode", NAVIGATION_MODE_DRIVING);
-                                main.toast.show(u.lang.setting_up_direction, -1);
-                                update.call(user);
-                            }
-                        },
-                        onmousedown: function() {
-                            this.longTapTask = setTimeout(function(){
-                                modeDialog.preventClick = true;
-                                modeDialog.open(NAVIGATION_MODE_DRIVING);
-                            }, 500);
-                        },
-                        onmouseup: function() {
-                            clearTimeout(this.longTapTask);
-                        },
-                        ontouchstart: function() {
-                            this.longTapTask = setTimeout(function(){
-                                modeDialog.preventClick = true;
-                                modeDialog.open(NAVIGATION_MODE_DRIVING);
-                            }, 500);
-                        },
-                        ontouchend: function() {
-                            clearTimeout(this.longTapTask);
-                        }
-                    },
-                    {
-                        type: HTML.DIV,
-                        className: "navigation-mode-item",
-                        innerHTML: "directions_walk",
-                        ondblclick: function(){modeDialog.open(NAVIGATION_MODE_WALKING)},
-                        onclick: function(){
-                            if(modeDialog.preventClick) {
-                                modeDialog.preventClick = false;
-                            } else {
-                                u.save("navigation:mode", NAVIGATION_MODE_WALKING);
-                                main.toast.show(u.lang.setting_up_direction, -1);
-                                update.call(user);
-                            }
-                        },
-                        onmousedown: function() {
-                            this.longTapTask = setTimeout(function(){
-                                modeDialog.preventClick = true;
-                                modeDialog.open(NAVIGATION_MODE_WALKING);
-                            }, 500);
-                        },
-                        onmouseup: function() {
-                            clearTimeout(this.longTapTask);
-                        },
-                        ontouchstart: function() {
-                            this.longTapTask = setTimeout(function(){
-                                modeDialog.preventClick = true;
-                                modeDialog.open(NAVIGATION_MODE_WALKING);
-                            }, 500);
-                        },
-                        ontouchend: function() {
-                            clearTimeout(this.longTapTask);
-                        }
-                    },
-                    {
-                        type: HTML.DIV,
-                        className: "navigation-mode-item",
-                        innerHTML: "directions_bike",
-                        ondblclick: function(){modeDialog.open(NAVIGATION_MODE_BICYCLING)},
-                        onclick: function(){
-                            if(modeDialog.preventClick) {
-                                modeDialog.preventClick = false;
-                            } else {
-                                u.save("navigation:mode", NAVIGATION_MODE_BICYCLING);
-                                main.toast.show(u.lang.setting_up_direction, -1);
-                                update.call(user);
-                            }
-                        },
-                         onmousedown: function() {
-                             this.longTapTask = setTimeout(function(){
-                                modeDialog.preventClick = true;
-                                 modeDialog.open(NAVIGATION_MODE_BICYCLING);
-                             }, 500);
-                         },
-                         onmouseup: function() {
-                             clearTimeout(this.longTapTask);
-                         },
-                         ontouchstart: function() {
-                             this.longTapTask = setTimeout(function(){
-                                modeDialog.preventClick = true;
-                                 modeDialog.open(NAVIGATION_MODE_BICYCLING);
-                             }, 500);
-                         },
-                         ontouchend: function() {
-                             clearTimeout(this.longTapTask);
-                         }
-                   },
-                ]
-            }, main.right);
-            modeButtons.addEventListener("mouseover", showModeButtons);
-
-            modeDialog = u.dialog({
-                title: u.lang.navigation_options,
-                className: "navigations-options-dialog",
-                items: [
-                    { type: HTML.HIDDEN },
-                    { type: HTML.CHECKBOX, label: u.lang.avoid_highways },
-                    { type: HTML.CHECKBOX, label: u.lang.avoid_tolls },
-                    { type: HTML.CHECKBOX, label: u.lang.avoid_ferries }
-                ],
-                positive: {
-                    label: u.lang.ok,
-                    onclick: function(items) {
-                        u.save("navigation:mode", items[0].value);
-                        switch(items[0].value) {
-                            case NAVIGATION_MODE_DRIVING:
-                                u.save("navigation:avoid_highways", items[1].checked);
-                                u.save("navigation:avoid_tolls", items[2].checked);
-                                u.save("navigation:avoid_ferries", items[3].checked);
-                                break;
-                            case NAVIGATION_MODE_WALKING:
-                                u.save("navigation:avoid_ferries", items[3].checked);
-                                break;
-                            case NAVIGATION_MODE_BICYCLING:
-                                u.save("navigation:avoid_ferries", items[3].checked);
-                                break;
-                        }
-                        main.toast.show(u.lang.setting_up_direction, -1);
-                        update.call(user);
-                    }
-                },
-                negative: {
-                    label: u.lang.cancel
-                },
-                onopen: function(items,mode) {
-                    items[0].value = mode;
-                    switch(mode) {
-                        case NAVIGATION_MODE_DRIVING:
-                            items[1].checked = u.load("navigation:avoid_highways");
-                            items[2].checked = u.load("navigation:avoid_tolls");
-                            items[3].checked = u.load("navigation:avoid_ferries");
-                            modeDialog.itemsLayout.childNodes[1].show();
-                            modeDialog.itemsLayout.childNodes[2].show();
-                            break;
-                        case NAVIGATION_MODE_WALKING:
-                            items[3].checked = u.load("navigation:avoid_ferries");
-                            modeDialog.itemsLayout.childNodes[1].hide();
-                            modeDialog.itemsLayout.childNodes[2].hide();
-                            break;
-                        case NAVIGATION_MODE_BICYCLING:
-                            items[3].checked = u.load("navigation:avoid_ferries");
-                            modeDialog.itemsLayout.childNodes[1].hide();
-                            modeDialog.itemsLayout.childNodes[2].hide();
-                            break;
-                    }
-                }
-            }, main.right);
-        }
-
         main.toast.hide();
-
-        showModeButtons();
 
         modeButtons.itemsLayout.childNodes[0].classList.remove("navigation-mode-item-selected");
         modeButtons.itemsLayout.childNodes[1].classList.remove("navigation-mode-item-selected");
@@ -511,7 +342,195 @@ function NavigationHolder(main) {
         }
     }
 
-    function showModeButtons() {
+    function showModeButtons(user) {
+        if(!modeButtons) {
+            modeButtons = u.dialog({
+                className: "navigation-mode",
+                itemsClassName: "navigation-mode-items",
+                items: [
+                    {
+                        type: HTML.DIV,
+                        className: "navigation-mode-item",
+                        innerHTML: "directions_car",
+                        ondblclick: function () {
+                            modeDialog.open(NAVIGATION_MODE_DRIVING)
+                        },
+                        onclick: function () {
+                            if (modeDialog.preventClick) {
+                                modeDialog.preventClick = false;
+                            } else {
+                                u.save("navigation:mode", NAVIGATION_MODE_DRIVING);
+                                main.toast.show(u.lang.setting_up_direction, -1);
+                                main.users.forAllUsersExceptMe(function(number, user) {
+                                    if(user.views && user.views.navigation && user.views.navigation.show) {
+                                        update.call(user);
+                                    }
+                                });
+                            }
+                        },
+                        onmousedown: function () {
+                            this.longTapTask = setTimeout(function () {
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_DRIVING);
+                            }, 500);
+                        },
+                        onmouseup: function () {
+                            clearTimeout(this.longTapTask);
+                        },
+                        ontouchstart: function () {
+                            this.longTapTask = setTimeout(function () {
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_DRIVING);
+                            }, 500);
+                        },
+                        ontouchend: function () {
+                            clearTimeout(this.longTapTask);
+                        }
+                    },
+                    {
+                        type: HTML.DIV,
+                        className: "navigation-mode-item",
+                        innerHTML: "directions_walk",
+                        ondblclick: function () {
+                            modeDialog.open(NAVIGATION_MODE_WALKING)
+                        },
+                        onclick: function () {
+                            if (modeDialog.preventClick) {
+                                modeDialog.preventClick = false;
+                            } else {
+                                u.save("navigation:mode", NAVIGATION_MODE_WALKING);
+                                main.toast.show(u.lang.setting_up_direction, -1);
+                                main.users.forAllUsersExceptMe(function(number, user) {
+                                    if(user.views && user.views.navigation && user.views.navigation.show) {
+                                        update.call(user);
+                                    }
+                                });
+                            }
+                        },
+                        onmousedown: function () {
+                            this.longTapTask = setTimeout(function () {
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_WALKING);
+                            }, 500);
+                        },
+                        onmouseup: function () {
+                            clearTimeout(this.longTapTask);
+                        },
+                        ontouchstart: function () {
+                            this.longTapTask = setTimeout(function () {
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_WALKING);
+                            }, 500);
+                        },
+                        ontouchend: function () {
+                            clearTimeout(this.longTapTask);
+                        }
+                    },
+                    {
+                        type: HTML.DIV,
+                        className: "navigation-mode-item",
+                        innerHTML: "directions_bike",
+                        ondblclick: function () {
+                            modeDialog.open(NAVIGATION_MODE_BICYCLING)
+                        },
+                        onclick: function () {
+                            if (modeDialog.preventClick) {
+                                modeDialog.preventClick = false;
+                            } else {
+                                u.save("navigation:mode", NAVIGATION_MODE_BICYCLING);
+                                main.toast.show(u.lang.setting_up_direction, -1);
+                                main.users.forAllUsersExceptMe(function(number, user) {
+                                    if(user.views && user.views.navigation && user.views.navigation.show) {
+                                        update.call(user);
+                                    }
+                                });
+                            }
+                        },
+                        onmousedown: function () {
+                            this.longTapTask = setTimeout(function () {
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_BICYCLING);
+                            }, 500);
+                        },
+                        onmouseup: function () {
+                            clearTimeout(this.longTapTask);
+                        },
+                        ontouchstart: function () {
+                            this.longTapTask = setTimeout(function () {
+                                modeDialog.preventClick = true;
+                                modeDialog.open(NAVIGATION_MODE_BICYCLING);
+                            }, 500);
+                        },
+                        ontouchend: function () {
+                            clearTimeout(this.longTapTask);
+                        }
+                    },
+                ]
+            }, main.right);
+            modeButtons.addEventListener("mouseover", showModeButtons);
+
+            modeDialog = u.dialog({
+                title: u.lang.navigation_options,
+                className: "navigations-options-dialog",
+                items: [
+                    { type: HTML.HIDDEN },
+                    { type: HTML.CHECKBOX, label: u.lang.avoid_highways },
+                    { type: HTML.CHECKBOX, label: u.lang.avoid_tolls },
+                    { type: HTML.CHECKBOX, label: u.lang.avoid_ferries }
+                ],
+                positive: {
+                    label: u.lang.ok,
+                    onclick: function(items) {
+                        u.save("navigation:mode", items[0].value);
+                        switch(items[0].value) {
+                            case NAVIGATION_MODE_DRIVING:
+                                u.save("navigation:avoid_highways", items[1].checked);
+                                u.save("navigation:avoid_tolls", items[2].checked);
+                                u.save("navigation:avoid_ferries", items[3].checked);
+                                break;
+                            case NAVIGATION_MODE_WALKING:
+                                u.save("navigation:avoid_ferries", items[3].checked);
+                                break;
+                            case NAVIGATION_MODE_BICYCLING:
+                                u.save("navigation:avoid_ferries", items[3].checked);
+                                break;
+                        }
+                        main.toast.show(u.lang.setting_up_direction, -1);
+                        main.users.forAllUsersExceptMe(function(number, user) {
+                            if(user.views && user.views.navigation && user.views.navigation.show) {
+                                update.call(user);
+                            }
+                        });
+                    }
+                },
+                negative: {
+                    label: u.lang.cancel
+                },
+                onopen: function(items,mode) {
+                    items[0].value = mode;
+                    switch(mode) {
+                        case NAVIGATION_MODE_DRIVING:
+                            items[1].checked = u.load("navigation:avoid_highways");
+                            items[2].checked = u.load("navigation:avoid_tolls");
+                            items[3].checked = u.load("navigation:avoid_ferries");
+                            modeDialog.itemsLayout.childNodes[1].show();
+                            modeDialog.itemsLayout.childNodes[2].show();
+                            break;
+                        case NAVIGATION_MODE_WALKING:
+                            items[3].checked = u.load("navigation:avoid_ferries");
+                            modeDialog.itemsLayout.childNodes[1].hide();
+                            modeDialog.itemsLayout.childNodes[2].hide();
+                            break;
+                        case NAVIGATION_MODE_BICYCLING:
+                            items[3].checked = u.load("navigation:avoid_ferries");
+                            modeDialog.itemsLayout.childNodes[1].hide();
+                            modeDialog.itemsLayout.childNodes[2].hide();
+                            break;
+                    }
+                }
+            }, main.right);
+        }
+
         clearTimeout(showModeButtonsTask);
         if(!modeButtons.opened) modeButtons.open();
         showModeButtonsTask = setTimeout(function(){
@@ -523,17 +542,17 @@ function NavigationHolder(main) {
 
         if (this.views.navigation.distance <= HIDE_TRACK_IF_DISTANCE_LESS_THAN) {
             this.views.navigation.previousDistance = this.views.navigationdistance;
-                return;
+            return;
         } else if (this.views.navigation.distance > SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
             && this.views.navigation.previousDistance
             && this.views.navigation.previousDistance < SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
             && this.views.navigation.track == null) {
-                this.views.navigation.previousDistance = this.views.navigation.distance;
+            this.views.navigation.previousDistance = this.views.navigation.distance;
         } else if (this.views.navigation.distance > HIDE_TRACK_IF_DISTANCE_LESS_THAN
             && this.views.navigation.distance <= SHOW_TRACK_IF_DISTANCE_BIGGER_THAN
             && this.views.navigation.track == null) {
-                this.views.navigation.previousDistance = this.views.navigation.distance;
-                return;
+            this.views.navigation.previousDistance = this.views.navigation.distance;
+            return;
         }
         this.views.navigation.previousDistance = this.views.navigation.distance;
 

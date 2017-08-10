@@ -76,8 +76,18 @@ function MarkerHolder(main) {
             case EVENTS.MAKE_INACTIVE:
                 this.views.marker.marker.setMap(null);
                 break;
+            case EVENTS.MAKE_ENABLED:
+                if(this.views && this.views.marker && this.views.marker.marker) {
+                    this.views.marker.marker.setTitle(this.properties.getDisplayName());
+                }
+                break;
+            case EVENTS.MAKE_DISABLED:
+                if(this.views && this.views.marker && this.views.marker.marker) {
+                    this.views.marker.marker.setTitle(this.properties.getDisplayName() + "\naway");
+                }
+                break;
             case EVENTS.CHANGE_NAME:
-                this.views.marker.marker;
+                //this.views.marker.marker;
                 break;
             case EVENTS.MOUSE_OVER:
                 if(this.views.marker.marker) {
