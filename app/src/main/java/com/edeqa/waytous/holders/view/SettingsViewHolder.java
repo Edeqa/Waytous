@@ -1,5 +1,6 @@
 package com.edeqa.waytous.holders.view;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -9,6 +10,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +25,8 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
-import com.edeqa.waytous.helpers.PreferenceDividerDecoration;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.PreferenceDividerDecoration;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
@@ -97,10 +99,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     }
                 });
                 break;
-//            case PREPARE_DRAWER:
-//                adder = (DrawerViewHolder.ItemsHolder) object;
-//                adder.findItem(R.string.chat).setVisible(true);
-//                break;
             case ACTIVITY_RESUME:
                 currentSettingItem = settingItem;
                 if(!settingsPrepared) {
@@ -124,12 +122,9 @@ public class SettingsViewHolder extends AbstractViewHolder {
     }
 
     public void showSettings() {
-
         dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
-
-//        final LinearLayout layoutFooter = setupFooter(content);
 
         context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
@@ -138,24 +133,36 @@ public class SettingsViewHolder extends AbstractViewHolder {
         adapter = new SettingsAdapter(list);
 
         dialog.setCustomTitle(setupToolbar());
-
         dialog.setView(content);
-
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                    if(queue.size() > 0) {
+                        currentSettingItem = queue.remove(queue.size()-1);
+                        toolbar.setTitle(currentSettingItem.getTitle());
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        dialog.cancel();
+//                        dialog = null;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         if(dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         }
         dialog.show();
-
         Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
-
     }
 
     private AppBarLayout setupToolbar() {
-
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        if(toolbar.getNavigationIcon() != null) toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,33 +177,24 @@ public class SettingsViewHolder extends AbstractViewHolder {
             }
         });
         toolbar.setTitle(currentSettingItem.getTitle());
-
         return layoutToolbar;
     }
 
     class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingViewHolder> {
-
-        private final RecyclerView list;
         private final LinearLayoutManager layoutManager;
 
         public SettingsAdapter(RecyclerView list) {
-            this.list = list;
             list.setAdapter(this);
             layoutManager = new LinearLayoutManager(context);
 
             list.setLayoutManager(layoutManager);
-//            DividerItemDecoration divider = new DividerItemDecoration(list.getContext(), ((LinearLayoutManager) list.getLayoutManager()).getOrientation());
             PreferenceDividerDecoration divider = new PreferenceDividerDecoration(list.getContext());
-
             list.addItemDecoration(divider);
-
             list.setItemAnimator(new DefaultItemAnimator());
-
         }
 
         @Override
         public SettingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_preference, parent, false);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -323,7 +321,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
         }
 
         class SettingViewHolder extends RecyclerView.ViewHolder {
-
             private final LinearLayout layoutHeader;
             private final LinearLayout layoutPreference;
             private final LinearLayout layoutWidget;
@@ -347,7 +344,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
                 cbCheckbox = (CheckBox) view.findViewById(R.id.cb_checkbox);
             }
         }
-
     }
 
 }

@@ -2,7 +2,6 @@ package com.edeqa.waytous;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
@@ -52,10 +50,10 @@ import static com.edeqa.waytous.helpers.Events.ACTIVITY_DESTROY;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.BACK_PRESSED;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
-import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.holders.property.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
@@ -68,15 +66,12 @@ import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public final static int REQUEST_PERMISSION_LOCATION = 1;
 
     public final static String PREFERENCE_INTRO = "intro";  //NON-NLS
-    public final static String PREFERENCE_BACKGROUND_ALERT_SHOWN = "background_alert_shown";  //NON-NLS
 
     private GoogleMap map;
     private SupportMapFragment mapFragment;
@@ -171,7 +166,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
-        DrawerViewHolder holder = (DrawerViewHolder) state.getEntityHolder(DrawerViewHolder.TYPE);
+        state.fire(BACK_PRESSED);
+
+        /*DrawerViewHolder holder = (DrawerViewHolder) state.getEntityHolder(DrawerViewHolder.TYPE);
         if (holder != null && holder.isDrawerOpen()) {
             holder.closeDrawer();
         } else {
@@ -196,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
                 dialog.show();
             }
-        }
+        }*/
     }
 
     @Override
@@ -446,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         case RESPONSE_STATUS_ERROR:
                             break;
                         case RESPONSE_STATUS_UPDATED:
-                            if (o.has(USER_DISMISSED)) {
+                            /*if (o.has(USER_DISMISSED)) {
                                 int number = o.getInt(USER_DISMISSED);
                                 state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                                     @Override
@@ -457,8 +454,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 if(State.getInstance().getUsers().getCountSelectedTotal() == 0) {
                                     State.getInstance().getMe().fire(SELECT_SINGLE_USER);
                                 }
-                            }
-                            if (o.has(USER_JOINED)) {
+                            }*/
+                            /*if (o.has(USER_JOINED)) {
                                 int number = o.getInt(USER_JOINED);
                                 state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                                     @Override
@@ -466,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         myUser.createViews();
                                     }
                                 });
-                            }
+                            }*/
                             break;
                     }
                 }
@@ -475,5 +472,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
+
+    /**
+     * Due to onBackPressed() fires Evtnts.BACK_PRESSED this method calls super.onBackPressed() for holders purposes.
+     */
+    public void onBackPressedSuper() {
+        super.onBackPressed();
+    }
 
 }

@@ -24,6 +24,7 @@ public class Events {
     public static final String PREPARE_FAB = "prepare_fab";
     public static final String CREATE_DRAWER = "create_drawer";
     public static final String PREPARE_DRAWER = "prepare_drawer";
+    public static final String BACK_PRESSED = "back_pressed";
     public static final String DROPPED_TO_USER = "dropped_to_user";
 
     public static final String ACTIVITY_CREATE = "activity_create";

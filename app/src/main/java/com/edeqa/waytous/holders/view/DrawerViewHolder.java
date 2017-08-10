@@ -23,6 +23,7 @@ import com.edeqa.waytous.interfaces.Runnable2;
 import java.util.ArrayList;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.BACK_PRESSED;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
@@ -143,6 +144,12 @@ public class DrawerViewHolder extends AbstractViewHolder {
                         });
                     }
                 });
+                break;
+            case BACK_PRESSED:
+                if (isDrawerOpen()) {
+                    closeDrawer();
+                    return false;
+                }
                 break;
             case TRACKING_ACTIVE:
             case TRACKING_DISABLED:

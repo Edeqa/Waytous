@@ -194,7 +194,8 @@ public class MyUser {
     }
 
     public void fire(final String EVENT, final Object object){
-        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]);
+        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object);
+//        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]);
         propertyBus.post(EVENT, object);
         viewBus.post(EVENT, object);
 
