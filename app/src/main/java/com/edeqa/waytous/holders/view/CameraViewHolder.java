@@ -256,6 +256,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         if(Locale.US.equals(Locale.getDefault())) {
             scaleView.setIsMiles(true);
         }
+        scaleView.update(map.getCameraPosition().zoom, map.getCameraPosition().target.latitude);
         return this;
     }
 
@@ -556,8 +557,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     break;
             }
             if(scaleView != null) {
-                //FIXME
-//                scaleView.update(map.getProjection(), map.getCameraPosition());
+                scaleView.update(map.getCameraPosition().zoom, map.getCameraPosition().target.latitude);
             }
 //            if(cameraView.zoom != map.getCameraPosition().zoom)
 //                moveFromHardware = true;
@@ -570,8 +570,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         @Override
         public void onCameraIdle() {
             if(scaleView != null) {
-                //FIXME
-//                scaleView.update(map.getProjection(), map.getCameraPosition());
+                scaleView.update(map.getCameraPosition().zoom, map.getCameraPosition().target.latitude);
             }
 
             if(cameraView == null || State.getInstance().getUsers().getCountSelected() != 1){
@@ -605,8 +604,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         @Override
         public void onCameraMoveCanceled() {
             if(scaleView != null) {
-                //FIXME
-//                scaleView.update(map.getProjection(), map.getCameraPosition());
+                scaleView.update(map.getCameraPosition().zoom, map.getCameraPosition().target.latitude);
             }
 
 //            System.out.println("onCameraMoveCanceled");
@@ -624,8 +622,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         public void onCameraMove() {
 //            System.out.println("onCameraMove");
             if(scaleView != null) {
-                //FIXME
-//                scaleView.update(map.getProjection(), map.getCameraPosition());
+                scaleView.update(map.getCameraPosition().zoom, map.getCameraPosition().target.latitude);
             }
         }
     };
