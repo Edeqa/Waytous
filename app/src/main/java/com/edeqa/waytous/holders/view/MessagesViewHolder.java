@@ -280,13 +280,176 @@ public class MessagesViewHolder extends AbstractViewHolder {
     public void showMessages() {
         State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
 
+/*
+        final CustomListDialog a = new CustomListDialog(context);
+        a.setLayout(R.layout.dialog_items);
+
+        list = a.getList();
+        adapter = new UserMessage.UserMessagesAdapter(context, list);
+
+        a.setAdapter(adapter);
+        a.setMenu(R.menu.dialog_messages_menu);
+        a.setFlat(true);
+
+        final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
+        a.setFooter(layoutFooter);
+        if(State.getInstance().tracking_active()) {
+            layoutFooter.setVisibility(View.VISIBLE);
+        } else {
+            layoutFooter.setVisibility(View.GONE);
+        }
+
+        final Runnable1<EditText> sender = new Runnable1<EditText>() {
+            @Override
+            public void call(EditText et) {
+                if (et.getText().toString().length() > 0) {
+                    if(State.getInstance().tracking_active()) {
+                        SystemMessage mm = new SystemMessage(context)
+                                .setFromUser(State.getInstance().getMe())
+                                .setText(et.getText().toString())
+                                .setDelivery(Utils.getUnique());
+                        State.getInstance().fire(SEND_MESSAGE, mm);
+
+
+//                        UserMessage m = new UserMessage(context);
+//                        m.setFrom(State.getInstance().getMe());
+//                        m.setBody(et.getText().toString());
+//                        m.setDelivery(Utils.getUnique());
+//                        m.save(null);
+//
+//                        State.getInstance().fire(SEND_MESSAGE, m);
+
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+
+                        reloadCursor();
+                    } else {
+                        new SystemMessage(context).setText(context.getString(R.string.cannot_send_message_because_of_network_is_unavailable)).showSnack();
+                    }
+                }
+                et.setText("");
+            }
+        };
+
+        layoutFooter.findViewById(R.id.ib_message_send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+            }
+        });
+        layoutFooter.findViewById(R.id.ib_message_send).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+                dialog.dismiss();
+                dialog = null;
+                return true;
+            }
+        });
+
+        hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
+        notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
+        fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
+
+        if(hideSystemMessages) {
+            UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE});
+        }
+        context.getSupportLoaderManager().initLoader(2, null, adapter);
+
+        layoutFooter.setVisibility(View.VISIBLE);
+
+        adapter.setFontSize(fontSize);
+        adapter.setOnRightSwipeListener(new Runnable1<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage.getDb().deleteByPosition(position);
+                adapter.notifyItemRemoved(position);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        donotscroll = true;
+                        reloadCursor();
+                    }
+                }, 500);
+            }
+        });
+        adapter.setOnItemClickListener(new Runnable1<UserMessage>() {
+            @Override
+            public void call(UserMessage message) {
+                reloadCursor();
+            }
+        });
+        adapter.setOnItemShareListener(new Runnable1<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
+                Utils.log(MessagesViewHolder.this, "showMessages:", "item="+item);
+
+                new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
+            }
+        });
+        adapter.setOnItemReplyListener(new Runnable1<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
+
+                MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
+                if(to != null) {
+                    ((EditText) a.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getBody());
+                } else {
+                    ((EditText) a.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getFrom() + ":\n> " + item.getBody());
+                }
+            }
+        });
+        adapter.setOnItemDeleteListener(new Runnable1<Integer>() {
+            @Override
+            public void call(final Integer position) {
+                UserMessage.getDb().deleteByPosition(position);
+                adapter.notifyItemRemoved(position);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        donotscroll = true;
+                        reloadCursor();
+                    }
+                }, 500);
+            }
+        });
+
+        adapter.setOnItemTouchListener(onTouchListener);
+
+        adapter.setOnCursorReloadListener(new Runnable1<Cursor>() {
+            @Override
+            public void call(Cursor cursor) {
+                a.setTitle(context.getString(R.string.chat_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
+                if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
+                donotscroll = false;
+            }
+        });
+        a.show();
+
+        a.setOntouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                onTouchListener.call(motionEvent);
+                return false;
+            }
+        });
+
+        drawable = a.getDrawable();
+        makeDialogTransparent();
+
+        setFilterAndReload(filterMessage);
+
+        if(true) return;
+*/
+
+
         dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
         final LinearLayout layoutFooter = setupFooter(content);
-
-        context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
         list = (RecyclerView) content.findViewById(R.id.list_items);
 
@@ -400,7 +563,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
         makeDialogTransparent();
 
         setFilterAndReload(filterMessage);
-
     }
 
     private AppBarLayout setupToolbar() {

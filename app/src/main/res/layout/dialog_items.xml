@@ -4,8 +4,8 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    >
+    android:background="@color/material_color_white"
+    android:orientation="vertical">
 
     <!--<android.support.design.widget.TextInputLayout
         android:id="@+id/vTitle"
@@ -23,14 +23,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        >
+        android:layout_weight="1">
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list_items"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbarStyle="insideOverlay"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
     </RelativeLayout>
 
     <TextView

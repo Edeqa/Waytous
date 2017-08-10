@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
+import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
 import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.Date;
