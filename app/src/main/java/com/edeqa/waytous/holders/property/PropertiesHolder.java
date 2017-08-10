@@ -179,6 +179,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
     public class Properties extends AbstractProperty {
         private HashMap<String, Serializable> external = new HashMap<>();
+
         private String name;
         private int number;
         private int color;
@@ -240,19 +241,20 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     break;
                 case SELECT_SINGLE_USER:
                     myUser.getProperties().selected = true;
+                    final ArrayList<MyUser> unselected = new ArrayList<>();
                     State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser user) {
-                            if(user != myUser) user.getProperties().selected = false;
+                            if(user != myUser && user.getProperties().isSelected()) {
+                                user.getProperties().selected = false;
+                                unselected.add(user);
+                            }
                         }
                     });
                     myUser.fire(SELECT_USER);
-                    State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
-                        @Override
-                        public void call(Integer number, MyUser user) {
-                            if(user != myUser) user.fire(UNSELECT_USER);
-                        }
-                    });
+                    for(MyUser user:unselected) {
+                        user.fire(UNSELECT_USER);
+                    }
                     break;
                 case UNSELECT_USER:
                     selected = false;
@@ -287,6 +289,10 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             return true;
         }
 
+        public void setName(String name) {
+            this.name = name;
+        }
+
         public String getName() {
             return name;
         }
@@ -319,6 +325,10 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
         public boolean isActive() {
             return active;
+        }
+
+        public void setColor(int color) {
+            this.color = color;
         }
 
         public int getColor() {

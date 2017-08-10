@@ -252,25 +252,26 @@ public class MyTrackingFB implements Tracking {
             scheduled = null;
         }
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put(Constants.DATABASE.USER_ACTIVE, false);
-        updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
-        ref.child(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
+        if(ref != null) {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put(Constants.DATABASE.USER_ACTIVE, false);
+            updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
+            ref.child(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
 
-        for(Map.Entry<DatabaseReference,Object> entry: refs.entrySet()) {
-            if(entry.getValue() instanceof ValueEventListener) {
-                entry.getKey().removeEventListener((ValueEventListener) entry.getValue());
-            } else if(entry.getValue() instanceof ChildEventListener) {
-                entry.getKey().removeEventListener((ChildEventListener) entry.getValue());
+            for (Map.Entry<DatabaseReference, Object> entry : refs.entrySet()) {
+                if (entry.getValue() instanceof ValueEventListener) {
+                    entry.getKey().removeEventListener((ValueEventListener) entry.getValue());
+                } else if (entry.getValue() instanceof ChildEventListener) {
+                    entry.getKey().removeEventListener((ChildEventListener) entry.getValue());
+                }
             }
-        }
 // remove public data of this user
-        for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
-            if(entry.getValue() != null && entry.getValue().isSaveable() && entry.getValue().isEraseable()) {
-                ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()).removeValue();
+            for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
+                if (entry.getValue() != null && entry.getValue().isSaveable() && entry.getValue().isEraseable()) {
+                    ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()).removeValue();
+                }
             }
         }
-
         FirebaseAuth.getInstance().signOut();
         trackingListener.onStop();
         state.getService().stopForeground(true);
@@ -576,39 +577,43 @@ public class MyTrackingFB implements Tracking {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
                                     try {
-                                        setStatus(TRACKING_ACTIVE);
-                                        if (o.has(RESPONSE_TOKEN)) {
-                                            setToken(o.getString(RESPONSE_TOKEN));
-                                        }
-                                        if (o.has(RESPONSE_NUMBER)) {
-                                            state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
-                                        }
-                                        o.put(RESPONSE_INITIAL, true);
+                                        if(!getStatus().equals(TRACKING_DISABLED)) {
+                                            setStatus(TRACKING_ACTIVE);
+                                            if (o.has(RESPONSE_TOKEN)) {
+                                                setToken(o.getString(RESPONSE_TOKEN));
+                                            }
+                                            if (o.has(RESPONSE_NUMBER)) {
+                                                state.getUsers().setMyNumber(o.getInt(RESPONSE_NUMBER));
+                                            }
+                                            o.put(RESPONSE_INITIAL, true);
 
-                                        Utils.log(MyTrackingFB.this, "onTextMessage:", "Snapshot="+authResult.getUser().getUid()); //NON-NLS
+                                            Utils.log(MyTrackingFB.this, "onTextMessage:", "Snapshot=" + authResult.getUser().getUid()); //NON-NLS
 
-                                        ref = database.getReference().child(getToken());
+                                            ref = database.getReference().child(getToken());
 
-                                        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-                                        scheduled = executor.scheduleAtFixedRate(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if(State.getInstance().tracking_active()) {
-                                                    ref.child(Constants.DATABASE.SECTION_USERS_DATA)
-                                                            .child(""+State.getInstance().getMe().getProperties().getNumber())
-                                                            .child(Constants.DATABASE.USER_CHANGED).setValue(ServerValue.TIMESTAMP);
+                                            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                                            scheduled = executor.scheduleAtFixedRate(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (State.getInstance().tracking_active()) {
+                                                        ref.child(Constants.DATABASE.SECTION_USERS_DATA)
+                                                                .child("" + State.getInstance().getMe().getProperties().getNumber())
+                                                                .child(Constants.DATABASE.USER_CHANGED).setValue(ServerValue.TIMESTAMP);
+                                                    }
+                                                }
+                                            }, 0, 1, TimeUnit.MINUTES);
+
+                                            registerValueListener(ref.child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CREATED), groupListener);
+                                            registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
+                                            for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
+                                                if (entry.getValue().isSaveable()) {
+                                                    registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
                                                 }
                                             }
-                                        }, 0, 1, TimeUnit.MINUTES);
-
-                                        registerValueListener(ref.child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CREATED),groupListener);
-                                        registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA),usersDataListener, -1);
-                                        for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
-                                            if(entry.getValue().isSaveable()) {
-                                                registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child(""+state.getMe().getProperties().getNumber()),userPrivateDataListener, -1);
-                                            }
+                                            trackingListener.onAccept(o);
+                                        } else {
+                                            stop();
                                         }
-                                        trackingListener.onAccept(o);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -851,7 +856,7 @@ public class MyTrackingFB implements Tracking {
                 state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        if (!name.equals(myUser.getProperties().getName())) {
+                        if (!name.equals("" + myUser.getProperties().getName())) {
                             myUser.fire(CHANGE_NAME, name);
                         }
                     }

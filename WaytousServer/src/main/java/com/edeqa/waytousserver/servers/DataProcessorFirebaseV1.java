@@ -574,6 +574,13 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             json.put(Constants.REST.GROUP_ID, group.getId());
 
                             Common.log(LOG, "onMessage:createGroup:created:" + group.getId());
+
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
                             onsuccess.call(json);
 
                         } else {

@@ -203,7 +203,7 @@ public class UserMessage extends AbstractSavedItem {
                 final UserMessage.UserMessagesAdapter.UserMessageViewHolder holder = (UserMessage.UserMessagesAdapter.UserMessageViewHolder) viewHolder;
 
                 final UserMessage item = UserMessage.getItemByCursor(cursor);
-                Utils.log(UserMessagesAdapter.this, "onBindViewHolder:", "userMessage=" + item);
+//                Utils.log(UserMessagesAdapter.this, "onBindViewHolder:", "userMessage=" + item);
                 String title = "";
                 String from = item.getFrom();
                 if(from != null && item.getTo() != null) {
@@ -221,7 +221,6 @@ public class UserMessage extends AbstractSavedItem {
                 Linkify.addLinks(holder.tvMessageBody, Linkify.ALL);
                 holder.tvMessageBody.setLinksClickable(true);
                 holder.tvMessageBody.setTextSize(fontSize);
-
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

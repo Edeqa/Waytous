@@ -147,7 +147,7 @@ public class MyUser {
                 AbstractProperty property = holder.create(this);
                 if (property != null) {
                     properties.put(holder.getType(), property);
-                    propertyBus.register(property);
+                    propertyBus.registerOrUpdate(property);
                 }
             }
         }
@@ -173,13 +173,8 @@ public class MyUser {
                         if(holder == null) continue;
                         AbstractView view = ((AbstractViewHolder) holder).create(MyUser.this);
                         if (view != null) {
-                            if(views.containsKey(type)) {
-                                Log.v(TYPE, "update:" + type + ":" + getProperties().getNumber() + ":" + view);
-                                viewBus.update(view);
-                            } else {
-                                Log.v(TYPE, "create:" + type + ":" + getProperties().getNumber() + ":" + view);
-                                viewBus.register(view);
-                            }
+                            Log.v(TYPE, (views.containsKey(type) ? "update:" : "create") + type + ":" + getProperties().getNumber() + ":" + view);
+                            viewBus.registerOrUpdate(view);
                             views.put(type, view);
                         }
                     }

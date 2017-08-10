@@ -308,14 +308,14 @@ public class State extends MultiDexApplication {
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {
                 if (holder.dependsOnEvent()) {
-                    systemViewBus.register((AbstractViewHolder) holder);
+                    systemViewBus.registerOrUpdate((AbstractViewHolder) holder);
                 }
                 if (holder.dependsOnUser()) {
                     userViewHolders.put(holder.getType(), (AbstractViewHolder) holder);
                 }
             } else {
                 if (holder.dependsOnEvent()) {
-                    systemPropertyBus.register(holder);
+                    systemPropertyBus.registerOrUpdate(holder);
                 }
                 if (holder.dependsOnUser()) {
                     userPropertyHolders.put(holder.getType(), holder);
@@ -350,7 +350,8 @@ public class State extends MultiDexApplication {
 
     public void fire(String EVENT, Object object){
 
-        Log.i("State","====>>> "+EVENT+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]); //NON-NLS
+        Log.i("State","====>>> "+EVENT+":"+object); //NON-NLS
+//        Log.i("State","====>>> "+EVENT+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]); //NON-NLS
         switch(EVENT){
             case Events.ACTIVITY_DESTROY:
                 if(tracking_disabled() || tracking_error() || tracking_expired()) {

@@ -1,5 +1,6 @@
 package com.edeqa.waytous.holders.view;
 
+import android.location.Address;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,10 @@ import com.edeqa.waytous.interfaces.Runnable1;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.List;
+
+import io.nlopez.smartlocation.OnReverseGeocodingListener;
+import io.nlopez.smartlocation.SmartLocation;
 
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
@@ -38,6 +43,18 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 }
             }
         });
+
+
+        Location l = new Location("fused");
+        l.setLatitude(38.9428053);
+        l.setLongitude(-77.3251007);
+        SmartLocation.with(context).geocoding().reverse(l, new OnReverseGeocodingListener() {
+            @Override
+            public void onAddressResolved(Location location, List<Address> list) {
+                System.out.println("ADDRESS RESOLVED1: "+location+":"+list);
+            }
+        });
+
     }
 
     @Override
@@ -110,6 +127,15 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+
+                    SmartLocation.with(context).geocoding().reverse(location, new OnReverseGeocodingListener() {
+                                @Override
+                                public void onAddressResolved(Location location, List<Address> list) {
+                                    System.out.println("ADDRESS RESOLVED: "+list);
+                                }
+                            });
+
+
                     String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
 
                     try {

@@ -205,21 +205,22 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
         @Override
         public void onAccept(JSONObject o) {
-            State.getInstance().setPreference(TRACKING_URI, tracking.getTrackingUri());
-            State.getInstance().fire(TRACKING_ACTIVE);
-
             try {
+                State.getInstance().setPreference(TRACKING_URI, tracking.getTrackingUri());
+                State.getInstance().fire(TRACKING_ACTIVE);
+
                 if (o.has(RESPONSE_TOKEN)) {
                     State.getInstance().fire(TOKEN_CREATED, o.getString(RESPONSE_TOKEN));
                 }
                 if (o.has(REQUEST_WELCOME_MESSAGE)) {
                     State.getInstance().fire(MessagesHolder.WELCOME_MESSAGE, o.getString(REQUEST_WELCOME_MESSAGE));
                 }
+                State.getInstance().sendBroadcast(new Intent(BROADCAST).putExtra(BROADCAST_MESSAGE, o.toString()));
             } catch (JSONException e) {
+                State.getInstance().fire(TRACKING_STOP);
                 e.printStackTrace();
             }
 
-            State.getInstance().sendBroadcast(new Intent(BROADCAST).putExtra(BROADCAST_MESSAGE, o.toString()));
         }
 
 //        @Override
