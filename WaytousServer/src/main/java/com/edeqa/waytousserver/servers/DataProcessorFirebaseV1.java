@@ -224,10 +224,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                 conn.send(response.toString());
                 conn.close();
                 Common.log(LOG,"onMessage:updateCoords:fake",response);
-            } else*/ if (REQUEST_NEW_GROUP.equals(req)) {
+            } else*/
+            if (REQUEST_NEW_GROUP.equals(req)) {
                 if (request.has(REQUEST_DEVICE_ID)) {
                     final MyGroup group = new MyGroup();
                     final MyUser user = new MyUser(conn, request.getString(REQUEST_DEVICE_ID));
+                    Common.log(LOG,"onMessage:requestNew:"+conn.getRemoteSocketAddress(),"{ deviceId:"+request.getString(REQUEST_DEVICE_ID)+" }");
                     //noinspection unchecked
                     final Runnable1<JSONObject>[] onresult = new Runnable1[2];
                     onresult[0] = new Runnable1<JSONObject>() {
@@ -347,9 +349,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             });
 
                     if (request.has(REQUEST_DEVICE_ID)) {
+                        Common.log(LOG,"onMessage:requestJoin:"+conn.getRemoteSocketAddress(),"{ groupId:"+groupId, "deviceId:"+request.getString(REQUEST_DEVICE_ID)+" }");
                         groupOptionsTask.setRef(refGroup.child(Constants.DATABASE.SECTION_OPTIONS)).start();
                     } else {
-                        System.out.println("B");
                         CheckReq check = new CheckReq();
                         check.setControl(Utils.getUnique());
                         check.setGroupId(groupId);
@@ -357,6 +359,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                         response.put(RESPONSE_STATUS, RESPONSE_STATUS_CHECK);
                         response.put(RESPONSE_CONTROL, check.getControl());
                         ipToCheck.put(ip, check);
+                        Common.log(LOG,"onMessage:requestReconnect:"+conn.getRemoteSocketAddress(),"{ groupId:"+groupId, "} control:", check.getControl());
                         conn.send(response.toString());
                     }
                     return;
@@ -394,7 +397,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                                                 Map<String,Object> update = new HashMap<>();
                                                 update.put(Constants.DATABASE.USER_ACTIVE, true);
-                                                update.put(Constants.DATABASE.USER_COLOR,Utils.selectColor((int) check.getNumber()));
+                                                update.put(Constants.DATABASE.USER_COLOR, Utils.selectColor((int) check.getNumber()));
                                                 update.put(Constants.DATABASE.USER_CHANGED, new Date().getTime());
                                                 if (check.getName() != null && check.getName().length() > 0) {
                                                     update.put(USER_NAME,check.getName());
@@ -416,7 +419,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                 e.printStackTrace();
                                             }
                                         } else {
-                                            Common.log(LOG, "onMessage:joinNotAuthenticated:"+conn.getRemoteSocketAddress(),"group:"+check.getGroupId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"}");
+                                            Common.log(LOG, "onMessage:joinNotAuthenticated:"+conn.getRemoteSocketAddress(),"group:"+check.getGroupId(),"{ number:"+dataSnapshot.getKey(), "properties:"+dataSnapshot.getValue(),"} got:", hash, " waited:", calculatedHash);
                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
                                             response.put(RESPONSE_MESSAGE, "Cannot join to group (user not authenticated).");
                                             conn.send(response.toString());
@@ -439,21 +442,73 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             }
                         });
 
-                        TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor<DataSnapshot>()
+                        final TaskSingleValueEventFor userGetNumberTask = new TaskSingleValueEventFor<DataSnapshot>()
                                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                     @Override
                                     public void call(DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.getValue() != null) {
-                                            userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child(""+check.getNumber())).start();
+                                            Common.log(LOG, "onMessage:joinNumberFound:"+conn.getRemoteSocketAddress(),"number:",dataSnapshot.getValue().toString());
+                                            check.setNumber(Long.parseLong(dataSnapshot.getValue().toString()));
+                                            userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child(dataSnapshot.getValue().toString())).start();
+
                                         } else {
-                                            System.out.println("D");
+                                            Common.log(LOG, "onMessage:joinNumberNotFound:"+conn.getRemoteSocketAddress());
                                             response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
-                                            response.put(RESPONSE_MESSAGE, "This group is expired. (002)");
+                                            response.put(RESPONSE_MESSAGE, "This group is expired. (005)");
                                             conn.send(response.toString());
                                             conn.close();
                                         }
                                     }
                                 });
+
+                        final TaskSingleValueEventFor userSearchTask = new TaskSingleValueEventFor<DataSnapshot>()
+                                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
+                                    @Override
+                                    public void call(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.getValue() != null) {
+                                            ArrayList<HashMap<String,Object>> users = (ArrayList<HashMap<String,Object>>) dataSnapshot.getValue();
+                                            for(HashMap<String,Object> user: users) {
+                                                if(user.containsKey(REQUEST_DEVICE_ID) && user.containsKey(REQUEST_KEY)) {
+                                                    String calculatedHash = Utils.getEncryptedHash(check.getControl() + ":" + user.get(REQUEST_DEVICE_ID).toString());
+                                                    if(calculatedHash.equals(hash)) {
+                                                        check.setUid(user.get(REQUEST_KEY).toString());
+                                                        userGetNumberTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(check.getUid())).start();
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                            Common.log(LOG, "onMessage:joinUserNotFound:"+conn.getRemoteSocketAddress());
+                                            response.put(RESPONSE_MESSAGE, "This group is expired. (004)");
+                                        } else {
+                                            Common.log(LOG, "onMessage:joinEmptyGroup:"+conn.getRemoteSocketAddress());
+                                            response.put(RESPONSE_MESSAGE, "This group is expired. (003)");
+                                        }
+                                        response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                                        conn.send(response.toString());
+                                        conn.close();
+                                    }
+                                });
+
+                        TaskSingleValueEventFor groupOptionsTask = new TaskSingleValueEventFor<DataSnapshot>()
+                                .addOnCompleteListener(new Runnable1<DataSnapshot>() {
+                                    @Override
+                                    public void call(DataSnapshot dataSnapshot) {
+                                        if(check.getUid() != null) {
+                                            if (dataSnapshot.getValue() != null) {
+                                                userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child("" + check.getNumber())).start();
+                                            } else {
+                                                Common.log(LOG, "onMessage:joinUserNotExists:"+conn.getRemoteSocketAddress());
+                                                response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
+                                                response.put(RESPONSE_MESSAGE, "This group is expired. (002)");
+                                                conn.send(response.toString());
+                                                conn.close();
+                                            }
+                                        } else {
+                                            userSearchTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE)).start();
+                                        }
+                                    }
+                                });
+
 
                         groupOptionsTask.setRef(refGroup.child(Constants.DATABASE.SECTION_OPTIONS)).start();
                         return;

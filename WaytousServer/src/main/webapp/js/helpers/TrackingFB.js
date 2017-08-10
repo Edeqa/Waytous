@@ -67,7 +67,7 @@ function TrackingFB(main) {
 //        window.location.href = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) + "/track/";
     }
 
-    function WebSocketListener(link) {
+    function WebSocketListener(link, reconnect) {
 
         var sendOriginal = send;
         var onopen =  function(event) {
@@ -75,6 +75,13 @@ function TrackingFB(main) {
             if(newTracking) {
                 put(REQUEST.REQUEST, REQUEST.NEW_GROUP);
                 put(REQUEST.DEVICE_ID, utils.getUuid());
+            } else if(reconnect) {
+                var parts = link.split("/");
+                var groupId = parts[parts.length-1];
+                setToken(groupId);
+
+                put(REQUEST.REQUEST, REQUEST.JOIN_GROUP);
+                put(REQUEST.TOKEN, groupId);
             } else {
                 var parts = link.split("/");
                 var groupId = parts[parts.length-1];
@@ -122,6 +129,9 @@ function TrackingFB(main) {
                                 // setStatus(EVENTS.TRACKING_ACTIVE);
                                 if (o[RESPONSE.TOKEN]) {
                                     setToken(o[RESPONSE.TOKEN]);
+                                    if(!serverUri.match(o[RESPONSE.TOKEN])) {
+                                        serverUri = link + "/" + o[RESPONSE.TOKEN];
+                                    }
                                 }
                                 if (o[RESPONSE.NUMBER]) {
                                     console.warn("Joined with number",o[RESPONSE.NUMBER]);
@@ -130,6 +140,10 @@ function TrackingFB(main) {
                                 o[RESPONSE.INITIAL] = true;
 
                                 ref = database.ref().child(getToken());
+
+                                if(main.me && main.me.number != undefined) {
+                                    ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE).set(true);
+                                }
 
                                 updateTask = setInterval(updateActive, 60000);
                                 window.addEventListener("focus", updateActive);
@@ -406,13 +420,13 @@ function TrackingFB(main) {
             switch(webSocketListener.readyState) {
             case WebSocket.CLOSED:
                 setStatus(EVENTS.TRACKING_RECONNECTING);
-                trackingListener.onJoining();
+                trackingListener.onReconnecting();
                 try {
                     webSocketListener.close();
                 } catch(e) {
                     console.warn(e);
                 }
-                webSocketListener = WebSocketListener(serverUri);
+                webSocketListener = WebSocketListener(serverUri, true);
                 break;
             }
         }

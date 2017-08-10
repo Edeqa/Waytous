@@ -327,7 +327,7 @@ function TrackingHolder(main) {
                     var token = o[RESPONSE.TOKEN];
                     main.fire(EVENTS.TOKEN_CREATED, token);
                     u.saveForContext("group", token);
-                    window.history.pushState({}, null, "/track/" + token);
+                    window.history.pushState({}, null, "/group/" + token);
                     main.fire(EVENTS.SHOW_HELP, {module: main.eventBus.holders.tracking, article: 1});
                     main.me.fire(EVENTS.SELECT_USER);
                 }
