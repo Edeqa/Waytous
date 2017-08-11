@@ -17,6 +17,7 @@ function TrackingFB(main) {
     var serverUri;
     var ref;
     var updateTask;
+    var refs = [];
     var updateFocusTask;
 
     function start() {
@@ -53,17 +54,24 @@ function TrackingFB(main) {
         updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
-        ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates).catch(function(error) {
-            console.error(error);
-        });
+        debugger;
+        console.log(refs);
+        for(var i in refs) {
+            ref.database.ref().child(refs[i]).off();
+        }
 
+        if(ref) {
+            ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).update(updates).catch(function (error) {
+                console.error(error);
+            });
+        }
         firebase.auth().signOut();
         window.removeEventListener("focus", updateActive);
         document.removeEventListener("visibilitychange", updateActive);
         trackingListener.onStop();
 
         var uri = new URL(serverUri);
-        window.location.href = "/track/";
+        window.location.href = "/group/";
 //        window.location.href = "https://" + uri.hostname + (data.HTTPS_PORT == 443 ? "" : ":"+ data.HTTPS_PORT) + "/track/";
     }
 
@@ -133,7 +141,7 @@ function TrackingFB(main) {
                                         serverUri = link + "/" + o[RESPONSE.TOKEN];
                                     }
                                 }
-                                if (o[RESPONSE.NUMBER]) {
+                                if (o[RESPONSE.NUMBER] != undefined) {
                                     console.warn("Joined with number",o[RESPONSE.NUMBER]);
                                     main.users.setMyNumber(o[RESPONSE.NUMBER]);
                                 }
@@ -405,12 +413,12 @@ function TrackingFB(main) {
         } else {
             ref.on("child_added", listener);
         }
-        // refs[ref] = listener;
+        refs.push(ref.path.toString());
     }
 
     function registerValueListener(ref, listener, errorListener) {
         ref.on("value", listener, errorListener);
-        // refs[ref] = listener;
+        refs.push(ref.path.toString());
     }
 
     function userActiveListener(data) {

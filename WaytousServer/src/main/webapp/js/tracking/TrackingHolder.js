@@ -26,7 +26,6 @@ function TrackingHolder(main) {
     var sounds;
     var joinSound;
     var defaultSound = "oringz-w427.mp3";
-    var wizardDialog;
     var agreementDialog;
 
     var drawerItemNewIconSvg = {
@@ -50,31 +49,6 @@ function TrackingHolder(main) {
                 { type: HTML.DIV, className: "progress-dialog-circle" },
                 { type: HTML.DIV, className: "progress-dialog-title" }
             ]
-        }, main.right);
-        wizardDialog = u.dialog({
-            title: u.lang.information,
-            className: "wizard-dialog",
-            items: [
-                { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_may_create_the_group },
-                { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: u.lang.terms_of_service, body: u.lang.terms_of_service_body },
-                { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: u.lang.i_have_read_and_agree_with_terms_of_service, onclick: function() {
-                    if(this.checked) {
-                        u.lang.updateNode(wizardDialog.positive, u.lang.create_group);
-                    } else {
-                        u.lang.updateNode(wizardDialog.positive, u.lang.close);
-                    }
-                } },
-            ],
-            positive: {
-                label: u.lang.close,
-                className: "wizard-dialog-button-create",
-                onclick: function(items) {
-                    if(items[2].checked) {
-                        u.save("tracking:terms_of_service_confirmed", true);
-                        main.fire(EVENTS.TRACKING_NEW);
-                    }
-                }
-            }
         }, main.right);
 
         joinSound = u.load("tracking:sound_on_join") || defaultSound;
@@ -134,20 +108,20 @@ function TrackingHolder(main) {
                         main.fire(EVENTS.TRACKING_NEW);
                     } else {
                         u.context = group;
-                        var self = this;
-                        setTimeout(function () {
-                            u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
-                        }, 0);
+                        startTracking(group);
+                        //
+                        //setTimeout(function () {
+                        //    u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
+                        //}, 0);
                     }
                 } else {
-                    wizardDialog.open();
+                    if(!u.load("tracking:terms_of_service_confirmed")) {
+                        startTracking();
+                    }
                 }
                 break;
             case EVENTS.TRACKING_NEW:
-                var self = this;
-                setTimeout(function(){
-                    u.require("/js/helpers/TrackingFB.js").then(startTracking.bind(self));
-                }, 0);
+                startTracking();
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 u.context = main.tracking.getToken();
@@ -185,7 +159,7 @@ function TrackingHolder(main) {
                 break;
             case EVENTS.TRACKING_CONNECTING:
 //                window.onbeforeunload = beforeunload;
-                wizardDialog.close();
+//                agreementDialog.close();
                 document.title = u.lang.connecting_s.format(main.appName).innerHTML;
                 drawerItemNew.hide();
                 drawerItemExit.show();
@@ -222,20 +196,23 @@ function TrackingHolder(main) {
         return true;
     }
 
-    function startTracking() {
-
+    function startTracking(group) {
         if(u.load("tracking:terms_of_service_confirmed")) {
-            startTrackingReady();
+            //setTimeout(function(){
+                u.require("/js/helpers/TrackingFB.js").then(startTrackingReady.bind(self));
+            //}, 0);
+            //startTrackingReady();
         } else {
             agreementDialog = agreementDialog || u.dialog({
                 title: u.lang.information,
                 className: "wizard-dialog",
                 items: [
-                    { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_are_joining_the_group },
+                    { type: HTML.DIV, className: "wizard-dialog-item", innerHTML: u.lang.you_may_create_the_group/*u.lang.you_are_joining_the_group*/ },
                     { type: HTML.DIV, className:"wizard-dialog-item", enclosed:true, label: u.lang.terms_of_service, body: u.lang.terms_of_service_body },
                     { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: u.lang.i_have_read_and_agree_with_terms_of_service, onclick: function() {
                         if(this.checked) {
-                            u.lang.updateNode(agreementDialog.positive, u.lang.join_group);
+                            u.lang.updateNode(agreementDialog.positive, !!agreementDialog.groupId ? u.lang.join_group : u.lang.create_group);
+                            //u.lang.updateNode(agreementDialog.positive, u.lang.create_group/*u.lang.join_group*/);
                         } else {
                             u.lang.updateNode(agreementDialog.positive, u.lang.close);
                         }
@@ -248,13 +225,21 @@ function TrackingHolder(main) {
                     onclick: function(items) {
                         if(items[2].checked) {
                             u.save("tracking:terms_of_service_confirmed", true);
-                            startTrackingReady();
+                            startTracking(agreementDialog.groupId);
                         } else {
-                            window.location = "/";
+                            window.history.pushState({}, null, "/group/");
                         }
                     }
                 }
             }, main.right);
+            if(group) {
+                u.lang.updateNode(agreementDialog.items[0], u.lang.you_are_joining_the_group);
+                //u.lang.updateNode(agreementDialog.positive, u.lang.join_group);
+            } else {
+                u.lang.updateNode(agreementDialog.items[0], u.lang.you_may_create_the_group);
+                //u.lang.updateNode(agreementDialog.positive, u.lang.create_group);
+            }
+            agreementDialog.groupId = group;
             agreementDialog.open();
         }
     }
