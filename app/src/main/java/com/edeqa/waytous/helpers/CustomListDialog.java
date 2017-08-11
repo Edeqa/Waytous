@@ -1,5 +1,6 @@
 package com.edeqa.waytous.helpers;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -18,6 +19,10 @@ import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.interfaces.Callable1;
 
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_NEUTRAL;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 /**
  * Created 8/10/2017.
  */
@@ -28,7 +33,7 @@ public class CustomListDialog {
     private View content;
     private RecyclerView list;
     private int layout;
-    private UserMessage.UserMessagesAdapter adapter;
+    private RecyclerView.Adapter adapter;
     private int menu;
     private String title;
     private boolean flat;
@@ -40,6 +45,13 @@ public class CustomListDialog {
     private View.OnTouchListener onTouchListener;
     private ColorDrawable drawable;
     private int alpha;
+    private String positiveString;
+    private DialogInterface.OnClickListener positiveListener;
+    private String negativeString;
+    private DialogInterface.OnClickListener negativeListener;
+    private String neutralString;
+    private DialogInterface.OnClickListener neutralListener;
+    private DialogInterface.OnCancelListener onCancelListener;
 
     public CustomListDialog(MainActivity context) {
         this.context = context;
@@ -55,8 +67,6 @@ public class CustomListDialog {
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
         dialog.setCustomTitle(layoutToolbar);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
-
-        getAdapter().setEmptyView(content.findViewById(R.id.tv_placeholder));
 
         if (getFooter() != null) {
             ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
@@ -79,25 +89,27 @@ public class CustomListDialog {
         }
 
         if (getSearchListener() != null) {
-            final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_message);
-            searchItem.getIcon().setColorFilter(Color.WHITE, mMode);
+            final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search);
+            if(searchItem != null) {
+                searchItem.getIcon().setColorFilter(Color.WHITE, mMode);
 
-            final SearchView searchView = (SearchView) searchItem.getActionView();
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    if (!searchView.isIconified()) {
-                        searchView.setIconified(true);
+                final SearchView searchView = (SearchView) searchItem.getActionView();
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        if (!searchView.isIconified()) {
+                            searchView.setIconified(true);
+                        }
+                        searchItem.collapseActionView();
+                        return getSearchListener().call(query);
                     }
-                    searchItem.collapseActionView();
-                    return getSearchListener().call(query);
-                }
 
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    return getSearchListener().call(s);
-                }
-            });
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        return getSearchListener().call(s);
+                    }
+                });
+            }
         }
 
         dialog.setView(content);
@@ -108,6 +120,21 @@ public class CustomListDialog {
                 dialog.getWindow().setBackgroundDrawable(drawable);
             }
         }
+
+        if(positiveString != null && positiveString.length() > 0) {
+            dialog.setButton(BUTTON_POSITIVE, positiveString, positiveListener);
+        }
+
+        if(negativeString != null && negativeString.length() > 0) {
+            dialog.setButton(BUTTON_NEGATIVE, negativeString, negativeListener);
+        }
+
+        if(neutralString != null && neutralString.length() > 0) {
+            dialog.setButton(BUTTON_NEUTRAL, neutralString, neutralListener);
+        }
+
+        if(onCancelListener != null) dialog.setOnCancelListener(onCancelListener);
+
         dialog.show();
 
         if (isFlat()) {
@@ -124,15 +151,15 @@ public class CustomListDialog {
         this.layout = layout;
     }
 
-    public int getLayout() {
-        return layout;
+    public View getLayout() {
+        return content;
     }
 
-    public void setAdapter(UserMessage.UserMessagesAdapter adapter) {
+    public void setAdapter(RecyclerView.Adapter adapter) {
         this.adapter = adapter;
     }
 
-    public UserMessage.UserMessagesAdapter getAdapter() {
+    public RecyclerView.Adapter getAdapter() {
         return adapter;
     }
 
@@ -177,7 +204,6 @@ public class CustomListDialog {
             dialog = null;
         }
     };
-
 
     public Callable1<Boolean, String> getSearchListener() {
         return searchListener;
@@ -250,5 +276,36 @@ public class CustomListDialog {
                 }
             });
         }
+    }
+
+
+    public void setButton(int button, String string, DialogInterface.OnClickListener onClickListener) {
+        switch(button) {
+            case BUTTON_POSITIVE:
+                positiveString = string;
+                positiveListener = onClickListener;
+                break;
+            case BUTTON_NEGATIVE:
+                negativeString = string;
+                negativeListener = onClickListener;
+                break;
+            case BUTTON_NEUTRAL:
+                neutralString = string;
+                neutralListener = onClickListener;
+                break;
+
+        }
+        if(dialog != null) {
+            dialog.setButton(button, string, onClickListener);
+        }
+    }
+
+    public void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
+        this.onCancelListener = onCancelListener;
+        if(dialog != null) dialog.setOnCancelListener(onCancelListener);
+    }
+
+    public DialogInterface.OnCancelListener getOnCancelListener() {
+        return onCancelListener;
     }
 }

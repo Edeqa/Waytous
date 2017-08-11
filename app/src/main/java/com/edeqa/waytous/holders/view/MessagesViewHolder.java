@@ -281,6 +281,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         list = dialog.getList();
         adapter = new UserMessage.UserMessagesAdapter(context, list);
+        adapter.setEmptyView(dialog.getLayout().findViewById(R.id.tv_placeholder));
 
         dialog.setAdapter(adapter);
         dialog.setMenu(R.menu.dialog_messages_menu);
@@ -361,7 +362,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
         context.getSupportLoaderManager().initLoader(2, null, adapter);
 
         layoutFooter.setVisibility(View.VISIBLE);
-
 
         dialog.setSearchListener(new Callable1<Boolean, String>() {
             @Override
@@ -448,23 +448,8 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         setFilterAndReload(filterMessage);
 
-        if(true) return;
-
 
 /*        dialog = new AlertDialog.Builder(context).create();
-
-        final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
-
-        final LinearLayout layoutFooter = setupFooter(content);
-
-        list = (RecyclerView) content.findViewById(R.id.list_items);
-
-        adapter = new UserMessage.UserMessagesAdapter(context, list);
-        adapter.setEmptyView(content.findViewById(R.id.tv_placeholder));
-
-        hideSystemMessages = State.getInstance().getBooleanPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
-        notTransparentWindow = State.getInstance().getBooleanPreference(PREFERENCE_NOT_TRANSPARENT, false);
-        fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
 
         dialog.setCustomTitle(setupToolbar());
 
@@ -472,23 +457,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
             UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE});
         }
         context.getSupportLoaderManager().initLoader(2, null, adapter);
-
-        adapter.setFontSize(fontSize);
-        adapter.setOnRightSwipeListener(new Runnable1<Integer>() {
-            @Override
-            public void call(final Integer position) {
-                UserMessage.getDb().deleteByPosition(position);
-                adapter.notifyItemRemoved(position);
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        donotscroll = true;
-                        reloadCursor();
-                    }
-                }, 500);
-            }
-        });
-
 
         adapter.setOnItemClickListener(new Runnable1<UserMessage>() {
             @Override
