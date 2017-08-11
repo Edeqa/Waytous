@@ -4,6 +4,7 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -16,12 +17,14 @@ import com.edeqa.waytous.interfaces.Runnable1;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
 /**
@@ -41,17 +44,6 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 if(context.getSupportActionBar() != null) {
                     context.getSupportActionBar().setSubtitle(text);
                 }
-            }
-        });
-
-
-        Location l = new Location("fused");
-        l.setLatitude(38.9428053);
-        l.setLongitude(-77.3251007);
-        SmartLocation.with(context).geocoding().reverse(l, new OnReverseGeocodingListener() {
-            @Override
-            public void onAddressResolved(Location location, List<Address> list) {
-                System.out.println("ADDRESS RESOLVED1: "+location+":"+list);
             }
         });
 
@@ -82,10 +74,18 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     }
 
     class AddressView extends AbstractView {
+        private final SmartLocation.GeocodingControl geocoding;
         private long lastRequestTimestamp;
 
         AddressView(MainActivity context, MyUser myUser) {
             super(context, myUser);
+            geocoding = SmartLocation.with(context).geocoding();
+        }
+
+        @Override
+        public void remove() {
+            super.remove();
+            geocoding.stop();
         }
 
         @Override
@@ -101,26 +101,25 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         @Override
         public boolean onEvent(String event, Object object) {
             switch(event){
+                case SELECT_USER:
                 case UNSELECT_USER:
-                    try {
-                        if (State.getInstance().getUsers().getCountSelected() > 1) {
-                            callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
-                        } else {
-                            callback.call("...");
-                            onChangeLocation(myUser.getLocation());
-                        }
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
+                    resolveAddress(myUser.getLocation());
                     break;
             }
             return true;
         }
 
         private void resolveAddress(final Location location) {
-            if(!myUser.getProperties().isSelected() || location == null || State.getInstance().getUsers().getCountSelectedTotal() > 1){
+            if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
+                callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                return;
+            } else if(myUser.getProperties().isSelected() && location == null) {
+                callback.call(null);
+            } else if(!myUser.getProperties().isSelected() || location == null){
                 return;
             }
+            callback.call("...");
+
             long currentTimestamp = new Date().getTime();
             if(currentTimestamp - lastRequestTimestamp < 5000) return;
             lastRequestTimestamp = currentTimestamp;
@@ -128,15 +127,37 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 @Override
                 public void run() {
 
-                    SmartLocation.with(context).geocoding().reverse(location, new OnReverseGeocodingListener() {
-                                @Override
-                                public void onAddressResolved(Location location, List<Address> list) {
-                                    System.out.println("ADDRESS RESOLVED: "+list);
+                    try {
+                        if(location == null) {
+                            callback.call(null);
+                            return;
+                        }
+                        geocoding.reverse(location, new OnReverseGeocodingListener() {
+                            @Override
+                            public void onAddressResolved(Location location, List<Address> list) {
+                                if (list != null && list.size() > 0) {
+                                    ArrayList parts = new ArrayList();
+                                    for (int i = 0; i < list.get(0).getMaxAddressLineIndex(); i++) {
+                                        parts.add(list.get(0).getAddressLine(i));
+                                    }
+                                    String formatted = TextUtils.join(", ", parts);
+                                    callback.call(formatted); //NON-NLS
+                                } else {
+                                    callback.call(null);
                                 }
-                            });
+                            }
+
+                        });
+                    } catch(Exception e) {
+                        Utils.err(AddressView.this, "User:", myUser.getProperties().getNumber(), "resolveAddress:", e.getMessage()); //NON-NLS
+                        if(location == null) {
+                            callback.call(null);
+                            return;
+                        }
+                    }
 
 
-                    String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
+                    /*String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
 
                     try {
                         Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req); //NON-NLS
@@ -149,7 +170,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                     } catch (Exception e) {
                         e.printStackTrace();
                         setTitle(null);
-                    }
+                    }*/
                 }
             }).start();
         }

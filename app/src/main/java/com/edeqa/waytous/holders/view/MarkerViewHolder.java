@@ -49,7 +49,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
 
     public static final String PREFERENCE_MARKER_ACCURACY = "marker_accuracy"; //NON-NLS
 
-    private final boolean showAccuracy;
+    private boolean showAccuracy;
 
     private GoogleMap map;
 
@@ -118,7 +118,19 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
                 item.add(new SettingItem.Group(getType()).setTitle(context.getString(R.string.marker)));
-                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(getType()).setMessage(context.getString(R.string.shows_accuracy_circle_around_the_marker_on_map)));
+                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(getType()).setMessage(context.getString(R.string.shows_accuracy_circle_around_the_marker_on_map)).setCallback(new Runnable1<Boolean>() {
+                    @Override
+                    public void call(Boolean arg) {
+                        showAccuracy = arg;
+                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                            @Override
+                            public void call(Integer arg1, MyUser user) {
+                                user.removeViews();
+                                user.createViews();
+                            }
+                        });
+                    }
+                }));
                 break;
         }
         return true;

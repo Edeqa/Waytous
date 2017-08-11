@@ -354,11 +354,11 @@ public class State extends MultiDexApplication {
 //        Log.i("State","====>>> "+EVENT+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]); //NON-NLS
         switch(EVENT){
             case Events.ACTIVITY_DESTROY:
-                if(tracking_disabled() || tracking_error() || tracking_expired()) {
+                /*if(tracking_disabled() || tracking_error() || tracking_expired()) {
                     Intent intent = new Intent(State.this, WaytousService.class);
                     stopService(intent);
                     System.exit(0);
-                }
+                }*/
                 break;
             default:
                 break;

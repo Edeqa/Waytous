@@ -96,7 +96,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        State.getInstance().getMe().fire(CHANGE_NAME,etMyName.getText().toString());
+                                        State.getInstance().getMe().fire(CHANGE_NAME, etMyName.getText().toString());
                                     }
                                 });
 
