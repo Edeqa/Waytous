@@ -205,7 +205,7 @@
     <string name="share_location_to">Share location to</string>
     <string name="look_at_s">Look at %s</string>
     <string name="you_want_to_minimize_waytous">You want to minimize Waytous. Note that the service will be active in background until you stop it. Continue minimizing?</string>
-    <string name="old_version_of_server">Old version of server</string>
+    <string name="cannot_join_server_is_too_old">Cannot join, server is too old.</string>
     <string name="shows_accuracy_circle_around_the_marker_on_map">Shows accuracy circle around the marker on map.</string>
     <string name="you_have_got_the_location_from_s" formatted="false">You\'ve got the location from %s: %s%s%s. Add it to your saved locations list?</string>
     <string name="i_have_read_and_agree_with_terms_of_service">I\'ve read and agree with terms of service</string>
@@ -216,5 +216,6 @@
     <string name="you_must_read_and_confirm_your_agreement_with_terms_of_service">You must read and confirm your agreement with Terms of service.</string>
     <string name="terms_of_service">Terms of service</string>
     <string name="terms_of_service_body">Terms of service</string>
+    <string name="cannot_join_server_responds_s">Cannot join, server responds: %s</string>
 
 </resources>

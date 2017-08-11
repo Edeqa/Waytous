@@ -4,7 +4,6 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/material_color_white"
     android:orientation="vertical">
 
     <!--<android.support.design.widget.TextInputLayout

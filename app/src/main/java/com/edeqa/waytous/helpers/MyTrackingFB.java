@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
-import static android.R.attr.data;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
@@ -632,8 +631,7 @@ public class MyTrackingFB implements Tracking {
                                     e1.printStackTrace();
                                     try {
                                         setStatus(TRACKING_DISABLED);
-
-                                        String reason = "";
+                                        String reason = State.getInstance().getString(R.string.cannot_join_server_responds_s, e1.getMessage());
                                         if (o.has(RESPONSE_MESSAGE)) {
                                             reason = o.getString(RESPONSE_MESSAGE);
                                         }
@@ -646,7 +644,7 @@ public class MyTrackingFB implements Tracking {
                         } else {
                             setStatus(TRACKING_DISABLED);
 
-                            String reason = state.getString(R.string.old_version_of_server);
+                            String reason = state.getString(R.string.cannot_join_server_is_too_old);
                             trackingListener.onReject(reason);
                         }
                         break;

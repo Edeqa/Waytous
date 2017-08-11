@@ -5,15 +5,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +25,7 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
+import com.edeqa.waytous.helpers.CustomListDialog;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.ShareSender;
@@ -37,6 +33,7 @@ import com.edeqa.waytous.helpers.SmoothInterpolated;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Callable1;
 import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
@@ -73,10 +70,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
     private UserMessage.UserMessagesAdapter adapter;
     private SmoothInterpolated action;
-    private Toolbar toolbar;
-    private ColorDrawable drawable;
+//    private Toolbar toolbar;
     private RecyclerView list;
-    private AlertDialog dialog;
+    private CustomListDialog  dialog;
 
     private String filterMessage;
     private Integer fontSize;
@@ -86,7 +82,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
     public MessagesViewHolder(final MainActivity context) {
         super(context);
-        this.dialog = new AlertDialog.Builder(context).create();
+        this.dialog = new CustomListDialog(context);
         filterMessage = "";
 
         context.findViewById(R.id.toolbar).setOnTouchListener(new View.OnTouchListener() {
@@ -280,19 +276,27 @@ public class MessagesViewHolder extends AbstractViewHolder {
     public void showMessages() {
         State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
 
-/*
-        final CustomListDialog a = new CustomListDialog(context);
-        a.setLayout(R.layout.dialog_items);
+        dialog = new CustomListDialog(context);
+        dialog.setLayout(R.layout.dialog_items);
 
-        list = a.getList();
+        list = dialog.getList();
         adapter = new UserMessage.UserMessagesAdapter(context, list);
 
-        a.setAdapter(adapter);
-        a.setMenu(R.menu.dialog_messages_menu);
-        a.setFlat(true);
+        dialog.setAdapter(adapter);
+        dialog.setMenu(R.menu.dialog_messages_menu);
+        dialog.setOnMenuItemClickListener(onDialogMenuItemClickListener);
+        dialog.setFlat(true);
+
+        dialog.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                onTouchListener.call(motionEvent);
+                return false;
+            }
+        });
 
         final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
-        a.setFooter(layoutFooter);
+        dialog.setFooter(layoutFooter);
         if(State.getInstance().tracking_active()) {
             layoutFooter.setVisibility(View.VISIBLE);
         } else {
@@ -358,6 +362,16 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         layoutFooter.setVisibility(View.VISIBLE);
 
+
+        dialog.setSearchListener(new Callable1<Boolean, String>() {
+            @Override
+            public Boolean call(String query) {
+                filterMessage = query;
+                setFilterAndReload(query);
+                return false;
+            }
+        });
+
         adapter.setFontSize(fontSize);
         adapter.setOnRightSwipeListener(new Runnable1<Integer>() {
             @Override
@@ -395,9 +409,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
                 MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
                 if(to != null) {
-                    ((EditText) a.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getBody());
+                    ((EditText) dialog.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getBody());
                 } else {
-                    ((EditText) a.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getFrom() + ":\n> " + item.getBody());
+                    ((EditText) dialog.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getFrom() + ":\n> " + item.getBody());
                 }
             }
         });
@@ -421,31 +435,23 @@ public class MessagesViewHolder extends AbstractViewHolder {
         adapter.setOnCursorReloadListener(new Runnable1<Cursor>() {
             @Override
             public void call(Cursor cursor) {
-                a.setTitle(context.getString(R.string.chat_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
+                dialog.setTitle(context.getString(R.string.chat_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
                 if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
                 donotscroll = false;
             }
         });
-        a.show();
+        dialog.show();
 
-        a.setOntouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                onTouchListener.call(motionEvent);
-                return false;
-            }
-        });
+        prepareToolbarMenu();
 
-        drawable = a.getDrawable();
         makeDialogTransparent();
 
         setFilterAndReload(filterMessage);
 
         if(true) return;
-*/
 
 
-        dialog = new AlertDialog.Builder(context).create();
+/*        dialog = new AlertDialog.Builder(context).create();
 
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
 
@@ -562,10 +568,10 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         makeDialogTransparent();
 
-        setFilterAndReload(filterMessage);
+        setFilterAndReload(filterMessage);*/
     }
 
-    private AppBarLayout setupToolbar() {
+    /*private AppBarLayout setupToolbar() {
 
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
@@ -615,7 +621,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         toolbar.setOnMenuItemClickListener(onDialogMenuItemClickListener);
 
         return layoutToolbar;
-    }
+    }*/
 
     private LinearLayout setupFooter(View content) {
         final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
@@ -696,16 +702,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
     private void makeDialogTransparent() {
         if(notTransparentWindow) {
-            drawable.setAlpha(255);
-
+            dialog.setAlpha(255);
         } else {
             new SmoothInterpolated(new Runnable1<Float[]>() {
                 @Override
                 public void call(final Float[] value) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         public void run() {
-                            if(drawable != null)
-                                drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                        dialog.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
                         }
                     });
                 }
@@ -720,12 +724,12 @@ public class MessagesViewHolder extends AbstractViewHolder {
     }
 
     private void prepareToolbarMenu() {
-        toolbar.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
-        toolbar.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
-        toolbar.getMenu().findItem(R.id.smaller_font).setVisible(fontSize >= 12);
-        toolbar.getMenu().findItem(R.id.bigger_font).setVisible(fontSize <= 24);
-        toolbar.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);
-        toolbar.getMenu().findItem(R.id.not_transparent).setVisible(!notTransparentWindow);
+        dialog.getMenu().findItem(R.id.hide_system_messages).setVisible(!hideSystemMessages);
+        dialog.getMenu().findItem(R.id.show_system_messages).setVisible(hideSystemMessages);
+        dialog.getMenu().findItem(R.id.smaller_font).setVisible(fontSize >= 12);
+        dialog.getMenu().findItem(R.id.bigger_font).setVisible(fontSize <= 24);
+        dialog.getMenu().findItem(R.id.transparent).setVisible(notTransparentWindow);
+        dialog.getMenu().findItem(R.id.not_transparent).setVisible(!notTransparentWindow);
     }
 
     @Override
@@ -823,7 +827,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             if(!notTransparentWindow) {
                 switch (motionEvent.getAction()) {
                     case 0:
-                        drawable.setAlpha(255);
+                        dialog.setAlpha(255);
                         break;
                     case 1:
                         action = new SmoothInterpolated(new Runnable1<Float[]>() {
@@ -831,8 +835,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                             public void call(final Float[] value) {
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     public void run() {
-                                        if(drawable != null)
-                                            drawable.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
+                                        dialog.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
                                     }
                                 });
                             }
@@ -915,14 +918,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
                     State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
                     adapter.setFontSize(fontSize);
                     adapter.notifyDataSetChanged();
-                    toolbar.post(new Runnable() { public void run() { toolbar.showOverflowMenu(); } });
+                    dialog.openMenu();
                     break;
                 case R.id.bigger_font:
                     fontSize += 2;
                     State.getInstance().setPreference(PREFERENCE_FONT_SIZE, fontSize);
                     adapter.setFontSize(fontSize);
                     adapter.notifyDataSetChanged();
-                    toolbar.post(new Runnable() { public void run() { toolbar.showOverflowMenu(); } });
+                    dialog.openMenu();
                     break;
                 case R.id.clear_messages:
                     AlertDialog dialog = new AlertDialog.Builder(context).create();
