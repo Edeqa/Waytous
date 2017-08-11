@@ -54,8 +54,6 @@ function TrackingFB(main) {
         updates[DATABASE.USER_CHANGED] = firebase.database.ServerValue.TIMESTAMP;
 
 //console.log("UPDATE",DATABASE.SECTION_USERS_DATA + "/" + main.me.number,updates);
-        debugger;
-        console.log(refs);
         for(var i in refs) {
             ref.database.ref().child(refs[i]).off();
         }

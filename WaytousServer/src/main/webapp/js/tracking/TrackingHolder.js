@@ -355,11 +355,11 @@ function TrackingHolder(main) {
                     label: u.lang.ok,
                 },
                 onclose: function() {
-                    window.location = "/track/";
+                    window.location = "/group/";
                 }
             }, main.right).open();
 
-//            window.history.pushState({}, null, "/track/" );
+//            window.history.pushState({}, null, "/group/" );
 
         },
         onStop: function(){

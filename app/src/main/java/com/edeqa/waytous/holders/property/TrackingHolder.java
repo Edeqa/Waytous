@@ -20,6 +20,8 @@ import com.edeqa.waytous.interfaces.TrackingCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
+
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
@@ -115,19 +117,39 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 break;
             case TRACKING_JOIN:
                 String link  = (String) object;
+
                 if(State.getInstance().getBooleanPreference(PREFERENCE_TERMS_OF_SERVICE_CONFIRMED, false)) {
                     if(link != null) {
+                        if(State.getInstance().tracking_disabled()) {
+                            Utils.log(TYPE, "onEvent:", "join to", link); //NON-NLS
+                            tracking = new MyTrackingFB(link);
+                            State.getInstance().setTracking(tracking);
+                            tracking.setTrackingListener(onTrackingListener);
+                            tracking.start();
+                        } else {
+                            try {
+                                URI currentUri = new URI(State.getInstance().getTracking().getTrackingUri());
+                                URI newUri = new URI(link);
+                                if(!currentUri.getPath().equals(newUri.getPath())) {
+                                    Utils.log(TYPE, "onEvent:", "same group, skipping", link); //NON-NLS
+                                    State.getInstance().fire(TRACKING_STOP);
+                                    State.getInstance().fire(TRACKING_JOIN, link);
+                                }
+                            } catch(Exception e) {
+                                Utils.log(TYPE, "onEvent:", "reconnecting to", link); //NON-NLS
+                                State.getInstance().fire(TRACKING_STOP);
+                                State.getInstance().fire(TRACKING_JOIN, link);
+                            }
+                        }
+/*
                         if(!link.equals(State.getInstance().getStringPreference(TRACKING_URI, null)) || State.getInstance().tracking_disabled()) {
                             State.getInstance().setPreference(TRACKING_URI, link);
                             if(State.getInstance().getTracking() != null && !TRACKING_DISABLED.equals(State.getInstance().getTracking().getStatus())) {
                                 State.getInstance().fire(TRACKING_STOP);
                             }
-
-                            tracking = new MyTrackingFB(link);
-                            State.getInstance().setTracking(tracking);
-                            tracking.setTrackingListener(onTrackingListener);
-                            tracking.start();
-                        }/* else if(State.getInstance().tracking_active()){
+                        }
+*/
+                        /* else if(State.getInstance().tracking_active()){
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -167,7 +189,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
 
                 break;
             case TRACKING_ERROR:
-                Utils.log(TYPE, "onEvent:", "TRACKING_ERROR"); //NON-NLS
+                Utils.err(TYPE, "onEvent:", "TRACKING_ERROR", object); //NON-NLS
                 break;
             case TOKEN_CREATED:
                 new ShareSender(context).sendLink(tracking.getTrackingUri());

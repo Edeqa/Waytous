@@ -184,8 +184,9 @@ function NavigationHolder(main) {
         if(!this || !this.views || !this.views.navigation || !this.views.navigation.show || !main.me.location || !this.location) return;
 
         var user = this;
-        var req = "https://crossorigin.me/https://maps.googleapis.com/maps/api/directions/json?"
-            //        var req = "https://maps.googleapis.com/maps/api/directions/json?"
+        //var req = "https://crossorigin.me/https://maps.googleapis.com/maps/api/directions/json?"
+        var req = "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/directions/json?"
+        //            var req = "https://maps.googleapis.com/maps/api/directions/json?"
             + "origin=" + main.me.location.coords.latitude + "," + main.me.location.coords.longitude + "&"
             + "destination=" + this.location.coords.latitude + "," + this.location.coords.longitude + "&"
             + "alternatives=false&"

@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
+import static android.R.attr.data;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
@@ -517,9 +518,12 @@ public class MyTrackingFB implements Tracking {
 
     @SuppressWarnings("FieldCanBeLocal")
     private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
+
         @Override
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
             super.onConnected(websocket, headers);
+
+            System.out.println("ONCONNECTED:"+getStatus()+":"+websocket+":"+headers);
             if(TRACKING_DISABLED.equals(getStatus())) return;
             Log.i("MyTrackingFB","onConnected"); //NON-NLS
             if(newTracking) {
@@ -604,7 +608,11 @@ public class MyTrackingFB implements Tracking {
                                             }, 0, 1, TimeUnit.MINUTES);
 
                                             registerValueListener(ref.child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CREATED), groupListener);
+
+                                            registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child("" + state.getUsers().getMyNumber()).child(Constants.DATABASE.USER_ACTIVE), userActiveListener);
+
                                             registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
+
                                             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
                                                 if (entry.getValue().isSaveable()) {
                                                     registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
@@ -905,5 +913,28 @@ public class MyTrackingFB implements Tracking {
         public void onCancelled(DatabaseError databaseError) {
         }
     };
+
+    private ValueEventListener userActiveListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+//            System.out.println("usersDataActiveListenerChanged:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
+            if(dataSnapshot.getValue() == null) {
+                stop();
+            } else if(!((Boolean) dataSnapshot.getValue())) {
+                switch (webSocket.getState()) {
+                    case CLOSED:
+                        reconnect();
+                        break;
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+
+
+
 
 }

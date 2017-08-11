@@ -128,7 +128,7 @@ public class MainServletHandler extends AbstractServletHandler {
                 String lastModified = dateFormat.format(file.lastModified());
 
                 requestWrapper.setHeader(HttpHeaders.LAST_MODIFIED, lastModified);
-                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=2592000");
+                requestWrapper.setHeader(HttpHeaders.CACHE_CONTROL, SENSITIVE.isDebugMode() ? "max-age=10" : "max-age=60");
                 requestWrapper.setHeader(HttpHeaders.ETAG, etag);
                 requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/" + SERVER_BUILD);
                 requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
@@ -138,7 +138,8 @@ public class MainServletHandler extends AbstractServletHandler {
                 requestWrapper.setHeader(HttpHeaders.CONTENT_SECURITY_POLICY, "frame-ancestors 'self'");
                 requestWrapper.setHeader(HttpHeaders.X_FRAME_OPTIONS, "SAMEORIGIN");
                 requestWrapper.setHeader(HttpHeaders.X_XSS_PROTECTION, "1; mode=block");
-                requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
+                requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=60; includeSubDomains; preload");
+//                requestWrapper.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, "max-age=63072000; includeSubDomains; preload");
 
                 // FIXME http://nibbler.silktide.com/en_US/reports/waytous.net
                 // FIXME https://gtmetrix.com/reports/waytous.net/6i4B5kR2

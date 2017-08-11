@@ -29,7 +29,11 @@ public class WebsocketDPConnection implements DataProcessorConnection {
 
     @Override
     public void send(String string) {
-        conn.send(string);
+        try {
+            conn.send(string);
+        } catch(Exception e) {
+            Common.err(WebsocketDPConnection.this, "send:", string, "error:", e.getMessage());
+        }
     }
 
     @Override

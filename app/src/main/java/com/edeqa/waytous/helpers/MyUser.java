@@ -310,8 +310,8 @@ public class MyUser {
     @Override
     public String toString() {
         return "MyUser {" +
-                "properties=" + properties +
-                ", \nviews=" + views +
+//                "properties=" + properties +
+//                ", \nviews=" + views +
                 ", \nlocation=" + location +
                 ", user=" + user +
                 "} " + (getProperties() != null ? getProperties().toString() : "");
