@@ -33,19 +33,31 @@ public class MainServletHandler extends AbstractServletHandler {
     private Map<String, String> substitutions;
 
 
-    private void initSubstitutions() {
+    private void initSubstitutions(RequestWrapper requestWrapper) {
         if(substitutions == null) {
             substitutions = new LinkedHashMap<>();
             substitutions.put("\\$\\{SERVER_BUILD\\}", "" + SERVER_BUILD);
             substitutions.put("\\$\\{APP_NAME\\}", SENSITIVE.getAppName() + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
             substitutions.put("\\$\\{SUPPORT_EMAIL\\}", SENSITIVE.getSupportEmail());
             substitutions.put("\\$\\{WEB_PAGE\\}", SENSITIVE.getAppLink());
+            substitutions.put("\\$\\{REFERER\\}", SENSITIVE.getServerHost());
+
+            try {
+                //noinspection LoopStatementThatDoesntLoop
+                for (String x : requestWrapper.getRequestHeader(HttpHeaders.REFERER)) {
+                    substitutions.put("\\$\\{REFERER\\}", x);
+                    break;
+                }
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
     @Override
     public void perform(RequestWrapper requestWrapper) {
-        initSubstitutions();
+        initSubstitutions(requestWrapper);
 
         try {
             String ifModifiedSince = null;
@@ -68,6 +80,7 @@ public class MainServletHandler extends AbstractServletHandler {
             Common.log("Main", uri.getPath(), "[" + (file.exists() ? file.length() + " byte(s)" : "not found") + "]");
 
             String etag = "W/1976-" + ("" + file.lastModified()).hashCode();
+
 
             String path = uri.getPath().toLowerCase();
             if (!file.getCanonicalPath().startsWith(root.getCanonicalPath())) {

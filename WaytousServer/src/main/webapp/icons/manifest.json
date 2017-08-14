@@ -3,6 +3,7 @@
     "short_name": "${APP_NAME}",
     "version": "1.${SERVER_BUILD}",
     "version_name": "Build ${SERVER_BUILD}",
+    "start_url": "${REFERER}",
     "description": "${APP_NAME} Web App.\nFull-duplex multiuser dynamic navigation tool.",
     "theme_color": "#aaeeee",
     "background_color": "#aaeeee",

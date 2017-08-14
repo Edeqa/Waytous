@@ -306,7 +306,7 @@ public class RestServletHandler extends AbstractServletHandler {
                 boolean exists = false;
                 File file = null;
                 for (File f : files) {
-                    Common.log(LOG,"Content: " + f.getCanonicalPath() +":"+f.getAbsolutePath());
+//                    Common.log(LOG,"Content: " + f.getCanonicalPath() +":"+f.getAbsolutePath());
 //                    if (f.getCanonicalPath().equals(f.getAbsolutePath()) && f.exists()) {
                     if (f.exists()) {
                         file = f;
