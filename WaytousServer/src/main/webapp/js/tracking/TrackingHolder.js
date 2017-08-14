@@ -212,16 +212,18 @@ function TrackingHolder(main) {
                     { type: HTML.CHECKBOX, itemClassName: "wizard-dialog-item-agree", label: u.lang.i_have_read_and_agree_with_terms_of_service, onclick: function() {
                         if(this.checked) {
                             u.lang.updateNode(agreementDialog.positive, !!agreementDialog.groupId ? u.lang.join_group : u.lang.create_group);
-                            //u.lang.updateNode(agreementDialog.positive, u.lang.create_group/*u.lang.join_group*/);
+                            agreementDialog.positive.classList.remove("wizard-dialog-button-disabled");
+                            agreementDialog.positive.disabled = false;
                         } else {
-                            u.lang.updateNode(agreementDialog.positive, u.lang.close);
+                            agreementDialog.positive.classList.add("wizard-dialog-button-disabled");
+                            agreementDialog.positive.disabled = true;
                         }
                     } },
-
                 ],
                 positive: {
                     label: u.lang.close,
-                    className: "wizard-dialog-button-create",
+                    className: "wizard-dialog-button-create wizard-dialog-button-disabled",
+                    disabled: true,
                     onclick: function(items) {
                         if(items[2].checked) {
                             u.save("tracking:terms_of_service_confirmed", true);
@@ -234,10 +236,10 @@ function TrackingHolder(main) {
             }, main.right);
             if(group) {
                 u.lang.updateNode(agreementDialog.items[0], u.lang.you_are_joining_the_group);
-                //u.lang.updateNode(agreementDialog.positive, u.lang.join_group);
+                u.lang.updateNode(agreementDialog.positive, u.lang.join_group);
             } else {
                 u.lang.updateNode(agreementDialog.items[0], u.lang.you_may_create_the_group);
-                //u.lang.updateNode(agreementDialog.positive, u.lang.create_group);
+                u.lang.updateNode(agreementDialog.positive, u.lang.create_group);
             }
             agreementDialog.groupId = group;
             agreementDialog.open();

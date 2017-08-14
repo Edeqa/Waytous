@@ -1220,24 +1220,39 @@ function Edequate(options) {
 
         var buttons = create(HTML.DIV, {className:"dialog-buttons hidden" + (options.buttonsClassName ? " " + options.buttonsClassName : "")}, dialog);
         if(options.positive && options.positive.label) {
-            dialog.positive = create(HTML.BUTTON, {className:"dialog-button dialog-button-positive", tabindex:98, onclick:function(event){
-                if(options.positive.onclick) options.positive.onclick.call(dialog,items,event);
+            options.positive.tabindex = 98;
+            options.positive.className = "dialog-button dialog-button-positive" + (options.positive.className ? " " + options.positive.className : "");
+            options.positive._onclick = options.positive.onclick;
+            options.positive.onclick = function(event){
+                if(options.positive._onclick) options.positive._onclick.call(dialog,items,event);
                 if(options.positive.dismiss == undefined || options.positive.dismiss) dialog.close();
-            }, innerHTML: options.positive.label}, buttons);
+            };
+            options.positive.innerHTML = options.positive.label;
+            dialog.positive = create(HTML.BUTTON, options.positive, buttons);
             buttons.show();
         }
         if(options.neutral && options.neutral.label) {
-            dialog.neutral = create(HTML.BUTTON, {className:"dialog-button dialog-button-neutral", tabindex:100, onclick:function(event){
-                if(options.neutral.onclick) options.neutral.onclick.call(dialog,items,event);
+            options.neutral.tabindex = 100;
+            options.neutral.className = "dialog-button dialog-button-neutral" + (options.neutral.className ? " " + options.neutral.className : "");
+            options.neutral._onclick = options.neutral.onclick;
+            options.neutral.onclick = function(event){
+                if(options.neutral._onclick) options.neutral._onclick.call(dialog,items,event);
                 if(options.neutral.dismiss == undefined || options.neutral.dismiss) dialog.close();
-            }, innerHTML: options.neutral.label}, buttons);
+            };
+            options.neutral.innerHTML = options.neutral.label;
+            dialog.neutral = create(HTML.BUTTON, options.neutral, buttons);
             buttons.show();
         }
         if(options.negative && options.negative.label) {
-            dialog.negative = create(HTML.BUTTON, {className:"dialog-button dialog-button-negative", tabindex:99, onclick:function(event){
-                if(options.negative.onclick) options.negative.onclick.call(dialog,items,event);
+            options.negative.tabindex = 99;
+            options.negative.className = "dialog-button dialog-button-negative" + (options.negative.className ? " " + options.negative.className : "");
+            options.negative._onclick = options.negative.onclick;
+            options.negative.onclick = function(event){
+                if(options.negative._onclick) options.negative._onclick.call(dialog,items,event);
                 if(options.negative.dismiss == undefined || options.negative.dismiss) dialog.close();
-            }, innerHTML: options.negative.label}, buttons);
+            };
+            options.negative.innerHTML = options.negative.label;
+            dialog.negative = create(HTML.BUTTON, options.negative, buttons);
             buttons.show();
         }
         if(options.help) {

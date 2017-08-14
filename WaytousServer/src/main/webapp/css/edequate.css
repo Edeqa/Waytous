@@ -424,6 +424,7 @@ button:active {
     padding: 0px;
     min-width: unset;
     font-size: initial !important;
+    color: darkslategray;
 }
 .dialog-help-button:hover {
     background-color: burlywood;
@@ -959,11 +960,16 @@ button:active {
         position: relative;
         font-size: 16px;
         width: 100%;
-        border-style: solid;
-        border-width: 2px;
+        background-color: #4c93af;
+        border: none;
+        margin: 2px;
+        color: white;
     }
     .dialog-filter-clear {
         padding: 15px;
+    }
+    .dialog-help-button {
+        font-size: 32px !important;
     }
     .dialog-items {
         /*flex: 1 1;*/

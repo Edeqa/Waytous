@@ -53,16 +53,15 @@ function GpsHolder(main) {
                     startPositioning();
                 } else if(!u.load("gps:asked")) {
                     locationRequiredDialog = locationRequiredDialog || u.dialog({
-                            title: "Alert",
                             queue: true,
                             className: "gps-required-dialog",
                             items: [
-                                { type: HTML.DIV, innerHTML: u.lang.gps_location_required_1 },
-                                { type: HTML.DIV, innerHTML: u.lang.gps_location_required_2 },
-                                { type: HTML.DIV, enclosed:true, label: u.lang.gps_location_required_3, body: u.lang.gps_location_required_4 },
+                                { type: HTML.DIV, className:"gps-required-dialog-allow", innerHTML: u.lang.gps_allow_geolocation },
+                                { type: HTML.DIV, enclosed:true, label: u.lang.gps_learn_more, body: u.lang.gps_learn_more_body },
+                                { type: HTML.DIV, enclosed:true, label: u.lang.gps_if_you_already_disallowed, body: u.lang.gps_if_you_already_disallowed_body },
                             ],
                             positive: {
-                                label: u.lang.ok_go_ahead,
+                                label: u.lang.ok,
                                 onclick: function() {
                                     u.save("gps:asked", true);
                                     startPositioning();
