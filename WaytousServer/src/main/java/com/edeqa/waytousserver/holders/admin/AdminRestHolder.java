@@ -5,10 +5,11 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.MyGroup;
+import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.PageHolder;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.google.api.client.http.HttpMethods;
 
@@ -16,6 +17,8 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.URI;
+
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
 
 
 /**
@@ -132,7 +135,7 @@ public class AdminRestHolder implements PageHolder {
 
             JSONObject json = new JSONObject(options);
 
-            MyGroup group = new MyGroup();
+            final MyGroup group = new MyGroup();
             if(json.has(Constants.REST.GROUP_ID)) group.setId(json.getString(Constants.REST.GROUP_ID));
             if(json.has(Constants.DATABASE.OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(Constants.DATABASE.OPTION_REQUIRES_PASSWORD));
             if(json.has("password")) group.setPassword(json.get("password").toString());
@@ -154,11 +157,46 @@ public class AdminRestHolder implements PageHolder {
                 }
             }
 
+
+            /*final Runnable1<JSONObject>[] onresult = new Runnable1[2];
+            onresult[0] = new Runnable1<JSONObject>() {
+                @Override
+                public void call(JSONObject json) {
+                    ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(user.getUid());
+                    DatabaseReference nodeNumber = ref.child(group.getId()).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
+                    nodeNumber.setValue(user.getUid());
+
+                    registerUser(group.getId(), user, request);
+                }
+            };
+            onresult[1] = new Runnable1<JSONObject>() {
+                @Override
+                public void call(JSONObject json) {
+                    group.fetchNewId();
+                    createGroup(group, onresult[0], onresult[1]);
+                }
+            };*/
+
+
+
             Common.getInstance().getDataProcessor("v1").createGroup(group,
                 new Runnable1<JSONObject>() {
                     @Override
                     public void call(JSONObject json) {
-                        Utils.sendResultJson.call(requestWrapper, json);
+
+                        MyUser user = new MyUser(null, "server:" + Utils.getUnique());
+
+                        Common.getInstance().getDataProcessor("v1").registerUser(group.getId(), user, REQUEST_NEW_GROUP, new Runnable1<JSONObject>() {
+                            @Override
+                            public void call(JSONObject json) {
+                                Utils.sendResultJson.call(requestWrapper, json);
+                            }
+                        }, new Runnable1<JSONObject>() {
+                            @Override
+                            public void call(JSONObject json) {
+                                Utils.sendError.call(requestWrapper, 500, json);
+                            }
+                        });
                     }
                 }, new Runnable1<JSONObject>() {
                     @Override

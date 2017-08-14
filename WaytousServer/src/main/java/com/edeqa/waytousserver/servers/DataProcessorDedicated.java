@@ -447,6 +447,11 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
         // TODO
     }
 
+    @Override
+    public void registerUser(String groupId, MyUser user, String action, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
+
+    }
+
 //    @Override
 //    public void onWebsocketPong(WebSocket conn, Framedata f) {
 //        super.onWebsocketPong(conn, f);

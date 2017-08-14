@@ -169,7 +169,8 @@ function PropertiesHolder(main) {
         }
 
         clearInterval(view.taskChanged);
-        setTimeout(disableIfOffline, 1);
+//        setTimeout(disableIfOffline, 0);
+        disableIfOffline();
         view.taskChanged = setInterval(disableIfOffline, 10000);
 
         return view;

@@ -124,13 +124,16 @@ function ButtonHolder(main) {
 //                }
 //                break;
             case EVENTS.MAKE_ENABLED:
+               console.log("PRP:", this.number, object, !!(this.views && this.views.button && this.views.button.button && this.views.button.button.classList))
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.remove("user-button-away");
                     this.fire(EVENTS.UPDATE_MENU_SUFFIX, "");
                 }
                 break;
             case EVENTS.MAKE_DISABLED:
-                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
+                console.log("PRD:", this.number, object)
+                debugger;
+               if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.add("user-button-away");
                     this.fire(EVENTS.UPDATE_MENU_SUFFIX, object);
                 }

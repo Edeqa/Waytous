@@ -399,7 +399,14 @@ function TrackingHolder(main) {
                         } else {
                             var number = o[RESPONSE.NUMBER];
                             var user = main.users.users[number];
-                            user.fire(EVENTS.MAKE_ENABLED, o[REQUEST.TIMESTAMP]);
+                            var timestamp = o[REQUEST.TIMESTAMP];
+
+                            var delta = parseInt((new Date().getTime() - timestamp) / 1000);
+                            if (delta < 120) {
+                                user.fire(EVENTS.MAKE_ENABLED, o[REQUEST.TIMESTAMP]);
+                            } else {
+                                user.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
+                            }
                         }
                         break;
                     case RESPONSE.LEAVE:

@@ -469,6 +469,7 @@ function TrackingFB(main) {
 
                 usersDataNameListener(data.child(DATABASE.USER_NAME));
                 usersDataActiveListener(data.child(DATABASE.USER_ACTIVE));
+                usersDataChangedListener(data.child(DATABASE.USER_CHANGED));
 
                 main.eventBus.chain(function(holder){
                     if(holder.saveable) {

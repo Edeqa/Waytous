@@ -140,6 +140,8 @@ abstract public class AbstractDataProcessor {
 
     abstract public void modifyPropertyInGroup(String groupId, String property, Serializable value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
+    public abstract void registerUser(String groupId, MyUser user, String action, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
+
     abstract public void removeUser(String groupId, Long userNumber, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
     abstract public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);

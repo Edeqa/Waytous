@@ -8,12 +8,17 @@ import org.json.JSONObject;
 import java.beans.Transient;
 import java.util.Date;
 
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.USER_ACCURACY;
 import static com.edeqa.waytousserver.helpers.Constants.USER_ALTITUDE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_BEARING;
 import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
+import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
 import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
 
@@ -49,6 +54,16 @@ public class MyUser {
         newControl();
 //        System.out.println("USER CONTROL:" + control);
         calculateHash();
+    }
+
+    public MyUser(DataProcessorConnection conn, JSONObject request) {
+        this(conn, request.getString(REQUEST_DEVICE_ID));
+
+        if (request.has(REQUEST_MANUFACTURER)) setManufacturer(request.getString(REQUEST_MANUFACTURER));
+        if (request.has(REQUEST_MODEL)) setModel(request.getString(REQUEST_MODEL));
+        if (request.has(REQUEST_OS)) setOs(request.getString(REQUEST_OS));
+        if (request.has(USER_NAME)) setName(request.getString(USER_NAME));
+
     }
 
     public String calculateHash() {
