@@ -539,6 +539,41 @@ function Utils(main) {
         return markerPosition;
     }
 
+    function toDateString(millis) {
+        var res = "";
+        var delta = parseInt(millis/1000);
+
+        var secInDay = 24 * 60 * 60;
+        var secInHour = 24 * 60;
+        var secInMinute = 60;
+
+        var d = parseInt(delta / secInDay);
+        delta -= d * secInDay;
+
+        var h = parseInt(delta / secInHour);
+        delta -= h * secInHour;
+
+        var m = parseInt(delta / secInMinute);
+        var s = delta - m * secInMinute;
+
+        if(d) {
+            res += d + "d";
+        }
+        if(h) {
+            if(res) res += " ";
+            res += h + "h";
+        }
+        if(m) {
+            if(res) res += " ";
+            res += m + "m";
+        }
+        if(s) {
+            if(res) res += " ";
+            res += s + "s";
+        }
+        return res;
+    }
+
     return {
         showAlert: showAlert,
         getHexColor: getHexColor,
@@ -557,5 +592,6 @@ function Utils(main) {
         popupBlockerChecker:popupBlockerChecker,
         dialogAbout:dialogAbout,
         labelPosition:labelPosition,
+        toDateString:toDateString,
     }
 }

@@ -27,6 +27,7 @@ function MyUsers(main) {
             }
             users[json[RESPONSE.NUMBER]] = user;
             user.type = json.type;
+            user.changed = json.changed;
             user.origin = json;
             user.fire(EVENTS.CHANGE_NUMBER, json[RESPONSE.NUMBER]);
             user.createViews();
@@ -36,7 +37,7 @@ function MyUsers(main) {
             if (json[USER.COLOR]) user.fire(EVENTS.CHANGE_COLOR, json[USER.COLOR]);
         }
         return user;
-    };
+    }
 
     function setMe() {
         delete users[myNumber];

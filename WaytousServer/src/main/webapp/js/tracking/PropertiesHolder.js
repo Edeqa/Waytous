@@ -149,7 +149,7 @@ function PropertiesHolder(main) {
             number: myUser.number,
             active: myUser.active,
             selected: myUser.selected,
-            changed: 0,
+            changed: myUser.changed,
             getDisplayName: getDisplayName.bind(myUser),
         };
 
@@ -159,19 +159,20 @@ function PropertiesHolder(main) {
         delete myUser.selected;
         myUser.properties = view;
 
-        function disableIfOffline() {
-            if(myUser.type == "user") {
-                var delta = parseInt((new Date().getTime() - myUser.properties.changed) / 1000);
+        var disableIfOffline = function() {
+            console.log(this.properties.name, this.properties.changed);
+            if(this.type == "user") {
+                var delta = parseInt((new Date().getTime() - this.properties.changed) / 1000);
                 if (delta > 120) {
-                    myUser.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
+                    this.fire(EVENTS.MAKE_DISABLED);
                 }
             }
-        }
+        };
 
-        clearInterval(view.taskChanged);
+        //clearInterval(view.taskChanged);
 //        setTimeout(disableIfOffline, 0);
-        disableIfOffline();
-        view.taskChanged = setInterval(disableIfOffline, 10000);
+        disableIfOffline.call(myUser);
+        view.taskChanged = setInterval(disableIfOffline.bind(myUser), 10000);
 
         return view;
     };

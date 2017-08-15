@@ -58,12 +58,12 @@ function ButtonHolder(main) {
         }, main.right);
 
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
-                contextMenuLayout.hide(u.HIDING.OPACITY);
-            }, onmouseleave: function(){
-                contextMenuLayout.hide(u.HIDING.OPACITY);
-            }, onmouseenter: function(){
-                clearTimeout(delayDismiss);
-            }
+            contextMenuLayout.hide(u.HIDING.OPACITY);
+        }, onmouseleave: function(){
+            contextMenuLayout.hide(u.HIDING.OPACITY);
+        }, onmouseenter: function(){
+            clearTimeout(delayDismiss);
+        }
         }, main.right);
         contextMenu = new ContextMenu();
     }
@@ -124,18 +124,16 @@ function ButtonHolder(main) {
 //                }
 //                break;
             case EVENTS.MAKE_ENABLED:
-               console.log("PRP:", this.number, object, !!(this.views && this.views.button && this.views.button.button && this.views.button.button.classList))
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.remove("user-button-away");
+                    this.views.button.button.classList.remove("disabled");
                     this.fire(EVENTS.UPDATE_MENU_SUFFIX, "");
                 }
                 break;
             case EVENTS.MAKE_DISABLED:
-                console.log("PRD:", this.number, object)
-                debugger;
-               if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
+                if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.add("user-button-away");
-                    this.fire(EVENTS.UPDATE_MENU_SUFFIX, object);
+                    this.fire(EVENTS.UPDATE_MENU_SUFFIX, utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed)));
                 }
                 break;
             case EVENTS.SHOW_BADGE:
@@ -226,37 +224,37 @@ function ButtonHolder(main) {
                 main.toast.show(user.properties.getDisplayName());
                 openContextMenu(user, true);
             },
-/*
-            onmousedown: function(){
-                onlyTouch = true;
-                startTime = new Date().getTime();
-                task = setTimeout(function(){
-                    openContextMenu(user);
-                }, 500);
-                // console.log(user);
-            },
-            onmousemove: function(){
-                onlyTouch = false;
-            },
-            onmouseup: function(){
-                if(!onlyTouch) return;
-                var delay = new Date().getTime() - startTime;
-                if(delay < 500) {
-                    if(clicked) {
-                        user.fire(EVENTS.CAMERA_ZOOM);
-                        contextMenuLayout.hide();
-                        clicked = false;
-                    } else {
-                        user.fire(EVENTS.SELECT_SINGLE_USER);
-                        openContextMenu(user);
-                        clicked = true;
-                        setTimeout(function(){
-                            clicked = false;
-                        }, 500);
-                    }
-                }
-                clearTimeout(task);
-            },*/
+            /*
+                        onmousedown: function(){
+                            onlyTouch = true;
+                            startTime = new Date().getTime();
+                            task = setTimeout(function(){
+                                openContextMenu(user);
+                            }, 500);
+                            // console.log(user);
+                        },
+                        onmousemove: function(){
+                            onlyTouch = false;
+                        },
+                        onmouseup: function(){
+                            if(!onlyTouch) return;
+                            var delay = new Date().getTime() - startTime;
+                            if(delay < 500) {
+                                if(clicked) {
+                                    user.fire(EVENTS.CAMERA_ZOOM);
+                                    contextMenuLayout.hide();
+                                    clicked = false;
+                                } else {
+                                    user.fire(EVENTS.SELECT_SINGLE_USER);
+                                    openContextMenu(user);
+                                    clicked = true;
+                                    setTimeout(function(){
+                                        clicked = false;
+                                    }, 500);
+                                }
+                            }
+                            clearTimeout(task);
+                        },*/
             onmouseenter: function(e) {
                 user.fire(EVENTS.MOUSE_OVER,e);
             },
@@ -376,8 +374,6 @@ function ButtonHolder(main) {
 
     function onChangeLocation(location) {
         updateSubtitle.call(this);
-        this.views.button.button.classList.remove("disabled");
-        this.views.button.button.classList.remove("user-button-away");
     }
 
     function updateSubtitle() {

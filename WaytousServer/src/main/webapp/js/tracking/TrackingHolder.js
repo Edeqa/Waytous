@@ -382,8 +382,8 @@ function TrackingHolder(main) {
                             user.fire(EVENTS.MAKE_INACTIVE);
                             main.fire(USER.DISMISSED, user);
                         } else if (o[USER.JOINED] != undefined) {
-                            var number = o[USER.JOINED];
-                            var user = main.users.users[number];
+                            number = o[USER.JOINED];
+                            user = main.users.users[number];
 
                             if(user.properties && !user.properties.active) {
                                 if(!user.changed || new Date().getTime() - 15 * 60 * 1000 > user.changed) {
@@ -391,21 +391,18 @@ function TrackingHolder(main) {
                                     sound.playButLast();
                                 }
                             }
-
                             user.fire(EVENTS.MAKE_ACTIVE);
                             main.fire(USER.JOINED, user);
-
-                            // console.log("JOINED",number);
                         } else {
-                            var number = o[RESPONSE.NUMBER];
-                            var user = main.users.users[number];
+                            number = o[RESPONSE.NUMBER];
+                            user = main.users.users[number];
                             var timestamp = o[REQUEST.TIMESTAMP];
 
                             var delta = parseInt((new Date().getTime() - timestamp) / 1000);
                             if (delta < 120) {
-                                user.fire(EVENTS.MAKE_ENABLED, o[REQUEST.TIMESTAMP]);
+                                user.fire(EVENTS.MAKE_ENABLED, timestamp);
                             } else {
-                                user.fire(EVENTS.MAKE_DISABLED, parseInt(delta / 60) + "min ago");
+                                user.fire(EVENTS.MAKE_DISABLED, timestamp);
                             }
                         }
                         break;

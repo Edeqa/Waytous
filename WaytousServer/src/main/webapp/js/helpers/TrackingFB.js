@@ -154,6 +154,7 @@ function TrackingFB(main) {
                                 updateTask = setInterval(updateActive, 60000);
                                 window.addEventListener("focus", updateActive);
                                 document.addEventListener("visibilitychange", updateActive);
+
                                 registerValueListener(ref.child(DATABASE.SECTION_OPTIONS).child(DATABASE.OPTION_DATE_CREATED), groupListener, groupErrorListener);
                                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE), userActiveListener);
                                 registerChildListener(ref.child(DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
@@ -458,8 +459,8 @@ function TrackingFB(main) {
                 o[RESPONSE.NUMBER] = parseInt(data.key);
                 o[RESPONSE.INITIAL] = true;
                 delete o.active;
-
                 var user = main.users.addUser(o);
+
                 user.type = "user";
 
                 //registers
@@ -467,9 +468,9 @@ function TrackingFB(main) {
                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_ACTIVE), usersDataActiveListener);
                 registerValueListener(ref.child(DATABASE.SECTION_USERS_DATA).child(user.number).child(DATABASE.USER_CHANGED), usersDataChangedListener);
 
-                usersDataNameListener(data.child(DATABASE.USER_NAME));
-                usersDataActiveListener(data.child(DATABASE.USER_ACTIVE));
-                usersDataChangedListener(data.child(DATABASE.USER_CHANGED));
+                //usersDataNameListener(data.child(DATABASE.USER_NAME));
+                //usersDataActiveListener(data.child(DATABASE.USER_ACTIVE));
+                //usersDataChangedListener(data.child(DATABASE.USER_CHANGED));
 
                 main.eventBus.chain(function(holder){
                     if(holder.saveable) {
