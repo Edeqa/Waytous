@@ -84,6 +84,9 @@
   "alpha_6": "&nbsp;",
   "alpha_7": "<a href=\"/\" target=\"_blank\" rel=\"noopener\">Go to the main page of project (new window).</a>",
 
+  "privacy_policy": "Privacy policy",
+  "terms_and_conditions": "Terms and conditions",
+  "third_party_components":"Third party components",
 
   "// GpsHolder": "",
   "enable_geolocation": "Enable geolocation",
@@ -94,8 +97,8 @@
   "gps_learn_more": "Why? Click here to learn more",
   "gps_learn_more_body": "The purpose of this service is to help friends to find each other. To get it, you have to send your location to your friends. Browser asks you about using your location information. Answer him &laquo;Allow&raquo;, otherwise your friends will not be able to see where you are.",
 
-  "gps_if_you_already_disallowed": "If you already disallowed",
-  "gps_if_you_already_disallowed_body": "If you already disallowed the geolocation before then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner of this window to get the detailed instruction.",
+  "gps_if_you_have_already_blocked": "If you have already blocked",
+  "gps_if_you_have_already_blocked_body": "If you have already blocked the geolocation before then the browser can remember your decision. Then you have to clear the settings for this site. Click question mark in the right bottom corner of this window to get the detailed instruction.",
 
   "user_took_too_long_to_grant_deny_geolocation_permission": "User took too long to grant/deny geolocation permission.",
   "geolocation_is_unavailable": "Geolocation is unavailable.",

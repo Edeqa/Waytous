@@ -163,7 +163,9 @@ function OptionHolder(main) {
                     break;
             }
 
-            if(item.onshow) item.onshow(options[i]);
+            if(item.onshow) {
+                item.onshow(options[i]);
+            }
 
         }
     }

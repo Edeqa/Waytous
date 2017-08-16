@@ -24,6 +24,41 @@ function DrawerHolder(main) {
     var start = function() {
         var dialogAbout = utils.dialogAbout(main.right);
 
+
+        dialogAbout.addItem({
+            enclosed: true,
+            label: u.lang.privacy_policy,
+            body: u.lang.loading.outerHTML,
+            onopen: function(e) {
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "privacy-policy.html", locale: lang}).then(function(xhr){
+                    e.body.innerHTML = xhr.response;
+                }).catch(function(error, json) {
+                    e.body.innerHTML = u.lang.error;
+                });
+            }
+        });
+        dialogAbout.addItem({
+            enclosed: true,
+            label: u.lang.terms_and_conditions,
+            body: u.lang.loading.outerHTML,
+            className: "dialog-about-terms",
+            onopen: function(e) {
+                var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+                u.post("/rest/v1/getContent", {resource: "terms-and-conditions.html", locale: lang}).then(function(xhr){
+                    e.body.innerHTML = xhr.response;
+                }).catch(function(error, json) {
+                    e.body.innerHTML = u.lang.error;
+                });
+            }
+        });
+        dialogAbout.addItem({
+            enclosed: true,
+            label: u.lang.third_party_components,
+            body: "Third party components",
+            className: "dialog-about-third"
+        });
+
         var sections = {};
         sections[DRAWER.SECTION_MAP] = u.lang.map;
 

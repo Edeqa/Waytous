@@ -91,9 +91,10 @@ body {
     white-space: normal;
 }
 
-.terms-body, .privacy-body {
+.terms-dialog-body, .privacy-dialog-body {
     align-items: flex-start;
     text-align: left;
+    flex-direction: column;
 }
 
 .button-scroll-top {

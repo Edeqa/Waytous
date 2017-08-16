@@ -394,36 +394,6 @@ function Main() {
                             }
                         }
                     ]
-                },
-                {
-                    id: "general:about",
-                    title: "About",
-                    items: [
-                        {
-                            id:"about:general",
-                            type: HTML.DIV,
-                            className: "options-dialog-item--about",
-                            innerHTML: "Waytous",
-                        },
-                        {
-                            id:"about:legal",
-                            type: HTML.DIV,
-                            className: "options-dialog-item-about",
-                            innerHTML: "Legal information",
-                        },
-                        {
-                            id:"about:terms",
-                            type: HTML.DIV,
-                            className: "options-dialog-item-about",
-                            innerHTML: "Terms and conditions",
-                        },
-                        {
-                            id:"about:other",
-                            type: HTML.DIV,
-                            className: "options-dialog-item-about",
-                            innerHTML: "Third party components",
-                        }
-                    ]
                 }
             ]
         }

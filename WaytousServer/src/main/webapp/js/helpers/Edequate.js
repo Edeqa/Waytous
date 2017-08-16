@@ -749,6 +749,9 @@ function Edequate(options) {
                         if(x.body.classList.contains("hidden")) {
                             enclosedIcon.innerHTML = "expand_less";
                             x.body.show(HIDING.SCALE_Y_TOP);
+                            if(item.onopen) {
+                                item.onopen(div);
+                            }
                         } else {
                             enclosedIcon.innerHTML = "expand_more";
                             x.body.hide(HIDING.SCALE_Y_TOP);

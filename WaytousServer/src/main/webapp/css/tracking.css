@@ -709,6 +709,8 @@ p.bottom-desc {
 .options-dialog-item-about {
     text-align: left;
     justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .share-dialog {
     z-index: 1001;

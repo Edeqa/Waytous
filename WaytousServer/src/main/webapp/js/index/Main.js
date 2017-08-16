@@ -82,8 +82,18 @@ function Main() {
         try {
 
             var path = window.location.pathname.split("/");
-            if(path.length > 1) {
-                type = path[1] || "home";
+            if(path.length > 2) {
+                if(holders[path[1]]) {
+                    type = path[1];
+                //} else if (path[1] == "404.html" || path[1] == "403.html") {
+                } else {
+                    type = 404;
+                    //window.location = "/404.html";
+                    //return;
+                }
+            } else {
+                type = "home";
+                window.history.pushState({}, null, "/" + type);
             }
 
             window.addEventListener("load",function() { setTimeout(function(){ // This hides the address bar:
@@ -93,7 +103,7 @@ function Main() {
             var out = u.create("div", {className:"layout"}, "layout");
 
             self.actionbar = u.actionBar({
-                title: holders[type].title,
+                title: (holders[type] ? holders[type].title : type),
                 onbuttonclick: function(){
                     try {
                         self.drawer.open();
@@ -210,9 +220,13 @@ function Main() {
                 }
             }
 
-            u.lang.updateNode(self.actionbar.titleNode, holders[type].title);
-            u.lang.updateNode(self.drawer.headerPrimary, holders[type].title);
-            holders[type].start();
+            if(type == 404 || type == 403) {
+
+            } else {
+                u.lang.updateNode(self.actionbar.titleNode, holders[type].title);
+                u.lang.updateNode(self.drawer.headerPrimary, holders[type].title);
+                holders[type].start();
+            }
             u.fire(type);
             u.loading.hide();
         } catch(e) {
@@ -224,7 +238,7 @@ function Main() {
         showPrivacy.dialog = showPrivacy.dialog || u.dialog({
                 title: u.lang.privacy_policy,
                 items: [
-                    { type: HTML.DIV, className: "privacy-body", innerHTML: u.lang.privacy_policy_body }
+                    { type: HTML.DIV, className: "privacy-dialog-body", innerHTML: u.lang.loading }
                 ],
                 positive: {
                     label: u.lang.close
@@ -232,6 +246,14 @@ function Main() {
             });
 
         showPrivacy.dialog.open();
+
+        var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+        u.post("/rest/v1/getContent", {resource: "privacy-policy.html", locale: lang}).then(function(xhr){
+            showPrivacy.dialog.items[0].innerHTML = xhr.response;
+        }).catch(function(error, json) {
+            showPrivacy.dialog.items[0].innerHTML = "Error";
+        });
+
         e.preventDefault();
         e.stopPropagation();
         return false;
@@ -241,7 +263,7 @@ function Main() {
         showTerms.dialog = showTerms.dialog || u.dialog({
                 title: u.lang.terms_and_conditions,
                 items: [
-                    { type: HTML.DIV, className: "terms-body", innerHTML: u.lang.terms_and_conditions_body }
+                    { type: HTML.DIV, className: "terms-dialog-body", innerHTML: u.lang.loading }
                 ],
                 positive: {
                     label: u.lang.close
@@ -249,6 +271,14 @@ function Main() {
             });
 
         showTerms.dialog.open();
+
+        var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
+        u.post("/rest/v1/getContent", {resource: "terms-and-conditions.html", locale: lang}).then(function(xhr){
+            showTerms.dialog.items[0].innerHTML = xhr.response;
+        }).catch(function(error, json) {
+            showTerms.dialog.items[0].innerHTML = "Error";
+        });
+
         e.preventDefault();
         e.stopPropagation();
         return false;
