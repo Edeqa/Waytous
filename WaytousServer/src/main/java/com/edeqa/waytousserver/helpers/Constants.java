@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 @SuppressWarnings("HardCodedStringLiteral")
 public class Constants {
-    public final static int SERVER_BUILD = 35;
+    public final static int SERVER_BUILD = 36;
 
     public static SensitiveData SENSITIVE;
 

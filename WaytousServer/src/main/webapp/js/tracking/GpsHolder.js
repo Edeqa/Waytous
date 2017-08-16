@@ -58,7 +58,7 @@ function GpsHolder(main) {
                             items: [
                                 { type: HTML.DIV, className:"gps-required-dialog-allow", innerHTML: u.lang.gps_allow_geolocation },
                                 { type: HTML.DIV, enclosed:true, label: u.lang.gps_learn_more, body: u.lang.gps_learn_more_body },
-                                { type: HTML.DIV, enclosed:true, label: u.lang.gps_if_you_already_disallowed, body: u.lang.gps_if_you_already_disallowed_body },
+                                { type: HTML.DIV, enclosed:true, label: u.lang.gps_if_you_have_already_blocked, body: u.lang.gps_if_you_have_already_blocked_body },
                             ],
                             positive: {
                                 label: u.lang.ok,
@@ -68,13 +68,6 @@ function GpsHolder(main) {
                                     if(!initialized) main.fire(EVENTS.MAP_READY);
                                 }
                             },
-                            /*negative: {
-                                label: u.lang.maybe_later,
-                                onclick: function() {
-                                    u.save("gps:asked", true);
-                                    if(!initialized) main.fire(EVENTS.MAP_READY);
-                                }
-                            },*/
                             help: function() {
                                 locationRequiredDialog.close();
                                 main.fire(EVENTS.SHOW_HELP, {module:main.eventBus.holders.gps, article:1})

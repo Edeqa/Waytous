@@ -40,7 +40,7 @@ public class MainServletHandler extends AbstractServletHandler {
             substitutions.put("\\$\\{APP_NAME\\}", SENSITIVE.getAppName() + (SENSITIVE.isDebugMode() ? " &beta;" : ""));
             substitutions.put("\\$\\{SUPPORT_EMAIL\\}", SENSITIVE.getSupportEmail());
             substitutions.put("\\$\\{WEB_PAGE\\}", SENSITIVE.getAppLink());
-            substitutions.put("\\$\\{REFERER\\}", SENSITIVE.getServerHost());
+            substitutions.put("\\$\\{REFERER\\}", "https://" + SENSITIVE.getServerHost());
 
             try {
                 //noinspection LoopStatementThatDoesntLoop

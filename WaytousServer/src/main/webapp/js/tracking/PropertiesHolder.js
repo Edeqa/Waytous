@@ -160,7 +160,7 @@ function PropertiesHolder(main) {
         myUser.properties = view;
 
         var disableIfOffline = function() {
-            console.log(this.properties.name, this.properties.changed);
+            //console.log(this.properties.name, this.properties.changed);
             if(this.type == "user") {
                 var delta = parseInt((new Date().getTime() - this.properties.changed) / 1000);
                 if (delta > 120) {

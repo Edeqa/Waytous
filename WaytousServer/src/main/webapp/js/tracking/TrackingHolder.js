@@ -379,6 +379,7 @@ function TrackingHolder(main) {
                             var number = o[USER.DISMISSED];
                             // console.log("DISMISSED",number);
                             var user = main.users.users[number];
+                            user.removeViews();
                             user.fire(EVENTS.MAKE_INACTIVE);
                             main.fire(USER.DISMISSED, user);
                         } else if (o[USER.JOINED] != undefined) {
