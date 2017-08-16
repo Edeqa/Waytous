@@ -6,22 +6,23 @@
  * Created 1/20/17.
  */
 {
-  "info": "Информация",
+
+
   "about": "О сайте",
-  "loading": "Загружается...",
-  "privacy": "Конфиденциальность",
-  "terms": "Условия",
-  "terms_and_conditions": "Условия использования",
-  "signing_in": "Подключаемся...",
-  "home": "Главная",
   "contact": "Контакт",
   "docs": "Документация",
-
-  "support": "Поддержка",
-  "help": "Справка",
   "feedback": "Обратная связь",
+  "help": "Справка",
+  "home": "Главная",
+  "info": "Информация",
   "legal_information": "Информация",
-
-  "site_is_under_construction": "Сайт в разработке."
+  "loading": "Загружается...",
+  "privacy": "Конфиденциальность",
+  "privacy_policy": "Политика конфиденциальности",
+  "signing_in": "Подключаемся...",
+  "site_is_under_construction": "Сайт в разработке.",
+  "support": "Поддержка",
+  "terms": "Условия",
+  "terms_and_conditions": "Условия использования"
 
 }
