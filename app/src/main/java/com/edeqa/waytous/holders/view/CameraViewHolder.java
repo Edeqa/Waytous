@@ -1,7 +1,9 @@
 package com.edeqa.waytous.holders.view;
 
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,12 +24,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
@@ -358,8 +360,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     if(orientationChanged) {
                         position.tilt(60);
                     }
-                    position.target(new LatLng(location.getLatitude(), location.getLongitude()));
-                    position.bearing(location.getBearing());
 
                     /*DisplayMetrics metrics = new DisplayMetrics();
                     context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -381,6 +381,19 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
                     LatLng fixLatLng = projection.fromScreenLocation(cameraCenter);
                     position.target(fixLatLng);*/
+
+                    DisplayMetrics metrics = new DisplayMetrics();
+                    context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                    Point targetPoint = new Point(metrics.widthPixels / 2, metrics.heightPixels - metrics.heightPixels / 9);
+                    LatLng targetLatlng = map.getProjection().fromScreenLocation(targetPoint);
+                    double fromCenterToTarget = SphericalUtil.computeDistanceBetween(map.getCameraPosition().target, targetLatlng);
+
+                    LatLng center = SphericalUtil.computeOffset(Utils.latLng(myUser.getLocation()), fromCenterToTarget/1.2, myUser.getLocation().getBearing());
+
+//                    position.target(centerlatlng);
+                    position.target(center);
+                    position.bearing(location.getBearing());
 
                     break;
                 case CAMERA_ORIENTATION_STAY:
@@ -412,6 +425,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     bRecenter.setVisibility(View.GONE);
                     orientation = previousOrientation;
                     orientationChanged = true;
+                    onChangeLocation(myUser.getLocation());
                     onChangeLocation(myUser.getLocation());
                     break;
                 case UNSELECT_USER:
@@ -577,10 +591,13 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 State.getInstance().fire(CAMERA_UPDATED);
                 return;
             }
+            boolean zoomChanged = false;
             if(canceled && cameraView.zoom != map.getCameraPosition().zoom){
                 cameraView.changeOrientation(cameraView.previousOrientation);
+                zoomChanged = true;
                 moveFromHardware = true;
             } else if(cameraView.zoom != map.getCameraPosition().zoom){
+                zoomChanged = true;
                 moveFromHardware = true;
             }
 
@@ -588,7 +605,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             cameraView.bearing = map.getCameraPosition().bearing;
             cameraView.tilt = map.getCameraPosition().tilt;
 
-//            System.out.println("onCameraIdle,orientation:"+orientation+":"+moveFromHardware);
+            if(zoomChanged) {
+                cameraView.onChangeLocation(cameraView.getLocation());
+            }
             if(!moveFromHardware){
                 cameraView.changeOrientation(CAMERA_ORIENTATION_STAY);
             }
