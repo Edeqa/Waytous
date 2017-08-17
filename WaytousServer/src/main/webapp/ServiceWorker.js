@@ -5,7 +5,7 @@
  * Version 1.${SERVER_BUILD}
  * Created 3/9/17.
  */
-var CACHE_NAME = "${APP_NAME}-v${SERVER_BUILD}";
+var CACHE_NAME = "${APP_NAME}-v${SERVER_BUILD}a";
 var urlsToCache = [
   "/",
   "/css/tracking.css",

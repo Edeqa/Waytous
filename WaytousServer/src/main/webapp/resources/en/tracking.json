@@ -23,6 +23,8 @@
   "mail": "Mail",
   "loading":"Loading...",
   "s_s": "%s - %s",
+  "force_reload": "Force reload application",
+  "go": "Go",
 
   "popup_blocked_dialog_1": "Looks like your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly.",
   "popup_blocked_dialog_2": "Detailed information how to unblock this feature",

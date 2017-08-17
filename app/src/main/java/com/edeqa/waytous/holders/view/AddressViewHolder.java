@@ -127,7 +127,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 @Override
                 public void run() {
 
-                    try {
+                    /*try {
                         if(location == null) {
                             callback.call(null);
                             return;
@@ -154,10 +154,10 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                             callback.call(null);
                             return;
                         }
-                    }
+                    }*/
 
 
-                    /*String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
+                    String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
 
                     try {
                         Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req); //NON-NLS
@@ -170,7 +170,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                     } catch (Exception e) {
                         e.printStackTrace();
                         setTitle(null);
-                    }*/
+                    }
                 }
             }).start();
         }

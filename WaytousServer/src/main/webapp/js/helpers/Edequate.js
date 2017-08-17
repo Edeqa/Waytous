@@ -2,6 +2,7 @@
  * Edequate - javascript DOM and interface routines
  * Copyright (C) Edeqa LLC <http://www.edeqa.com>
  *
+ * v.1.1 - some fixes and improvements
  * v.1 - initial release
  */
 
@@ -826,7 +827,7 @@ function Edequate(options) {
 
                 item.tabindex = i;
                 item.className = "dialog-item-input-"+item.type + (item.className ? " "+item.className : "");
-                if(item.onclick) {
+                if(item.onclick && item.type != HTML.BUTTON) {
                     var a = item.onclick;
                     item.onclick = function(e) { this.focus(); a.call(this); e.stopPropagation(); };
                 } else {

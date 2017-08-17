@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/material_list_normal_padding_vertical"
+        android:layout_weight="0"
         android:text="@string/you_are_creating_the_group"
         android:visibility="gone"
         tools:visibility="visible"/>
@@ -25,13 +26,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/material_list_normal_padding_vertical"
+        android:layout_weight="0"
         android:text="@string/you_are_joining_the_group"
         android:visibility="gone"
         tools:visibility="visible"/>
 
     <ScrollView
+        android:id="@+id/sv_terms"
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/material_list_normal_padding_vertical"
                 android:text="@string/legal_information_body"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
 
         </LinearLayout>
     </ScrollView>
@@ -53,6 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/material_list_normal_padding_vertical"
-        android:text="@string/i_have_read_and_agree_with_terms_of_service" />
+        android:layout_weight="0"
+        android:text="@string/i_have_read_and_agree_with_terms_of_service"/>
 
 </LinearLayout>

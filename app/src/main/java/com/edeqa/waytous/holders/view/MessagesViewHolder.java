@@ -38,6 +38,7 @@ import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 
+import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
@@ -72,7 +73,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
     private SmoothInterpolated action;
 //    private Toolbar toolbar;
     private RecyclerView list;
-    private CustomListDialog  dialog;
+    private CustomListDialog dialog;
 
     private String filterMessage;
     private Integer fontSize;
@@ -120,6 +121,13 @@ public class MessagesViewHolder extends AbstractViewHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
+            case ACTIVITY_RESUME:
+                if(dialog != null && dialog.isShowing()) {
+                    System.out.println("DO RESIZE:"+dialog);
+                    dialog.setContext((MainActivity) object);
+                    dialog.resize();
+                }
+                break;
             case NEW_MESSAGE:
                 MyUser to = null;
                 if(object instanceof Integer) {

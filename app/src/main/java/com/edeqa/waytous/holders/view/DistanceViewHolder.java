@@ -388,7 +388,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         if(user1 != null && user1.getLocation() != null && user2 != null && user2.getLocation() != null) {
             DistanceMark mark = new DistanceMark(user1, user2);
             marks.add(mark);
-        mark.update(false);
+            mark.update(false);
             return mark;
         }
         return null;

@@ -376,6 +376,8 @@ public class Utils {
             if(height == MATCH_SCREEN) {
                 height = displaymetrics.heightPixels;
             }
+                System.out.println("WIDTH:"+width);
+                System.out.println("HEIGHT:"+height);
         }
         dialog.getWindow().setLayout(width, height);
     }

@@ -38,7 +38,6 @@ function MapHolder(main) {
                 main.users.forAllUsers(function(number,user){
                     if(user.views.properties.selected) user.fire(EVENTS.SELECT_USER);
                 });
-//                this.hide(u.HIDING.OPACITY);
                 return false;
             }
         }, main.right);
@@ -46,6 +45,7 @@ function MapHolder(main) {
 
     window.initMap = function() {
         // Create a map object and specify the DOM element for display.
+        delete window.initMap;
         var center = u.load("map:coords") || {};
         center.lat = center.lat || 4.0;
         center.lng = center.lng || -16.0;
@@ -81,7 +81,7 @@ function MapHolder(main) {
         main.map.addListener("idle", function() {
             main.me.fire(EVENTS.MAP_MOVED)
         });
-    }
+    };
 
     function onEvent(EVENT,object){
         var center = main.map && main.map.getCenter();

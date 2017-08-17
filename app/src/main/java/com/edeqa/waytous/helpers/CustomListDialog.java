@@ -29,7 +29,8 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 @SuppressWarnings("WeakerAccess")
 public class CustomListDialog {
-    private final MainActivity context;
+
+    private MainActivity context;
     private View content;
     private RecyclerView list;
     private int layout;
@@ -58,12 +59,12 @@ public class CustomListDialog {
 
         content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
         list = (RecyclerView) content.findViewById(R.id.list_items);
-    }
 
+        dialog = new AlertDialog.Builder(context).create();
+    }
 
     public void show() {
 
-        dialog = new AlertDialog.Builder(context).create();
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
         dialog.setCustomTitle(layoutToolbar);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
@@ -261,7 +262,7 @@ public class CustomListDialog {
     }
 
     public boolean isShowing() {
-        return dialog.isShowing();
+        return dialog != null && dialog.isShowing();
     }
 
     public Menu getMenu() {
@@ -308,4 +309,13 @@ public class CustomListDialog {
     public DialogInterface.OnCancelListener getOnCancelListener() {
         return onCancelListener;
     }
+
+    public void resize() {
+        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    public void setContext(MainActivity context) {
+        this.context = context;
+    }
+
 }

@@ -1,9 +1,13 @@
 package com.edeqa.waytous.holders.view;
 
 import android.content.DialogInterface;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.edeqa.waytous.MainActivity;
@@ -130,6 +134,10 @@ public class TrackingViewHolder extends AbstractViewHolder<TrackingViewHolder.Tr
         TextView tvMessageCreate = (TextView) content.findViewById(R.id.tv_message_create);
         TextView tvMessageJoin = (TextView) content.findViewById(R.id.tv_message_join);
         final CheckBox cbConfirm = (CheckBox) content.findViewById(R.id.cb_terms_of_service_confirm);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        context.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
         cbConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +173,7 @@ public class TrackingViewHolder extends AbstractViewHolder<TrackingViewHolder.Tr
             }
         });
         dialog.setView(content);
+
         dialog.show();
 
     }
