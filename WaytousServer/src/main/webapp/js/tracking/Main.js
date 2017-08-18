@@ -372,8 +372,8 @@ function Main() {
                                 }
                                 this.dialog.close();
                             }
-                        },
-                        {
+                        }
+                        /*{
                             id:"main:force_reload",
                             type: HTML.BUTTON,
                             label: u.lang.force_reload,
@@ -382,7 +382,7 @@ function Main() {
                             onclick: function(e, event) {
                                 window.location.reload(true);
                             }
-                        }
+                        }*/
                     ]
                 },
                 {

@@ -119,6 +119,7 @@ public class TrackingServletHandler extends AbstractServletHandler {
         html.getHead().add(TITLE).with("Waytous");
 //        html.getHead().add(META).with(NAME, "theme-color").with(CONTENT, "#aaeeee");
         html.getHead().add(SCRIPT).with("data", o);
+        html.getHead().add(SCRIPT).with("(function checkVersion(){var l=localStorage;if(l){var w=\"waytous:version\";var d=data.version;var i=parseInt(l[w]||0);if(i<d){l[w]=d;console.warn(\"Forced reloading because of version \"+d+\" is newer than \"+i);window.location.reload(true);}}})();");
         html.getHead().add(SCRIPT).with(SRC, "/js/tracking/Main.js").with("async",true).with("defer",true).with(ONLOAD, "(window.WTU = new Main()).start();");
 
 
