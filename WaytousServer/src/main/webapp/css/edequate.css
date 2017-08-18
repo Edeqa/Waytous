@@ -947,6 +947,7 @@ button:active {
         position: absolute;
         left: 50px;
         height: 50px;
+        display: flex;
     }
     .dialog-filter-button {
         padding: 15px;
@@ -954,12 +955,10 @@ button:active {
         right: 0px;
     }
     .dialog-filter-input {
-        height: 30px;
+        flex: 1 1;
         padding: 8px;
         outline: none;
-        position: relative;
         font-size: 16px;
-        width: 100%;
         background-color: #4c93af;
         border: none;
         margin: 2px;
@@ -967,6 +966,7 @@ button:active {
     }
     .dialog-filter-clear {
         padding: 15px;
+        color: white;
     }
     .dialog-help-button {
         font-size: 32px !important;
