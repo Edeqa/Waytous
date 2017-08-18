@@ -1870,25 +1870,17 @@ function Edequate(options) {
                     var title = options.title;
                     delete options.title;
                     var notif;
-//                    console.log("A");
                     try {
-//                    console.log("B");
                         notif = new Notification(title, options);
                     } catch (e) {
-//                    console.log("C",e);
                         if(e.name === "TypeError") {
-//                    console.log("D");
                             navigator.serviceWorker.register("/sw.js").then(function(e){
-//                    console.log("E:"+e);
-
                                 navigator.serviceWorker.ready.then(function(registration) {
-//                        console.log("F",registration);
                                     notif = registration.showNotification(title, options);
                                 });
                             });
                         }
                     }
-//                    console.log("G",notif);
                     notif.onclick = function(e){
                         notif.close();
                         window.focus();
@@ -1898,7 +1890,6 @@ function Edequate(options) {
                     if(options.duration) {
                         setTimeout(function(){
                             notif.close();
-//                            notif2 && notif2.close();
                         }, options.duration);
                     }
                 }
