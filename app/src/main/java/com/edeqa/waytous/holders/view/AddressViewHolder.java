@@ -157,9 +157,9 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                     }*/
 
 
-                    String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
 
                     try {
+                        String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
                         Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req); //NON-NLS
                         final String res = Utils.getUrl(req);
                         Utils.log(AddressView.this, "Response:", res); //NON-NLS

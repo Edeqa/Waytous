@@ -21,6 +21,7 @@ import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -79,6 +80,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private final static String ORIENTATION = "orientation";
     private final static String PREVIOUS_ORIENTATION = "previous_orientation";
     private final static String PERSPECTIVE_NORTH = "perspective_north";
+    private final SupportMapFragment mapFragment;
 
     private CameraView cameraView;
     private MapScaleView scaleView;
@@ -92,6 +94,18 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     public CameraViewHolder(MainActivity context) {
         super(context);
         padding = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
+        mapFragment = (SupportMapFragment) context.getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                int oldHeight = oldBottom - oldTop; // bottom exclusive, top inclusive
+                if( v.getHeight() != oldHeight) {
+                    if(cameraView != null) {
+                        cameraView.onChangeLocation(cameraView.getLocation());
+                    }
+                }
+            }
+        });
 
         setMap(context.getMap());
         setScaleView((MapScaleView) context.findViewById(R.id.scale_view));
@@ -385,7 +399,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     DisplayMetrics metrics = new DisplayMetrics();
                     context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-                    Point targetPoint = new Point(metrics.widthPixels / 2, metrics.heightPixels - metrics.heightPixels / 9);
+                    int height = mapFragment.getView().getHeight();
+
+                    Point targetPoint = new Point(metrics.widthPixels / 2, height /*metrics.heightPixels*/ - height /*metrics.heightPixels*/ / 9);
                     LatLng targetLatlng = map.getProjection().fromScreenLocation(targetPoint);
                     double fromCenterToTarget = SphericalUtil.computeDistanceBetween(map.getCameraPosition().target, targetLatlng);
 
@@ -605,9 +621,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             cameraView.bearing = map.getCameraPosition().bearing;
             cameraView.tilt = map.getCameraPosition().tilt;
 
-            if(zoomChanged) {
-                cameraView.onChangeLocation(cameraView.getLocation());
-            }
             if(!moveFromHardware){
                 cameraView.changeOrientation(CAMERA_ORIENTATION_STAY);
             }
@@ -615,6 +628,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
             moveFromHardware = false;
             canceled = false;
             State.getInstance().fire(CAMERA_UPDATED, cameraView.getUser());
+            if(zoomChanged) {
+                cameraView.onChangeLocation(cameraView.getLocation());
+            }
 //            System.out.println("onCameraIdle");
         }
     };
