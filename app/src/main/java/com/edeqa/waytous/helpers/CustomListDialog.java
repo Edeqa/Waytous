@@ -142,6 +142,16 @@ public class CustomListDialog {
             Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
         }
 
+        dialog.getWindow().getDecorView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                int oldHeight = oldBottom - oldTop; // bottom exclusive, top inclusive
+                if(v.getHeight() != oldHeight) {
+                    Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
+                }
+            }
+        });
+
         if(getOnTouchListener() != null) {
             dialog.getWindow().getDecorView().setOnTouchListener(getOnTouchListener());
         }
