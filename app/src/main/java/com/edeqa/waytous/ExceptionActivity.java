@@ -76,6 +76,29 @@ public class ExceptionActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+
+                        Intent intent = null;
+                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue")
+                                    .buildUpon()
+                                    .appendQueryParameter("project", "WTU")
+                                    .appendQueryParameter("summary", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
+//                                    .appendQueryParameter("description", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
+                                    .appendQueryParameter("description", textException.toString())
+                                    .build());
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                            startActivity(intent);
+
+/*
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setData(Uri.parse("mailto:"));
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.email)});
+                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+                        intent.putExtra(Intent.EXTRA_TEXT, textException.toString());
+*/
+
+/*
                         Intent intent = new Intent(Intent.ACTION_SEND);
                         intent.setData(Uri.parse("mailto:"));
                         intent.setType("text/plain");
@@ -86,6 +109,7 @@ public class ExceptionActivity extends AppCompatActivity {
 //                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
                         startActivity(Intent.createChooser(intent, getString(R.string.send_report_about_an_error)));
+*/
                     }
                 }).start();
                 finish();

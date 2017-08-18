@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
+//        findViewById(100000).setTag(1);
         state.fire(BACK_PRESSED);
 
         /*DrawerViewHolder holder = (DrawerViewHolder) state.getEntityHolder(DrawerViewHolder.TYPE);
