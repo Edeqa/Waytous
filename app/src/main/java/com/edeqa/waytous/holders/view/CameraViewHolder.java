@@ -437,12 +437,19 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         @Override
         public boolean onEvent(String event, Object object) {
             switch (event) {
-                case SELECT_USER:
+                case SELECT_SINGLE_USER:
                     bRecenter.setVisibility(View.GONE);
                     orientation = previousOrientation;
                     orientationChanged = true;
                     onChangeLocation(myUser.getLocation());
-                    onChangeLocation(myUser.getLocation());
+                    if(orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
+                        mapFragment.getView().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                onChangeLocation(myUser.getLocation());
+                            }
+                        }, LOCATION_UPDATES_DELAY);
+                    }
                     break;
                 case UNSELECT_USER:
                     if(State.getInstance().getUsers().getCountSelectedTotal()==0){
@@ -468,6 +475,14 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     previousOrientation = orientation;
                     changeOrientation(orientation);
                     onChangeLocation(myUser.getLocation());
+                    if(orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
+                        mapFragment.getView().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                onChangeLocation(myUser.getLocation());
+                            }
+                        }, LOCATION_UPDATES_DELAY);
+                    }
                     break;
 //                case ADJUST_ZOOM:
 //                    zoom = CAMERA_DEFAULT_ZOOM;
