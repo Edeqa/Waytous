@@ -115,9 +115,11 @@ function TrackingHolder(main) {
                         //}, 0);
                     }
                 } else {
-                    if(!u.load("tracking:terms_of_service_confirmed")) {
-                        startTracking();
-                    }
+                    //if(!u.load("tracking:terms_of_service_confirmed")) {
+                    main.fire(EVENTS.TRACKING_NEW);
+                    //} else {
+                    //
+                    //}
                 }
                 break;
             case EVENTS.TRACKING_NEW:
@@ -197,7 +199,7 @@ function TrackingHolder(main) {
     }
 
     function startTracking(group) {
-        if(u.load("tracking:terms_of_service_confirmed")) {
+        if(group && u.load("tracking:terms_of_service_confirmed")) {
             //setTimeout(function(){
                 u.require("/js/helpers/TrackingFB.js").then(startTrackingReady.bind(self));
             //}, 0);
@@ -227,7 +229,9 @@ function TrackingHolder(main) {
                     onclick: function(items) {
                         if(items[2].checked) {
                             u.save("tracking:terms_of_service_confirmed", true);
-                            startTracking(agreementDialog.groupId);
+                            u.require("/js/helpers/TrackingFB.js").then(startTrackingReady.bind(self));
+
+                            //startTracking(agreementDialog.groupId);
                         } else {
                             window.history.pushState({}, null, "/group/");
                         }
