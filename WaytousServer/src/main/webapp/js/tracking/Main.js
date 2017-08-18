@@ -16,11 +16,10 @@ function Main() {
     var origin;
     var main = window.Waytous = this;
     var alert;
-    var defaultResources = "/resources/en/tracking.json";
 
     if (!data.isDebugMode && "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
-            navigator.serviceWorker.register("/ServiceWorker.js")
+            navigator.serviceWorker.register("/sw.js")
             .then(function(registration) {
                 console.log("ServiceWorker registration successful with scope:", registration);
             })
