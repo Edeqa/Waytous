@@ -58,6 +58,7 @@ import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.USER_ADDRESS;
 import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
 import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
@@ -315,9 +316,10 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     break;
                 case HIDE_PLACE:
                     myUser.removeViews();
-                    myUser.fire(NavigationViewHolder.HIDE_NAVIGATION);
+//                    myUser.fire(NavigationViewHolder.HIDE_NAVIGATION);
                     myUser.fire(MAKE_INACTIVE);
-                    myUser.fire(UNSELECT_USER);
+                    State.getInstance().fire(USER_DISMISSED, myUser);
+//                    myUser.fire(UNSELECT_USER);
 
 //                    State.getInstance().fire(USER_DISMISSED, myUser);
 //                    myUser.fire(USER_DISMISSED);

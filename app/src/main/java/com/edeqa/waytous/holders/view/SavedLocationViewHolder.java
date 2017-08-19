@@ -757,7 +757,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     break;
                 case CREATE_CONTEXT_MENU:
                     Menu menu = (Menu) object;
-                    if(myUser.isUser()) {
+                    if(!isSavedLocation(myUser)) {
                         menu.add(0, R.string.save_location, Menu.NONE, R.string.save_location).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -906,7 +906,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     }
                     break;
                 case SAVE_LOCATION:
-                    if(myUser.isUser()) {
+                    if(!isSavedLocation(myUser)) {
                         final SavedLocation loc = new SavedLocation(context);
                         loc.setLatitude(myUser.getLocation().getLatitude());
                         loc.setLongitude(myUser.getLocation().getLongitude());
@@ -932,6 +932,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             return true;
         }
 
+
 /*
         @Override
         public View infoWindow() {
@@ -955,6 +956,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         return rules;
     }
 */
+
 
     private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
         @Override

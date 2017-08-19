@@ -90,7 +90,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 break;
             case USER_JOINED:
             case USER_DISMISSED:
-                if(layout.getChildCount()>1 || !State.getInstance().tracking_disabled()) {
+                if(State.getInstance().getUsers().getCountActiveTotal() > 1 || !State.getInstance().tracking_disabled()) {
                     show();
                 } else if(State.getInstance().tracking_disabled()) {
                     hide();

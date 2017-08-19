@@ -23,6 +23,8 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.LightSensorManager.DAY;
 import static com.edeqa.waytous.helpers.LightSensorManager.NIGHT;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
+import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
 
 /**
@@ -110,23 +112,39 @@ public class SensorsViewHolder extends AbstractViewHolder {
         switch (event) {
             case TRACKING_ACTIVE:
                 context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                System.out.println("SCREENON1");
                 lightSensor.enable();
                 break;
             case TRACKING_DISABLED:
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                System.out.println("SCREENOFF1");
                 lightSensor.disable();
                 onEnvironmentChangeListener.call(DAY);
                 break;
             case ACTIVITY_PAUSE:
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                System.out.println("SCREENOFF2");
                 lightSensor.disable();
                 break;
             case ACTIVITY_RESUME:
-                if(State.getInstance().tracking_active()) {
+                if(State.getInstance().tracking_active() || State.getInstance().getUsers().getCountActiveTotal() > 1) {
+//                    System.out.println("SCREENON2");
                     context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lightSensor.enable();
                 } else {
                     onEnvironmentChangeListener.call(DAY);
+                }
+                break;
+            case USER_JOINED:
+                if(State.getInstance().tracking_active() || State.getInstance().getUsers().getCountActiveTotal() > 1) {
+//                    System.out.println("SCREENON3");
+                    context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                break;
+            case USER_DISMISSED:
+                if(!State.getInstance().tracking_active() && State.getInstance().getUsers().getCountActiveTotal() == 1) {
+//                    System.out.println("SCREENOFF3");
+                    context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 }
                 break;
             case REQUEST_MODE_DAY:
