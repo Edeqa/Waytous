@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
@@ -61,6 +62,8 @@ import static com.edeqa.waytous.holders.view.SettingsViewHolder.PREPARE_SETTINGS
 public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolder.NavigationView> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820058L;
+
+    public static final String TYPE = "navigationView";
 
     @SuppressWarnings("WeakerAccess")
     public static final String SHOW_NAVIGATION = "show_navigation";
@@ -97,7 +100,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         mode = State.getInstance().getStringPreference(PREFERENCE_MODE, NAVIGATION_MODE_DRIVING);
 
-        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(getType());
+        NavigationViewHolder m = (NavigationViewHolder) State.getInstance().getPropertiesHolder().loadFor(TYPE);
         if(m != null) {
             mode = m.mode;
         }
@@ -128,7 +131,10 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser myUser) {
-                                myUser.fire(HIDE_NAVIGATION);
+                                NavigationView view = ((NavigationView) myUser.getView(TYPE));
+                                if(view != null && view.showNavigation) {
+                                    myUser.fire(HIDE_NAVIGATION);
+                                }
                             }
                         });
                         return false;
@@ -142,7 +148,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        NavigationView view = ((NavigationView) myUser.getView(getType()));
+                        NavigationView view = ((NavigationView) myUser.getView(TYPE));
                         if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
                         }
@@ -158,11 +164,11 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        if(myUser!= null && myUser.getView(getType()) != null && ((NavigationView)myUser.getView(getType())).track != null) {
+                        if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
                             buttonsView.setVisibility(View.VISIBLE);
                             handlerHideButtons.removeCallbacks(hideButtons);
                             handlerHideButtons.postDelayed(hideButtons, 5000);
-                            NavigationView view = (NavigationView) myUser.getView(getType());
+                            NavigationView view = (NavigationView) myUser.getView(TYPE);
                             Utils.updateMarkerPosition(map, view.marker, view.points);
                         }
                     }
@@ -177,8 +183,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
 
-                item.add(new SettingItem.Page(getType()).setTitle(R.string.navigation)
-                        .add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setGroupId(getType()))
+                item.add(new SettingItem.Page(TYPE).setTitle(R.string.navigation)
+                        .add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setGroupId(TYPE))
                         .add(new SettingItem.List(PREFERENCE_MODE)
                                 .add(NAVIGATION_MODE_DRIVING, R.string.driving)
                                 .add(NAVIGATION_MODE_WALKING, R.string.walking)
@@ -203,7 +209,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                         onClickListener.onClick(v);
                                     }
                                 }))
-                        .add(new SettingItem.Group(PREFERENCE_OPTIONS).setTitle(R.string.options).setGroupId(getType()))
+                        .add(new SettingItem.Group(PREFERENCE_OPTIONS).setTitle(R.string.options).setGroupId(TYPE))
                         .add(new SettingItem.Checkbox(PREFERENCE_AVOID_HIGHWAYS).setTitle(R.string.avoid_highways).setGroupId(PREFERENCE_OPTIONS))
                         .add(new SettingItem.Checkbox(PREFERENCE_AVOID_TOLLS).setTitle(R.string.avoid_tolls).setGroupId(PREFERENCE_OPTIONS))
                         .add(new SettingItem.Checkbox(PREFERENCE_AVOID_FERRIES).setTitle(R.string.avoid_ferries).setGroupId(PREFERENCE_OPTIONS)));
@@ -247,7 +253,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
             @Override
             public void call(Integer number, MyUser myUser) {
-                NavigationView view = (NavigationView) myUser.getView(getType());
+                NavigationView view = (NavigationView) myUser.getView(TYPE);
                 if(view != null && view.showNavigation){
                     view.previousLocation = null;
                     view.update();
@@ -299,9 +305,16 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         dialog.show();
     }
 
+    @Override
+    public String getType() {
+        return TYPE;
+    }
+
     class NavigationView extends AbstractView {
+
         volatile private Polyline track;
         private Polyline trackCenter;
+        private long lastUpdate = 0;
         private boolean showNavigation = false;
         private Location previousLocation;
         private Location previousMeLocation;
@@ -310,16 +323,22 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         private int previousDistance;
         private String title;
         private List<LatLng> points;
+        private int countRemoved = 0;
 
         NavigationView(MyUser myUser){
             super(NavigationViewHolder.this.context, myUser);
 
-            Boolean props = (Boolean) myUser.getProperties().loadFor(getType());
+            Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
             showNavigation = !(props == null || !props);
             if(showNavigation){
                 update();//onChangeLocation(myUser.getLocation());
 //                myUser.fire(SHOW_NAVIGATION);
             }
+        }
+
+        @Override
+        public String getType() {
+            return NavigationViewHolder.this.getType();
         }
 
         @Override
@@ -333,7 +352,8 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                     @Override
                     public void call(Integer number, MyUser myUser) {
-                        NavigationView view = (NavigationView) myUser.getView(getType());
+                        NavigationView view = (NavigationView) myUser.getView(TYPE);
+
                         if(view != null && view.showNavigation) {
                             view.update();
                         }
@@ -358,7 +378,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
                 @Override
                 public void call(Integer number, MyUser myUser) {
-                    if(myUser!= null && myUser.getView(getType()) != null && ((NavigationView)myUser.getView(getType())).track != null) {
+                    if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
                         buttonsView.setVisibility(View.VISIBLE);
                         handlerHideButtons.removeCallbacks(hideButtons);
                         handlerHideButtons.postDelayed(hideButtons, 5000);
@@ -404,7 +424,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 case SHOW_NAVIGATION:
                     showNavigation = true;
                     if(myUser == State.getInstance().getMe()) break;
-                    myUser.getProperties().saveFor(getType(), showNavigation);
+                    myUser.getProperties().saveFor(TYPE, showNavigation);
 
                     onChangeLocation(myUser.getLocation());
 
@@ -413,7 +433,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 case HIDE_NAVIGATION:
                     showNavigation = false;
                     previousLocation = null;
-                    myUser.getProperties().saveFor(getType(), null);
+                    myUser.getProperties().saveFor(TYPE, null);
                     remove();
 
                     break;
@@ -434,6 +454,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         }
 
         private void update() {
+            if(State.getInstance().getMe().getLocation() == null || myUser.getLocation() == null) {
+                return;
+            }
             if(track == null && State.getInstance().getMe().getLocation() != null && myUser.getLocation() != null) {
                 final int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0xAA000000;
                 iconFactory = new IconGenerator(State.getInstance());
@@ -456,18 +479,20 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 buttonsView.setVisibility(View.INVISIBLE);
             }
 
-            boolean needUpdate = true;
-            /*if(locationChanged(State.getInstance().getMe().getLocation(), previousMeLocation) && !PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), track.getPoints(), false, 20)) {
+            boolean needUpdate = false;
+            if(locationChanged(State.getInstance().getMe().getLocation(), previousMeLocation) && !PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), track.getPoints(), false, 20)) {
                 needUpdate = true;
-            } else if(locationChanged(myUser.getLocation(), previousLocation) && !needUpdate && !PolyUtil.isLocationOnPath(Utils.latLng(myUser.getLocation()), track.getPoints(), false, 20)) {
+            } else if(locationChanged(myUser.getLocation(), previousLocation) && !PolyUtil.isLocationOnPath(Utils.latLng(myUser.getLocation()), track.getPoints(), false, 20)) {
                 needUpdate = true;
             }
+            // removing points that passed already
             if(!needUpdate) {
                 points = track.getPoints();
                 LatLng removed = null;
                 if(locationChanged(State.getInstance().getMe().getLocation(), previousMeLocation)) {
                     while(PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), points, false, 20)) {
                         removed = points.remove(0);
+                        countRemoved++;
                     }
                     if(removed != null) {
                         points.add(0, removed);
@@ -475,12 +500,19 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 } else if(locationChanged(myUser.getLocation(), previousLocation)) {
                     while(PolyUtil.isLocationOnPath(Utils.latLng(State.getInstance().getMe().getLocation()), points, false, 20)) {
                         removed = points.remove(points.size()-1);
+                        countRemoved++;
                     }
                     if(removed != null) {
                         points.add(removed);
                     }
                 }
-            }*/
+            }
+
+            // if points removed more than 10 times then update anyway
+            if(countRemoved > 10) {
+                needUpdate = true;
+                countRemoved = 0;
+            }
 
             final boolean finalNeedUpdate = needUpdate;
             new Thread(new Runnable() {
@@ -520,6 +552,10 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                             return;
                         }
 
+                        if(new Date().getTime() - 5000 < lastUpdate) {
+                            return;
+                        }
+
                         if(finalNeedUpdate) {
                             String req = "https://maps.googleapis.com/maps/api/directions/json?"
                                     + "origin=" + me.getLocation().getLatitude() + "," + me.getLocation().getLongitude() + "&"
@@ -546,8 +582,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                             if (State.getInstance().getBooleanPreference(PREFERENCE_AVOID_FERRIES, false))
                                 req += "&avoid=ferries";
 
-                            Utils.log(NavigationView.this, req);
+                            Utils.log(NavigationView.this, "Update:", myUser.getProperties().getNumber()+"|"+myUser.getProperties().getDisplayName(), "Request:",req);
                             final String res = Utils.getUrl(req);
+                            lastUpdate = new Date().getTime();
                             JSONObject o = new JSONObject(res);
 
                             final String text = o.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");

@@ -118,7 +118,6 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             } else if(!myUser.getProperties().isSelected() || location == null){
                 return;
             }
-            callback.call("...");
 
             long currentTimestamp = new Date().getTime();
             if(currentTimestamp - lastRequestTimestamp < 5000) return;
@@ -156,11 +155,11 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                         }
                     }*/
 
-
+//                    callback.call("...");
 
                     try {
                         String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());
-                        Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber(), "Request:", req); //NON-NLS
+                        Utils.log(AddressView.this, "User:", myUser.getProperties().getNumber() + "|" + myUser.getProperties().getDisplayName(), "Request:", req); //NON-NLS
                         final String res = Utils.getUrl(req);
                         Utils.log(AddressView.this, "Response:", res); //NON-NLS
                         if(res.length() > 0) {

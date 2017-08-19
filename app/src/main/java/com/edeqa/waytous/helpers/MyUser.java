@@ -170,7 +170,7 @@ public class MyUser {
                             views.get(type).remove();
                         }
                         AbstractPropertyHolder holder = entry.getValue();
-                        if(holder == null) continue;
+                        if (holder == null) continue;
                         AbstractView view = ((AbstractViewHolder) holder).create(MyUser.this);
                         if (view != null) {
                             Log.v(TYPE, (views.containsKey(type) ? "update:" : "create") + type + ":" + getProperties().getNumber() + ":" + view);
@@ -237,7 +237,7 @@ public class MyUser {
                     if (getProperties().isActive() && entry.getValue() == null) {
                         AbstractViewHolder holder = State.getInstance().getUserViewHolders().get(entry.getKey());
 //                        if(holder != null) {
-                            entry.setValue(holder.create(MyUser.this));
+                        entry.setValue(holder.create(MyUser.this));
 //                        }
                     }
                     if (entry.getValue().dependsOnLocation() && getLocation() != null) {

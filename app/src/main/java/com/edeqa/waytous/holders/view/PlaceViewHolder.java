@@ -391,7 +391,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         toolbar.setOnClickListener(onSearchClickListener);
     }
 
-    private View.OnClickListener onSearchClickListener = new View.OnClickListener() {
+    private transient View.OnClickListener onSearchClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             try {
