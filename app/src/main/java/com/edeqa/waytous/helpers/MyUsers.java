@@ -19,6 +19,7 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DESCRIPTION;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
 
@@ -113,6 +114,7 @@ public class MyUsers {
                 myUser = new MyUser();
                 myUser.getProperties().setNumber(o.getInt(RESPONSE_NUMBER));
                 if(o.has(USER_COLOR)) myUser.getProperties().setColor(o.getInt(USER_COLOR));
+                if(o.has(USER_DESCRIPTION)) myUser.getProperties().setDescription(o.getString(USER_DESCRIPTION));
                 if(o.has(USER_NAME)) {
                     myUser.getProperties().setName(o.getString(USER_NAME));
                     myUser.fire(CHANGE_NAME,o.getString(USER_NAME));

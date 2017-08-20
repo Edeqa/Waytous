@@ -41,6 +41,7 @@ import com.google.maps.android.ui.IconGenerator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -269,6 +270,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         o.put(USER_NUMBER, 10000 + savedLocation.getNumber());
                         o.put(USER_COLOR, Color.rgb(0,155,0));
                         o.put(USER_NAME, savedLocation.getUsername());
+                        o.put(USER_DESCRIPTION, savedLocation.getTitle());
                         o.put(REQUEST_TIMESTAMP, savedLocation.getTimestamp());
                         MyUser x = State.getInstance().getUsers().addUser(o);
                         x.fire(MAKE_ACTIVE);
@@ -649,14 +651,23 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         @Override
                         public void call(Integer number, MyUser myUser) {
                             myUser.fire(CHANGE_NAME, savedLocation.getUsername());
+                            myUser.removeViews();
+                            myUser.createViews();
                         }
                     });
                 }
                 if(etComment.getText().toString().length() > 0) {
                     savedLocation.setTitle(etComment.getText().toString());
+                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Runnable2<Integer, MyUser>() {
+                        @Override
+                        public void call(Integer number, MyUser myUser) {
+                            myUser.getProperties().setDescription(etComment.getText().toString());
+                        }
+                    });
                 }
                 savedLocation.save(context);
                 reloadCursor();
+
             }
         });
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {

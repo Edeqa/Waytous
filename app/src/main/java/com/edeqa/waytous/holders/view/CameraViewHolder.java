@@ -226,7 +226,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
                 camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
             } else {
-                distanceBetweenCurrentAndNew = SphericalUtil.computeDistanceBetween(new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude), new LatLng(cameraView.getLocation().getLatitude(), cameraView.getLocation().getLongitude()));
+                if(cameraView.getLocation() != null) {
+                    distanceBetweenCurrentAndNew = SphericalUtil.computeDistanceBetween(new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude), new LatLng(cameraView.getLocation().getLatitude(), cameraView.getLocation().getLongitude()));
+                }
                 camera = CameraUpdateFactory.newCameraPosition(cameraView.getCameraPosition().build());
             }
             moveFromHardware = true;

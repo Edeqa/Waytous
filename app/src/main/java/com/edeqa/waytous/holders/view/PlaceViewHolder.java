@@ -1,15 +1,19 @@
 package com.edeqa.waytous.holders.view;
 
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.edeqa.waytous.MainActivity;
@@ -46,18 +50,20 @@ import java.util.Map;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
+import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
-import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.USER_ADDRESS;
 import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
+import static com.edeqa.waytousserver.helpers.Constants.USER_DESCRIPTION;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
@@ -74,22 +80,21 @@ import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceView> implements Serializable, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    transient static final long serialVersionUID = -6395904747342820059L;
+    static final long serialVersionUID = -6395904747342820059L;
 
-    private transient static final String SHOW_PLACE = "show_place"; //NON-NLS
-    private transient static final String HIDE_PLACE = "hide_place"; //NON-NLS
+    private static final String SHOW_PLACE = "show_place"; //NON-NLS
+    private static final String HIDE_PLACE = "hide_place"; //NON-NLS
 
-    transient private static final int REQUEST_CODE_AUTOCOMPLETE_PLACE = 3;
+    private static final int REQUEST_CODE_AUTOCOMPLETE_PLACE = 3;
 
-    transient private GoogleMap map;
-    transient private GoogleApiClient mGoogleApiClient;
+    private GoogleMap map;
+    private GoogleApiClient mGoogleApiClient;
 
     private ArrayList<Map<String,Serializable>> places = new ArrayList<>();
 
     public PlaceViewHolder(MainActivity context) {
         super(context);
 
-        setMap(context.getMap());
     }
 
     @Override
@@ -101,9 +106,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
     public PlaceViewHolder setMap(GoogleMap map) {
         this.map = map;
 
-        PlaceViewHolder m = (PlaceViewHolder) State.getInstance().getPropertiesHolder().loadFor(getType());
+        Object m = State.getInstance().getPropertiesHolder().loadFor(getType());
         if(m != null) {
-            places = m.places;
+            places = (ArrayList<Map<String,Serializable>>) m;
             if(places != null) {
                 for (Map<String, Serializable> x : places) {
                     try {
@@ -218,6 +223,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                             mm.put(USER_NAME, place.getName().subSequence(0, place.getName().toString().length() > 9 ? 9 : place.getName().toString().length()).toString());
                             mm.put("id", place.getId());
                             mm.put(USER_ADDRESS, place.getAddress().toString());
+                            mm.put(USER_DESCRIPTION, place.getAddress().toString());
                             mm.put(REQUEST_TIMESTAMP, new Date().getTime());
 
                             for (Map<String, Serializable> x : places) {
@@ -237,12 +243,15 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                             }
 
                             places.add(mm);
-                            State.getInstance().getPropertiesHolder().saveFor(getType(), this);
+                            State.getInstance().getPropertiesHolder().saveFor(getType(), places);
 
                             State.getInstance().fire(SHOW_PLACE, mm);
                         }
                     }
                 }
+                break;
+            case MAP_READY:
+                setMap((GoogleMap) object);
                 break;
         }
         return true;
@@ -312,6 +321,16 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                                 return false;
                             }
                         }).setIcon(R.drawable.ic_location_off_black_24dp);
+                        menu.add(0, R.string.edit, Menu.NONE, R.string.edit).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                int number = myUser.getProperties().getNumber() - REQUEST_CODE_AUTOCOMPLETE_PLACE * 10000;
+
+                                Utils.log(PlaceView.this, "onEvent:","number="+number); //NON-NLS
+                                editPlace(myUser);
+                                return false;
+                            }
+                        }).setIcon(R.drawable.ic_mode_edit_black_24dp);
                     }
                     break;
                 case HIDE_PLACE:
@@ -332,11 +351,13 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                             break;
                         }
                     }
-                    State.getInstance().getPropertiesHolder().saveFor(getType(), PlaceViewHolder.this);
+                    State.getInstance().getPropertiesHolder().saveFor(getType(), places);
                     break;
             }
             return true;
         }
+
+
     }
 
     private boolean isPlace(MyUser user) {
@@ -391,7 +412,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         toolbar.setOnClickListener(onSearchClickListener);
     }
 
-    private transient View.OnClickListener onSearchClickListener = new View.OnClickListener() {
+    private View.OnClickListener onSearchClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             try {
@@ -423,4 +444,60 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         Utils.log(PlaceViewHolder.this, "onConnectionFailed:",""+connectionResult); //NON-NLS
     }
 
+    private void editPlace(final MyUser user) {
+
+        final AlertDialog dialog = new AlertDialog.Builder(context).create();
+
+        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_place, null);
+
+        final EditText etTitle = (EditText) content.findViewById(R.id.et_place_title);
+        final EditText etComment = (EditText) content.findViewById(R.id.et_place_description);
+        etTitle.setText(user.getProperties().getDisplayName());
+        etComment.setText(user.getProperties().getDescription());
+
+        dialog.setTitle(context.getString(R.string.place));
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                Map<String, Serializable> place = null;
+                for (Map<String, Serializable> x : places) {
+                    if (user.getProperties().getNumber() == (Integer) x.get(USER_NUMBER)) {
+                        place = x;
+                        break;
+                    }
+                }
+
+                if(etTitle.getText().toString().length() > 0) {
+                    user.getProperties().setName(etTitle.getText().toString());
+                    if(place != null) {
+                        place.put(USER_NAME, etTitle.getText().toString());
+                    }
+                    user.fire(CHANGE_NAME, etTitle.getText().toString());
+                }
+                if(etComment.getText().toString().length() > 0) {
+                    if(place != null) {
+                        place.put(USER_DESCRIPTION, etComment.getText().toString());
+                    }
+                    user.getProperties().setDescription(etComment.getText().toString());
+                }
+                State.getInstance().getPropertiesHolder().saveFor(getType(), places);
+                user.removeViews();
+                user.createViews();
+            }
+        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+            }
+        });
+        dialog.setView(content);
+        dialog.show();
+
+    }
 }

@@ -181,6 +181,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         private HashMap<String, Serializable> external = new HashMap<>();
 
         private String name;
+        private String description;
         private int number;
         private int color;
         private int imageResource;
@@ -390,6 +391,14 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     ", selected=" + selected +
                     ", active=" + active +
                     '}';
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
         }
     }
 
