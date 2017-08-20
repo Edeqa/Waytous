@@ -46,7 +46,7 @@ function Create() {
                             dialog.items[5].focus();
                         }
                     },
-                    { type: HTML.NUMBER, label: "&#150; time to live, min", oninput: validate_ttl, value: 15 },
+                    { type: HTML.NUMBER, label: "&#150; time to live, min", oninput: validate_ttl, value: 60 },
                     { type: HTML.CHECKBOX, label: "Dismiss inactive users", onchange: function() {
                         dialog.items[7].disabled = !!this.checked;
                         dialog.items[7].parentNode.classList[this.checked ? "add" : "remove"]("disabled");

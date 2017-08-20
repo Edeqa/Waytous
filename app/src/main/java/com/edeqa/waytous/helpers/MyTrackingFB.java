@@ -599,9 +599,12 @@ public class MyTrackingFB implements Tracking {
                                                 @Override
                                                 public void run() {
                                                     if (State.getInstance().tracking_active()) {
+                                                        Map<String, Object> updates = new HashMap<>();
+                                                        updates.put(Constants.DATABASE.USER_ACTIVE, true);
+                                                        updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
                                                         ref.child(Constants.DATABASE.SECTION_USERS_DATA)
-                                                                .child("" + State.getInstance().getMe().getProperties().getNumber())
-                                                                .child(Constants.DATABASE.USER_CHANGED).setValue(ServerValue.TIMESTAMP);
+                                                                .child("" + state.getMe().getProperties().getNumber())
+                                                                .updateChildren(updates);
                                                     }
                                                 }
                                             }, 0, 1, TimeUnit.MINUTES);

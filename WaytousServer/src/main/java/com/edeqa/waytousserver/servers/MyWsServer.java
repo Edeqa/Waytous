@@ -16,6 +16,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
+import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 /**
@@ -36,7 +37,7 @@ public class MyWsServer extends WebSocketServer {
                 public void run() {
                     Common.getInstance().getDataProcessor("v1").validateGroups();
                 }
-            }, 0, LIFETIME_INACTIVE_GROUP, TimeUnit.SECONDS);
+            }, 0, LIFETIME_INACTIVE_USER, TimeUnit.SECONDS);
             MyWsServer.setValidationStarted(true);
         }
     }

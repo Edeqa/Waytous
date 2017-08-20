@@ -569,6 +569,7 @@ function TrackingFB(main) {
     function updateActive() {
         try {
             if(main.me && main.me.number != undefined) {
+                ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_ACTIVE).set(true);
                 ref.child(DATABASE.SECTION_USERS_DATA).child(main.me.number).child(DATABASE.USER_CHANGED).set(firebase.database.ServerValue.TIMESTAMP);
             }
         } catch(e) {
