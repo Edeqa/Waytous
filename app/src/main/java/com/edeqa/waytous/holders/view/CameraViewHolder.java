@@ -196,6 +196,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         try {
             if (cameraView == null) return;
             CameraUpdate camera;
+            double distanceBetweenCurrentAndNew = 0;
             MyUser user;
 //                System.out.println("PERSPECTIVE:"+((CameraView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
             if (State.getInstance().getUsers().getCountSelectedTotal() > 1) {
@@ -225,12 +226,16 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
                 camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
             } else {
+                distanceBetweenCurrentAndNew = SphericalUtil.computeDistanceBetween(new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude), new LatLng(cameraView.getLocation().getLatitude(), cameraView.getLocation().getLongitude()));
                 camera = CameraUpdateFactory.newCameraPosition(cameraView.getCameraPosition().build());
             }
             moveFromHardware = true;
 
+
             try {
-                if (initialStart) {
+                if(distanceBetweenCurrentAndNew > 1000000) {
+                    map.moveCamera(camera);
+                } else if (initialStart) {
                     if (!State.getInstance().tracking_disabled() || State.getInstance().getStringPreference(TRACKING_URI, null) != null) {
                         map.moveCamera(camera);
                     } else {
