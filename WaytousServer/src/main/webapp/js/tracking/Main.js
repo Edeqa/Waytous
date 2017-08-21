@@ -17,7 +17,7 @@ function Main() {
     var main = window.Waytous = this;
     var alert;
 
-    if (!data.isDebugMode && "serviceWorker" in navigator) {
+    if (/*!data.isDebugMode &&*/ "serviceWorker" in navigator) {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("/sw.js")
             .then(function(registration) {

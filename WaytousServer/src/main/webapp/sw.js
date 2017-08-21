@@ -20,7 +20,13 @@ var urlsToCache = [
     "/js/helpers/TrackingFB.js",
     "/js/helpers/Utils.js",
     "/js/all.js",
-    "/resources/en/tracking.json"
+    "/resources/en/tracking.json",
+    "/icons/android-chrome-192x192.png",
+    "/icons/favicon-32x32.png",
+    "/icons/favicon-16x16.png",
+    "/icons/favicon-194x194.png",
+    "/icons/favicon.ico",
+
 ];
 
 self.addEventListener("install", function(event) {
@@ -28,6 +34,12 @@ self.addEventListener("install", function(event) {
         caches.open(CACHE_NAME).then(function(cache) {
             console.log("Opened cache");
             return cache.addAll(urlsToCache);
+        }).then(function() {
+            // `skipWaiting()` forces the waiting ServiceWorker to become the
+            // active ServiceWorker, triggering the `onactivate` event.
+            // Together with `Clients.claim()` this allows a worker to take effect
+            // immediately in the client(s).
+            return self.skipWaiting();
         })
     );
 });
@@ -84,4 +96,5 @@ self.addEventListener("activate", function(event) {
             );
         })
     );
+    return self.clients.claim();
 });
