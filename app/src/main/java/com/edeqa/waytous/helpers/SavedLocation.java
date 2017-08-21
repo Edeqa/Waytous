@@ -167,6 +167,7 @@ public class SavedLocation extends AbstractSavedItem {
         } );
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public String toString() {
         return "{ timestamp: " + new Date(timestamp).toString()
                 + ", number: "+getNumber()
@@ -413,6 +414,7 @@ public class SavedLocation extends AbstractSavedItem {
                 JSONObject o = new JSONObject(res);
 
                 savedLocation.setAddress(o.getString("display_name"));
+                savedLocation.setTitle(o.getString("display_name"));
                 savedLocation.save(context);
 
                 if(callback != null) {

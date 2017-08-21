@@ -231,7 +231,7 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                     if(track != null) break;
                     try {
                         float density = State.getInstance().getResources().getDisplayMetrics().density;
-                        float width = (int) (10 * density);
+                        float width = (int) (16 * density);
 
                         int color = (myUser.getProperties().getColor() & 0x00FFFFFF) | 0x77000000;
 

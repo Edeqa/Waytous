@@ -217,5 +217,7 @@
     <string name="terms_of_service">Terms of service</string>
     <string name="terms_of_service_body">Terms of service</string>
     <string name="cannot_join_server_responds_s">Cannot join, server responds: %s</string>
+    <string name="report_an_issue">Report an issue</string>
+    <string name="click_here_to_report_about_error_odd_behaviour_or_some_great_idea">Click here to report about error, odd behaviour or some great idea.</string>
 
 </resources>

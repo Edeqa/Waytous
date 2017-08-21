@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 @SuppressWarnings("HardCodedStringLiteral")
 public class Constants {
-    public final static int SERVER_BUILD = 37;
+    public final static int SERVER_BUILD = 38;
 
     public static SensitiveData SENSITIVE;
 
@@ -106,8 +106,8 @@ public class Constants {
     }
 
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;
-    public static final int LIFETIME_INACTIVE_GROUP = 3600;
-    public final static int LIFETIME_INACTIVE_USER = 600;
+    public static final int LIFETIME_INACTIVE_GROUP = 24 * 3600;
+    public final static int LIFETIME_INACTIVE_USER = 300;
 
     public static class REST {
         public static final String STATUS = "status",

@@ -56,9 +56,9 @@ public class MyGroup {
         requirePassword = false;
         password = null;
         persistent = false;
-        timeToLiveIfEmpty = 15;
+        timeToLiveIfEmpty = 24 * 60;
         dismissInactive = false;
-        delayToDismiss = 300;
+        delayToDismiss = 3600;
         welcomeMessage = "";
 
     }

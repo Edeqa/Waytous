@@ -46,13 +46,13 @@ function Create() {
                             dialog.items[5].focus();
                         }
                     },
-                    { type: HTML.NUMBER, label: "&#150; time to live, min", oninput: validate_ttl, value: 60 },
+                    { type: HTML.NUMBER, label: "&#150; time to live, min", oninput: validate_ttl, value: 24 * 60 },
                     { type: HTML.CHECKBOX, label: "Dismiss inactive users", onchange: function() {
                         dialog.items[7].disabled = !!this.checked;
                         dialog.items[7].parentNode.classList[this.checked ? "add" : "remove"]("disabled");
                         dialog.items[7].focus();
                     }, checked: true },
-                    { type: HTML.NUMBER, itemClassName: "", label: "&#150; delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay, value: 300 },
+                    { type: HTML.NUMBER, itemClassName: "", label: "&#150; delay to dismiss, sec", title:"Minimal value 300", onchange: validate_delay, oninput: validate_delay, value: 3600 },
                 ],
                 positive: {
                     label: u.create(HTML.SPAN, "OK"),

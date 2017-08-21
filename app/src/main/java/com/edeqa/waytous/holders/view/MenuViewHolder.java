@@ -136,7 +136,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                                         .setTitle("Copyright (c) 2017 Edeqa").setMessage("http://www.edeqa.com"))
                                 .add(new SettingItem.Label("report")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue?project=WTU")))
-                                        .setTitle("Claim an issue").setMessage("Click here to report about error, odd behaviour or some great idea.")))
+                                        .setTitle(context.getString(R.string.report_an_issue)).setMessage(context.getString(R.string.click_here_to_report_about_error_odd_behaviour_or_some_great_idea))))
                         .add(new SettingItem.Page("legal_information").setTitle(context.getString(R.string.legal_information))
                                 .add(new SettingItem.Label("legal_text").setTitle(R.string.legal_information_body)))
                         .add(new SettingItem.Page("third_party").setTitle(context.getString(R.string.third_party_components)).setPriority(0)
