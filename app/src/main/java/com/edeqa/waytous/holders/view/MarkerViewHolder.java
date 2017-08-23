@@ -99,7 +99,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             case MARKER_CLICK:
                 Marker marker = (Marker) object;
                 Bundle b = (Bundle) marker.getTag();
-                if(b.getString(getType(), null).equals(getType())){
+                if(b != null && b.getString(getType(), null).equals(getType())){
                     if(marker.getTag() != null) {
                         int number = b.getInt(RESPONSE_NUMBER);
                         State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {

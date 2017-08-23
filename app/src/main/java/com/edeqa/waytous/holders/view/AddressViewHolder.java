@@ -11,6 +11,7 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
+import com.edeqa.waytous.helpers.AddressResolver;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
@@ -24,6 +25,7 @@ import java.util.List;
 import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
@@ -76,10 +78,19 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     class AddressView extends AbstractView {
         private final SmartLocation.GeocodingControl geocoding;
         private long lastRequestTimestamp;
+        private AddressResolver addressResolver;
 
         AddressView(MainActivity context, MyUser myUser) {
             super(context, myUser);
             geocoding = SmartLocation.with(context).geocoding();
+            addressResolver = new AddressResolver(context);
+            addressResolver.setUser(myUser);
+            addressResolver.setCallback(new Runnable1<String>() {
+                @Override
+                public void call(String formattedAddress) {
+                    setTitle(formattedAddress);
+                }
+            });
         }
 
         @Override
@@ -119,14 +130,15 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 return;
             }
 
-            long currentTimestamp = new Date().getTime();
+            addressResolver.resolve();
+            /*long currentTimestamp = new Date().getTime();
             if(currentTimestamp - lastRequestTimestamp < 5000) return;
             lastRequestTimestamp = currentTimestamp;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
 
-                    /*try {
+                    *//*try {
                         if(location == null) {
                             callback.call(null);
                             return;
@@ -153,7 +165,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                             callback.call(null);
                             return;
                         }
-                    }*/
+                    }*//*
 
 //                    callback.call("...");
 
@@ -171,7 +183,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                         setTitle(null);
                     }
                 }
-            }).start();
+            }).start();*/
         }
     }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
@@ -52,6 +53,7 @@ import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.PREPARE_SETTINGS;
+import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 
 
 /**
@@ -466,7 +468,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
                 final float density = State.getInstance().getResources().getDisplayMetrics().density;
                 track = map.addPolyline(new PolylineOptions().width((int) (20 * density)).color(color).geodesic(true).zIndex(100f));
-                trackCenter = map.addPolyline(new PolylineOptions().width((int) (6 * density)).color(Color.WHITE).geodesic(true).zIndex(100f));
+                trackCenter = map.addPolyline(new PolylineOptions().width((int) (6 * density)).color(Color.WHITE).geodesic(true).zIndex(101f));
 
                 MarkerOptions markerOptions = new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("")))
@@ -475,6 +477,10 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(context.getString(R.string.setting_up))));
 
                 marker = map.addMarker(markerOptions);
+                Bundle b = new Bundle();
+                b.putString(MarkerViewHolder.TYPE, TYPE);
+                b.putInt(RESPONSE_NUMBER, myUser.getProperties().getNumber());
+
                 marker.setVisible(false);
                 buttonsView.setVisibility(View.INVISIBLE);
             }

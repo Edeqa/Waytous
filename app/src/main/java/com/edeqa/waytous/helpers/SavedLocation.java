@@ -22,6 +22,7 @@ import com.edeqa.waytous.R;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
 import com.edeqa.waytous.interfaces.Runnable1;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -156,9 +157,20 @@ public class SavedLocation extends AbstractSavedItem {
         //noinspection unchecked
         super.save(new Runnable1<SavedLocation>() {
             @Override
-            public void call(SavedLocation listItem) {
+            public void call(final SavedLocation listItem) {
                 if(listItem.getAddress() == null) {
-                    new Thread(new LoadAddress(context, listItem, null)).start();
+                    new AddressResolver(context)
+                            .setLatLng(new LatLng(listItem.getLatitude(), listItem.getLongitude()))
+                            .setCallback(new Runnable1<String>() {
+                                @Override
+                                public void call(String formattedAddress) {
+                                    listItem.setAddress(formattedAddress);
+                                    listItem.setTitle(formattedAddress);
+                                    listItem.save(context);
+                                }
+                            })
+                            .resolve();
+
                 }
                 if(listItem.getBitmap() == null) {
                     new Thread(new LoadBitmap(context, listItem, null)).start();
@@ -396,33 +408,4 @@ public class SavedLocation extends AbstractSavedItem {
         }
     }
 
-    private static class LoadAddress implements Runnable {
-        private SavedLocation savedLocation;
-        private Context context;
-        private Runnable1<String> callback;
-
-        LoadAddress(Context context, SavedLocation savedLocation, Runnable1<String> callback){
-            this.context = context;
-            this.savedLocation = savedLocation;
-            this.callback = callback;
-        }
-        @Override
-        public void run() {
-            try {
-                String req = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + savedLocation.getLatitude() + "&lon=" + savedLocation.getLongitude() + "&zoom=18&addressdetails=1";
-                final String res = Utils.getUrl(req);
-                JSONObject o = new JSONObject(res);
-
-                savedLocation.setAddress(o.getString("display_name"));
-                savedLocation.setTitle(o.getString("display_name"));
-                savedLocation.save(context);
-
-                if(callback != null) {
-                    callback.call(o.getString("display_name"));
-                }
-            } catch (JSONException | IOException | NullPointerException e) {
-                //e.printStackTrace();
-            }
-        }
-    }
 }

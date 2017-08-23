@@ -423,7 +423,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 CameraViewHolder.this.setCameraView(this);
                 CameraViewHolder.this.update();
             } catch (Exception e) {
-                Log.e(TYPE, "onChangeLocation", e);
+                Utils.err(TYPE, "onChangeLocation", e);
             }
         }
 
