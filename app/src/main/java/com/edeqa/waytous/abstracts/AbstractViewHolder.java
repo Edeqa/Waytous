@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 abstract public class AbstractViewHolder<T extends AbstractView> extends AbstractPropertyHolder {
 
-    protected MainActivity context;
+    protected transient MainActivity context;
 
     protected AbstractViewHolder(MainActivity context) {
         super(context);

@@ -3,8 +3,8 @@ package com.edeqa.waytous.holders.view;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
+import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,11 +66,26 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private final static int CAMERA_ORIENTATION_PERSPECTIVE = 2;
     private final static int CAMERA_ORIENTATION_STAY = 3;
     private final static int CAMERA_ORIENTATION_USER = 4;
-    private static final float CAMERA_DEFAULT_ZOOM = 15.f;
-    private static final float CAMERA_DEFAULT_TILT = 0.f;
-    private static final float CAMERA_DEFAULT_BEARING = 0.f;
+    private final static float CAMERA_DEFAULT_ZOOM = 15.f;
+    private final static float CAMERA_DEFAULT_TILT = 0.f;
+    private final static float CAMERA_DEFAULT_BEARING = 0.f;
     private final static int CAMERA_ORIENTATION_LAST = 2;
     private final static boolean CAMERA_ORIENTATION_PERSPECTIVE_NORTH = true;
+
+    private static final String PREFERENCE_CAMERA_MULTIUSERS_ORIENTATION = "camera_multiusers_orientation";
+
+    private enum MultiUsersOrientation {
+        NORTH,
+        USER;
+//        public static MultiUsersOrientation fromString (String string) {
+//            try {
+//                return valueOf(string);
+//            } catch (Exception ex) {
+//                // For error cases
+//                return NORTH;
+//            }
+//        }
+    }
 
     private final static String LATITUDE = "latitude";
     private final static String LONGITUDE = "longitude";
@@ -81,16 +96,17 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
     private final static String ORIENTATION = "orientation";
     private final static String PREVIOUS_ORIENTATION = "previous_orientation";
     private final static String PERSPECTIVE_NORTH = "perspective_north";
-    private final SupportMapFragment mapFragment;
 
-    private CameraView cameraView;
-    private MapScaleView scaleView;
-    private GoogleMap map;
-    private int padding;
-    private boolean moveFromHardware = false;
-    private boolean canceled = false;
-    private boolean initialStart = true;
-    private Button bRecenter;
+    private transient SupportMapFragment mapFragment;
+    private transient CameraView cameraView;
+    private transient MapScaleView scaleView;
+    private transient GoogleMap map;
+    private transient int padding;
+    private transient boolean moveFromHardware = false;
+    private transient boolean canceled = false;
+    private transient boolean initialStart = true;
+    private transient Button bRecenter;
+    private transient MultiUsersOrientation multiUsersOrientation = MultiUsersOrientation.NORTH;
 
     public CameraViewHolder(MainActivity context) {
         super(context);
@@ -107,17 +123,12 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 }
             }
         });
+        multiUsersOrientation = MultiUsersOrientation.valueOf(State.getInstance().getStringPreference(PREFERENCE_CAMERA_MULTIUSERS_ORIENTATION, MultiUsersOrientation.NORTH.name()));
 
         setMap(context.getMap());
         setScaleView((MapScaleView) context.findViewById(R.id.scale_view));
         bRecenter = (Button) context.findViewById(R.id.buttonRecenter);
-        bRecenter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                State.getInstance().fire(MAP_MY_LOCATION_BUTTON_CLICKED);
-                bRecenter.setVisibility(View.GONE);
-            }
-        });
+        bRecenter.setOnClickListener(onRecenterClick);
     }
 
     @Override
@@ -179,12 +190,19 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 }
                 break;
             case MAP_MY_LOCATION_BUTTON_CLICKED:
-                if(cameraView == null) return false;
-                State.getInstance().fire(REQUEST_LOCATION_SINGLE);
-                if(cameraView.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
-                    cameraView.perspectiveNorth = !cameraView.perspectiveNorth;
+                if(bRecenter.getVisibility() == View.VISIBLE) {
+                    onRecenterClick.onClick(null);
+                } else if(State.getInstance().getUsers().getCountSelectedTotal() == 1) {
+                    onRecenterClick.onClick(null);
+                } else if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
+                    if(multiUsersOrientation == MultiUsersOrientation.NORTH) {
+                        multiUsersOrientation = MultiUsersOrientation.USER;
+                    } else if(multiUsersOrientation == MultiUsersOrientation.USER) {
+                        multiUsersOrientation = MultiUsersOrientation.NORTH;
+                    }
+                    State.getInstance().setPreference(PREFERENCE_CAMERA_MULTIUSERS_ORIENTATION, multiUsersOrientation.name());
+                    update();
                 }
-                cameraView.getUser().fire(SELECT_USER);
                 break;
             case MAP_READY:
                 setMap((GoogleMap) object);
@@ -195,37 +213,41 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     private void update() {
         try {
-            if (cameraView == null) return;
+            if (cameraView == null || bRecenter.getVisibility() == View.VISIBLE) return;
             CameraUpdate camera;
             double distanceBetweenCurrentAndNew = 0;
             MyUser user;
 //                System.out.println("PERSPECTIVE:"+((CameraView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
             if (State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                 double lat1 = 0f, lat2 = 0f, lng1 = 0f, lng2 = 0f;
-                //noinspection LoopStatementThatDoesntLoop
-                for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
-                    user = entry.getValue();
-                    if (user.getProperties().isSelected() && user.getLocation() != null) {
-                        lat1 = user.getLocation().getLatitude();
-                        lat2 = user.getLocation().getLatitude();
-                        lng1 = user.getLocation().getLongitude();
-                        lng2 = user.getLocation().getLongitude();
-                        break;
+                if(multiUsersOrientation == MultiUsersOrientation.NORTH) {
+                    //noinspection LoopStatementThatDoesntLoop
+                    for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
+                        user = entry.getValue();
+                        if (user.getProperties().isSelected() && user.getLocation() != null) {
+                            lat1 = user.getLocation().getLatitude();
+                            lat2 = user.getLocation().getLatitude();
+                            lng1 = user.getLocation().getLongitude();
+                            lng2 = user.getLocation().getLongitude();
+                            break;
+                        }
                     }
-                }
-                for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
-                    user = entry.getValue();
-                    if (user.getProperties().isSelected() && user.getLocation() != null) {
-                        lat1 = Math.min(lat1, user.getLocation().getLatitude());
-                        lat2 = Math.max(lat2, user.getLocation().getLatitude());
-                        lng1 = Math.min(lng1, user.getLocation().getLongitude());
-                        lng2 = Math.max(lng2, user.getLocation().getLongitude());
+                    for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
+                        user = entry.getValue();
+                        if (user.getProperties().isSelected() && user.getLocation() != null) {
+                            lat1 = Math.min(lat1, user.getLocation().getLatitude());
+                            lat2 = Math.max(lat2, user.getLocation().getLatitude());
+                            lng1 = Math.min(lng1, user.getLocation().getLongitude());
+                            lng2 = Math.max(lng2, user.getLocation().getLongitude());
+                        }
                     }
-                }
-                LatLng latLngLB = new LatLng(lat1, lng1);
-                LatLng latLngRT = new LatLng(lat2, lng2);
+                    LatLng latLngLB = new LatLng(lat1, lng1);
+                    LatLng latLngRT = new LatLng(lat2, lng2);
 
-                camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
+                    camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
+                } else {
+                    camera = CameraUpdateFactory.newCameraPosition(map.getCameraPosition());
+                }
             } else {
                 if(cameraView.getLocation() != null) {
                     distanceBetweenCurrentAndNew = SphericalUtil.computeDistanceBetween(new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude), new LatLng(cameraView.getLocation().getLatitude(), cameraView.getLocation().getLongitude()));
@@ -586,7 +608,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         }
     }
 
-    private GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
+    private final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int i) {
             switch(i) {
@@ -604,7 +626,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         }
     };
 
-    private GoogleMap.OnCameraIdleListener onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
+    private final GoogleMap.OnCameraIdleListener onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
             if(scaleView != null) {
@@ -643,7 +665,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         }
     };
 
-    private GoogleMap.OnCameraMoveCanceledListener onCameraMoveCanceledListener = new GoogleMap.OnCameraMoveCanceledListener() {
+    private final GoogleMap.OnCameraMoveCanceledListener onCameraMoveCanceledListener = new GoogleMap.OnCameraMoveCanceledListener() {
         @Override
         public void onCameraMoveCanceled() {
             if(scaleView != null) {
@@ -660,13 +682,26 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         }
     };
 
-    private GoogleMap.OnCameraMoveListener onCameraMoveListener = new GoogleMap.OnCameraMoveListener() {
+    private final GoogleMap.OnCameraMoveListener onCameraMoveListener = new GoogleMap.OnCameraMoveListener() {
         @Override
         public void onCameraMove() {
 //            System.out.println("onCameraMove");
             if(scaleView != null) {
                 scaleView.update(map.getCameraPosition().zoom, map.getCameraPosition().target.latitude);
             }
+        }
+    };
+
+    private final View.OnClickListener onRecenterClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (cameraView == null) return;
+            bRecenter.setVisibility(View.GONE);
+            State.getInstance().fire(REQUEST_LOCATION_SINGLE);
+            if (cameraView.orientation == CAMERA_ORIENTATION_PERSPECTIVE) {
+                cameraView.perspectiveNorth = !cameraView.perspectiveNorth;
+            }
+            cameraView.getUser().fire(SELECT_USER);
         }
     };
 

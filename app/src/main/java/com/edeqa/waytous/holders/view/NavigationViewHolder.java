@@ -47,6 +47,7 @@ import java.util.List;
 
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.MAP_MY_LOCATION_BUTTON_CLICKED;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.view.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_DAY;
@@ -86,6 +87,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     private static final int REBUILD_TRACK_IF_LOCATION_CHANGED_IN_METERS = 10;
     private static final int HIDE_TRACK_IF_DISTANCE_LESS_THAN = 10;
     private static final int SHOW_TRACK_IF_DISTANCE_BIGGER_THAN = 20;
+
 
     transient private GoogleMap map;
 

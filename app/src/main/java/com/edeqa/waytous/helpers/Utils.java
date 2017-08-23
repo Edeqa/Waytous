@@ -17,6 +17,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.edeqa.waytous.State;
+import com.edeqa.waytous.holders.view.CameraViewHolder;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -426,4 +428,5 @@ public class Utils {
         Log.e(tag, str);
         if(e != null) e.printStackTrace();
     }
+
 }
