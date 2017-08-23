@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -362,68 +363,50 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
         @Override
         public void onChangeLocation(Location location) {
-            if(!myUser.getProperties().isSelected()){
-                return;
-            }
-            this.location = location;
-            switch (orientation){
-                case CAMERA_ORIENTATION_NORTH:
-                    position.target(new LatLng(location.getLatitude(), location.getLongitude()));
-                    position.bearing(0);
-                    position.tilt(0);
-                    break;
-                case CAMERA_ORIENTATION_DIRECTION:
-                    position.target(new LatLng(location.getLatitude(), location.getLongitude()));
-                    position.bearing(location.getBearing());
-                    position.tilt(0);
-                    break;
-                case CAMERA_ORIENTATION_PERSPECTIVE:
-                    if(orientationChanged) {
-                        position.tilt(60);
-                    }
+            try {
+                if (!myUser.getProperties().isSelected()) {
+                    return;
+                }
+                this.location = location;
+                switch (orientation) {
+                    case CAMERA_ORIENTATION_NORTH:
+                        position.target(new LatLng(location.getLatitude(), location.getLongitude()));
+                        position.bearing(0);
+                        position.tilt(0);
+                        break;
+                    case CAMERA_ORIENTATION_DIRECTION:
+                        position.target(new LatLng(location.getLatitude(), location.getLongitude()));
+                        position.bearing(location.getBearing());
+                        position.tilt(0);
+                        break;
+                    case CAMERA_ORIENTATION_PERSPECTIVE:
+                        if (orientationChanged) {
+                            position.tilt(75);
+                        }
 
-                    /*DisplayMetrics metrics = new DisplayMetrics();
-                    context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                        DisplayMetrics metrics = new DisplayMetrics();
+                        context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-                    Projection projection = map.getProjection();
+                        int height = metrics.heightPixels;
+                        if(mapFragment != null && mapFragment.getView() != null) {
+                            height = mapFragment.getView().getHeight();
+                        }
 
-                    Point cameraCenter = projection.toScreenLocation(Utils.latLng(location));
+                        Point targetPoint = new Point(metrics.widthPixels / 2, height - height / 9);
+                        LatLng targetLatlng = map.getProjection().fromScreenLocation(targetPoint);
+                        double fromCenterToTarget = SphericalUtil.computeDistanceBetween(map.getCameraPosition().target, targetLatlng);
 
-                    float tiltFactor = (90 - map.getCameraPosition().tilt) / 90;
+                        LatLng center = SphericalUtil.computeOffset(Utils.latLng(myUser.getLocation()), fromCenterToTarget / 1.2, myUser.getLocation().getBearing());
 
-                    System.out.println("METRICS:"+metrics);
-                    System.out.println("VISIBLE:"+projection.getVisibleRegion());
-                    System.out.println("POINT:"+cameraCenter);
+                        position.target(center);
+                        position.bearing(location.getBearing());
 
-                    cameraCenter.x -= metrics.widthPixels / 2;// - cameraCenter.x;
-                    cameraCenter.y -= metrics.heightPixels *.2;// / 2 * tiltFactor;
-
-                    System.out.println("POINT2:"+cameraCenter);
-
-                    LatLng fixLatLng = projection.fromScreenLocation(cameraCenter);
-                    position.target(fixLatLng);*/
-
-                    DisplayMetrics metrics = new DisplayMetrics();
-                    context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-                    int height = mapFragment.getView().getHeight();
-
-                    Point targetPoint = new Point(metrics.widthPixels / 2, height /*metrics.heightPixels*/ - height /*metrics.heightPixels*/ / 9);
-                    LatLng targetLatlng = map.getProjection().fromScreenLocation(targetPoint);
-                    double fromCenterToTarget = SphericalUtil.computeDistanceBetween(map.getCameraPosition().target, targetLatlng);
-
-                    LatLng center = SphericalUtil.computeOffset(Utils.latLng(myUser.getLocation()), fromCenterToTarget/1.2, myUser.getLocation().getBearing());
-
-//                    position.target(centerlatlng);
-                    position.target(center);
-                    position.bearing(location.getBearing());
-
-                    break;
-                case CAMERA_ORIENTATION_STAY:
-                    position.target(map.getCameraPosition().target);
-                    break;
-            }
-            position.zoom(zoom);
+                        break;
+                    case CAMERA_ORIENTATION_STAY:
+                        position.target(map.getCameraPosition().target);
+                        break;
+                }
+                position.zoom(zoom);
             /*if(orientationChanged) {
                 switch (orientation) {
                     case CAMERA_ORIENTATION_NORTH:
@@ -435,10 +418,13 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         break;
                 }
             }*/
-            orientationChanged = false;
+                orientationChanged = false;
 
-            CameraViewHolder.this.setCameraView(this);
-            CameraViewHolder.this.update();
+                CameraViewHolder.this.setCameraView(this);
+                CameraViewHolder.this.update();
+            } catch (Exception e) {
+                Log.e(TYPE, "onChangeLocation", e);
+            }
         }
 
         @Override
