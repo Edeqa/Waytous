@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.Button;
 
@@ -220,33 +221,104 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //                System.out.println("PERSPECTIVE:"+((CameraView) State.getInstance().getMe().getEntity(CameraViewHolder.TYPE)).perspectiveNorth);
             if (State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                 double lat1 = 0f, lat2 = 0f, lng1 = 0f, lng2 = 0f;
-                if(multiUsersOrientation == MultiUsersOrientation.NORTH) {
-                    //noinspection LoopStatementThatDoesntLoop
-                    for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
-                        user = entry.getValue();
-                        if (user.getProperties().isSelected() && user.getLocation() != null) {
-                            lat1 = user.getLocation().getLatitude();
-                            lat2 = user.getLocation().getLatitude();
-                            lng1 = user.getLocation().getLongitude();
-                            lng2 = user.getLocation().getLongitude();
-                            break;
-                        }
+                //noinspection LoopStatementThatDoesntLoop
+                for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
+                    user = entry.getValue();
+                    if (user.getProperties().isSelected() && user.getLocation() != null) {
+                        lat1 = user.getLocation().getLatitude();
+                        lat2 = user.getLocation().getLatitude();
+                        lng1 = user.getLocation().getLongitude();
+                        lng2 = user.getLocation().getLongitude();
+                        break;
                     }
-                    for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
-                        user = entry.getValue();
-                        if (user.getProperties().isSelected() && user.getLocation() != null) {
-                            lat1 = Math.min(lat1, user.getLocation().getLatitude());
-                            lat2 = Math.max(lat2, user.getLocation().getLatitude());
-                            lng1 = Math.min(lng1, user.getLocation().getLongitude());
-                            lng2 = Math.max(lng2, user.getLocation().getLongitude());
-                        }
+                }
+                for (Map.Entry<Integer, MyUser> entry : State.getInstance().getUsers().getUsers().entrySet()) {
+                    user = entry.getValue();
+                    if (user.getProperties().isSelected() && user.getLocation() != null) {
+                        lat1 = Math.min(lat1, user.getLocation().getLatitude());
+                        lat2 = Math.max(lat2, user.getLocation().getLatitude());
+                        lng1 = Math.min(lng1, user.getLocation().getLongitude());
+                        lng2 = Math.max(lng2, user.getLocation().getLongitude());
                     }
-                    LatLng latLngLB = new LatLng(lat1, lng1);
-                    LatLng latLngRT = new LatLng(lat2, lng2);
+                }
+                LatLng latLngLB = new LatLng(lat1, lng1);
+                LatLng latLngRT = new LatLng(lat2, lng2);
 
-                    camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
+
+                if(multiUsersOrientation == MultiUsersOrientation.USER && State.getInstance().getMe().getProperties().isSelected()) {
+
+                    LatLng me = Utils.latLng(State.getInstance().getMe().getLocation());
+                    float bearing = State.getInstance().getMe().getLocation().getBearing();
+                    double alpha = bearing;
+
+                    int rotation = 0;
+                    if(bearing > 270) {
+                        alpha = bearing - 270;
+                        rotation = 3;
+                    } else if(bearing > 180) {
+                        alpha = bearing - 180;
+                        rotation = 2;
+                    } else if(bearing > 90) {
+                        alpha = bearing - 90;
+                        rotation = 1;
+                    }
+                    alpha = Math.toRadians(alpha);
+
+
+
+                    LatLngBounds a = new LatLngBounds(latLngLB, latLngRT);
+
+                    double width = SphericalUtil.computeDistanceBetween(latLngLB, new LatLng(latLngLB.latitude, latLngRT.longitude));
+                    double height = SphericalUtil.computeDistanceBetween(latLngLB, new LatLng(latLngRT.latitude, latLngLB.longitude));
+
+                    double newWidth = width * Math.sin(alpha) + height * Math.cos(alpha);
+                    double newHeight = height * Math.sin(alpha) + width * Math.cos(alpha);
+
+                    double fractHeight = newHeight / height;
+                    double fractWidth = newWidth / width;
+
+                    System.out.println("CURR:"+map.getProjection().getVisibleRegion());
+                    System.out.println("OPTS:"+rotation+":"+bearing+":"+alpha+":"+new LatLngBounds(latLngLB, latLngRT));
+                    System.out.println("OLD:"+width+":"+height);
+                    System.out.println("NEW:"+newWidth+":"+newHeight);
+                    System.out.println("FRACT:"+fractWidth+":"+fractHeight);
+
+                    LatLng centerX = SphericalUtil.computeOffset(latLngLB, width / 2, 90);
+                    LatLng centerY = SphericalUtil.computeOffset(latLngLB, height / 2, 0);
+                    LatLng center = new LatLng(centerY.latitude, centerX.longitude);
+
+                    LatLng left = SphericalUtil.computeOffset(center, newWidth / 2, 270);
+                    LatLng top = SphericalUtil.computeOffset(center, newHeight / 2, 0);
+                    LatLng right = SphericalUtil.computeOffset(center, newWidth / 2, 90);
+                    LatLng bottom = SphericalUtil.computeOffset(center, newHeight / 2, 180);
+
+                    LatLng leftTop = new LatLng(top.latitude, left.longitude);
+                    LatLng rightTop = new LatLng(top.latitude, right.longitude);
+                    LatLng rightBottom = new LatLng(bottom.latitude, right.longitude);
+                    LatLng leftBottom = new LatLng(bottom.latitude, left.longitude);
+
+                    double diagonal = SphericalUtil.computeDistanceBetween(leftTop, rightBottom);
+
+
+                    LatLng newLeftTop = SphericalUtil.computeOffset(center, diagonal / 2, bearing);
+                    LatLng newRightBottom = SphericalUtil.computeOffset(center, diagonal / 2, bearing );
+
+//                    int zoom = getBoundsZoomLevel(newLeftTop, newRightBottom, (int)newWidth, (int)newHeight);
+
+                    double zoom = Math.min(
+                            Math.max(
+                                    Math.log(newWidth) / .693147180559945309417,
+                                    Math.log(newHeight) / .693147180559945309417
+                            ), 21);
+
+                    System.out.println("NEWS:"+center+":"+zoom);
+
+                    CameraPosition.Builder cameraPosition = new CameraPosition.Builder().target(center).zoom((float) zoom).bearing(bearing).tilt(0);
+
+                    camera = CameraUpdateFactory.newCameraPosition(cameraPosition.build());
+
                 } else {
-                    camera = CameraUpdateFactory.newCameraPosition(map.getCameraPosition());
+                    camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
                 }
             } else {
                 if(cameraView.getLocation() != null) {
@@ -276,6 +348,28 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static int getBoundsZoomLevel(LatLng northeast,LatLng southwest,
+                                         int width, int height) {
+        final int GLOBE_WIDTH = 256; // a constant in Google's map projection
+        final int ZOOM_MAX = 21;
+        double latFraction = (latRad(northeast.latitude) - latRad(southwest.latitude)) / Math.PI;
+        double lngDiff = northeast.longitude - southwest.longitude;
+        double lngFraction = ((lngDiff < 0) ? (lngDiff + 360) : lngDiff) / 360;
+        double latZoom = zoom(height, GLOBE_WIDTH, latFraction);
+        double lngZoom = zoom(width, GLOBE_WIDTH, lngFraction);
+        double zoom = Math.min(Math.min(latZoom, lngZoom),ZOOM_MAX);
+        return (int)(zoom);
+    }
+    private static double latRad(double lat) {
+        double sin = Math.sin(lat * Math.PI / 180);
+        double radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
+        return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
+    }
+    private static double zoom(double mapPx, double worldPx, double fraction) {
+        final double LN2 = .693147180559945309417;
+        return (Math.log(mapPx / worldPx / fraction) / LN2);
     }
 
     public void move(){

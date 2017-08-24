@@ -271,6 +271,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         }
 
         private void createMarker() {
+
             myUser.getProperties().setButtonView(R.layout.view_navigation_button);
 
             int size = PlaceViewHolder.this. context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
@@ -282,13 +283,15 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     .anchor(0.5f, 1.0f)
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
-            marker = map.addMarker(markerOptions);
-            marker.setAlpha(.5F);
+            if(map != null) {
+                marker = map.addMarker(markerOptions);
+                marker.setAlpha(.5F);
 
-            Bundle b = new Bundle();
-            b.putString(MarkerViewHolder.TYPE, getType());
-            b.putInt(RESPONSE_NUMBER, myUser.getProperties().getNumber());
-            marker.setTag(b);
+                Bundle b = new Bundle();
+                b.putString(MarkerViewHolder.TYPE, getType());
+                b.putInt(RESPONSE_NUMBER, myUser.getProperties().getNumber());
+                marker.setTag(b);
+            }
             myUser.fire(NavigationViewHolder.SHOW_NAVIGATION);
         }
 

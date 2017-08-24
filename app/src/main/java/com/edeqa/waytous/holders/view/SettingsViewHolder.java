@@ -235,15 +235,25 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     break;
                 case SettingItem.LABEL:
                     holder.tvTitle.setText(item.getTitle());
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            SettingItem.Label x = (SettingItem.Label) item;
-                            if(x.getIntent() != null) {
-                                context.startActivity(x.getIntent());
+                    if(item.getCallback() != null) {
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                SettingItem.Label x = (SettingItem.Label) item;
+                                x.getCallback().call(x.fetchId());
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                SettingItem.Label x = (SettingItem.Label) item;
+                                if (x.getIntent() != null) {
+                                    context.startActivity(x.getIntent());
+                                }
+                            }
+                        });
+                    }
                     break;
                 case SettingItem.TEXT:
                     holder.tvTitle.setText(item.getTitle());

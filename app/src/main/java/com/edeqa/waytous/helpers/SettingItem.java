@@ -350,7 +350,7 @@ public class SettingItem<T> {
 
     }
 
-    public static class Label extends SettingItem {
+    public static class Label extends SettingItem<String> {
         private Intent intent;
 
         public Label(Item id) {
@@ -363,8 +363,10 @@ public class SettingItem<T> {
         }
 
         @Override
-        public void onClick(Runnable1 runnable) {
-
+        public void onClick(Runnable1<String> runnable) {
+            if(callback != null) {
+                callback.call(id);
+            }
         }
 
         public Intent getIntent() {

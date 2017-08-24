@@ -66,8 +66,8 @@ public class ExceptionActivity extends AppCompatActivity {
         etExceptionTrace.setText("In version "+ BuildConfig.VERSION_NAME +"." + BuildConfig.VERSION_CODE +"\n" + textException.toString());
         etExceptionTrace.setMovementMethod(new ScrollingMovementMethod());
 
-            etExceptionTrace.setRawInputType(InputType.TYPE_CLASS_TEXT);
-            etExceptionTrace.setTextIsSelectable(true);
+        etExceptionTrace.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        etExceptionTrace.setTextIsSelectable(true);
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.report), new DialogInterface.OnClickListener() {
             @Override
@@ -78,16 +78,16 @@ public class ExceptionActivity extends AppCompatActivity {
                     public void run() {
 
                         Intent intent = null;
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue")
-                                    .buildUpon()
-                                    .appendQueryParameter("project", "WTU")
-                                    .appendQueryParameter("summary", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
+                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue")
+                                .buildUpon()
+                                .appendQueryParameter("project", "WTU")
+                                .appendQueryParameter("summary", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
 //                                    .appendQueryParameter("description", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
-                                    .appendQueryParameter("description", textException.toString())
-                                    .build());
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-                            startActivity(intent);
+                                .appendQueryParameter("description", textException.toString())
+                                .build());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        startActivity(intent);
 
 /*
                         Intent intent = new Intent(Intent.ACTION_SEND);
