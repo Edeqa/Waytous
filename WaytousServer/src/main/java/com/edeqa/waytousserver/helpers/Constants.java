@@ -1,7 +1,5 @@
 package com.edeqa.waytousserver.helpers;
 
-import java.io.Serializable;
-
 /**
  * Created 10/14/16.
  */
@@ -113,6 +111,7 @@ public class Constants {
         public static final String STATUS = "status",
                 SUCCESS = "success",
                 ERROR = "error",
+                REASON = "reason",
                 MESSAGE = "message",
                 REQUEST = "request",
                 GROUP_ID = "group_id",

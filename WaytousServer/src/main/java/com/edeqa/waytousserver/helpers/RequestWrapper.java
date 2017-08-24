@@ -33,6 +33,8 @@ public class RequestWrapper  {
     protected final static int MODE_SERVLET = 0;
     protected final static int MODE_EXCHANGE = 1;
 
+    protected final static long MAX_BODY_LENGTH = 1024 * 1024;
+
     private HttpServletRequest httpServletRequest;
     private HttpServletResponse httpServletResponse;
 
@@ -245,14 +247,16 @@ public class RequestWrapper  {
 
     public void processBody(Runnable1<StringBuilder> callback, Runnable1<Exception> fallback) {
 
-        StringBuilder buf = new StringBuilder();
         try {
-            InputStream is = this.getInputStream();
-
+            StringBuilder buf = new StringBuilder();
+            InputStream is = this.getRequestBody();
             int b;
+            long count = 0;
             while ((b = is.read()) != -1) {
-                System.out.println("BUF:"+b);
-
+                if(count++ > MAX_BODY_LENGTH) {
+                    fallback.call(new IllegalArgumentException("Body size is bigger than " + MAX_BODY_LENGTH + " byte(s)."));
+                    return;
+                }
                 buf.append((char) b);
             }
             is.close();
@@ -262,7 +266,8 @@ public class RequestWrapper  {
             } else {
                 fallback.call(new IllegalArgumentException("Empty body"));
             }
-        } catch (Exception e) {
+
+        } catch(Exception e) {
             e.printStackTrace();
             if(fallback != null) fallback.call(e);
         }

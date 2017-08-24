@@ -49,7 +49,6 @@ public class WaytousServer {
 
     public static void main(final String[] args ) throws Exception {
 
-
         Common.log(LOG, "====== Waytous server v1."+SERVER_BUILD+". Copyright (C) Edeqa. http://www.edeqa.com ======");
         SENSITIVE = new SensitiveData(args);
 
@@ -198,6 +197,7 @@ public class WaytousServer {
         sslServer.createContext("/rest/", restServer);
         Common.log(LOG, "Rest HTTPS\t\t\t| " + SENSITIVE.getHttpsPort() + "\t| /rest/" + (SENSITIVE.getHttpsPort() == SENSITIVE.getHttpsPortMasked() ? " (masked by "+SENSITIVE.getHttpsPortMasked() +")" : ""));
 
+        sslAdminServer.createContext("/rest/", restServer);
         sslAdminServer.createContext("/", adminServer).setAuthenticator(new DigestAuthenticator("waytous"));
         sslAdminServer.createContext("/admin/logout", adminServer);
         Common.log(LOG, "Admin HTTPS\t\t\t| " + SENSITIVE.getHttpsAdminPort() + "\t| " + "/");

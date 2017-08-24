@@ -5,6 +5,7 @@ import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HttpDPConnection;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.common.net.HttpHeaders;
 
 import org.json.JSONObject;
@@ -13,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class RestServletHandler extends AbstractServletHandler {
 
 //        switch(exchange.getRequestMethod()) {
 //            case HttpMethods.GET:
-            json.put("status", "success");
+            json.put(Constants.REST.STATUS, "success");
 
             switch (uri.getPath()) {
                 case "/rest/v1/getVersion":
@@ -96,17 +96,17 @@ public class RestServletHandler extends AbstractServletHandler {
 //        }
 
             if (printRes) Utils.sendResultJson.call(requestWrapper, json);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-
     private boolean noAction(JSONObject json) {
         Common.log(LOG, "perform:noAction", json);
-        json.put("status", "error");
-        json.put("reason", "Action not defined");
+        json.put(Constants.REST.STATUS, "error");
+        json.put(Constants.REST.REASON, "Action not supported");
+        json.put(Constants.REST.MESSAGE, "Action not supported");
         return true;
     }
 
@@ -116,15 +116,13 @@ public class RestServletHandler extends AbstractServletHandler {
     }
 
 
-
-
-
-    public class V1 extends RestComponent{
+    public class V1 extends RestComponent {
         @Override
         boolean getVersion(JSONObject json) {
             json.put("version", Constants.SERVER_BUILD);
             return true;
         }
+
         boolean getSounds(JSONObject json) {
             File dir = new File(SENSITIVE.getWebRootDirectory() + "/sounds");
             File[] files = dir.listFiles(new FilenameFilter() {
@@ -135,32 +133,34 @@ public class RestServletHandler extends AbstractServletHandler {
             });
             ArrayList<String> list = new ArrayList<>();
             list.add("none.mp3");
-            if(files != null) {
-                for(File file: files) {
-                    if(!list.contains(file.getName())) list.add(file.getName());
+            if (files != null) {
+                for (File file : files) {
+                    if (!list.contains(file.getName())) list.add(file.getName());
                 }
             }
             json.put("files", list);
             return true;
         }
+
         boolean join(JSONObject json, RequestWrapper requestWrapper) {
             try {
-                InputStreamReader isr = new InputStreamReader(requestWrapper.getRequestBody(),"utf-8");
+                InputStreamReader isr = new InputStreamReader(requestWrapper.getRequestBody(), "utf-8");
                 BufferedReader br = new BufferedReader(isr);
                 String body = br.readLine();
                 br.close();
 
-                Common.log("Rest",requestWrapper.getRemoteAddress(), "joinV1:", body);
+                Common.log("Rest", requestWrapper.getRemoteAddress(), "joinV1:", body);
                 Common.getInstance().getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
             } catch (Exception e) {
                 e.printStackTrace();
-                json.put("status", "error");
-                json.put("reason", "Action failed");
-                json.put("message", e.getMessage());
-                Utils.sendResultJson.call(requestWrapper,json);
+                json.put(Constants.REST.STATUS, "error");
+                json.put(Constants.REST.REASON, "Action failed");
+                json.put(Constants.REST.MESSAGE, e.getMessage());
+                Utils.sendResultJson.call(requestWrapper, json);
             }
             return false;
         }
+
         boolean getLocales(final JSONObject json, final RequestWrapper requestWrapper) {
             File dir = new File(SENSITIVE.getWebRootDirectory() + "/resources");
             try {
@@ -189,6 +189,7 @@ public class RestServletHandler extends AbstractServletHandler {
                 return true;
             }
         }
+
         boolean getContent(final JSONObject json, final RequestWrapper requestWrapper) {
 
         /*requestWrapper.processBody(new Runnable1<StringBuilder>() {
@@ -273,7 +274,67 @@ public class RestServletHandler extends AbstractServletHandler {
         if(true) return false;
 */
 
-            try {
+            requestWrapper.processBody(new Runnable1<StringBuilder>() {
+                @Override
+                public void call(StringBuilder body) {
+                    JSONObject options = new JSONObject(body.toString());
+                    Common.log(LOG, "Content requested: " + options);
+
+                    ArrayList<File> files = new ArrayList<>();
+
+                    if (options.has("type")) {
+                        if (options.has("locale") && options.has("resource")) {
+                            files.add(new File(SENSITIVE.getWebRootDirectory() + "/" + options.getString("type") + "/" + options.getString("locale") + "/" + options.getString("resource")));
+                        }
+                        if (options.has("resource")) {
+                            files.add(new File(SENSITIVE.getWebRootDirectory() + "/" + options.getString("type") + "/en/" + options.getString("resource")));
+                        }
+                    } else {
+                        if (options.has("locale") && options.has("resource")) {
+                            files.add(new File(SENSITIVE.getWebRootDirectory() + "/content/" + options.getString("locale") + "/" + options.getString("resource")));
+                        }
+                        if (options.has("resource")) {
+                            files.add(new File(SENSITIVE.getWebRootDirectory() + "/content/en/" + options.getString("resource")));
+                        }
+                    }
+
+                    boolean exists = false;
+                    File file = null;
+                    for (File f : files) {
+//                    Common.log(LOG,"Content: " + f.getCanonicalPath() +":"+f.getAbsolutePath());
+//                    if (f.getCanonicalPath().equals(f.getAbsolutePath()) && f.exists()) {
+                        if (f.exists()) {
+                            file = f;
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (exists) {
+                        String path = file.getAbsolutePath().replace(SENSITIVE.getWebRootDirectory(), "");
+                        Common.log(LOG, "->", path);
+                        try {
+                            requestWrapper.sendRedirect(path);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Common.log(LOG, "Content not found: " + files);
+                    }
+                }
+            }, new Runnable1<Exception>() {
+                @Override
+                public void call(Exception arg) {
+                    Common.err(LOG, "getContent:", arg);
+                    json.put(Constants.REST.STATUS, "error");
+                    json.put(Constants.REST.REASON, "Incorrect request");
+                    json.put(Constants.REST.MESSAGE, arg.getMessage());
+                    Utils.sendError.call(requestWrapper, 413, json);
+                }
+            });
+            return false;
+
+            /*try {
                 StringBuilder buf = new StringBuilder();
                 InputStream is = requestWrapper.getRequestBody();
                 int b;
@@ -282,6 +343,7 @@ public class RestServletHandler extends AbstractServletHandler {
                 }
                 is.close();
 
+                Common.log(LOG,"Content requested: " + buf.toString());
                 JSONObject options = new JSONObject(buf.toString());
                 Common.log(LOG,"Content requested: " + options);
 
@@ -317,6 +379,7 @@ public class RestServletHandler extends AbstractServletHandler {
 
                 if(exists) {
                     String path = file.getAbsolutePath().replace(SENSITIVE.getWebRootDirectory(), "");
+//                    path = "https://" + SENSITIVE.getServerHost() + Common.getWrappedHttpsPort() + path;
                     Common.log(LOG,"->", path);
                     requestWrapper.sendRedirect(path);
                     return false;
@@ -328,11 +391,10 @@ public class RestServletHandler extends AbstractServletHandler {
             } catch (Exception e) {
                 e.printStackTrace();
                 return true;
-            }
+            }*/
 
         }
+
+
     }
-
-
-
 }

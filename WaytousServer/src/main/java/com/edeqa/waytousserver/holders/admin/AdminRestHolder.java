@@ -15,7 +15,6 @@ import com.google.api.client.http.HttpMethods;
 
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.net.URI;
 
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
@@ -94,9 +93,9 @@ public class AdminRestHolder implements PageHolder {
         return false;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private void cleanGroupsV1(RequestWrapper requestWrapper) {
         try {
-
             //noinspection HardCodedStringLiteral
             Common.log(LOG, "cleanGroupsV1");
 
@@ -118,44 +117,38 @@ public class AdminRestHolder implements PageHolder {
     }
 
     private void createGroupV1(final RequestWrapper requestWrapper) {
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
-            }
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
 
-            is.close();
-            options = buf.toString();
+                //noinspection HardCodedStringLiteral
+                Common.log(LOG, "createGroupV1:", options);
 
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "createGroupV1:", options);
+                JSONObject json = new JSONObject(options);
 
-            JSONObject json = new JSONObject(options);
-
-            final MyGroup group = new MyGroup();
-            if(json.has(Constants.REST.GROUP_ID)) group.setId(json.getString(Constants.REST.GROUP_ID));
-            if(json.has(Constants.DATABASE.OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(Constants.DATABASE.OPTION_REQUIRES_PASSWORD));
-            if(json.has("password")) group.setPassword(json.get("password").toString());
-            if(json.has(Constants.DATABASE.OPTION_WELCOME_MESSAGE)) group.setWelcomeMessage(json.getString(Constants.DATABASE.OPTION_WELCOME_MESSAGE));
-            if(json.has(Constants.DATABASE.OPTION_PERSISTENT)) group.setPersistent(json.getBoolean(Constants.DATABASE.OPTION_PERSISTENT));
-            if(json.has(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)) {
-                try {
-                    group.setTimeToLiveIfEmpty(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)));
-                } catch (Exception e) {
-                    group.setTimeToLiveIfEmpty(15);
+                final MyGroup group = new MyGroup();
+                if(json.has(Constants.REST.GROUP_ID)) group.setId(json.getString(Constants.REST.GROUP_ID));
+                if(json.has(Constants.DATABASE.OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(Constants.DATABASE.OPTION_REQUIRES_PASSWORD));
+                if(json.has("password")) group.setPassword(json.get("password").toString());
+                if(json.has(Constants.DATABASE.OPTION_WELCOME_MESSAGE)) group.setWelcomeMessage(json.getString(Constants.DATABASE.OPTION_WELCOME_MESSAGE));
+                if(json.has(Constants.DATABASE.OPTION_PERSISTENT)) group.setPersistent(json.getBoolean(Constants.DATABASE.OPTION_PERSISTENT));
+                if(json.has(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)) {
+                    try {
+                        group.setTimeToLiveIfEmpty(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)));
+                    } catch (Exception e) {
+                        group.setTimeToLiveIfEmpty(15);
+                    }
                 }
-            }
-            if(json.has(Constants.DATABASE.OPTION_DISMISS_INACTIVE)) group.setDismissInactive(json.getBoolean(Constants.DATABASE.OPTION_DISMISS_INACTIVE));
-            if(json.has(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)) {
-                try {
-                    group.setDelayToDismiss(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)));
-                } catch(Exception e){
-                    group.setDelayToDismiss(300);
+                if(json.has(Constants.DATABASE.OPTION_DISMISS_INACTIVE)) group.setDismissInactive(json.getBoolean(Constants.DATABASE.OPTION_DISMISS_INACTIVE));
+                if(json.has(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)) {
+                    try {
+                        group.setDelayToDismiss(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)));
+                    } catch(Exception e){
+                        group.setDelayToDismiss(300);
+                    }
                 }
-            }
 
 
             /*final Runnable1<JSONObject>[] onresult = new Runnable1[2];
@@ -177,19 +170,24 @@ public class AdminRestHolder implements PageHolder {
                 }
             };*/
 
-
-
-            Common.getInstance().getDataProcessor("v1").createGroup(group,
-                new Runnable1<JSONObject>() {
-                    @Override
-                    public void call(JSONObject json) {
-
-                        MyUser user = new MyUser(null, "server:" + Utils.getUnique());
-
-                        Common.getInstance().getDataProcessor("v1").registerUser(group.getId(), user, REQUEST_NEW_GROUP, new Runnable1<JSONObject>() {
+                Common.getInstance().getDataProcessor("v1").createGroup(group,
+                        new Runnable1<JSONObject>() {
                             @Override
                             public void call(JSONObject json) {
-                                Utils.sendResultJson.call(requestWrapper, json);
+
+                                MyUser user = new MyUser(null, "server:" + Utils.getUnique());
+
+                                Common.getInstance().getDataProcessor("v1").registerUser(group.getId(), user, REQUEST_NEW_GROUP, new Runnable1<JSONObject>() {
+                                    @Override
+                                    public void call(JSONObject json) {
+                                        Utils.sendResultJson.call(requestWrapper, json);
+                                    }
+                                }, new Runnable1<JSONObject>() {
+                                    @Override
+                                    public void call(JSONObject json) {
+                                        Utils.sendError.call(requestWrapper, 500, json);
+                                    }
+                                });
                             }
                         }, new Runnable1<JSONObject>() {
                             @Override
@@ -197,6 +195,39 @@ public class AdminRestHolder implements PageHolder {
                                 Utils.sendError.call(requestWrapper, 500, json);
                             }
                         });
+
+            }
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "createGroupV1:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
+    }
+
+    private void deleteGroupV1(final RequestWrapper requestWrapper) {
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
+
+                //noinspection HardCodedStringLiteral
+                Common.log(LOG, "deleteGroupV1:", options);
+
+                JSONObject json = new JSONObject(options);
+                String groupId = json.getString(Constants.REST.GROUP_ID);
+
+                Common.getInstance().getDataProcessor("v1").deleteGroup(groupId,new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendResultJson.call(requestWrapper, json);
                     }
                 }, new Runnable1<JSONObject>() {
                     @Override
@@ -204,263 +235,212 @@ public class AdminRestHolder implements PageHolder {
                         Utils.sendError.call(requestWrapper, 500, json);
                     }
                 });
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
-    }
-
-    private void deleteGroupV1(final RequestWrapper requestWrapper) {
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
             }
-
-            is.close();
-            options = buf.toString();
-
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "deleteGroupV1:", options);
-
-            JSONObject json = new JSONObject(options);
-            String groupId = json.getString(Constants.REST.GROUP_ID);
-
-            Common.getInstance().getDataProcessor("v1").deleteGroup(groupId,new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendResultJson.call(requestWrapper, json);
-                }
-            }, new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendError.call(requestWrapper, 500, json);
-                }
-            });
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "deleteGroupV1:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
     }
 
     private void removeUserV1(final RequestWrapper requestWrapper) {
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
+
+                //noinspection HardCodedStringLiteral
+                Common.log(LOG, "removeUserV1:", options);
+
+                JSONObject json = new JSONObject(options);
+                String groupId = json.getString(Constants.REST.GROUP_ID);
+                Long userNumber = Long.parseLong(json.get(Constants.REST.USER_NUMBER).toString());
+
+                Common.getInstance().getDataProcessor("v1").removeUser(groupId,userNumber,new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendResultJson.call(requestWrapper, json);
+                    }
+                }, new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendError.call(requestWrapper, 500, json);
+                    }
+                });
             }
-
-            is.close();
-            options = buf.toString();
-
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "removeUserV1:", options);
-
-            JSONObject json = new JSONObject(options);
-            String groupId = json.getString(Constants.REST.GROUP_ID);
-            Long userNumber = Long.parseLong(json.get(Constants.REST.USER_NUMBER).toString());
-
-            Common.getInstance().getDataProcessor("v1").removeUser(groupId,userNumber,new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendResultJson.call(requestWrapper, json);
-                }
-            }, new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendError.call(requestWrapper, 500, json);
-                }
-            });
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "removeUserV1:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
     }
 
     private void switchPropertyInGroupV1(final RequestWrapper requestWrapper) {
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
 
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
+                //noinspection HardCodedStringLiteral
+                Common.log(LOG, "switchPropertyInGroupV1:", options);
+
+                JSONObject json = new JSONObject(options);
+                String groupId = json.getString(Constants.REST.GROUP_ID);
+                String property = json.getString(Constants.REST.PROPERTY);
+
+                Common.getInstance().getDataProcessor("v1").switchPropertyInGroup(groupId,property,new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendResultJson.call(requestWrapper, json);
+                    }
+                }, new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendError.call(requestWrapper, 500, json);
+                    }
+                });
             }
-
-            is.close();
-            options = buf.toString();
-
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "switchPropertyInGroupV1:", options);
-
-            JSONObject json = new JSONObject(options);
-            String groupId = json.getString(Constants.REST.GROUP_ID);
-            String property = json.getString(Constants.REST.PROPERTY);
-
-            Common.getInstance().getDataProcessor("v1").switchPropertyInGroup(groupId,property,new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendResultJson.call(requestWrapper, json);
-                }
-            }, new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendError.call(requestWrapper, 500, json);
-                }
-            });
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "switchPropertyInGroupV1:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
 
     }
 
     private void switchPropertyForUserV1(final RequestWrapper requestWrapper) {
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
+
+                //noinspection HardCodedStringLiteral
+                Common.log(LOG, "switchPropertyForUserV1:", options);
+
+                JSONObject json = new JSONObject(options);
+                String groupId = json.getString(Constants.REST.GROUP_ID);
+                Long userNumber = Long.parseLong(json.getString(Constants.REST.USER_NUMBER));
+                String property = json.getString(Constants.REST.PROPERTY);
+                Boolean value = json.getBoolean(Constants.REST.VALUE);
+
+                Common.getInstance().getDataProcessor("v1").switchPropertyForUser(groupId,userNumber,property,value,new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendResultJson.call(requestWrapper, json);
+                    }
+                }, new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendError.call(requestWrapper, 500, json);
+                    }
+                });
             }
-
-            is.close();
-            options = buf.toString();
-
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "switchPropertyForUserV1:", options);
-
-            JSONObject json = new JSONObject(options);
-            String groupId = json.getString(Constants.REST.GROUP_ID);
-            Long userNumber = Long.parseLong(json.getString(Constants.REST.USER_NUMBER));
-            String property = json.getString(Constants.REST.PROPERTY);
-            Boolean value = json.getBoolean(Constants.REST.VALUE);
-
-            Common.getInstance().getDataProcessor("v1").switchPropertyForUser(groupId,userNumber,property,value,new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendResultJson.call(requestWrapper, json);
-                }
-            }, new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendError.call(requestWrapper, 500, json);
-                }
-            });
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "switchPropertyForUserV1:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
     }
 
     private void actionNotSupported(final RequestWrapper requestWrapper) {
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
+
+                Common.log(LOG, "actionNotSupported:", requestWrapper.getRequestURI().getPath());
+
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Action not supported.");
+                json.put(Constants.REST.REQUEST, options);
+                Utils.sendError.call(requestWrapper, 400, json);
             }
-
-            is.close();
-            options = buf.toString();
-
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "actionNotSupported:", requestWrapper.getRequestURI().getPath());
-
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Action not supported.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
-
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "actionNotSupported:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
     }
 
     private void modifyPropertyInGroupV1(final RequestWrapper requestWrapper) {
+        requestWrapper.processBody(new Runnable1<StringBuilder>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(StringBuilder buf) {
+                String options = buf.toString();
 
-        String options = "";
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = requestWrapper.getRequestBody();
-            int b;
-            while((b = is.read()) != -1) {
-                buf.append((char) b);
+                //noinspection HardCodedStringLiteral
+                Common.log(LOG, "modifyPropertyInGroupV1:", options);
+
+                JSONObject json = new JSONObject(options);
+                String groupId = json.getString(Constants.REST.GROUP_ID);
+                String property = json.getString(Constants.REST.PROPERTY);
+                String value = json.getString(Constants.REST.VALUE);
+
+                Common.getInstance().getDataProcessor("v1").modifyPropertyInGroup(groupId,property,value,new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendResultJson.call(requestWrapper, json);
+                    }
+                }, new Runnable1<JSONObject>() {
+                    @Override
+                    public void call(JSONObject json) {
+                        Utils.sendError.call(requestWrapper, 500, json);
+                    }
+                });
             }
-
-            is.close();
-            options = buf.toString();
-
-            //noinspection HardCodedStringLiteral
-            Common.log(LOG, "modifyPropertyInGroupV1:", options);
-
-            JSONObject json = new JSONObject(options);
-            String groupId = json.getString(Constants.REST.GROUP_ID);
-            String property = json.getString(Constants.REST.PROPERTY);
-            String value = json.getString(Constants.REST.VALUE);
-
-            Common.getInstance().getDataProcessor("v1").modifyPropertyInGroup(groupId,property,value,new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendResultJson.call(requestWrapper, json);
-                }
-            }, new Runnable1<JSONObject>() {
-                @Override
-                public void call(JSONObject json) {
-                    Utils.sendError.call(requestWrapper, 500, json);
-                }
-            });
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
-            json.put(Constants.REST.REQUEST, options);
-            Utils.sendError.call(requestWrapper, 400, json);
-        }
+        }, new Runnable1<Exception>() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public void call(Exception e) {
+                Common.err(LOG, "modifyPropertyInGroupV1:", e);
+                JSONObject json = new JSONObject();
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Incorrect request.");
+                json.put(Constants.REST.REASON, e.getMessage());
+                Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
     }
 
 
