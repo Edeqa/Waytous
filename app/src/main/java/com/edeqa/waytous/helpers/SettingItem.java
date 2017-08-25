@@ -46,6 +46,7 @@ public class SettingItem<T> {
     private String groupId;
     private String title;
     private String message;
+    private String messageHtml;
     private int type;
     private String[] depended;
     protected Runnable1<T> callback;
@@ -87,6 +88,10 @@ public class SettingItem<T> {
         return message;
     }
 
+    public String getMessageHtml() {
+        return messageHtml;
+    }
+
     public SettingItem setMessage(String message) {
         this.message = message;
         return this;
@@ -96,6 +101,12 @@ public class SettingItem<T> {
         this.message = context.getString(resId);
         return this;
     }
+
+    public SettingItem setMessageHtml(int resId) {
+        this.messageHtml = context.getString(resId);
+        return this;
+    }
+
 
     public int getType() {
         return type;

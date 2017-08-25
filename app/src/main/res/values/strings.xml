@@ -214,8 +214,6 @@
     <string name="you_are_creating_the_group">You\'re creating the group for real-time sharing your location. But first, you must read and confirm your agreement with Terms of service.</string>
     <string name="you_are_joining_the_group">You\'re joining the group for real-time sharing your location. But first, you must read and confirm your agreement with Terms of service.</string>
     <string name="you_must_read_and_confirm_your_agreement_with_terms_of_service">You must read and confirm your agreement with Terms of service.</string>
-    <string name="terms_of_service">Terms of service</string>
-    <string name="terms_of_service_body">Terms of service</string>
     <string name="cannot_join_server_responds_s">Cannot join, server responds: %s</string>
     <string name="report_an_issue">Report an issue</string>
     <string name="click_here_to_report_about_error_odd_behaviour_or_some_great_idea">Click here to report about error, odd behaviour or some great idea.</string>

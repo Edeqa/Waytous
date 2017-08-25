@@ -10,6 +10,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -215,7 +218,15 @@ public class SettingsViewHolder extends AbstractViewHolder {
             holder.itemView.setOnClickListener(null);
             holder.itemView.setEnabled(true);
 
-            if(item.fetchSummary() != null) {
+            if(item.getMessageHtml() != null) {
+                Spanned html = Html.fromHtml(item.getMessageHtml());
+                holder.tvHeaderSummary.setText(html);
+                holder.tvHeaderSummary.setMovementMethod(LinkMovementMethod.getInstance());
+                holder.tvHeaderSummary.setVisibility(View.VISIBLE);
+                holder.tvSummary.setText(html);
+                holder.tvSummary.setMovementMethod(LinkMovementMethod.getInstance());
+                holder.tvSummary.setVisibility(View.VISIBLE);
+            } else if(item.fetchSummary() != null) {
                 holder.tvHeaderSummary.setText(item.fetchSummary());
                 holder.tvHeaderSummary.setVisibility(View.VISIBLE);
                 holder.tvSummary.setText(item.fetchSummary());
