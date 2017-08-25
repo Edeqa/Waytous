@@ -27,9 +27,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -212,6 +215,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         return true;
     }
 
+    Polygon rect;
     private void update() {
         try {
             if (cameraView == null || bRecenter.getVisibility() == View.VISIBLE) return;
@@ -264,15 +268,17 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     }
                     alpha = Math.toRadians(alpha);
 
-
-
-                    LatLngBounds a = new LatLngBounds(latLngLB, latLngRT);
-
                     double width = SphericalUtil.computeDistanceBetween(latLngLB, new LatLng(latLngLB.latitude, latLngRT.longitude));
                     double height = SphericalUtil.computeDistanceBetween(latLngLB, new LatLng(latLngRT.latitude, latLngLB.longitude));
 
                     double newWidth = width * Math.sin(alpha) + height * Math.cos(alpha);
                     double newHeight = height * Math.sin(alpha) + width * Math.cos(alpha);
+
+//                    if(rotation == 1 || rotation == 3) {
+//                        double a = newWidth;
+//                        newHeight = newWidth;
+//                        newWidth = a;
+//                    }
 
                     double fractHeight = newHeight / height;
                     double fractWidth = newWidth / width;
@@ -298,22 +304,35 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     LatLng leftBottom = new LatLng(bottom.latitude, left.longitude);
 
                     double diagonal = SphericalUtil.computeDistanceBetween(leftTop, rightBottom);
+                    if(rect == null) {
+                        rect = map.addPolygon(new PolygonOptions().add(leftTop).add(rightTop).add(rightBottom).add(leftBottom));
+                    }
+                    ArrayList points = new ArrayList();
+                    points.add(leftTop);
+                    points.add(rightTop);
+                    points.add(rightBottom);
+                    points.add(leftBottom);
 
+                    rect.setPoints(points);
 
                     LatLng newLeftTop = SphericalUtil.computeOffset(center, diagonal / 2, bearing);
                     LatLng newRightBottom = SphericalUtil.computeOffset(center, diagonal / 2, bearing );
 
 //                    int zoom = getBoundsZoomLevel(newLeftTop, newRightBottom, (int)newWidth, (int)newHeight);
 
-                    double zoom = Math.min(
-                            Math.max(
-                                    Math.log(newWidth) / .693147180559945309417,
-                                    Math.log(newHeight) / .693147180559945309417
-                            ), 21);
+                    DisplayMetrics metrics = new DisplayMetrics();
+                    context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-                    System.out.println("NEWS:"+center+":"+zoom);
+                    double zoom2;
+                    if(metrics.widthPixels < metrics.heightPixels) {
+                        zoom2 = Math.log((Math.cos(center.longitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (newWidth * 256) * metrics.widthPixels) / Math.log(2);
+                    } else {
+                        zoom2 = Math.log((Math.cos(center.latitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (newHeight * 256) * metrics.widthPixels) / Math.log(2);
+                    }
+                    zoom2 = Math.min(zoom2, 21.);
+                    System.out.println("NEWS:"+center+":"+width+":"+height+"|"+newWidth+":"+newHeight+"|"+zoom2);
 
-                    CameraPosition.Builder cameraPosition = new CameraPosition.Builder().target(center).zoom((float) zoom).bearing(bearing).tilt(0);
+                    CameraPosition.Builder cameraPosition = new CameraPosition.Builder().target(center).zoom((float) zoom2).bearing(bearing).tilt(0);
 
                     camera = CameraUpdateFactory.newCameraPosition(cameraPosition.build());
 
