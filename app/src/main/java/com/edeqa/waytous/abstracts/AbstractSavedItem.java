@@ -70,7 +70,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     public static AbstractSavedItem getItemByPosition(String itemType, int position) {
         Cursor cursor = dbHelpers.get(itemType).getByPosition(position);
-        cursor.moveToFirst();
+//        cursor.moveToFirst();
         return getSingleItemByCursor(itemType, cursor);
     }
 

@@ -47,7 +47,6 @@ import java.util.List;
 
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
-import static com.edeqa.waytous.helpers.Events.MAP_MY_LOCATION_BUTTON_CLICKED;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.view.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_DAY;
@@ -187,6 +186,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
 
+                //noinspection unchecked
                 item.add(new SettingItem.Page(TYPE).setTitle(R.string.navigation)
                         .add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setGroupId(TYPE))
                         .add(new SettingItem.List(PREFERENCE_MODE)
