@@ -17,6 +17,7 @@ function Main() {
         "/js/index/StartHolder",
 
         "/js/index/HelpHolder",
+        "/js/index/PrivacyPolicyHolder",
 //        "/js/index/ApiHolder",
 
         "/js/index/SupportHolder",

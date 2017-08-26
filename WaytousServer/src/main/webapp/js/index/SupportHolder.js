@@ -17,7 +17,7 @@ function SupportHolder(main) {
     this.icon = "live_help";
 
     this.start = function() {
-        console.log("INDEX SUPPORT");
+        console.log("START SUPPORT");
     };
 
     this.onEvent = function(event, object) {
@@ -35,7 +35,7 @@ function SupportHolder(main) {
                     if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
-                    u.byId("content").classList.add("content-support");
+                    u.byId("content").classList.add("content-error");
                     if(object) object();
                 });
                 break;

@@ -17,7 +17,7 @@ function ContactHolder(main) {
     this.icon = "mail_outline";
 
     this.start = function() {
-        console.log("INDEX CONTACT");
+        console.log("START CONTACT");
     };
 
     this.onEvent = function(event, object) {
@@ -35,7 +35,7 @@ function ContactHolder(main) {
                     if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
-                    u.byId("content").classList.add("content-contact");
+                    u.byId("content").classList.add("content-error");
                     if(object) object();
                 });
                 break;

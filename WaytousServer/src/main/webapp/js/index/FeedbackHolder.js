@@ -17,7 +17,7 @@ function FeedbackHolder(main) {
     this.icon = "feedback";
 
     this.start = function() {
-        console.log("INDEX FEEDBACK");
+        console.log("START FEEDBACK");
     };
 
     this.onEvent = function(event, object) {
@@ -35,7 +35,7 @@ function FeedbackHolder(main) {
                     if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
-                    u.byId("content").classList.add("content-feedback");
+                    u.byId("content").classList.add("content-error");
                     if(object) object();
                 });
                 break;

@@ -17,7 +17,7 @@ function HelpHolder(main) {
     this.icon = "help";
 
     this.start = function() {
-        console.log("INDEX HELP");
+        console.log("START HELP");
     };
 
     this.onEvent = function(event, object) {
@@ -31,16 +31,17 @@ function HelpHolder(main) {
                 var lang = (u.load("lang") || navigator.language).toLowerCase().slice(0,2);
                 u.post("/rest/v1/getContent", {resource: "index-help.html", locale: lang}).then(function(xhr){
                     u.byId("content").innerHTML = xhr.response;
-                    u.byId("content").classList.add("content-help");
+                    u.byId("content").classList.add("content-HELP");
                     if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
-                    u.byId("content").classList.add("content-help");
+                    u.byId("content").classList.add("content-error");
                     if(object) object();
                 });
                 break;
         }
         return true;
     }
+
 
 }

@@ -17,7 +17,7 @@ function ApiHolder(main) {
     this.icon = "extension";
 
     this.start = function() {
-        console.log("INDEX API");
+        console.log("START API");
     };
 
     this.onEvent = function(event, object) {

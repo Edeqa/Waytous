@@ -17,7 +17,7 @@ function HomeHolder(main) {
     this.icon = "home";
 
     this.start = function() {
-        console.log("INDEX TRACK");
+        console.log("START TRACK");
     };
 
     this.onEvent = function(event, object) {
@@ -35,7 +35,7 @@ function HomeHolder(main) {
                     if(object) object();
                 }).catch(function(error, json) {
                     u.byId("content").innerHTML = "Error";
-                    u.byId("content").classList.add("content-home");
+                    u.byId("content").classList.add("content-error");
                     if(object) object();
                 });
                 break;
