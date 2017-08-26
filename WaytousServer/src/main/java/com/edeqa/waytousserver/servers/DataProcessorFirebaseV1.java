@@ -303,12 +303,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 }
                                 ++count;
                             }
-                            System.out.println("TRY:"+value+":"+user.getUid()+":"+found);
                             if (found) {
-//                                final MyGroup group = new MyGroup();
+//                                Common.log(LOG, "onMessage:newGroup:", "user found:", user.getUid());
                                 user.number = count;
                                 registerUser(groupId, user, REQUEST_JOIN_GROUP, null, null);
                             } else {
+//                                Common.log(LOG, "onMessage:newGroup:", "user not found adding:", user.getUid());
                                 ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).setValue(user.getUid());
                                 DatabaseReference nodeNumber = ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
                                 nodeNumber.setValue(user.getUid());

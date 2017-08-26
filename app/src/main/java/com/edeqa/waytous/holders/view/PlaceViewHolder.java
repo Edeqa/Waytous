@@ -354,8 +354,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                             break;
                         }
                     }
-                    State.getInstance().getPropertiesHolder().saveFor(getType(), places);
+                    State.getInstance().getPropertiesHolder().saveFor(PlaceViewHolder.this.getType(), places);
                     break;
+
             }
             return true;
         }
