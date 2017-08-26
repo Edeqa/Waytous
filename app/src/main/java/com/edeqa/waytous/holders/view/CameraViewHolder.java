@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -215,7 +216,6 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
         return true;
     }
 
-    Polygon rect;
     private void update() {
         try {
             if (cameraView == null || bRecenter.getVisibility() == View.VISIBLE) return;
@@ -248,96 +248,66 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 LatLng latLngLB = new LatLng(lat1, lng1);
                 LatLng latLngRT = new LatLng(lat2, lng2);
 
+                LatLngBounds bounds = new LatLngBounds(latLngLB, latLngRT);
 
                 if(multiUsersOrientation == MultiUsersOrientation.USER && State.getInstance().getMe().getProperties().isSelected()) {
 
-                    LatLng me = Utils.latLng(State.getInstance().getMe().getLocation());
-                    float bearing = State.getInstance().getMe().getLocation().getBearing();
-                    double alpha = bearing;
+                    final LatLng center = bounds.getCenter();
+                    final float alpha = State.getInstance().getMe().getLocation().getBearing();
+//                    final LatLngBounds newBounds = new LatLngBounds();
 
-                    int rotation = 0;
-                    if(bearing > 270) {
-                        alpha = bearing - 270;
-                        rotation = 3;
-                    } else if(bearing > 180) {
-                        alpha = bearing - 180;
-                        rotation = 2;
-                    } else if(bearing > 90) {
-                        alpha = bearing - 90;
-                        rotation = 1;
+                    final ArrayList<LatLng> points = new ArrayList<>();
+                    State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                        @Override
+                        public void call(Integer number, MyUser user) {
+                            Location loc = user.getLocation();
+                            if(loc != null) {
+                                double lng = center.longitude + (loc.getLongitude() - center.longitude) * Math.cos(alpha * Math.PI / 180)
+                                        - (loc.getLatitude() - center.latitude) * Math.sin(alpha * Math.PI / 180);
+                                double lat = center.latitude + (loc.getLatitude() - center.latitude) * Math.cos(alpha * Math.PI / 180)
+                                        + (loc.getLongitude() - center.longitude) * Math.sin(alpha * Math.PI / 180);
+
+                                LatLng ll = new LatLng(lat, lng);
+                                points.add(ll);
+                            }
+                        }
+                    });
+                    LatLng ll = points.get(0);
+                    lat1 = ll.latitude;
+                    lat2 = ll.latitude;
+                    lng1 = ll.longitude;
+                    lng2 = ll.longitude;
+
+                    for(LatLng x: points) {
+                        lat1 = Math.min(lat1, x.latitude);
+                        lat2 = Math.max(lat2, x.latitude);
+                        lng1 = Math.min(lng1, x.longitude);
+                        lng2 = Math.max(lng2, x.longitude);
                     }
-                    alpha = Math.toRadians(alpha);
+                    LatLng bLatLngLB = new LatLng(lat1, lng1);
+                    LatLng bLatLngRT = new LatLng(lat2, lng2);
 
-                    double width = SphericalUtil.computeDistanceBetween(latLngLB, new LatLng(latLngLB.latitude, latLngRT.longitude));
-                    double height = SphericalUtil.computeDistanceBetween(latLngLB, new LatLng(latLngRT.latitude, latLngLB.longitude));
-
-                    double newWidth = width * Math.sin(alpha) + height * Math.cos(alpha);
-                    double newHeight = height * Math.sin(alpha) + width * Math.cos(alpha);
-
-//                    if(rotation == 1 || rotation == 3) {
-//                        double a = newWidth;
-//                        newHeight = newWidth;
-//                        newWidth = a;
-//                    }
-
-                    double fractHeight = newHeight / height;
-                    double fractWidth = newWidth / width;
-
-                    System.out.println("CURR:"+map.getProjection().getVisibleRegion());
-                    System.out.println("OPTS:"+rotation+":"+bearing+":"+alpha+":"+new LatLngBounds(latLngLB, latLngRT));
-                    System.out.println("OLD:"+width+":"+height);
-                    System.out.println("NEW:"+newWidth+":"+newHeight);
-                    System.out.println("FRACT:"+fractWidth+":"+fractHeight);
-
-                    LatLng centerX = SphericalUtil.computeOffset(latLngLB, width / 2, 90);
-                    LatLng centerY = SphericalUtil.computeOffset(latLngLB, height / 2, 0);
-                    LatLng center = new LatLng(centerY.latitude, centerX.longitude);
-
-                    LatLng left = SphericalUtil.computeOffset(center, newWidth / 2, 270);
-                    LatLng top = SphericalUtil.computeOffset(center, newHeight / 2, 0);
-                    LatLng right = SphericalUtil.computeOffset(center, newWidth / 2, 90);
-                    LatLng bottom = SphericalUtil.computeOffset(center, newHeight / 2, 180);
-
-                    LatLng leftTop = new LatLng(top.latitude, left.longitude);
-                    LatLng rightTop = new LatLng(top.latitude, right.longitude);
-                    LatLng rightBottom = new LatLng(bottom.latitude, right.longitude);
-                    LatLng leftBottom = new LatLng(bottom.latitude, left.longitude);
-
-                    double diagonal = SphericalUtil.computeDistanceBetween(leftTop, rightBottom);
-                    if(rect == null) {
-                        rect = map.addPolygon(new PolygonOptions().add(leftTop).add(rightTop).add(rightBottom).add(leftBottom));
-                    }
-                    ArrayList points = new ArrayList();
-                    points.add(leftTop);
-                    points.add(rightTop);
-                    points.add(rightBottom);
-                    points.add(leftBottom);
-
-                    rect.setPoints(points);
-
-                    LatLng newLeftTop = SphericalUtil.computeOffset(center, diagonal / 2, bearing);
-                    LatLng newRightBottom = SphericalUtil.computeOffset(center, diagonal / 2, bearing );
-
-//                    int zoom = getBoundsZoomLevel(newLeftTop, newRightBottom, (int)newWidth, (int)newHeight);
+                    double width = SphericalUtil.computeDistanceBetween(bLatLngLB, new LatLng(bLatLngLB.latitude, bLatLngRT.longitude));
+                    double height = SphericalUtil.computeDistanceBetween(bLatLngLB, new LatLng(bLatLngRT.latitude, bLatLngLB.longitude));
 
                     DisplayMetrics metrics = new DisplayMetrics();
                     context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
+                    double fract = height / width;
+                    double fractScreen = 1. * metrics.heightPixels / metrics.widthPixels;
+
                     double zoom2;
-                    if(metrics.widthPixels < metrics.heightPixels) {
-                        zoom2 = Math.log((Math.cos(center.longitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (newWidth * 256) * metrics.widthPixels) / Math.log(2);
+                    if(fract >= fractScreen) {
+                        zoom2 = Math.log((Math.cos(center.longitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (height * 256 * metrics.density / 2) * metrics.heightPixels) / Math.log(2);
                     } else {
-                        zoom2 = Math.log((Math.cos(center.latitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (newHeight * 256) * metrics.widthPixels) / Math.log(2);
+                        zoom2 = Math.log((Math.cos(center.longitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (width * 256 * metrics.density / 2) * metrics.widthPixels) / Math.log(2);
                     }
+
                     zoom2 = Math.min(zoom2, 21.);
-                    System.out.println("NEWS:"+center+":"+width+":"+height+"|"+newWidth+":"+newHeight+"|"+zoom2);
-
-                    CameraPosition.Builder cameraPosition = new CameraPosition.Builder().target(center).zoom((float) zoom2).bearing(bearing).tilt(0);
-
+                    CameraPosition.Builder cameraPosition = new CameraPosition.Builder().target(center).zoom((float) zoom2).bearing(alpha).tilt(0);
                     camera = CameraUpdateFactory.newCameraPosition(cameraPosition.build());
-
                 } else {
-                    camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(new LatLngBounds(latLngLB, latLngRT), 1.1), padding);
+                    camera = CameraUpdateFactory.newLatLngBounds(Utils.reduce(bounds, 1.1), padding);
                 }
             } else {
                 if(cameraView.getLocation() != null) {
@@ -578,6 +548,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                             }
                         }, LOCATION_UPDATES_DELAY);
                     }
+                    update();
                     break;
                 case UNSELECT_USER:
                     if(State.getInstance().getUsers().getCountSelectedTotal()==0){
