@@ -198,6 +198,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 if(bRecenter.getVisibility() == View.VISIBLE) {
                     onRecenterClick.onClick(null);
                 } else if(State.getInstance().getUsers().getCountSelectedTotal() == 1) {
+                    cameraView.zoom = CAMERA_DEFAULT_ZOOM;
                     onRecenterClick.onClick(null);
                 } else if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                     if(multiUsersOrientation == MultiUsersOrientation.NORTH) {
