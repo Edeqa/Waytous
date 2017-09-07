@@ -4,7 +4,6 @@ import android.content.Context;
 import android.location.Location;
 
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.holders.view.AddressViewHolder;
 import com.edeqa.waytous.interfaces.Runnable1;
 import com.google.android.gms.maps.model.LatLng;
 

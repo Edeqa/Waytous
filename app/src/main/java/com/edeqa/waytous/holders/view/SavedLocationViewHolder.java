@@ -41,7 +41,6 @@ import com.google.maps.android.ui.IconGenerator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

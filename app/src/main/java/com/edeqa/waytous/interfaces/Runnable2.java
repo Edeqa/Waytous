@@ -1,7 +1,5 @@
 package com.edeqa.waytous.interfaces;
 
-import com.edeqa.waytous.helpers.MyUser;
-
 /**
  * Created 5/18/17.
  */

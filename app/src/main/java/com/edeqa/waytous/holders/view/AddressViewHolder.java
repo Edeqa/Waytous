@@ -1,10 +1,8 @@
 package com.edeqa.waytous.holders.view;
 
-import android.location.Address;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -13,19 +11,10 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.AddressResolver;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable1;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 

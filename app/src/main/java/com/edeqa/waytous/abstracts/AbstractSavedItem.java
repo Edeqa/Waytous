@@ -2,18 +2,7 @@ package com.edeqa.waytous.abstracts;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Canvas;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.edeqa.waytous.helpers.DBHelper;
 import com.edeqa.waytous.interfaces.Runnable1;

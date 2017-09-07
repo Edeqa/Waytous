@@ -1,13 +1,10 @@
 package com.edeqa.waytous.holders.view;
 
 import android.content.DialogInterface;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.edeqa.waytous.MainActivity;

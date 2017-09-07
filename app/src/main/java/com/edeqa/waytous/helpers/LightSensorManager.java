@@ -9,7 +9,6 @@ import android.hardware.SensorManager;
 import android.hardware.TriggerEvent;
 import android.hardware.TriggerEventListener;
 import android.os.Build;
-import android.util.Log;
 
 import com.edeqa.waytous.interfaces.Runnable1;
 

@@ -3,14 +3,11 @@ package com.edeqa.waytous.holders.view;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -28,8 +25,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
