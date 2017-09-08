@@ -110,7 +110,7 @@ public class AddressResolver {
     }
 
 
-    public MyUser getUser() {
+    private MyUser getUser() {
         return user;
     }
 
@@ -119,7 +119,7 @@ public class AddressResolver {
         return this;
     }
 
-    public LatLng getLatLng() {
+    private LatLng getLatLng() {
         return latLng;
     }
 
@@ -133,11 +133,11 @@ public class AddressResolver {
         return this;
     }
 
-    public Location getLocation() {
+    private Location getLocation() {
         return location;
     }
 
-    public Runnable1 getCallback() {
+    private Runnable1 getCallback() {
         return callback;
     }
 
