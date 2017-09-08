@@ -17,7 +17,6 @@
 /temp.jks
 /cacerts
 /options_inchem.json
-app/src/test/
 /deploy.sh
 /deploy_debug.sh
 /app/src/debug/
