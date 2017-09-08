@@ -80,14 +80,17 @@ public class Utils {
             case 1:
                 sType = "SHA-1";
                 break;
-            case 2:
-                sType = "MD2";
-                break;
             case 5:
                 sType = "MD5";
                 break;
+            case 224:
+                sType = "SHA-224";
+                break;
             case 256:
                 sType = "SHA-256";
+                break;
+            case 384:
+                sType = "SHA-384";
                 break;
             case 512:
                 sType = "SHA-512";
