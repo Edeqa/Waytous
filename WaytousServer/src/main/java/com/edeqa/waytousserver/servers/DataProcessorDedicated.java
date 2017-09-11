@@ -5,8 +5,8 @@ import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -498,6 +498,21 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     @Override
     public String createCustomToken(String id) {
         return null;
+    }
+
+    @Override
+    public void putStaticticsGroup(String groupId, boolean isPermanent, GroupAction action, String errorMessage) {
+        // TODO
+    }
+
+    @Override
+    public void putStaticticsUser(String groupId, String userId, UserAction action, String errorMessage) {
+        // TODO
+    }
+
+    @Override
+    public void cleanStatisticsMessages(Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
+
     }
 
 }

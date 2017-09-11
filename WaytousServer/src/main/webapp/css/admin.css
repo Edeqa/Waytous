@@ -133,7 +133,20 @@ h2 {
     border: none;
 }
 .buttons {
+    display: inline-flex;
     margin-bottom: 5px;
+    font-size: initial;
+    align-items: center;
+    margin-left: 10px;
+}
+.button-clean {
+    font-family: "Material Icons";
+    font-feature-settings: "liga" 1;
+    font-style: normal;
+    stroke: darkslategray;
+    background-color: transparent;
+    border: none;
+    outline: none;
 }
 .welcome-input {
     width: 100%;
@@ -240,7 +253,7 @@ h2 {
         height: 25px;
     }
     .buttons {
-        margin-bottom: 50px;
+        width: auto;
     }
     .logs-header-input {
         font-size: 16px;

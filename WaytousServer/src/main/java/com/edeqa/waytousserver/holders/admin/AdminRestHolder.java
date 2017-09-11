@@ -60,6 +60,9 @@ public class AdminRestHolder implements PageHolder {
                     case "/admin/rest/v1/groups/clean":
                         cleanGroupsV1(requestWrapper);
                         return true;
+                    case "/admin/rest/v1/stat/clean":
+                        cleanStatMessagesV1(requestWrapper);
+                        return true;
                     default:
                         actionNotSupported(requestWrapper);
                         return true;
@@ -439,6 +442,26 @@ public class AdminRestHolder implements PageHolder {
                 json.put(Constants.REST.MESSAGE, "Incorrect request.");
                 json.put(Constants.REST.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
+            }
+        });
+    }
+
+    @SuppressWarnings("HardCodedStringLiteral")
+    private void cleanStatMessagesV1(final RequestWrapper requestWrapper) {
+        Common.log(LOG, "cleanStatMessagesV1:started");
+        Common.getInstance().getDataProcessor("v1").cleanStatisticsMessages(new Runnable1<JSONObject>() {
+            @Override
+            public void call(JSONObject json) {
+                Common.log(LOG, "cleanStatMessagesV1:done");
+                Utils.sendResultJson.call(requestWrapper, json);
+            }
+        }, new Runnable1<JSONObject>() {
+            @Override
+            public void call(JSONObject json) {
+                Common.err(LOG, "cleanStatMessagesV1:failed");
+                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                json.put(Constants.REST.MESSAGE, "Messages cleaning failed.");
+                Utils.sendError.call(requestWrapper, 500, json);
             }
         });
     }

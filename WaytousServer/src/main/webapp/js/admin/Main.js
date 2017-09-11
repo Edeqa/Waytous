@@ -24,7 +24,8 @@ function Main() {
         "Group",
         "Groups",
         "Chat",
-        "Logs"
+        "Logs",
+        "Statistics"
 //        "Settings",
 //        "Help",
     ];

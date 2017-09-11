@@ -100,7 +100,20 @@ public class Constants {
                 OPTION_REQUIRES_PASSWORD = "requires-password",
                 OPTION_WELCOME_MESSAGE = "welcome-message",
                 OPTION_DATE_CREATED = "date-created",
-                OPTION_DATE_CHANGED = "date-changed";
+                OPTION_DATE_CHANGED = "date-changed",
+
+                SECTION_STAT = "_stat",
+                STAT_TOTAL = "total",
+                STAT_BY_DATE = "by-date",
+                STAT_GROUPS_CREATED_TEMPORARY = "groups-created-temporary",
+                STAT_GROUPS_CREATED_PERSISTENT = "groups-created-persistent",
+                STAT_GROUPS_REJECTED = "groups-rejected",
+                STAT_GROUPS_DELETED = "groups-deleted",
+                STAT_USERS_JOINED = "users-joined",
+                STAT_USERS_RECONNECTED = "users-reconnected",
+                STAT_USERS_REJECTED = "users-rejected",
+                STAT_MESSAGES = "messages"
+        ;
     }
 
     public static final int LIFETIME_REQUEST_TIMEOUT = 10;

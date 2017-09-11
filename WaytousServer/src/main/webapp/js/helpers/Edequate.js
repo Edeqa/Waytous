@@ -2,8 +2,10 @@
  * Edequate - javascript DOM and interface routines
  * Copyright (C) Edeqa LLC <http://www.edeqa.com>
  *
- * v.1.1 - some fixes and improvements
- * v.1 - initial release
+ * History:
+ * 1.2 - HTMLElement#updateHTML(text)
+ * 1.1 - some fixes and improvements
+ * 1 - initial release
  */
 
 function Edequate(options) {
@@ -299,6 +301,16 @@ function Edequate(options) {
             div.classList.add("hidden");
         }
         return div;
+    };
+
+    HTMLElement.prototype.updateHTML = function(update, options) {
+        clearTimeout(this._updateTask);
+        options = options || {};
+        this.innerHTML = update;
+        if(!options.noflick) {
+            this.classList.add("changed");
+            this._updateTask = setTimeout(function(){this.classList.remove("changed")}.bind(this), 5000);
+        }
     };
 
     HTMLElement.prototype.place = function(type, args) {
