@@ -175,16 +175,13 @@ function Groups() {
 
     function cleanGroupsQuestion(e){
         u.clear(buttons);
-        u.create({className:"question", innerHTML: "This will check expired users and groups immediately using each group options. Continue?"}, buttons);
+        u.create({className:"question", innerHTML: "This will immediately check for expired users and groups. Options for each group are important. Continue?"}, buttons);
         u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: function() {
            renderButtons(buttons);
            u.toast.show("Groups clean is performing.");
            u.get("/admin/rest/v1/groups/clean")
             .then(function(xhr){
-//               WTU.switchTo("/admin/groups");
             }).catch(function(code,xhr){
-//               console.warn("Resign because of",code,xhr);
-//               WTU.resign(updateData);
                var res = JSON.parse(xhr.responseText) || {};
                u.toast.show(res.message || xhr.statusText);
              });

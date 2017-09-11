@@ -6,6 +6,8 @@
       ".read": false,
       ".write": false
     },
+    "_stat": {
+    },
     "$group_id": {
       ".write": false,
       ".validate": "root.child('_groups').child($group_id).exists()",
@@ -89,8 +91,8 @@
           }
         }
       }
-      //    				".read": "root.child($group_id+'/u/'+auth.uid).exists()",
-      //    				".write": "root.child($group_id+'/u/'+auth.uid).exists() && newData.child('author_id').val() === auth.uid && !data.exists() && newData.exists()",
+//    ".read": "root.child($group_id+'/u/'+auth.uid).exists()",
+//    ".write": "root.child($group_id+'/u/'+auth.uid).exists() && newData.child('author_id').val() === auth.uid && !data.exists() && newData.exists()",
 
     }
   }
