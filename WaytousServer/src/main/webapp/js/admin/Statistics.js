@@ -251,7 +251,7 @@ function Statistics() {
               } else {
                   groupsStat.addRow(groupsData);
               }
-              groupsChart.draw(groupsStat, google.charts.Line.convertOptions(groupsChartOptions));
+//              groupsChart.draw(groupsStat, google.charts.Line.convertOptions(groupsChartOptions));
 
               var usersData = [data.key,0,0,0];
               if(json[DATABASE.STAT_USERS_JOINED]) {
@@ -272,7 +272,12 @@ function Statistics() {
               } else {
                   usersStat.addRow(usersData);
               }
-              usersChart.draw(usersStat, google.charts.Line.convertOptions(usersChartOptions));
+
+            google.visualization.events.addOneTimeListener(groupsChart, "ready", function(){
+                usersChart.draw(usersStat, google.charts.Line.convertOptions(usersChartOptions));
+            });
+            groupsChart.draw(groupsStat, google.charts.Line.convertOptions(groupsChartOptions));
+
         };
 
         var addValueToChartError = function(e) {
