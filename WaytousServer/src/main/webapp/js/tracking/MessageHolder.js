@@ -128,7 +128,7 @@ function MessageHolder(main) {
                 var div = chat.addItem({
                     type:HTML.DIV,
                     className:"chat-dialog-message" + (object.private ? " chat-dialog-message-private" : ""),
-                    order: object.timestamp,
+                    order: object.timestamp
                 });
                 u.create(HTML.DIV, {className:"chat-dialog-message-timestamp", innerHTML: new Date(object.timestamp).toLocaleString()}, div);
 

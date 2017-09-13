@@ -44,6 +44,10 @@ import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.PREPARE_FAB;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
+import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;
 import static com.edeqa.waytous.holders.property.MessagesHolder.NEW_MESSAGE;
@@ -124,8 +128,21 @@ public class MessagesViewHolder extends AbstractViewHolder {
             case ACTIVITY_RESUME:
                 if(dialog != null && dialog.isShowing()) {
                     System.out.println("DO RESIZE:"+dialog);
+                    dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE: View.GONE);
                     dialog.setContext((MainActivity) object);
                     dialog.resize();
+                }
+                break;
+            case TRACKING_ACTIVE:
+                if(dialog != null) {
+                    dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE: View.GONE);
+                }
+                break;
+            case TRACKING_DISABLED:
+            case TRACKING_RECONNECTING:
+            case TRACKING_STOP:
+                if(dialog != null) {
+                    dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE: View.GONE);
                 }
                 break;
             case NEW_MESSAGE:
@@ -306,11 +323,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
         dialog.setFooter(layoutFooter);
-        if(State.getInstance().tracking_active()) {
-            layoutFooter.setVisibility(View.VISIBLE);
-        } else {
-            layoutFooter.setVisibility(View.GONE);
-        }
 
         final Runnable1<EditText> sender = new Runnable1<EditText>() {
             @Override
@@ -449,6 +461,8 @@ public class MessagesViewHolder extends AbstractViewHolder {
             }
         });
         dialog.show();
+
+        dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE : View.GONE);
 
         prepareToolbarMenu();
 
