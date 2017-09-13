@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -71,6 +72,8 @@ public class MessagesViewHolder extends AbstractViewHolder {
     private static final String PREFERENCE_HIDE_SYSTEM_MESSAGES = "messages_hide_system_messages"; //NON-NLS
     private static final String PREFERENCE_FONT_SIZE = "messages_font_size"; //NON-NLS
     private static final String PREFERENCE_NOT_TRANSPARENT = "messages_not_transparent"; //NON-NLS
+
+    private static final int MESSAGE_MAX_LENGTH = 1024;
 
 
     private UserMessage.UserMessagesAdapter adapter;
@@ -328,21 +331,17 @@ public class MessagesViewHolder extends AbstractViewHolder {
             @Override
             public void call(EditText et) {
                 if (et.getText().toString().length() > 0) {
+                    if(et.getText().toString().length() > MESSAGE_MAX_LENGTH) {
+                        Toast.makeText(context, R.string.too_long_message, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if(State.getInstance().tracking_active()) {
                         SystemMessage mm = new SystemMessage(context)
                                 .setFromUser(State.getInstance().getMe())
                                 .setText(et.getText().toString())
                                 .setDelivery(Utils.getUnique());
                         State.getInstance().fire(SEND_MESSAGE, mm);
-
-
-//                        UserMessage m = new UserMessage(context);
-//                        m.setFrom(State.getInstance().getMe());
-//                        m.setBody(et.getText().toString());
-//                        m.setDelivery(Utils.getUnique());
-//                        m.save(null);
-//
-//                        State.getInstance().fire(SEND_MESSAGE, m);
 
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(et.getWindowToken(), 0);

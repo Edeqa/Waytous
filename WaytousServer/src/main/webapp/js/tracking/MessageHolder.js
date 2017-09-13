@@ -14,6 +14,8 @@ EVENTS.WELCOME_MESSAGE = "welcome_message";
 
 function MessageHolder(main) {
 
+    var MESSAGE_MAX_LENGTH = 1024;
+
     var type = "message";
     var chat;
     var messages;
@@ -61,13 +63,19 @@ function MessageHolder(main) {
 //        messages = chat.items[0];
         reply = chat.footer;
         replyTo = u.create(HTML.INPUT, {type:HTML.HIDDEN, value:""}, reply);
-        replyInput = u.create(HTML.INPUT, {className: "chat-dialog-reply-input", tabindex:5, onkeyup:function(e){
-            if(e.keyCode == 13) {
-                replyButton.click();
+        replyInput = u.create(HTML.INPUT, {
+            className: "chat-dialog-reply-input",
+            tabindex:5,
+            maxlength: MESSAGE_MAX_LENGTH,
+            onkeyup:function(e){
+                if(e.keyCode == 13) {
+                    replyButton.click();
+                }
+            },
+            onclick: function(){
+                this.focus();
             }
-        }, onclick: function(){
-            this.focus();
-        }}, reply);
+        }, reply);
         replyButton = u.create(HTML.BUTTON, {className: "chat-dialog-reply-button", innerHTML:"send", onclick:sendUserMessage}, reply);
 
         incomingMessageSound = u.load("message:incoming") || defaultIncomingMessageSound;
@@ -184,6 +192,10 @@ function MessageHolder(main) {
         try {
             var text = replyInput.value;
             if(!text) return;
+            if(text.length > MESSAGE_MAX_LENGTH) {
+                main.toast.show(u.lang.too_long_message);
+                return;
+            }
             replyInput.value = "";
 
             main.tracking.put(USER.MESSAGE, text);

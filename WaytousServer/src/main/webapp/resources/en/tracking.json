@@ -162,6 +162,7 @@
   "chat": "Chat",
   "private_message": "Private message",
   "incoming_message": "Incoming message",
+  "too_long_message": "Too long message",
 
 
   "// NavigationHolder": "",

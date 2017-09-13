@@ -7,6 +7,7 @@
       ".write": false
     },
     "_stat": {
+      ".write": false
     },
     "$group_id": {
       ".write": false,
@@ -16,7 +17,8 @@
         ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()",
         ".write": false,
         "welcome-message": {
-          ".write": "root.child($group_id+'/u/p/0/key').val() === auth.uid"
+          ".write": "root.child($group_id+'/u/p/0/key').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length < 10240"
         },
         "date-created": {
           ".write": "!data.exists() && newData.exists()"
@@ -52,13 +54,16 @@
           ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()",
           "$user_number":{
             "active": {
-              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid"
+              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
+              ".validate": "newData.isBoolean()"
             },
             "name": {
-              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid"
+              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
+              ".validate": "newData.isString() && newData.val().length < 256"
             },
             "changed": {
-              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid"
+              ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
+              ".validate": "newData.val() <= now"
             }
           }
         },
@@ -74,6 +79,10 @@
           "$user_number": {
             ".write": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
             "$item_id": {
+              ".validate": "(newData.isString() && newData.val().length < 10240) || !newData.isString()",
+              "$key_id": {
+                ".validate": "(newData.isString() && newData.val().length < 10240) || newData.isNumber() || newData.isBoolean()"
+              }
             }
           }
         }
@@ -85,15 +94,17 @@
           "$user_number": {
             ".read": "root.child($group_id+'/u/p/'+$user_number+'/key').val() === auth.uid",
             "$item_id": {
-              ".write": "root.child($group_id+'/u/k/'+auth.uid).exists()"
-              // ".read": "root.child($group_id+'/u/k/'+auth.uid).exists()",
+              ".write": "root.child($group_id+'/u/k/'+auth.uid).exists()",
+              ".validate": "(newData.isString() && newData.val().length < 10240) || !newData.isString()",
+              "$key_id": {
+                ".validate": "(newData.isString() && newData.val().length < 10240) || newData.isNumber() || newData.isBoolean()"
+              }
             }
           }
         }
       }
-//    ".read": "root.child($group_id+'/u/'+auth.uid).exists()",
-//    ".write": "root.child($group_id+'/u/'+auth.uid).exists() && newData.child('author_id').val() === auth.uid && !data.exists() && newData.exists()",
-
+      //    ".read": "root.child($group_id+'/u/'+auth.uid).exists()",
+      //    ".write": "root.child($group_id+'/u/'+auth.uid).exists() && newData.child('author_id').val() === auth.uid && !data.exists() && newData.exists()",
     }
   }
 }
