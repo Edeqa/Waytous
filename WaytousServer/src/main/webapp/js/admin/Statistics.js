@@ -106,8 +106,8 @@ function Statistics() {
             ]
         });
 
-        groupsChartNode = u.create(HTML.DIV, null, div);
-        usersChartNode = u.create(HTML.DIV, null, div);
+        groupsChartNode = u.create(HTML.DIV, {className: "statistics-chart"}, div);
+        usersChartNode = u.create(HTML.DIV, {className: "statistics-chart"}, div);
 
        // Create the data table.
         groupsStat = new google.visualization.DataTable();

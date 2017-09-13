@@ -5,7 +5,7 @@ package com.edeqa.waytousserver.helpers;
  */
 @SuppressWarnings("HardCodedStringLiteral")
 public class Constants {
-    public final static int SERVER_BUILD = 40;
+    public final static int SERVER_BUILD = 41;
 
     public static SensitiveData SENSITIVE;
 

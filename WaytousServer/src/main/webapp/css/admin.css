@@ -17,7 +17,6 @@ h2 {
     align-items: flex-start;
 }
 .inactive {
-    /*background-color: rgb(240, 240, 250);*/
     font-style: italic;
     font-size: smaller;
 }
@@ -209,6 +208,9 @@ h2 {
     height: 100%;
     border-style: groove;
     border-width: 1px;
+}
+.statistics-chart{
+    padding: 10px;
 }
 
 @media screen and (max-width: 1000px) {
