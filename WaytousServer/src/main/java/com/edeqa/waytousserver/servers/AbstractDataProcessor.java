@@ -3,10 +3,10 @@ package com.edeqa.waytousserver.servers;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
+import com.edeqa.waytousserver.interfaces.Runnable1;
 
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
@@ -37,6 +37,15 @@ abstract public class AbstractDataProcessor {
     abstract public void validateGroups();
 
     abstract public void validateUsers();
+
+    public enum GroupAction {
+        GROUP_CREATED, GROUP_DELETED, GROUP_REJECTED
+    }
+
+    public enum UserAction {
+        USER_JOINED, USER_RECONNECTED, USER_REJECTED
+    }
+
 
     public AbstractDataProcessor() {
         groups = new ConcurrentHashMap<>();
@@ -171,4 +180,11 @@ abstract public class AbstractDataProcessor {
     }
 
     public abstract String createCustomToken(String id);
+
+    public abstract void putStaticticsGroup(String groupId, boolean isPermanent, GroupAction action, String errorMessage);
+
+    public abstract void putStaticticsUser(String groupId, String userId, UserAction action, String errorMessage);
+
+    abstract public void cleanStatisticsMessages(Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
+
 }

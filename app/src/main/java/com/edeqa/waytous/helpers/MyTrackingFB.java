@@ -258,6 +258,18 @@ public class MyTrackingFB implements Tracking {
             updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
             ref.child(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
 
+/*
+            Iterator<Map.Entry<DatabaseReference, Object>> iter = refs.entrySet().iterator();
+            while(iter.hasNext()) {
+                Map.Entry<DatabaseReference, Object> entry = iter.next();
+                if (entry.getValue() instanceof ValueEventListener) {
+                    entry.getKey().removeEventListener((ValueEventListener) entry.getValue());
+                } else if (entry.getValue() instanceof ChildEventListener) {
+                    entry.getKey().removeEventListener((ChildEventListener) entry.getValue());
+                }
+            }
+*/
+
             for (Map.Entry<DatabaseReference, Object> entry : refs.entrySet()) {
                 if (entry.getValue() instanceof ValueEventListener) {
                     entry.getKey().removeEventListener((ValueEventListener) entry.getValue());
@@ -594,6 +606,7 @@ public class MyTrackingFB implements Tracking {
 
                                             ref = database.getReference().child(getToken());
 
+
                                             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
                                             scheduled = executor.scheduleAtFixedRate(new Runnable() {
                                                 @Override
@@ -620,6 +633,7 @@ public class MyTrackingFB implements Tracking {
                                                     registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
                                                 }
                                             }
+
                                             trackingListener.onAccept(o);
                                         } else {
                                             stop();

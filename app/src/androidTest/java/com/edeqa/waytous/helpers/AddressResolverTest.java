@@ -40,7 +40,6 @@ public class AddressResolverTest {
 
     @Test
     public void testResolve() throws Exception {
-
         final Object syncObject = new Object();
 
         resolver.setCallback(new Runnable1<String>() {
