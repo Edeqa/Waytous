@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_KEY;
@@ -54,6 +55,32 @@ public class MyTrackingFBTest {
     }
 
     @Test
+    public void testNewToken() throws Exception {
+        link = "http://" + SENSITIVE.getServerHost() + Common.getWrappedHttpPort() + "/track/" + TOKEN;
+        tracking = new MyTrackingFB();
+        State.getInstance().setTracking(tracking);
+        tracking.setTrackingListener(onTrackingListener);
+        tracking.start();
+        assertEquals(TRACKING_CONNECTING, tracking.getStatus());
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        tracking.put("BOOLEAN", true);
+        tracking.put("NUMBER", 1);
+        tracking.put("STRING", "test");
+//        tracking.send();
+
+        assertEquals(TRACKING_ACTIVE, tracking.getStatus());
+
+        assertEquals(true, tracking.getTrackingUri().length() > 0);
+
+        tracking.stop();
+        assertEquals(TRACKING_DISABLED, tracking.getStatus());
+
+    }
+
+    @Test
     public void testCorrectToken() throws Exception {
         link = "http://" + SENSITIVE.getServerHost() + Common.getWrappedHttpPort() + "/track/" + TOKEN;
         tracking = new MyTrackingFB(link);
@@ -78,7 +105,6 @@ public class MyTrackingFBTest {
 
         tracking.stop();
         assertEquals(TRACKING_DISABLED, tracking.getStatus());
-
 
     }
 
