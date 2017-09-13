@@ -472,7 +472,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         if (dataSnapshot.getValue() != null) {
                                             ArrayList<HashMap<String, Object>> users = (ArrayList<HashMap<String, Object>>) dataSnapshot.getValue();
                                             for (HashMap<String, Object> user : users) {
-                                                if (user.containsKey(REQUEST_DEVICE_ID) && user.containsKey(REQUEST_KEY)) {
+                                                if (user != null && user.containsKey(REQUEST_DEVICE_ID) && user.containsKey(REQUEST_KEY)) {
                                                     String calculatedHash = Utils.getEncryptedHash(check.getControl() + ":" + user.get(REQUEST_DEVICE_ID).toString());
                                                     if (calculatedHash.equals(hash)) {
                                                         check.setUid(user.get(REQUEST_KEY).toString());
@@ -520,7 +520,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             }
         } catch (Exception e) {
             Common.log(LOG, "onMessage:error:" + e.getMessage(), "req:" + message);
-//            e.printStackTrace();
+            e.printStackTrace();
             conn.send("{\"status\":\"Request failed\"}");
         }
     }

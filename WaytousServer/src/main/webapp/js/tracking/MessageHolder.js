@@ -22,6 +22,7 @@ function MessageHolder(main) {
     var replyInput;
     var replyButton;
     var lastReadTimestamp;
+    var lastGotTimestamp;
     var drawerItemChat;
     var incomingMessageSounds;
     var incomingMessageSound;
@@ -53,7 +54,7 @@ function MessageHolder(main) {
             },
             footer: {
                 type: HTML.DIV,
-                className: "chat-dialog-reply"
+                className: "chat-dialog-reply hidden"
             }
         }, main.right);
 
@@ -91,15 +92,17 @@ function MessageHolder(main) {
                         chat.close();
                     }
                 });
-                drawerItemChat.hide();
                 break;
             case EVENTS.TRACKING_ACTIVE:
                 if(u.loadForContext("message:chat")) chat.open();
                 lastReadTimestamp = u.loadForContext("message:lastread");
 
-                drawerItemChat.show();
+                chat.clearItems();
+                chat.footer.show(HIDING.SCALE_Y_TOP);
                 break;
+            case EVENTS.TRACKING_RECONNECTING:
             case EVENTS.TRACKING_DISABLED:
+                chat.footer.hide(HIDING.SCALE_Y_TOP);
                 break;
             case EVENTS.CREATE_CONTEXT_MENU:
                 var user = this;
