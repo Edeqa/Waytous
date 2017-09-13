@@ -165,6 +165,12 @@ button:active {
     display: none;
     visibility: hidden;
 }
+.actionbar-title-suffix {
+    display: inline;
+    margin-left: 5px;
+    font-size: small;
+    font-weight: initial;
+}
 /* Dialog */
 .dialog-title {
     width: 100%;

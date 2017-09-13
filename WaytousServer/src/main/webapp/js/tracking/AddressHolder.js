@@ -21,14 +21,19 @@ function AddressHolder(main) {
     function onEvent(EVENT,object){
         switch (EVENT){
             case EVENTS.SELECT_USER:
-                onChangeLocation.call(this,this.location);
+                //onChangeLocation.call(this,this.location);
                 break;
-            case EVENTS.UPDATE_MENU_SUBTITLE:
+            case EVENTS.SELECT_SINGLE_USER:
+                updateAddress.call(this);
+                break;
+            case EVENTS.EXPAND_MENU:
+                main.users.forAllUsers(function(number,user){
+                    updateAddress.call(user);
+                });
+                break;
+            /*case EVENTS.UPDATE_ACTIONBAR_SUBTITLE:
                 updateAddress.call(this, object);
-                break;
-            case EVENTS.UPDATE_ACTIONBAR_SUBTITLE:
-                updateAddress.call(this, object);
-                break;
+                break;*/
             default:
                 break;
         }
@@ -36,9 +41,10 @@ function AddressHolder(main) {
     }
 
     function onChangeLocation(location) {
-        return;
-        var user = this;
-        setTimeout(function(){
+        //return;
+        //var user = this;
+        updateAddress.call(this);
+/*        setTimeout(function(){
             if(location) {
                 if(delayStart) {
                     if(new Date().getTime() - (delayStart||0) < delayInError) return;
@@ -48,14 +54,14 @@ function AddressHolder(main) {
                 console.warn("FETCH",location.coords.latitude);
                 u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + location.coords.latitude + "&lon=" + location.coords.longitude + "&zoom=18&addressdetails=1")
                     .then(function(json){
-                        user.fire(EVENTS.UPDATE_ADDRESS, json["display_name"]);
+                        user.fire.call(user, EVENTS.UPDATE_MENU_SUBTITLE, json["display_name"]);
                     }).catch(function(code, xhr) {
                     user.fire(EVENTS.UPDATE_ADDRESS);
                     delayStart = new Date().getTime();
                 });
 
             }
-        }, 0);
+        }, 0);*/
     }
 
     function createView(user) {
@@ -65,9 +71,17 @@ function AddressHolder(main) {
         };
     }
 
-    function updateAddress(node) {
+    function updateAddress() {
         var user = this;
-        if(user.location && user.location.coords && node) {
+        if(user.views && user.views.address && user.views.address.lastKnownAddress) {
+            user.fire.call(user, EVENTS.UPDATE_MENU_SUBTITLE, user.views.address.lastKnownAddress);
+            user.fire.call(user, EVENTS.UPDATE_ACTIONBAR_SUBTITLE, user.views.address.lastKnownAddress);
+        } else {
+            user.fire.call(user, EVENTS.UPDATE_MENU_SUBTITLE);
+            user.fire.call(user, EVENTS.UPDATE_ACTIONBAR_SUBTITLE);
+        }
+
+        if(user.location && user.location.coords) {
             var currentTime = new Date().getTime();
             if(currentTime - user.views[type].lastRequest < 5000) return;
             if(user.views[type].lastRequestedCoords.latitude == user.location.coords.latitude && user.views[type].lastRequestedCoords.longitude == user.location.coords.longitude) return;
@@ -81,7 +95,11 @@ function AddressHolder(main) {
 //console.warn(++counter, user.number);
             u.getJSON("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + user.location.coords.latitude + "&lon=" + user.location.coords.longitude + "&zoom=18&addressdetails=1")
                 .then(function(json){
-                    node.innerHTML = json["display_name"];
+                    user.views.address.lastKnownAddress = json["display_name"];
+                    user.fire.call(user, EVENTS.UPDATE_MENU_SUBTITLE, user.views.address.lastKnownAddress);
+                    user.fire.call(user, EVENTS.UPDATE_ACTIONBAR_SUBTITLE, user.views.address.lastKnownAddress);
+
+                    //node.innerHTML = json["display_name"];
                 });
         }
     }

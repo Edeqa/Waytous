@@ -25,6 +25,7 @@
   "s_s": "%s - %s",
   "force_reload": "Force reload application",
   "go": "Go",
+  "s_ago": "(%s ago)",
 
   "popup_blocked_dialog_1": "Looks like your browser blocks pop-ups. If so please unlock this ability for calling e-mail properly.",
   "popup_blocked_dialog_2": "Detailed information how to unblock this feature",
@@ -89,6 +90,7 @@
   "privacy_policy": "Privacy policy",
   "terms_and_conditions": "Terms and conditions",
   "third_party_components":"Third party components",
+  "d_selected": "%d selected",
 
   "// GpsHolder": "",
   "enable_geolocation": "Enable geolocation",

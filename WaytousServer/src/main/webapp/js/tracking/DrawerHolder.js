@@ -115,10 +115,12 @@ function DrawerHolder(main) {
 
     var onEvent = function(EVENT,object){
         switch (EVENT){
-            case EVENTS.UPDATE_ADDRESS:
-                if(main.users.getCountSelected() == 1 && this.properties.selected) {
-                    actionbar.subtitle.innerHTML = object;
-                    actionbar.subtitle.show();
+            case EVENTS.UPDATE_ACTIONBAR_SUBTITLE:
+                if(object && main.users.getCountSelected() == 1) {
+                    if(this.properties.selected) {
+                        actionbar.subtitle.innerHTML = object;
+                        actionbar.subtitle.show();
+                    }
                 } else {
                     actionbar.subtitle.hide();
                 }
@@ -147,9 +149,26 @@ function DrawerHolder(main) {
                     drawer.headerPrimary.innerHTML = main.me.properties.getDisplayName();
                 }
                 break;
+            case EVENTS.SELECT_SINGLE_USER:
+                var text = utils.toDateString(new Date().getTime() - this.properties.changed);
+                actionbar.titleNode.innerHTML = this.properties.getDisplayName();
+                if(this != main.me) {
+                    u.create(HTML.DIV, {
+                        className: "actionbar-title-suffix",
+                        innerHTML: u.lang.s_ago.format(text)
+                    }, actionbar.titleNode);
+                }
+
+                if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
+                    actionbar.style.backgroundColor = utils.getRGBAColor(this.properties.color, 0.8);
+                }
+                break;
             case EVENTS.SELECT_USER:
-//            case EVENTS.SELECT_SINGLE_USER:
-                onChangeLocation.call(this, this.location)
+                if(main.users.getCountSelected() > 1) {
+                    actionbar.style.backgroundColor = "";
+                    u.lang.updateNode(actionbar.titleNode, u.lang.d_selected.format(main.users.getCountSelected()));
+                    actionbar.subtitle.hide();
+                }
                 break;
             case EVENTS.CREATE_DRAWER:
                 drawerItemShare = drawerItemShare || object.add(DRAWER.SECTION_COMMUNICATION, "share", u.lang.share, "share", function(){
@@ -165,12 +184,12 @@ function DrawerHolder(main) {
         return {};
     }
 
-    function onChangeLocation(location) {
+    /*function onChangeLocation(location) {
         if(this && this.properties && this.properties.selected && main.users.getCountSelected() == 1) {
             actionbar.subtitle.show();
             this.fire(EVENTS.UPDATE_ACTIONBAR_SUBTITLE, actionbar.subtitle);
         }
-    }
+    }*/
 
     function options(){
         return {
@@ -202,7 +221,7 @@ function DrawerHolder(main) {
         start:start,
         onEvent:onEvent,
         createView:createView,
-        onChangeLocation:onChangeLocation,
+        //onChangeLocation:onChangeLocation,
         options:options,
     }
 }

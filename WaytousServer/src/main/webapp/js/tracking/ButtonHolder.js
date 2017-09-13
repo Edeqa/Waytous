@@ -10,6 +10,8 @@ EVENTS.SHOW_MENU_SUBTITLE = "show_menu_subtitle";
 EVENTS.UPDATE_MENU_SUBTITLE = "update_menu_subtitle";
 EVENTS.UPDATE_MENU_SUFFIX = "update_menu_suffix";
 EVENTS.UPDATE_MENU_PREFIX = "update_menu_prefix";
+EVENTS.EXPAND_MENU = "expand_menu";
+EVENTS.COLLAPSE_MENU = "collapse_menu";
 
 MENU = {
     SECTION_PRIMARY: 0,
@@ -41,12 +43,9 @@ function ButtonHolder(main) {
                     icon: "view_headline",
                     className: "user-buttons-title-button notranslate",
                     onclick: function() {
-                        var mininized = u.load("button:minimized");
-                        u.save("button:minimized", !mininized);
-                        main.users.forAllUsers(function(number,user){
-                            user.views.button.subtitle[u.load("button:minimized") ? "hide" : "show"](u.HIDING.SCALE_XY);
-                            updateSubtitle.call(user);
-                        });
+                        var minimized = u.load("button:minimized");
+                        u.save("button:minimized", !minimized);
+                        main.fire(minimized ? EVENTS.EXPAND_MENU : EVENTS.COLLAPSE_MENU);
                     }
                 }
             },
@@ -58,9 +57,9 @@ function ButtonHolder(main) {
         }, main.right);
 
         contextMenuLayout = u.create(HTML.DIV, {className:"user-context-menu shadow hidden", tabindex: 2, onblur: function(){
-            contextMenuLayout.hide(u.HIDING.OPACITY);
+            contextMenuLayout.hide(HIDING.OPACITY);
         }, onmouseleave: function(){
-            contextMenuLayout.hide(u.HIDING.OPACITY);
+            contextMenuLayout.hide(HIDING.OPACITY);
         }, onmouseenter: function(){
             clearTimeout(delayDismiss);
         }
@@ -105,8 +104,7 @@ function ButtonHolder(main) {
                 break;
             case EVENTS.MAKE_INACTIVE:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) this.views.button.button.hide();
-                u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()))
-//                buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
+                u.lang.updateNode(buttons.titleLayout, u.lang.users_d.format(main.users.getCountActive()));
                 if(main.users.getCountActive() < 2 && (!main.tracking || main.tracking.getStatus() == EVENTS.TRACKING_DISABLED)) {
                     buttons.close();
                 }
@@ -127,13 +125,19 @@ function ButtonHolder(main) {
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.remove("user-button-away");
                     this.views.button.button.classList.remove("disabled");
-                    this.fire(EVENTS.UPDATE_MENU_SUFFIX, "");
+                    if(this != main.me) {
+                        var text = utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed));
+                        this.fire(EVENTS.UPDATE_MENU_SUFFIX, u.lang.s_ago.format(text).innerHTML);
+                    }
                 }
                 break;
             case EVENTS.MAKE_DISABLED:
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.add("user-button-away");
-                    this.fire(EVENTS.UPDATE_MENU_SUFFIX, utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed)));
+                    if(this != main.me) {
+                        var text = utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed));
+                        this.fire(EVENTS.UPDATE_MENU_SUFFIX, u.lang.s_ago.format(text).innerHTML);
+                    }
                 }
                 break;
             case EVENTS.SHOW_BADGE:
@@ -156,17 +160,17 @@ function ButtonHolder(main) {
             case EVENTS.UPDATE_MENU_PREFIX:
                 if(object) {
                     this.views.button.prefix.innerHTML = object;
-                    this.views.button.prefix.show(u.HIDING.SCALE_X_RIGHT);
+                    this.views.button.prefix.show(HIDING.SCALE_X_RIGHT);
                 } else {
-                    this.views.button.prefix.hide(u.HIDING.SCALE_X_RIGHT);
+                    this.views.button.prefix.hide(HIDING.SCALE_X_RIGHT);
                 }
                 break;
             case EVENTS.UPDATE_MENU_SUFFIX:
                 if(object) {
                     this.views.button.suffix.innerHTML = object;
-                    this.views.button.suffix.show(u.HIDING.SCALE_X_RIGHT);
+                    this.views.button.suffix.show(HIDING.SCALE_X_RIGHT);
                 } else {
-                    this.views.button.suffix.hide(u.HIDING.SCALE_X_RIGHT);
+                    this.views.button.suffix.hide(HIDING.SCALE_X_RIGHT);
                 }
                 break;
             case EVENTS.MOUSE_OVER:
@@ -182,6 +186,21 @@ function ButtonHolder(main) {
                     this.views.button.button.style.backgroundColor = color;
                 } else if(object && object.constructor === Number) {
 //                    console.log("TODO NUMERIC")
+                }
+                break;
+            case EVENTS.EXPAND_MENU:
+                main.users.forAllUsers(function(number,user){
+                    user.views.button.subtitle.show(HIDING.SCALE_XY);
+                });
+                break;
+            case EVENTS.COLLAPSE_MENU:
+                main.users.forAllUsers(function(number,user){
+                    user.views.button.subtitle.hide(HIDING.SCALE_XY);
+                });
+                break;
+            case EVENTS.UPDATE_MENU_SUBTITLE:
+                if(!this.views.button.subtitle.classList.contains("hidden")) {
+                    this.views.button.subtitle.innerHTML = object;
                 }
                 break;
             default:
@@ -215,7 +234,7 @@ function ButtonHolder(main) {
                 if(thisClick - firstClick < 500) {
                     setTimeout(function(){
                         user.fire(EVENTS.CAMERA_ZOOM);
-                        contextMenuLayout.hide(u.HIDING.OPACITY);
+                        contextMenuLayout.hide(HIDING.OPACITY);
                     },0);
                 }
                 firstClick = thisClick;
@@ -274,8 +293,7 @@ function ButtonHolder(main) {
         var subtitle = u.create(HTML.DIV, {className:"user-button-subtitle hidden", innerHTML:""}, div);
 
         if(!u.load("button:minimized")) {
-            subtitle.show(u.HIDING.SCALE_Y_TOP);
-            updateSubtitle.call(user);
+            subtitle.show(HIDING.SCALE_Y_TOP);
         }
 
         buttons.titleLayout.innerHTML = "Users (" + main.users.getCountActive() +")";
@@ -317,7 +335,7 @@ function ButtonHolder(main) {
 
         setTimeout(function(){
             var size = user.views.button.button.getBoundingClientRect();
-            contextMenuLayout.show(u.HIDING.OPACITY);
+            contextMenuLayout.show(HIDING.OPACITY);
             contextMenuLayout.style.top = Math.floor(size.top) + "px";
             if(size.left - main.right.offsetLeft - contextMenuLayout.offsetWidth -10 > 0) {
                 contextMenuLayout.style.left = Math.floor(size.left - contextMenuLayout.offsetWidth -10) + "px";
@@ -330,7 +348,7 @@ function ButtonHolder(main) {
 
             clearTimeout(delayDismiss);
             delayDismiss = setTimeout(function(){
-                contextMenuLayout.hide(u.HIDING.OPACITY);
+                contextMenuLayout.hide(HIDING.OPACITY);
             },2000);
         },0);
     }
@@ -342,7 +360,7 @@ function ButtonHolder(main) {
                 className:"user-context-menu-item",
                 onclick: function() {
                     setTimeout(function(){
-                        contextMenuLayout.hide(u.HIDING.OPACITY);
+                        contextMenuLayout.hide(HIDING.OPACITY);
                         contextMenuLayout.blur();
                         callback();
                     }, 0);
@@ -373,14 +391,9 @@ function ButtonHolder(main) {
     }
 
     function onChangeLocation(location) {
-        updateSubtitle.call(this);
+        //updateSubtitle.call(this);
     }
 
-    function updateSubtitle() {
-        if(this.location && this.views.button && !this.views.button.subtitle.classList.contains("hidden")) {
-            this.fire(EVENTS.UPDATE_MENU_SUBTITLE, this.views.button.subtitle);
-        }
-    }
 
     return {
         type:type,

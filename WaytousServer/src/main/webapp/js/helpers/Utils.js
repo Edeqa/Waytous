@@ -567,10 +567,8 @@ function Utils(main) {
             if(res) res += " ";
             res += m + "m";
         }
-        if(s) {
-            if(res) res += " ";
-            res += s + "s";
-        }
+        if(res) res += " ";
+        res += (s ? s : "0") + "s";
         return res;
     }
 
