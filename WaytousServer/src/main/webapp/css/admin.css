@@ -276,7 +276,42 @@ h2 {
     .map-place {
         display: none;
     }
-
+    .statistics-row {
+    }
+    .statistics-row:focus {
+        background-color: lightcyan;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        width: 100%;
+    }
+    .statistics-row:focus .td {
+        display: block;
+        width: 100%;
+        border: none;
+        font-weight: bold;
+        padding: 4px;
+    }
+    .statistics-row:focus .td:nth-child(1)::before {
+        content: "Timestamp: ";
+        font-weight: initial;
+    }
+    .statistics-row:focus .td:nth-child(2)::before {
+        content: "Action: ";
+        font-weight: initial;
+    }
+    .statistics-row:focus .td:nth-child(3)::before {
+        content: "Group ID: ";
+        font-weight: initial;
+    }
+    .statistics-row:focus .td:nth-child(4)::before {
+        content: "User ID: ";
+        font-weight: initial;
+    }
+    .statistics-row:focus .td:nth-child(5)::before {
+        content: "Message: ";
+        font-weight: initial;
+    }
 
 
     /* media specific classes */

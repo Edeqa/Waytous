@@ -176,7 +176,7 @@ function Statistics() {
             caption: {
                 items: [
                     { label: "Timestamp" },
-                    { label: "Action" },
+                    { label: "Action", className: "media-hidden" },
                     { label: "Group ID", className: "media-hidden" },
                     { label: "User ID", className: "media-hidden" },
                     { label: "Message" }
@@ -295,14 +295,15 @@ function Statistics() {
             var json = data.val();
             tableMessages.add({
                   id: data.key,
-                  className: "highlight",
+                  className: "statistics-row highlight",
+                  tabindex: -1,
 //                  onclick: function(){
 //                      WTU.switchTo("/admin/group/"+data.key);
 //                      return false;
 //                  },
                   cells: [
                       { innerHTML: data.key },
-                      { innerHTML: json["action"]},
+                      { className: "media-hidden", innerHTML: json["action"]},
                       { className: "media-hidden", innerHTML: json["group"] },
                       { className: "media-hidden", innerHTML: json["user"] },
                       { innerHTML: json["message"] }
