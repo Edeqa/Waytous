@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 
-import com.edeqa.waytousserver.helpers.Constants;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -118,7 +117,7 @@ public class UtilsTest {
         String res = Utils.getUrl("https://www.waytous.net/rest/v1/getVersion");
         Log.d("TEST", res);
         JSONObject json = new JSONObject(res);
-        assertEquals(Constants.SERVER_BUILD, json.getInt("version"));
+        assertEquals("success", json.getString("status"));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class UtilsTest {
         String res = Utils.getUrl("https://www.waytous.net/rest/v1/getVersion", "CP-1251");
         Log.d("TEST", res);
         JSONObject json = new JSONObject(res);
-        assertEquals(Constants.SERVER_BUILD, json.getInt("version"));
+        assertEquals("success", json.getString("status"));
     }
 
     @Test

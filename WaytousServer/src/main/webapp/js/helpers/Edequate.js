@@ -1375,6 +1375,7 @@ function Edequate(options) {
                         var a = lang.$nodes[string].cloneNode();
                         a.format = function() {
                             lang.$arguments[this.dataset.lang] = arguments;
+                            this.innerHTML = lang.$origin[this.dataset.lang] || (this.dataset.lang ? this.dataset.lang.substr(0,1).toUpperCase() + this.dataset.lang.substr(1) : "");
                             this.innerHTML = sprintf.call(this.innerHTML, arguments);
                             return this;
                         };
