@@ -420,8 +420,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                     response.put(RESPONSE_NUMBER, check.getNumber());
                                                     response.put(RESPONSE_SIGN, customToken);
                                                     conn.send(response.toString());
-                                                    conn.close();
                                                     Common.log(LOG, "onMessage:joined:" + conn.getRemoteSocketAddress(), "signToken: [provided]"/*+customToken*/);
+                                                    conn.close();
                                                     putStaticticsUser(check.getGroupId(), check.getName(), UserAction.USER_RECONNECTED, null);
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
@@ -430,12 +430,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                 e.printStackTrace();
                                             }
                                         } else {
-                                            Common.log(LOG, "onMessage:joinNotAuthenticated:" + conn.getRemoteSocketAddress(), "group:" + check.getGroupId(), "{ number:" + dataSnapshot.getKey(), "properties:" + dataSnapshot.getValue(), "} got:", hash, " waited:", calculatedHash);
+                                            Common.err(LOG, "onMessage:joinNotAuthenticated:" + conn.getRemoteSocketAddress(), "group:" + check.getGroupId(), "{ number:" + dataSnapshot.getKey(), "properties:" + dataSnapshot.getValue(), "} got:", hash, " waited:", calculatedHash);
                                             rejectUser(response, conn, check.getGroupId(), check.getName(), "Cannot join to group (user not authenticated).");
                                         }
 
                                     } catch (Exception e) {
-                                        Common.log(LOG, "onMessage:joinHashFailed:" + conn.getRemoteSocketAddress(), "group:" + check.getGroupId(), "{ number:" + dataSnapshot.getKey(), "properties:" + dataSnapshot.getValue(), "}");
+                                        Common.err(LOG, "onMessage:joinHashFailed:" + conn.getRemoteSocketAddress(), "group:" + check.getGroupId(), "{ number:" + dataSnapshot.getKey(), "properties:" + dataSnapshot.getValue(), "}");
                                         rejectUser(response, conn, check.getGroupId(), check.getName(), "Cannot join to group (user not authenticated).");
                                         e.printStackTrace();
                                     }
@@ -459,7 +459,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                             userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child(dataSnapshot.getValue().toString())).start();
 
                                         } else {
-                                            Common.log(LOG, "onMessage:joinNumberNotFound:" + conn.getRemoteSocketAddress());
+                                            Common.err(LOG, "onMessage:joinNumberNotFound:" + conn.getRemoteSocketAddress());
                                             rejectUser(response, conn, check.getGroupId(), null, "This group is expired. (005)");
                                         }
                                     }
@@ -481,10 +481,10 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                     }
                                                 }
                                             }
-                                            Common.log(LOG, "onMessage:joinUserNotFound:" + conn.getRemoteSocketAddress());
+                                            Common.err(LOG, "onMessage:joinUserNotFound:" + conn.getRemoteSocketAddress());
                                             rejectUser(response, conn, check.getGroupId(), null, "This group is expired. (004)");
                                         } else {
-                                            Common.log(LOG, "onMessage:joinEmptyGroup:" + conn.getRemoteSocketAddress());
+                                            Common.err(LOG, "onMessage:joinEmptyGroup:" + conn.getRemoteSocketAddress());
                                             rejectUser(response, conn, check.getGroupId(), null, "This group is expired. (003)");
                                         }
                                     }
@@ -498,7 +498,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                             if (dataSnapshot.getValue() != null) {
                                                 userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child("" + check.getNumber())).start();
                                             } else {
-                                                Common.log(LOG, "onMessage:joinUserNotExists:" + conn.getRemoteSocketAddress());
+                                                Common.err(LOG, "onMessage:joinUserNotExists:" + conn.getRemoteSocketAddress());
                                                 rejectUser(response, conn, check.getGroupId(), null, "This group is expired. (002)");
                                             }
                                         } else {
@@ -510,22 +510,23 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                         groupOptionsTask.setRef(refGroup.child(Constants.DATABASE.SECTION_OPTIONS)).start();
                     } else {
-                        Common.log(LOG, "onMessage:joinNotAuthorized:" + conn.getRemoteSocketAddress());
+                        Common.err(LOG, "onMessage:joinNotAuthorized:" + conn.getRemoteSocketAddress());
                         rejectUser(response, conn, null, null, "Cannot join to group (user not authorized).");
                     }
                 } else {
-                    Common.log(LOG, "onMessage:joinNotDefined:" + conn.getRemoteSocketAddress());
+                    Common.err(LOG, "onMessage:joinNotDefined:" + conn.getRemoteSocketAddress());
                     rejectUser(response, conn, null, null, "Cannot join to group (hash not defined).");
                 }
             }
         } catch (Exception e) {
-            Common.log(LOG, "onMessage:error:" + e.getMessage(), "req:" + message);
+            Common.err(LOG, "onMessage:error:" + e.getMessage(), "req:" + message);
             e.printStackTrace();
             conn.send("{\"status\":\"Request failed\"}");
         }
     }
 
     private void rejectUser(JSONObject response, DataProcessorConnection conn, String groupId, String userId, String message) {
+        Common.err(LOG, "rejectUser:" + userId, "groupId:" + groupId, "reason:" + message, "response:" + response);
         response.put(RESPONSE_STATUS, RESPONSE_STATUS_ERROR);
         response.put(RESPONSE_MESSAGE, message);
         conn.send(response.toString());
@@ -577,7 +578,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             json.put(Constants.REST.STATUS, Constants.REST.ERROR);
                             json.put(Constants.REST.GROUP_ID, group.getId());
                             json.put(Constants.REST.MESSAGE, "Group " + group.getId() + " already exists.");
-                            Common.log(LOG, "createGroup:alreadyExists:" + group.getId());
+                            Common.err(LOG, "createGroup:alreadyExists:" + group.getId());
                             if (onerror != null) onerror.call(json);
                             putStaticticsGroup(group.getId(), group.isPersistent(), GroupAction.GROUP_REJECTED, "already exists");
                         }
@@ -597,7 +598,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             public void onFailure(@NonNull Exception e) {
                 json.put(Constants.REST.STATUS, Constants.REST.ERROR);
                 json.put(Constants.REST.MESSAGE, e.getMessage());
-                Common.log(LOG, "deleteGroup:" + groupId, "error:" + e.getMessage());
+                Common.err(LOG, "deleteGroup:" + groupId, "error:" + e.getMessage());
                 onerror.call(json);
             }
         };
@@ -677,7 +678,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
                             onsuccess.call(res);
                         } else {
-                            Common.log(LOG, "modifyPropertyInGroup:nullValue:", property);
+                            Common.err(LOG, "modifyPropertyInGroup:nullValue:", property);
                             res.put(Constants.REST.STATUS, Constants.REST.ERROR);
                             onerror.call(res);
                         }
@@ -806,7 +807,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             public void onFailure(@NonNull Exception e) {
                 json.put(Constants.REST.STATUS, Constants.REST.ERROR);
                 json.put(Constants.REST.MESSAGE, e.getMessage());
-                Common.log(LOG, "removeUser:" + userNumber, "group:" + groupId, "error:" + e.getMessage());
+                Common.err(LOG, "removeUser:" + userNumber, "group:" + groupId, "error:" + e.getMessage());
                 onerror.call(json);
             }
         };
@@ -996,7 +997,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                         }
 
                                                         if (!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000) {
-                                                            String info = group + " expired for" + ((new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000) / 1000 / 60) + "minutes";
+                                                            String info = group + " expired for " + ((new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000) / 1000 / 60) + " minutes";
                                                             Common.log(LOG, "--- removing group " + info);
                                                             ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
                                                             ref.child(group).removeValue();
@@ -1202,7 +1203,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         referenceTotal.runTransaction(incrementValue);
 
         if(errorMessage != null && errorMessage.length() > 0) {
-            today = String.format("%s %02d-%02d-%02d-%03d", today, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+            today = String.format("%s %02d-%02d-%02d-%03d", today, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Map<String, String> map = new HashMap<>();
             map.put("group", groupId);
             map.put("action", action.toString());
@@ -1240,7 +1241,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         referenceTotal.runTransaction(incrementValue);
 
         if(errorMessage != null && errorMessage.length() > 0) {
-            today = String.format("%s %02d-%02d-%02d-%03d", today, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+            today = String.format("%s %02d-%02d-%02d-%03d", today, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Map<String, String> map = new HashMap<>();
             map.put("group", groupId);
             map.put("user", userId);
@@ -1255,16 +1256,6 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
         final JSONObject res = new JSONObject();
 
-        final OnFailureListener onFailureListener = new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                res.put(Constants.REST.MESSAGE, e.getMessage());
-                Common.log(LOG, "cleanStatisticsMessages:failed", e.getMessage());
-                onerror.call(res);
-            }
-        };
-
         ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_MESSAGES).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -1277,7 +1268,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             public void onFailure(@NonNull Exception e) {
                 res.put(Constants.REST.STATUS, Constants.REST.ERROR);
                 res.put(Constants.REST.MESSAGE, e.getMessage());
-                Common.log(LOG, "cleanStatisticsMessages:failed", e.getMessage());
+                Common.err(LOG, "cleanStatisticsMessages:failed", e.getMessage());
                 onerror.call(res);
             }
         });

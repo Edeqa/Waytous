@@ -163,6 +163,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
                     actionBar.setTitle(R.string.connecting);
                 }
                 break;
+            case SELECT_SINGLE_USER:
+                System.out.println("DRAWER:"+object);
+                break;
         }
         return true;
     }
