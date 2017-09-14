@@ -137,6 +137,7 @@ h2 {
     font-size: initial;
     align-items: center;
     margin-left: 10px;
+    margin-right: 10px;
 }
 .button-clean {
     font-family: "Material Icons";
@@ -194,7 +195,6 @@ h2 {
 .two-divs {
     display: flex;
     width: 100%;
-    justify-content: space-between;
 }
 .summary-place {
     flex: 1 1 100%;
@@ -235,10 +235,6 @@ h2 {
         min-height: unset;
         height: auto;
     }
-    .buttons {
-        text-align: center;
-        width: 100%;
-    }
     .td.th {
         width: 50%;
         min-width: 120px;
@@ -254,9 +250,6 @@ h2 {
         font-size:16px;
         height: 25px;
     }
-    .buttons {
-        width: auto;
-    }
     .logs-header-input {
         font-size: 16px;
         padding-top: 5px;
@@ -271,7 +264,7 @@ h2 {
         padding-bottom: 3px;
     }
     .two-divs {
-        display: block;
+        flex-direction: column;
     }
     .map-place {
         display: none;

@@ -105,13 +105,13 @@ public class Constants {
                 SECTION_STAT = "_stat",
                 STAT_TOTAL = "total",
                 STAT_BY_DATE = "by-date",
-                STAT_GROUPS_CREATED_TEMPORARY = "groups-created-temporary",
-                STAT_GROUPS_CREATED_PERSISTENT = "groups-created-persistent",
-                STAT_GROUPS_REJECTED = "groups-rejected",
-                STAT_GROUPS_DELETED = "groups-deleted",
-                STAT_USERS_JOINED = "users-joined",
-                STAT_USERS_RECONNECTED = "users-reconnected",
-                STAT_USERS_REJECTED = "users-rejected",
+                STAT_GROUPS_CREATED_TEMPORARY = "gt",
+                STAT_GROUPS_CREATED_PERSISTENT = "gp",
+                STAT_GROUPS_REJECTED = "gr",
+                STAT_GROUPS_DELETED = "gd",
+                STAT_USERS_JOINED = "uj",
+                STAT_USERS_RECONNECTED = "uc",
+                STAT_USERS_REJECTED = "ur",
                 STAT_MESSAGES = "messages"
         ;
     }

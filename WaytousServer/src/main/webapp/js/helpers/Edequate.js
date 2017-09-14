@@ -3,6 +3,7 @@
  * Copyright (C) Edeqa LLC <http://www.edeqa.com>
  *
  * History:
+ * 1.3 - sprintf redesigned; table#options.sort=true/false; table#options.filter=true/false
  * 1.2 - HTMLElement#updateHTML(text)
  * 1.1 - some fixes and improvements
  * 1 - initial release
@@ -344,6 +345,43 @@ function Edequate(options) {
             enumerable: false,
             value: function() {
                 return this.substring(0,1).toUpperCase() + this.substring(1);
+            }
+        });
+    }
+
+    if(!String.prototype.sprintf) {
+        Object.defineProperty(String.prototype, "sprintf", {
+            enumerable: false,
+            value: function() {
+                var a = this, b;
+                if(arguments[0].constructor === Array || arguments[0].constructor === Object) {
+                    arguments = arguments[0];
+                }
+                var args = [];
+                for(var i = 0; i < arguments.length; i++) {
+                    args.push(arguments[i]);
+                }
+                return this.replace(/%[\d\.]*[sdf]/g, function(pattern){
+                    var value = args.shift();
+                    var tokens = pattern.match(/^%(0)?([\d\.]*)(.)$/);
+                    switch(tokens[3]) {
+                    case "d":
+                        var length = +tokens[2];
+                        var string = value.toString();
+                        if(length > string.length) {
+                            tokens[1] = tokens[1] || " ";
+                            value = tokens[1].repeat(length - string.length) + string;
+                        }
+                        break;
+                    case "f":
+                        break;
+                    case "s":
+                        break;
+                    default:
+                        console.error("Unknown pattern: " + tokens[0]);
+                    }
+                    return value;
+                });
             }
         });
     }
@@ -1318,36 +1356,39 @@ function Edequate(options) {
     }
     this.dialog = dialog;
 
+/*
     function sprintf() {
         var a = this, b;
-        var args = arguments;
         if(arguments[0].constructor === Array || arguments[0].constructor === Object) {
-            args = arguments[0];
+            arguments = arguments[0];
         }
-
-        for(b in args){
-            var value = args[b];
-            var replace = "";
-            if (value.constructor === String || value.constructor === Number) {
-                replace = value;
-            } else if(value.constructor === HTMLSpanElement) {
-                if(value.dataset.lang && lang.$origin[value.dataset.lang]) {
-                    replace = lang[value.dataset.lang].outerText;
-                } else {
-                    replace = value.outerText;
+        var args = [];
+        for(var i = 0; i < arguments.length; i++) {
+            args.push(arguments[i]);
+        }
+        return this.replace(/%[\d\.]*[sdf]/g, function(pattern){
+            var value = args.shift();
+            var tokens = pattern.match(/^%(0)?([\d\.]*)(.)$/);
+            switch(tokens[3]) {
+            case "d":
+                if(tokens[1] == "0") {
+                    var length = +tokens[2];
+                    var string = value.toString();
+                    value = "0".repeat(length - string.length) + string;
                 }
-            } else if (value.constructor === Array) {
-                replace = value;
-            } else if (value.constructor === Object) {
-                replace = value;
-            } else {
-                console.error("Replace failed.")
+                break;
+            case "f":
+                break;
+            case "s":
+                break;
+            default:
+                console.error("Unknown pattern: " + tokens[0]);
             }
-            a = a.replace(/%[a-z]/,replace);
-        }
-        return a; // Make chainable
+            return value;
+        });
     }
     this.sprintf = sprintf;
+*/
 
     function cloneAsObject(object) {
         var o = {};
@@ -1376,12 +1417,12 @@ function Edequate(options) {
                         a.format = function() {
                             lang.$arguments[this.dataset.lang] = arguments;
                             this.innerHTML = lang.$origin[this.dataset.lang] || (this.dataset.lang ? this.dataset.lang.substr(0,1).toUpperCase() + this.dataset.lang.substr(1) : "");
-                            this.innerHTML = sprintf.call(this.innerHTML, arguments);
+                            this.innerHTML = this.innerHTML.sprintf(arguments);
                             return this;
                         };
                         a.innerHTML = lang.$origin[string] || (string ? string.substr(0,1).toUpperCase() + string.substr(1) : "");
                         if(lang.$arguments[string]){
-                            a.innerHTML = sprintf.call(a.innerHTML, lang.$arguments[string]);
+                            a.innerHTML = a.innerHTML.sprintf(lang.$arguments[string]);
                         }
                         a.dataset.lang = string;
                         return a;
@@ -1966,7 +2007,7 @@ function Edequate(options) {
     function table(options, appendTo) {
         options.className = "table" + (options.className ? " " + options.className : "");
         var table = create(HTML.DIV, {
-            className:options.className,
+            className: options.className,
             filter: function() {
                 if(!options.caption.items) return;
                 setTimeout(function(){
@@ -2085,117 +2126,126 @@ function Edequate(options) {
                 item.className = "th"+(item.className ? " "+item.className : "");
                 var innerHTML = item.innerHTML;
                 delete item.innerHTML;
-                item.index = i;
-                item.sort = 0;
-                item.onclick = function() {
-                    this.sort ++;
-                    if(this.sort == 0) this.sort ++;
-                    else if(this.sort > 1) this.sort = -1;
+                if(options.sort == undefined || options.sort) {
+                    item.index = i;
+                    item.sort = 0;
+                    item.onclick = function() {
+                        this.sort ++;
+                        if(this.sort == 0) this.sort ++;
+                        else if(this.sort > 1) this.sort = -1;
 
-                    table.sorts({ index: this.index, mode: this.sort });
-                    table.sort(this.index);
+                        table.sorts({ index: this.index, mode: this.sort });
+                        table.sort(this.index);
 
-                };
-                item.ondblclick = function() {
-                    this.sort = 0;
-                    table.sorts({ index: this.index });
-                    table.head.cells[this.index].firstChild.hide();
-                    table.update();
-                };
+                    };
+                    item.ondblclick = function() {
+                        this.sort = 0;
+                        table.sorts({ index: this.index });
+                        table.head.cells[this.index].firstChild.hide();
+                        table.update();
+                    };
+                }
                 var cell = create(HTML.DIV, item, table.head);
                 cell.place(HTML.DIV,{className:"table-sort hidden", innerHTML:"sort"}).place(HTML.SPAN, {innerHTML: item.innerHTML || item.label});
                 table.head.cells.push(cell);
             }
 
-            table.resetButton = u.create(HTML.DIV, {
-                className: "table-reset-button notranslate",
-                innerHTML: "clear_all",
-                title: "Reset customizations",
-                onclick: function() {
-                    table._sorts = [];
-                    table.saveOption("sorts");
-                    for(var i in table.head.cells) {
-                        table.head.cells[i].sort = 0;
-                        table.head.cells[i].firstChild.hide();
-                    }
-                    table.filter.clear();
-                    table.filterInput.value = "";
-                    table.filterInput.focus();
-                    table.filterInput.apply();
-                    table.filterInput.blur();
-                    table.update();
-                }
-            }, table);
-
-            table.filterLayout = u.create(HTML.DIV, {
-                className: "table-filter"
-            }, table);
-
-            table.filterButton = u.create(HTML.DIV, {
-                className: "table-filter-button notranslate",
-                innerHTML: "search",
-                title: "Filter",
-                onclick: function() {
-                    table.filterButton.hide();
-                    table.filterInput.classList.remove("hidden");
-                    table.filterInput.focus();
-                }
-            }, table.filterLayout);
-
-            table.filterInput = create(HTML.INPUT, {
-                className: "table-filter-input hidden",
-                tabindex: -1,
-                onkeyup: function(evt) {
-                    if(evt.keyCode === 27) {
-                        evt.preventDefault();
-                        evt.stopPropagation();
-                        if(this.value) {
-                            this.value = "";
-                        } else {
-                            this.blur();
+            if((options.filter == undefined || options.filter) || (options.sort == undefined || options.sort)) {
+                table.resetButton = u.create(HTML.DIV, {
+                    className: "table-reset-button notranslate",
+                    innerHTML: "clear_all",
+                    title: "Reset customizations",
+                    onclick: function() {
+                        table._sorts = [];
+                        table.saveOption("sorts");
+                        for(var i in table.head.cells) {
+                            table.head.cells[i].sort = 0;
+                            table.head.cells[i].firstChild.hide();
                         }
+                        if(table.filterInput) {
+                            table.filter.clear();
+                            table.filterInput.value = "";
+                            table.filterInput.focus();
+                            table.filterInput.apply();
+                            table.filterInput.blur();
+                        }
+                        table.update();
                     }
-                    clearTimeout(table.filterInput.updateTask);
-                    table.filterInput.updateTask = setTimeout(function(){
+                }, table);
+            }
+
+            if(options.filter == undefined || options.filter) {
+
+                table.filterLayout = u.create(HTML.DIV, {
+                    className: "table-filter"
+                }, table);
+
+                table.filterButton = u.create(HTML.DIV, {
+                    className: "table-filter-button notranslate",
+                    innerHTML: "search",
+                    title: "Filter",
+                    onclick: function() {
+                        table.filterButton.hide();
+                        table.filterInput.classList.remove("hidden");
+                        table.filterInput.focus();
+                    }
+                }, table.filterLayout);
+
+                table.filterInput = create(HTML.INPUT, {
+                    className: "table-filter-input hidden",
+                    tabindex: -1,
+                    onkeyup: function(evt) {
+                        if(evt.keyCode === 27) {
+                            evt.preventDefault();
+                            evt.stopPropagation();
+                            if(this.value) {
+                                this.value = "";
+                            } else {
+                                this.blur();
+                            }
+                        }
+                        clearTimeout(table.filterInput.updateTask);
+                        table.filterInput.updateTask = setTimeout(function(){
+                            table.filterInput.apply();
+                        }, 300);
+                    },
+                    onblur: function() {
+                        if(!this.value) {
+                            table.filterInput.classList.add("hidden");
+                            table.filterButton.show();
+                        }
+                    },
+                    onclick: function() {
+                        this.focus();
+                    },
+                    _filter: function(row) {
+                        var contains = false;
+                        for(var i in row.cells) {
+                            if(row.cells[i].innerText.toLowerCase().indexOf(this.filterInput.value.toLowerCase()) >= 0) return true;
+                        }
+                        return false;
+                    },
+                    apply: function() {
+                        if(this.value) {
+                            table.filterClear.show();
+                        } else {
+                            table.filterClear.hide();
+                        }
+                        var counter = 0;
+                        table.filter.add(table.filterInput._filter);
+                        table.filter();
+                    }
+                }, table.filterLayout);
+                table.filterClear = create(HTML.DIV, {
+                    className: "table-filter-clear hidden notranslate",
+                    innerHTML: "clear",
+                    onclick: function() {
+                        table.filterInput.value = "";
+                        table.filterInput.focus();
                         table.filterInput.apply();
-                    }, 300);
-                },
-                onblur: function() {
-                    if(!this.value) {
-                        table.filterInput.classList.add("hidden");
-                        table.filterButton.show();
                     }
-                },
-                onclick: function() {
-                    this.focus();
-                },
-                _filter: function(row) {
-                    var contains = false;
-                    for(var i in row.cells) {
-                        if(row.cells[i].innerText.toLowerCase().indexOf(this.filterInput.value.toLowerCase()) >= 0) return true;
-                    }
-                    return false;
-                },
-                apply: function() {
-                    if(this.value) {
-                        table.filterClear.show();
-                    } else {
-                        table.filterClear.hide();
-                    }
-                    var counter = 0;
-                    table.filter.add(table.filterInput._filter);
-                    table.filter();
-                }
-            }, table.filterLayout);
-            table.filterClear = create(HTML.DIV, {
-                className: "table-filter-clear hidden notranslate",
-                innerHTML: "clear",
-                onclick: function() {
-                    table.filterInput.value = "";
-                    table.filterInput.focus();
-                    table.filterInput.apply();
-                }
-            }, table.filterLayout);
+                }, table.filterLayout);
+            }
 
             function normalizeFunction(func) {
                 if(!func) return null;

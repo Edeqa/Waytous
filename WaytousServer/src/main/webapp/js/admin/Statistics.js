@@ -11,7 +11,8 @@ function Statistics() {
 
     var alertArea;
     var trhead;
-    var tableSummary;
+    var tableSummaryGroups;
+    var tableSummaryUsers;
     var tableMessages;
     var user;
     var firebaseToken;
@@ -48,61 +49,87 @@ function Statistics() {
 
         u.create(HTML.H2, "Summary", div);
 
-        tableSummary = u.table({
-            className: "option"
-        }, div);
-        tableSummary.add({
+        var columns = u.create(HTML.DIV, {className: "two-divs"}, div);
+
+        tableSummaryGroups = u.table({
+            className: "option",
+            sort: false,
+            filter: false,
+            caption: {
+                items: [
+                    { label: "Groups" },
+                    { label: "Today" },
+                    { label: "Total" }
+                ]
+            }
+        }, u.create(HTML.DIV, null, columns));
+//        tableSummaryGroups.add({
+//            cells: [
+//                { className:"th", innerHTML: "Groups" },
+//                { className:"option", innerHTML: 0 }
+//            ]
+//        });
+        tableSummaryGroups.groupsCreatedPersistentItem = tableSummaryGroups.add({
             cells: [
-                { className:"th", innerHTML: "Groups" },
-                { className:"option", innerHTML: 0 }
+                { className:"th", innerHTML: "New persistent" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" }
             ]
         });
-        tableSummary.groupsCreatedPersistentItem = tableSummary.add({
+        tableSummaryGroups.groupsCreatedTemporaryItem = tableSummaryGroups.add({
             cells: [
-                { className:"th", innerHTML: "&#150; created persistent" },
-                { className:"option", innerHTML: 0 }
+                { className:"th", innerHTML: "New temporary" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" },
             ]
         });
-        tableSummary.groupsCreatedTemporaryItem = tableSummary.add({
+        tableSummaryGroups.groupsDeletedItem = tableSummaryGroups.add({
             cells: [
-                { className:"th", innerHTML: "&#150; created temporary" },
-                { className:"option", innerHTML: 0 },
+                { className:"th", innerHTML: "Deleted" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" },
             ]
         });
-        tableSummary.groupsDeletedItem = tableSummary.add({
+        tableSummaryGroups.groupsRejectedItem = tableSummaryGroups.add({
             cells: [
-                { className:"th", innerHTML: "&#150; deleted" },
-                { className:"option", innerHTML: 0 },
+                { className:"th", innerHTML: "Rejected" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" },
             ]
         });
-        tableSummary.groupsRejectedItem = tableSummary.add({
+
+        u.create(HTML.DIV, "&nbsp;&nbsp;&nbsp;", columns);
+        tableSummaryUsers = u.table({
+            className: "option",
+            sort: false,
+            filter: false,
+            caption: {
+                items: [
+                    { label: "Users" },
+                    { label: "Today" },
+                    { label: "Total" }
+                ]
+            }
+        }, u.create(HTML.DIV, null, columns));
+        tableSummaryUsers.usersJoinedItem = tableSummaryUsers.add({
             cells: [
-                { className:"th", innerHTML: "&#150; rejected" },
-                { className:"option", innerHTML: 0 },
+                { className:"th", innerHTML: "Joined" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" },
             ]
         });
-        tableSummary.add({
+        tableSummaryUsers.usersReconnectedItem = tableSummaryUsers.add({
             cells: [
-                { className:"th", innerHTML: "Users" },
-                { className:"option", innerHTML: 0 }
+                { className:"th", innerHTML: "Reconnected" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" },
             ]
         });
-        tableSummary.usersJoinedItem = tableSummary.add({
+        tableSummaryUsers.usersRejectedItem = tableSummaryUsers.add({
             cells: [
-                { className:"th", innerHTML: "&#150; joined" },
-                { className:"option", innerHTML: 0 },
-            ]
-        });
-        tableSummary.usersReconnectedItem = tableSummary.add({
-            cells: [
-                { className:"th", innerHTML: "&#150; reconnected" },
-                { className:"option", innerHTML: 0 },
-            ]
-        });
-        tableSummary.usersRejectedItem = tableSummary.add({
-            cells: [
-                { className:"th", innerHTML: "&#150; rejected" },
-                { className:"option", innerHTML: 0 },
+                { className:"th", innerHTML: "Rejected" },
+                { className:"option", innerHTML: "0" },
+                { className:"option", innerHTML: "0" },
             ]
         });
 
@@ -191,35 +218,32 @@ function Statistics() {
 
     function updateData(){
 
-        var initial = true;
-        setTimeout(function(){initial = false;}, 3000);
         var resign = true;
 
         tableMessages.placeholder.show();
         u.clear(tableMessages.body);
 
+        var updateValue = function(node, value) {
+            if(!value) return;
+            value = +value;
+            var oldValue = +node.innerHTML;
+            if(value != oldValue) {
+                node.updateHTML(value, {noflick: !oldValue});
+            }
+        }
+
         ref.child(DATABASE.SECTION_STAT).child(DATABASE.STAT_TOTAL).off();
         ref.child(DATABASE.SECTION_STAT).child(DATABASE.STAT_TOTAL).on("value", function(data) {
             var json = data.val();
 
-            var updateValue = function(node, type) {
-                if(!json[type]) return;
-                var value = +json[type];
-                var oldValue = +node.innerHTML;
-                if(value != oldValue) {
-                    node.updateHTML(value, {noflick: initial});
-                }
-            }
+            updateValue(tableSummaryGroups.groupsCreatedPersistentItem.cells[2], json[DATABASE.STAT_GROUPS_CREATED_PERSISTENT]);
+            updateValue(tableSummaryGroups.groupsCreatedTemporaryItem.cells[2], json[DATABASE.STAT_GROUPS_CREATED_TEMPORARY]);
+            updateValue(tableSummaryGroups.groupsDeletedItem.cells[2], json[DATABASE.STAT_GROUPS_DELETED]);
+            updateValue(tableSummaryGroups.groupsRejectedItem.cells[2], json[DATABASE.STAT_GROUPS_REJECTED]);
+            updateValue(tableSummaryUsers.usersJoinedItem.cells[2], json[DATABASE.STAT_USERS_JOINED]);
+            updateValue(tableSummaryUsers.usersReconnectedItem.cells[2], json[DATABASE.STAT_USERS_RECONNECTED]);
+            updateValue(tableSummaryUsers.usersRejectedItem.cells[2], json[DATABASE.STAT_USERS_REJECTED]);
 
-            updateValue(tableSummary.groupsCreatedPersistentItem.cells[1], DATABASE.STAT_GROUPS_CREATED_PERSISTENT);
-            updateValue(tableSummary.groupsCreatedTemporaryItem.cells[1], DATABASE.STAT_GROUPS_CREATED_TEMPORARY);
-            updateValue(tableSummary.groupsDeletedItem.cells[1], DATABASE.STAT_GROUPS_DELETED);
-            updateValue(tableSummary.groupsRejectedItem.cells[1], DATABASE.STAT_GROUPS_REJECTED);
-            updateValue(tableSummary.usersJoinedItem.cells[1], DATABASE.STAT_USERS_JOINED);
-            updateValue(tableSummary.usersReconnectedItem.cells[1], DATABASE.STAT_USERS_RECONNECTED);
-            updateValue(tableSummary.usersRejectedItem.cells[1], DATABASE.STAT_USERS_REJECTED);
-
-            initial = false;
         }, function(err) {
             console.err("ERR", err);
         })
@@ -251,7 +275,6 @@ function Statistics() {
               } else {
                   groupsStat.addRow(groupsData);
               }
-//              groupsChart.draw(groupsStat, google.charts.Line.convertOptions(groupsChartOptions));
 
               var usersData = [data.key,0,0,0];
               if(json[DATABASE.STAT_USERS_JOINED]) {
@@ -278,6 +301,17 @@ function Statistics() {
             });
             groupsChart.draw(groupsStat, google.charts.Line.convertOptions(groupsChartOptions));
 
+            var date = new Date();
+            date = "%04d-%02d-%02d".sprintf(date.getFullYear(), date.getMonth()+1, date.getDate());
+            if(data.key == date) {
+                updateValue(tableSummaryGroups.groupsCreatedPersistentItem.cells[1], json[DATABASE.STAT_GROUPS_CREATED_PERSISTENT]);
+                updateValue(tableSummaryGroups.groupsCreatedTemporaryItem.cells[1], json[DATABASE.STAT_GROUPS_CREATED_TEMPORARY]);
+                updateValue(tableSummaryGroups.groupsDeletedItem.cells[1], json[DATABASE.STAT_GROUPS_DELETED]);
+                updateValue(tableSummaryGroups.groupsRejectedItem.cells[1], json[DATABASE.STAT_GROUPS_REJECTED]);
+                updateValue(tableSummaryUsers.usersJoinedItem.cells[1], json[DATABASE.STAT_USERS_JOINED]);
+                updateValue(tableSummaryUsers.usersReconnectedItem.cells[1], json[DATABASE.STAT_USERS_RECONNECTED]);
+                updateValue(tableSummaryUsers.usersRejectedItem.cells[1], json[DATABASE.STAT_USERS_REJECTED]);
+           }
         };
 
         var addValueToChartError = function(e) {
