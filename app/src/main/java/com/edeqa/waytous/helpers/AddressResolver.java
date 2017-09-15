@@ -41,13 +41,14 @@ public class AddressResolver {
         if(currentTimestamp - lastRequestTimestamp < 5000) return;
         lastRequestTimestamp = currentTimestamp;
 
-
         if(getLatLng() != null) {
             current = getLatLng();
         } else if(getLocation() != null) {
             current = Utils.latLng(getLocation());
-        } else {
+        } else if(user.getLocation() != null) {
             current = Utils.latLng(user.getLocation());
+        } else {
+            return;
         }
 
         setLatLng(null);

@@ -137,14 +137,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 }
                 break;
             case TRACKING_ACTIVE:
-                if(dialog != null) {
+                if(dialog != null && dialog.getFooter() != null) {
                     dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE: View.GONE);
                 }
                 break;
             case TRACKING_DISABLED:
             case TRACKING_RECONNECTING:
             case TRACKING_STOP:
-                if(dialog != null) {
+                if(dialog != null && dialog.getFooter() != null) {
                     dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE: View.GONE);
                 }
                 break;

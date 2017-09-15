@@ -256,6 +256,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     for(MyUser user:unselected) {
                         user.fire(UNSELECT_USER);
                     }
+                    State.getInstance().fire(SELECT_SINGLE_USER, this);
                     break;
                 case UNSELECT_USER:
                     selected = false;

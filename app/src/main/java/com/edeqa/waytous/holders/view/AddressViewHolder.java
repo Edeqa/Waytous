@@ -12,9 +12,11 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.AddressResolver;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.waytous.interfaces.Runnable2;
 
 import io.nlopez.smartlocation.SmartLocation;
 
+import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
@@ -68,16 +70,26 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         private final SmartLocation.GeocodingControl geocoding;
         private long lastRequestTimestamp;
         private AddressResolver addressResolver;
+        private String lastKnownAddress;
 
-        AddressView(MainActivity context, MyUser myUser) {
+        AddressView(MainActivity context, final MyUser myUser) {
             super(context, myUser);
+
+            Object object = myUser.getProperties().loadFor(TYPE);
+            if(object != null) {
+                lastKnownAddress = (String) object;
+            }
+            System.out.println("LASTKNOWN:"+lastKnownAddress);
             geocoding = SmartLocation.with(context).geocoding();
             addressResolver = new AddressResolver(context);
             addressResolver.setUser(myUser);
             addressResolver.setCallback(new Runnable1<String>() {
                 @Override
                 public void call(String formattedAddress) {
-                    setTitle(formattedAddress);
+                    lastKnownAddress = formattedAddress;
+                    if(State.getInstance().getUsers().getCountSelectedTotal() == 1 && myUser.getProperties().isSelected()) {
+                        setTitle(formattedAddress);
+                    }
                 }
             });
         }
@@ -86,6 +98,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         public void remove() {
             super.remove();
             geocoding.stop();
+            myUser.getProperties().saveFor(TYPE, lastKnownAddress);
         }
 
         @Override
@@ -103,22 +116,33 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             switch(event){
                 case SELECT_USER:
                 case UNSELECT_USER:
+                    if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
+                        callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                    } else {
+                        State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                            @Override
+                            public void call(Integer number, MyUser myUser) {
+                                ((AddressView) myUser.getView(TYPE)).resolveAddress(myUser.getLocation());
+                            }
+                        });
+                    }
+                    break;
+                case SELECT_SINGLE_USER:
                     resolveAddress(myUser.getLocation());
                     break;
             }
             return true;
         }
 
-        private void resolveAddress(final Location location) {
+        public void resolveAddress(final Location location) {
             if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                 callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
                 return;
             } else if(myUser.getProperties().isSelected() && location == null) {
                 callback.call(null);
-            } else if(!myUser.getProperties().isSelected() || location == null){
-                return;
             }
 
+            if(lastKnownAddress != null) setTitle(lastKnownAddress);
             addressResolver.resolve();
             /*long currentTimestamp = new Date().getTime();
             if(currentTimestamp - lastRequestTimestamp < 5000) return;
@@ -174,6 +198,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 }
             }).start();*/
         }
+
     }
 
 }
