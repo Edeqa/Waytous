@@ -150,15 +150,17 @@ function DrawerHolder(main) {
                 }
                 break;
             case EVENTS.SELECT_SINGLE_USER:
-                var text = utils.toDateString(new Date().getTime() - this.properties.changed);
                 actionbar.titleNode.innerHTML = this.properties.getDisplayName();
                 if(this != main.me) {
-                    u.create(HTML.DIV, {
-                        className: "actionbar-title-suffix",
-                        innerHTML: u.lang.s_ago.format(text)
-                    }, actionbar.titleNode);
+                    var delta = new Date().getTime() - this.properties.changed;
+                    if(delta > 60000) {
+                        var text = utils.toDateString(delta);
+                        u.create(HTML.DIV, {
+                            className: "actionbar-title-suffix",
+                            innerHTML: u.lang.s_ago.format(text)
+                        }, actionbar.titleNode);
+                    }
                 }
-
                 if(main.tracking && main.tracking.getStatus() == EVENTS.TRACKING_ACTIVE) {
                     actionbar.style.backgroundColor = utils.getRGBAColor(this.properties.color, 0.8);
                 }

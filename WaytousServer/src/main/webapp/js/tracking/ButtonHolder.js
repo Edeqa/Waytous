@@ -126,8 +126,13 @@ function ButtonHolder(main) {
                     this.views.button.button.classList.remove("user-button-away");
                     this.views.button.button.classList.remove("disabled");
                     if(this != main.me) {
-                        var text = utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed));
-                        this.fire(EVENTS.UPDATE_MENU_SUFFIX, u.lang.s_ago.format(text).innerHTML);
+                        var delta = new Date().getTime() - parseInt(object || this.properties.changed);
+                        if(delta > 60000) {
+                            var text = utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed));
+                            this.fire(EVENTS.UPDATE_MENU_SUFFIX, u.lang.s_ago.format(text).innerHTML);
+                        } else {
+                            this.fire(EVENTS.UPDATE_MENU_SUFFIX);
+                        }
                     }
                 }
                 break;
@@ -135,8 +140,13 @@ function ButtonHolder(main) {
                 if(this.views && this.views.button && this.views.button.button && this.views.button.button.classList) {
                     this.views.button.button.classList.add("user-button-away");
                     if(this != main.me) {
-                        var text = utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed));
-                        this.fire(EVENTS.UPDATE_MENU_SUFFIX, u.lang.s_ago.format(text).innerHTML);
+                        var delta = new Date().getTime() - parseInt(object || this.properties.changed);
+                        if(delta > 60000) {
+                            var text = utils.toDateString(new Date().getTime() - parseInt(object || this.properties.changed));
+                            this.fire(EVENTS.UPDATE_MENU_SUFFIX, u.lang.s_ago.format(text).innerHTML);
+                        } else {
+                            this.fire(EVENTS.UPDATE_MENU_SUFFIX);
+                        }
                     }
                 }
                 break;
