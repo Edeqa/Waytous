@@ -79,7 +79,6 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             if(object != null) {
                 lastKnownAddress = (String) object;
             }
-            System.out.println("LASTKNOWN:"+lastKnownAddress);
             geocoding = SmartLocation.with(context).geocoding();
             addressResolver = new AddressResolver(context);
             addressResolver.setUser(myUser);

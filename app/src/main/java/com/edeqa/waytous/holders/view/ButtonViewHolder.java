@@ -307,7 +307,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         @Override
         public List<String> events() {
             List<String> list = new ArrayList<>();
-            list.add(CHANGE_NAME);
             return list;
         }
 
@@ -318,7 +317,6 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         @Override
         public boolean onEvent(String event, Object object) {
-
             switch(event){
                 case SELECT_USER:
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.BOLD_ITALIC : Typeface.BOLD);

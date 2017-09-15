@@ -26,6 +26,7 @@ import java.util.Date;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.BACK_PRESSED;
+import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
@@ -39,7 +40,7 @@ import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 /**
  * Created 11/27/16.
  */
-public class DrawerViewHolder extends AbstractViewHolder {
+public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.DrawerView> {
 
     public static final String TYPE = DrawerViewHolder.class.getSimpleName();
 
@@ -116,7 +117,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     @Override
     public boolean dependsOnUser() {
-        return false;
+        return true;
     }
 
     @Override
@@ -125,8 +126,9 @@ public class DrawerViewHolder extends AbstractViewHolder {
     }
 
     @Override
-    public AbstractView create(MyUser myUser) {
-        return null;
+    public DrawerView create(MyUser myUser) {
+        if (myUser == null) return null;
+        return new DrawerView(context, myUser);
     }
 
     @Override
@@ -165,27 +167,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
             case TRACKING_RECONNECTING:
                 if(actionBar != null) {
                     actionBar.setTitle(R.string.connecting);
-                }
-                break;
-            case SELECT_SINGLE_USER:
-            case SELECT_USER:
-            case UNSELECT_USER:
-                if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
-                    actionBar.setTitle(R.string.app_name);
-                } else {
-                    State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
-                        @Override
-                        public void call(Integer number, MyUser user) {
-                            String title = user.getProperties().getDisplayName();
-                            if(user != State.getInstance().getMe()) {
-                                long delta = new Date().getTime() - user.getProperties().getChanged();
-                                if(delta > 60000) {
-                                    title += context.getString(R.string.s_ago, Utils.toDateString(delta));
-                                }
-                            }
-                            actionBar.setTitle(title);
-                        }
-                    });
                 }
                 break;
         }
@@ -235,6 +216,52 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
         public MenuItem findItem(int itemId) {
             return navigationView.getMenu().findItem(itemId);
+        }
+    }
+
+    class DrawerView extends AbstractView {
+
+        DrawerView(MainActivity context, final MyUser myUser) {
+            super(context, myUser);
+        }
+
+        @Override
+        public void remove() {
+            super.remove();
+        }
+
+        @Override
+        public boolean dependsOnLocation() {
+            return false;
+        }
+
+        @Override
+        public boolean onEvent(String event, Object object) {
+            switch (event) {
+                case SELECT_SINGLE_USER:
+                case SELECT_USER:
+                case UNSELECT_USER:
+                case CHANGE_NAME:
+                    if (State.getInstance().getUsers().getCountSelectedTotal() > 1) {
+                        actionBar.setTitle(R.string.app_name);
+                    } else {
+                        State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                            @Override
+                            public void call(Integer number, MyUser myUser) {
+                                String title = myUser.getProperties().getDisplayName();
+                                if (myUser != State.getInstance().getMe()) {
+                                    long delta = new Date().getTime() - myUser.getProperties().getChanged();
+                                    if (delta > 60000) {
+                                        title += " " + context.getString(R.string.s_ago, Utils.toDateString(delta));
+                                    }
+                                }
+                                actionBar.setTitle(title);
+                            }
+                        });
+                    }
+                    break;
+            }
+            return true;
         }
     }
 

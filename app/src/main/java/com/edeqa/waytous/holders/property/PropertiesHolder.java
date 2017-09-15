@@ -209,7 +209,6 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         @Override
         public List<String> events() {
             List<String> list = new ArrayList<>();
-            list.add(CHANGE_NAME);
             list.add(CHANGE_COLOR);
             return list;
         }
@@ -242,7 +241,6 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             switch(event){
                 case SELECT_USER:
                     selected = true;
-                    State.getInstance().fire(SELECT_USER, myUser);
                     break;
                 case SELECT_SINGLE_USER:
                     myUser.getProperties().selected = true;
@@ -260,11 +258,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     for(MyUser user:unselected) {
                         user.fire(UNSELECT_USER);
                     }
-                    State.getInstance().fire(SELECT_SINGLE_USER, myUser);
                     break;
                 case UNSELECT_USER:
                     selected = false;
-                    State.getInstance().fire(UNSELECT_USER, myUser);
                     break;
                 case MAKE_ACTIVE:
                     active = true;

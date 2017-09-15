@@ -544,7 +544,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         @Override
         public List<String> events() {
             List<String> list = new ArrayList<>();
-            list.add(CHANGE_NAME);
             return list;
         }
 
