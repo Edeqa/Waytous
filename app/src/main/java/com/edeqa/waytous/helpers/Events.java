@@ -10,6 +10,8 @@ public class Events {
     public static final String UNSELECT_USER = "unselect";
     public static final String MAKE_ACTIVE = "make_active";
     public static final String MAKE_INACTIVE = "make_inactive";
+    public static final String MAKE_ENABLED = "make_enabled";
+    public static final String MAKE_DISABLED = "make_disabled";
     public static final String CHANGE_NAME = "change_name";
     public static final String CHANGE_NUMBER = "change_number";
     public static final String CHANGE_COLOR = "change_color";

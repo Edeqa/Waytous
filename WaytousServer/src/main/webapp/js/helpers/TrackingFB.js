@@ -541,8 +541,8 @@ function TrackingFB(main) {
             if(user && user.properties && active != user.properties.active) {
                 var o = {};
                 o[RESPONSE.STATUS] = RESPONSE.STATUS_UPDATED;
-                o[active ? USER.JOINED : USER.DISMISSED] = number;
                 o[RESPONSE.NUMBER] = number;
+                o[active ? USER.JOINED : USER.DISMISSED] = number;
                 trackingListener.onMessage(o);
             }
         } catch(e) {

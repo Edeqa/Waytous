@@ -218,5 +218,6 @@
     <string name="report_an_issue">Report an issue</string>
     <string name="click_here_to_report_about_error_odd_behaviour_or_some_great_idea">Click here to report about error, odd behaviour or some great idea.</string>
     <string name="too_long_message">Too long message</string>
+    <string name="s_ago"> (%s ago)</string>
 
 </resources>

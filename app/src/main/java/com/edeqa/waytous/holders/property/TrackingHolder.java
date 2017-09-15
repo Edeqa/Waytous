@@ -21,9 +21,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.Date;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.MAKE_DISABLED;
+import static com.edeqa.waytous.helpers.Events.MAKE_ENABLED;
 import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.TOKEN_CREATED;
@@ -41,8 +44,10 @@ import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;
 import static com.edeqa.waytousserver.helpers.Constants.BROADCAST_MESSAGE;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_LEAVE;
+import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
 import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
+import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
@@ -289,6 +294,21 @@ public class TrackingHolder extends AbstractPropertyHolder {
                                     if(!user.getProperties().isActive()) {
                                         user.fire(MAKE_ACTIVE);
                                         State.getInstance().fire(USER_JOINED, user);
+                                    }
+                                }
+                            });
+                        } else {
+                            int number = o.getInt(RESPONSE_NUMBER);
+                            final long timestamp = o.getLong(REQUEST_TIMESTAMP);
+
+                            State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                                @Override
+                                public void call(Integer number, MyUser user) {
+                                    long delta = (new Date().getTime() - timestamp) / 1000;
+                                    if(delta < 120) {
+                                        user.fire(MAKE_ENABLED, timestamp);
+                                    } else {
+                                        user.fire(MAKE_DISABLED, timestamp);
                                     }
                                 }
                             });

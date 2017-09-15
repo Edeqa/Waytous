@@ -761,6 +761,7 @@ public class MyTrackingFB implements Tracking {
 
                     registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_NAME),usersDataNameListener);
                     registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_ACTIVE),usersDataActiveListener);
+                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_CHANGED), usersDataChangedListener);
 
 //                    usersDataNameListener.onDataChange(dataSnapshot.child(Constants.DATABASE.USER_NAME));
 //                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
@@ -909,13 +910,45 @@ public class MyTrackingFB implements Tracking {
                             try {
                                 JSONObject o = new JSONObject();
                                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                                o.put(active ? USER_JOINED : USER_DISMISSED, number);
                                 o.put(RESPONSE_NUMBER, number);
+                                o.put(active ? USER_JOINED : USER_DISMISSED, number);
                                 trackingListener.onMessage(o);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
 
+                        }
+                    }
+                });
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+
+    private ValueEventListener usersDataChangedListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            System.out.println("usersDataChangedListener:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
+
+            try {
+                int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
+                final long changed = (long) dataSnapshot.getValue();
+                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                    @Override
+                    public void call(Integer number, MyUser myUser) {
+                        try {
+                            JSONObject o = new JSONObject();
+                            o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                            o.put(RESPONSE_NUMBER, number);
+                            o.put(REQUEST_TIMESTAMP, changed);
+                            trackingListener.onMessage(o);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 });

@@ -166,14 +166,14 @@ public class MyUser {
                         String type = entry.getKey();
 
                         if(views.containsKey(type) && views.get(type) != null){
-                            Log.v(TYPE, "remove:" + type + ":"+getProperties().getNumber()+":"+views.get(type));
+//                            Log.v(TYPE, "remove:" + type + ":"+getProperties().getNumber()+":"+views.get(type));
                             views.get(type).remove();
                         }
                         AbstractPropertyHolder holder = entry.getValue();
                         if (holder == null) continue;
                         AbstractView view = ((AbstractViewHolder) holder).create(MyUser.this);
                         if (view != null) {
-                            Log.v(TYPE, (views.containsKey(type) ? "update:" : "create") + type + ":" + getProperties().getNumber() + ":" + view);
+//                            Log.v(TYPE, (views.containsKey(type) ? "update:" : "create") + type + ":" + getProperties().getNumber() + ":" + view);
                             viewBus.registerOrUpdate(view);
                             views.put(type, view);
                         }

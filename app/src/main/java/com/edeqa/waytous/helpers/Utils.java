@@ -430,4 +430,39 @@ public class Utils {
         if(e != null) e.printStackTrace();
     }
 
+    public static String toDateString(long millis) {
+        StringBuilder res = new StringBuilder();
+        int delta = Math.round(Math.round(millis/1000));
+
+        int secInDay = 24 * 60 * 60;
+        int secInHour = 24 * 60;
+        int secInMinute = 60;
+
+        int d = Math.round(Math.round(delta / secInDay));
+        delta -= d * secInDay;
+
+        int h = Math.round(Math.round(delta / secInHour));
+        delta -= h * secInHour;
+
+        int m = Math.round(Math.round(delta / secInMinute));
+        int s = delta - m * secInMinute;
+
+        if(d > 0) {
+            res.append(d + "d");
+        }
+        if(h > 0) {
+            if(res.length() > 0) res.append(" ");
+            res.append(h + "h");
+        }
+        if(m > 0) {
+            if(res.length() > 0) res.append(" ");
+            res.append(m + "m");
+        }
+        if(res.length() > 0) res.append(" ");
+        res.append((s > 0 ? s : "0") + "s");
+        return res.toString();
+    }
+
+
+
 }

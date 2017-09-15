@@ -25,6 +25,8 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
+import static com.edeqa.waytous.helpers.Events.MAKE_DISABLED;
+import static com.edeqa.waytous.helpers.Events.MAKE_ENABLED;
 import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.MOVING_AWAY_FROM;
 import static com.edeqa.waytous.helpers.Events.MOVING_CLOSE_TO;
@@ -185,6 +187,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         private int number;
         private int color;
         private int imageResource;
+        private long changed;
         private boolean selected;
         private boolean active;
         private double previousDistance;
@@ -239,6 +242,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             switch(event){
                 case SELECT_USER:
                     selected = true;
+                    State.getInstance().fire(SELECT_USER, myUser);
                     break;
                 case SELECT_SINGLE_USER:
                     myUser.getProperties().selected = true;
@@ -256,10 +260,11 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     for(MyUser user:unselected) {
                         user.fire(UNSELECT_USER);
                     }
-                    State.getInstance().fire(SELECT_SINGLE_USER, this);
+                    State.getInstance().fire(SELECT_SINGLE_USER, myUser);
                     break;
                 case UNSELECT_USER:
                     selected = false;
+                    State.getInstance().fire(UNSELECT_USER, myUser);
                     break;
                 case MAKE_ACTIVE:
                     active = true;
@@ -267,6 +272,10 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                 case MAKE_INACTIVE:
                     active = false;
                     selected = false;
+                    break;
+                case MAKE_ENABLED:
+                case MAKE_DISABLED:
+                    changed = (long) object;
                     break;
                 case CHANGE_NUMBER:
                     number = (int) object;
@@ -400,6 +409,14 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public long getChanged() {
+            return changed;
+        }
+
+        public void setChanged(long changed) {
+            this.changed = changed;
         }
     }
 

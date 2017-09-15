@@ -18,19 +18,23 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable2;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.BACK_PRESSED;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
+import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
+import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 
 /**
  * Created 11/27/16.
@@ -127,6 +131,7 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     @Override
     public boolean onEvent(String event, Object object) {
+        System.out.println("EVENT:"+event);
         switch(event){
             case ACTIVITY_RESUME:
                 State.getInstance().fire(CREATE_DRAWER, itemsHolder);
@@ -164,7 +169,25 @@ public class DrawerViewHolder extends AbstractViewHolder {
                 }
                 break;
             case SELECT_SINGLE_USER:
-                System.out.println("DRAWER:"+object);
+            case SELECT_USER:
+            case UNSELECT_USER:
+                if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
+                    actionBar.setTitle(R.string.app_name);
+                } else {
+                    State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                        @Override
+                        public void call(Integer number, MyUser user) {
+                            String title = user.getProperties().getDisplayName();
+                            if(user != State.getInstance().getMe()) {
+                                long delta = new Date().getTime() - user.getProperties().getChanged();
+                                if(delta > 60000) {
+                                    title += context.getString(R.string.s_ago, Utils.toDateString(delta));
+                                }
+                            }
+                            actionBar.setTitle(title);
+                        }
+                    });
+                }
                 break;
         }
         return true;
@@ -215,4 +238,5 @@ public class DrawerViewHolder extends AbstractViewHolder {
             return navigationView.getMenu().findItem(itemId);
         }
     }
+
 }
