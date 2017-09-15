@@ -28,8 +28,6 @@ import com.edeqa.waytous.holders.property.PropertiesHolder;
 import com.edeqa.waytous.holders.property.TrackingHolder;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
-import com.edeqa.waytousserver.helpers.Constants;
-import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;

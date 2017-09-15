@@ -7,7 +7,7 @@ import android.view.animation.Interpolator;
 
 import com.edeqa.waytous.interfaces.Runnable1;
 
-import static com.edeqa.waytousserver.helpers.Constants.LOCATION_UPDATES_DELAY;
+import static com.edeqa.waytous.Constants.LOCATION_UPDATES_DELAY;
 
 /**
  * Created 12/1/16.

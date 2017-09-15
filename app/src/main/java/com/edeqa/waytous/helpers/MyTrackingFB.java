@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
@@ -13,7 +14,6 @@ import com.edeqa.waytous.interfaces.EntityHolder;
 import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -52,46 +52,46 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
+import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_USER;
+import static com.edeqa.waytous.Constants.REQUEST;
+import static com.edeqa.waytous.Constants.REQUEST_CHANGE_NAME;
+import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
+import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
+import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
+import static com.edeqa.waytous.Constants.REQUEST_HASH;
+import static com.edeqa.waytous.Constants.REQUEST_JOIN_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_KEY;
+import static com.edeqa.waytous.Constants.REQUEST_MANUFACTURER;
+import static com.edeqa.waytous.Constants.REQUEST_MODEL;
+import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_OS;
+import static com.edeqa.waytous.Constants.REQUEST_PUSH;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytous.Constants.REQUEST_UPDATE;
+import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_CONTROL;
+import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
+import static com.edeqa.waytous.Constants.RESPONSE_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_PRIVATE;
+import static com.edeqa.waytous.Constants.RESPONSE_SIGN;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
+import static com.edeqa.waytous.Constants.USER_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.holders.property.MessagesHolder.PRIVATE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_KEY;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_UPDATE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_PRIVATE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_SIGN;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 import static org.apache.http.conn.ssl.SSLSocketFactory.TLS;
 
 /**
@@ -254,9 +254,9 @@ public class MyTrackingFB implements Tracking {
 
         if(ref != null) {
             Map<String, Object> updates = new HashMap<>();
-            updates.put(Constants.DATABASE.USER_ACTIVE, false);
-            updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
-            ref.child(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
+            updates.put(Firebase.USER_ACTIVE, false);
+            updates.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
+            ref.child(Firebase.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
 
 /*
             Iterator<Map.Entry<DatabaseReference, Object>> iter = refs.entrySet().iterator();
@@ -280,7 +280,7 @@ public class MyTrackingFB implements Tracking {
 // remove public data of this user
             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
                 if (entry.getValue() != null && entry.getValue().isSaveable() && entry.getValue().isEraseable()) {
-                    ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()).removeValue();
+                    ref.child(Firebase.SECTION_PUBLIC).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()).removeValue();
                 }
             }
         }
@@ -358,13 +358,13 @@ public class MyTrackingFB implements Tracking {
             } else if (ref != null) {
                 if(REQUEST_CHANGE_NAME.equals(type)) {
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(Constants.DATABASE.USER_NAME, o.get(USER_NAME));
-                    childUpdates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
-                    ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
+                    childUpdates.put(Firebase.USER_NAME, o.get(USER_NAME));
+                    childUpdates.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
+                    ref.child(Firebase.SECTION_USERS_DATA).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
                     return;
                 } else if(REQUEST_WELCOME_MESSAGE.equals(type)) {
                     if(state.getMe().getProperties().getNumber() == 0) {
-                        ref.child(Constants.DATABASE.OPTION_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
+                        ref.child(Firebase.OPTION_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
                     }
                     return;
                 }
@@ -391,13 +391,13 @@ public class MyTrackingFB implements Tracking {
                     String to = String.valueOf(data.get(RESPONSE_PRIVATE));
                     data.remove(RESPONSE_PRIVATE);
                     data.put("from", state.getMe().getProperties().getNumber());
-                    path = Constants.DATABASE.SECTION_PRIVATE + "/" + type + "/" + to;
+                    path = Firebase.SECTION_PRIVATE + "/" + type + "/" + to;
                 } else {
-                    path = Constants.DATABASE.SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
+                    path = Firebase.SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
                 }
 
                 updates.put(path + "/" + key, data);
-                updates.put(Constants.DATABASE.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/" + Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
+                updates.put(Firebase.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/" + Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
                 Task<Void> a = ref.updateChildren(updates);
                 a.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -613,24 +613,24 @@ public class MyTrackingFB implements Tracking {
                                                 public void run() {
                                                     if (State.getInstance().tracking_active()) {
                                                         Map<String, Object> updates = new HashMap<>();
-                                                        updates.put(Constants.DATABASE.USER_ACTIVE, true);
-                                                        updates.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
-                                                        ref.child(Constants.DATABASE.SECTION_USERS_DATA)
+                                                        updates.put(Firebase.USER_ACTIVE, true);
+                                                        updates.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
+                                                        ref.child(Firebase.SECTION_USERS_DATA)
                                                                 .child("" + state.getMe().getProperties().getNumber())
                                                                 .updateChildren(updates);
                                                     }
                                                 }
                                             }, 0, 1, TimeUnit.MINUTES);
 
-                                            registerValueListener(ref.child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CREATED), groupListener);
+                                            registerValueListener(ref.child(Firebase.SECTION_OPTIONS).child(Firebase.OPTION_DATE_CREATED), groupListener);
 
-                                            registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child("" + state.getUsers().getMyNumber()).child(Constants.DATABASE.USER_ACTIVE), userActiveListener);
+                                            registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child("" + state.getUsers().getMyNumber()).child(Firebase.USER_ACTIVE), userActiveListener);
 
-                                            registerChildListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA), usersDataListener, -1);
+                                            registerChildListener(ref.child(Firebase.SECTION_USERS_DATA), usersDataListener, -1);
 
                                             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
                                                 if (entry.getValue().isSaveable()) {
-                                                    registerChildListener(ref.child(Constants.DATABASE.SECTION_PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
+                                                    registerChildListener(ref.child(Firebase.SECTION_PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
                                                 }
                                             }
 
@@ -759,16 +759,16 @@ public class MyTrackingFB implements Tracking {
                     MyUser user = State.getInstance().getUsers().addUser(o);
                     user.setUser(true);
 
-                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_NAME),usersDataNameListener);
-                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_ACTIVE),usersDataActiveListener);
-                    registerValueListener(ref.child(Constants.DATABASE.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Constants.DATABASE.USER_CHANGED), usersDataChangedListener);
+                    registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Firebase.USER_NAME),usersDataNameListener);
+                    registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Firebase.USER_ACTIVE),usersDataActiveListener);
+                    registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Firebase.USER_CHANGED), usersDataChangedListener);
 
 //                    usersDataNameListener.onDataChange(dataSnapshot.child(Constants.DATABASE.USER_NAME));
 //                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
 
                     for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
                         if(entry.getValue().isSaveable()) {
-                            registerChildListener(ref.child(Constants.DATABASE.SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
+                            registerChildListener(ref.child(Firebase.SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
                         }
                     }
 //                    trackingListener.onAccept(o);

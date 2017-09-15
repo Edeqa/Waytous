@@ -47,6 +47,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.USER_ADDRESS;
+import static com.edeqa.waytous.Constants.USER_COLOR;
+import static com.edeqa.waytous.Constants.USER_DESCRIPTION;
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.USER_NUMBER;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
@@ -59,18 +71,6 @@ import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.MAP_READY;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ADDRESS;
-import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DESCRIPTION;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
 
 
 /**

@@ -20,10 +20,10 @@ import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 
+import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
 
 /**
  * Created 01/13/17.

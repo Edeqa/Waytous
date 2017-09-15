@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
-
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -15,6 +14,8 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.Utils;
 
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
 import static com.edeqa.waytous.helpers.Events.TOKEN_CREATED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ERROR;
@@ -25,8 +26,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.holders.property.MessagesHolder.NEW_MESSAGE;
 import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
 import static com.edeqa.waytous.holders.property.TrackingHolder.PREFERENCE_TERMS_OF_SERVICE_CONFIRMED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
 /**
  * Created 11/27/16.

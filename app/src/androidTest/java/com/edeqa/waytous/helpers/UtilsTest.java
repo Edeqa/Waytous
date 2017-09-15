@@ -18,14 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ACCURACY;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ALTITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_BEARING;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.USER_ACCURACY;
+import static com.edeqa.waytous.Constants.USER_ALTITUDE;
+import static com.edeqa.waytous.Constants.USER_BEARING;
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
+import static com.edeqa.waytous.Constants.USER_SPEED;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 

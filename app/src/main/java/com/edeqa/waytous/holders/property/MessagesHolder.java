@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.NotificationCompat;
 
+import com.edeqa.waytous.Constants;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -17,7 +18,6 @@ import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.interfaces.Runnable2;
-import com.edeqa.waytousserver.helpers.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +27,14 @@ import java.util.Date;
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
+import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
+import static com.edeqa.waytous.Constants.REQUEST_PUSH;
+import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_PRIVATE;
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
+import static com.edeqa.waytous.Constants.USER_NUMBER;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
@@ -37,14 +45,6 @@ import static com.edeqa.waytous.helpers.UserMessage.TYPE_PRIVATE;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_USER_DISMISSED;
 import static com.edeqa.waytous.helpers.UserMessage.TYPE_USER_JOINED;
 import static com.edeqa.waytous.holders.view.MessagesViewHolder.SHOW_MESSAGES;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_PRIVATE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 
 /**
  * Created 11/27/16.

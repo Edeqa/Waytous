@@ -43,15 +43,15 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ACCURACY;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ALTITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_BEARING;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.USER_ACCURACY;
+import static com.edeqa.waytous.Constants.USER_ALTITUDE;
+import static com.edeqa.waytous.Constants.USER_BEARING;
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
+import static com.edeqa.waytous.Constants.USER_SPEED;
 
 
 /**
@@ -464,5 +464,12 @@ public class Utils {
     }
 
 
+    public static String getWrappedHttpPort(){
+        return SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked();
+    }
+
+    public static String getWrappedHttpsPort(){
+        return SENSITIVE.getHttpsPortMasked() == 443 ? "" : ":" + SENSITIVE.getHttpsPortMasked();
+    }
 
 }

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
@@ -53,7 +54,6 @@ import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_DAY;
 import static com.edeqa.waytous.holders.view.SensorsViewHolder.REQUEST_MODE_NIGHT;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.PREPARE_SETTINGS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 
 
 /**

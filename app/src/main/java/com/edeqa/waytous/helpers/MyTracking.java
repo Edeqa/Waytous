@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 import com.neovisionaries.ws.client.PayloadGenerator;
@@ -30,38 +31,36 @@ import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
-import com.edeqa.waytous.State;
-
+import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_USER;
+import static com.edeqa.waytous.Constants.REQUEST;
+import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
+import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
+import static com.edeqa.waytous.Constants.REQUEST_HASH;
+import static com.edeqa.waytous.Constants.REQUEST_JOIN_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_LEAVE;
+import static com.edeqa.waytous.Constants.REQUEST_MANUFACTURER;
+import static com.edeqa.waytous.Constants.REQUEST_MODEL;
+import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_OS;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytous.Constants.REQUEST_UPDATE;
+import static com.edeqa.waytous.Constants.RESPONSE_CONTROL;
+import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
+import static com.edeqa.waytous.Constants.RESPONSE_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.USER_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_LEAVE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_UPDATE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
 
 /**
  * Created 10/8/16.

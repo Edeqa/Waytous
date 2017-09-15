@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.USER_COLOR;
+import static com.edeqa.waytous.Constants.USER_DESCRIPTION;
+import static com.edeqa.waytous.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DESCRIPTION;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
 
 /**
  * Created 10/23/16.

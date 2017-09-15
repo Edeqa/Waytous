@@ -45,6 +45,15 @@ import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
 
+import static com.edeqa.waytous.Constants.BROADCAST;
+import static com.edeqa.waytous.Constants.BROADCAST_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_CREATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_DESTROY;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -57,15 +66,6 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
 import static com.edeqa.waytous.holders.property.GpsHolder.REQUEST_LOCATION_SINGLE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
-import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;
-import static com.edeqa.waytousserver.helpers.Constants.BROADCAST_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 

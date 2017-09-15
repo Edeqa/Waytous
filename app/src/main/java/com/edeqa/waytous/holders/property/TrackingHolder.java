@@ -23,6 +23,22 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.util.Date;
 
+import static com.edeqa.waytous.Constants.BROADCAST;
+import static com.edeqa.waytous.Constants.BROADCAST_MESSAGE;
+import static com.edeqa.waytous.Constants.REQUEST_CHANGE_NAME;
+import static com.edeqa.waytous.Constants.REQUEST_LEAVE;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
+import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
+import static com.edeqa.waytous.Constants.USER_LEFT;
+import static com.edeqa.waytous.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.USER_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.MAKE_DISABLED;
@@ -40,22 +56,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.holders.view.TrackingViewHolder.TRACKING_TERMS_OF_SERVICE;
 import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
-import static com.edeqa.waytousserver.helpers.Constants.BROADCAST;
-import static com.edeqa.waytousserver.helpers.Constants.BROADCAST_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHANGE_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_LEAVE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LEFT;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
 
 /**
  * Created 11/30/16.

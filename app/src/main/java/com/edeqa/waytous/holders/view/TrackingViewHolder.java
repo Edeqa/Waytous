@@ -18,6 +18,8 @@ import com.edeqa.waytous.helpers.SettingItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
 import static com.edeqa.waytous.helpers.Events.BACK_PRESSED;
 import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
@@ -25,8 +27,6 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_NEW;
 import static com.edeqa.waytous.holders.property.TrackingHolder.PREFERENCE_TERMS_OF_SERVICE_CONFIRMED;
 import static com.edeqa.waytous.holders.view.MenuViewHolder.PREFERENCES_ABOUT;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 
 /**
  * Created 8/3/17.

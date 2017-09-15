@@ -39,6 +39,7 @@ import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 
+import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
@@ -57,7 +58,6 @@ import static com.edeqa.waytous.holders.property.MessagesHolder.SEND_MESSAGE;
 import static com.edeqa.waytous.holders.property.MessagesHolder.USER_MESSAGE;
 import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
 import static com.edeqa.waytous.holders.property.NotificationHolder.HIDE_CUSTOM_NOTIFICATION;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
 
 
 /**

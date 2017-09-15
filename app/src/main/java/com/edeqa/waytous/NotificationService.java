@@ -10,9 +10,9 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.REQUEST_PUSH;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
 
 /**
  * Created 1/8/17.

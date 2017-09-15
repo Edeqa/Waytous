@@ -24,12 +24,11 @@ import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 
+import static com.edeqa.waytous.Constants.SENSITIVE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
 
 
 /**
@@ -127,7 +126,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                         .add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100)
                                 .add(new SettingItem.Label("waytous")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://play.google.com/store/apps/details?id=com.edeqa.waytous")))
-                                        .setTitle(R.string.app_name).setMessage(context.getString(R.string.version_s_d, BuildConfig.VERSION_NAME, SERVER_BUILD)))
+                                        .setTitle(R.string.app_name).setMessage(context.getString(R.string.version_s_d, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)))
                                 .add(new SettingItem.Label("waytous_web")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://www.waytous.net")))
                                         .setTitle(context.getString(R.string.waytous_web_service)).setMessage("http://www.waytous.net"))

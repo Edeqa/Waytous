@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
@@ -36,7 +37,6 @@ import static com.edeqa.waytous.helpers.Events.SELECT_SINGLE_USER;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.CURRENT_VALUE;
 import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
 import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
 
 
 /**

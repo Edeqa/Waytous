@@ -4,36 +4,35 @@ import android.util.Log;
 
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
-import com.edeqa.waytousserver.helpers.Common;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.edeqa.waytous.Constants.REQUEST_KEY;
+import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.USER_ACCURACY;
+import static com.edeqa.waytous.Constants.USER_ALTITUDE;
+import static com.edeqa.waytous.Constants.USER_BEARING;
+import static com.edeqa.waytous.Constants.USER_JOINED;
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_MESSAGE;
+import static com.edeqa.waytous.Constants.USER_NUMBER;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
+import static com.edeqa.waytous.Constants.USER_SPEED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_CONNECTING;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_KEY;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ACCURACY;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ALTITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_BEARING;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
 import static junit.framework.Assert.assertEquals;
 
 /**
@@ -56,7 +55,7 @@ public class MyTrackingFBTest {
 
     @Test
     public void testNewToken() throws Exception {
-        link = "http://" + SENSITIVE.getServerHost() + Common.getWrappedHttpPort() + "/track/" + TOKEN;
+        link = "http://" + SENSITIVE.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
         tracking = new MyTrackingFB();
         State.getInstance().setTracking(tracking);
         tracking.setTrackingListener(onTrackingListener);
@@ -82,7 +81,7 @@ public class MyTrackingFBTest {
 
     @Test
     public void testCorrectToken() throws Exception {
-        link = "http://" + SENSITIVE.getServerHost() + Common.getWrappedHttpPort() + "/track/" + TOKEN;
+        link = "http://" + SENSITIVE.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
         tracking = new MyTrackingFB(link);
         State.getInstance().setTracking(tracking);
         tracking.setTrackingListener(onTrackingListener);
@@ -110,7 +109,7 @@ public class MyTrackingFBTest {
 
     @Test
     public void testWrongToken() throws Exception {
-        link = "http://" + SENSITIVE.getServerHost() + Common.getWrappedHttpPort() + "/track/" + TOKEN + TOKEN;
+        link = "http://" + SENSITIVE.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN + TOKEN;
         tracking = new MyTrackingFB(link);
         State.getInstance().setTracking(tracking);
         tracking.setTrackingListener(onTrackingListener);
