@@ -1,12 +1,12 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.FlagHolder;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;

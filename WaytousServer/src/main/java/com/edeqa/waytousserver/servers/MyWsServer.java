@@ -15,9 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_USER;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 
 /**
  * Created 10/5/16.

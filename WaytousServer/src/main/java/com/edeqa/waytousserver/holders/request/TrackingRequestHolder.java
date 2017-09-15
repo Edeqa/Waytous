@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TRACKING;
+import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
 
 
 /**

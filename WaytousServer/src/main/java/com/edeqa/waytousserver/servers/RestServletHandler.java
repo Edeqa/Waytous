@@ -1,11 +1,11 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.Rest;
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HttpDPConnection;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.common.net.HttpHeaders;
 
 import org.json.JSONObject;
@@ -22,7 +22,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 
 
 /**
@@ -66,7 +66,7 @@ public class RestServletHandler extends AbstractServletHandler {
 
 //        switch(exchange.getRequestMethod()) {
 //            case HttpMethods.GET:
-            json.put(Constants.REST.STATUS, "success");
+            json.put(Rest.STATUS, "success");
 
             switch (uri.getPath()) {
                 case "/rest/v1/getVersion":
@@ -104,9 +104,9 @@ public class RestServletHandler extends AbstractServletHandler {
 
     private boolean noAction(JSONObject json) {
         Common.log(LOG, "perform:noAction", json);
-        json.put(Constants.REST.STATUS, "error");
-        json.put(Constants.REST.REASON, "Action not supported");
-        json.put(Constants.REST.MESSAGE, "Action not supported");
+        json.put(Rest.STATUS, "error");
+        json.put(Rest.REASON, "Action not supported");
+        json.put(Rest.MESSAGE, "Action not supported");
         return true;
     }
 
@@ -119,7 +119,7 @@ public class RestServletHandler extends AbstractServletHandler {
     public class V1 extends RestComponent {
         @Override
         boolean getVersion(JSONObject json) {
-            json.put("version", Constants.SERVER_BUILD);
+            json.put("version", Common.SERVER_BUILD);
             return true;
         }
 
@@ -153,9 +153,9 @@ public class RestServletHandler extends AbstractServletHandler {
                 Common.getInstance().getDataProcessor(requestWrapper.getRequestURI().getPath().split("/")[3]).onMessage(new HttpDPConnection(requestWrapper), body);
             } catch (Exception e) {
                 e.printStackTrace();
-                json.put(Constants.REST.STATUS, "error");
-                json.put(Constants.REST.REASON, "Action failed");
-                json.put(Constants.REST.MESSAGE, e.getMessage());
+                json.put(Rest.STATUS, "error");
+                json.put(Rest.REASON, "Action failed");
+                json.put(Rest.MESSAGE, e.getMessage());
                 Utils.sendResultJson.call(requestWrapper, json);
             }
             return false;
@@ -326,9 +326,9 @@ public class RestServletHandler extends AbstractServletHandler {
                 @Override
                 public void call(Exception arg) {
                     Common.err(LOG, "getContent:", arg);
-                    json.put(Constants.REST.STATUS, "error");
-                    json.put(Constants.REST.REASON, "Incorrect request");
-                    json.put(Constants.REST.MESSAGE, arg.getMessage());
+                    json.put(Rest.STATUS, "error");
+                    json.put(Rest.REASON, "Incorrect request");
+                    json.put(Rest.MESSAGE, arg.getMessage());
                     Utils.sendError.call(requestWrapper, 413, json);
                 }
             });

@@ -1,7 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.Mime;
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.google.common.net.HttpHeaders;
 
@@ -20,8 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytousserver.helpers.Common.SERVER_BUILD;
 
 
 /**
@@ -115,7 +115,7 @@ public class MainServletHandler extends AbstractServletHandler {
                 }
 
                 boolean text = false;
-                String type = Constants.MIME.APPLICATION_OCTET_STREAM;
+                String type = Mime.APPLICATION_OCTET_STREAM;
                 JSONArray types = SENSITIVE.getTypes();
                 types.put(new JSONObject("{\"type\":\"\",\"mime\":\"application/unknown\"}"));
                 JSONObject json = null;

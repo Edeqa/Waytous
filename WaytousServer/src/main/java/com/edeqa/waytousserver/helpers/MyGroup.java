@@ -17,15 +17,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_PUSH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_WELCOME_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_INITIAL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
+import static com.edeqa.waytous.Constants.REQUEST_PUSH;
+import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.USER_COLOR;
+import static com.edeqa.waytous.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.USER_NUMBER;
 
 
 /**

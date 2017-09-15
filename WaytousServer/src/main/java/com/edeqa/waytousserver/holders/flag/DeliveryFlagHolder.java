@@ -7,9 +7,9 @@ import com.edeqa.waytousserver.servers.AbstractDataProcessor;
 
 import org.json.JSONObject;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DELIVERY_CONFIRMATION;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.REQUEST;
+import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
 
 
 /**

@@ -1,15 +1,16 @@
 
 package com.edeqa.waytousserver.holders.admin;
 
+import com.edeqa.waytous.Firebase;
+import com.edeqa.waytous.Rest;
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.PageHolder;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.google.api.client.http.HttpMethods;
 
@@ -17,7 +18,7 @@ import org.json.JSONObject;
 
 import java.net.URI;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
 
 
 /**
@@ -105,15 +106,15 @@ public class AdminRestHolder implements PageHolder {
             Common.getInstance().getDataProcessor("v1").validateGroups();
 
             JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
-            json.put(Constants.REST.MESSAGE, "Clean started.");
+            json.put(Rest.STATUS, Rest.SUCCESS);
+            json.put(Rest.MESSAGE, "Clean started.");
             Utils.sendResultJson.call(requestWrapper, json);
 
         } catch(Exception e) {
             e.printStackTrace();
             JSONObject json = new JSONObject();
-            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-            json.put(Constants.REST.MESSAGE, "Incorrect request.");
+            json.put(Rest.STATUS, Rest.ERROR);
+            json.put(Rest.MESSAGE, "Incorrect request.");
             Utils.sendError.call(requestWrapper, 400, json);
         }
 
@@ -132,22 +133,22 @@ public class AdminRestHolder implements PageHolder {
                 JSONObject json = new JSONObject(options);
 
                 final MyGroup group = new MyGroup();
-                if(json.has(Constants.REST.GROUP_ID)) group.setId(json.getString(Constants.REST.GROUP_ID));
-                if(json.has(Constants.DATABASE.OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(Constants.DATABASE.OPTION_REQUIRES_PASSWORD));
+                if(json.has(Rest.GROUP_ID)) group.setId(json.getString(Rest.GROUP_ID));
+                if(json.has(Firebase.OPTION_REQUIRES_PASSWORD)) group.setRequiresPassword(json.getBoolean(Firebase.OPTION_REQUIRES_PASSWORD));
                 if(json.has("password")) group.setPassword(json.get("password").toString());
-                if(json.has(Constants.DATABASE.OPTION_WELCOME_MESSAGE)) group.setWelcomeMessage(json.getString(Constants.DATABASE.OPTION_WELCOME_MESSAGE));
-                if(json.has(Constants.DATABASE.OPTION_PERSISTENT)) group.setPersistent(json.getBoolean(Constants.DATABASE.OPTION_PERSISTENT));
-                if(json.has(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)) {
+                if(json.has(Firebase.OPTION_WELCOME_MESSAGE)) group.setWelcomeMessage(json.getString(Firebase.OPTION_WELCOME_MESSAGE));
+                if(json.has(Firebase.OPTION_PERSISTENT)) group.setPersistent(json.getBoolean(Firebase.OPTION_PERSISTENT));
+                if(json.has(Firebase.OPTION_TIME_TO_LIVE_IF_EMPTY)) {
                     try {
-                        group.setTimeToLiveIfEmpty(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY)));
+                        group.setTimeToLiveIfEmpty(Integer.parseInt(json.getString(Firebase.OPTION_TIME_TO_LIVE_IF_EMPTY)));
                     } catch (Exception e) {
                         group.setTimeToLiveIfEmpty(15);
                     }
                 }
-                if(json.has(Constants.DATABASE.OPTION_DISMISS_INACTIVE)) group.setDismissInactive(json.getBoolean(Constants.DATABASE.OPTION_DISMISS_INACTIVE));
-                if(json.has(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)) {
+                if(json.has(Firebase.OPTION_DISMISS_INACTIVE)) group.setDismissInactive(json.getBoolean(Firebase.OPTION_DISMISS_INACTIVE));
+                if(json.has(Firebase.OPTION_DELAY_TO_DISMISS)) {
                     try {
-                        group.setDelayToDismiss(Integer.parseInt(json.getString(Constants.DATABASE.OPTION_DELAY_TO_DISMISS)));
+                        group.setDelayToDismiss(Integer.parseInt(json.getString(Firebase.OPTION_DELAY_TO_DISMISS)));
                     } catch(Exception e){
                         group.setDelayToDismiss(300);
                     }
@@ -206,9 +207,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "createGroupV1:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -225,7 +226,7 @@ public class AdminRestHolder implements PageHolder {
                 Common.log(LOG, "deleteGroupV1:", options);
 
                 JSONObject json = new JSONObject(options);
-                String groupId = json.getString(Constants.REST.GROUP_ID);
+                String groupId = json.getString(Rest.GROUP_ID);
 
                 Common.getInstance().getDataProcessor("v1").deleteGroup(groupId,new Runnable1<JSONObject>() {
                     @Override
@@ -245,9 +246,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "deleteGroupV1:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -264,8 +265,8 @@ public class AdminRestHolder implements PageHolder {
                 Common.log(LOG, "removeUserV1:", options);
 
                 JSONObject json = new JSONObject(options);
-                String groupId = json.getString(Constants.REST.GROUP_ID);
-                Long userNumber = Long.parseLong(json.get(Constants.REST.USER_NUMBER).toString());
+                String groupId = json.getString(Rest.GROUP_ID);
+                Long userNumber = Long.parseLong(json.get(Rest.USER_NUMBER).toString());
 
                 Common.getInstance().getDataProcessor("v1").removeUser(groupId,userNumber,new Runnable1<JSONObject>() {
                     @Override
@@ -285,9 +286,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "removeUserV1:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -304,8 +305,8 @@ public class AdminRestHolder implements PageHolder {
                 Common.log(LOG, "switchPropertyInGroupV1:", options);
 
                 JSONObject json = new JSONObject(options);
-                String groupId = json.getString(Constants.REST.GROUP_ID);
-                String property = json.getString(Constants.REST.PROPERTY);
+                String groupId = json.getString(Rest.GROUP_ID);
+                String property = json.getString(Rest.PROPERTY);
 
                 Common.getInstance().getDataProcessor("v1").switchPropertyInGroup(groupId,property,new Runnable1<JSONObject>() {
                     @Override
@@ -325,9 +326,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "switchPropertyInGroupV1:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -345,10 +346,10 @@ public class AdminRestHolder implements PageHolder {
                 Common.log(LOG, "switchPropertyForUserV1:", options);
 
                 JSONObject json = new JSONObject(options);
-                String groupId = json.getString(Constants.REST.GROUP_ID);
-                Long userNumber = Long.parseLong(json.getString(Constants.REST.USER_NUMBER));
-                String property = json.getString(Constants.REST.PROPERTY);
-                Boolean value = json.getBoolean(Constants.REST.VALUE);
+                String groupId = json.getString(Rest.GROUP_ID);
+                Long userNumber = Long.parseLong(json.getString(Rest.USER_NUMBER));
+                String property = json.getString(Rest.PROPERTY);
+                Boolean value = json.getBoolean(Rest.VALUE);
 
                 Common.getInstance().getDataProcessor("v1").switchPropertyForUser(groupId,userNumber,property,value,new Runnable1<JSONObject>() {
                     @Override
@@ -368,9 +369,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "switchPropertyForUserV1:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -386,9 +387,9 @@ public class AdminRestHolder implements PageHolder {
                 Common.log(LOG, "actionNotSupported:", requestWrapper.getRequestURI().getPath());
 
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Action not supported.");
-                json.put(Constants.REST.REQUEST, options);
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Action not supported.");
+                json.put(Rest.REQUEST, options);
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         }, new Runnable1<Exception>() {
@@ -397,9 +398,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "actionNotSupported:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -416,9 +417,9 @@ public class AdminRestHolder implements PageHolder {
                 Common.log(LOG, "modifyPropertyInGroupV1:", options);
 
                 JSONObject json = new JSONObject(options);
-                String groupId = json.getString(Constants.REST.GROUP_ID);
-                String property = json.getString(Constants.REST.PROPERTY);
-                String value = json.getString(Constants.REST.VALUE);
+                String groupId = json.getString(Rest.GROUP_ID);
+                String property = json.getString(Rest.PROPERTY);
+                String value = json.getString(Rest.VALUE);
 
                 Common.getInstance().getDataProcessor("v1").modifyPropertyInGroup(groupId,property,value,new Runnable1<JSONObject>() {
                     @Override
@@ -438,9 +439,9 @@ public class AdminRestHolder implements PageHolder {
             public void call(Exception e) {
                 Common.err(LOG, "modifyPropertyInGroupV1:", e);
                 JSONObject json = new JSONObject();
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Incorrect request.");
-                json.put(Constants.REST.REASON, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Incorrect request.");
+                json.put(Rest.REASON, e.getMessage());
                 Utils.sendError.call(requestWrapper, 400, json);
             }
         });
@@ -459,8 +460,8 @@ public class AdminRestHolder implements PageHolder {
             @Override
             public void call(JSONObject json) {
                 Common.err(LOG, "cleanStatMessagesV1:failed");
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, "Messages cleaning failed.");
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, "Messages cleaning failed.");
                 Utils.sendError.call(requestWrapper, 500, json);
             }
         });

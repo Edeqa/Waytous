@@ -7,8 +7,8 @@ import com.edeqa.waytousserver.servers.AbstractDataProcessor;
 
 import org.json.JSONObject;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_MESSAGE;
+import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
+import static com.edeqa.waytous.Constants.USER_MESSAGE;
 
 
 /**

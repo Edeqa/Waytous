@@ -1,8 +1,8 @@
 
 package com.edeqa.waytousserver.holders.admin;
 
+import com.edeqa.waytous.Mime;
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.interfaces.PageHolder;
@@ -18,7 +18,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.util.zip.GZIPOutputStream;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 
 
 /**
@@ -91,7 +91,7 @@ public class AdminLogsHolder implements PageHolder {
             byte[] bytes = "".getBytes();
 
             requestWrapper.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-            requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
+            requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Mime.TEXT_PLAIN);
             requestWrapper.sendResponseHeaders(200, bytes.length);
 
             OutputStream os = requestWrapper.getResponseBody();
@@ -111,8 +111,8 @@ public class AdminLogsHolder implements PageHolder {
 
             if(!file.exists()) {
                 Common.log(LOG,"File not found.");
-                requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
-                requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
+                requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Mime.TEXT_PLAIN);
+                requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Common.SERVER_BUILD);
                 requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
 
                 requestWrapper.sendResponseHeaders(500, 0);
@@ -127,8 +127,8 @@ public class AdminLogsHolder implements PageHolder {
 
 
             boolean gzip = true;
-            requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Constants.MIME.TEXT_PLAIN);
-            requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Constants.SERVER_BUILD);
+            requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, Mime.TEXT_PLAIN);
+            requestWrapper.setHeader(HttpHeaders.SERVER, "Waytous/"+ Common.SERVER_BUILD);
             requestWrapper.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
 
             if(gzip){

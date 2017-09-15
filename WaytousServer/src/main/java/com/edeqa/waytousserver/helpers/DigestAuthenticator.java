@@ -18,7 +18,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+
 
 @SuppressWarnings("restriction")
 public class DigestAuthenticator extends Authenticator {

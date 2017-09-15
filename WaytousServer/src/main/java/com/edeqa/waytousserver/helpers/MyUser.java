@@ -8,19 +8,19 @@ import org.json.JSONObject;
 import java.beans.Transient;
 import java.util.Date;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ACCURACY;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ALTITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_BEARING;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
-import static com.edeqa.waytousserver.helpers.Constants.USER_PROVIDER;
-import static com.edeqa.waytousserver.helpers.Constants.USER_SPEED;
+import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
+import static com.edeqa.waytous.Constants.REQUEST_MANUFACTURER;
+import static com.edeqa.waytous.Constants.REQUEST_MODEL;
+import static com.edeqa.waytous.Constants.REQUEST_OS;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.USER_ACCURACY;
+import static com.edeqa.waytous.Constants.USER_ALTITUDE;
+import static com.edeqa.waytous.Constants.USER_BEARING;
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
+import static com.edeqa.waytous.Constants.USER_SPEED;
 
 
 /**

@@ -6,9 +6,9 @@
 
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.SensitiveData;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
-import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 
 abstract public class AbstractServletHandler extends HttpServlet implements HttpHandler {
 

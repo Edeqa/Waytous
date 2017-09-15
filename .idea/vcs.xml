@@ -13,5 +13,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/EventBus" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/WaytousFramework" vcs="Git" />
   </component>
 </project>

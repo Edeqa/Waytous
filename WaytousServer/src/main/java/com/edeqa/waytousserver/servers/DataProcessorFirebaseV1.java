@@ -1,15 +1,16 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.Firebase;
+import com.edeqa.waytous.Rest;
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.TaskSingleValueEventFor;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
 import com.edeqa.waytousserver.interfaces.RequestHolder;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,28 +51,28 @@ import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_KEY;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_SIGN;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.REQUEST;
+import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
+import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
+import static com.edeqa.waytous.Constants.REQUEST_HASH;
+import static com.edeqa.waytous.Constants.REQUEST_JOIN_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_KEY;
+import static com.edeqa.waytous.Constants.REQUEST_MODEL;
+import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_OS;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytous.Constants.RESPONSE_CONTROL;
+import static com.edeqa.waytous.Constants.RESPONSE_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_SIGN;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.USER_NAME;
 
 
 /**
@@ -289,7 +290,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                             if (value == null) {
                                 dataSnapshot.getRef().push().setValue(user.getUid());
-                                requestDataPrivateTask[0].setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER)).start();
+                                requestDataPrivateTask[0].setRef(refGroup.child(Firebase.SECTION_USERS_ORDER)).start();
                                 return;
                             }
 
@@ -310,10 +311,10 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                 registerUser(groupId, user, REQUEST_JOIN_GROUP, null, null);
                             } else {
 //                                Common.log(LOG, "onMessage:newGroup:", "user not found adding:", user.getUid());
-                                ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).setValue(user.getUid());
-                                DatabaseReference nodeNumber = ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
+                                ref.child(Firebase.SECTION_GROUPS).child(groupId).setValue(user.getUid());
+                                DatabaseReference nodeNumber = ref.child(groupId).child(Firebase.SECTION_USERS_ORDER).push();
                                 nodeNumber.setValue(user.getUid());
-                                requestDataPrivateTask[0].setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER)).start();
+                                requestDataPrivateTask[0].setRef(refGroup.child(Firebase.SECTION_USERS_ORDER)).start();
                             }
                         }
                     });
@@ -341,7 +342,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                             e.printStackTrace();
                                         }
                                     } else { // join as new member
-                                        requestDataPrivateTask[0].setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_ORDER)).start();
+                                        requestDataPrivateTask[0].setRef(refGroup.child(Firebase.SECTION_USERS_ORDER)).start();
                                     }
                                 }
                             });
@@ -354,7 +355,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         String deviceId = request.getString(REQUEST_DEVICE_ID);
                                         final String uid = Utils.getEncryptedHash(deviceId);
 
-                                        numberForKeyTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(uid)).start();
+                                        numberForKeyTask.setRef(refGroup.child(Firebase.SECTION_USERS_KEYS).child(uid)).start();
                                     } else {
                                         rejectUser(response, conn, groupId, null, "This group is expired. (001)");
                                     }
@@ -363,7 +364,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                     if (request.has(REQUEST_DEVICE_ID)) {
                         Common.log(LOG, "onMessage:requestJoin:" + conn.getRemoteSocketAddress(), "{ groupId:" + groupId, "deviceId:" + request.getString(REQUEST_DEVICE_ID) + " }");
-                        groupOptionsTask.setRef(refGroup.child(Constants.DATABASE.SECTION_OPTIONS)).start();
+                        groupOptionsTask.setRef(refGroup.child(Firebase.SECTION_OPTIONS)).start();
                     } else {
                         CheckReq check = new CheckReq();
                         check.setControl(Utils.getUnique());
@@ -406,14 +407,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                 String customToken = createCustomToken(check.getUid());
 
                                                 Map<String, Object> update = new HashMap<>();
-                                                update.put(Constants.DATABASE.USER_ACTIVE, true);
-                                                update.put(Constants.DATABASE.USER_COLOR, Utils.selectColor((int) check.getNumber()));
-                                                update.put(Constants.DATABASE.USER_CHANGED, new Date().getTime());
+                                                update.put(Firebase.USER_ACTIVE, true);
+                                                update.put(Firebase.USER_COLOR, Utils.selectColor((int) check.getNumber()));
+                                                update.put(Firebase.USER_CHANGED, new Date().getTime());
                                                 if (check.getName() != null && check.getName().length() > 0) {
                                                     update.put(USER_NAME, check.getName());
                                                 }
 
-                                                Task<Void> updateUserTask = refGroup.child(Constants.DATABASE.SECTION_USERS_DATA).child("" + check.getNumber()).updateChildren(update);
+                                                Task<Void> updateUserTask = refGroup.child(Firebase.SECTION_USERS_DATA).child("" + check.getNumber()).updateChildren(update);
                                                 try {
                                                     Tasks.await(updateUserTask);
                                                     response.put(RESPONSE_STATUS, RESPONSE_STATUS_ACCEPTED);
@@ -456,7 +457,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         if (dataSnapshot.getValue() != null) {
                                             Common.log(LOG, "onMessage:joinNumberFound:" + conn.getRemoteSocketAddress(), "number:", dataSnapshot.getValue().toString());
                                             check.setNumber(Long.parseLong(dataSnapshot.getValue().toString()));
-                                            userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child(dataSnapshot.getValue().toString())).start();
+                                            userCheckTask.setRef(refGroup.child(Firebase.SECTION_USERS_DATA_PRIVATE).child(dataSnapshot.getValue().toString())).start();
 
                                         } else {
                                             Common.err(LOG, "onMessage:joinNumberNotFound:" + conn.getRemoteSocketAddress());
@@ -476,7 +477,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                     String calculatedHash = Utils.getEncryptedHash(check.getControl() + ":" + user.get(REQUEST_DEVICE_ID).toString());
                                                     if (calculatedHash.equals(hash)) {
                                                         check.setUid(user.get(REQUEST_KEY).toString());
-                                                        userGetNumberTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_KEYS).child(check.getUid())).start();
+                                                        userGetNumberTask.setRef(refGroup.child(Firebase.SECTION_USERS_KEYS).child(check.getUid())).start();
                                                         return;
                                                     }
                                                 }
@@ -496,19 +497,19 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                     public void call(DataSnapshot dataSnapshot) {
                                         if (check.getUid() != null) {
                                             if (dataSnapshot.getValue() != null) {
-                                                userCheckTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE).child("" + check.getNumber())).start();
+                                                userCheckTask.setRef(refGroup.child(Firebase.SECTION_USERS_DATA_PRIVATE).child("" + check.getNumber())).start();
                                             } else {
                                                 Common.err(LOG, "onMessage:joinUserNotExists:" + conn.getRemoteSocketAddress());
                                                 rejectUser(response, conn, check.getGroupId(), null, "This group is expired. (002)");
                                             }
                                         } else {
-                                            userSearchTask.setRef(refGroup.child(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE)).start();
+                                            userSearchTask.setRef(refGroup.child(Firebase.SECTION_USERS_DATA_PRIVATE)).start();
                                         }
                                     }
                                 });
 
 
-                        groupOptionsTask.setRef(refGroup.child(Constants.DATABASE.SECTION_OPTIONS)).start();
+                        groupOptionsTask.setRef(refGroup.child(Firebase.SECTION_OPTIONS)).start();
                     } else {
                         Common.err(LOG, "onMessage:joinNotAuthorized:" + conn.getRemoteSocketAddress());
                         rejectUser(response, conn, null, null, "Cannot join to group (user not authorized).");
@@ -541,33 +542,33 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
         Common.log(LOG, "New group ID:", group.getId());
 
-        new TaskSingleValueEventFor<DataSnapshot>(ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(Firebase.SECTION_GROUPS).child(group.getId()))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue() == null) {
                             Map<String, Object> childUpdates = new HashMap<>();
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_PERSISTENT, group.isPersistent());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DISMISS_INACTIVE, group.isDismissInactive());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
-                            childUpdates.put(Constants.DATABASE.SECTION_OPTIONS + "/"
-                                    + Constants.DATABASE.OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_WELCOME_MESSAGE, group.getWelcomeMessage());
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_REQUIRES_PASSWORD, group.isRequirePassword());
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_TIME_TO_LIVE_IF_EMPTY, group.getTimeToLiveIfEmpty());
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_PERSISTENT, group.isPersistent());
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_DISMISS_INACTIVE, group.isDismissInactive());
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_DELAY_TO_DISMISS, group.getDelayToDismiss());
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_DATE_CREATED, ServerValue.TIMESTAMP);
+                            childUpdates.put(Firebase.SECTION_OPTIONS + "/"
+                                    + Firebase.OPTION_DATE_CHANGED, ServerValue.TIMESTAMP);
                             ref.child(group.getId()).updateChildren(childUpdates);
-                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group.getId()).setValue(0);
+                            ref.child(Firebase.SECTION_GROUPS).child(group.getId()).setValue(0);
 
-                            json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
-                            json.put(Constants.REST.GROUP_ID, group.getId());
+                            json.put(Rest.STATUS, Rest.SUCCESS);
+                            json.put(Rest.GROUP_ID, group.getId());
 
                             Common.log(LOG, "createGroup:created:" + group.getId());
 
@@ -575,9 +576,9 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                             putStaticticsGroup(group.getId(), group.isPersistent(), GroupAction.GROUP_CREATED, null);
                         } else {
-                            json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                            json.put(Constants.REST.GROUP_ID, group.getId());
-                            json.put(Constants.REST.MESSAGE, "Group " + group.getId() + " already exists.");
+                            json.put(Rest.STATUS, Rest.ERROR);
+                            json.put(Rest.GROUP_ID, group.getId());
+                            json.put(Rest.MESSAGE, "Group " + group.getId() + " already exists.");
                             Common.err(LOG, "createGroup:alreadyExists:" + group.getId());
                             if (onerror != null) onerror.call(json);
                             putStaticticsGroup(group.getId(), group.isPersistent(), GroupAction.GROUP_REJECTED, "already exists");
@@ -591,25 +592,25 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void deleteGroup(final String groupId, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
         final JSONObject json = new JSONObject();
 
-        json.put(Constants.REST.GROUP_ID, groupId);
+        json.put(Rest.GROUP_ID, groupId);
 
         final OnFailureListener onFailureListener = new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, e.getMessage());
                 Common.err(LOG, "deleteGroup:" + groupId, "error:" + e.getMessage());
                 onerror.call(json);
             }
         };
 
-        Task<Void> deleteGroupTask = ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).removeValue();
+        Task<Void> deleteGroupTask = ref.child(Firebase.SECTION_GROUPS).child(groupId).removeValue();
         try {
             Tasks.await(deleteGroupTask);
 
             Task<Void> deleteGroupIdTask = ref.child(groupId).removeValue();
             Tasks.await(deleteGroupIdTask);
-            json.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+            json.put(Rest.STATUS, Rest.SUCCESS);
             Common.log(LOG, "deleteGroup:" + groupId);
             onsuccess.call(json);
 
@@ -625,30 +626,30 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void switchPropertyInGroup(final String groupId, final String property, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject res = new JSONObject();
-        res.put(Constants.REST.PROPERTY, property);
+        res.put(Rest.PROPERTY, property);
 
         final OnFailureListener onFailureListener = new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                res.put(Constants.REST.MESSAGE, e.getMessage());
+                res.put(Rest.STATUS, Rest.ERROR);
+                res.put(Rest.MESSAGE, e.getMessage());
                 Common.log(LOG, "switchPropertyInGroup:", property, e.getMessage());
                 onerror.call(res);
             }
         };
 
-        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Firebase.SECTION_OPTIONS).child(property))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         Boolean value = (Boolean) dataSnapshot.getValue();
                         if (value != null) {
-                            res.put(Constants.REST.OLD_VALUE, value);
+                            res.put(Rest.OLD_VALUE, value);
                             value = !value;
-                            ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property).setValue(value).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            ref.child(groupId).child(Firebase.SECTION_OPTIONS).child(property).setValue(value).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                                    res.put(Rest.STATUS, Rest.SUCCESS);
                                     onsuccess.call(res);
                                 }
                             }).addOnFailureListener(onFailureListener);
@@ -664,22 +665,22 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void modifyPropertyInGroup(final String groupId, final String property, final Serializable value, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject res = new JSONObject();
-        res.put(Constants.REST.PROPERTY, property);
-        res.put(Constants.REST.VALUE, value);
+        res.put(Rest.PROPERTY, property);
+        res.put(Rest.VALUE, value);
 
-        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Firebase.SECTION_OPTIONS).child(property))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         Serializable oldValue = (Serializable) dataSnapshot.getValue();
                         if (oldValue != null && value != null) {
-                            res.put(Constants.REST.OLD_VALUE, oldValue);
-                            ref.child(groupId).child(Constants.DATABASE.SECTION_OPTIONS).child(property).setValue(value);
-                            res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                            res.put(Rest.OLD_VALUE, oldValue);
+                            ref.child(groupId).child(Firebase.SECTION_OPTIONS).child(property).setValue(value);
+                            res.put(Rest.STATUS, Rest.SUCCESS);
                             onsuccess.call(res);
                         } else {
                             Common.err(LOG, "modifyPropertyInGroup:nullValue:", property);
-                            res.put(Constants.REST.STATUS, Constants.REST.ERROR);
+                            res.put(Rest.STATUS, Rest.ERROR);
                             onerror.call(res);
                         }
                     }
@@ -692,8 +693,8 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         final JSONObject response = new JSONObject();
 
         if(REQUEST_NEW_GROUP.equals(action)) {
-            ref.child(Constants.DATABASE.SECTION_GROUPS).child(groupId).setValue(user.getUid());
-            DatabaseReference nodeNumber = ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_ORDER).push();
+            ref.child(Firebase.SECTION_GROUPS).child(groupId).setValue(user.getUid());
+            DatabaseReference nodeNumber = ref.child(groupId).child(Firebase.SECTION_USERS_ORDER).push();
             nodeNumber.setValue(user.getUid());
         }
 
@@ -704,14 +705,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         final Map<String, Object> childUpdates = new HashMap<>();
 
         Map<String, Object> o = new HashMap<>();
-        o.put(Constants.DATABASE.USER_COLOR, user.getColor());
-        o.put(Constants.DATABASE.USER_NAME, user.getName());
+        o.put(Firebase.USER_COLOR, user.getColor());
+        o.put(Firebase.USER_NAME, user.getName());
         if(!user.getDeviceId().startsWith("server:")) {
-            o.put(Constants.DATABASE.USER_ACTIVE, true);
+            o.put(Firebase.USER_ACTIVE, true);
         }
-        o.put(Constants.DATABASE.USER_CREATED, user.getCreated());
-        o.put(Constants.DATABASE.USER_CHANGED, ServerValue.TIMESTAMP);
-        childUpdates.put(Constants.DATABASE.SECTION_USERS_DATA + "/" + user.getNumber(), o);
+        o.put(Firebase.USER_CREATED, user.getCreated());
+        o.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
+        childUpdates.put(Firebase.SECTION_USERS_DATA + "/" + user.getNumber(), o);
 
         o = new HashMap<>();
 
@@ -720,15 +721,15 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         o.put(REQUEST_DEVICE_ID, user.getDeviceId());
         o.put(REQUEST_OS, user.getOs());
         o.put(REQUEST_KEY, uid);
-        childUpdates.put(Constants.DATABASE.SECTION_USERS_DATA_PRIVATE + "/" + user.getNumber(), o);
+        childUpdates.put(Firebase.SECTION_USERS_DATA_PRIVATE + "/" + user.getNumber(), o);
 
         for (Map.Entry<String, RequestHolder> entry : requestHolders.entrySet()) {
             if (entry.getValue().isSaveable()) {
-                childUpdates.put(Constants.DATABASE.SECTION_PUBLIC + "/" + entry.getKey() + "/" + user.getNumber(), "{}");
+                childUpdates.put(Firebase.SECTION_PUBLIC + "/" + entry.getKey() + "/" + user.getNumber(), "{}");
             }
         }
 
-        childUpdates.put(Constants.DATABASE.SECTION_USERS_KEYS + "/" + uid, user.getNumber());
+        childUpdates.put(Firebase.SECTION_USERS_KEYS + "/" + uid, user.getNumber());
 
         final Task<Void> updateUserTask = ref.child(groupId).updateChildren(childUpdates);
         try {
@@ -799,14 +800,14 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         final JSONObject json = new JSONObject();
 //        final String user = String.valueOf(userNumber);
 
-        json.put(Constants.REST.GROUP_ID, groupId);
-        json.put(Constants.REST.USER_NUMBER, userNumber);
+        json.put(Rest.GROUP_ID, groupId);
+        json.put(Rest.USER_NUMBER, userNumber);
 
         final OnFailureListener onFailureListener = new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                json.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                json.put(Constants.REST.MESSAGE, e.getMessage());
+                json.put(Rest.STATUS, Rest.ERROR);
+                json.put(Rest.MESSAGE, e.getMessage());
                 Common.err(LOG, "removeUser:" + userNumber, "group:" + groupId, "error:" + e.getMessage());
                 onerror.call(json);
             }
@@ -851,31 +852,31 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
     public void switchPropertyForUser(final String groupId, final Long userNumber, final String property, final Boolean value, final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
 
         final JSONObject res = new JSONObject();
-        res.put(Constants.REST.PROPERTY, property);
+        res.put(Rest.PROPERTY, property);
 
         final OnFailureListener onFailureListener = new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                res.put(Constants.REST.MESSAGE, e.getMessage());
+                res.put(Rest.STATUS, Rest.ERROR);
+                res.put(Rest.MESSAGE, e.getMessage());
                 Common.log(LOG, "switchPropertyForUser:", property, e.getMessage());
                 onerror.call(res);
             }
         };
 
-        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property))
+        new TaskSingleValueEventFor<DataSnapshot>(ref.child(groupId).child(Firebase.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property))
                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                     @Override
                     public void call(DataSnapshot dataSnapshot) {
                         Boolean oldValue = (Boolean) dataSnapshot.getValue();
                         if (oldValue != null) {
-                            res.put(Constants.REST.OLD_VALUE, oldValue);
+                            res.put(Rest.OLD_VALUE, oldValue);
                             Boolean newValue = !oldValue;
                             if (value != null) newValue = value;
-                            ref.child(groupId).child(Constants.DATABASE.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).setValue(newValue).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            ref.child(groupId).child(Firebase.SECTION_USERS_DATA).child(String.valueOf(userNumber)).child(property).setValue(newValue).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                                    res.put(Rest.STATUS, Rest.SUCCESS);
                                     onsuccess.call(res);
                                 }
                             }).addOnFailureListener(onFailureListener);
@@ -901,7 +902,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                             continue;
                         }
 
-                        new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Constants.DATABASE.SECTION_OPTIONS))
+                        new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Firebase.SECTION_OPTIONS))
                                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                     @Override
                                     public void call(DataSnapshot dataSnapshot) {
@@ -911,7 +912,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
                                         if (value == null) {
                                             Common.log(LOG, "--- corrupted group detected, removing ----- 1"); //TODO
-                                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                            ref.child(Firebase.SECTION_GROUPS).child(group).removeValue();
                                             ref.child(group).removeValue();
                                             putStaticticsGroup(group, false, GroupAction.GROUP_DELETED, "corrupted group detected, removing ----- 1");
                                             return;
@@ -924,26 +925,26 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                         final long timeToLiveIfEmpty;
 
 
-                                        Object object = value.get(Constants.DATABASE.OPTION_REQUIRES_PASSWORD);
+                                        Object object = value.get(Firebase.OPTION_REQUIRES_PASSWORD);
                                         requiresPassword = object != null && (boolean) object;
 
-                                        object = value.get(Constants.DATABASE.OPTION_DISMISS_INACTIVE);
+                                        object = value.get(Firebase.OPTION_DISMISS_INACTIVE);
                                         dismissInactive = object != null && (boolean) object;
 
-                                        object = value.get(Constants.DATABASE.OPTION_PERSISTENT);
+                                        object = value.get(Firebase.OPTION_PERSISTENT);
                                         persistent = object != null && (boolean) object;
 
-                                        object = value.get(Constants.DATABASE.OPTION_DELAY_TO_DISMISS);
+                                        object = value.get(Firebase.OPTION_DELAY_TO_DISMISS);
                                         if (object != null)
                                             delayToDismiss = Long.parseLong("0" + object.toString());
                                         else delayToDismiss = 0;
 
-                                        object = value.get(Constants.DATABASE.OPTION_TIME_TO_LIVE_IF_EMPTY);
+                                        object = value.get(Firebase.OPTION_TIME_TO_LIVE_IF_EMPTY);
                                         if (object != null)
                                             timeToLiveIfEmpty = Long.parseLong("0" + object.toString());
                                         else timeToLiveIfEmpty = 0;
 
-                                        new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Constants.DATABASE.SECTION_USERS_DATA))
+                                        new TaskSingleValueEventFor<DataSnapshot>(ref.child(group).child(Firebase.SECTION_USERS_DATA))
                                                 .addOnCompleteListener(new Runnable1<DataSnapshot>() {
                                                     @Override
                                                     public void call(DataSnapshot dataSnapshot) {
@@ -958,7 +959,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                         }
                                                         if (users == null) {
                                                             Common.log(LOG, "--- corrupted group detected, removing: ----- 2"); //TODO
-                                                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                                            ref.child(Firebase.SECTION_GROUPS).child(group).removeValue();
                                                             ref.child(group).removeValue();
                                                             putStaticticsGroup(group, false, GroupAction.GROUP_DELETED, "corrupted group detected, removing: ----- 2");
                                                             return;
@@ -969,12 +970,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                             Map<String, Serializable> user = users.get(i);
                                                             if (user == null) continue;
 
-                                                            String name = (String) user.get(Constants.DATABASE.USER_NAME);
-                                                            Long changed = (Long) user.get(Constants.DATABASE.USER_CHANGED);
+                                                            String name = (String) user.get(Firebase.USER_NAME);
+                                                            Long changed = (Long) user.get(Firebase.USER_CHANGED);
                                                             if (changed != null && changed > groupChanged)
                                                                 groupChanged = changed;
                                                             boolean active = false;
-                                                            Object object = user.get(Constants.DATABASE.USER_ACTIVE);
+                                                            Object object = user.get(Firebase.USER_ACTIVE);
                                                             if (object != null) {
                                                                 active = (Boolean) object;
                                                             }
@@ -985,12 +986,12 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                                 Long current = new Date().getTime();
                                                                 if (changed == null) {
                                                                     Common.log(LOG, "--- user:", i, "name:", name, "is NULL");
-                                                                    dataSnapshot.getRef().child("" + i).child(Constants.DATABASE.USER_ACTIVE).setValue(false);
+                                                                    dataSnapshot.getRef().child("" + i).child(Firebase.USER_ACTIVE).setValue(false);
                                                                 } else if (current - delayToDismiss * 1000 > changed) {
                                                                     Common.log(LOG, "--- user:", i, "name:", name, "is EXPIRED for", ((current - delayToDismiss * 1000 - changed) / 1000), "seconds");
-                                                                    dataSnapshot.getRef().child("" + i).child(Constants.DATABASE.USER_ACTIVE).setValue(false);
+                                                                    dataSnapshot.getRef().child("" + i).child(Firebase.USER_ACTIVE).setValue(false);
                                                                 } else {
-                                                                    dataSnapshot.getRef().getParent().getParent().child(Constants.DATABASE.SECTION_OPTIONS).child(Constants.DATABASE.OPTION_DATE_CHANGED).setValue(changed);
+                                                                    dataSnapshot.getRef().getParent().getParent().child(Firebase.SECTION_OPTIONS).child(Firebase.OPTION_DATE_CHANGED).setValue(changed);
                                                                     Common.log(LOG, "--- user:", i, "name:", name, "is OK");
                                                                 }
                                                             }
@@ -999,7 +1000,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
                                                         if (!persistent && timeToLiveIfEmpty > 0 && new Date().getTime() - groupChanged > timeToLiveIfEmpty * 60 * 1000) {
                                                             String info = group + " expired for " + ((new Date().getTime() - groupChanged - timeToLiveIfEmpty * 60 * 1000) / 1000 / 60) + " minutes";
                                                             Common.log(LOG, "--- removing group " + info);
-                                                            ref.child(Constants.DATABASE.SECTION_GROUPS).child(group).removeValue();
+                                                            ref.child(Firebase.SECTION_GROUPS).child(group).removeValue();
                                                             ref.child(group).removeValue();
                                                             putStaticticsGroup(group, false, GroupAction.GROUP_DELETED, info);
                                                         }
@@ -1176,26 +1177,26 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         Calendar cal = Calendar.getInstance();
         String today = String.format("%04d-%02d-%02d", cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,cal.get(Calendar.DAY_OF_MONTH));
 
-        referenceTotal = ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_TOTAL);
-        referenceToday = ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_BY_DATE).child(today);
+        referenceTotal = ref.child(Firebase.SECTION_STAT).child(Firebase.STAT_TOTAL);
+        referenceToday = ref.child(Firebase.SECTION_STAT).child(Firebase.STAT_BY_DATE).child(today);
 
         switch(action) {
             case GROUP_CREATED:
                 if(isPersistent) {
-                    referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_GROUPS_CREATED_PERSISTENT);
-                    referenceToday = referenceToday.child(Constants.DATABASE.STAT_GROUPS_CREATED_PERSISTENT);
+                    referenceTotal = referenceTotal.child(Firebase.STAT_GROUPS_CREATED_PERSISTENT);
+                    referenceToday = referenceToday.child(Firebase.STAT_GROUPS_CREATED_PERSISTENT);
                 } else {
-                    referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_GROUPS_CREATED_TEMPORARY);
-                    referenceToday = referenceToday.child(Constants.DATABASE.STAT_GROUPS_CREATED_TEMPORARY);
+                    referenceTotal = referenceTotal.child(Firebase.STAT_GROUPS_CREATED_TEMPORARY);
+                    referenceToday = referenceToday.child(Firebase.STAT_GROUPS_CREATED_TEMPORARY);
                 }
                 break;
             case GROUP_DELETED:
-                referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_GROUPS_DELETED);
-                referenceToday = referenceToday.child(Constants.DATABASE.STAT_GROUPS_DELETED);
+                referenceTotal = referenceTotal.child(Firebase.STAT_GROUPS_DELETED);
+                referenceToday = referenceToday.child(Firebase.STAT_GROUPS_DELETED);
                 break;
             case GROUP_REJECTED:
-                referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_GROUPS_REJECTED);
-                referenceToday = referenceToday.child(Constants.DATABASE.STAT_GROUPS_REJECTED);
+                referenceTotal = referenceTotal.child(Firebase.STAT_GROUPS_REJECTED);
+                referenceToday = referenceToday.child(Firebase.STAT_GROUPS_REJECTED);
                 break;
         }
 
@@ -1217,20 +1218,20 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         Calendar cal = Calendar.getInstance();
         String today = String.format("%04d-%02d-%02d", cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,cal.get(Calendar.DAY_OF_MONTH));
 
-        referenceTotal = ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_TOTAL);
-        referenceToday = ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_BY_DATE).child(today);
+        referenceTotal = ref.child(Firebase.SECTION_STAT).child(Firebase.STAT_TOTAL);
+        referenceToday = ref.child(Firebase.SECTION_STAT).child(Firebase.STAT_BY_DATE).child(today);
         switch(action) {
             case USER_JOINED:
-                referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_USERS_JOINED);
-                referenceToday = referenceToday.child(Constants.DATABASE.STAT_USERS_JOINED);
+                referenceTotal = referenceTotal.child(Firebase.STAT_USERS_JOINED);
+                referenceToday = referenceToday.child(Firebase.STAT_USERS_JOINED);
                 break;
             case USER_RECONNECTED:
-                referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_USERS_RECONNECTED);
-                referenceToday = referenceToday.child(Constants.DATABASE.STAT_USERS_RECONNECTED);
+                referenceTotal = referenceTotal.child(Firebase.STAT_USERS_RECONNECTED);
+                referenceToday = referenceToday.child(Firebase.STAT_USERS_RECONNECTED);
                 break;
             case USER_REJECTED:
-                referenceTotal = referenceTotal.child(Constants.DATABASE.STAT_USERS_REJECTED);
-                referenceToday = referenceToday.child(Constants.DATABASE.STAT_USERS_REJECTED);
+                referenceTotal = referenceTotal.child(Firebase.STAT_USERS_REJECTED);
+                referenceToday = referenceToday.child(Firebase.STAT_USERS_REJECTED);
                 break;
         }
 
@@ -1255,7 +1256,7 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
             map = new HashMap<>();
         }
         map.put("message", message);
-        ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_MESSAGES).child(today).setValue(map);
+        ref.child(Firebase.SECTION_STAT).child(Firebase.STAT_MESSAGES).child(today).setValue(map);
     }
 
 
@@ -1264,18 +1265,18 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
 
         final JSONObject res = new JSONObject();
 
-        ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_MESSAGES).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+        ref.child(Firebase.SECTION_STAT).child(Firebase.STAT_MESSAGES).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void result) {
-                res.put(Constants.REST.STATUS, Constants.REST.SUCCESS);
+                res.put(Rest.STATUS, Rest.SUCCESS);
                 Common.log(LOG, "cleanStatisticsMessages:done");
                 onsuccess.call(res);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                res.put(Constants.REST.STATUS, Constants.REST.ERROR);
-                res.put(Constants.REST.MESSAGE, e.getMessage());
+                res.put(Rest.STATUS, Rest.ERROR);
+                res.put(Rest.MESSAGE, e.getMessage());
                 Common.err(LOG, "cleanStatisticsMessages:failed", e.getMessage());
                 onerror.call(res);
             }

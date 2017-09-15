@@ -1,8 +1,8 @@
 package com.edeqa.waytousserver;
 
+import com.edeqa.waytous.SensitiveData;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.DigestAuthenticator;
-import com.edeqa.waytousserver.helpers.SensitiveData;
 import com.edeqa.waytousserver.servers.AdminServletHandler;
 import com.edeqa.waytousserver.servers.DataProcessorFirebaseV1;
 import com.edeqa.waytousserver.servers.MainServletHandler;
@@ -32,8 +32,8 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytousserver.helpers.Common.SERVER_BUILD;
 
 
 /**

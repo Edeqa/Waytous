@@ -7,12 +7,12 @@ import com.edeqa.waytousserver.servers.AbstractDataProcessor;
 
 import org.json.JSONObject;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_SAVED_LOCATION;
-import static com.edeqa.waytousserver.helpers.Constants.USER_ADDRESS;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DESCRIPTION;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LATITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_LONGITUDE;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.REQUEST_SAVED_LOCATION;
+import static com.edeqa.waytous.Constants.USER_ADDRESS;
+import static com.edeqa.waytous.Constants.USER_DESCRIPTION;
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_NAME;
 
 
 /**

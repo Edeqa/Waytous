@@ -1,6 +1,6 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.interfaces.Runnable1;
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 
 /**
  * Created 6/13/2017.

@@ -1,7 +1,7 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.Mime;
 import com.edeqa.waytousserver.helpers.Common;
-import com.edeqa.waytousserver.helpers.Constants;
 import com.edeqa.waytousserver.helpers.HtmlGenerator;
 import com.edeqa.waytousserver.helpers.RequestWrapper;
 import com.edeqa.waytousserver.helpers.Utils;
@@ -20,8 +20,8 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
-import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytousserver.helpers.Common.SERVER_BUILD;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SCRIPT;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SRC;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.TITLE;
@@ -106,7 +106,7 @@ public class AdminServletHandler extends AbstractServletHandler {
                     html.getHead().add(SCRIPT).with("data", o);
                     html.getHead().add(SCRIPT).with(SRC, "/js/admin/Main.js");
 
-                    Utils.sendResult.call(requestWrapper, 200, Constants.MIME.TEXT_HTML, html.build().getBytes());
+                    Utils.sendResult.call(requestWrapper, 200, Mime.TEXT_HTML, html.build().getBytes());
 
                 } catch (Exception e) {
                     e.printStackTrace();

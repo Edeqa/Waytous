@@ -1,1 +1,1 @@
-include ':app', ':WaytousServer', ':EventBus'
+include ':app', ':WaytousServer', ':EventBus', ':WaytousFramework'

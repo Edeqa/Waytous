@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_LEAVE;
+import static com.edeqa.waytous.Constants.REQUEST_LEAVE;
 
 
 /**

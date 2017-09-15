@@ -1,12 +1,12 @@
 package com.edeqa.waytousserver.servers;
 
+import com.edeqa.waytous.interfaces.Runnable1;
 import com.edeqa.waytousserver.helpers.CheckReq;
 import com.edeqa.waytousserver.helpers.Common;
 import com.edeqa.waytousserver.helpers.MyGroup;
 import com.edeqa.waytousserver.helpers.MyUser;
 import com.edeqa.waytousserver.helpers.Utils;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
-import com.edeqa.waytousserver.interfaces.Runnable1;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,33 +20,33 @@ import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.LIFETIME_INACTIVE_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_CHECK_USER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_DEVICE_ID;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_HASH;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_JOIN_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MANUFACTURER;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_MODEL;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_NEW_GROUP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_OS;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_CONTROL;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_MESSAGE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_PRIVATE;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_CHECK;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytousserver.helpers.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytousserver.helpers.Constants.USER_COLOR;
-import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
-import static com.edeqa.waytousserver.helpers.Constants.USER_NAME;
+import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_GROUP;
+import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_USER;
+import static com.edeqa.waytous.Constants.REQUEST;
+import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
+import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
+import static com.edeqa.waytous.Constants.REQUEST_HASH;
+import static com.edeqa.waytous.Constants.REQUEST_JOIN_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_MANUFACTURER;
+import static com.edeqa.waytous.Constants.REQUEST_MODEL;
+import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
+import static com.edeqa.waytous.Constants.REQUEST_OS;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytous.Constants.RESPONSE_CONTROL;
+import static com.edeqa.waytous.Constants.RESPONSE_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
+import static com.edeqa.waytous.Constants.RESPONSE_PRIVATE;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
+import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
+import static com.edeqa.waytous.Constants.USER_COLOR;
+import static com.edeqa.waytous.Constants.USER_DISMISSED;
+import static com.edeqa.waytous.Constants.USER_JOINED;
+import static com.edeqa.waytous.Constants.USER_NAME;
 
 /**
  * Created 10/5/16.

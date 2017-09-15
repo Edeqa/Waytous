@@ -1,7 +1,7 @@
 package com.edeqa.waytousserver.helpers;
 
+import com.edeqa.waytous.Mime;
 import com.edeqa.waytousserver.interfaces.DataProcessorConnection;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.net.InetSocketAddress;
 
@@ -28,7 +28,7 @@ public class HttpDPConnection implements DataProcessorConnection {
 
     @Override
     public void send(String string) {
-        Utils.sendResult.call(requestWrapper, 200, Constants.MIME.APPLICATION_JSON, string.getBytes());
+        Utils.sendResult.call(requestWrapper, 200, Mime.APPLICATION_JSON, string.getBytes());
     }
 
     @Override

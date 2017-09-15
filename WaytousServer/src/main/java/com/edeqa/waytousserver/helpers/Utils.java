@@ -1,8 +1,9 @@
 package com.edeqa.waytousserver.helpers;
 
-import com.edeqa.waytousserver.interfaces.Runnable2;
-import com.edeqa.waytousserver.interfaces.Runnable3;
-import com.edeqa.waytousserver.interfaces.Runnable4;
+import com.edeqa.waytous.Mime;
+import com.edeqa.waytous.interfaces.Runnable2;
+import com.edeqa.waytous.interfaces.Runnable3;
+import com.edeqa.waytous.interfaces.Runnable4;
 import com.google.common.net.HttpHeaders;
 
 import org.json.JSONObject;
@@ -25,7 +26,7 @@ import java.util.Random;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytousserver.helpers.Common.SERVER_BUILD;
 
 /**
  * Created 10/8/16.
@@ -198,14 +199,14 @@ public class Utils {
     public static final Runnable2<RequestWrapper,JSONObject> sendResultJson = new Runnable2<RequestWrapper,JSONObject>() {
         @Override
         public void call(RequestWrapper requestWrapper, JSONObject json) {
-            sendResult.call(requestWrapper, 200, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
+            sendResult.call(requestWrapper, 200, Mime.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 
     public static final Runnable3<RequestWrapper,Integer,JSONObject> sendError = new Runnable3<RequestWrapper,Integer,JSONObject>() {
         @Override
         public void call(RequestWrapper requestWrapper, Integer code, JSONObject json) {
-            sendResult.call(requestWrapper, code, Constants.MIME.APPLICATION_JSON, json.toString().getBytes());
+            sendResult.call(requestWrapper, code, Mime.APPLICATION_JSON, json.toString().getBytes());
         }
     };
 

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 
 
 /**
@@ -22,6 +22,9 @@ import static com.edeqa.waytousserver.helpers.Constants.SENSITIVE;
  */
 
 public class Common {
+
+    public final static int SERVER_BUILD = 41;
+
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z", Locale.getDefault());
 //    volatile private static PrintWriter out;

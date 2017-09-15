@@ -7,7 +7,7 @@ import com.edeqa.waytousserver.servers.AbstractDataProcessor;
 
 import org.json.JSONObject;
 
-import static com.edeqa.waytousserver.helpers.Constants.REQUEST_ADMIN;
+import static com.edeqa.waytous.Constants.REQUEST_ADMIN;
 
 
 /**

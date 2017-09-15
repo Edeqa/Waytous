@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.edeqa.waytousserver.helpers.Constants.SERVER_BUILD;
+import static com.edeqa.waytousserver.helpers.Common.SERVER_BUILD;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.CLASS;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.DIV;
 import static com.edeqa.waytousserver.helpers.HtmlGenerator.SCRIPT;
