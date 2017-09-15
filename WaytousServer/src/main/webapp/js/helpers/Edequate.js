@@ -365,20 +365,20 @@ function Edequate(options) {
                     var value = args.shift();
                     var tokens = pattern.match(/^%(0)?([\d\.]*)(.)$/);
                     switch(tokens[3]) {
-                    case "d":
-                        var length = +tokens[2];
-                        var string = value.toString();
-                        if(length > string.length) {
-                            tokens[1] = tokens[1] || " ";
-                            value = tokens[1].repeat(length - string.length) + string;
-                        }
-                        break;
-                    case "f":
-                        break;
-                    case "s":
-                        break;
-                    default:
-                        console.error("Unknown pattern: " + tokens[0]);
+                        case "d":
+                            var length = +tokens[2];
+                            var string = value.toString();
+                            if(length > string.length) {
+                                tokens[1] = tokens[1] || " ";
+                                value = tokens[1].repeat(length - string.length) + string;
+                            }
+                            break;
+                        case "f":
+                            break;
+                        case "s":
+                            break;
+                        default:
+                            console.error("Unknown pattern: " + tokens[0]);
                     }
                     return value;
                 });
@@ -656,10 +656,10 @@ function Edequate(options) {
     function _parse(key, value) {
         if (typeof value === "string" && /^function.*?\([\s\S]*?\)\s*\{[\s\S]*\}[\s\S]*$/.test(value)) {
             var args = value
-                        .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
-                        .match(/\([\s\S]*?\)/m)[0]                      //find argument list
-                        .replace(/^\(|\)$/g, "")                    //remove parens
-                        .match(/[^\s(),]+/g) || [],                //find arguments
+                    .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, "") //strip comments
+                    .match(/\([\s\S]*?\)/m)[0]                      //find argument list
+                    .replace(/^\(|\)$/g, "")                    //remove parens
+                    .match(/[^\s(),]+/g) || [],                //find arguments
                 body = value.replace(/\n/mg, "").match(/\{([\s\S]*)\}/)[1]          //extract body between curlies
             return Function.apply(0, args.concat(body));
         } else {
@@ -1355,39 +1355,39 @@ function Edequate(options) {
     }
     this.dialog = dialog;
 
-/*
-    function sprintf() {
-        var a = this, b;
-        if(arguments[0].constructor === Array || arguments[0].constructor === Object) {
-            arguments = arguments[0];
-        }
-        var args = [];
-        for(var i = 0; i < arguments.length; i++) {
-            args.push(arguments[i]);
-        }
-        return this.replace(/%[\d\.]*[sdf]/g, function(pattern){
-            var value = args.shift();
-            var tokens = pattern.match(/^%(0)?([\d\.]*)(.)$/);
-            switch(tokens[3]) {
-            case "d":
-                if(tokens[1] == "0") {
-                    var length = +tokens[2];
-                    var string = value.toString();
-                    value = "0".repeat(length - string.length) + string;
-                }
-                break;
-            case "f":
-                break;
-            case "s":
-                break;
-            default:
-                console.error("Unknown pattern: " + tokens[0]);
+    /*
+        function sprintf() {
+            var a = this, b;
+            if(arguments[0].constructor === Array || arguments[0].constructor === Object) {
+                arguments = arguments[0];
             }
-            return value;
-        });
-    }
-    this.sprintf = sprintf;
-*/
+            var args = [];
+            for(var i = 0; i < arguments.length; i++) {
+                args.push(arguments[i]);
+            }
+            return this.replace(/%[\d\.]*[sdf]/g, function(pattern){
+                var value = args.shift();
+                var tokens = pattern.match(/^%(0)?([\d\.]*)(.)$/);
+                switch(tokens[3]) {
+                case "d":
+                    if(tokens[1] == "0") {
+                        var length = +tokens[2];
+                        var string = value.toString();
+                        value = "0".repeat(length - string.length) + string;
+                    }
+                    break;
+                case "f":
+                    break;
+                case "s":
+                    break;
+                default:
+                    console.error("Unknown pattern: " + tokens[0]);
+                }
+                return value;
+            });
+        }
+        this.sprintf = sprintf;
+    */
 
     function cloneAsObject(object) {
         var o = {};
@@ -1410,8 +1410,8 @@ function Edequate(options) {
                 Object.defineProperty(lang, string, {
                     get: function() {
                         lang.$nodes[string] = lang.$nodes[string] || create(HTML.SPAN, {
-                                dataLang: string
-                            });
+                            dataLang: string
+                        });
                         var a = lang.$nodes[string].cloneNode();
                         a.format = function() {
                             lang.$arguments[this.dataset.lang] = arguments;
@@ -2323,13 +2323,13 @@ function Edequate(options) {
     var loadingHolder;
     function loading(progress) {
         loadingHolder = loadingHolder || create("div", {style:{
-                position: "fixed", top: 0, bottom: 0, left: 0, right: 0,
-                zIndex: 10000, backgroundColor: "white", display: "flex", flexDirection: "column",
-                justifyContent: "center", alignItems: "center", fontFamily: "sans-serif"
-            }}, document.body)
-                .place(HTML.DIV, {className:"loading-progress-circle"})
-                .place(HTML.DIV, {className:"loading-progress-title", innerHTML: "Loading, please wait... "})
-                .place(HTML.DIV, {className:"loading-progress-subtitle hidden"});
+            position: "fixed", top: 0, bottom: 0, left: 0, right: 0,
+            zIndex: 10000, backgroundColor: "white", display: "flex", flexDirection: "column",
+            justifyContent: "center", alignItems: "center", fontFamily: "sans-serif"
+        }}, document.body)
+            .place(HTML.DIV, {className:"loading-progress-circle"})
+            .place(HTML.DIV, {className:"loading-progress-title", innerHTML: "Loading, please wait... "})
+            .place(HTML.DIV, {className:"loading-progress-subtitle hidden"});
         if(progress) {
             lang.updateNode(loadingHolder.lastChild, progress);
             loadingHolder.lastChild.show();
@@ -2366,12 +2366,12 @@ function Edequate(options) {
         appendTo = appendTo || document.body;
 
         progressHolder = progressHolder || dialog({
-                className: "progress-dialog" + (options.className ? " "+options.className : ""),
-                items: [
-                    { type: HTML.DIV, className: "progress-dialog-circle" },
-                    { type: HTML.DIV, className: "progress-dialog-title" },
-                ]
-            }, appendTo)
+            className: "progress-dialog" + (options.className ? " "+options.className : ""),
+            items: [
+                { type: HTML.DIV, className: "progress-dialog-circle" },
+                { type: HTML.DIV, className: "progress-dialog-title" },
+            ]
+        }, appendTo)
 //        progress.show(options.label);
     }
     Progress.prototype.show = function(label) {

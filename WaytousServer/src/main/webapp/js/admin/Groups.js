@@ -187,8 +187,8 @@ function Groups() {
                 }
             }
             u.toast.show("Group "+data.key+" was removed.");
-             updateTableSummary()
-       }, function(error){
+            updateTableSummary()
+        }, function(error){
             console.error("REMOVED",error);
 
         })
@@ -203,14 +203,14 @@ function Groups() {
         u.clear(buttons);
         u.create({className:"question", innerHTML: "This will immediately check for expired users and groups. Options for each group are important. Continue?"}, buttons);
         u.create(HTML.BUTTON,{ className:"question", innerHTML:"Yes", onclick: function() {
-           renderButtons(buttons);
-           u.toast.show("Groups clean is performing.");
-           u.get("/admin/rest/v1/groups/clean")
-            .then(function(xhr){
-            }).catch(function(code,xhr){
-               var res = JSON.parse(xhr.responseText) || {};
-               u.toast.show(res.message || xhr.statusText);
-             });
+            renderButtons(buttons);
+            u.toast.show("Groups clean is performing.");
+            u.get("/admin/rest/v1/groups/clean")
+                .then(function(xhr){
+                }).catch(function(code,xhr){
+                var res = JSON.parse(xhr.responseText) || {};
+                u.toast.show(res.message || xhr.statusText);
+            });
         }}, buttons);
         u.create(HTML.BUTTON,{ innerHTML:"No", onclick: function(){
             renderButtons(buttons);

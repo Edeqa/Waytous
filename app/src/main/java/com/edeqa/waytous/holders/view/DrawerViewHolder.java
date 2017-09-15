@@ -131,7 +131,6 @@ public class DrawerViewHolder extends AbstractViewHolder {
 
     @Override
     public boolean onEvent(String event, Object object) {
-        System.out.println("EVENT:"+event);
         switch(event){
             case ACTIVITY_RESUME:
                 State.getInstance().fire(CREATE_DRAWER, itemsHolder);

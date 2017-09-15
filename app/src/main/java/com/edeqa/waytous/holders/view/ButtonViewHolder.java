@@ -48,6 +48,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
+import static com.edeqa.waytous.holders.view.CameraViewHolder.CAMERA_UPDATED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_DISMISSED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_JOINED;
 import static com.edeqa.waytousserver.helpers.Constants.USER_NUMBER;
@@ -94,6 +95,11 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     show();
                 } else if(State.getInstance().tracking_disabled()) {
                     hide();
+                }
+                break;
+            case CAMERA_UPDATED:
+                if(State.getInstance().getUsers().getCountActiveTotal() > 1) {
+                    show();
                 }
                 break;
         }
@@ -199,7 +205,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                             @Override
                             public void call(Integer number, MyUser user) {
-                                    user.fire(DROPPED_TO_USER, myUser);
+                                user.fire(DROPPED_TO_USER, myUser);
                             }
                         });
                         return true;

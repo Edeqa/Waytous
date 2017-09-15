@@ -183,7 +183,7 @@
     <string name="communication">Communication</string>
     <string name="views">Views</string>
     <string name="miscellaneous">Miscellaneous</string>
-    <string name="d_users_selected">%d user(s) selected</string>
+    <string name="d_selected">%d selected</string>
     <string name="version_s_d" formatted="false">Version %s.%d</string>
     <string name="waytous_web_service">Waytous web service</string>
     <string name="legal_information">Legal information</string>

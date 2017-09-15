@@ -117,7 +117,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 case SELECT_USER:
                 case UNSELECT_USER:
                     if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
-                        callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                        callback.call(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));
                     } else {
                         State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
                             @Override
@@ -136,7 +136,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
 
         public void resolveAddress(final Location location) {
             if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
-                callback.call(context.getString(R.string.d_users_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                callback.call(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));
                 return;
             } else if(myUser.getProperties().isSelected() && location == null) {
                 callback.call(null);
