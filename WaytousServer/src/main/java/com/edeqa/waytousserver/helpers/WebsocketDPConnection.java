@@ -30,7 +30,11 @@ public class WebsocketDPConnection implements DataProcessorConnection {
     @Override
     public void send(String string) {
         try {
-            conn.send(string);
+            if(conn.isOpen()) {
+                conn.send(string);
+            } else {
+                Common.err(WebsocketDPConnection.this, "send:failed", "connectionState:" + conn.getReadyState());
+            }
         } catch(Exception e) {
             Common.err(WebsocketDPConnection.this, "send:", string, "error:", e.getMessage());
         }

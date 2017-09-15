@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,8 +31,8 @@ abstract public class AbstractDataProcessor {
     final ConcurrentHashMap<String, MyGroup> ipToToken;
     final ConcurrentHashMap<String, MyUser> ipToUser;
     final ConcurrentHashMap<String, CheckReq> ipToCheck;
-    final HashMap<String,RequestHolder> requestHolders;
-    protected final HashMap<String,FlagHolder> flagHolders;
+    final HashMap<String, RequestHolder> requestHolders;
+    protected final HashMap<String, FlagHolder> flagHolders;
     private boolean serverMode = false;
 
     abstract public void validateGroups();
@@ -57,14 +58,14 @@ abstract public class AbstractDataProcessor {
 
         LinkedList<String> classes = getRequestHoldersList();
 
-        if(classes != null) {
+        if (classes != null) {
             for (String s : classes) {
                 try {
                     Class<RequestHolder> _tempClass = (Class<RequestHolder>) Class.forName("com.edeqa.waytousserver.holders.request." + s);
                     Constructor<RequestHolder> ctor = _tempClass.getDeclaredConstructor(AbstractDataProcessor.class);
                     registerRequestHolder(ctor.newInstance(this));
                 } catch (Exception e) {
-                    System.err.println("Trying to instantiate "+s);
+                    System.err.println("Trying to instantiate " + s);
                     e.printStackTrace();
                 }
             }
@@ -72,14 +73,14 @@ abstract public class AbstractDataProcessor {
 
         flagHolders = new LinkedHashMap<>();
         classes = getFlagsHoldersList();
-        if(classes != null) {
+        if (classes != null) {
             for (String s : classes) {
                 try {
                     Class<FlagHolder> _tempClass = (Class<FlagHolder>) Class.forName("com.edeqa.waytousserver.holders.flag." + s);
                     Constructor<FlagHolder> ctor = _tempClass.getDeclaredConstructor(AbstractDataProcessor.class);
                     registerFlagHolder(ctor.newInstance(this));
                 } catch (Exception e) {
-                    System.out.println("Trying to instantiate "+s);
+                    System.out.println("Trying to instantiate " + s);
                     e.printStackTrace();
                 }
             }
@@ -91,19 +92,19 @@ abstract public class AbstractDataProcessor {
     abstract public LinkedList<String> getFlagsHoldersList();
 
     public void registerRequestHolder(RequestHolder holder) {
-        if(holder.getType() == null) return;
+        if (holder.getType() == null) return;
         requestHolders.put(holder.getType(), holder);
     }
 
     public void registerFlagHolder(FlagHolder holder) {
-        if(holder.getType() == null) return;
+        if (holder.getType() == null) return;
         flagHolders.put(holder.getType(), holder);
     }
 
     final public void onOpen(DataProcessorConnection conn, ClientHandshake handshake) {
         try {
 //            conn.send("{\"" + RESPONSE_STATUS + "\":\""+RESPONSE_STATUS_CONNECTED+"\",\"version\":" + SERVER_BUILD + "}");
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -112,7 +113,7 @@ abstract public class AbstractDataProcessor {
 //        System.out.println("WSS:on close:" + conn.getRemoteSocketAddress() + " disconnected:by client:"+remote+":"+code+":"+reason);
 //        this.sendToAll( conn + " has left the room!" );
         String ip = conn.getRemoteSocketAddress().toString();
-        if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
+        if (ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
 
     }
 
@@ -122,9 +123,9 @@ abstract public class AbstractDataProcessor {
         ex.printStackTrace();
         if (conn != null && conn.getRemoteSocketAddress() != null) {
             String ip = conn.getRemoteSocketAddress().toString();
-            if(ipToToken.containsKey(ip)) ipToToken.remove(ip);
-            if(ipToUser.containsKey(ip)) ipToUser.remove(ip);
-            if(ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
+            if (ipToToken.containsKey(ip)) ipToToken.remove(ip);
+            if (ipToUser.containsKey(ip)) ipToUser.remove(ip);
+            if (ipToCheck.containsKey(ip)) ipToCheck.remove(ip);
             // some errors like port binding failed may not be assignable to a specific websocket
         }
     }
@@ -136,7 +137,7 @@ abstract public class AbstractDataProcessor {
                 ipToUser.get(ip).setChanged();
             }
 //            System.out.println("PING:" + conn.getRemoteSocketAddress() + ":" + f);
-        } catch ( Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -155,19 +156,19 @@ abstract public class AbstractDataProcessor {
 
     abstract public void switchPropertyForUser(String groupId, Long userNumber, String property, Boolean value, Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 
-    public ConcurrentHashMap<String, MyGroup> getGroups(){
+    public ConcurrentHashMap<String, MyGroup> getGroups() {
         return groups;
     }
 
-    public ConcurrentHashMap<String, MyGroup> getIpToToken(){
+    public ConcurrentHashMap<String, MyGroup> getIpToToken() {
         return ipToToken;
     }
 
-    public ConcurrentHashMap<String, MyUser> getIpToUser(){
+    public ConcurrentHashMap<String, MyUser> getIpToUser() {
         return ipToUser;
     }
 
-    public ConcurrentHashMap<String, CheckReq> getIpToCheck(){
+    public ConcurrentHashMap<String, CheckReq> getIpToCheck() {
         return ipToCheck;
     }
 
@@ -185,6 +186,7 @@ abstract public class AbstractDataProcessor {
 
     public abstract void putStaticticsUser(String groupId, String userId, UserAction action, String errorMessage);
 
-    abstract public void cleanStatisticsMessages(Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
+    abstract public void putStaticticsMessage(String message, Map<String, String> map);
 
+    abstract public void cleanStatisticsMessages(Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror);
 }

@@ -396,8 +396,7 @@ function Edequate(options) {
                 this.onRejected = callback || function(){};
             },
             onResolved: function(value) {
-                console.warn("Define '.then(onResolved(value){...})'");
-                console.log(value);
+                console.warn("Define '.then(onResolved(value){...})'; got response: ", value && value.response);
             },
             onRejected: function(code, value, error) {
                 console.warn("Define '.catch(onRejected(code, value[, error]){...})'");

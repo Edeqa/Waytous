@@ -33,17 +33,43 @@ function Groups() {
         tableSummary = u.table({
             className: "option"
         }, div);
+
+        function filterPersistent(row){
+            return row.cells[2].innerHTML == "Yes";
+        }
+        function filterTemporary(row){
+            return row.cells[2].innerHTML == "No";
+        }
         tableSummary.groupsItem = tableSummary.add({
+            onclick: function(e){
+                tableGroups.filter.remove(filterPersistent);
+                tableGroups.filter.remove(filterTemporary);
+            },
             cells: [
                 { className:"th", innerHTML: "Groups" },
                 { className:"option", innerHTML: 0 }
             ]
         });
+
         tableSummary.groupsPersistentItem = tableSummary.add({
             cells: [
                 { className:"th", innerHTML: "&#150; persistent" },
                 { className:"option", innerHTML: 0 },
-            ]
+            ],
+            onclick: function(e){
+                tableGroups.filter.remove(filterTemporary);
+                tableGroups.filter.add(filterPersistent);
+            }
+        });
+        tableSummary.groupsTemporaryItem = tableSummary.add({
+            cells: [
+                { className:"th", innerHTML: "&#150; temporary" },
+                { className:"option", innerHTML: 0 },
+            ],
+            onclick: function(e){
+                tableGroups.filter.remove(filterPersistent);
+                tableGroups.filter.add(filterTemporary);
+            }
         });
         tableSummary.usersTotalItem = tableSummary.add({
             cells: [
@@ -195,9 +221,10 @@ function Groups() {
 
         tableSummary.groupsItem.lastChild.innerHTML = tableGroups.rows.length;
 
-        var usersTotal = 0, usersOnline = 0, groupPersistent = 0;
+        var usersTotal = 0, usersOnline = 0, groupPersistent = 0, groupTemporary = 0;
         for(var i in tableGroups.rows) {
             if(tableGroups.rows[i].cells[2].innerHTML == "Yes") groupPersistent ++;
+            else groupTemporary++;
 
             var users = tableGroups.rows[i].cells[5].innerHTML;
             users = users.split("/");
@@ -207,6 +234,7 @@ function Groups() {
             }
         }
         tableSummary.groupsPersistentItem.lastChild.innerHTML = groupPersistent;
+        tableSummary.groupsTemporaryItem.lastChild.innerHTML = groupTemporary;
         tableSummary.usersTotalItem.lastChild.innerHTML = usersTotal;
         tableSummary.usersOnlineItem.lastChild.innerHTML = usersOnline;
 

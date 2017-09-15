@@ -511,6 +511,11 @@ public class DataProcessorDedicated extends AbstractDataProcessor {
     }
 
     @Override
+    public void putStaticticsMessage(String message, Map<String, String> map) {
+        // TODO
+    }
+
+    @Override
     public void cleanStatisticsMessages(Runnable1<JSONObject> onsuccess, Runnable1<JSONObject> onerror) {
 
     }

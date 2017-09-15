@@ -1203,14 +1203,11 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         referenceTotal.runTransaction(incrementValue);
 
         if(errorMessage != null && errorMessage.length() > 0) {
-            today = String.format("%s %02d-%02d-%02d-%03d", today, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Map<String, String> map = new HashMap<>();
             map.put("group", groupId);
             map.put("action", action.toString());
-            map.put("message", errorMessage);
-            ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_MESSAGES).child(today).setValue(map);
+            putStaticticsMessage(errorMessage, map);
         }
-
     }
 
     @Override
@@ -1241,15 +1238,26 @@ public class DataProcessorFirebaseV1 extends AbstractDataProcessor {
         referenceTotal.runTransaction(incrementValue);
 
         if(errorMessage != null && errorMessage.length() > 0) {
-            today = String.format("%s %02d-%02d-%02d-%03d", today, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Map<String, String> map = new HashMap<>();
             map.put("group", groupId);
             map.put("user", userId);
             map.put("action", action.toString());
-            map.put("message", errorMessage);
-            ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_MESSAGES).child(today).setValue(map);
+            putStaticticsMessage(errorMessage, map);
         }
     }
+
+    @Override
+    public void putStaticticsMessage(String message, Map<String, String> map) {
+        Calendar cal = Calendar.getInstance();
+        String today = String.format("%04d-%02d-%02d %02d-%02d-%02d-%03d", cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,cal.get(Calendar.DAY_OF_MONTH),cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+
+        if(map == null) {
+            map = new HashMap<>();
+        }
+        map.put("message", message);
+        ref.child(Constants.DATABASE.SECTION_STAT).child(Constants.DATABASE.STAT_MESSAGES).child(today).setValue(map);
+    }
+
 
     @Override
     public void cleanStatisticsMessages(final Runnable1<JSONObject> onsuccess, final Runnable1<JSONObject> onerror) {
