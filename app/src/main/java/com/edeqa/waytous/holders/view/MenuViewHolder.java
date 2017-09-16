@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.BuildConfig;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -20,7 +21,6 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.holders.property.PropertiesHolder;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 

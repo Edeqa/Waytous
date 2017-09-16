@@ -5,13 +5,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.SupportStreetViewPanoramaFragment;

@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.NotificationCompat;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -21,7 +22,6 @@ import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SettingItem;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.Date;
 import java.util.LinkedHashMap;

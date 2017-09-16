@@ -6,12 +6,12 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.interfaces.EntityHolder;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 import com.google.android.gms.tasks.OnFailureListener;

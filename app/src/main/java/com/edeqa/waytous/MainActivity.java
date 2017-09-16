@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.widget.Toast;
 
+import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
@@ -29,8 +31,6 @@ import com.edeqa.waytous.holders.view.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.view.SettingsViewHolder;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
 import com.edeqa.waytous.holders.view.TrackingViewHolder;
-import com.edeqa.waytous.interfaces.Runnable1;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;

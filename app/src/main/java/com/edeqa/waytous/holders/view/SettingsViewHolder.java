@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -32,7 +33,6 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.PreferenceDividerDecoration;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 

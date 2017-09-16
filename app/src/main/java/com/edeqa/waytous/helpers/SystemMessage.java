@@ -3,9 +3,9 @@ package com.edeqa.waytous.helpers;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 /**
  * Created 12/4/16.

@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 
+import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -24,8 +26,6 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.NavigationStarter;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Runnable1;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;

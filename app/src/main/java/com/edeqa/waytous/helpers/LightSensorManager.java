@@ -10,7 +10,7 @@ import android.hardware.TriggerEvent;
 import android.hardware.TriggerEventListener;
 import android.os.Build;
 
-import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable1;
 
 
 /**

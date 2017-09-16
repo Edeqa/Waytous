@@ -83,9 +83,6 @@ public class Utils {
             case 5:
                 sType = "MD5";
                 break;
-            case 224:
-                sType = "SHA-224";
-                break;
             case 256:
                 sType = "SHA-256";
                 break;

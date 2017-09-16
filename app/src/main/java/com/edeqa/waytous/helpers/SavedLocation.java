@@ -18,14 +18,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
-import com.edeqa.waytous.interfaces.Runnable1;
 import com.google.android.gms.maps.model.LatLng;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;

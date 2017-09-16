@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.NotificationCompat;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.Constants;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -17,7 +18,6 @@ import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Runnable2;
 
 import org.json.JSONException;
 import org.json.JSONObject;

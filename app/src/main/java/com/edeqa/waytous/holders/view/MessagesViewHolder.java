@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.edeqa.helpers.interfaces.Callable1;
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -34,8 +36,6 @@ import com.edeqa.waytous.helpers.SmoothInterpolated;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.UserMessage;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Callable1;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 

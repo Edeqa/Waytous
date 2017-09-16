@@ -3,6 +3,8 @@ package com.edeqa.waytous.holders.view;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -10,8 +12,6 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.LightSensorManager;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.Runnable1;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MapStyleOptions;
 

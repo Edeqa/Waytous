@@ -3,8 +3,8 @@ package com.edeqa.waytous.helpers;
 import android.content.Context;
 import android.location.Location;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.interfaces.Runnable1;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;

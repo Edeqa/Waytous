@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -33,7 +34,6 @@ import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;

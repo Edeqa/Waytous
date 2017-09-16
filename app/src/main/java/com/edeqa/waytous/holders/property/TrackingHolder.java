@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.util.Log;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
@@ -13,7 +14,6 @@ import com.edeqa.waytous.helpers.MyTrackingFB;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.ShareSender;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 

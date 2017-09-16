@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;

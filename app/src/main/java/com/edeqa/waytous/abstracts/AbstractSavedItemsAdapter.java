@@ -14,7 +14,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable1;
 
 /**
  * Created 8/10/2017.

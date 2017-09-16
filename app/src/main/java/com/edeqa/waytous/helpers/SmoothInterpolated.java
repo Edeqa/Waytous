@@ -5,7 +5,7 @@ import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.edeqa.waytous.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable1;
 
 import static com.edeqa.waytous.Constants.LOCATION_UPDATES_DELAY;
 

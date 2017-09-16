@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 
 /**

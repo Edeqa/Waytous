@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.ArrayList;
 import java.util.HashMap;

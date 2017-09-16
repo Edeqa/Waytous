@@ -4,6 +4,8 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -11,8 +13,6 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.AddressResolver;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.Runnable1;
-import com.edeqa.waytous.interfaces.Runnable2;
 
 import io.nlopez.smartlocation.SmartLocation;
 

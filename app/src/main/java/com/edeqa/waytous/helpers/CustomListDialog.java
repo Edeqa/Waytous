@@ -15,9 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.edeqa.helpers.interfaces.Callable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
-import com.edeqa.waytous.interfaces.Callable1;
 
 import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_NEUTRAL;

@@ -16,14 +16,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import java.util.Date;
-
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

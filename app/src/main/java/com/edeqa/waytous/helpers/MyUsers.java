@@ -3,8 +3,8 @@ package com.edeqa.waytous.helpers;
 import android.annotation.SuppressLint;
 import android.location.Location;
 
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.State;
-import com.edeqa.waytous.interfaces.Runnable2;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.eventbus.EventBus;
+import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.Events;
@@ -26,7 +27,6 @@ import com.edeqa.waytous.holders.property.MessagesHolder;
 import com.edeqa.waytous.holders.property.NotificationHolder;
 import com.edeqa.waytous.holders.property.PropertiesHolder;
 import com.edeqa.waytous.holders.property.TrackingHolder;
-import com.edeqa.waytous.interfaces.Runnable2;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.google.firebase.iid.FirebaseInstanceId;
 

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
+import static com.edeqa.waytous.Constants.SENSITIVE;
 import static com.edeqa.waytous.Constants.USER_ACCURACY;
 import static com.edeqa.waytous.Constants.USER_ALTITUDE;
 import static com.edeqa.waytous.Constants.USER_BEARING;
@@ -33,7 +34,6 @@ import static junit.framework.Assert.assertTrue;
  * Created 9/8/2017.
  */
 public class UtilsTest {
-
     private Location location;
     private JSONObject jsonLocation;
     private long timestamp;
@@ -72,7 +72,6 @@ public class UtilsTest {
     public void getEncryptedHash1() throws Exception {
         assertEquals("984816fd329622876e14907634264e6f332e9fb3", Utils.getEncryptedHash("TEST", 1));
         assertEquals("033bd94b1168d7e4f0d644c3c95e35bf", Utils.getEncryptedHash("TEST", 5));
-//        assertEquals("917ecca24f3e6ceaf52375d8083381f1f80a21e6e49fbadc40afeb8e", Utils.getEncryptedHash("TEST", 224));
         assertEquals("94ee059335e587e501cc4bf90613e0814f00a7b08bc7c648fd865a2af6a22cc2", Utils.getEncryptedHash("TEST", 256));
         assertEquals("4f37c49c0024445f91977dbc47bd4da9c4de8d173d03379ee19c2bb15435c2c7e624ea42f7cc1689961cb7aca50c7d17", Utils.getEncryptedHash("TEST", 384));
         assertEquals("7bfa95a688924c47c7d22381f20cc926f524beacb13f84e203d4bd8cb6ba2fce81c57a5f059bf3d509926487bde925b3bcee0635e4f7baeba054e5dba696b2bf", Utils.getEncryptedHash("TEST", 512));
@@ -199,7 +198,6 @@ public class UtilsTest {
     @Test
     public void formatLengthToLocale() throws Exception {
         String text = Utils.formatLengthToLocale(10);
-        Log.d("TEST", text);
         assertEquals("  33 ft", text);
     }
 
@@ -220,6 +218,21 @@ public class UtilsTest {
         assertEquals(37.65054916754206, reducedLatLngBounds.southwest.latitude);
         assertEquals(-77.9205028848438, reducedLatLngBounds.southwest.longitude);
 
+    }
+
+    @Test
+    public void toDateString() throws Exception {
+        assertEquals("17425d 9h 18m 40s", Utils.toDateString(1505534126840L));
+    }
+
+    @Test
+    public void getWrappedHttpPort() throws Exception {
+        assertEquals(":" + SENSITIVE.getHttpPort(), Utils.getWrappedHttpPort());
+    }
+
+    @Test
+    public void getWrappedHttpsPort() throws Exception {
+        assertEquals(":" + SENSITIVE.getHttpsPort(), Utils.getWrappedHttpsPort());
     }
 
 }
