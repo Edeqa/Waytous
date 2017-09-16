@@ -59,14 +59,14 @@ configurations {
 
 task switchToDebug(type: Copy) {
     description = 'Switches to DEBUG google-services.json'
-    from "../conf/developer"
+    from "../app/src/debug"
     include "google-services.json"
     into "."
 }
 
 task switchToRelease(type: Copy) {
     description = 'Switches to AWS RELEASE google-services.json'
-    from "../conf/aws"
+    from "../app/src/release"
     include "google-services.json"
     into "."
 }
