@@ -7,7 +7,6 @@ deploy*.sh
 generate_letsencrypt_jks.sh
 gradle
 captures
-/WaytousServer
 local.properties
 google-services.json
 options*.json
