@@ -1,16 +1,20 @@
 package com.edeqa.waytous.helpers;
 
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 
+import com.edeqa.eventbus.EventBus;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.edeqa.waytous.helpers.NavigationHelper.TYPE_DISTANCE;
-import static com.edeqa.waytous.helpers.NavigationHelper.TYPE_DURATION;
-import static com.edeqa.waytous.helpers.NavigationHelper.TYPE_STARTED;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -20,9 +24,9 @@ public class NavigationHelperTest {
 
     private static String USERNAME = "testuser";
 
-    final Object syncObject = new Object();
+    private final Object syncObject = new Object();
 
-    private MyUser user;
+//    private MyUser user;
     private Location startLocation;
     private Location destinationLocation;
     private NavigationHelper navigationHelper;
@@ -39,11 +43,6 @@ public class NavigationHelperTest {
         destinationLocation.setLongitude(-77.324682);
         destinationLocation.setLatitude(38.942308);
 
-        user = new MyUser();
-        user.setUser(true);
-        user.getProperties().setName(USERNAME);
-        user.addLocation(startLocation);
-
         navigationHelper = new NavigationHelper();
         navigationHelper.setAvoidTolls(true);
         navigationHelper.setMode(NavigationHelper.Mode.DRIVING);
@@ -54,9 +53,6 @@ public class NavigationHelperTest {
             @Override
             public void run() {
                 assertEquals(true, navigationHelper.isActive());
-//                synchronized (syncObject){
-//                    syncObject.notify();
-//                }
             }
         });
         navigationHelper.setOnRequest(new Runnable1<String>() {
@@ -65,19 +61,21 @@ public class NavigationHelperTest {
                 assertEquals("https://maps.googleapis.com/maps/api/directions/json?origin=37.7510,-77.8220&destination=38.9423,-77.3247&mode=driving&alternatives=true&avoid=tolls", address);
             }
         });
-        navigationHelper.setOnUpdate(new Runnable2<Integer, String>() {
+        navigationHelper.setOnUpdate(new Runnable2<NavigationHelper.Type, Object>() {
             @Override
-            public void call(Integer type, String text) {
-
+            public void call(NavigationHelper.Type type, Object object) {
                 switch(type) {
-                    case TYPE_STARTED:
-                        assertEquals(null, text);
+                    case UPDATED:
+                        assertEquals(null, object);
                         break;
-                    case TYPE_DISTANCE:
-                        assertEquals("130.3 mi", text);
+                    case DISTANCE:
+                        assertEquals("130.3 mi", object.toString());
                         break;
-                    case TYPE_DURATION:
-                        assertEquals("2h 9m", text);
+                    case DURATION:
+                        assertEquals("2h 9m", object.toString());
+                        break;
+                    case POINTS:
+                        assertEquals(275, ((List)object).size());
                         synchronized (syncObject) {
                             syncObject.notify();
                         }
@@ -96,14 +94,27 @@ public class NavigationHelperTest {
                 }
             }
         });
+        navigationHelper.setOnStop(new Runnable() {
+            @Override
+            public void run() {
+                assertEquals(false, navigationHelper.isActive());
+                synchronized (syncObject){
+                    syncObject.notifyAll();
+                }
+            }
+        });
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+        EventBus.Runner runner = new EventBus.Runner() {
+            @Override
+            public void post(Runnable runnable) {
+                handler.post(runnable);
+            }
+        };
+        navigationHelper.setRunner(runner);
 
     }
 
-    @Test
-    public void update() throws Exception {
-        // TODO
-
-    }
 
     @Test
     public void start() throws Exception {
@@ -112,204 +123,183 @@ public class NavigationHelperTest {
             syncObject.wait();
         }
 
+        navigationHelper.updateCurrentLocation(startLocation);
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        navigationHelper.stop();
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+        assertEquals(false, navigationHelper.isActive());
+
+        Calendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(navigationHelper.getLastUpdate());
+        assertEquals(2017, cal.get(Calendar.YEAR));
     }
 
     @Test
     public void stop() throws Exception {
-        // TODO
 
     }
 
     @Test
     public void isAvoidHighways() throws Exception {
-        // TODO
-
+        assertEquals(false, navigationHelper.isAvoidHighways());
     }
 
     @Test
     public void setAvoidHighways() throws Exception {
-        // TODO
-
+        navigationHelper.setAvoidHighways(true);
+        assertEquals(true, navigationHelper.isAvoidHighways());
     }
 
     @Test
     public void isAvoidTolls() throws Exception {
-        // TODO
-
+        assertEquals(true, navigationHelper.isAvoidTolls());
     }
 
     @Test
     public void setAvoidTolls() throws Exception {
-        // TODO
-
+        navigationHelper.setAvoidTolls(false);
+        assertEquals(false, navigationHelper.isAvoidTolls());
     }
 
     @Test
     public void isAvoidFerries() throws Exception {
-        // TODO
-
+        assertEquals(false, navigationHelper.isAvoidFerries());
     }
 
     @Test
     public void setAvoidFerries() throws Exception {
-        // TODO
-
+        navigationHelper.setAvoidFerries(true);
+        assertEquals(true, navigationHelper.isAvoidFerries());
     }
 
     @Test
     public void getMode() throws Exception {
-        // TODO
-
+        assertEquals(NavigationHelper.Mode.DRIVING, navigationHelper.getMode());
     }
 
     @Test
     public void setMode() throws Exception {
-        // TODO
-
+        navigationHelper.setMode(NavigationHelper.Mode.WALKING);
+        assertEquals(NavigationHelper.Mode.WALKING, navigationHelper.getMode());
     }
 
     @Test
     public void getOnUpdate() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnUpdate() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void getOnStart() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnStart() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void isActive() throws Exception {
-        // TODO
-
+        assertEquals(false, navigationHelper.isActive());
     }
 
     @Test
     public void setActive() throws Exception {
-        // TODO
-
+        navigationHelper.setActive(true);
+        assertEquals(true, navigationHelper.isActive());
+        navigationHelper.setActive(false);
+        assertEquals(false, navigationHelper.isActive());
     }
 
     @Test
     public void getStartLocation() throws Exception {
-        // TODO
-
+        assertEquals(37.75101, navigationHelper.getStartLocation().getLatitude(), .0001);
     }
 
     @Test
     public void setStartLocation() throws Exception {
-        // TODO
-
+        navigationHelper.setStartLocation(null);
+        assertEquals(null, navigationHelper.getStartLocation());
     }
 
     @Test
     public void getEndLocation() throws Exception {
-        // TODO
-
+        assertEquals(38.942308, navigationHelper.getEndLocation().getLatitude(), .0001);
     }
 
     @Test
     public void setEndLocation() throws Exception {
-        // TODO
-
+        navigationHelper.setEndLocation(null);
+        assertEquals(null, navigationHelper.getEndLocation());
     }
 
     @Test
     public void getCurrentLocation() throws Exception {
-        // TODO
-
+        assertEquals(null, navigationHelper.getCurrentLocation());
     }
 
     @Test
     public void setCurrentLocation() throws Exception {
-        // TODO
-
+        navigationHelper.setCurrentLocation(null);
+        assertEquals(null, navigationHelper.getCurrentLocation());
     }
 
     @Test
     public void getOnRequest() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnRequest() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void getOnStop() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnStop() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void getLastUpdate() throws Exception {
-        // TODO
-
-    }
-
-    @Test
-    public void setLastUpdate() throws Exception {
-        // TODO
-
+        assertEquals(0, navigationHelper.getLastUpdate());
     }
 
     @Test
     public void getApiKey() throws Exception {
-        // TODO
-
+        assertEquals(null, navigationHelper.getApiKey());
     }
 
     @Test
     public void setApiKey() throws Exception {
-        // TODO
-
+        navigationHelper.setApiKey("AAA");
+        assertEquals("AAA", navigationHelper.getApiKey());
     }
 
     @Test
     public void getOnError() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnError() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void getOnErrorThrowable() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnError1() throws Exception {
-        // TODO
+    }
 
+    @Test
+    public void updateCurrentLocation() throws Exception {
     }
 
 }

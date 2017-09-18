@@ -2,6 +2,7 @@ package com.edeqa.waytous.helpers;
 
 import android.location.Location;
 
+import com.edeqa.eventbus.EventBus;
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
@@ -22,61 +23,91 @@ import java.util.concurrent.Executors;
  * Created 9/17/17.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class NavigationHelper implements Serializable {
 
     private static final long serialVersionUID = -6978147387428739440L;
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public static final String MODE_DRIVING = "driving";
-    public static final String MODE_WALKING = "walking";
-    public static final String MODE_BICYCLING = "bicycling";
-
     public static final int ERROR_JSON = 1;
     public static final int ERROR_OVER_QUERY_LIMIT = 2;
 
-    public static final int TYPE_STARTED = 0;
-    public static final int TYPE_DISTANCE = 1;
-    public static final int TYPE_DURATION = 2;
-
+    @SuppressWarnings("HardCodedStringLiteral")
     private static final String pattern = "https://maps.googleapis.com/maps/api/directions/json?origin=%g,%g&destination=%g,%g&mode=%s&alternatives=true";
+
+    private transient EventBus.Runner runner;
 
     private transient Runnable onStart;
     private transient Runnable onStop;
     private transient Runnable1<String> onRequest;
-    private transient Runnable2<Integer, String> onUpdate;
+    private transient Runnable2<Type, Object> onUpdate;
     private transient Runnable1<Throwable> onErrorThrowable;
     private transient Runnable2<Integer, String> onError;
 
     private transient Location startLocation;
-    private transient Location currentLocation;
     private transient Location endLocation;
+    private transient Location currentLocation;
 
     private transient ArrayList<Route> routes;
-
-    public enum Mode {
-        DRIVING,WALKING,BICYCLING
-    }
 
     private Mode mode = Mode.DRIVING;
     private String apiKey;
 
     private long lastUpdate;
+    private long lastTry;
+
+    private int selectedRoute;
 
     private boolean avoidHighways;
     private boolean avoidTolls;
     private boolean avoidFerries;
-    private boolean active;
 
+    private volatile boolean active;
+
+    public static EventBus.Runner RUNNER_DEFAULT = new EventBus.Runner() {
+        @Override
+        public void post(final Runnable runnable) {
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    runnable.run();
+                }
+            });
+        }
+    };
 
     public NavigationHelper() {
+        setSelectedRoute(0);
     }
 
-    public void update() {
+    public void start() {
+        if(isActive()) return;
+
+        if(runner == null) {
+            runner = RUNNER_DEFAULT;
+        }
+
+        setActive(true);
+
+        if(getCurrentLocation() == null) {
+            setCurrentLocation(getStartLocation());
+        }
+        if(onStart != null) runner.post(onStart);
+        updatePath();
+    }
+
+    public void updatePath() {
+
+        long currentTimestamp = new Date().getTime();
+        if(currentTimestamp - lastUpdate < 5000) return;
 
         executor.execute(new Runnable() {
+            @SuppressWarnings("HardCodedStringLiteral")
             @Override
             public void run() {
+                if(!isActive()) return;
+
                 String req = String.format(pattern, startLocation.getLatitude(), startLocation.getLongitude(), endLocation.getLatitude(), endLocation.getLongitude(), mode.toString().toLowerCase());
 
                 if(isAvoidHighways()) req += "&avoid=highways";
@@ -88,14 +119,17 @@ public class NavigationHelper implements Serializable {
                 }
                 String res = null;
                 try {
-                    res = Misc.getUrl(req);
+                    lastTry = new Date().getTime();
 
-                    lastUpdate = new Date().getTime();
+                    res = Misc.getUrl(req);
+                    if(!isActive()) return;
+
                     JSONObject o = new JSONObject(res);
 
                     switch(o.getString("status")) {
                         case "OK":
-                            routes = new ArrayList<Route>();
+                            lastUpdate = new Date().getTime();
+                            routes = new ArrayList<>();
                             for(int i = 0; i < o.getJSONArray("routes").length(); i++) {
                                 try {
                                     Route route = new Route((JSONObject) o.getJSONArray("routes").get(i));
@@ -105,55 +139,95 @@ public class NavigationHelper implements Serializable {
                                 }
                             }
                             if(onUpdate != null && routes.size() > 0) {
-                                onUpdate.call(TYPE_DISTANCE, routes.get(0).fetchDistance());
-                                onUpdate.call(TYPE_DURATION, routes.get(0).fetchDuration());
+                                runner.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        onUpdate.call(Type.DISTANCE, routes.get(getSelectedRoute()).fetchDistance());
+                                        onUpdate.call(Type.DURATION, routes.get(getSelectedRoute()).fetchDuration());
+                                        onUpdate.call(Type.POINTS, routes.get(getSelectedRoute()).getPoints());
+                                    }
+                                });
                             }
                             break;
                         case "OVER_QUERY_LIMIT":
                             String message = "Daily request quota for Direction API is exceeded";
-                            if(onErrorThrowable != null) onErrorThrowable.call(new Exception(message));
-                            if(onError != null) onError.call(ERROR_OVER_QUERY_LIMIT, message);
+                            throwError(ERROR_OVER_QUERY_LIMIT, message);
                             break;
                     }
 
-
-//                    System.out.println("NAVRESOLVED:"+o);
-//            final String text = o.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
-//            points = PolyUtil.decode(text);
-//            String distanceText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getString("text");
-//            String durationText = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
-//            title = distanceText + "\n" + durationText;
-//
-//            int distance = o.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getInt("value");
-
-                    if(onUpdate != null) onUpdate.call(TYPE_STARTED, null);
-
+                    if(onUpdate != null) {
+                        runner.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                onUpdate.call(Type.UPDATED, null);
+                            }
+                        });
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    String message = "Incorrect response: " + res;
-                    if(onErrorThrowable != null) onErrorThrowable.call(new JSONException(message));
-                    if(onError != null) onError.call(ERROR_JSON, message);
+                    final String message = "Incorrect response: " + res;
+                    throwError(ERROR_JSON, message);
                 }
             }
         });
-
     }
 
-    public void start() {
-        if(isActive()) return;
+    private void throwError(final int errorCode, final String message) {
+        if(onErrorThrowable != null) {
+            runner.post(new Runnable() {
+                @Override
+                public void run() {
+                    onErrorThrowable.call(new JSONException(message));
+                }
+            });
+        }
+        if(onError != null) {
+            runner.post(new Runnable() {
+                @Override
+                public void run() {
+                    onError.call(errorCode, message);
+                }
+            });
+        }
+    }
 
-        setActive(true);
+    public void updateCurrentLocation(Location location) {
+        if(!isActive()) return;
 
-        if(onStart != null) onStart.run();
-        update();
+        currentLocation = location;
+
+
+
+
+        if(onUpdate != null){
+            runner.post(new Runnable() {
+                @Override
+                public void run() {
+                    onUpdate.call(Type.POINTS, routes.get(getSelectedRoute()).getPoints());
+                }
+            });
+        }
     }
 
     public void stop() {
         if(!isActive()) return;
 
         setActive(false);
-        if(onStop != null) onStop.run();
+        if(onStop != null) runner.post(onStop);
     }
+
+    /*public void fetchInfo(Type type, Runnable2<Type, Object> callback) {
+        switch(type) {
+            case DISTANCE:
+                break;
+            case DURATION:
+                break;
+            case POINTS:
+                break;
+            case UPDATED:
+                break;
+        }
+    }*/
 
     public boolean isAvoidHighways() {
         return avoidHighways;
@@ -182,8 +256,8 @@ public class NavigationHelper implements Serializable {
         return this;
     }
 
-    public String getMode() {
-        return mode.toString();
+    public Mode getMode() {
+        return mode;
     }
 
     public NavigationHelper setMode(Mode mode) {
@@ -195,7 +269,7 @@ public class NavigationHelper implements Serializable {
         return onUpdate;
     }
 
-    public NavigationHelper setOnUpdate(Runnable2 onUpdate) {
+    public NavigationHelper setOnUpdate(Runnable2<Type, Object> onUpdate) {
         this.onUpdate = onUpdate;
         return this;
     }
@@ -267,7 +341,7 @@ public class NavigationHelper implements Serializable {
         return lastUpdate;
     }
 
-    public NavigationHelper setLastUpdate(long lastUpdate) {
+    private NavigationHelper setLastUpdate(long lastUpdate) {
         this.lastUpdate = lastUpdate;
         return this;
     }
@@ -299,14 +373,45 @@ public class NavigationHelper implements Serializable {
         return this;
     }
 
+    public EventBus.Runner getRunner() {
+        return runner;
+    }
+
+    public void setRunner(EventBus.Runner runner) {
+        this.runner = runner;
+    }
+
+    public int getSelectedRoute() {
+        return selectedRoute;
+    }
+
+    public NavigationHelper setSelectedRoute(int selectedRoute) {
+        this.selectedRoute = selectedRoute;
+        return this;
+    }
+
+    public int getRoutesCount() {
+        return routes.size();
+    }
+
+    public enum Mode {
+        DRIVING,WALKING,BICYCLING
+    }
+
+    public enum Type {
+        UPDATED, DISTANCE, DURATION, POINTS
+    }
+
     public class Route {
 
         private List<Leg> legs;
+
         private final List<LatLng> points;
         private String summary;
         private String copyrights;
 
 
+        @SuppressWarnings("HardCodedStringLiteral")
         public Route(JSONObject route) throws JSONException {
 
             if(route.has("copyrights")) copyrights = route.getString("copyrights");
@@ -327,6 +432,23 @@ public class NavigationHelper implements Serializable {
 
         }
 
+        public String fetchDistance() {
+            return Misc.distanceToString(legs.get(0).getDistance());
+        }
+
+        public String fetchDuration() {
+            return Misc.durationToString(legs.get(0).getDuration() * 1000);
+        }
+
+        public List<Leg> getLegs() {
+            return legs;
+        }
+
+        public List<LatLng> getPoints() {
+            return points;
+        }
+
+        @SuppressWarnings("HardCodedStringLiteral")
         @Override
         public String toString() {
             return "Route{" +
@@ -336,14 +458,6 @@ public class NavigationHelper implements Serializable {
                     ", legs.count=" + legs.size() +
                     ", legs=" + legs +
                     '}';
-        }
-
-        public String fetchDistance() {
-            return Misc.formatLengthToLocale(legs.get(0).getDistance());
-        }
-
-        public String fetchDuration() {
-            return Misc.toDateString(legs.get(0).getDuration() * 1000);
         }
     }
 
@@ -359,6 +473,7 @@ public class NavigationHelper implements Serializable {
         private final int distance;
         private final int duration;
 
+        @SuppressWarnings("HardCodedStringLiteral")
         public Leg(JSONObject leg) throws JSONException {
 
             startLocation = new LatLng(leg.getJSONObject("start_location").getDouble("lat"), leg.getJSONObject("start_location").getDouble("lng"));
@@ -387,6 +502,7 @@ public class NavigationHelper implements Serializable {
             return duration;
         }
 
+        @SuppressWarnings("HardCodedStringLiteral")
         @Override
         public String toString() {
             return "Leg{" +
@@ -412,6 +528,7 @@ public class NavigationHelper implements Serializable {
         private int distance;
         private int duration;
 
+        @SuppressWarnings("HardCodedStringLiteral")
         public Step(JSONObject step) throws JSONException {
 
             if(step.has("start_location")) startLocation = new LatLng(step.getJSONObject("start_location").getDouble("lat"), step.getJSONObject("start_location").getDouble("lng"));
@@ -446,6 +563,7 @@ public class NavigationHelper implements Serializable {
             return duration;
         }
 
+        @SuppressWarnings("HardCodedStringLiteral")
         @Override
         public String toString() {
             return "Step{" +

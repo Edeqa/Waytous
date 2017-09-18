@@ -2,6 +2,8 @@ package com.edeqa.waytous.helpers;
 
 import android.location.Location;
 
+import com.edeqa.waytous.holders.property.PropertiesHolder;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,6 +62,56 @@ public class MyUserTest {
         assertEquals(USERNAME, user.getProperties().getDisplayName());
     }
 
+    @Test
+    public void getLocations() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void createViews() throws Exception {
+    }
+
+    @Test
+    public void fire() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void fire1() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void onChangeLocation() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void removeViews() throws Exception {
+    }
+
+    @Test
+    public void getProperties() throws Exception {
+        assertEquals("testuser", user.getProperties().getDisplayName());
+    }
+
+    @Test
+    public void getProperty() throws Exception {
+        assertEquals("testuser", ((PropertiesHolder.Properties)user.getProperty(PropertiesHolder.TYPE)).getDisplayName());
+    }
+
+    @Test
+    public void getView() throws Exception {
+//        assertEquals("A", user.getView(NavigationViewHolder.TYPE));
+    }
+
+    @Test
+    public void setUser() throws Exception {
+        assertEquals(true, user.isUser());
+        user.setUser(false);
+        assertEquals(false, user.isUser());
+    }
 
 }
 

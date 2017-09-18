@@ -29,7 +29,6 @@ import static com.edeqa.waytous.Constants.USER_LONGITUDE;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Created 9/8/2017.
@@ -99,12 +98,6 @@ public class UtilsTest {
     }
 
     @Test
-    public void getUnique() throws Exception {
-        Log.d("TEST", Misc.getUnique());
-        assertTrue(Misc.getUnique() != null && Misc.getUnique().length() > 0);
-    }
-
-    @Test
     public void normalizeLocation() throws Exception {
 
         GeoTrackFilter filter = new GeoTrackFilter(1.);
@@ -168,7 +161,7 @@ public class UtilsTest {
 
     @Test
     public void formatLengthToLocale() throws Exception {
-        String text = Misc.formatLengthToLocale(10);
+        String text = Misc.distanceToString(10);
         assertEquals("  33 ft", text);
     }
 
@@ -191,10 +184,6 @@ public class UtilsTest {
 
     }
 
-    @Test
-    public void toDateString() throws Exception {
-        assertEquals("17425d 9h 18m 40s", Misc.toDateString(1505534126840L));
-    }
 
     @Test
     public void getWrappedHttpPort() throws Exception {

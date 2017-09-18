@@ -252,7 +252,7 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
                                 if (myUser != State.getInstance().getMe()) {
                                     long delta = new Date().getTime() - myUser.getProperties().getChanged();
                                     if (delta > 60000) {
-                                        title += " " + context.getString(R.string.s_ago, Misc.toDateString(delta));
+                                        title += " " + context.getString(R.string.s_ago, Misc.durationToString(delta));
                                     }
                                 }
                                 actionBar.setTitle(title);
