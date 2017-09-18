@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 
+import com.edeqa.helpers.Misc;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -64,20 +65,6 @@ public class UtilsTest {
     }
 
     @Test
-    public void getEncryptedHash() throws Exception {
-        assertEquals("033bd94b1168d7e4f0d644c3c95e35bf", Utils.getEncryptedHash("TEST"));
-    }
-
-    @Test
-    public void getEncryptedHash1() throws Exception {
-        assertEquals("984816fd329622876e14907634264e6f332e9fb3", Utils.getEncryptedHash("TEST", 1));
-        assertEquals("033bd94b1168d7e4f0d644c3c95e35bf", Utils.getEncryptedHash("TEST", 5));
-        assertEquals("94ee059335e587e501cc4bf90613e0814f00a7b08bc7c648fd865a2af6a22cc2", Utils.getEncryptedHash("TEST", 256));
-        assertEquals("4f37c49c0024445f91977dbc47bd4da9c4de8d173d03379ee19c2bb15435c2c7e624ea42f7cc1689961cb7aca50c7d17", Utils.getEncryptedHash("TEST", 384));
-        assertEquals("7bfa95a688924c47c7d22381f20cc926f524beacb13f84e203d4bd8cb6ba2fce81c57a5f059bf3d509926487bde925b3bcee0635e4f7baeba054e5dba696b2bf", Utils.getEncryptedHash("TEST", 512));
-    }
-
-    @Test
     public void getColorMatrix() throws Exception {
         assertEquals(1.0F, Utils.getColorMatrix(Color.BLACK)[0]);
     }
@@ -112,25 +99,9 @@ public class UtilsTest {
     }
 
     @Test
-    public void getUrl() throws Exception {
-        String res = Utils.getUrl("https://www.waytous.net/rest/v1/getVersion");
-        Log.d("TEST", res);
-        JSONObject json = new JSONObject(res);
-        assertEquals("success", json.getString("status"));
-    }
-
-    @Test
-    public void getUrl1() throws Exception {
-        String res = Utils.getUrl("https://www.waytous.net/rest/v1/getVersion", "CP-1251");
-        Log.d("TEST", res);
-        JSONObject json = new JSONObject(res);
-        assertEquals("success", json.getString("status"));
-    }
-
-    @Test
     public void getUnique() throws Exception {
-        Log.d("TEST", Utils.getUnique());
-        assertTrue(Utils.getUnique() != null && Utils.getUnique().length() > 0);
+        Log.d("TEST", Misc.getUnique());
+        assertTrue(Misc.getUnique() != null && Misc.getUnique().length() > 0);
     }
 
     @Test

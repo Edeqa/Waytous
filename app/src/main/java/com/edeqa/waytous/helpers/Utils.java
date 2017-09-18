@@ -26,20 +26,13 @@ import com.google.maps.android.SphericalUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.MessageDigest;
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,20 +54,20 @@ import static com.edeqa.waytous.Constants.USER_SPEED;
 public class Utils {
 
 
-    public static final int DIGEST_METHOD_MD2 = 2;
-    public static final int DIGEST_METHOD_MD5 = 5;
-    public static final int DIGEST_METHOD_SHA1 = 1;
-    public static final int DIGEST_METHOD_SHA256 = 256;
-    public static final int DIGEST_METHOD_SHA512 = 512;
+//    public static final int DIGEST_METHOD_MD2 = 2;
+//    public static final int DIGEST_METHOD_MD5 = 5;
+//    public static final int DIGEST_METHOD_SHA1 = 1;
+//    public static final int DIGEST_METHOD_SHA256 = 256;
+//    public static final int DIGEST_METHOD_SHA512 = 512;
     public static final int MATCH_SCREEN = -100;
 
-    public static String getEncryptedHash(String str) {
-        return getEncryptedHash(str, 5);
-    }
+//    public static String getEncryptedHash_old(String str) {
+//        return getEncryptedHash(str, 5);
+//    }
 
     @SuppressWarnings("WeakerAccess")
     @Nullable
-    public static String getEncryptedHash(String str, int type) {
+    public static String getEncryptedHash_old(String str, int type) {
         String sType;
         switch (type) {
             case 1:
@@ -212,38 +205,6 @@ public class Utils {
         drawable.draw(canvas);
 
         return bitmap;
-    }
-
-    public static String getUrl(String url) throws IOException {
-        return Utils.getUrl(url, "UTF-8");
-    }
-
-    public static String getUrl(String url, String urlCharset) throws IOException {
-        String line;
-        StringBuilder sb = new StringBuilder();
-        InputStream in = null;
-        HttpURLConnection feedUrl;
-        feedUrl = (HttpURLConnection) new URL(url).openConnection();
-        feedUrl.setConnectTimeout(5000);
-        feedUrl.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1.12) Gecko/20080201 Firefox");
-        feedUrl.setRequestProperty("Accept", "*/*");
-
-        int status = feedUrl.getResponseCode();
-        if(status >= 200 && status < 300) {
-            in = feedUrl.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, urlCharset));
-            while ((line = reader.readLine()) != null) {
-                sb.append(new String(line.getBytes("UTF-8"))).append("\n");
-            }
-            in.close();
-        } else {
-            log("Utils","getUrl:status:"+status);
-        }
-        return sb.toString();
-    }
-
-    public static String getUnique() {
-        return new BigInteger(48, new SecureRandom()).toString(32).toUpperCase();
     }
 
     public static Location normalizeLocation(GeoTrackFilter filter, Location location) {

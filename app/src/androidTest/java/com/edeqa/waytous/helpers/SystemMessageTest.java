@@ -1,5 +1,6 @@
 package com.edeqa.waytous.helpers;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.State;
 
@@ -36,7 +37,7 @@ public class SystemMessageTest {
         systemMessage = new SystemMessage(State.getInstance())
                 .setFromUser(userFrom)
                 .setText(TEXT)
-                .setDelivery(Utils.getUnique())
+                .setDelivery(Misc.getUnique())
                 .setToUser(userTo)
                 .setOnClickListener(new Runnable1<String>() {
                     @Override

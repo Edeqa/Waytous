@@ -17,6 +17,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.EditText;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Callable1;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
@@ -729,7 +730,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                             .put(USER_DESCRIPTION, savedLocation.getTitle())
                                             .put(REQUEST_PUSH, true)
                                             .put(RESPONSE_PRIVATE, user.getProperties().getNumber())
-                                            .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
+                                            .put(REQUEST_DELIVERY_CONFIRMATION, Misc.getUnique())
                                             .send(REQUEST_SAVED_LOCATION);
                                 } else if (user == null) {
                                     State.getInstance().getTracking()
@@ -739,7 +740,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                             .put(USER_NAME, savedLocation.getUsername())
                                             .put(USER_DESCRIPTION, savedLocation.getTitle())
                                             .put(REQUEST_PUSH, true)
-                                            .put(REQUEST_DELIVERY_CONFIRMATION, Utils.getUnique())
+                                            .put(REQUEST_DELIVERY_CONFIRMATION, Misc.getUnique())
                                             .send(REQUEST_SAVED_LOCATION);
                                 }
 

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
@@ -130,7 +131,7 @@ public class MyTracking implements Tracking {
                         if (o.has(RESPONSE_CONTROL)) {
                             String control = o.getString(RESPONSE_CONTROL);
                             String deviceId = State.getInstance().getDeviceId();
-                            String hash = Utils.getEncryptedHash(control + ":" + deviceId);
+                            String hash = Misc.getEncryptedHash(control + ":" + deviceId);
                             put(REQUEST,REQUEST_CHECK_USER);
                             put(REQUEST_HASH,hash);
                             send();

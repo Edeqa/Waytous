@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
@@ -591,7 +592,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                 req += "&avoid=ferries";
 
                             Utils.log(NavigationView.this, "Update:", myUser.getProperties().getNumber()+"|"+myUser.getProperties().getDisplayName(), "Request:",req);
-                            final String res = Utils.getUrl(req);
+                            final String res = Misc.getUrl(req);
                             lastUpdate = new Date().getTime();
                             JSONObject o = new JSONObject(res);
 

@@ -3,6 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.content.Context;
 import android.location.Location;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -96,7 +97,7 @@ public class AddressResolver {
                     } else {
                         Utils.log(AddressResolver.this, "LatLng:", current, "Request:", req); //NON-NLS
                     }
-                    final String res = Utils.getUrl(req);
+                    final String res = Misc.getUrl(req);
                     Utils.log(AddressResolver.this, "Response:", res); //NON-NLS
                     if(res.length() > 0) {
                         JSONObject address = new JSONObject(res);

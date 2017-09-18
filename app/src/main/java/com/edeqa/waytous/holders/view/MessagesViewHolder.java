@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Callable1;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
@@ -237,7 +238,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                             SystemMessage mm = new SystemMessage(context)
                                     .setFromUser(State.getInstance().getMe())
                                     .setText(etMessage.getText().toString())
-                                    .setDelivery(Utils.getUnique())
+                                    .setDelivery(Misc.getUnique())
                                     .setToUser(toUser)
                                     .setType(TYPE_PRIVATE);
                             toUser.fire(SEND_MESSAGE, mm);
@@ -255,7 +256,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                             SystemMessage mm = new SystemMessage(context)
                                     .setFromUser(State.getInstance().getMe())
                                     .setText(etMessage.getText().toString())
-                                    .setDelivery(Utils.getUnique());
+                                    .setDelivery(Misc.getUnique());
 
                             State.getInstance().fire(SEND_MESSAGE, mm);
 
@@ -340,7 +341,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         SystemMessage mm = new SystemMessage(context)
                                 .setFromUser(State.getInstance().getMe())
                                 .setText(et.getText().toString())
-                                .setDelivery(Utils.getUnique());
+                                .setDelivery(Misc.getUnique());
                         State.getInstance().fire(SEND_MESSAGE, mm);
 
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -634,7 +635,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         SystemMessage mm = new SystemMessage(context)
                                 .setFromUser(State.getInstance().getMe())
                                 .setText(et.getText().toString())
-                                .setDelivery(Utils.getUnique());
+                                .setDelivery(Misc.getUnique());
                         State.getInstance().fire(SEND_MESSAGE, mm);
 
 

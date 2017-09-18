@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
@@ -576,7 +577,7 @@ public class MyTrackingFB implements Tracking {
                         if (o.has(RESPONSE_CONTROL)) {
                             String control = o.getString(RESPONSE_CONTROL);
                             String deviceId = State.getInstance().getDeviceId();
-                            String hash = Utils.getEncryptedHash(control + ":" + deviceId);
+                            String hash = Misc.getEncryptedHash(control + ":" + deviceId);
                             put(REQUEST,REQUEST_CHECK_USER);
                             put(REQUEST_HASH,hash);
                             send();
