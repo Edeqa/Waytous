@@ -1,7 +1,7 @@
 package com.edeqa.waytous.helpers;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.State;
-import com.edeqa.waytous.interfaces.Runnable1;
 
 import org.junit.Before;
 import org.junit.Test;
