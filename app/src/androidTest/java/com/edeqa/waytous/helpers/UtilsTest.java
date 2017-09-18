@@ -168,7 +168,7 @@ public class UtilsTest {
 
     @Test
     public void formatLengthToLocale() throws Exception {
-        String text = Utils.formatLengthToLocale(10);
+        String text = Misc.formatLengthToLocale(10);
         assertEquals("  33 ft", text);
     }
 
@@ -193,7 +193,7 @@ public class UtilsTest {
 
     @Test
     public void toDateString() throws Exception {
-        assertEquals("17425d 9h 18m 40s", Utils.toDateString(1505534126840L));
+        assertEquals("17425d 9h 18m 40s", Misc.toDateString(1505534126840L));
     }
 
     @Test

@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
@@ -294,7 +295,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             line.setPoints(Arrays.asList(firstPosition(),secondPosition()));
 //            LatLng markerPosition = SphericalUtil.interpolate(firstPosition(), secondPosition(), .5);
             double distance = SphericalUtil.computeDistanceBetween(firstPosition(), secondPosition());
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(Utils.formatLengthToLocale(distance))));
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(Misc.formatLengthToLocale(distance))));
 //            marker.setPosition(markerPosition);
         }
 
@@ -335,7 +336,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         }
 
         private void updateLineAndMarker(final LatLng firstPosition, final LatLng secondPosition) {
-            title = Utils.formatLengthToLocale(SphericalUtil.computeDistanceBetween(firstPosition, secondPosition));
+            title = Misc.formatLengthToLocale(SphericalUtil.computeDistanceBetween(firstPosition, secondPosition));
 
             bounds = map.getProjection().getVisibleRegion().latLngBounds;
             boundsForName = Utils.reduce(bounds, 0.9);

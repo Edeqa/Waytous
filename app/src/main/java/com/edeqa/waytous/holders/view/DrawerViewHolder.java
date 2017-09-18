@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -19,7 +20,6 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -252,7 +252,7 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
                                 if (myUser != State.getInstance().getMe()) {
                                     long delta = new Date().getTime() - myUser.getProperties().getChanged();
                                     if (delta > 60000) {
-                                        title += " " + context.getString(R.string.s_ago, Utils.toDateString(delta));
+                                        title += " " + context.getString(R.string.s_ago, Misc.toDateString(delta));
                                     }
                                 }
                                 actionBar.setTitle(title);

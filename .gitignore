@@ -1,6 +1,6 @@
 *.iml
+.idea/libraries
 .gradle
-.idea
 build
 conf
 deploy*.sh

@@ -34,7 +34,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.List;
-import java.util.Locale;
 
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.SENSITIVE;
@@ -269,28 +268,6 @@ public class Utils {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
-    public static String formatLengthToLocale(double meters) {
-        if(Locale.US.equals(Locale.getDefault())) {
-            meters = meters * 3.2808399;
-            if(meters < 530) {
-                return String.format("%4.0f %s", meters, "ft");
-            } else {
-                meters = meters / 5280;
-                return String.format("%4.1f %s", meters, "mi");
-            }
-        } else {
-            String unit = "m";
-            if (meters < 1) {
-                meters *= 1000;
-                unit = "mm";
-            } else if (meters > 1000) {
-                meters /= 1000;
-                unit = "km";
-            }
-            return String.format("%4.1f %s", meters, unit);
-        }
-    }
-
     public static LatLngBounds reduce(LatLngBounds bounds, double fraction) {
 
         LatLng newNortheast = SphericalUtil.interpolate(bounds.northeast, bounds.southwest, (1+fraction)/2);
@@ -386,39 +363,6 @@ public class Utils {
         }
         Log.e(tag, str);
         if(e != null) e.printStackTrace();
-    }
-
-    public static String toDateString(long millis) {
-        StringBuilder res = new StringBuilder();
-        int delta = Math.round(Math.round(millis/1000));
-
-        int secInDay = 24 * 60 * 60;
-        int secInHour = 24 * 60;
-        int secInMinute = 60;
-
-        int d = Math.round(Math.round(delta / secInDay));
-        delta -= d * secInDay;
-
-        int h = Math.round(Math.round(delta / secInHour));
-        delta -= h * secInHour;
-
-        int m = Math.round(Math.round(delta / secInMinute));
-        int s = delta - m * secInMinute;
-
-        if(d > 0) {
-            res.append(d + "d");
-        }
-        if(h > 0) {
-            if(res.length() > 0) res.append(" ");
-            res.append(h + "h");
-        }
-        if(m > 0) {
-            if(res.length() > 0) res.append(" ");
-            res.append(m + "m");
-        }
-        if(res.length() > 0) res.append(" ");
-        res.append((s > 0 ? s : "0") + "s");
-        return res.toString();
     }
 
 

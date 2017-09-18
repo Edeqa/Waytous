@@ -344,7 +344,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     if(layout.getChildCount()>1) {
                         show();
                     } else if(State.getInstance().tracking_disabled()) {
-                        hide();
+                        stop();
                     }
                     break;*/
             }

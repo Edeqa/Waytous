@@ -450,7 +450,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     showNavigation = false;
                     previousLocation = null;
                     myUser.getProperties().saveFor(TYPE, null);
-                    navigationHelper.hide();
+                    navigationHelper.stop();
                     remove();
 
                     break;
