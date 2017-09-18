@@ -24,6 +24,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.NavigationHelper;
 import com.edeqa.waytous.helpers.NavigationStarter;
 import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
@@ -78,7 +79,6 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
     private static final String PREFERENCE_MODE = "navigation_mode";
     private static final String PREFERENCE_OPTIONS = "navigation_type";
-
 
     private static final String PREFERENCE_AVOID_HIGHWAYS = "navigation_avoid_highways";
     private static final String PREFERENCE_AVOID_TOLLS = "navigation_avoid_tolls";
@@ -329,9 +329,18 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         private String title;
         private List<LatLng> points;
         private int countRemoved = 0;
+        private NavigationHelper navigationHelper;
 
-        NavigationView(MyUser myUser){
+        NavigationView(final MyUser myUser){
             super(NavigationViewHolder.this.context, myUser);
+
+            navigationHelper = new NavigationHelper();
+            navigationHelper.setOnRequest(new Runnable1<String>() {
+                @Override
+                public void call(String req) {
+                    Utils.log(NavigationView.this, "Update:", myUser.getProperties().getNumber()+"|"+myUser.getProperties().getDisplayName(), "Request:",req);
+                }
+            });
 
             Boolean props = (Boolean) myUser.getProperties().loadFor(TYPE);
             showNavigation = !(props == null || !props);
@@ -429,8 +438,10 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 case SHOW_NAVIGATION:
                     showNavigation = true;
                     if(myUser == State.getInstance().getMe()) break;
+
                     myUser.getProperties().saveFor(TYPE, showNavigation);
 
+                    navigationHelper.start();
                     onChangeLocation(myUser.getLocation());
 
                     State.getInstance().fire(SHOW_NAVIGATION);
@@ -439,6 +450,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     showNavigation = false;
                     previousLocation = null;
                     myUser.getProperties().saveFor(TYPE, null);
+                    navigationHelper.hide();
                     remove();
 
                     break;

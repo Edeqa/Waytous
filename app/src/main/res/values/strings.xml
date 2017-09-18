@@ -153,7 +153,7 @@
     <string name="friend_d">Friend %d</string>
     <string name="add_location">Add location</string>
     <string name="location_saved">Location saved</string>
-    <string name="show">Show</string>
+    <string name="active">Show</string>
     <string name="locations_d">Locations (%d)</string>
     <string name="show_all">Show all</string>
     <string name="hide_all">Hide all</string>
