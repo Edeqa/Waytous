@@ -42,7 +42,12 @@ public class NavigationHelper implements Serializable {
     private transient Runnable onStop;
     private transient Runnable1<String> onRequest;
     private transient Runnable2<Type, Object> onUpdate;
-    private transient Runnable1<Throwable> onErrorThrowable;
+    private transient Runnable1<Throwable> onErrorThrowable = new Runnable1<Throwable>() {
+        @Override
+        public void call(Throwable arg) {
+            arg.printStackTrace();
+        }
+    };
     private transient Runnable2<Integer, String> onError;
 
     private transient Location startLocation;
@@ -51,13 +56,13 @@ public class NavigationHelper implements Serializable {
 
     private transient ArrayList<Route> routes;
 
-    private Mode mode = Mode.DRIVING;
+    private transient Mode mode = Mode.DRIVING;
     private String apiKey;
 
     private long lastUpdate;
     private long lastTry;
 
-    private int selectedRoute;
+    private int activeRoute;
 
     private boolean avoidHighways;
     private boolean avoidTolls;
@@ -65,7 +70,7 @@ public class NavigationHelper implements Serializable {
 
     private volatile boolean active;
 
-    public static EventBus.Runner RUNNER_DEFAULT = new EventBus.Runner() {
+    public static final EventBus.Runner RUNNER_DEFAULT = new EventBus.Runner() {
         @Override
         public void post(final Runnable runnable) {
             executor.submit(new Runnable() {
@@ -78,7 +83,7 @@ public class NavigationHelper implements Serializable {
     };
 
     public NavigationHelper() {
-        setSelectedRoute(0);
+        setActiveRoute(0);
     }
 
     public void start() {
@@ -94,13 +99,17 @@ public class NavigationHelper implements Serializable {
             setCurrentLocation(getStartLocation());
         }
         if(onStart != null) runner.post(onStart);
-        updatePath();
+        updatePath(true);
     }
 
     public void updatePath() {
+        updatePath(false);
+    }
+
+    public void updatePath(boolean force) {
 
         long currentTimestamp = new Date().getTime();
-        if(currentTimestamp - lastUpdate < 5000) return;
+        if(!force && currentTimestamp - lastUpdate < 5000) return;
 
         executor.execute(new Runnable() {
             @SuppressWarnings("HardCodedStringLiteral")
@@ -108,17 +117,18 @@ public class NavigationHelper implements Serializable {
             public void run() {
                 if(!isActive()) return;
 
-                String req = String.format(pattern, startLocation.getLatitude(), startLocation.getLongitude(), endLocation.getLatitude(), endLocation.getLongitude(), mode.toString().toLowerCase());
-
-                if(isAvoidHighways()) req += "&avoid=highways";
-                if(isAvoidTolls()) req += "&avoid=tolls";
-                if(isAvoidFerries()) req += "&avoid=ferries";
-
-                if(onRequest != null) {
-                    onRequest.call(req);
-                }
                 String res = null;
                 try {
+                    String req = String.format(pattern, startLocation.getLatitude(), startLocation.getLongitude(), endLocation.getLatitude(), endLocation.getLongitude(), mode.toString().toLowerCase());
+
+                    if(isAvoidHighways()) req += "&avoid=highways";
+                    if(isAvoidTolls()) req += "&avoid=tolls";
+                    if(isAvoidFerries()) req += "&avoid=ferries";
+
+                    if(onRequest != null) {
+                        onRequest.call(req);
+                    }
+
                     lastTry = new Date().getTime();
 
                     res = Misc.getUrl(req);
@@ -142,9 +152,11 @@ public class NavigationHelper implements Serializable {
                                 runner.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        onUpdate.call(Type.DISTANCE, routes.get(getSelectedRoute()).fetchDistance());
-                                        onUpdate.call(Type.DURATION, routes.get(getSelectedRoute()).fetchDuration());
-                                        onUpdate.call(Type.POINTS, routes.get(getSelectedRoute()).getPoints());
+                                        onUpdate.call(Type.DISTANCE, routes.get(getActiveRoute()).fetchDistance());
+                                        onUpdate.call(Type.DURATION, routes.get(getActiveRoute()).fetchDuration());
+                                        onUpdate.call(Type.POINTS_BEFORE, routes.get(getActiveRoute()).getPoints());
+                                        onUpdate.call(Type.POINTS_AFTER, routes.get(getActiveRoute()).getPoints());
+                                        onUpdate.call(Type.POINTS, routes.get(getActiveRoute()).getPoints());
                                     }
                                 });
                             }
@@ -191,22 +203,28 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    public void updateStartLocation(Location location) {
+        if(!isActive()) return;
+
+        startLocation = location;
+
+        updatePath();
+    }
+
     public void updateCurrentLocation(Location location) {
         if(!isActive()) return;
 
         currentLocation = location;
 
+        updatePath();
+    }
 
+    public void updateEndLocation(Location location) {
+        if(!isActive()) return;
 
+        endLocation = location;
 
-        if(onUpdate != null){
-            runner.post(new Runnable() {
-                @Override
-                public void run() {
-                    onUpdate.call(Type.POINTS, routes.get(getSelectedRoute()).getPoints());
-                }
-            });
-        }
+        updatePath();
     }
 
     public void stop() {
@@ -262,6 +280,15 @@ public class NavigationHelper implements Serializable {
 
     public NavigationHelper setMode(Mode mode) {
         this.mode = mode;
+        return this;
+    }
+
+    public NavigationHelper setMode(String mode) {
+        try {
+            this.mode = Mode.valueOf(mode.toUpperCase());
+        } catch (Exception e) {
+            this.mode = Mode.DRIVING;
+        }
         return this;
     }
 
@@ -381,12 +408,12 @@ public class NavigationHelper implements Serializable {
         this.runner = runner;
     }
 
-    public int getSelectedRoute() {
-        return selectedRoute;
+    public int getActiveRoute() {
+        return activeRoute;
     }
 
-    public NavigationHelper setSelectedRoute(int selectedRoute) {
-        this.selectedRoute = selectedRoute;
+    public NavigationHelper setActiveRoute(int activeRoute) {
+        this.activeRoute = activeRoute;
         return this;
     }
 
@@ -399,7 +426,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public enum Type {
-        UPDATED, DISTANCE, DURATION, POINTS
+        UPDATED, DISTANCE, DURATION, POINTS_BEFORE, POINTS_AFTER, POINTS
     }
 
     public class Route {

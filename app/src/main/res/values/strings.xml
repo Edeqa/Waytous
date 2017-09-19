@@ -219,5 +219,6 @@
     <string name="click_here_to_report_about_error_odd_behaviour_or_some_great_idea">Click here to report about error, odd behaviour or some great idea.</string>
     <string name="too_long_message">Too long message</string>
     <string name="s_ago"> (%s ago)</string>
+    <string name="select_your_preferred_navigation_mode">Select your preferred navigation mode.</string>
 
 </resources>
