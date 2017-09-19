@@ -162,7 +162,7 @@ public class UtilsTest {
     @Test
     public void formatLengthToLocale() throws Exception {
         String text = Misc.distanceToString(10);
-        assertEquals("  33 ft", text);
+        assertEquals("33 ft", text);
     }
 
     @Test

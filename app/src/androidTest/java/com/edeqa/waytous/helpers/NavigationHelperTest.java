@@ -29,6 +29,7 @@ public class NavigationHelperTest {
 //    private MyUser user;
     private Location startLocation;
     private Location destinationLocation;
+    private Location currentLocation;
     private NavigationHelper navigationHelper;
 
 
@@ -36,12 +37,16 @@ public class NavigationHelperTest {
     public void setUp() throws Exception {
 
         startLocation = new Location("fused");
-        startLocation.setLongitude(-77.822);
-        startLocation.setLatitude(37.75101);
+        startLocation.setLongitude(-77.3591);
+        startLocation.setLatitude(38.9343);
 
         destinationLocation = new Location("fused");
-        destinationLocation.setLongitude(-77.324682);
-        destinationLocation.setLatitude(38.942308);
+        destinationLocation.setLongitude(-77.3247);
+        destinationLocation.setLatitude(38.9423);
+
+        currentLocation = new Location("fused");
+        currentLocation.setLongitude(-75.7988);
+        currentLocation.setLatitude(43.50011);
 
         navigationHelper = new NavigationHelper();
         navigationHelper.setAvoidTolls(true);
@@ -58,24 +63,35 @@ public class NavigationHelperTest {
         navigationHelper.setOnRequest(new Runnable1<String>() {
             @Override
             public void call(String address) {
-                assertEquals("https://maps.googleapis.com/maps/api/directions/json?origin=37.7510,-77.8220&destination=38.9423,-77.3247&mode=driving&alternatives=true&avoid=tolls", address);
+                assertEquals("https://maps.googleapis.com/maps/api/directions/json?origin=38.9343,-77.3591&destination=38.9423,-77.3247&mode=driving&avoid=tolls", address);
             }
         });
         navigationHelper.setOnUpdate(new Runnable2<NavigationHelper.Type, Object>() {
             @Override
             public void call(NavigationHelper.Type type, Object object) {
                 switch(type) {
-                    case UPDATED:
-                        assertEquals(null, object);
-                        break;
                     case DISTANCE:
-                        assertEquals("130.3 mi", object.toString());
+                        assertEquals("3.5 mi", object.toString());
                         break;
                     case DURATION:
-                        assertEquals("2h 9m", object.toString());
+                        assertEquals("10m 18s", object.toString());
+                        break;
+                    case POINTS_BEFORE:
+                        assertEquals(0, ((List)object).size());
+                        break;
+                    case POINTS_AFTER:
+                        assertEquals(127, ((List)object).size());
                         break;
                     case POINTS:
-                        assertEquals(275, ((List)object).size());
+                        assertEquals(127, ((List)object).size());
+                        break;
+                    case UPDATED:
+                        assertEquals(null, object);
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         synchronized (syncObject) {
                             syncObject.notify();
                         }
@@ -123,7 +139,44 @@ public class NavigationHelperTest {
             syncObject.wait();
         }
 
-        navigationHelper.updateCurrentLocation(startLocation);
+        navigationHelper.setOnRequest(new Runnable1<String>() {
+            @Override
+            public void call(String address) {
+                assertEquals("https://maps.googleapis.com/maps/api/directions/json?origin=38.9343,-77.3591&destination=38.9423,-77.3247&mode=driving&avoid=tolls&waypoints=43.50011,-75.7988", address);
+            }
+        });
+        navigationHelper.setOnUpdate(new Runnable2<NavigationHelper.Type, Object>() {
+            @Override
+            public void call(NavigationHelper.Type type, Object object) {
+                switch(type) {
+                    case DISTANCE:
+//                        assertEquals("383.4 mi", object.toString());
+                        assertEquals("422.0 mi", object.toString());
+                        break;
+                    case DURATION:
+                        assertEquals("6h 58m", object.toString());
+                        break;
+                    case POINTS_BEFORE:
+                        assertEquals(622, ((List)object).size());
+                        break;
+                    case POINTS_AFTER:
+                        assertEquals(658, ((List)object).size());
+                        break;
+                    case POINTS:
+                        assertEquals(217, ((List)object).size());
+                        break;
+                    case UPDATED:
+                        assertEquals(null, object);
+                        synchronized (syncObject) {
+                            syncObject.notify();
+                        }
+                        break;
+                    default:
+                        assertEquals(true, false);
+                }
+            }
+        });
+        navigationHelper.updateCurrentLocation(currentLocation);
         synchronized (syncObject){
             syncObject.wait();
         }
@@ -219,7 +272,7 @@ public class NavigationHelperTest {
 
     @Test
     public void getStartLocation() throws Exception {
-        assertEquals(37.75101, navigationHelper.getStartLocation().getLatitude(), .0001);
+        assertEquals(38.9343, navigationHelper.getStartLocation().getLatitude(), .0001);
     }
 
     @Test
@@ -230,7 +283,7 @@ public class NavigationHelperTest {
 
     @Test
     public void getEndLocation() throws Exception {
-        assertEquals(38.942308, navigationHelper.getEndLocation().getLatitude(), .0001);
+        assertEquals(38.9423, navigationHelper.getEndLocation().getLatitude(), .0001);
     }
 
     @Test

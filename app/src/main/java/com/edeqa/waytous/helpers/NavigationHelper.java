@@ -8,6 +8,7 @@ import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +34,12 @@ public class NavigationHelper implements Serializable {
     public static final int ERROR_JSON = 1;
     public static final int ERROR_OVER_QUERY_LIMIT = 2;
 
+    public static int distanceForRebuildForce = 20;
+    public static int maxFailsCount = 10;
+    public static int afterFailDelay = 2;
+
     @SuppressWarnings("HardCodedStringLiteral")
-    private static final String pattern = "https://maps.googleapis.com/maps/api/directions/json?origin=%g,%g&destination=%g,%g&mode=%s&alternatives=true";
+    private static final String pattern = "https://maps.googleapis.com/maps/api/directions/json?origin=%g,%g&destination=%g,%g&mode=%s";
 
     private transient EventBus.Runner runner;
 
@@ -50,9 +55,12 @@ public class NavigationHelper implements Serializable {
     };
     private transient Runnable2<Integer, String> onError;
 
-    private transient Location startLocation;
-    private transient Location endLocation;
-    private transient Location currentLocation;
+    private volatile transient Location startLocation;
+    private transient Location previousStartLocation;
+    private volatile transient Location endLocation;
+    private transient Location previousEndLocation;
+    private volatile transient Location currentLocation;
+    private transient Location previousCurrentLocation;
 
     private transient ArrayList<Route> routes;
 
@@ -61,6 +69,7 @@ public class NavigationHelper implements Serializable {
 
     private long lastUpdate;
     private long lastTry;
+    private int failsCount;
 
     private int activeRoute;
 
@@ -86,6 +95,15 @@ public class NavigationHelper implements Serializable {
         setActiveRoute(0);
     }
 
+
+    public static int getDistanceForRebuildForce() {
+        return distanceForRebuildForce;
+    }
+
+    public static void setDistanceForRebuildForce(int distanceForRebuildForce) {
+        NavigationHelper.distanceForRebuildForce = distanceForRebuildForce;
+    }
+
     public void start() {
         if(isActive()) return;
 
@@ -98,6 +116,11 @@ public class NavigationHelper implements Serializable {
         if(getCurrentLocation() == null) {
             setCurrentLocation(getStartLocation());
         }
+
+        previousStartLocation = getStartLocation();
+        previousCurrentLocation = getCurrentLocation();
+        previousEndLocation = getEndLocation();
+
         if(onStart != null) runner.post(onStart);
         updatePath(true);
     }
@@ -109,7 +132,10 @@ public class NavigationHelper implements Serializable {
     public void updatePath(boolean force) {
 
         long currentTimestamp = new Date().getTime();
-        if(!force && currentTimestamp - lastUpdate < 5000) return;
+        if(!force && currentTimestamp - lastUpdate < 5000){
+//            throwUpdate();
+            return;
+        }
 
         executor.execute(new Runnable() {
             @SuppressWarnings("HardCodedStringLiteral")
@@ -119,11 +145,16 @@ public class NavigationHelper implements Serializable {
 
                 String res = null;
                 try {
-                    String req = String.format(pattern, startLocation.getLatitude(), startLocation.getLongitude(), endLocation.getLatitude(), endLocation.getLongitude(), mode.toString().toLowerCase());
+                    String req = String.format(pattern, getStartLocation().getLatitude(), getStartLocation().getLongitude(), getEndLocation().getLatitude(), getEndLocation().getLongitude(), mode.toString().toLowerCase());
 
                     if(isAvoidHighways()) req += "&avoid=highways";
                     if(isAvoidTolls()) req += "&avoid=tolls";
                     if(isAvoidFerries()) req += "&avoid=ferries";
+
+                    if(getStartLocation().getLatitude() != getCurrentLocation().getLatitude() &&
+                            getStartLocation().getLongitude() != getCurrentLocation().getLongitude()) {
+                        req += "&waypoints=" + getCurrentLocation().getLatitude() + "," +getCurrentLocation().getLongitude();
+                    }
 
                     if(onRequest != null) {
                         onRequest.call(req);
@@ -133,7 +164,6 @@ public class NavigationHelper implements Serializable {
 
                     res = Misc.getUrl(req);
                     if(!isActive()) return;
-
                     JSONObject o = new JSONObject(res);
 
                     switch(o.getString("status")) {
@@ -152,29 +182,33 @@ public class NavigationHelper implements Serializable {
                                 runner.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        onUpdate.call(Type.DISTANCE, routes.get(getActiveRoute()).fetchDistance());
-                                        onUpdate.call(Type.DURATION, routes.get(getActiveRoute()).fetchDuration());
-                                        onUpdate.call(Type.POINTS_BEFORE, routes.get(getActiveRoute()).getPoints());
-                                        onUpdate.call(Type.POINTS_AFTER, routes.get(getActiveRoute()).getPoints());
-                                        onUpdate.call(Type.POINTS, routes.get(getActiveRoute()).getPoints());
+                                        Route route = routes.get(getActiveRoute());
+                                        onUpdate.call(Type.DISTANCE, route.fetchDistance());
+                                        onUpdate.call(Type.DURATION, route.fetchDuration());
+
+                                        if(routes.get(getActiveRoute()).getLegs().size() > 1) {
+                                            onUpdate.call(Type.POINTS_BEFORE, PolyUtil.simplify(route.getLegs().get(0).getPoints(), 50));
+                                            onUpdate.call(Type.POINTS_AFTER, PolyUtil.simplify(route.getLegs().get(1).getPoints(), 50));
+                                        } else {
+                                            onUpdate.call(Type.POINTS_BEFORE, new ArrayList<LatLng>());
+                                            onUpdate.call(Type.POINTS_AFTER, route.getPoints());
+                                        }
+                                        onUpdate.call(Type.POINTS, route.getPoints());
                                     }
                                 });
                             }
                             break;
                         case "OVER_QUERY_LIMIT":
                             String message = "Daily request quota for Direction API is exceeded";
+                            failsCount ++;
+                            if(failsCount > maxFailsCount)
+
+
                             throwError(ERROR_OVER_QUERY_LIMIT, message);
                             break;
                     }
 
-                    if(onUpdate != null) {
-                        runner.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                onUpdate.call(Type.UPDATED, null);
-                            }
-                        });
-                    }
+                    throwUpdate();
                 } catch (Exception e) {
                     e.printStackTrace();
                     final String message = "Incorrect response: " + res;
@@ -203,28 +237,67 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    private void throwUpdate() {
+        if(onUpdate != null) {
+            runner.post(new Runnable() {
+                @Override
+                public void run() {
+                    onUpdate.call(Type.UPDATED, null);
+                }
+            });
+        }
+    }
+
     public void updateStartLocation(Location location) {
         if(!isActive()) return;
 
-        startLocation = location;
+        setStartLocation(location);
+        double distance = 0;
+        if(previousStartLocation != null) {
+            distance = SphericalUtil.computeDistanceBetween(Utils.latLng(location), Utils.latLng(previousStartLocation));
+        }
 
-        updatePath();
+        if(distance > distanceForRebuildForce) {
+            previousStartLocation = location;
+            updatePath(true);
+        } else {
+            updatePath();
+        }
     }
 
     public void updateCurrentLocation(Location location) {
         if(!isActive()) return;
 
-        currentLocation = location;
+        setCurrentLocation(location);
+        double distance = 0;
 
-        updatePath();
+        if(previousCurrentLocation != null) {
+            distance = SphericalUtil.computeDistanceBetween(Utils.latLng(location), Utils.latLng(previousCurrentLocation));
+        }
+
+        if(distance > distanceForRebuildForce) {
+            previousCurrentLocation = location;
+            updatePath(true);
+        } else {
+            updatePath();
+        }
     }
 
     public void updateEndLocation(Location location) {
         if(!isActive()) return;
 
-        endLocation = location;
+        setEndLocation(location);
+        double distance = 0;
+        if(previousEndLocation != null) {
+            distance = SphericalUtil.computeDistanceBetween(Utils.latLng(location), Utils.latLng(previousEndLocation));
+        }
 
-        updatePath();
+        if(distance > distanceForRebuildForce) {
+            previousEndLocation = location;
+            updatePath(true);
+        } else {
+            updatePath();
+        }
     }
 
     public void stop() {
@@ -493,6 +566,8 @@ public class NavigationHelper implements Serializable {
 
         private List<Step> steps;
 
+        private List<LatLng> points;
+
         private LatLng startLocation;
         private LatLng endLocation;
         private final String startAddress;
@@ -511,14 +586,20 @@ public class NavigationHelper implements Serializable {
             duration = leg.getJSONObject("duration").getInt("value");
 
             steps = new ArrayList<>();
+            points = new ArrayList<>();
             for(int i = 0; i < leg.getJSONArray("steps").length(); i++) {
                 try {
                     Step step = new Step((JSONObject) leg.getJSONArray("steps").get(i));
                     steps.add(step);
+                    points.addAll(step.getPoints());
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
             }
+        }
+
+        public List<LatLng> getPoints() {
+            return points;
         }
 
         public int getDistance() {
@@ -569,9 +650,8 @@ public class NavigationHelper implements Serializable {
 
             if(step.has("polyline")) {
                 String polyline = step.getJSONObject("polyline").getString("points");
-                points = PolyUtil.decode(polyline);
+                setPoints(PolyUtil.decode(polyline));
             }
-
         }
 
         public String getManeuver() {
@@ -588,6 +668,14 @@ public class NavigationHelper implements Serializable {
 
         public int getDuration() {
             return duration;
+        }
+
+        public List<LatLng> getPoints() {
+            return points;
+        }
+
+        public void setPoints(List<LatLng> points) {
+            this.points = points;
         }
 
         @SuppressWarnings("HardCodedStringLiteral")
