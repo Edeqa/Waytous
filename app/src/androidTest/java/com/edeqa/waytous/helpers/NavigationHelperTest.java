@@ -355,4 +355,70 @@ public class NavigationHelperTest {
     public void updateCurrentLocation() throws Exception {
     }
 
+    @Test
+    public void getDistanceForRebuildForce() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void setDistanceForRebuildForce() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void updatePath() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void updatePath1() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void updateStartLocation() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void updateEndLocation() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void getRunner() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void setRunner() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void getActiveRoute() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void setActiveRoute() throws Exception {
+        // TODO
+
+    }
+
+    @Test
+    public void getRoutesCount() throws Exception {
+        // TODO
+
+    }
+
 }

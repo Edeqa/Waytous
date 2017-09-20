@@ -132,7 +132,7 @@ public class NavigationHelper implements Serializable {
     public void updatePath(boolean force) {
 
         long currentTimestamp = new Date().getTime();
-        if(!force && currentTimestamp - lastUpdate < 5000){
+        if(!force && currentTimestamp - getLastUpdate() < 5000){
 //            throwUpdate();
             return;
         }
@@ -168,7 +168,7 @@ public class NavigationHelper implements Serializable {
 
                     switch(o.getString("status")) {
                         case "OK":
-                            lastUpdate = new Date().getTime();
+                            setLastUpdate(new Date().getTime());
                             routes = new ArrayList<>();
                             for(int i = 0; i < o.getJSONArray("routes").length(); i++) {
                                 try {
