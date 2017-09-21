@@ -79,7 +79,7 @@ public class NavigationHelper implements Serializable {
 
     private volatile boolean active;
 
-    public static final EventBus.Runner RUNNER_DEFAULT = new EventBus.Runner() {
+    public static final EventBus.Runner DEFAULT_RUNNER = new EventBus.Runner() {
         @Override
         public void post(final Runnable runnable) {
             executor.submit(new Runnable() {
@@ -108,7 +108,7 @@ public class NavigationHelper implements Serializable {
         if(isActive()) return;
 
         if(runner == null) {
-            runner = RUNNER_DEFAULT;
+            runner = DEFAULT_RUNNER;
         }
 
         setActive(true);

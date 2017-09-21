@@ -11,7 +11,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * Created by eduardm on 008, 9/8/2017.
+ * Created 9/8/2017.
  */
 public class AddressResolverTest {
 
