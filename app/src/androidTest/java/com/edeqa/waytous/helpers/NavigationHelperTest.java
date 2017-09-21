@@ -163,7 +163,7 @@ public class NavigationHelperTest {
                         assertEquals(658, ((List)object).size());
                         break;
                     case POINTS:
-                        assertEquals(217, ((List)object).size());
+                        assertEquals(216, ((List)object).size());
                         break;
                     case UPDATED:
                         assertEquals(null, object);

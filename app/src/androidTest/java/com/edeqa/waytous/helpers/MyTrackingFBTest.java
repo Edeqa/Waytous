@@ -232,4 +232,77 @@ public class MyTrackingFBTest {
 
     };
 
+
+    @Test
+    public void start() throws Exception {
+    }
+
+    @Test
+    public void stop() throws Exception {
+    }
+
+    @Test
+    public void put() throws Exception {
+    }
+
+    @Test
+    public void put1() throws Exception {
+    }
+
+    @Test
+    public void put2() throws Exception {
+    }
+
+    @Test
+    public void send() throws Exception {
+    }
+
+    @Test
+    public void send1() throws Exception {
+    }
+
+    @Test
+    public void send2() throws Exception {
+    }
+
+    @Test
+    public void sendUpdate() throws Exception {
+    }
+
+    @Test
+    public void sendMessage() throws Exception {
+    }
+
+    @Test
+    public void sendMessage1() throws Exception {
+    }
+
+    @Test
+    public void getStatus() throws Exception {
+    }
+
+    @Test
+    public void setStatus() throws Exception {
+    }
+
+    @Test
+    public void setTrackingListener() throws Exception {
+    }
+
+    @Test
+    public void postMessage() throws Exception {
+    }
+
+    @Test
+    public void getToken() throws Exception {
+    }
+
+    @Test
+    public void setToken() throws Exception {
+    }
+
+    @Test
+    public void getTrackingUri() throws Exception {
+    }
+
 }

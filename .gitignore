@@ -14,3 +14,5 @@ google_maps_api.xml
 *.apk
 Helpers.iml
 keystore_release.jks
+test-reports
+test-results

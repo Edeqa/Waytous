@@ -21,9 +21,11 @@ public class MyUserTest {
 
     @Before
     public void setUp() throws Exception {
+
         user = new MyUser();
         user.setUser(true);
         user.getProperties().setName(USERNAME);
+
         location = new Location("fused");
         location.setLongitude(-77.822);
         location.setLatitude(37.75101);

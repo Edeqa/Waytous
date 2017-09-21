@@ -289,7 +289,6 @@ public class CustomListDialog {
         }
     }
 
-
     public void setButton(int button, String string, DialogInterface.OnClickListener onClickListener) {
         switch(button) {
             case BUTTON_POSITIVE:
