@@ -14,11 +14,9 @@
   <component name="ChangeListManager">
     <list id="b7326f3a-291f-4db6-a39a-3401f7e27e4e" name="Default" comment="" />
     <list id="d8c1ca30-7d7e-43e7-8358-cdb9f80b3771" name="WTU-259 NavigationHelper class" comment="WTU-259 NavigationHelper class" />
-    <list id="462b48fc-d1df-427d-aa0f-d99f04bee3c8" name="WTU-285 Test coverage" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+    <list default="true" id="12e92505-66cd-4e4a-94fd-0f56486d6f87" name="WTU-286 Test coverage" comment="WTU-217 User profile">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
-    <list default="true" id="12e92505-66cd-4e4a-94fd-0f56486d6f87" name="WTU-286 Test coverage" comment="WTU-217 User profile" />
     <ignored path="Waytous.iws" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -132,7 +130,7 @@
       <file leaf-file-name="DataProcessorFirebaseV1.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="507">
+            <state relative-caret-position="372">
               <caret line="317" column="40" selection-start-line="317" selection-start-column="40" selection-end-line="317" selection-end-column="40" />
               <folding />
             </state>
@@ -5684,13 +5682,13 @@
       <branch name="master" repository="$PROJECT_DIR$/WaytousServer" original="true" />
       <branch name="master" repository="$PROJECT_DIR$/WaytousFramework" original="true" />
       <branch name="master" repository="$PROJECT_DIR$/EventBus" original="true" />
-      <changelist id="462b48fc-d1df-427d-aa0f-d99f04bee3c8" name="WTU-285 Test coverage" comment="" />
+      <changelist id="" name="WTU-285 Test coverage" comment="" />
       <created>1505965654443</created>
       <option name="issue" value="true" />
       <option name="number" value="285" />
       <option name="presentableId" value="WTU-285" />
       <option name="project" value="WTU" />
-      <updated>1505968115047</updated>
+      <updated>1506120779151</updated>
     </task>
     <task id="LOCAL-00007" summary="Fixes">
       <created>1505967842349</created>
@@ -5860,13 +5858,13 @@
     <MESSAGE value="WTU-259 NavigationHelper class" />
     <MESSAGE value="Tests" />
     <MESSAGE value="EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; tests; fixes" />
-    <MESSAGE value="WTU-285 Test coverage" />
     <MESSAGE value="Fixes" />
     <MESSAGE value="WTU-286 Test coverage" />
     <MESSAGE value="SensitiveData renamed to Options" />
     <MESSAGE value="1.41" />
     <MESSAGE value="WTU-217 User profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="WTU-217 User profile" />
+    <MESSAGE value="WTU-285 Test coverage" />
+    <option name="LAST_COMMIT_MESSAGE" value="WTU-285 Test coverage" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -6392,7 +6390,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="507">
+        <state relative-caret-position="372">
           <caret line="317" column="40" selection-start-line="317" selection-start-column="40" selection-end-line="317" selection-end-column="40" />
           <folding />
         </state>
