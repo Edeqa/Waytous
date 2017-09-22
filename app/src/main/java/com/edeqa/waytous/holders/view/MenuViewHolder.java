@@ -24,7 +24,7 @@ import com.edeqa.waytous.holders.property.PropertiesHolder;
 
 import java.util.ArrayList;
 
-import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
@@ -61,7 +61,7 @@ public class MenuViewHolder extends AbstractViewHolder {
         switch(event){
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
-                if(SENSITIVE.isDebugMode()) {
+                if(OPTIONS.isDebugMode()) {
                     optionsMenu.add("Switch day/night mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {

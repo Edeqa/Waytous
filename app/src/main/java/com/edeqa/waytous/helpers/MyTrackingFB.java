@@ -83,7 +83,7 @@ import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.USER_DISMISSED;
 import static com.edeqa.waytous.Constants.USER_JOINED;
 import static com.edeqa.waytous.Constants.USER_NAME;
@@ -124,7 +124,7 @@ public class MyTrackingFB implements Tracking {
 
 
     public MyTrackingFB() {
-        this("https://" + SENSITIVE.getServerHost(), true); //NON-NLS
+        this("https://" + OPTIONS.getServerHost(), true); //NON-NLS
     }
 
     public MyTrackingFB(String host) {
@@ -136,7 +136,7 @@ public class MyTrackingFB implements Tracking {
 
         try {
             URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + SENSITIVE.getWsPortFirebase() + uri.getPath()); //NON-NLS
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + OPTIONS.getWsPortFirebase() + uri.getPath()); //NON-NLS
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -495,7 +495,7 @@ public class MyTrackingFB implements Tracking {
 
     @Override
     public String getTrackingUri() {
-        return "http://" + serverUri.getHost() + (SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked()) + "/track/" + getToken(); //NON-NLS
+        return "http://" + serverUri.getHost() + (OPTIONS.getHttpPortMasked() == 80 ? "" : ":" + OPTIONS.getHttpPortMasked()) + "/track/" + getToken(); //NON-NLS
     }
 
     private DatabaseReference registerChildListener(DatabaseReference ref, ChildEventListener listener, int limit) {

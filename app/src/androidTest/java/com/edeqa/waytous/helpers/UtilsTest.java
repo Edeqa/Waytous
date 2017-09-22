@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.USER_ACCURACY;
 import static com.edeqa.waytous.Constants.USER_ALTITUDE;
 import static com.edeqa.waytous.Constants.USER_BEARING;
@@ -187,12 +187,12 @@ public class UtilsTest {
 
     @Test
     public void getWrappedHttpPort() throws Exception {
-        assertEquals(":" + SENSITIVE.getHttpPort(), Utils.getWrappedHttpPort());
+        assertEquals(":" + OPTIONS.getHttpPort(), Utils.getWrappedHttpPort());
     }
 
     @Test
     public void getWrappedHttpsPort() throws Exception {
-        assertEquals(":" + SENSITIVE.getHttpsPort(), Utils.getWrappedHttpsPort());
+        assertEquals(":" + OPTIONS.getHttpsPort(), Utils.getWrappedHttpsPort());
     }
 
 }

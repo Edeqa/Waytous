@@ -36,7 +36,7 @@ import java.security.MessageDigest;
 import java.util.List;
 
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.USER_ACCURACY;
 import static com.edeqa.waytous.Constants.USER_ALTITUDE;
 import static com.edeqa.waytous.Constants.USER_BEARING;
@@ -211,7 +211,7 @@ public class Utils {
         double[] latlng = filter.get_lat_long();
         location.setLatitude(latlng[0]);
         location.setLongitude(latlng[1]);
-        if(SENSITIVE.isDebugMode()) location.setBearing((float) filter.get_bearing());
+        if(OPTIONS.isDebugMode()) location.setBearing((float) filter.get_bearing());
         location.setSpeed((float) filter.get_speed(location.getAltitude()));
         return location;
 
@@ -367,11 +367,11 @@ public class Utils {
 
 
     public static String getWrappedHttpPort(){
-        return SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked();
+        return OPTIONS.getHttpPortMasked() == 80 ? "" : ":" + OPTIONS.getHttpPortMasked();
     }
 
     public static String getWrappedHttpsPort(){
-        return SENSITIVE.getHttpsPortMasked() == 443 ? "" : ":" + SENSITIVE.getHttpsPortMasked();
+        return OPTIONS.getHttpsPortMasked() == 443 ? "" : ":" + OPTIONS.getHttpsPortMasked();
     }
 
 }

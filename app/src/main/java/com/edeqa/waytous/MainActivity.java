@@ -53,7 +53,7 @@ import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_CREATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_DESTROY;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         state = State.getInstance();
 
-        if(SENSITIVE.isDebugMode()){
+        if(OPTIONS.isDebugMode()){
 //            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
 //            state.setPreference("intro",false);
         }
@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if(!SENSITIVE.isDebugMode()) return;
+                if(!OPTIONS.isDebugMode()) return;
                 try {
                     Location location = state.getMe().getLocation();
                     Location loc = new Location("touch");

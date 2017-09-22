@@ -55,7 +55,7 @@ import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytous.Constants.SENSITIVE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.USER_NAME;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
@@ -231,7 +231,7 @@ public class MyTracking implements Tracking {
     };
 
     public MyTracking() {
-        this("https://" + SENSITIVE.getServerHost(), true);
+        this("https://" + OPTIONS.getServerHost(), true);
     }
 
     public MyTracking(String host) {
@@ -243,7 +243,7 @@ public class MyTracking implements Tracking {
 
         try {
             URI uri = new URI(stringUri);
-            this.serverUri = new URI("ws://" + uri.getHost() + ":" + SENSITIVE.getWssPortDedicated() + uri.getPath());
+            this.serverUri = new URI("ws://" + uri.getHost() + ":" + OPTIONS.getWssPortDedicated() + uri.getPath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -472,7 +472,7 @@ public class MyTracking implements Tracking {
     }
 
     public String getTrackingUri() {
-        return "http://" + serverUri.getHost() + (SENSITIVE.getHttpPortMasked() == 80 ? "" : ":" + SENSITIVE.getHttpPortMasked()) + "/track/" + getToken();
+        return "http://" + serverUri.getHost() + (OPTIONS.getHttpPortMasked() == 80 ? "" : ":" + OPTIONS.getHttpPortMasked()) + "/track/" + getToken();
     }
 
     private class ReconnectRunnable implements Runnable {

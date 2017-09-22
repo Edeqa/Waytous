@@ -91,12 +91,12 @@ public class State extends MultiDexApplication {
     @Override
     public void onCreate() {
 
-//        Constants.SENSITIVE = new SensitiveData(new String[]{""+BuildConfig.DEBUG});
+//        Constants.OPTIONS = new Options(new String[]{""+BuildConfig.DEBUG});
         try {
             InputStream stream = getAssets().open("options.json"); //NON-NLS
 
             Reader reader = new InputStreamReader(stream);
-            Constants.SENSITIVE = new SensitiveData(reader);
+            Constants.OPTIONS = new Options(reader);
         } catch (IOException e) {
             e.printStackTrace();
         }
