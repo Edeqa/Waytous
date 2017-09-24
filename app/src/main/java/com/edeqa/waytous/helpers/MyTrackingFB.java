@@ -67,6 +67,7 @@ import static com.edeqa.waytous.Constants.REQUEST_MODEL;
 import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytous.Constants.REQUEST_OS;
 import static com.edeqa.waytous.Constants.REQUEST_PUSH;
+import static com.edeqa.waytous.Constants.REQUEST_SIGN_PROVIDER;
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
 import static com.edeqa.waytous.Constants.REQUEST_UPDATE;
@@ -551,14 +552,20 @@ public class MyTrackingFB implements Tracking {
                     }
                 }
                 put(REQUEST_TOKEN, getToken());
-                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
+                put(REQUEST_DEVICE_ID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
             }
             if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
+                put(REQUEST_DEVICE_ID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
             }
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
             put(REQUEST_OS, "android");
+
+            String signProvider = /*u.load(REQUEST.SIGN_PROVIDER) || */"anonymous";
+            if(signProvider != null) {
+                put(REQUEST_SIGN_PROVIDER, signProvider);
+            }
+
             if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
                 put(USER_NAME,state.getMe().getProperties().getName());
             }
@@ -576,7 +583,7 @@ public class MyTrackingFB implements Tracking {
                     case RESPONSE_STATUS_CHECK:
                         if (o.has(RESPONSE_CONTROL)) {
                             String control = o.getString(RESPONSE_CONTROL);
-                            String deviceId = State.getInstance().getDeviceId();
+                            String deviceId = Misc.getEncryptedHash(State.getInstance().getDeviceId());
                             String hash = Misc.getEncryptedHash(control + ":" + deviceId);
                             put(REQUEST,REQUEST_CHECK_USER);
                             put(REQUEST_HASH,hash);
