@@ -174,7 +174,7 @@ public class MyTrackingFBTest {
 
         @Override
         public void onReject(String reason) {
-            Log.d("TEST:onReject", reason);
+            Log.e("TEST:onReject", reason);
             assertEquals(true, reason.startsWith("This group is expired"));
             synchronized (syncObject){
                 syncObject.notify();

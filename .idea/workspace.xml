@@ -15,49 +15,11 @@
     <list id="b7326f3a-291f-4db6-a39a-3401f7e27e4e" name="Default" comment="" />
     <list id="d8c1ca30-7d7e-43e7-8358-cdb9f80b3771" name="WTU-259 NavigationHelper class" comment="WTU-259 NavigationHelper class" />
     <list id="fe3119ee-4759-40e7-929f-07a67d10ad58" name="WTU-287 Test coverage" comment="WTU-287 Test coverage" />
-    <list default="true" id="b2f32c63-f7e4-4322-b73b-d16ace075b2f" name="WTU-295 Rename device_id to uid" comment="WTU-295 Rename device_id to uid">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Options.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer" afterPath="$PROJECT_DIR$/WaytousServer" />
+    <list default="true" id="b2f32c63-f7e4-4322-b73b-d16ace075b2f" name="WTU-295 Rename device_id to uid" comment="JavaDoc updating">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers" afterPath="$PROJECT_DIR$/Helpers" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework" afterPath="$PROJECT_DIR$/WaytousFramework" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/allclasses-frame.html" afterPath="$PROJECT_DIR$/Helpers/docs/allclasses-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/allclasses-noframe.html" afterPath="$PROJECT_DIR$/Helpers/docs/allclasses-noframe.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/HtmlGenerator.Tag.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/HtmlGenerator.Tag.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/HtmlGenerator.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/HtmlGenerator.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/Mime.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/Mime.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/Misc.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/Misc.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Callable1.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Callable1.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable1.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable1.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable2.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable2.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable3.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable3.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable4.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/Runnable4.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/package-frame.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/package-summary.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/package-tree.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/interfaces/package-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/package-frame.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/package-summary.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/package-tree.html" afterPath="$PROJECT_DIR$/Helpers/docs/com/edeqa/helpers/package-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/constant-values.html" afterPath="$PROJECT_DIR$/Helpers/docs/constant-values.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/deprecated-list.html" afterPath="$PROJECT_DIR$/Helpers/docs/deprecated-list.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/help-doc.html" afterPath="$PROJECT_DIR$/Helpers/docs/help-doc.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/index-all.html" afterPath="$PROJECT_DIR$/Helpers/docs/index-all.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/index.html" afterPath="$PROJECT_DIR$/Helpers/docs/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/overview-frame.html" afterPath="$PROJECT_DIR$/Helpers/docs/overview-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/overview-summary.html" afterPath="$PROJECT_DIR$/Helpers/docs/overview-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers/docs/overview-tree.html" afterPath="$PROJECT_DIR$/Helpers/docs/overview-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/allclasses-frame.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/allclasses-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/allclasses-noframe.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/allclasses-noframe.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Constants.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Constants.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Firebase.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Firebase.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Rest.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/Rest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/package-frame.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/package-summary.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/package-tree.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/com/edeqa/waytous/package-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/constant-values.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/constant-values.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/deprecated-list.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/deprecated-list.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/help-doc.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/help-doc.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/index-all.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/index-all.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/index.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousFramework/docs/overview-tree.html" afterPath="$PROJECT_DIR$/WaytousFramework/docs/overview-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" />
     </list>
     <ignored path="Waytous.iws" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -131,112 +93,7 @@
           <activation />
         </task>
         <projects_view>
-          <tree_state>
-            <PATH>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ExternalProjectsStructure$RootNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Waytous" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ProjectNode" />
-              </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ExternalProjectsStructure$RootNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Waytous" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ProjectNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value=":WaytousFramework" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ModuleNode" />
-              </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ExternalProjectsStructure$RootNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Waytous" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ProjectNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value=":WaytousFramework" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ModuleNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Tasks" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.TasksNode" />
-              </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ExternalProjectsStructure$RootNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Waytous" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ProjectNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value=":WaytousFramework" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ModuleNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Tasks" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.TasksNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="other" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.TasksNode$1" />
-              </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ExternalProjectsStructure$RootNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Waytous" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ProjectNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value=":Helpers" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ModuleNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Tasks" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.TasksNode" />
-              </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ExternalProjectsStructure$RootNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Waytous" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ProjectNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value=":Helpers" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.ModuleNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="Tasks" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.TasksNode" />
-              </PATH_ELEMENT>
-              <PATH_ELEMENT>
-                <option name="myItemId" value="other" />
-                <option name="myItemType" value="com.intellij.openapi.externalSystem.view.TasksNode$1" />
-              </PATH_ELEMENT>
-            </PATH>
-          </tree_state>
+          <tree_state />
         </projects_view>
       </state>
     </system>
@@ -249,8 +106,8 @@
       <file leaf-file-name="DataProcessorFirebaseV1.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
-              <caret line="320" column="36" selection-start-line="320" selection-start-column="36" selection-end-line="320" selection-end-column="36" />
+            <state relative-caret-position="159">
+              <caret line="362" column="125" selection-start-line="362" selection-start-column="122" selection-end-line="362" selection-end-column="125" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#25039#26152#0" expanded="true" />
@@ -303,11 +160,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UserProfileHolder.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js">
+      <file leaf-file-name="MyTrackingFBTest.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="624" column="89" selection-start-line="624" selection-start-column="89" selection-end-line="624" selection-end-column="89" />
+            <state relative-caret-position="365">
+              <caret line="92" column="9" selection-start-line="92" selection-start-column="9" selection-end-line="92" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -374,7 +231,7 @@
   </component>
   <component name="Git.Settings">
     <option name="UPDATE_TYPE" value="MERGE" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/WaytousServer" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_COMMON_BRANCH" value="master" />
   </component>
   <component name="GradleLocalSettings">
@@ -4235,7 +4092,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTracking.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/NotificationIDService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java" />
-        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Chat.js" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js" />
@@ -4249,6 +4105,7 @@
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/css/edequate.css" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js" />
+        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" />
       </list>
     </option>
   </component>
@@ -5472,7 +5329,7 @@
       </FILE-GROUP>
     </UpdatedFiles>
   </component>
-  <component name="RunManager" selected="Gradle.Waytous:WaytousFramework [javaDoc]">
+  <component name="RunManager" selected="Android Instrumented Tests.MyTrackingFBTest">
     <configuration default="false" name="MyTrackingFBTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
       <module name="app" />
       <option name="TESTING_TYPE" value="2" />
@@ -6101,9 +5958,9 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Gradle.Waytous:WaytousFramework [javaDoc]" />
-        <item index="1" class="java.lang.String" itemvalue="Gradle.Waytous:app [signingReport]" />
-        <item index="2" class="java.lang.String" itemvalue="Android Instrumented Tests.MyTrackingFBTest" />
+        <item index="0" class="java.lang.String" itemvalue="Android Instrumented Tests.MyTrackingFBTest" />
+        <item index="1" class="java.lang.String" itemvalue="Gradle.Waytous:WaytousFramework [javaDoc]" />
+        <item index="2" class="java.lang.String" itemvalue="Gradle.Waytous:app [signingReport]" />
         <item index="3" class="java.lang.String" itemvalue="Android Instrumented Tests.UserMessageTest" />
         <item index="4" class="java.lang.String" itemvalue="Android Instrumented Tests.MyUserTest" />
       </list>
@@ -6345,7 +6202,14 @@
       <option name="project" value="WTU" />
       <updated>1506366733974</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="JavaDoc updating">
+      <created>1506374585667</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1506374585667</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <option name="clearContext" value="false" />
     <option name="createBranch" value="false" />
     <option name="useBranch" value="true" />
@@ -6365,6 +6229,21 @@
     </servers>
   </component>
   <component name="TestHistory">
+    <history-entry file="MyTrackingFBTest - 2017.09.25 at 17h 26m 05s.xml">
+      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
+    <history-entry file="MyTrackingFBTest - 2017.09.25 at 17h 32m 04s.xml">
+      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
+    <history-entry file="MyTrackingFBTest - 2017.09.25 at 17h 33m 11s.xml">
+      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
+    <history-entry file="MyTrackingFBTest - 2017.09.25 at 17h 34m 22s.xml">
+      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
+    <history-entry file="MyTrackingFBTest - 2017.09.25 at 17h 34m 29s.xml">
+      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
     <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.09.25 at 09h 43m 27s.xml">
       <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
@@ -6376,21 +6255,6 @@
     </history-entry>
     <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.09.25 at 10h 22m 03s.xml">
       <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
-    <history-entry file="UserMessageTest - 2017.09.21 at 16h 29m 09s.xml">
-      <configuration name="UserMessageTest" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
-    <history-entry file="UserMessageTest - 2017.09.21 at 16h 31m 35s.xml">
-      <configuration name="UserMessageTest" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
-    <history-entry file="UserMessageTest - 2017.09.21 at 16h 40m 41s.xml">
-      <configuration name="UserMessageTest" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
-    <history-entry file="UserMessageTest - 2017.09.21 at 16h 42m 33s.xml">
-      <configuration name="UserMessageTest" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
-    <history-entry file="UserMessageTest - 2017.09.21 at 16h 44m 28s.xml">
-      <configuration name="UserMessageTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
     <history-entry file="UserMessageTest - 2017.09.21 at 16h 45m 19s.xml">
       <configuration name="UserMessageTest" configurationId="AndroidTestRunConfigurationType" />
@@ -6407,7 +6271,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21937639" sideWeight="0.4936034" order="7" side_tool="false" content_ui="tabs" />
@@ -6416,8 +6280,8 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28619152" sideWeight="0.50852877" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" x="14" y="0" width="1186" height="987" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28619152" sideWeight="0.4914712" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28619152" sideWeight="0.4914712" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.49413645" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -6426,7 +6290,7 @@
       <window_info id="YouTrack" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28144988" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Android WiFi ADB" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.49453977" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25746268" sideWeight="0.46177846" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25746268" sideWeight="0.46177846" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24253732" sideWeight="0.46177846" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25746268" sideWeight="0.538206" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -6484,7 +6348,8 @@
     <MESSAGE value="WTU-292 Rename Terms and Conditions to Terms of Service entirely" />
     <MESSAGE value="WTU-295 Rename device_id to uid" />
     <MESSAGE value="WTU-217 User profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="WTU-217 User profile" />
+    <MESSAGE value="JavaDoc updating" />
+    <option name="LAST_COMMIT_MESSAGE" value="JavaDoc updating" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -6839,14 +6704,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="90" column="34" selection-start-line="81" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/LinearLayoutCompatBehavior.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -6935,10 +6792,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/css/edequate.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="458" column="4" selection-start-line="458" selection-start-column="4" selection-end-line="458" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="844" column="0" selection-start-line="844" selection-start-column="0" selection-end-line="844" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="613" column="10" selection-start-line="613" selection-start-column="10" selection-end-line="613" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="320" column="36" selection-start-line="320" selection-start-column="36" selection-end-line="320" selection-end-column="36" />
+        <state relative-caret-position="159">
+          <caret line="362" column="125" selection-start-line="362" selection-start-column="122" selection-end-line="362" selection-end-column="125" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#25039#26152#0" expanded="true" />
@@ -6960,26 +6841,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/css/edequate.css">
+    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="458" column="4" selection-start-line="458" selection-start-column="4" selection-end-line="458" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="844" column="0" selection-start-line="844" selection-start-column="0" selection-end-line="844" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="624" column="89" selection-start-line="624" selection-start-column="89" selection-end-line="624" selection-end-column="89" />
+        <state relative-caret-position="365">
+          <caret line="92" column="9" selection-start-line="92" selection-start-column="9" selection-end-line="92" selection-end-column="9" />
           <folding />
         </state>
       </provider>
