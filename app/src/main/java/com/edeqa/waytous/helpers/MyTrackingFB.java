@@ -366,7 +366,7 @@ public class MyTrackingFB implements Tracking {
                     return;
                 } else if(REQUEST_WELCOME_MESSAGE.equals(type)) {
                     if(state.getMe().getProperties().getNumber() == 0) {
-                        ref.child(Firebase.OPTION_WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
+                        ref.child(Firebase.WELCOME_MESSAGE).setValue(o.get(REQUEST_WELCOME_MESSAGE));
                     }
                     return;
                 }

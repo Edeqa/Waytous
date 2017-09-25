@@ -39,7 +39,7 @@ android {
             debuggable true
             minifyEnabled false
             testCoverageEnabled true
-            applicationIdSuffix ".beta"
+//            applicationIdSuffix ".beta"
         }
     }
     targetCompatibility = '1.7'
