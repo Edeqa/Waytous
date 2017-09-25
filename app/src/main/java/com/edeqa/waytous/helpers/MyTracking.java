@@ -35,7 +35,6 @@ import javax.net.ssl.SSLContext;
 import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_USER;
 import static com.edeqa.waytous.Constants.REQUEST;
 import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
-import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
 import static com.edeqa.waytous.Constants.REQUEST_HASH;
 import static com.edeqa.waytous.Constants.REQUEST_JOIN_GROUP;
 import static com.edeqa.waytous.Constants.REQUEST_LEAVE;
@@ -45,6 +44,7 @@ import static com.edeqa.waytous.Constants.REQUEST_NEW_GROUP;
 import static com.edeqa.waytous.Constants.REQUEST_OS;
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytous.Constants.REQUEST_UID;
 import static com.edeqa.waytous.Constants.REQUEST_UPDATE;
 import static com.edeqa.waytous.Constants.RESPONSE_CONTROL;
 import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
@@ -104,10 +104,10 @@ public class MyTracking implements Tracking {
                     }
                 }
                 put(REQUEST_TOKEN, getToken());
-                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
+                put(REQUEST_UID, State.getInstance().getDeviceId());
             }
             if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                put(REQUEST_DEVICE_ID, State.getInstance().getDeviceId());
+                put(REQUEST_UID, State.getInstance().getDeviceId());
             }
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);

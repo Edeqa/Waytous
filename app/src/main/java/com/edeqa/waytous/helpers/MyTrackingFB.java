@@ -58,7 +58,6 @@ import static com.edeqa.waytous.Constants.REQUEST;
 import static com.edeqa.waytous.Constants.REQUEST_CHANGE_NAME;
 import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
 import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
-import static com.edeqa.waytous.Constants.REQUEST_DEVICE_ID;
 import static com.edeqa.waytous.Constants.REQUEST_HASH;
 import static com.edeqa.waytous.Constants.REQUEST_JOIN_GROUP;
 import static com.edeqa.waytous.Constants.REQUEST_KEY;
@@ -70,6 +69,7 @@ import static com.edeqa.waytous.Constants.REQUEST_PUSH;
 import static com.edeqa.waytous.Constants.REQUEST_SIGN_PROVIDER;
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.REQUEST_TOKEN;
+import static com.edeqa.waytous.Constants.REQUEST_UID;
 import static com.edeqa.waytous.Constants.REQUEST_UPDATE;
 import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
 import static com.edeqa.waytous.Constants.RESPONSE_CONTROL;
@@ -552,10 +552,10 @@ public class MyTrackingFB implements Tracking {
                     }
                 }
                 put(REQUEST_TOKEN, getToken());
-                put(REQUEST_DEVICE_ID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
+                put(REQUEST_UID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
             }
             if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                put(REQUEST_DEVICE_ID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
+                put(REQUEST_UID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
             }
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);

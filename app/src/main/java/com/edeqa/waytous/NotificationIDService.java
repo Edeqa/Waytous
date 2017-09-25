@@ -4,6 +4,8 @@ import com.edeqa.waytous.helpers.Utils;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
+import static com.edeqa.waytous.Constants.REQUEST_UID;
+
 /**
  * Created 1/8/17.
  */
@@ -16,6 +18,6 @@ public class NotificationIDService extends FirebaseInstanceIdService {
 
         Utils.log(this, "onTokenRefresh:", refreshedToken);
 
-        State.getInstance().setPreference("device_id", refreshedToken);
+        State.getInstance().setPreference(REQUEST_UID, refreshedToken);
     }
 }
