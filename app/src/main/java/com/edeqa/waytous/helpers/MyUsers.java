@@ -119,7 +119,7 @@ public class MyUsers {
                     myUser.getProperties().setName(o.getString(USER_NAME));
                     myUser.fire(CHANGE_NAME,o.getString(USER_NAME));
                 }
-//                if(o.has(USER_COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(USER_COLOR));
+//                if(o.has(COLOR)) myUser.fire(CHANGE_COLOR,o.getInt(COLOR));
                 if(o.has(USER_PROVIDER)) {
                     Location location = Utils.jsonToLocation(o);
                     myUser.addLocation(location);

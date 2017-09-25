@@ -256,9 +256,9 @@ public class MyTrackingFB implements Tracking {
 
         if(ref != null) {
             Map<String, Object> updates = new HashMap<>();
-            updates.put(Firebase.USER_ACTIVE, false);
-            updates.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
-            ref.child(Firebase.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber()).updateChildren(updates);
+            updates.put(Firebase.ACTIVE, false);
+            updates.put(Firebase.CHANGED, ServerValue.TIMESTAMP);
+            ref.child(Firebase.USERS).child(Firebase.PUBLIC).child(""+state.getMe().getProperties().getNumber()).updateChildren(updates);
 
 /*
             Iterator<Map.Entry<DatabaseReference, Object>> iter = refs.entrySet().iterator();
@@ -282,7 +282,7 @@ public class MyTrackingFB implements Tracking {
 // remove public data of this user
             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
                 if (entry.getValue() != null && entry.getValue().isSaveable() && entry.getValue().isEraseable()) {
-                    ref.child(Firebase.SECTION_PUBLIC).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()).removeValue();
+                    ref.child(Firebase.PUBLIC).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()).removeValue();
                 }
             }
         }
@@ -360,9 +360,9 @@ public class MyTrackingFB implements Tracking {
             } else if (ref != null) {
                 if(REQUEST_CHANGE_NAME.equals(type)) {
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put(Firebase.USER_NAME, o.get(USER_NAME));
-                    childUpdates.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
-                    ref.child(Firebase.SECTION_USERS_DATA).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
+                    childUpdates.put(Firebase.NAME, o.get(USER_NAME));
+                    childUpdates.put(Firebase.CHANGED, ServerValue.TIMESTAMP);
+                    ref.child(Firebase.USERS).child(Firebase.PUBLIC).child(""+state.getMe().getProperties().getNumber()).updateChildren(childUpdates);
                     return;
                 } else if(REQUEST_WELCOME_MESSAGE.equals(type)) {
                     if(state.getMe().getProperties().getNumber() == 0) {
@@ -393,13 +393,13 @@ public class MyTrackingFB implements Tracking {
                     String to = String.valueOf(data.get(RESPONSE_PRIVATE));
                     data.remove(RESPONSE_PRIVATE);
                     data.put("from", state.getMe().getProperties().getNumber());
-                    path = Firebase.SECTION_PRIVATE + "/" + type + "/" + to;
+                    path = Firebase.PRIVATE + "/" + type + "/" + to;
                 } else {
-                    path = Firebase.SECTION_PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
+                    path = Firebase.PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
                 }
 
                 updates.put(path + "/" + key, data);
-                updates.put(Firebase.SECTION_USERS_DATA + "/" + state.getMe().getProperties().getNumber() + "/" + Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
+                updates.put(Firebase.USERS + "/" + Firebase.PUBLIC + "/" + state.getMe().getProperties().getNumber() + "/" + Firebase.CHANGED, ServerValue.TIMESTAMP);
                 Task<Void> a = ref.updateChildren(updates);
                 a.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -621,24 +621,24 @@ public class MyTrackingFB implements Tracking {
                                                 public void run() {
                                                     if (State.getInstance().tracking_active()) {
                                                         Map<String, Object> updates = new HashMap<>();
-                                                        updates.put(Firebase.USER_ACTIVE, true);
-                                                        updates.put(Firebase.USER_CHANGED, ServerValue.TIMESTAMP);
-                                                        ref.child(Firebase.SECTION_USERS_DATA)
+                                                        updates.put(Firebase.ACTIVE, true);
+                                                        updates.put(Firebase.CHANGED, ServerValue.TIMESTAMP);
+                                                        ref.child(Firebase.USERS).child(Firebase.PUBLIC)
                                                                 .child("" + state.getMe().getProperties().getNumber())
                                                                 .updateChildren(updates);
                                                     }
                                                 }
                                             }, 0, 1, TimeUnit.MINUTES);
 
-                                            registerValueListener(ref.child(Firebase.SECTION_OPTIONS).child(Firebase.OPTION_DATE_CREATED), groupListener);
+                                            registerValueListener(ref.child(Firebase.OPTIONS).child(Firebase.CREATED), groupListener);
 
-                                            registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child("" + state.getUsers().getMyNumber()).child(Firebase.USER_ACTIVE), userActiveListener);
+                                            registerValueListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC).child("" + state.getUsers().getMyNumber()).child(Firebase.ACTIVE), userActiveListener);
 
-                                            registerChildListener(ref.child(Firebase.SECTION_USERS_DATA), usersDataListener, -1);
+                                            registerChildListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC), usersDataListener, -1);
 
                                             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
                                                 if (entry.getValue().isSaveable()) {
-                                                    registerChildListener(ref.child(Firebase.SECTION_PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
+                                                    registerChildListener(ref.child(Firebase.PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
                                                 }
                                             }
 
@@ -767,16 +767,16 @@ public class MyTrackingFB implements Tracking {
                     MyUser user = State.getInstance().getUsers().addUser(o);
                     user.setUser(true);
 
-                    registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Firebase.USER_NAME),usersDataNameListener);
-                    registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Firebase.USER_ACTIVE),usersDataActiveListener);
-                    registerValueListener(ref.child(Firebase.SECTION_USERS_DATA).child(""+user.getProperties().getNumber()).child(Firebase.USER_CHANGED), usersDataChangedListener);
+                    registerValueListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC).child(""+user.getProperties().getNumber()).child(Firebase.NAME),usersDataNameListener);
+                    registerValueListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC).child(""+user.getProperties().getNumber()).child(Firebase.ACTIVE),usersDataActiveListener);
+                    registerValueListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC).child(""+user.getProperties().getNumber()).child(Firebase.CHANGED), usersDataChangedListener);
 
-//                    usersDataNameListener.onDataChange(dataSnapshot.child(Constants.DATABASE.USER_NAME));
+//                    usersDataNameListener.onDataChange(dataSnapshot.child(Constants.DATABASE.NAME));
 //                    usersDataActiveListener.onDataChange(dataSnapshot.child("active"));
 
                     for(Map.Entry<String,AbstractPropertyHolder> entry: state.getAllHolders().entrySet()) {
                         if(entry.getValue().isSaveable()) {
-                            registerChildListener(ref.child(Firebase.SECTION_PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
+                            registerChildListener(ref.child(Firebase.PUBLIC).child(entry.getKey()).child(""+user.getProperties().getNumber()), userPublicDataListener,1);
                         }
                     }
 //                    trackingListener.onAccept(o);
