@@ -218,6 +218,7 @@ public class State extends MultiDexApplication {
     }
 
     public String getDeviceId() {
+        System.out.println("DEVICEID:"+deviceId);
         if(deviceId == null) {
             deviceId = FirebaseInstanceId.getInstance().getToken();//getStringPreference("device_id", null);
 //            if(deviceId == null) {
@@ -418,5 +419,7 @@ public class State extends MultiDexApplication {
         return androidRunner;
     }
 
-
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 }

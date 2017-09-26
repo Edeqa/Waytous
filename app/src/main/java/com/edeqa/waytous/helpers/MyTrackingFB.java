@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.edeqa.helpers.Misc;
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
@@ -54,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 
 import static com.edeqa.waytous.Constants.LIFETIME_INACTIVE_USER;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.REQUEST;
 import static com.edeqa.waytous.Constants.REQUEST_CHANGE_NAME;
 import static com.edeqa.waytous.Constants.REQUEST_CHECK_USER;
@@ -84,7 +86,6 @@ import static com.edeqa.waytous.Constants.RESPONSE_STATUS_CHECK;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
-import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.USER_DISMISSED;
 import static com.edeqa.waytous.Constants.USER_JOINED;
 import static com.edeqa.waytous.Constants.USER_NAME;
@@ -122,6 +123,8 @@ public class MyTrackingFB implements Tracking {
 
     private boolean newTracking;
     private ScheduledFuture<?> scheduled;
+    private Runnable onSendSuccess;
+    private Runnable1<Throwable> onSendFailure;
 
 
     public MyTrackingFB() {
@@ -397,23 +400,25 @@ public class MyTrackingFB implements Tracking {
                 } else {
                     path = Firebase.PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
                 }
-
                 updates.put(path + "/" + key, data);
                 updates.put(Firebase.USERS + "/" + Firebase.PUBLIC + "/" + state.getMe().getProperties().getNumber() + "/" + Firebase.CHANGED, ServerValue.TIMESTAMP);
+                System.out.println("UPDATES:"+updates);
                 Task<Void> a = ref.updateChildren(updates);
                 a.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-//                            System.out.println("SUCCESS:");
+                        if(getOnSendSuccess() != null) getOnSendSuccess().run();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Utils.err(MyTrackingFB.this, "send:", e.getMessage(),e); //NON-NLS
+                        if(getOnSendFailure() != null) getOnSendFailure().call(e);
                     }
                 });
             } else {
                 Utils.log(MyTrackingFB.this, "send:", "Error sending"); //NON-NLS
+                if(getOnSendFailure() != null) getOnSendFailure().call(new Throwable("Error sending: " + o)); //NON-NLS
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -514,6 +519,25 @@ public class MyTrackingFB implements Tracking {
         ref.addValueEventListener(listener);
         refs.put(ref,listener);
     }
+
+    @Override
+    public void setOnSendSuccess(Runnable onSendSuccess) {
+        this.onSendSuccess = onSendSuccess;
+    }
+
+    private Runnable getOnSendSuccess() {
+        return onSendSuccess;
+    }
+
+    @Override
+    public void setOnSendFailure(Runnable1<Throwable> onSendFailure) {
+        this.onSendFailure = onSendFailure;
+    }
+
+    private Runnable1<Throwable> getOnSendFailure() {
+        return onSendFailure;
+    }
+
 
     private class ReconnectRunnable implements Runnable {
         @Override

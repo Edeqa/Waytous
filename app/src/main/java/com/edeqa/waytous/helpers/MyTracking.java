@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.edeqa.helpers.Misc;
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
@@ -473,6 +474,16 @@ public class MyTracking implements Tracking {
 
     public String getTrackingUri() {
         return "http://" + serverUri.getHost() + (OPTIONS.getHttpPortMasked() == 80 ? "" : ":" + OPTIONS.getHttpPortMasked()) + "/track/" + getToken();
+    }
+
+    @Override
+    public void setOnSendSuccess(Runnable onSendSuccess) {
+
+    }
+
+    @Override
+    public void setOnSendFailure(Runnable1<Throwable> onSendFailure) {
+
     }
 
     private class ReconnectRunnable implements Runnable {
