@@ -17,19 +17,8 @@
     <list default="true" id="fe3119ee-4759-40e7-929f-07a67d10ad58" name="WTU-287 Test coverage" comment="WTU-287 Test coverage">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer" afterPath="$PROJECT_DIR$/WaytousServer" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/interfaces/Tracking.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/interfaces/Tracking.java" />
-    </list>
-    <list id="46b38bfb-7c6e-46ff-b9c5-e2a1aaa8bebd" name="WTU-217 User profile" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/CheckReq.java" afterPath="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/CheckReq.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/TaskSingleValueEventFor.java" afterPath="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/TaskSingleValueEventFor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java" afterPath="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Constants.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Constants.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/State.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/State.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTracking.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTracking.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/interfaces/Tracking.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/interfaces/Tracking.java" />
     </list>
     <ignored path="Waytous.iws" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -113,19 +102,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="DataProcessorFirebaseV1.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5729">
-              <caret line="362" column="37" selection-start-line="362" selection-start-column="37" selection-end-line="362" selection-end-column="37" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#16048#16496#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WaytousFramework/src/main/java/com/edeqa/waytous/Constants.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -156,11 +132,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MyTrackingFBTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MyTrackingFBTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="365">
-              <caret line="92" column="9" selection-start-line="92" selection-start-column="9" selection-end-line="92" selection-end-column="9" />
+            <state relative-caret-position="399">
+              <caret line="258" column="19" selection-start-line="258" selection-start-column="19" selection-end-line="258" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MyTrackingFB.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="330" column="16" selection-start-line="330" selection-start-column="16" selection-end-line="330" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -5911,11 +5897,11 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Gradle.Waytous:WaytousFramework [javaDoc]" />
-        <item index="1" class="java.lang.String" itemvalue="Gradle.Waytous:app [signingReport]" />
-        <item index="2" class="java.lang.String" itemvalue="Android Instrumented Tests.UserMessageTest" />
-        <item index="3" class="java.lang.String" itemvalue="Android Instrumented Tests.MyUserTest" />
-        <item index="4" class="java.lang.String" itemvalue="Android Instrumented Tests.MyTrackingFBTest" />
+        <item index="0" class="java.lang.String" itemvalue="Android Instrumented Tests.MyTrackingFBTest" />
+        <item index="1" class="java.lang.String" itemvalue="Gradle.Waytous:WaytousFramework [javaDoc]" />
+        <item index="2" class="java.lang.String" itemvalue="Gradle.Waytous:app [signingReport]" />
+        <item index="3" class="java.lang.String" itemvalue="Android Instrumented Tests.UserMessageTest" />
+        <item index="4" class="java.lang.String" itemvalue="Android Instrumented Tests.MyUserTest" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="Applet" default="true" selected="false">
@@ -6006,13 +5992,13 @@
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" />
-      <changelist id="46b38bfb-7c6e-46ff-b9c5-e2a1aaa8bebd" name="WTU-217 User profile" comment="" />
+      <changelist id="" name="WTU-217 User profile" comment="" />
       <created>1501862551252</created>
       <option name="issue" value="true" />
       <option name="number" value="217" />
       <option name="presentableId" value="WTU-217" />
       <option name="project" value="WTU" />
-      <updated>1506462168489</updated>
+      <updated>1506462211701</updated>
     </task>
     <task id="LOCAL-00005" summary="Tests">
       <created>1505944202188</created>
@@ -6181,9 +6167,6 @@
     </servers>
   </component>
   <component name="TestHistory">
-    <history-entry file="MyTrackingFBTest - 2017.09.26 at 17h 09m 16s.xml">
-      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
     <history-entry file="MyTrackingFBTest - 2017.09.26 at 17h 09m 59s.xml">
       <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
@@ -6211,6 +6194,9 @@
     <history-entry file="MyTrackingFBTest - 2017.09.26 at 17h 43m 14s.xml">
       <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
+    <history-entry file="MyTrackingFBTest - 2017.09.26 at 17h 45m 26s.xml">
+      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -6223,7 +6209,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21937639" sideWeight="0.4936034" order="7" side_tool="false" content_ui="tabs" />
@@ -6232,8 +6218,8 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28619152" sideWeight="0.50852877" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" x="6" y="-31" width="1202" height="1026" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28619152" sideWeight="0.4914712" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28619152" sideWeight="0.4914712" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.49413645" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -6298,10 +6284,10 @@
     <MESSAGE value="Code coverage" />
     <MESSAGE value="WTU-292 Rename Terms and Conditions to Terms of Service entirely" />
     <MESSAGE value="WTU-295 Rename device_id to uid" />
-    <MESSAGE value="WTU-217 User profile" />
     <MESSAGE value="JavaDoc updating" />
     <MESSAGE value="WTU-287 Test coverage" />
-    <option name="LAST_COMMIT_MESSAGE" value="WTU-287 Test coverage" />
+    <MESSAGE value="WTU-217 User profile" />
+    <option name="LAST_COMMIT_MESSAGE" value="WTU-217 User profile" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -6645,14 +6631,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="431">
-          <caret line="404" column="44" selection-start-line="404" selection-start-column="36" selection-end-line="404" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5729">
@@ -6684,14 +6662,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7786">
           <caret line="458" column="4" selection-start-line="458" selection-start-column="4" selection-end-line="458" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="365">
-          <caret line="92" column="9" selection-start-line="92" selection-start-column="9" selection-end-line="92" selection-end-column="9" />
           <folding />
         </state>
       </provider>
@@ -6732,6 +6702,22 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1921">
           <caret line="139" column="92" selection-start-line="139" selection-start-column="92" selection-end-line="139" selection-end-column="92" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="258" column="19" selection-start-line="258" selection-start-column="19" selection-end-line="258" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="330" column="16" selection-start-line="330" selection-start-column="16" selection-end-line="330" selection-end-column="16" />
           <folding />
         </state>
       </provider>

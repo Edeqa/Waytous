@@ -1,5 +1,7 @@
 package com.edeqa.waytous.interfaces;
 
+import com.edeqa.helpers.interfaces.Runnable1;
+
 import org.json.JSONObject;
 
 /**
@@ -53,4 +55,10 @@ public interface Tracking {
     void setToken(String token);
 
     String getTrackingUri();
+
+    void setOnSendSuccess(Runnable onSendSuccess);
+
+    void setOnSendFailure(Runnable1<Throwable> onSendFailure);
+
+//    Runnable onSendSuccess();
 }

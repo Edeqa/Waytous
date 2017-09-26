@@ -342,6 +342,8 @@ public class MyTrackingFB implements Tracking {
 
     @Override
     public void send(JSONObject o) {
+        System.out.println("UPDATES:");
+
         try {
             o.put(REQUEST_TIMESTAMP, new Date().getTime());
             String type = o.getString(REQUEST);
@@ -361,6 +363,7 @@ public class MyTrackingFB implements Tracking {
                         break;
                 }
             } else if (ref != null) {
+                System.out.println("UPDATES:A");
                 if(REQUEST_CHANGE_NAME.equals(type)) {
                     Map<String, Object> childUpdates = new HashMap<>();
                     childUpdates.put(Firebase.NAME, o.get(USER_NAME));
@@ -373,6 +376,7 @@ public class MyTrackingFB implements Tracking {
                     }
                     return;
                 }
+                System.out.println("UPDATES:B");
 
                 EntityHolder holder = state.getAllHolders().get(type);
 

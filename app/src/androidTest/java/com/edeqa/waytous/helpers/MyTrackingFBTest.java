@@ -2,6 +2,8 @@ package com.edeqa.waytous.helpers;
 
 import android.util.Log;
 
+import com.edeqa.helpers.Misc;
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 
@@ -10,6 +12,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.REQUEST_KEY;
 import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
@@ -18,7 +21,6 @@ import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.USER_ACCURACY;
 import static com.edeqa.waytous.Constants.USER_ALTITUDE;
 import static com.edeqa.waytous.Constants.USER_BEARING;
@@ -45,17 +47,71 @@ public class MyTrackingFBTest {
     private MyTrackingFB tracking;
     private String link;
     final Object syncObject = new Object();
+    final Object syncMessage = new Object();
 
 
     @Before
     public void setUp() throws Exception {
 
+    }
+
+    /*
+    new group
+        new user
+        existing user
+    join group
+        new user
+            - correct group
+            - incorrect group
+        existing user
+            - correct group correct user
+            - correct group incorrect user
+            - incorrect group correct user
+            - inccorrect group incorrect user
+     */
+
+
+    @Test
+    public void testNewGroup1_NewUser() throws Exception {
+        link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
+
+        String deviceId = "test:"+ Misc.getUnique();
+        State.getInstance().setDeviceId(deviceId);
+        State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
+
+        tracking = new MyTrackingFB();
+        State.getInstance().setTracking(tracking);
+        tracking.setTrackingListener(onTrackingListener);
+        tracking.start();
+        assertEquals(TRACKING_CONNECTING, tracking.getStatus());
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        tracking.put("BOOLEAN", true);
+        tracking.put("NUMBER", 1);
+        tracking.put("STRING", "test");
+//        tracking.send();
+
+        assertEquals(TRACKING_ACTIVE, tracking.getStatus());
+
+        assertEquals(true, tracking.getTrackingUri().length() > 0);
+
+//        tracking.send(CHANGE_NAME, "test");
+//        synchronized (syncMessage){
+//            syncMessage.wait();
+//        }
+
+
+        tracking.stop();
+        assertEquals(TRACKING_DISABLED, tracking.getStatus());
 
     }
 
     @Test
-    public void testNewToken() throws Exception {
+    public void testNewGroup2_ExistingUser() throws Exception {
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
+
         tracking = new MyTrackingFB();
         State.getInstance().setTracking(tracking);
         tracking.setTrackingListener(onTrackingListener);
@@ -76,11 +132,72 @@ public class MyTrackingFBTest {
 
         tracking.stop();
         assertEquals(TRACKING_DISABLED, tracking.getStatus());
-
     }
 
     @Test
-    public void testCorrectToken() throws Exception {
+    public void testCorrectGroup1_NewUser() throws Exception {
+        link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
+
+        String deviceId = "test:"+ Misc.getUnique();
+        State.getInstance().setDeviceId(deviceId);
+        State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
+
+        tracking = new MyTrackingFB(link);
+        State.getInstance().setTracking(tracking);
+        tracking.setTrackingListener(onTrackingListener);
+        tracking.setToken(TOKEN);
+        tracking.start();
+        assertEquals(TRACKING_RECONNECTING, tracking.getStatus());
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        tracking.put("BOOLEAN", true);
+        tracking.put("NUMBER", 1);
+        tracking.put("STRING", "test");
+//        tracking.send();
+
+        assertEquals(TRACKING_ACTIVE, tracking.getStatus());
+
+        assertEquals(TOKEN, tracking.getToken());
+        assertEquals(link, tracking.getTrackingUri());
+
+        tracking.stop();
+        assertEquals(TRACKING_DISABLED, tracking.getStatus());
+    }
+
+    @Test
+    public void testCorrectGroup2_ExistingUser() throws Exception {
+        link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
+
+        tracking = new MyTrackingFB(link);
+        State.getInstance().setTracking(tracking);
+        tracking.setTrackingListener(onTrackingListener);
+        tracking.setToken(TOKEN);
+        tracking.start();
+        assertEquals(TRACKING_RECONNECTING, tracking.getStatus());
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        tracking.put("BOOLEAN", true);
+        tracking.put("NUMBER", 1);
+        tracking.put("STRING", "test");
+//        tracking.send();
+
+        assertEquals(TRACKING_ACTIVE, tracking.getStatus());
+
+        assertEquals(TOKEN, tracking.getToken());
+        assertEquals(link, tracking.getTrackingUri());
+
+        tracking.stop();
+        assertEquals(TRACKING_DISABLED, tracking.getStatus());
+    }
+
+
+
+    @Test
+    public void testCorrectGroup_Track() throws Exception {
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
         tracking = new MyTrackingFB(link);
         State.getInstance().setTracking(tracking);
@@ -104,11 +221,56 @@ public class MyTrackingFBTest {
 
         tracking.stop();
         assertEquals(TRACKING_DISABLED, tracking.getStatus());
+    }
+
+    @Test
+    public void testCorrectGroup_Group() throws Exception {
+        link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/group/" + TOKEN;
+        tracking = new MyTrackingFB(link);
+
+        link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
+        State.getInstance().setTracking(tracking);
+        tracking.setTrackingListener(onTrackingListener);
+        tracking.setToken(TOKEN);
+        tracking.start();
+        assertEquals(TRACKING_RECONNECTING, tracking.getStatus());
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        tracking.put("BOOLEAN", true);
+        tracking.put("NUMBER", 1);
+        tracking.put("STRING", "test");
+
+        tracking.setOnSendSuccess(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("TESTTEST:");
+            }
+        });
+
+        tracking.setOnSendFailure(new Runnable1<Throwable>() {
+            @Override
+            public void call(Throwable error) {
+                System.out.println("ERRERR:");
+
+            }
+        });
+        tracking.send();
+
+
+        assertEquals(TRACKING_ACTIVE, tracking.getStatus());
+
+        assertEquals(TOKEN, tracking.getToken());
+        assertEquals(link, tracking.getTrackingUri());
+
+        tracking.stop();
+        assertEquals(TRACKING_DISABLED, tracking.getStatus());
 
     }
 
     @Test
-    public void testWrongToken() throws Exception {
+    public void testWrongGroup_Track() throws Exception {
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN + TOKEN;
         tracking = new MyTrackingFB(link);
         State.getInstance().setTracking(tracking);
@@ -124,6 +286,25 @@ public class MyTrackingFBTest {
         assertEquals(TRACKING_DISABLED, tracking.getStatus());
 
     }
+
+    @Test
+    public void testWrongGroup_Group() throws Exception {
+        link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/group/" + TOKEN + TOKEN;
+        tracking = new MyTrackingFB(link);
+        State.getInstance().setTracking(tracking);
+        tracking.setTrackingListener(onTrackingListener);
+        tracking.setToken(TOKEN + TOKEN);
+        tracking.start();
+        assertEquals(TRACKING_RECONNECTING, tracking.getStatus());
+
+        synchronized (syncObject){
+            syncObject.wait();
+        }
+
+        assertEquals(TRACKING_DISABLED, tracking.getStatus());
+
+    }
+
 
 
     private TrackingCallback onTrackingListener = new TrackingCallback() {
@@ -191,7 +372,7 @@ public class MyTrackingFBTest {
 
         @Override
         public void onMessage(final JSONObject o) {
-            Log.d("TEST", o.toString());
+            Log.d("TEST:", o.toString());
             try {
                 String status = o.getString(RESPONSE_STATUS);
                 switch(status) {
@@ -219,10 +400,12 @@ public class MyTrackingFBTest {
                                 && o.has(REQUEST_TIMESTAMP)
                         );
                         break;
-
                     default:
                         assertEquals("", o.toString());
                         break;
+                }
+                synchronized (syncMessage){
+                    syncMessage.notify();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
