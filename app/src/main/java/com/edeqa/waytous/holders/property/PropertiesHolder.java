@@ -15,6 +15,7 @@ import com.google.maps.android.SphericalUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -264,14 +265,17 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     break;
                 case MAKE_ACTIVE:
                     active = true;
+//                    changed = (long) object;
+                    changed = new Date().getTime();
                     break;
                 case MAKE_INACTIVE:
                     active = false;
                     selected = false;
                     break;
                 case MAKE_ENABLED:
-                case MAKE_DISABLED:
-                    changed = (long) object;
+//                case MAKE_DISABLED:
+//                    changed = (long) object;
+                    changed = new Date().getTime();
                     break;
                 case CHANGE_NUMBER:
                     number = (int) object;

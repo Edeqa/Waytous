@@ -791,7 +791,6 @@ public class MyTrackingFB implements Tracking {
                     JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
                     o.put(RESPONSE_NUMBER, Integer.parseInt(dataSnapshot.getKey()));
                     o.put(RESPONSE_INITIAL, true);
-
                     MyUser user = State.getInstance().getUsers().addUser(o);
                     user.setUser(true);
 
@@ -943,6 +942,8 @@ public class MyTrackingFB implements Tracking {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if (myUser.getProperties().isActive() != active) {
+                            System.out.println("DATES:"+myUser.getProperties().getNumber()+":"+(new Date().getTime() - myUser.getProperties().getChanged()));
+
                             try {
                                 JSONObject o = new JSONObject();
                                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
@@ -973,21 +974,23 @@ public class MyTrackingFB implements Tracking {
 
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
-                final long changed = (long) dataSnapshot.getValue();
-                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
-                    @Override
-                    public void call(Integer number, MyUser myUser) {
-                        try {
-                            JSONObject o = new JSONObject();
-                            o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
-                            o.put(RESPONSE_NUMBER, number);
-                            o.put(REQUEST_TIMESTAMP, changed);
-                            trackingListener.onMessage(o);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    final long changed = (long) dataSnapshot.getValue();
+                    state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                        @Override
+                        public void call(Integer number, MyUser myUser) {
+                            try {
+                                JSONObject o = new JSONObject();
+                                o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
+                                o.put(RESPONSE_NUMBER, number);
+                                o.put(REQUEST_TIMESTAMP, changed);
+                                trackingListener.onMessage(o);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             } catch(Exception e) {
                 e.printStackTrace();
             }

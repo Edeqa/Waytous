@@ -10,7 +10,9 @@ import com.edeqa.waytous.interfaces.TrackingCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.REQUEST_KEY;
@@ -40,6 +42,7 @@ import static junit.framework.Assert.assertEquals;
 /**
  * Created 9/11/2017.
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MyTrackingFBTest {
 
     private final static String TOKEN = "TEST";

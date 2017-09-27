@@ -6,6 +6,7 @@ import android.location.Location;
 import android.util.Log;
 
 import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
@@ -299,16 +300,21 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             });
                         } else {
                             int number = o.getInt(RESPONSE_NUMBER);
-                            final long timestamp = o.getLong(REQUEST_TIMESTAMP);
+                            long timestamp = 0;
+                            if(o.has(REQUEST_TIMESTAMP)) timestamp = o.getLong(REQUEST_TIMESTAMP);
 
+                            final long finalTimestamp = timestamp;
                             State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                                 @Override
                                 public void call(Integer number, MyUser user) {
-                                    long delta = (new Date().getTime() - timestamp) / 1000;
-                                    if(delta < 120) {
-                                        user.fire(MAKE_ENABLED, timestamp);
+                                    long delta = (new Date().getTime() - finalTimestamp) / 1000;
+                                    if(delta > 3600) {
+                                        user.fire(MAKE_INACTIVE, finalTimestamp);
+                                    } else if(delta > 120) {
+                                        user.fire(MAKE_DISABLED, finalTimestamp);
                                     } else {
-                                        user.fire(MAKE_DISABLED, timestamp);
+                                        user.fire(MAKE_ACTIVE, finalTimestamp);
+                                        user.fire(MAKE_ENABLED, finalTimestamp);
                                     }
                                 }
                             });
