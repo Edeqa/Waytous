@@ -74,7 +74,7 @@ public class NavigationHelperTest {
                         assertEquals("3.5 mi", object.toString());
                         break;
                     case DURATION:
-                        assertEquals("10m 18s", object.toString());
+                        assertEquals("10m 17s", object.toString());
                         break;
                     case POINTS_BEFORE:
                         assertEquals(0, ((List)object).size());
@@ -160,7 +160,7 @@ public class NavigationHelperTest {
                         assertEquals(621, ((List)object).size());
                         break;
                     case POINTS_AFTER:
-                        assertEquals(657, ((List)object).size());
+                        assertEquals(658, ((List)object).size());
                         break;
                     case POINTS:
                         assertEquals(216, ((List)object).size());
