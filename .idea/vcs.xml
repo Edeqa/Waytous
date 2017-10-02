@@ -4,7 +4,7 @@
     <option name="links">
       <list>
         <IssueNavigationLink>
-          <option name="issueRegexp" value="(?x)(WTU)-\d+#YouTrack" />
+          <option name="issueRegexp" value="(?x)(EB|WTU)-\d+#YouTrack" />
           <option name="linkRegexp" value="http://waytous.myjetbrains.com/youtrack/issue/$0" />
         </IssueNavigationLink>
       </list>
