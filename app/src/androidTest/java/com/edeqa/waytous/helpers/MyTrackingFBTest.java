@@ -76,6 +76,7 @@ public class MyTrackingFBTest {
 
     @Test
     public void testNewGroup1_NewUser() throws Exception {
+
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
 
         String deviceId = "test:"+ Misc.getUnique();
