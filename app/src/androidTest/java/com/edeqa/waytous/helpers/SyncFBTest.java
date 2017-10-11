@@ -77,7 +77,6 @@ public class SyncFBTest {
 
             Log.d("UserID",Misc.getEncryptedHash(State.getInstance().getDeviceId()));
 
-
             tracking = new MyTrackingFB(link);
             State.getInstance().setTracking(tracking);
             tracking.setTrackingListener(onTrackingListener);
