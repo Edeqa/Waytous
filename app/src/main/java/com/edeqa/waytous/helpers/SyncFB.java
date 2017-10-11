@@ -19,12 +19,18 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
+import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static com.edeqa.waytous.helpers.SyncFB.Mode.ADD_REMOTE;
+import static com.edeqa.waytous.helpers.SyncFB.Mode.GET_REMOTE;
+import static com.edeqa.waytous.helpers.SyncFB.Mode.OVERRIDE_LOCAL;
 import static com.edeqa.waytous.helpers.SyncFB.Mode.OVERRIDE_REMOTE;
+import static com.edeqa.waytous.helpers.SyncFB.Mode.SKIP;
+import static com.edeqa.waytous.helpers.SyncFB.Mode.UPDATE_LOCAL;
 import static com.edeqa.waytous.helpers.SyncFB.Mode.UPDATE_REMOTE;
 
 /**
@@ -153,7 +159,8 @@ public class SyncFB {
         OVERRIDE_LOCAL("ol"),
         REMOVE_LOCAL("rl"),
         UPDATE_BOTH("ub"),
-        SKIP("sk");
+        SKIP("sk"),
+        GET_REMOTE("gr");
 
         private String id;
         Mode(String id) {
@@ -172,7 +179,31 @@ public class SyncFB {
         this._ref = getRef(getChild());
         if(this._ref == null) return;
 
-        lastKeyListener = new ChildEventListener() {
+
+        this._ref.child(getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot data) {
+                if(data.getValue() == null) {
+                    getOnFinish().call(SKIP, getKey());
+                } else if(data.getValue() instanceof Map){
+                    for (DataSnapshot child : data.getChildren()) {
+                        onGetValue.call(child.getKey(), child.getValue());
+                    }
+                    getOnFinish().call(GET_REMOTE, getKey());
+                } else {
+                    getOnError().call(getKey(), new Exception("Not an object or array, use 'getValue' instead."));
+//                    getOnFinish().call(GET_REMOTE, getKey());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                getOnError().call(getKey(), databaseError.toException());
+            }
+        });
+
+
+        /*lastKeyListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot data, String s) {
 
@@ -185,6 +216,9 @@ public class SyncFB {
                     getOnFinish().call(getMode(), "[no keys]");
                     return;
                 }
+
+
+
 
                 valuesListener = new ChildEventListener() {
                     @Override
@@ -220,6 +254,9 @@ public class SyncFB {
                     }
                 };
                 SyncFB.this._ref.child(getKey()).orderByKey().limitToLast(100).addChildEventListener(valuesListener);
+
+
+
             }
 
             @Override
@@ -244,6 +281,7 @@ public class SyncFB {
             }
         };
         this._ref.child(getKey()).orderByKey().limitToLast(1).addChildEventListener(lastKeyListener);
+        */
     }
 
 
@@ -320,7 +358,9 @@ public class SyncFB {
     }
 
     public void updateRemoteValue(Object value) {
-        // TODO
+        _ref = getRef(getChild());
+        if(_ref == null) return;
+        _syncValue(UPDATE_REMOTE, value, getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), onSaveRemoteValueWithTimestamp, getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), getOnSaveLocalValue(), getOnFinish(), getOnError());
     }
 
     public void overrideRemoteValue(Object value) {
@@ -339,7 +379,7 @@ public class SyncFB {
                 Map<String, Object> updates = new HashMap<>();
 
                 Object local = newValue;
-                if(Misc.isEmpty(local)) {
+                if(Misc.isEmpty(local) && !"".equals(local)) {
                     local = onGetValue.call(key, remote);
                 }
                 if(local == null) {
@@ -350,10 +390,10 @@ public class SyncFB {
                     onError.call(key,new Exception("Remote value [" + (remote != null ? remote.getClass().getSimpleName() : null) +"] is not equivalent to local value [" + (local != null ? local.getClass().getSimpleName() : null) + "], use 'syncValues' for sync objects."));
                     return null;
                 }
+                System.out.println("B:"+local+":"+remote);
                 if(local.equals(remote)) {
                     return null;
                 }
-
                 switch (mode) {
                     case UPDATE_LOCAL:
                         boolean process = false;
@@ -376,6 +416,8 @@ public class SyncFB {
                                 onSaveLocalValue.call(key, remote, null);
                                 onFinish.call(Mode.ADD_LOCAL, key);
                             }
+                        } else {
+                            onFinish.call(SKIP, key);
                         }
                         break;
                     case OVERRIDE_LOCAL:
@@ -383,6 +425,7 @@ public class SyncFB {
                             onError.call(key, new Exception("Mode OVERRIDE_REMOTE allowed only for strings."));
                             return null;
                         }
+                        System.out.println("LOCAL:"+Misc.isEmpty(local)+":"+local+":"+remote);
                         if(!Misc.isEmpty(local)) {
                             onUpdateLocalValue.call(key, remote, local);
                             onSaveLocalValue.call(key, remote, local);
@@ -407,7 +450,6 @@ public class SyncFB {
                                     && (ServerValue.TIMESTAMP.equals(((Map) local).get(Firebase.SYNCED)) || Long.valueOf(((Map) local).get(Firebase.SYNCED).toString()) > Long.valueOf(((Map) remote).get(Firebase.SYNCED).toString()))) {
                                 process = true;
                             }
-
                         }
                         if(process) {
                             updates.put(key, local);
@@ -438,16 +480,18 @@ public class SyncFB {
                                     onError.call(key, e);
                                 }
                             });
+                        } else {
+                            onFinish.call(SKIP, key);
                         }
                         break;
                     case OVERRIDE_REMOTE:
-                        if((!Misc.isEmpty(local) && local != ServerValue.TIMESTAMP && !(local instanceof String || local instanceof Boolean || local instanceof Number
-                            )) || (!Misc.isEmpty(remote) && !(remote instanceof String || remote instanceof Boolean || remote instanceof Number))) {
-                            onError.call(key, new Exception("Mode OVERRIDE_REMOTE allowed only for primitives (string, number, boolean)."));
-                            return null;
-                        }
-                        if(!Misc.isEmpty(local) && local instanceof Map) {
-                            if(local != ServerValue.TIMESTAMP) {
+//                        if((!Misc.isEmpty(local) && local != ServerValue.TIMESTAMP && !(local instanceof String || local instanceof Boolean || local instanceof Number
+//                            )) || (!Misc.isEmpty(remote) && !(remote instanceof String || remote instanceof Boolean || remote instanceof Number))) {
+//                            onError.call(key, new Exception("Mode OVERRIDE_REMOTE allowed only for primitives (string, number, boolean)."));
+//                            return null;
+//                        }
+                        if(!Misc.isEmpty(local)) {
+                            if(local instanceof Map && local != ServerValue.TIMESTAMP) {
                                 ((Map) local).put(Firebase.SYNCED, ServerValue.TIMESTAMP);
                             }
                             updates.put(key, local);
@@ -478,6 +522,8 @@ public class SyncFB {
                                     onError.call(key, e);
                                 }
                             });
+                        } else {
+                            onFinish.call(SKIP, key);
                         }
                         break;
                     case UPDATE_BOTH:
@@ -496,11 +542,15 @@ public class SyncFB {
     }
 
     public void updateLocalValue(Object value) {
-        // TODO
+        _ref = getRef(getChild());
+        if(_ref == null) return;
+        _syncValue(UPDATE_LOCAL, value, getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), getOnSaveRemoteValue(), getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), getOnSaveLocalValue(), getOnFinish(), getOnError());
     }
 
     public void overrideLocalValue(Object value) {
-        // TODO
+        _ref = getRef(getChild());
+        if(_ref == null) return;
+        _syncValue(OVERRIDE_LOCAL, value, getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), getOnSaveRemoteValue(), getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), getOnSaveLocalValue(), getOnFinish(), getOnError());
     }
 
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Callable2;
 import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Runnable3;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.edeqa.waytous.Constants.OPTIONS;
@@ -63,6 +65,7 @@ public class SyncFBTest {
     MyTrackingFB tracking;
     String resultKey;
     Object resultValue;
+    String testValue;
 
     @Before
     public void setUp() throws Exception {
@@ -100,7 +103,15 @@ public class SyncFBTest {
                         System.out.println("Got Value: " + key + ", [value]: " + value);
                         resultKey = key;
                         resultValue = value;
-                        return null;
+                        return value;
+                    }
+                })
+                .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
+                    @Override
+                    public void call(String key, Object newValue, Object oldValue) {
+                        System.out.println("Save Local: " + key + ", [new]: " + newValue + ", [old]: " + oldValue);
+                        resultKey = key;
+                        resultValue = newValue;
                     }
                 })
                 .setOnFinish(new Runnable2<SyncFB.Mode, String>() {
@@ -159,17 +170,14 @@ public class SyncFBTest {
         sync.setLog(true);
         sync.setKey(Firebase.CHANGED);
         sync.overrideRemoteValue(ServerValue.TIMESTAMP);
-        synchronized (syncObject) {
-            syncObject.wait();
-        }
+        waitObject();
+        sync.setLog(false);
 
         // then get values from history
         sync.setKey(Firebase.HISTORY);
         sync.getValues();
 
-        synchronized (syncObject) {
-            syncObject.wait();
-        }
+        waitObject();
         assertTrue(resultKey.startsWith("-"));
         assertEquals("p/ch", ((Map)resultValue).get(Firebase.KEYS));
         assertEquals(SyncFB.Mode.OVERRIDE_REMOTE.toString(), ((Map)resultValue).get(Firebase.MODE));
@@ -189,9 +197,7 @@ public class SyncFBTest {
         sync.setKey(REQUEST_SIGN_PROVIDER);
         sync.getValue();
 
-        synchronized (syncObject) {
-            syncObject.wait();
-        }
+        waitObject();
 
         assertEquals("sign-provider", resultKey);
         assertEquals("anonymous", resultValue);
@@ -205,26 +211,163 @@ public class SyncFBTest {
     }
 
     @Test
-    public void updateRemoteValue() throws Exception {
-        // TODO
+    public void overrideRemoteValue() throws Exception {
+
+        // test String key
+        testValue = "test-value-" + Math.random();
+
+        sync.setKey("test-key");
+        sync.overrideRemoteValue(testValue);
+
+        waitObject();
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals("test-key", resultKey);
+        assertEquals(testValue, resultValue);
+
+
+        // test Map key
+        sync.setKey("test-map");
+        Map testMap = new HashMap();
+        testMap.put("a","b");
+        testMap.put("c","d-" + Math.random());
+
+        sync.overrideRemoteValue(testMap);
+
+        waitObject();
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals("test-map", resultKey);
+        assertEquals(testMap.get("a"), ((Map)resultValue).get("a"));
+        assertEquals(testMap.get("c"), ((Map)resultValue).get("c"));
 
     }
 
     @Test
-    public void overrideRemoteValue() throws Exception {
+    public void updateRemoteValue() throws Exception {
 
+        // test String key
+        testValue = "test-value-" + Math.random();
+        String testKey = ("test-key-" + Math.random()).replaceAll("\\.", "");
+        sync.setKey(testKey);
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals(testKey, resultKey);
+        assertEquals(null, resultValue);
+
+        sync.updateRemoteValue(testValue);
+
+        waitObject();
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals(testKey, resultKey);
+        assertEquals(testValue, resultValue);
+
+        String newTestValue = "test-value-" + Math.random();
+        sync.updateRemoteValue(newTestValue);
+
+        waitObject();
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals(testKey, resultKey);
+        assertEquals(testValue, resultValue);
+
+        sync.overrideRemoteValue(newTestValue);
+
+        waitObject();
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals(testKey, resultKey);
+        assertEquals(newTestValue, resultValue);
+
+
+
+        // test Map key
+        sync.setKey("test-map");
+        Map testMap = new HashMap();
+        testMap.put("a","b");
+        testMap.put("c","d-" + Math.random());
+
+        sync.updateRemoteValue(testMap);
+
+        waitObject();
+
+        sync.getValue();
+
+        waitObject();
+
+        assertEquals("test-map", resultKey);
+        assertEquals(testMap.get("a"), ((Map)resultValue).get("a"));
+        assertNotEquals(testMap.get("c"), ((Map)resultValue).get("c"));
 
     }
 
     @Test
     public void updateLocalValue() throws Exception {
-        // TODO
+
+        testValue = "test-value";
+
+        sync.setKey("test-key");
+        sync.updateLocalValue(testValue);
+
+        waitObject();
+
+        assertEquals(null, resultKey);
+        assertNotEquals(testValue, resultValue);
+
+        testValue = "";
+
+        sync.setKey("test-key");
+        sync.updateLocalValue(testValue);
+
+        waitObject();
+
+        assertEquals("test-key", resultKey);
+        assertNotEquals(testValue, resultValue);
+
 
     }
 
     @Test
     public void overrideLocalValue() throws Exception {
-        // TODO
+
+        testValue = "test-value";
+
+        sync.setKey("test-key");
+        sync.overrideLocalValue(testValue);
+
+        waitObject();
+
+        assertEquals("test-key", resultKey);
+        assertNotEquals(testValue, resultValue);
+
+        testValue = "";
+
+        sync.setKey("test-key");
+        sync.overrideLocalValue(testValue);
+
+        waitObject();
+
+        assertEquals("test-key", resultKey);
+        assertNotEquals(testValue, resultValue);
 
     }
 
@@ -469,5 +612,15 @@ public class SyncFBTest {
 
     };
 
+
+    private void waitObject() {
+        synchronized (syncObject) {
+            try {
+                syncObject.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
