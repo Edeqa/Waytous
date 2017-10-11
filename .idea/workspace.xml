@@ -16,14 +16,21 @@
     <list id="b7326f3a-291f-4db6-a39a-3401f7e27e4e" name="Default" comment="" />
     <list id="d8c1ca30-7d7e-43e7-8358-cdb9f80b3771" name="WTU-259 NavigationHelper class" comment="WTU-259 NavigationHelper class" />
     <list id="fe3119ee-4759-40e7-929f-07a67d10ad58" name="WTU-287 Test coverage" comment="WTU-287 Test coverage" />
-    <list default="true" id="65987e5e-2a1b-4160-9db1-fe17c7970bd4" name="WTU-217 User profile" comment="WTU-217 User profile">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer" afterPath="$PROJECT_DIR$/WaytousServer" />
+    <list id="65987e5e-2a1b-4160-9db1-fe17c7970bd4" name="WTU-217 User profile" comment="WTU-217 User profile">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js" />
+    </list>
+    <list default="true" id="4d77d14b-46ad-470a-963d-f5f235f46116" name="WTU-301 SyncFB class" comment="Callable2; Callable3; Misc#isEmpty">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers" afterPath="$PROJECT_DIR$/Helpers" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer" afterPath="$PROJECT_DIR$/WaytousServer" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/NavigationHelperTest.java" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/NavigationHelperTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/SyncFBTest.java" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/SyncFBTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/SyncFB.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/SyncFB.java" />
     </list>
     <ignored path="Waytous.iws" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +65,9 @@
     <SUITE FILE_PATH="coverage/Waytous$SensitiveDataTest.coverage" NAME="SensitiveDataTest Coverage Results" MODIFIED="1506003290536" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.edeqa.waytous.*</FILTER>
     </SUITE>
+    <SUITE FILE_PATH="coverage/Waytous$MiscTest.coverage" NAME="MiscTest Coverage Results" MODIFIED="1507668954324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.edeqa.helpers.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/Waytous$All_in_Helpers.coverage" NAME="All in Helpers Coverage Results" MODIFIED="1505920322392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
     <SUITE FILE_PATH="coverage/Waytous$com_edeqa_helpers_in_Helpers.coverage" NAME="com.edeqa.helpers in Helpers Coverage Results" MODIFIED="1506005203827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.edeqa.helpers.*</FILTER>
@@ -65,6 +75,26 @@
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DockManager">
+    <window id="3">
+      <content type="file-editors">
+        <state>
+          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+            <file leaf-file-name="Utils.js" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="590">
+                    <caret line="764" column="29" selection-start-line="764" selection-start-column="29" selection-end-line="764" selection-end-column="29" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="ExternalProjectsData">
@@ -172,83 +202,53 @@
       <file leaf-file-name="Utils.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="624" column="36" selection-start-line="624" selection-start-column="36" selection-end-line="624" selection-end-column="36" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UserProfileHolder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js">
+      <file leaf-file-name="SyncFB.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/SyncFB.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10268">
-              <caret line="604" column="0" selection-start-line="604" selection-start-column="0" selection-end-line="604" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DataProcessorFirebaseV1.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="94" column="22" selection-start-line="94" selection-start-column="22" selection-end-line="94" selection-end-column="22" />
+            <state relative-caret-position="315">
+              <caret line="525" column="46" selection-start-line="525" selection-start-column="46" selection-end-line="525" selection-end-column="46" />
               <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#8459#8460#0" expanded="false" />
-                <element signature="e#8486#8487#0" expanded="false" />
+                <element signature="class#Type#0;class#SyncFB#0" expanded="false" />
+                <element signature="e#14418#24257#0" expanded="true" />
+                <element signature="e#24256#24257#0" expanded="true" />
+                <marker date="1507757096969" expanded="false" signature="9523:9539" ph="{...}" />
+                <marker date="1507757096969" expanded="false" signature="9629:9645" ph="{...}" />
+                <marker date="1507757096969" expanded="false" signature="9743:9759" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SavedLocationHolder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/SavedLocationHolder.js">
+      <file leaf-file-name="MyTrackingFBTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8619">
-              <caret line="507" column="42" selection-start-line="507" selection-start-column="42" selection-end-line="507" selection-end-column="42" />
-              <folding />
+            <state relative-caret-position="334">
+              <caret line="435" column="16" selection-start-line="435" selection-start-column="16" selection-end-line="435" selection-end-column="16" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TrackingHolder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js">
+      <file leaf-file-name="SyncFBTest.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/SyncFBTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="598">
-              <caret line="309" column="9" selection-start-line="309" selection-start-column="9" selection-end-line="309" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Group.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NavigationHelperTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/NavigationHelperTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="382">
-              <caret line="151" column="26" selection-start-line="151" selection-start-column="26" selection-end-line="151" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PropertiesHolder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/PropertiesHolder.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3927">
-              <caret line="231" column="47" selection-start-line="231" selection-start-column="47" selection-end-line="231" selection-end-column="47" />
-              <folding />
+            <state relative-caret-position="399">
+              <caret line="247" column="68" selection-start-line="247" selection-start-column="68" selection-end-line="247" selection-end-column="68" />
+              <folding>
+                <element signature="e#4320#4721#0" expanded="true" />
+                <element signature="e#4720#4721#0" expanded="true" />
+                <element signature="e#5170#5646#0" expanded="true" />
+                <element signature="e#5645#5646#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -258,6 +258,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Class" />
         <option value="JUnit4 Test Class" />
       </list>
     </option>
@@ -265,7 +266,7 @@
   <component name="Git.Settings">
     <option name="UPDATE_TYPE" value="MERGE" />
     <option name="ROOT_SYNC" value="SYNC" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/WaytousServer" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_COMMON_BRANCH" value="master" />
   </component>
   <component name="GradleLocalSettings">
@@ -4089,15 +4090,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/resources/ru/tracking.json" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/terms_and_conditions.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/privacy_policy.xml" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/content/en/privacy-policy.html" />
-        <option value="$PROJECT_DIR$/app/src/debug/google-services.json" />
-        <option value="$PROJECT_DIR$/WaytousFramework/src/main/java/com/edeqa/waytous/Constants.java" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/MyUser.java" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/MyGroup.java" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorDedicated.java" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/holders/admin/AdminSummaryHolder.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/NotificationIDService.java" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
@@ -4109,12 +4101,8 @@
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/css/edequate.css" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/TaskSingleValueEventFor.java" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/CheckReq.java" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/State.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/interfaces/Tracking.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTracking.java" />
-        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java" />
         <option value="$PROJECT_DIR$/EventBus/src/test/java/com/edeqa/eventbus/EventBusTest.java" />
         <option value="$PROJECT_DIR$/EventBus/src/main/java/com/edeqa/eventbus/EventBus.java" />
@@ -4124,7 +4112,6 @@
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/Main.js" />
         <option value="$PROJECT_DIR$/WaytousServer/firebase_rules.json" />
-        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/NavigationHelperTest.java" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Constants.js" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/DataProcessorFirebaseV1.java" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/WaytousServer.java" />
@@ -4138,8 +4125,22 @@
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/SavedLocationHolder.js" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/PropertiesHolder.js" />
-        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js" />
+        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js" />
+        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js" />
+        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/css/admin.css" />
+        <option value="$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/RestServletHandler.java" />
         <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js" />
+        <option value="$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Callable1.java" />
+        <option value="$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Callable2.java" />
+        <option value="$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Callable3.java" />
+        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/State.java" />
+        <option value="$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/Misc.java" />
+        <option value="$PROJECT_DIR$/Helpers/src/test/java/com/edeqa/helpers/MiscTest.java" />
+        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/NavigationHelperTest.java" />
+        <option value="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/SyncFB.java" />
+        <option value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/SyncFBTest.java" />
       </list>
     </option>
   </component>
@@ -4174,59 +4175,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane">
-        <subPane />
-      </pane>
-      <pane id="AndroidView">
-        <subPane />
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Local Unit Tests">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="EventBus">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="app">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-        <subPane subId="Tests">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -4363,40 +4311,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tracking" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Waytous" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Waytous" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WaytousServer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="webapp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="helpers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -4422,82 +4336,6 @@
               <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="webapp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Waytous" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Waytous" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WaytousServer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="waytousserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Waytous" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Waytous" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WaytousServer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="waytousserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="servers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -4528,6 +4366,92 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="waytous" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="helpers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -4597,13 +4521,66 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="AndroidView">
+        <subPane />
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Local Unit Tests">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="EventBus">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="app">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+        <subPane subId="Tests">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane />
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="add_unversioned_files" value="true" />
-    <property name="SearchEverywhereHistoryKey" value="logginglevel&#9;PSI&#9;JAVA://com.edeqa.eventbus.AbstractEntityHolder#loggingLevel&#10;test&#9;ACTION&#9;null&#10;duplicat&#9;ACTION&#9;MethodDuplicates" />
+    <property name="SearchEverywhereHistoryKey" value="test&#9;ACTION&#9;null&#10;logginglevel&#9;PSI&#9;JAVA://com.edeqa.eventbus.AbstractEntityHolder#loggingLevel&#10;duplicat&#9;ACTION&#9;MethodDuplicates" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="device.picker.selection" value="emulator-5556" />
@@ -4633,6 +4610,9 @@
       <recent name="C:\Users\eduardm\AndroidStudioProjects\Waytous\.idea\runConfigurations" />
       <recent name="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.edeqa.helpers.interfaces" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer\conf\developer" />
       <recent name="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework\docs" />
@@ -4654,16 +4634,7 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/.idea/misc.xml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/RestServletHandler.java</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Constants.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/PropertiesHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/SavedLocationHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/SyncFBTest.java</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Created" />
@@ -4759,13 +4730,81 @@
       </FILE-GROUP>
     </UpdatedFiles>
   </component>
-  <component name="RunManager" selected="Android Instrumented Tests.MyTrackingFBTest">
-    <configuration default="false" name="MyTrackingFBTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Android Instrumented Tests.SyncFBTest">
+    <configuration default="false" name="Tests in 'com.edeqa'" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
+      <module name="app" />
+      <option name="TESTING_TYPE" value="1" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="android.support.test.runner.AndroidJUnitRunner" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="com.edeqa" />
+      <option name="EXTRA_OPTIONS" value="" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="2147483645" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Hybrid>
+      <Java />
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Native>
+      <Profilers>
+        <option name="ENABLE_ADVANCED_PROFILING" value="false" />
+        <option name="SUPPORT_LIB_ENABLED" value="true" />
+        <option name="INSTRUMENTATION_ENABLED" value="true" />
+      </Profilers>
+      <method />
+    </configuration>
+    <configuration default="false" name="Misc" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.edeqa.helpers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="com.edeqa.helpers.Misc" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="Helpers" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="MiscTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
       <module name="app" />
       <option name="TESTING_TYPE" value="2" />
       <option name="INSTRUMENTATION_RUNNER_CLASS" value="android.support.test.runner.AndroidJUnitRunner" />
       <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="com.edeqa.waytous.helpers.MyTrackingFBTest" />
+      <option name="CLASS_NAME" value="com.edeqa.helpers.MiscTest" />
       <option name="PACKAGE_NAME" value="" />
       <option name="EXTRA_OPTIONS" value="" />
       <option name="PREFERRED_AVD" value="" />
@@ -4808,12 +4847,38 @@
       </Profilers>
       <method />
     </configuration>
-    <configuration default="false" name="MyUserTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="MiscTest" type="AndroidJUnit" factoryName="Android JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.edeqa.helpers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="Helpers" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.edeqa.helpers" />
+      <option name="MAIN_CLASS_NAME" value="com.edeqa.helpers.MiscTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="SyncFBTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
       <module name="app" />
       <option name="TESTING_TYPE" value="2" />
       <option name="INSTRUMENTATION_RUNNER_CLASS" value="android.support.test.runner.AndroidJUnitRunner" />
       <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="com.edeqa.waytous.helpers.MyUserTest" />
+      <option name="CLASS_NAME" value="com.edeqa.waytous.helpers.SyncFBTest" />
       <option name="PACKAGE_NAME" value="" />
       <option name="EXTRA_OPTIONS" value="" />
       <option name="PREFERRED_AVD" value="" />
@@ -4854,90 +4919,6 @@
         <option name="SUPPORT_LIB_ENABLED" value="true" />
         <option name="INSTRUMENTATION_ENABLED" value="true" />
       </Profilers>
-      <method />
-    </configuration>
-    <configuration default="false" name="UserMessageTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
-      <module name="app" />
-      <option name="TESTING_TYPE" value="2" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="android.support.test.runner.AndroidJUnitRunner" />
-      <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="com.edeqa.waytous.helpers.UserMessageTest" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="EXTRA_OPTIONS" value="" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
-      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
-      <Auto>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Auto>
-      <Hybrid>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Hybrid>
-      <Java />
-      <Native>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Native>
-      <Profilers>
-        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
-        <option name="SUPPORT_LIB_ENABLED" value="true" />
-        <option name="INSTRUMENTATION_ENABLED" value="true" />
-      </Profilers>
-      <method />
-    </configuration>
-    <configuration default="false" name="Waytous:app [signingReport]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/app" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="signingReport" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <method />
-    </configuration>
-    <configuration default="false" name="Waytous:WaytousFramework [javaDoc]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/WaytousFramework" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="javaDoc" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
       <method />
     </configuration>
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
@@ -5247,54 +5228,6 @@
       </Profilers>
       <method />
     </configuration>
-    <configuration default="false" name="NavigationHelperTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" nameIsGenerated="true">
-      <module name="app" />
-      <option name="TESTING_TYPE" value="2" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="android.support.test.runner.AndroidJUnitRunner" />
-      <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="com.edeqa.waytous.helpers.NavigationHelperTest" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="EXTRA_OPTIONS" value="" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
-      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
-      <Auto>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Auto>
-      <Hybrid>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Hybrid>
-      <Java />
-      <Native>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Native>
-      <Profilers>
-        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
-        <option name="SUPPORT_LIB_ENABLED" value="true" />
-        <option name="INSTRUMENTATION_ENABLED" value="true" />
-      </Profilers>
-      <method />
-    </configuration>
     <configuration default="false" name="WaytousServlet" type="AppEngineRunConfiguration" factoryName="App Engine DevAppServer" singleton="true">
       <module name="WaytousServer" />
       <setting name="serverAddress" value="0.0.0.0" />
@@ -5372,27 +5305,26 @@
       </Profilers>
       <method />
     </configuration>
-    <list size="12">
+    <list size="11">
       <item index="0" class="java.lang.String" itemvalue="Android App.app" />
       <item index="1" class="java.lang.String" itemvalue="Android App.app On Device" />
       <item index="2" class="java.lang.String" itemvalue="Android Instrumented Tests.Unnamed" />
-      <item index="3" class="java.lang.String" itemvalue="Android Instrumented Tests.NavigationHelperTest" />
-      <item index="4" class="java.lang.String" itemvalue="App Engine DevAppServer.WaytousServlet" />
-      <item index="5" class="java.lang.String" itemvalue="Application.WaytousServer" />
-      <item index="6" class="java.lang.String" itemvalue="Android Instrumented Tests.Tests in 'com.edeqa.waytous'" />
-      <item index="7" class="java.lang.String" itemvalue="Android Instrumented Tests.MyTrackingFBTest" />
-      <item index="8" class="java.lang.String" itemvalue="Android Instrumented Tests.MyUserTest" />
-      <item index="9" class="java.lang.String" itemvalue="Android Instrumented Tests.UserMessageTest" />
-      <item index="10" class="java.lang.String" itemvalue="Gradle.Waytous:app [signingReport]" />
-      <item index="11" class="java.lang.String" itemvalue="Gradle.Waytous:WaytousFramework [javaDoc]" />
+      <item index="3" class="java.lang.String" itemvalue="App Engine DevAppServer.WaytousServlet" />
+      <item index="4" class="java.lang.String" itemvalue="Application.WaytousServer" />
+      <item index="5" class="java.lang.String" itemvalue="Android Instrumented Tests.Tests in 'com.edeqa.waytous'" />
+      <item index="6" class="java.lang.String" itemvalue="Android Instrumented Tests.Tests in 'com.edeqa'" />
+      <item index="7" class="java.lang.String" itemvalue="Application.Misc" />
+      <item index="8" class="java.lang.String" itemvalue="Android Instrumented Tests.MiscTest" />
+      <item index="9" class="java.lang.String" itemvalue="Android JUnit.MiscTest" />
+      <item index="10" class="java.lang.String" itemvalue="Android Instrumented Tests.SyncFBTest" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Android Instrumented Tests.MyTrackingFBTest" />
-        <item index="1" class="java.lang.String" itemvalue="Gradle.Waytous:WaytousFramework [javaDoc]" />
-        <item index="2" class="java.lang.String" itemvalue="Gradle.Waytous:app [signingReport]" />
-        <item index="3" class="java.lang.String" itemvalue="Android Instrumented Tests.UserMessageTest" />
-        <item index="4" class="java.lang.String" itemvalue="Android Instrumented Tests.MyUserTest" />
+        <item index="0" class="java.lang.String" itemvalue="Android Instrumented Tests.SyncFBTest" />
+        <item index="1" class="java.lang.String" itemvalue="Android JUnit.MiscTest" />
+        <item index="2" class="java.lang.String" itemvalue="Android Instrumented Tests.MiscTest" />
+        <item index="3" class="java.lang.String" itemvalue="Application.Misc" />
+        <item index="4" class="java.lang.String" itemvalue="Android Instrumented Tests.Tests in 'com.edeqa'" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="Applet" default="true" selected="false">
@@ -5412,7 +5344,7 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="StructureViewFactory">
-    <option name="ACTIVE_ACTIONS" value=",SHOW_INTERFACES" />
+    <option name="ACTIVE_ACTIONS" value=",SHOW_INTERFACES,ALPHA_COMPARATOR" />
   </component>
   <component name="SvnConfiguration">
     <configuration>C:\Users\eduardm\AppData\Roaming\Subversion</configuration>
@@ -5424,11 +5356,16 @@
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" original="true" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" original="true" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" original="true" />
       <changelist id="b7326f3a-291f-4db6-a39a-3401f7e27e4e" name="Default" comment="" />
       <created>1505741747822</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1505759118612</updated>
+      <updated>1507643449511</updated>
     </task>
     <task id="WTU-259" summary="NavigationHelper class">
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" />
@@ -5477,19 +5414,24 @@
       <option name="project" value="LOCAL" />
       <updated>1505769426611</updated>
     </task>
-    <task active="true" id="WTU-217" summary="User profile">
+    <task id="WTU-217" summary="User profile">
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" />
       <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" original="true" />
       <changelist id="65987e5e-2a1b-4160-9db1-fe17c7970bd4" name="WTU-217 User profile" comment="" />
       <created>1501862551252</created>
       <option name="issue" value="true" />
       <option name="number" value="217" />
       <option name="presentableId" value="WTU-217" />
       <option name="project" value="WTU" />
-      <updated>1507151623763</updated>
+      <updated>1507671682598</updated>
     </task>
     <task id="LOCAL-00005" summary="Tests">
       <created>1505944202188</created>
@@ -5677,7 +5619,59 @@
       <option name="project" value="LOCAL" />
       <updated>1506954332498</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="WTU-302" summary="Group - show counters for active and enabled users (instead of online)">
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" original="true" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" original="true" />
+      <created>1507237621284</created>
+      <option name="issue" value="true" />
+      <option name="number" value="302" />
+      <option name="presentableId" value="WTU-302" />
+      <option name="project" value="WTU" />
+      <updated>1507323497129</updated>
+    </task>
+    <task id="WTU-303" summary="User - show card for location when clicking on mobile mode">
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" />
+      <created>1507309456135</created>
+      <option name="issue" value="true" />
+      <option name="number" value="303" />
+      <option name="presentableId" value="WTU-303" />
+      <option name="project" value="WTU" />
+      <updated>1507323515589</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fixes">
+      <created>1507326075481</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1507326075481</updated>
+    </task>
+    <task active="true" id="WTU-301" summary="SyncFB class">
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" />
+      <branch name="master" repository="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousServer" />
+      <changelist id="4d77d14b-46ad-470a-963d-f5f235f46116" name="WTU-301 SyncFB class" comment="" />
+      <created>1507051219755</created>
+      <option name="issue" value="true" />
+      <option name="number" value="301" />
+      <option name="presentableId" value="WTU-301" />
+      <option name="project" value="WTU" />
+      <updated>1507671710147</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <option name="clearContext" value="false" />
     <option name="createBranch" value="false" />
     <option name="useBranch" value="true" />
@@ -5697,35 +5691,35 @@
     </servers>
   </component>
   <component name="TestHistory">
-    <history-entry file="MyTrackingFBTest - 2017.10.05 at 12h 12m 27s.xml">
-      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 17m 35s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="MyTrackingFBTest - 2017.10.05 at 16h 18m 07s.xml">
-      <configuration name="MyTrackingFBTest" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 18m 01s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.09.29 at 09h 26m 26s.xml">
-      <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 18m 49s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.09.29 at 09h 27m 09s.xml">
-      <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 19m 26s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.09.29 at 09h 27m 51s.xml">
-      <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 19m 45s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.09.29 at 09h 29m 17s.xml">
-      <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 20m 50s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.10.03 at 16h 52m 42s.xml">
-      <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 21m 12s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="Tests_in_'com_edeqa_waytous' - 2017.10.05 at 10h 08m 55s.xml">
-      <configuration name="Tests in 'com.edeqa.waytous'" configurationId="AndroidTestRunConfigurationType" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 25m 41s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="com_edeqa_eventbus_in_EventBus - 2017.09.27 at 10h 42m 21s.xml">
-      <configuration name="com.edeqa.eventbus in EventBus" configurationId="AndroidJUnit" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 26m 21s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
-    <history-entry file="com_edeqa_eventbus_in_EventBus - 2017.09.27 at 10h 43m 55s.xml">
-      <configuration name="com.edeqa.eventbus in EventBus" configurationId="AndroidJUnit" />
+    <history-entry file="SyncFBTest - 2017.10.11 at 17h 27m 14s.xml">
+      <configuration name="SyncFBTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -5739,7 +5733,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21937639" sideWeight="0.4904051" order="7" side_tool="false" content_ui="tabs" />
@@ -5747,9 +5741,9 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36191538" sideWeight="0.50692964" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" x="6" y="-31" width="1202" height="1026" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" x="26" y="11" width="1530" height="986" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28619152" sideWeight="0.4914712" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36191538" sideWeight="0.49307036" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36191538" sideWeight="0.49307036" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.49413645" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -5758,7 +5752,7 @@
       <window_info id="YouTrack" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28144988" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Android WiFi ADB" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.49453977" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25746268" sideWeight="0.45768374" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24786781" sideWeight="0.45768374" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17324094" sideWeight="0.4524181" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25746268" sideWeight="0.538206" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3997773" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -5770,7 +5764,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24786781" sideWeight="0.54231626" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24786781" sideWeight="0.5475819" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -5805,7 +5799,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="false" />
-    <MESSAGE value="Fixes" />
     <MESSAGE value="WTU-259 NavigationHelper class" />
     <MESSAGE value="Initial" />
     <MESSAGE value="Tests" />
@@ -5819,202 +5812,19 @@
     <MESSAGE value="1.0" />
     <MESSAGE value="1.41" />
     <MESSAGE value="WTU-299 Add google analytics tracking code" />
+    <MESSAGE value="WTU-302 Group - show counters for active and enabled users (instead of online)" />
+    <MESSAGE value="WTU-303 User - show card for location when clicking on mobile mode" />
+    <MESSAGE value="Fixes" />
     <MESSAGE value="WTU-217 User profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="WTU-217 User profile" />
+    <MESSAGE value="WTU-301 SyncFB class" />
+    <MESSAGE value="Callable2; Callable3; Misc#isEmpty" />
+    <option name="LAST_COMMIT_MESSAGE" value="Callable2; Callable3; Misc#isEmpty" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/LinearLayoutCompatBehavior.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="42" column="9" selection-start-line="42" selection-start-column="9" selection-end-line="42" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Chat.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="57" column="87" selection-start-line="57" selection-start-column="87" selection-end-line="57" selection-end-column="87" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/MyUser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="49" column="11" selection-start-line="49" selection-start-column="11" selection-end-line="49" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/CheckReq.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="3" selection-start-line="0" selection-start-column="1" selection-end-line="0" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/helpers/TaskSingleValueEventFor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="139" column="14" selection-start-line="139" selection-start-column="14" selection-end-line="139" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="30" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/State.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="224" column="37" selection-start-line="224" selection-start-column="37" selection-end-line="224" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/interfaces/Tracking.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="63" column="1" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-25/java/lang/Override.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="50" column="18" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTracking.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="485" column="0" selection-start-line="485" selection-start-column="0" selection-end-line="485" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4063">
-          <caret line="342" column="13" selection-start-line="342" selection-start-column="13" selection-end-line="342" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EventBus/src/test/java/com/edeqa/eventbus/EventBusTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9860">
-          <caret line="607" column="0" selection-start-line="607" selection-start-column="0" selection-end-line="607" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EventBus/src/main/java/com/edeqa/eventbus/AbstractEntityHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="35" column="19" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EventBus/src/main/java/com/edeqa/eventbus/EventBus.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="37" column="16" selection-start-line="37" selection-start-column="16" selection-end-line="37" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EventBus/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="323">
-            <caret line="40" column="20" selection-start-line="40" selection-start-column="20" selection-end-line="40" selection-end-column="20" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="0">
-            <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          </first_editor>
-          <second_editor>
-            <js_state />
-          </second_editor>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/content/en/index-api.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EventBus/src/main/java/com/edeqa/eventbus/EntityHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="28" column="6" selection-start-line="28" selection-start-column="6" selection-end-line="28" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14348">
-          <caret line="844" column="0" selection-start-line="844" selection-start-column="0" selection-end-line="844" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="119" column="24" selection-start-line="119" selection-start-column="24" selection-end-line="119" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousFramework/src/main/java/com/edeqa/waytous/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="30" column="31" selection-start-line="30" selection-start-column="31" selection-end-line="30" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/css/edequate.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7786">
-          <caret line="458" column="4" selection-start-line="458" selection-start-column="4" selection-end-line="458" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Groups.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2329">
-          <caret line="138" column="0" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousFramework/src/main/java/com/edeqa/waytous/Firebase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="21" column="47" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-101033">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/firebase_rules.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="742">
@@ -6022,24 +5832,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/TrackingFB.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10404">
-          <caret line="612" column="155" selection-start-line="612" selection-start-column="110" selection-end-line="612" selection-end-column="155" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Constants.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2431">
           <caret line="143" column="12" selection-start-line="143" selection-start-column="12" selection-end-line="143" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="113" column="9" selection-start-line="113" selection-start-column="9" selection-end-line="113" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -6061,13 +5857,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/WaytousServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="72" column="9" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -6136,18 +5925,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/Main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/SavedLocationHolder.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8619">
           <caret line="507" column="42" selection-start-line="507" selection-start-column="42" selection-end-line="507" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -6155,7 +5936,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="10268">
           <caret line="604" column="0" selection-start-line="604" selection-start-column="0" selection-end-line="604" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -6163,51 +5943,282 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="94" column="22" selection-start-line="94" selection-start-column="22" selection-end-line="94" selection-end-column="22" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#8459#8460#0" expanded="false" />
-            <element signature="e#8486#8487#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/PropertiesHolder.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3927">
-          <caret line="231" column="47" selection-start-line="231" selection-start-column="47" selection-end-line="231" selection-end-column="47" />
+        <state relative-caret-position="3893">
+          <caret line="229" column="47" selection-start-line="229" selection-start-column="47" selection-end-line="229" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="423" column="35" selection-start-line="423" selection-start-column="35" selection-end-line="423" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Statistics.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="314">
+          <caret line="329" column="22" selection-start-line="329" selection-start-column="22" selection-end-line="329" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="477">
+          <caret line="127" column="0" selection-start-line="120" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/css/admin.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="632">
+          <caret line="376" column="5" selection-start-line="376" selection-start-column="5" selection-end-line="376" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/NavigationHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1802">
+          <caret line="134" column="46" selection-start-line="134" selection-start-column="44" selection-end-line="134" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/Mime.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/HtmlGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1615">
+          <caret line="106" column="27" selection-start-line="106" selection-start-column="27" selection-end-line="106" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/WaytousServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="49" column="68" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8177">
+          <caret line="481" column="51" selection-start-line="481" selection-start-column="51" selection-end-line="481" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/java/com/edeqa/waytousserver/servers/RestServletHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="680">
+          <caret line="351" column="0" selection-start-line="351" selection-start-column="0" selection-end-line="351" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/SmoothInterpolated.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Runnable1.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Runnable2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Callable1.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/Main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="377">
+          <caret line="430" column="20" selection-start-line="430" selection-start-column="20" selection-end-line="430" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Callable2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="9" column="19" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/interfaces/Callable3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousFramework/src/main/java/com/edeqa/waytous/Firebase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="48" column="38" selection-start-line="48" selection-start-column="12" selection-end-line="48" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.android/build-cache/b56a8e7a427cf8cb5854990293ac58c870dbbee8/output/jars/classes.jar!/com/google/firebase/database/ServerValue.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="12" column="44" selection-start-line="12" selection-start-column="44" selection-end-line="12" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/main/java/com/edeqa/helpers/Misc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3910">
+          <caret line="257" column="59" selection-start-line="257" selection-start-column="59" selection-end-line="257" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Helpers/src/test/java/com/edeqa/helpers/MiscTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.android/build-cache/34573cf786d0a51365d99ce8a199f430021fca0f/output/jars/classes.jar!/com/google/firebase/iid/FirebaseInstanceId.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="29" column="28" selection-start-line="29" selection-start-column="28" selection-end-line="29" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/State.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2856">
+          <caret line="222" column="61" selection-start-line="222" selection-start-column="61" selection-end-line="222" selection-end-column="61" />
+          <folding>
+            <element signature="e#13995#13996#0" expanded="true" />
+            <element signature="e#14035#14036#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/MyTrackingFB.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7871">
+          <caret line="582" column="89" selection-start-line="582" selection-start-column="33" selection-end-line="582" selection-end-column="89" />
+          <folding>
+            <element signature="e#5401#5402#0" expanded="true" />
+            <element signature="e#5475#5476#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/TrackingFB.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2669">
+          <caret line="157" column="63" selection-start-line="157" selection-start-column="63" selection-end-line="157" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousFramework/src/main/java/com/edeqa/waytous/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="20" column="31" selection-start-line="20" selection-start-column="31" selection-end-line="20" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="6" selection-start-line="25" selection-start-column="6" selection-end-line="25" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/NavigationHelperTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="382">
-          <caret line="151" column="26" selection-start-line="151" selection-start-column="26" selection-end-line="151" selection-end-column="26" />
+        <state relative-caret-position="161">
+          <caret line="156" column="42" selection-start-line="156" selection-start-column="42" selection-end-line="156" selection-end-column="42" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.android/build-cache/b56a8e7a427cf8cb5854990293ac58c870dbbee8/output/jars/classes.jar!/com/google/firebase/database/DataSnapshot.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-714">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/MyTrackingFBTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="334">
+          <caret line="435" column="16" selection-start-line="435" selection-start-column="16" selection-end-line="435" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Utils.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="624" column="36" selection-start-line="624" selection-start-column="36" selection-end-line="624" selection-end-column="36" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/edeqa/waytous/helpers/SyncFB.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="598">
-          <caret line="309" column="9" selection-start-line="309" selection-start-column="9" selection-end-line="309" selection-end-column="9" />
-          <folding />
+        <state relative-caret-position="315">
+          <caret line="525" column="46" selection-start-line="525" selection-start-column="46" selection-end-line="525" selection-end-column="46" />
+          <folding>
+            <element signature="class#Type#0;class#SyncFB#0" expanded="false" />
+            <element signature="e#14418#24257#0" expanded="true" />
+            <element signature="e#24256#24257#0" expanded="true" />
+            <marker date="1507757096969" expanded="false" signature="9523:9539" ph="{...}" />
+            <marker date="1507757096969" expanded="false" signature="9629:9645" ph="{...}" />
+            <marker date="1507757096969" expanded="false" signature="9743:9759" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js">
+    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/edeqa/waytous/helpers/SyncFBTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="399">
+          <caret line="247" column="68" selection-start-line="247" selection-start-column="68" selection-end-line="247" selection-end-column="68" />
+          <folding>
+            <element signature="e#4320#4721#0" expanded="true" />
+            <element signature="e#4720#4721#0" expanded="true" />
+            <element signature="e#5170#5646#0" expanded="true" />
+            <element signature="e#5645#5646#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
