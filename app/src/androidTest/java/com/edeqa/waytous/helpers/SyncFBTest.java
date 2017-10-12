@@ -47,6 +47,7 @@ import static com.edeqa.waytous.Constants.USER_SPEED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.*;
 
@@ -147,20 +148,19 @@ public class SyncFBTest {
 
     @Test
     public void getUserNumber() throws Exception {
-        // TODO
-
+        assertEquals("0", sync.getUserNumber());
     }
 
     @Test
     public void setUserNumber() throws Exception {
-        // TODO
-
+        sync.setUserNumber(10);
+        assertEquals("10", sync.getUserNumber());
     }
 
     @Test
     public void setUserNumber1() throws Exception {
-        // TODO
-
+        sync.setUserNumber("10");
+        assertEquals("10", sync.getUserNumber());
     }
 
     @Test
@@ -206,7 +206,93 @@ public class SyncFBTest {
 
     @Test
     public void syncValue() throws Exception {
-        // TODO
+
+        String key = "test-both";
+        String value = "test-value-" + Math.random();
+
+        // sync String value
+        sync.setKey(key);
+        sync.getValue();
+        waitObject();
+        assertEquals(null, resultValue);
+
+        sync.syncValue(value);
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(value, resultValue);
+
+        sync.syncValue(value + value);
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(value, resultValue);
+
+        sync.removeRemoteValue();
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(null, resultValue);
+
+        // test Map value
+        key = "test-map-both";
+
+        sync.setKey(key);
+        Map testMap = new HashMap();
+        testMap.put("a","b");
+        testMap.put("c","d-" + Math.random());
+
+        sync.getValue();
+        waitObject();
+        assertEquals(null, resultValue);
+
+        sync.syncValue(testMap);
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(testMap.get("c"), ((Map)resultValue).get("c"));
+
+        testMap = (Map) resultValue;
+        testMap.remove(Firebase.SYNCED);
+        testMap.put("c","d-" + Math.random());
+
+        sync.syncValue(testMap);
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(testMap.get("c"), ((Map)resultValue).get("c"));
+
+        testMap = (Map) resultValue;
+        testMap.put(Firebase.SYNCED, (Long)testMap.get(Firebase.SYNCED) - 10000);
+        testMap.put("c","d-" + Math.random());
+
+        sync.syncValue(testMap);
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertNotEquals(testMap.get("c"), ((Map)resultValue).get("c"));
+
+        testMap = (Map) resultValue;
+
+        sync.syncValue(null);
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(testMap.get("c"), ((Map)resultValue).get("c"));
+
+        sync.removeRemoteValue();
+        waitObject();
+
+        sync.getValue();
+        waitObject();
+        assertEquals(null, resultValue);
 
     }
 
@@ -298,6 +384,9 @@ public class SyncFBTest {
         assertEquals(testKey, resultKey);
         assertEquals(newTestValue, resultValue);
 
+        sync.removeRemoteValue();
+        System.out.println("D:");
+        waitObject();
 
 
         // test Map key
@@ -342,7 +431,6 @@ public class SyncFBTest {
 
         assertEquals("test-key", resultKey);
         assertNotEquals(testValue, resultValue);
-
 
     }
 
@@ -391,170 +479,139 @@ public class SyncFBTest {
 
     @Test
     public void setDebug() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnGetValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnAddRemoteValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnUpdateRemoteValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnRemoveRemoteValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnSaveRemoteValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnAddLocalValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnUpdateLocalValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnRemoveLocalValue() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnSaveLocalValue() throws Exception {
-        // TODO
-
-    }
-
-    @Test
-    public void setOnFinish() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void setOnError() throws Exception {
-        // TODO
-
     }
 
     @Test
     public void getReference() throws Exception {
-        // TODO
-
+        assertEquals("https://waytous-beta.firebaseio.com", sync.getReference().toString());
     }
 
     @Test
     public void setReference() throws Exception {
-        // TODO
-
+        sync.setReference(null);
+        assertEquals(null, sync.getReference());
     }
 
     @Test
     public void getMode() throws Exception {
-        // TODO
-
+        assertEquals(null, sync.getMode());
     }
 
     @Test
     public void setMode() throws Exception {
-        // TODO
-
+        sync.setMode(SyncFB.Mode.SKIP);
+        assertEquals(SyncFB.Mode.SKIP, sync.getMode());
     }
 
     @Test
     public void isLog() throws Exception {
-        // TODO
-
+        assertFalse(sync.isLog());
     }
 
     @Test
     public void setLog() throws Exception {
-        // TODO
+        sync.setLog(true);
+        assertTrue(sync.isLog());
 
+        sync.setLog(false);
+        assertFalse(sync.isLog());
     }
 
     @Test
     public void getKey() throws Exception {
-        // TODO
-
+        assertEquals(null, sync.getKey());
     }
 
     @Test
     public void setKey() throws Exception {
-        // TODO
-
+        sync.setKey(Firebase.SYNCED);
+        assertEquals(Firebase.SYNCED, sync.getKey());
     }
 
     @Test
     public void getChild() throws Exception {
-        // TODO
-
+        assertEquals(null, sync.getChild());
     }
 
     @Test
     public void setChild() throws Exception {
-        // TODO
-
+        sync.setChild(Firebase.TERMS_OF_SERVICE_CONFIRMED);
+        assertEquals(Firebase.TERMS_OF_SERVICE_CONFIRMED, sync.getChild());
     }
 
     @Test
     public void getUid() throws Exception {
-        // TODO
-
+        assertEquals(Misc.getEncryptedHash(State.getInstance().getDeviceId()), sync.getUid());
     }
 
     @Test
     public void setUid() throws Exception {
-        // TODO
-
+        String uid = Misc.getUnique();
+        sync.setUid(uid);
+        assertEquals(uid, sync.getUid());
     }
 
     @Test
     public void getType() throws Exception {
-        // TODO
-
+        assertEquals(SyncFB.Type.ACCOUNT_PRIVATE, sync.getType());
     }
 
     @Test
     public void setType() throws Exception {
-        // TODO
-
+        sync.setType(SyncFB.Type.ACCOUNT_PRIVATE);
+        assertEquals(SyncFB.Type.ACCOUNT_PRIVATE, sync.getType());
     }
 
     @Test
     public void getGroup() throws Exception {
-        // TODO
-
+        assertEquals(null, sync.getGroup());
     }
 
     @Test
     public void setGroup() throws Exception {
-        // TODO
-
+        String group = Misc.getUnique();
+        sync.setGroup(group);
+        assertEquals(group, sync.getGroup());
     }
 
 

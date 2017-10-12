@@ -9,6 +9,7 @@ import com.edeqa.waytous.interfaces.TrackingCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -56,6 +57,11 @@ public class MyTrackingFBTest {
     @Before
     public void setUp() throws Exception {
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        State.getInstance().setTracking(null);
     }
 
     /*
@@ -306,7 +312,6 @@ public class MyTrackingFBTest {
         }
 
         assertEquals(TRACKING_DISABLED, tracking.getStatus());
-
     }
 
 

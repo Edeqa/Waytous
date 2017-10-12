@@ -270,6 +270,10 @@ public class State extends MultiDexApplication {
         return sharedPreferences.getInt(key,defaultValue);
     }
 
+    public Long getLongPreference(String key, long defaultValue){
+        return sharedPreferences.getLong(key,defaultValue);
+    }
+
     public void setPreference(String key, String value){
         if(value != null && value.length()>0){
             sharedPreferences.edit().putString(key,value).apply();
@@ -289,6 +293,14 @@ public class State extends MultiDexApplication {
     public void setPreference(String key, int value){
         if(value > 0){
             sharedPreferences.edit().putInt(key,value).apply();
+        } else {
+            sharedPreferences.edit().remove(key).apply();
+        }
+    }
+
+    public void setPreference(String key, long value){
+        if(value > 0){
+            sharedPreferences.edit().putLong(key,value).apply();
         } else {
             sharedPreferences.edit().remove(key).apply();
         }
