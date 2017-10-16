@@ -20,6 +20,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,7 @@ import static com.edeqa.waytous.Constants.USER_MESSAGE;
 import static com.edeqa.waytous.Constants.USER_NUMBER;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
+import static com.edeqa.waytous.Firebase.SYNCED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
 import static junit.framework.Assert.assertEquals;
@@ -57,7 +59,6 @@ import static org.junit.Assert.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SyncFBTest {
-
     private final static String TOKEN = "TEST";
 
     final Object syncObject = new Object();
@@ -101,7 +102,7 @@ public class SyncFBTest {
                 .setOnGetValue(new Callable2<Object, String, Object>() {
                     @Override
                     public Object call(String key, Object value) {
-                        System.out.println("Got Value: " + key + ", [value]: " + value);
+                        System.out.println("Got value: " + key + ", [value]: " + value);
                         resultKey = key;
                         resultValue = value;
                         return value;
@@ -110,7 +111,7 @@ public class SyncFBTest {
                 .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
                     @Override
                     public void call(String key, Object newValue, Object oldValue) {
-                        System.out.println("Save Local: " + key + ", [new]: " + newValue + ", [old]: " + oldValue);
+                        System.out.println("Save local: " + key + ", [new]: " + newValue + ", [old]: " + oldValue);
                         resultKey = key;
                         resultValue = newValue;
                     }
@@ -257,7 +258,7 @@ public class SyncFBTest {
         assertEquals(testMap.get("c"), ((Map)resultValue).get("c"));
 
         testMap = (Map) resultValue;
-        testMap.remove(Firebase.SYNCED);
+        testMap.remove(SYNCED);
         testMap.put("c","d-" + Math.random());
 
         sync.syncValue(testMap);
@@ -268,7 +269,7 @@ public class SyncFBTest {
         assertEquals(testMap.get("c"), ((Map)resultValue).get("c"));
 
         testMap = (Map) resultValue;
-        testMap.put(Firebase.SYNCED, (Long)testMap.get(Firebase.SYNCED) - 10000);
+        testMap.put(SYNCED, (Long)testMap.get(SYNCED) - 10000);
         testMap.put("c","d-" + Math.random());
 
         sync.syncValue(testMap);
@@ -304,7 +305,6 @@ public class SyncFBTest {
 
         sync.setKey("test-key");
         sync.overrideRemoteValue(testValue);
-
         waitObject();
 
         sync.getValue();
@@ -314,7 +314,6 @@ public class SyncFBTest {
         assertEquals("test-key", resultKey);
         assertEquals(testValue, resultValue);
 
-
         // test Map key
         sync.setKey("test-map");
         Map testMap = new HashMap();
@@ -322,7 +321,6 @@ public class SyncFBTest {
         testMap.put("c","d-" + Math.random());
 
         sync.overrideRemoteValue(testMap);
-
         waitObject();
 
         sync.getValue();
@@ -461,8 +459,115 @@ public class SyncFBTest {
 
     @Test
     public void syncValues() throws Exception {
-        // TODO
 
+        sync.setKey("test-sync-values");
+
+        // sync values not existing on server
+        ArrayList<Map<String, Object>> values = new ArrayList<>();
+        HashMap<String, Object> value1 = new HashMap<>();
+        value1.put("a", "a1");
+        value1.put("b", "b1");
+
+        HashMap<String, Object> value2 = new HashMap<>();
+        value2.put("a", "a2");
+        value2.put("b", "b2");
+        value2.put(SYNCED, 1508165565800L);
+        value2.put(Firebase.KEYS, "-Kw_etFOpRlTRlWchhMy");
+
+        values.add(value1);
+        values.add(value2);
+
+        sync.syncValues(values);
+        waitObject();
+        assertEquals(2, values.size());
+
+        sync.getValues();
+        waitObject();
+
+        System.out.println("VALUES1:"+values);
+        assertTrue(resultKey.startsWith("-"));
+        assertEquals(values.get(0).get(SYNCED), ((Map)resultValue).get(SYNCED));
+        assertEquals(values.get(0).get("a"), ((Map)resultValue).get("a"));
+        assertEquals(values.get(0).get("b"), ((Map)resultValue).get("b"));
+
+
+        // sync values:
+        // - one already exists,
+        // - one new
+        HashMap<String, Object> value3 = new HashMap<>();
+        value3.put("a", "a3");
+        value3.put("b", "b3");
+
+        values.clear();
+        values.add(value3);
+        values.add(value2);
+
+        sync.syncValues(values);
+        waitObject();
+
+        assertEquals(3, values.size());
+
+        sync.getValues();
+        waitObject();
+
+        System.out.println("VALUES2:"+values);
+        assertTrue(resultKey.startsWith("-"));
+        assertEquals(value3.get(SYNCED), ((Map)resultValue).get(SYNCED));
+        assertEquals(value3.get("a"), ((Map)resultValue).get("a"));
+        assertEquals(value3.get("b"), ((Map)resultValue).get("b"));
+
+
+        // sync values:
+        // - one value updated but not updated SYNCED-value;
+        // - second updated and increased SYNCED-value too;
+        // - third changed and decreased SYNCED-value
+        // - fourth value doesn't have SYNCED-value
+
+        values.get(0).put("c","c1");
+        values.get(1).put("c","c2");
+        values.get(1).put(Firebase.SYNCED, (long) values.get(1).get(Firebase.SYNCED) + 10);
+        values.get(2).put("c","c2");
+        values.get(2).put(Firebase.SYNCED, (long) values.get(1).get(Firebase.SYNCED) - 10);
+
+        HashMap<String, Object> value4 = new HashMap<>();
+        value4.put("a", "a4");
+        value4.put("b", "b4");
+        values.add(value4);
+
+        sync.syncValues(values);
+        waitObject();
+
+        System.out.println("VALUES3:"+values);
+        assertEquals(4, values.size());
+
+        sync.getValues();
+        waitObject();
+
+        System.out.println("VALUES4:"+values);
+        assertTrue(resultKey.startsWith("-"));
+        assertEquals(value4.get(SYNCED), ((Map)resultValue).get(SYNCED));
+        assertEquals(value4.get("a"), ((Map)resultValue).get("a"));
+        assertEquals(value4.get("b"), ((Map)resultValue).get("b"));
+
+        // local values are empty
+        values.clear();
+
+        sync.syncValues(values);
+        waitObject();
+
+        System.out.println("VALUES5:"+values);
+        assertEquals(4, values.size());
+
+        // remove test values
+        sync.removeRemoteValue();
+        waitObject();
+
+        resultKey = null;
+
+        sync.getValues();
+        waitObject();
+
+        assertEquals(null, resultKey);
     }
 
     @Test
@@ -564,8 +669,8 @@ public class SyncFBTest {
 
     @Test
     public void setKey() throws Exception {
-        sync.setKey(Firebase.SYNCED);
-        assertEquals(Firebase.SYNCED, sync.getKey());
+        sync.setKey(SYNCED);
+        assertEquals(SYNCED, sync.getKey());
     }
 
     @Test
@@ -614,6 +719,17 @@ public class SyncFBTest {
         assertEquals(group, sync.getGroup());
     }
 
+    @Test
+    public void removeRemoteValue() throws Exception {
+    }
+
+    @Test
+    public void removeLocalValue() throws Exception {
+    }
+
+    @Test
+    public void setOnFinish() throws Exception {
+    }
 
 
 
