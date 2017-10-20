@@ -15,9 +15,12 @@
     <list id="d8c1ca30-7d7e-43e7-8358-cdb9f80b3771" name="WTU-259 NavigationHelper class" comment="WTU-259 NavigationHelper class" />
     <list id="a75c28cf-df76-4175-865b-8706aa47d24e" name="WTU-301 SyncFB class" comment="WTU-301 SyncFB class" />
     <list default="true" id="b8cf3a86-eb75-4978-a41f-179a63d5fb59" name="WTU-305 Log - not heavy, continuous mode" comment="WTU-305 Log - not heavy, continuous mode">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Helpers" afterPath="$PROJECT_DIR$/Helpers" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer" afterPath="$PROJECT_DIR$/WaytousServer" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/css/admin.css" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/css/admin.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Accounts.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Accounts.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Groups.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Groups.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Logs.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Logs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Statistics.js" afterPath="$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Statistics.js" />
     </list>
     <ignored path="Waytous.iws" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -4839,22 +4842,8 @@
           <PATH vcs="Git" revision="">$PROJECT_DIR$/.idea/misc.xml</PATH>
           <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer</PATH>
           <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/css/admin.css</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/css/edequate.css</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Account.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Accounts.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Group.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Groups.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/Statistics.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/admin/User.js</PATH>
           <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/Edequate.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/MyUsers.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/helpers/TrackingFB.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/MessageHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/PlaceHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/PropertiesHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/SavedLocationHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/TrackingHolder.js</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/UserProfileHolder.js</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/WaytousServer/src/main/webapp/js/tracking/AddressHolder.js</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Created" />
@@ -5825,7 +5814,7 @@
       <option name="number" value="305" />
       <option name="presentableId" value="WTU-305" />
       <option name="project" value="WTU" />
-      <updated>1508390766630</updated>
+      <updated>1508391889999</updated>
     </task>
     <option name="localTasksCounter" value="14" />
     <option name="clearContext" value="false" />
@@ -5889,7 +5878,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2048" height="1152" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="simpleUML" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -5900,7 +5889,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5021322" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" x="-1915" y="142" width="1227" height="913" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28544423" sideWeight="0.4978678" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25047258" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25047258" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32986766" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
