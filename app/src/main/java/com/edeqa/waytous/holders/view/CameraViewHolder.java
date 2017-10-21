@@ -602,13 +602,29 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         }).setIcon(R.drawable.ic_unselect_black_24dp);
                     }
                     if(myUser.isUser()) {
-                        menu.add(0, R.string.change_orientation, Menu.NONE, R.string.change_orientation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        MenuItem menuItem = menu.add(0, R.string.change_orientation, Menu.NONE, R.string.change_orientation).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 myUser.fire(CAMERA_NEXT_ORIENTATION);
                                 return false;
                             }
-                        }).setIcon(R.drawable.ic_compass_black_24dp);
+                        });
+                        switch (orientation) {
+                            case CAMERA_ORIENTATION_NORTH:
+                                menuItem.setIcon(R.drawable.ic_compass_black_24dp);
+                                break;
+                            case CAMERA_ORIENTATION_DIRECTION:
+                                menuItem.setIcon(R.drawable.ic_compass_black_north_24dp);
+                                break;
+                            case CAMERA_ORIENTATION_PERSPECTIVE:
+                                menuItem.setIcon(R.drawable.ic_compass_black_3d_24dp);
+                                break;
+                            case CAMERA_ORIENTATION_STAY:
+                                menuItem.setIcon(R.drawable.ic_compass_black_24dp);
+                                break;
+                            default:
+                                menuItem.setIcon(R.drawable.ic_compass_black_24dp);
+                        }
                     }
                     break;
                 case CHANGE_NUMBER:
