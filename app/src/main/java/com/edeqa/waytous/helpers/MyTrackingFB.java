@@ -103,6 +103,7 @@ import static org.apache.http.conn.ssl.SSLSocketFactory.TLS;
 
 public class MyTrackingFB implements Tracking {
 
+    private static final String LOG = "MyTrackingFB"; //NON-NLS
 
     private final static int CONNECTION_TIMEOUT = 5;
     private final static int RECONNECTION_DELAY = 5;
@@ -136,7 +137,7 @@ public class MyTrackingFB implements Tracking {
     }
 
     private MyTrackingFB(String stringUri, final boolean isNewTracking) {
-        Log.i("MyTrackingFB","create:" + stringUri); //NON-NLS
+        Utils.log("MyTrackingFB","create:" + stringUri); //NON-NLS
 
         try {
             URI uri = new URI(stringUri);
@@ -200,7 +201,7 @@ public class MyTrackingFB implements Tracking {
             factory.setSSLContext(context);
             webSocket = factory.createSocket(serverUri.toString());
 
-            Log.i("MyTrackingFB","createWebSocket:" + webSocket + ", uri:" + serverUri.toString()); //NON-NLS
+            Utils.log("MyTrackingFB","createWebSocket:" + webSocket + ", uri:" + serverUri.toString()); //NON-NLS
             webSocket.addListener(webSocketListener);
 
             webSocket.setPingInterval(LIFETIME_INACTIVE_USER / 2 * 1000);
@@ -231,7 +232,7 @@ public class MyTrackingFB implements Tracking {
 
     private void reconnect() {
         if(TRACKING_DISABLED.equals(getStatus())) return;
-        Log.i("MyTrackingFB","reconnect"); //NON-NLS
+        Utils.log("MyTrackingFB","reconnect"); //NON-NLS
         setStatus(TRACKING_RECONNECTING);
         trackingListener.onReconnecting();
         try {
@@ -342,7 +343,6 @@ public class MyTrackingFB implements Tracking {
 
     @Override
     public void send(JSONObject o) {
-        System.out.println("UPDATES:");
 
         try {
             o.put(REQUEST_TIMESTAMP, new Date().getTime());
@@ -363,7 +363,6 @@ public class MyTrackingFB implements Tracking {
                         break;
                 }
             } else if (ref != null) {
-                System.out.println("UPDATES:A");
                 if(REQUEST_CHANGE_NAME.equals(type)) {
                     Map<String, Object> childUpdates = new HashMap<>();
                     childUpdates.put(Firebase.NAME, o.get(USER_NAME));
@@ -376,7 +375,6 @@ public class MyTrackingFB implements Tracking {
                     }
                     return;
                 }
-                System.out.println("UPDATES:B");
 
                 EntityHolder holder = state.getAllHolders().get(type);
 
@@ -406,7 +404,6 @@ public class MyTrackingFB implements Tracking {
                 }
                 updates.put(path + "/" + key, data);
                 updates.put(Firebase.USERS + "/" + Firebase.PUBLIC + "/" + state.getMe().getProperties().getNumber() + "/" + Firebase.CHANGED, ServerValue.TIMESTAMP);
-                System.out.println("UPDATES:"+updates);
                 Task<Void> a = ref.updateChildren(updates);
                 a.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -548,10 +545,10 @@ public class MyTrackingFB implements Tracking {
         public void run() {
             if(TRACKING_DISABLED.equals(getStatus())) return;
             try {
-                Log.i("MyTrackingFB","reconnectRunnable"); //NON-NLS
+                Utils.log("MyTrackingFB","reconnectRunnable"); //NON-NLS
                 webSocket.connect();
             } catch (WebSocketException e) {
-                Log.e("MyTrackingFB","reconnectRunnable:error:" + e.getMessage()); //NON-NLS
+                Utils.err("MyTrackingFB","reconnectRunnable:error:" + e.getMessage()); //NON-NLS
                 reconnect();
             }
         }
@@ -564,9 +561,9 @@ public class MyTrackingFB implements Tracking {
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
             super.onConnected(websocket, headers);
 
-            System.out.println("ONCONNECTED:"+getStatus()+":"+websocket+":"+headers);
+//            System.out.println("ONCONNECTED:"+getStatus()+":"+websocket+":"+headers);
             if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTrackingFB","onConnected"); //NON-NLS
+            Utils.log("MyTrackingFB","onConnected"); //NON-NLS
             if(newTracking) {
                 put(REQUEST, REQUEST_NEW_GROUP);
             } else {
@@ -665,7 +662,7 @@ public class MyTrackingFB implements Tracking {
                                             registerChildListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC), usersDataListener, -1);
 
                                             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
-                                                if (entry.getValue().isSaveable()) {
+                                                if(entry.getValue().isSaveable()) {
                                                     registerChildListener(ref.child(Firebase.PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
                                                 }
                                             }
@@ -722,7 +719,7 @@ public class MyTrackingFB implements Tracking {
         @Override
         public void onError(WebSocket websocket, WebSocketException cause) {
             if(TRACKING_DISABLED.equals(getStatus())) return;
-//            Log.i("MyTrackingFB","onError:" + websocket.getState() + ":" + cause.getMessage());
+//            Utils.log("MyTrackingFB","onError:" + websocket.getState() + ":" + cause.getMessage());
 
             if(websocket.getState() == WebSocketState.CLOSED) {
                 if(newTracking) {
@@ -737,7 +734,7 @@ public class MyTrackingFB implements Tracking {
         @Override
         public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
                                    WebSocketFrame clientCloseFrame, boolean closedByServer) {
-            Log.i("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking); //NON-NLS
+            Utils.log("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking); //NON-NLS
 
             if (closedByServer) {
             } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
@@ -752,7 +749,7 @@ public class MyTrackingFB implements Tracking {
 
         @Override
         public void onUnexpectedError(WebSocket websocket, WebSocketException cause) {
-            Log.i("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage()); //NON-NLS
+            Utils.log("MyTrackingFB","onUnexpectedError:" + websocket.getState() + ":" + cause.getMessage()); //NON-NLS
             reconnect();
         }
     };
@@ -970,7 +967,7 @@ public class MyTrackingFB implements Tracking {
     private ValueEventListener usersDataChangedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            System.out.println("usersDataChangedListener:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
+            Utils.log(this, "usersDataChangedListener:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
 
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());

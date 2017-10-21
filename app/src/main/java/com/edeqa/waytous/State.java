@@ -334,7 +334,10 @@ public class State extends MultiDexApplication {
 
     public HashMap<String,AbstractPropertyHolder> getAllHolders(){
         HashMap<String,AbstractPropertyHolder> res = new LinkedHashMap<>();
-        for(Map.Entry<String, AbstractPropertyHolder> entry: systemPropertyBus.getHolders().entrySet()){
+        for(Map.Entry<String, AbstractPropertyHolder> entry: getSystemPropertyBus().getHolders().entrySet()){
+            res.put(entry.getKey(), entry.getValue());
+        }
+        for(Map.Entry<String, ? extends AbstractPropertyHolder> entry: getSystemViewBus().getHolders().entrySet()){
             res.put(entry.getKey(), entry.getValue());
         }
         return res;

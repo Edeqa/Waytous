@@ -129,9 +129,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case TRACKING_ACTIVE:
                 becomesActive = new Date().getTime();
                 updateIcon(R.drawable.ic_notification_twinks);
-                int priority = PRIORITY_HIGH;
-                if(MainActivity.isVisible()) priority = PRIORITY_DEFAULT;
-                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, priority, null);
+                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, PRIORITY_HIGH, null);
                 break;
             case USER_JOINED:
                 MyUser user = (MyUser) object;
@@ -171,6 +169,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case SHOW_CUSTOM_NOTIFICATION:
                 final Notification notification = (Notification) object;
                 if(notification != null){
+                    if(MainActivity.isVisible()) notification.priority = Notification.PRIORITY_LOW;
                     NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
                     notificationManager.notify(1977, notification);
                 }
@@ -219,6 +218,8 @@ public class NotificationHolder extends AbstractPropertyHolder {
     private void update(String text, int defaults, int priority, Uri sound) {
         if(notification == null) return;
         if(state.tracking_disabled()) return;
+
+        if(MainActivity.isVisible()) priority = PRIORITY_DEFAULT;
 
         if(showNotifications) {
             notification.setDefaults(defaults);

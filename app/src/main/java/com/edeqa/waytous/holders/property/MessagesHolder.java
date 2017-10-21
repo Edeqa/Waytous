@@ -26,6 +26,8 @@ import java.util.Date;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
@@ -276,6 +278,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
                                 notification.setDefaults(DEFAULT_LIGHTS);
                                 notification.setPriority(Notification.PRIORITY_LOW);
                             }
+
 //                            notification.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.youve_been_informed));
                         }
                         State.getInstance().fire(NotificationHolder.SHOW_CUSTOM_NOTIFICATION, notification.build());

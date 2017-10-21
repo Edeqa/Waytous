@@ -175,6 +175,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         final SavedLocation loc = new SavedLocation(context);
                         loc.setLatitude(lat);
+                        loc.setLatitude(lat);
                         loc.setLongitude(lng);
                         loc.setTimestamp(new Date().getTime());
                         loc.setUsername(finalName);
@@ -200,6 +201,10 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        final SavedLocation loc = new SavedLocation(context);
+                        loc.setKey(finalKey);
+                        loc.setDeleted(true);
+                        loc.save(context);
                     }
                 });
                 dialog.show();
@@ -320,7 +325,14 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         saved = SavedLocation.getItemByPosition(position);
                         if(adapter != null) adapter.notifyItemRemoved(position);
                     }
-                    SavedLocation.getDb().deleteByItem(saved);
+                    saved.setAddress(null);
+                    saved.setBitmap(null);
+                    saved.setTitle(null);
+                    saved.setLongitude(0);
+                    saved.setLatitude(0);
+                    saved.setDeleted(true);
+                    saved.save(context);
+//                    SavedLocation.getDb().deleteByItem(saved);
                     State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new Runnable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {

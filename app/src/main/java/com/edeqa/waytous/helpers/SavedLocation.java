@@ -46,6 +46,7 @@ public class SavedLocation extends AbstractSavedItem {
     private double longitude;
     private String title;
     private String username;
+    private String provider;
     private long timestamp;
     private String address;
     private BitmapDataObject bitmap;
@@ -53,6 +54,7 @@ public class SavedLocation extends AbstractSavedItem {
     public SavedLocation(Context context) {
         super(context, LOCATION);
         timestamp = new Date().getTime();
+        provider = "saved"; //NON-NLS
     }
 
     public static void init(Context context) {
@@ -155,7 +157,7 @@ public class SavedLocation extends AbstractSavedItem {
         super.save(new Runnable1<SavedLocation>() {
             @Override
             public void call(final SavedLocation listItem) {
-                if(listItem.getAddress() == null) {
+                if(listItem.getAddress() == null && (listItem.getLatitude() != 0.0 || listItem.getLongitude() != 0.0)) {
                     new AddressResolver(context)
                             .setLatLng(new LatLng(listItem.getLatitude(), listItem.getLongitude()))
                             .setCallback(new Runnable1<String>() {
@@ -169,7 +171,7 @@ public class SavedLocation extends AbstractSavedItem {
                             .resolve();
 
                 }
-                if(listItem.getBitmap() == null) {
+                if(listItem.getBitmap() == null && (listItem.getLatitude() != 0.0 || listItem.getLongitude() != 0.0)) {
                     new Thread(new LoadBitmap(context, listItem, null)).start();
                 }
             }
@@ -195,6 +197,14 @@ public class SavedLocation extends AbstractSavedItem {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 
     static public class SavedLocationsAdapter extends AbstractSavedItemsAdapter {

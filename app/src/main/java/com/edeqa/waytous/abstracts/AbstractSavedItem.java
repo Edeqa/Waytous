@@ -28,6 +28,7 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     protected transient Context context;
     transient private String itemType;
     transient private long number;
+    private boolean deleted;
 
     protected AbstractSavedItem() {
     }
@@ -130,5 +131,13 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         public Cursor loadInBackground() {
             return dbHelpers.get(itemType).getAll();
         }
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;// ? 1 : 0;
     }
 }

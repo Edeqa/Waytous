@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.SoundEffectConstants;
 
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 
@@ -49,7 +50,6 @@ public class DBHelper<T extends AbstractSavedItem> {
         if(!isTableExists(fields.itemType)) {
             mDB.execSQL(fields.getCreateString());
         } else {
-
             Cursor cursor = mDB.query(fields.itemType, null, null, null, null, null, null);
             ArrayList<String> columnNames = new ArrayList<>();
             columnNames.addAll(Arrays.asList(cursor.getColumnNames()));
@@ -73,11 +73,10 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     public Cursor getAll() {
-        String selection = null;
-        String[] selectionArgs = null;
+        String selection = "(deleted_ IS NULL OR NOT deleted_)";
+        String[] selectionArgs = null;//{"1"};
 
         if(restrictions != null && restrictions.containsKey(fields.itemType)) {
-            selection = "";
             ArrayList<String> args = new ArrayList<>();
             HashMap<String, Restriction> rest = restrictions.get(fields.itemType);
             for(Map.Entry<String,Restriction> entry: rest.entrySet()) {
@@ -92,6 +91,7 @@ public class DBHelper<T extends AbstractSavedItem> {
         if(!mDB.isOpen()){
             mDB = mDBHelper.getWritableDatabase();
         }
+
         return mDB.query(fields.itemType, null, selection, selectionArgs, null, null, null);
     }
 
@@ -141,7 +141,12 @@ public class DBHelper<T extends AbstractSavedItem> {
         ContentValues cv = new ContentValues();
         for(Map.Entry<String,Fields.FieldOptions> x: fields.fields.entrySet()){
             try {
-                Field field = item.getClass().getDeclaredField(x.getValue().name);
+                Field field;
+                try {
+                    field = item.getClass().getDeclaredField(x.getValue().name);
+                } catch (NoSuchFieldException e) {
+                    field = item.getClass().getSuperclass().getDeclaredField(x.getValue().name);
+                }
                 field.setAccessible(true);
                 Object value = field.get(item);
                 if(value != null) {
@@ -217,11 +222,17 @@ public class DBHelper<T extends AbstractSavedItem> {
 
         for(Map.Entry<String,Fields.FieldOptions> x: fields.fields.entrySet()){
             try {
-                Field field = fields.classType.getDeclaredField(x.getValue().name);
+                Field field;
+                try {
+                    field = fields.classType.getDeclaredField(x.getValue().name);
+                } catch (NoSuchFieldException e) {
+                    field = fields.classType.getSuperclass().getDeclaredField(x.getValue().name);
+                }
+
                 field.setAccessible(true);
                 if (x.getValue().serialize) {
                     String value = cursor.getString(cursor.getColumnIndex(x.getValue().name + "_"));
-                    field.set(item, Utils.deserializeFromString(value));
+                    if(value != null) field.set(item, Utils.deserializeFromString(value));
                 } else if (x.getValue().sourceType.equals("boolean")) {
                     int value = cursor.getInt(cursor.getColumnIndex(x.getValue().name + "_"));
                     field.set(item, value == 1);
@@ -304,6 +315,9 @@ public class DBHelper<T extends AbstractSavedItem> {
             this.itemType = itemType;
             this.classType = item;
             for (Field field : item.getDeclaredFields()) {
+                processField(field);
+            }
+            for (Field field : item.getSuperclass().getDeclaredFields()) {
                 processField(field);
             }
         }
