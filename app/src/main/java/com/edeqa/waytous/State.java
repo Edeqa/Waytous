@@ -48,8 +48,6 @@ import static com.edeqa.waytous.holders.property.PropertiesHolder.PREFERENCE_MY_
 
 public class State extends MultiDexApplication {
 
-    public static final int API = 1;
-
     private static State instance = null;
 
     private Tracking tracking;
@@ -60,8 +58,6 @@ public class State extends MultiDexApplication {
     private MyUser me;
     private GeoTrackFilter gpsFilter;
     private Notification notification;
-    private AtomicBoolean continueFiring = new AtomicBoolean();
-    private EventBus bus;
 
     private String deviceId;
     private String token;
@@ -125,12 +121,12 @@ public class State extends MultiDexApplication {
 
         systemViewBus.setRunner(androidRunner);
 
-        registerEntityHolder(new PropertiesHolder(this),null); // ---> need to be first!
-        registerEntityHolder(new TrackingHolder(this),null); // ---> need to be second!
-        registerEntityHolder(new MessagesHolder(this),null); // ---> need to be before NotificationHolder
-        registerEntityHolder(new NotificationHolder(this),null); // ---> need to be after MessagesHolder
-        registerEntityHolder(new GpsHolder(this),null);
-//        registerEntityHolder(new LoggerHolder(),null);
+        registerEntityHolder(new PropertiesHolder(this)); // ---> need to be first!
+        registerEntityHolder(new TrackingHolder(this)); // ---> need to be second!
+        registerEntityHolder(new MessagesHolder(this)); // ---> need to be before NotificationHolder
+        registerEntityHolder(new NotificationHolder(this)); // ---> need to be after MessagesHolder
+        registerEntityHolder(new GpsHolder(this));
+//        registerEntityHolder(new LoggerHolder());
 
         gpsFilter = new GeoTrackFilter(1.);
 
@@ -314,7 +310,7 @@ public class State extends MultiDexApplication {
         this.me = me;
     }
 
-    public void registerEntityHolder(AbstractPropertyHolder holder, MainActivity context) {
+    public void registerEntityHolder(AbstractPropertyHolder holder) {
 
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {

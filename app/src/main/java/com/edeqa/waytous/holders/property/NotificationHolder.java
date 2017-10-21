@@ -129,7 +129,9 @@ public class NotificationHolder extends AbstractPropertyHolder {
             case TRACKING_ACTIVE:
                 becomesActive = new Date().getTime();
                 updateIcon(R.drawable.ic_notification_twinks);
-                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, PRIORITY_HIGH, null);
+                int priority = PRIORITY_HIGH;
+                if(MainActivity.isVisible()) priority = PRIORITY_DEFAULT;
+                update(state.getString(R.string.you_have_joined), DEFAULT_LIGHTS, priority, null);
                 break;
             case USER_JOINED:
                 MyUser user = (MyUser) object;

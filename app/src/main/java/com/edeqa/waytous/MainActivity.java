@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private SupportMapFragment mapFragment;
     private State state;
+    private static boolean isVisible = false;
 
 
     @Override
@@ -102,12 +103,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        state.registerEntityHolder(new FabViewHolder(this),this);
-        state.registerEntityHolder(new DrawerViewHolder(this),this);
-        state.registerEntityHolder(new SnackbarViewHolder(this),this);
-        state.registerEntityHolder(new FacebookViewHolder(this),this);
-        state.registerEntityHolder(new SettingsViewHolder(this),this);
-        state.registerEntityHolder(new TrackingViewHolder(this),this);
+        state.registerEntityHolder(new FabViewHolder(this));
+        state.registerEntityHolder(new DrawerViewHolder(this));
+        state.registerEntityHolder(new SnackbarViewHolder(this));
+        state.registerEntityHolder(new FacebookViewHolder(this));
+        state.registerEntityHolder(new SettingsViewHolder(this));
+        state.registerEntityHolder(new TrackingViewHolder(this));
 
         state.fire(ACTIVITY_CREATE, this);
     }
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onResume() {
         super.onResume();
+        isVisible = true;
 
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         registerReceiver(receiver, intentFilter);
@@ -144,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onPause();
         state.fire(ACTIVITY_PAUSE);
         unregisterReceiver(receiver);
+        isVisible = false;
     }
 
     @Override
@@ -353,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //noinspection unchecked
                 Class<AbstractViewHolder> _tempClass = (Class<AbstractViewHolder>) Class.forName("com.edeqa.waytous.holders.view."+s);
                 Constructor<AbstractViewHolder> ctor = _tempClass.getDeclaredConstructor(MainActivity.class);
-                state.registerEntityHolder(ctor.newInstance(this), MainActivity.this);
+                state.registerEntityHolder(ctor.newInstance(this));
             } catch (Exception e) {
                 System.err.println("with " + s);
                 e.printStackTrace();
@@ -481,4 +484,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onBackPressed();
     }
 
+    public static boolean isVisible() {
+        return isVisible;
+    }
 }
