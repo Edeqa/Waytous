@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -33,6 +34,7 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.IntroRule;
 import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -52,6 +54,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
 import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 import static com.edeqa.waytous.holders.view.CameraViewHolder.CAMERA_UPDATED;
+import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
 
 /**
  * Created 11/18/16.
@@ -59,11 +62,16 @@ import static com.edeqa.waytous.holders.view.CameraViewHolder.CAMERA_UPDATED;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.ButtonView> {
 
+    public static final String TYPE = "buttonView"; //NON-NLS
+
+    private static final String PREFERENCE_SHOW_LABELS_IN_CONTEXT_MENU = "show_labels_ic_context_menu"; //NON-NLS
+
     private Handler handlerHideMenu;
     private Runnable runnableHideMenu;
     private LinearLayout layout;
     private HorizontalScrollView scrollLayout;
     private FlexboxLayout menuLayout;
+    private boolean showLabelsInContextMenu = true;
 
     public ButtonViewHolder(MainActivity context) {
         super(context);
@@ -71,6 +79,9 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         setScrollLayout((HorizontalScrollView) context.findViewById(R.id.sv_users));
         setLayout((LinearLayout) context.findViewById(R.id.layout_users));
         setMenuLayout((FlexboxLayout) context.findViewById(R.id.layout_context_menu));
+
+        showLabelsInContextMenu = State.getInstance().getBooleanPreference(PREFERENCE_SHOW_LABELS_IN_CONTEXT_MENU, true);
+
     }
 
     @Override
@@ -101,6 +112,16 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 if(State.getInstance().getUsers().getCountActiveTotal() > 1) {
                     show();
                 }
+                break;
+            case CREATE_SETTINGS:
+                SettingItem.Page item = (SettingItem.Page) object;
+                item.add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100));
+                item.add(new SettingItem.Checkbox(PREFERENCE_SHOW_LABELS_IN_CONTEXT_MENU).setValue(showLabelsInContextMenu).setTitle(R.string.show_labels_in_context_menu).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL).setCallback(new Runnable1<Boolean>() {
+                    @Override
+                    public void call(Boolean arg) {
+                        showLabelsInContextMenu = arg;
+                    }
+                }));
                 break;
         }
         return true;
@@ -306,8 +327,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
         @Override
         public List<String> events() {
-            List<String> list = new ArrayList<>();
-            return list;
+            return new ArrayList<>();
         }
 
         @Override
@@ -337,7 +357,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     title.setTypeface(null, (myUser.getLocation() == null) ? Typeface.ITALIC : Typeface.NORMAL);
                     break;
                 case CHANGE_NAME:
-                    title.setText((myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName());
+                    title.setText(String.format("%s%s", myUser.getProperties().getNumber() == 0 ? "*" : "", myUser.getProperties().getDisplayName())); //NON-NLS
                     break;
                 /*case MAKE_ACTIVE:
                 case MAKE_INACTIVE:
@@ -381,8 +401,14 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
 
                         LinearLayout button = (LinearLayout) inflater.inflate(R.layout.view_user_button, null);
 
-                        ((ImageView)button.findViewById(R.id.iv_button_image)).setImageDrawable(item.getIcon());
-                        button.findViewById(R.id.tv_button_title).setVisibility(View.GONE);
+                        ((ImageView) button.findViewById(R.id.iv_button_image)).setImageDrawable(item.getIcon());
+
+                        if(showLabelsInContextMenu) {
+                            ((TextView) button.findViewById(R.id.tv_button_title)).setText(item.getTitle());// .setVisibility(View.GONE);
+                            ((TextView) button.findViewById(R.id.tv_button_title)).setTextSize(8);
+                        } else {
+                            button.findViewById(R.id.tv_button_title).setVisibility(View.GONE);
+                        }
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -395,7 +421,13 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         button.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+                                menuLayout.setVisibility(View.GONE);
+
+//                                PopupMenu popupMenu = new PopupMenu(context, null);
+//                                popupMenu
+                                popup.show();
+
                                 return true;
                             }
                         });

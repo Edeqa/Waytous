@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 
-
 /**
  * Created 7/28/17.
  */
@@ -76,7 +75,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
                 }
             }
         }).setTitle(R.string.settings);
-//        settingItem.add(new SettingItem.Group(PREFERENCES_GENERAL).setTitle("General"));
     }
 
     @Override

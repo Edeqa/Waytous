@@ -74,12 +74,12 @@ public class SettingItem<T> {
         return title;
     }
 
-    public SettingItem setTitle(String title) {
+    public SettingItem<T> setTitle(String title) {
         this.title = title;
         return this;
     }
 
-    public SettingItem setTitle(int resId) {
+    public SettingItem<T> setTitle(int resId) {
         this.title = context.getString(resId);
         return this;
     }
@@ -92,17 +92,17 @@ public class SettingItem<T> {
         return messageHtml;
     }
 
-    public SettingItem setMessage(String message) {
+    public SettingItem<T> setMessage(String message) {
         this.message = message;
         return this;
     }
 
-    public SettingItem setMessage(int resId) {
+    public SettingItem<T> setMessage(int resId) {
         this.message = context.getString(resId);
         return this;
     }
 
-    public SettingItem setMessageHtml(int resId) {
+    public SettingItem<T> setMessageHtml(int resId) {
         this.messageHtml = context.getString(resId);
         return this;
     }
@@ -120,7 +120,7 @@ public class SettingItem<T> {
         return id;
     }
 
-    public SettingItem setId(String id) {
+    public SettingItem<T> setId(String id) {
         this.id = id;
         return this;
     }
@@ -129,12 +129,12 @@ public class SettingItem<T> {
         return depended;
     }
 
-    public SettingItem setDepended(String[] depended) {
+    public SettingItem<T> setDepended(String[] depended) {
         this.depended = depended;
         return this;
     }
 
-    public SettingItem setInternalId(String internalId) {
+    public SettingItem<T> setInternalId(String internalId) {
         this.internalId = internalId;
         return this;
     }
@@ -143,7 +143,7 @@ public class SettingItem<T> {
         return groupId;
     }
 
-    public SettingItem setGroupId(String groupId) {
+    public SettingItem<T> setGroupId(String groupId) {
         this.groupId = groupId;
         return this;
     }
@@ -186,7 +186,7 @@ public class SettingItem<T> {
         return priority;
     }
 
-    public SettingItem setPriority(int priority) {
+    public SettingItem<T> setPriority(int priority) {
         this.priority = priority;
         return this;
     }
@@ -209,13 +209,13 @@ public class SettingItem<T> {
         }
     }
 
-    public SettingItem setValue(String value) {
+    public SettingItem<T> setValue(String value) {
         return this;
     }
-    public SettingItem setValue(Integer value) {
+    public SettingItem<T> setValue(Integer value) {
         return this;
     }
-    public SettingItem setValue(Boolean value) {
+    public SettingItem<T> setValue(Boolean value) {
         return this;
     }
 
@@ -232,7 +232,7 @@ public class SettingItem<T> {
             return checked;
         }
 
-        public SettingItem setChecked(boolean checked) {
+        public SettingItem<Boolean> setChecked(boolean checked) {
             this.checked = checked;
             return this;
         }
@@ -532,7 +532,7 @@ public class SettingItem<T> {
             ArrayList<HashMap<String,String>> arrayList=new ArrayList<>();
             for(Map.Entry<String,String> x: items.entrySet()) {
                 HashMap<String,String> hashMap=new HashMap<>();
-                hashMap.put("name", x.getKey());
+                hashMap.put("name", x.getKey()); //NON-NLS
                 arrayList.add(hashMap);
             }
             return arrayList;

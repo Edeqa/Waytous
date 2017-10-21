@@ -220,5 +220,6 @@
     <string name="too_long_message">Too long message</string>
     <string name="s_ago"> (%s ago)</string>
     <string name="select_your_preferred_navigation_mode">Select your preferred navigation mode.</string>
+    <string name="show_labels_in_context_menu">Show labels in context menu</string>
 
 </resources>
