@@ -19,6 +19,7 @@ public class Events {
     public static final String MAP_MY_LOCATION_BUTTON_CLICKED = "map_my_location_button_clicked";
     public static final String MARKER_CLICK = "marker_click";
     public static final String MAP_READY = "map_ready";
+    public static final String SYNC_PROFILE = "sync_profile";
 
     public static final String CREATE_CONTEXT_MENU = "create_context_menu";
     public static final String CREATE_OPTIONS_MENU = "create_options_menu";

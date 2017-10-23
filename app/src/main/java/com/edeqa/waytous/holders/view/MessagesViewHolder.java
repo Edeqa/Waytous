@@ -306,7 +306,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
         State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
 
         dialog = new CustomListDialog(context);
-        dialog.setLayout(R.layout.dialog_items);
 
         list = dialog.getList();
         adapter = new UserMessage.UserMessagesAdapter(context, list);

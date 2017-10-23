@@ -221,5 +221,10 @@
     <string name="s_ago"> (%s ago)</string>
     <string name="select_your_preferred_navigation_mode">Select your preferred navigation mode.</string>
     <string name="show_labels_in_context_menu">Show labels in context menu</string>
+    <string name="user_profile">User profile</string>
+    <string name="sign_in_with_facebook">Sign in with Facebook</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_in_with_twitter">Sign in with Twitter</string>
+    <string name="sign_in_with_e_mail">Sign in with e-mail</string>
 
 </resources>

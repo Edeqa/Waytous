@@ -368,7 +368,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
     private void showLocations() {
 
         dialog = new CustomListDialog(context);
-        dialog.setLayout(R.layout.dialog_items);
 
         final RecyclerView list = dialog.getList();
         adapter = new SavedLocation.SavedLocationsAdapter(context, list);

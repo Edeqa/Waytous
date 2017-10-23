@@ -52,7 +52,6 @@ public class SettingsViewHolder extends AbstractViewHolder {
     public static final String PREFERENCES_GENERAL = "general"; //NON-NLS
 
     private AlertDialog dialog;
-    private RecyclerView list;
     private Toolbar toolbar;
     private SettingsAdapter adapter;
     private SettingItem.Page settingItem;
@@ -125,11 +124,11 @@ public class SettingsViewHolder extends AbstractViewHolder {
     public void showSettings() {
         dialog = new AlertDialog.Builder(context).create();
 
-        final View content = context.getLayoutInflater().inflate(R.layout.dialog_items, null);
+        final View content = context.getLayoutInflater().inflate(R.layout.dialog_custom, null);
 
-        context.getLayoutInflater().inflate(R.layout.dialog_items, null);
+        context.getLayoutInflater().inflate(R.layout.dialog_custom, null);
 
-        list = (RecyclerView) content.findViewById(R.id.list_items);
+        RecyclerView list = (RecyclerView) content.findViewById(R.id.list_items);
 
         adapter = new SettingsAdapter(list);
 
@@ -217,6 +216,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
             holder.itemView.setEnabled(true);
 
             if(item.getMessageHtml() != null) {
+                //noinspection deprecation
                 Spanned html = Html.fromHtml(item.getMessageHtml());
                 holder.tvHeaderSummary.setText(html);
                 holder.tvHeaderSummary.setMovementMethod(LinkMovementMethod.getInstance());
