@@ -316,7 +316,7 @@ public class MyTrackingFBTest {
 
 
 
-    private TrackingCallback onTrackingListener = new TrackingCallback() {
+    public TrackingCallback onTrackingListener = new TrackingCallback() {
 
         @Override
         public void onCreating() {

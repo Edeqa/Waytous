@@ -16,3 +16,4 @@ Helpers.iml
 keystore_release.jks
 test-reports
 test-results
+/app/sensitive.gradle

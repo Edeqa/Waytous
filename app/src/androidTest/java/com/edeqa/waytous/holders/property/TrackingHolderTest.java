@@ -1,11 +1,22 @@
 package com.edeqa.waytous.holders.property;
 
-import com.edeqa.waytous.State;
-import com.edeqa.waytous.helpers.MyUser;
+import android.util.Log;
 
+import com.edeqa.waytous.State;
+import com.edeqa.waytous.helpers.MyTrackingFB;
+import com.edeqa.waytous.helpers.MyTrackingFBTest;
+import com.edeqa.waytous.helpers.MyUser;
+import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.TrackingCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.edeqa.waytous.Constants.OPTIONS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ERROR;
 import static com.edeqa.waytous.helpers.Events.TRACKING_JOIN;
@@ -29,6 +40,9 @@ public class TrackingHolderTest {
         user.getProperties().setName(USERNAME);
 
         holder = new TrackingHolder(State.getInstance());
+
+        State.getInstance().getTracking().setTrackingListener(new MyTrackingFBTest().onTrackingListener);
+
     }
 
     @Test
@@ -64,5 +78,6 @@ public class TrackingHolderTest {
         holder.onEvent(TRACKING_DISABLED, null);
         holder.onEvent(TRACKING_ERROR, "Error");
     }
+
 
 }

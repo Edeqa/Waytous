@@ -32,6 +32,9 @@ import com.edeqa.waytous.holders.view.SettingsViewHolder;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
 import com.edeqa.waytous.holders.view.TrackingViewHolder;
 import com.edeqa.waytous.holders.view.UserProfileViewHolder;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -48,13 +51,13 @@ import io.nlopez.smartlocation.SmartLocation;
 
 import static com.edeqa.waytous.Constants.BROADCAST;
 import static com.edeqa.waytous.Constants.BROADCAST_MESSAGE;
+import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
 import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytous.Constants.OPTIONS;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_CREATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_DESTROY;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -78,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SupportMapFragment mapFragment;
     private State state;
     private static boolean isVisible = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -489,4 +491,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static boolean isVisible() {
         return isVisible;
     }
+
 }

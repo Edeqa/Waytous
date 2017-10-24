@@ -21,6 +21,8 @@ import com.edeqa.waytous.R;
 import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_NEUTRAL;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Created 8/10/2017.
@@ -49,6 +51,7 @@ public class CustomDialog {
     private String neutralString;
     private DialogInterface.OnClickListener neutralListener;
     private DialogInterface.OnCancelListener onCancelListener;
+    private boolean showMenu = false;
 
     public CustomDialog(MainActivity context) {
         this.context = context;
@@ -61,13 +64,16 @@ public class CustomDialog {
     public void show() {
 
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
+        if(dialog == null) {
+            dialog = new AlertDialog.Builder(context).create();
+        }
         dialog.setCustomTitle(layoutToolbar);
         toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
 
         if (getFooter() != null) {
             ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             getFooter().setLayoutParams(params);
 
             placeFooter.addView(getFooter());
@@ -106,6 +112,12 @@ public class CustomDialog {
                     }
                 });
             }
+//        } else {
+//            toolbar.getMenu().findItem(R.id.search).setVisible(false);
+        }
+
+        if(getTitle() != null) {
+            setTitle(getTitle());
         }
 
         dialog.setView(content);
@@ -134,7 +146,9 @@ public class CustomDialog {
         dialog.show();
 
         if (isFlat()) {
-            Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
+            Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
+        } else {
+            Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
         }
 
         dialog.getWindow().getDecorView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -142,7 +156,11 @@ public class CustomDialog {
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 int oldHeight = oldBottom - oldTop; // bottom exclusive, top inclusive
                 if(v.getHeight() != oldHeight) {
-                    Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    if (isFlat()) {
+                        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
+                    } else {
+                        Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
+                    }
                 }
             }
         });
@@ -157,7 +175,6 @@ public class CustomDialog {
         LinearLayout layoutItems = (LinearLayout) content.findViewById(R.id.layout_items);
         View view = context.getLayoutInflater().inflate(layout, null);
         layoutItems.addView(view);
-//        this.layout = layout;
     }
 
     public View getLayout() {
@@ -166,10 +183,15 @@ public class CustomDialog {
 
     public void setMenu(int menu) {
         this.menu = menu;
+        if(menu > 0) showMenu();
     }
 
     public int getMenuRes() {
         return menu;
+    }
+
+    public void setTitle(int resId) {
+        setTitle(context.getString(resId));
     }
 
     public void setTitle(String title) {
@@ -255,6 +277,7 @@ public class CustomDialog {
 
     public void dismiss() {
         dialog.dismiss();
+        dialog = null;
     }
 
     public boolean isShowing() {
@@ -313,4 +336,17 @@ public class CustomDialog {
         this.context = context;
     }
 
+    public void showMenu() {
+        showMenu = true;
+        if(toolbar != null) {
+            toolbar.showOverflowMenu();
+        }
+    }
+
+    public void hideMenu() {
+        showMenu = false;
+        if(toolbar != null) {
+            toolbar.hideOverflowMenu();
+        }
+    }
 }
