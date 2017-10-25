@@ -577,10 +577,14 @@ public class MyTrackingFB implements Tracking {
                     }
                 }
                 put(REQUEST_TOKEN, getToken());
-                put(REQUEST_UID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
+                String deviceId = State.getInstance().getDeviceId();
+                if(deviceId.length() > 40) deviceId = Misc.getEncryptedHash(deviceId);
+                put(REQUEST_UID, deviceId);
             }
             if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                put(REQUEST_UID, Misc.getEncryptedHash(State.getInstance().getDeviceId()));
+                String deviceId = State.getInstance().getDeviceId();
+                if(deviceId.length() > 40) deviceId = Misc.getEncryptedHash(deviceId);
+                put(REQUEST_UID, deviceId);
             }
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
@@ -608,7 +612,8 @@ public class MyTrackingFB implements Tracking {
                     case RESPONSE_STATUS_CHECK:
                         if (o.has(RESPONSE_CONTROL)) {
                             String control = o.getString(RESPONSE_CONTROL);
-                            String deviceId = Misc.getEncryptedHash(State.getInstance().getDeviceId());
+                            String deviceId = State.getInstance().getDeviceId();
+                            if(deviceId.length() > 40) deviceId = Misc.getEncryptedHash(deviceId);
                             String hash = Misc.getEncryptedHash(control + ":" + deviceId);
                             put(REQUEST,REQUEST_CHECK_USER);
                             put(REQUEST_HASH,hash);

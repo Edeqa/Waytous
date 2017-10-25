@@ -3,20 +3,16 @@ package com.edeqa.waytous.holders.view;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.edeqa.waytous.Firebase;
+import com.edeqa.helpers.Misc;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -24,20 +20,14 @@ import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.Account;
 import com.edeqa.waytous.helpers.CustomDialog;
-import com.edeqa.waytous.helpers.CustomListDialog;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.helpers.SettingItem;
 import com.edeqa.waytous.helpers.Utils;
-import com.facebook.internal.CallbackManagerImpl;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.location.ActivityRecognition;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -60,21 +50,35 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
     public static final String SHOW_USER_PROFILE = "show_user_profile"; //NON-NLS
 
+    public static final String TYPE = "user_profile";
+
     private CustomDialog dialog;
     private OnSignGoogleClickListener onSignGoogleClickListener;
     GoogleApiClient mGoogleApiClient;
+    private Account account;
 
     public UserProfileViewHolder(MainActivity context) {
         super(context);
-        SettingItem.setSharedPreferences(State.getInstance().getSharedPreferences());
-        SettingItem.setContext(context);
 
-        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+        new Thread(new Runnable() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Utils.log("onAuthStateChanged:"+firebaseAuth);
+            public void run() {
+                Object object = State.getInstance().getPropertiesHolder().loadFor(TYPE);
+                if(object != null) {
+                    setAccount((Account) object);
+                }
+
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                System.out.println("CURRENTUSER:"+currentUser);
+
+                FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+                    @Override
+                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                        Utils.log("onAuthStateChanged:"+firebaseAuth);
+                    }
+                });
             }
-        });
+        }).start();
     }
 
     @Override
@@ -213,15 +217,18 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if(auth != null) {
             FirebaseUser currentUser = auth.getCurrentUser();
-            Log.i("USER", String.valueOf(currentUser));
+            Log.i("USER", Misc.toStringDeep(currentUser));
             if(currentUser != null) {
                 account = new Account();
                 account.setName(currentUser.getDisplayName());
                 account.setEmail(currentUser.getEmail());
                 account.setSignProvider(currentUser.getProviders().get(0));
                 account.setPhotoUrl(currentUser.getPhotoUrl());
+                account.setUid(currentUser.getUid());
+                account.setAnonymous(currentUser.isAnonymous());
+                account.setEmailVerified(currentUser.isEmailVerified());
             }
-            Log.i("ACCOUNT", String.valueOf(account));
+            Log.i("ACCOUNT", Misc.toStringDeep(account));
         }
 //        var data = firebase.auth().currentUser;
 //        if(data) {
@@ -246,6 +253,14 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         public void onClick(View v) {
         }
     };
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 
     class OnSignGoogleClickListener implements OnClickListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 

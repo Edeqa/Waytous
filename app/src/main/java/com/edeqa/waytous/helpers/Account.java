@@ -2,19 +2,24 @@ package com.edeqa.waytous.helpers;
 
 import android.net.Uri;
 
+import java.io.Serializable;
+
 /**
  * Created 10/21/17.
  */
 
-public class Account {
+public class Account implements Serializable{
 
+    private static final long serialVersionUID = 8336921607194270112L;
+
+    private Uri photoUrl;
     private String name;
     private String email;
     private String signProvider;
-    private Long created;
-    private Long changed;
+    private String uid;
     private Long synced;
-    private Uri photoUrl;
+    private boolean anonymous;
+    private boolean emailVerified;
 
     public String getName() {
         return name;
@@ -30,22 +35,6 @@ public class Account {
 
     public void setSignProvider(String signProvider) {
         this.signProvider = signProvider;
-    }
-
-    public Long getCreated() {
-        return created;
-    }
-
-    public void setCreated(Long created) {
-        this.created = created;
-    }
-
-    public Long getChanged() {
-        return changed;
-    }
-
-    public void setChanged(Long changed) {
-        this.changed = changed;
     }
 
     public Long getSynced() {
@@ -72,6 +61,30 @@ public class Account {
         return photoUrl;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
     @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public String toString() {
@@ -79,10 +92,9 @@ public class Account {
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", signProvider='" + signProvider + '\'' +
-                ", created=" + created +
-                ", changed=" + changed +
                 ", synced=" + synced +
                 ", photoUrl=" + photoUrl +
                 '}';
     }
+
 }
