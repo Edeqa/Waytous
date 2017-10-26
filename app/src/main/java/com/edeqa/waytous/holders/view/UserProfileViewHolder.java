@@ -2,7 +2,10 @@ package com.edeqa.waytous.holders.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.waytous.MainActivity;
@@ -35,6 +40,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
@@ -46,7 +58,7 @@ import static com.edeqa.waytous.helpers.Events.SYNC_PROFILE;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class UserProfileViewHolder extends AbstractViewHolder {
+public class UserProfileViewHolder extends AbstractViewHolder implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String SHOW_USER_PROFILE = "show_user_profile"; //NON-NLS
 
@@ -57,12 +69,27 @@ public class UserProfileViewHolder extends AbstractViewHolder {
     GoogleApiClient mGoogleApiClient;
     private Account account;
 
-    public UserProfileViewHolder(MainActivity context) {
+    public UserProfileViewHolder(final MainActivity context) {
         super(context);
+
+        Twitter.initialize(context);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
+
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 Object object = State.getInstance().getPropertiesHolder().loadFor(TYPE);
                 if(object != null) {
                     setAccount((Account) object);
@@ -74,7 +101,10 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
                     @Override
                     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                        Utils.log("onAuthStateChanged:"+firebaseAuth);
+                        if(dialog != null && dialog.isShowing()) showAccountDialog();
+//                        Utils.log("onAuthStateChanged:"+firebaseAuth);
+//                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//                        System.out.println("CURRENTUSER2:"+currentUser);
                     }
                 });
             }
@@ -94,31 +124,15 @@ public class UserProfileViewHolder extends AbstractViewHolder {
     @Override
     public boolean onEvent(String event, Object object) {
         switch(event){
-            case CREATE_DRAWER:
-                DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
-                adder.add(R.id.drawer_section_miscellaneous, R.string.user_profile, R.string.user_profile, R.drawable.ic_person_black_24dp).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().fire(SHOW_USER_PROFILE);
-                        return false;
-                    }
-                });
-                break;
-            case SHOW_USER_PROFILE:
-                showAccountDialog();
-                break;
-            case MAP_READY:
-                doGlobalSync();
-                break;
             case ACTIVITY_RESULT:
                 Bundle m = (Bundle) object;
                 if(m != null){
                     int requestCode = m.getInt("requestCode");
                     int resultCode = m.getInt("resultCode");
                     Intent data = m.getParcelable("data");
+                    Utils.log("ACTIVITY_RESULT:"+requestCode+":"+resultCode+":"+data);
                     if (requestCode == 117) {
 //                        if(CallbackManagerImpl.RequestCodeOffset.Share.toRequestCode() == requestCode) {
-                            Utils.log("ACTIVITY_RESULT:"+requestCode+":"+resultCode+":"+data);
 
                             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 
@@ -139,20 +153,43 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                                     // Sign in success, update UI with the signed-in user's information
                                                     FirebaseUser user = auth.getCurrentUser();
                                                     Utils.log("signInWithCredential:success:"+user);
+
+                                                    showDialogLayout(DialogMode.PROFILE);
                                                 } else {
                                                     // If sign in fails, display a message to the user.
                                                     Utils.log("signInWithCredential:failure", task.getException());
+
+                                                    showDialogLayout(DialogMode.SIGN_BUTTONS);
                                                 }
                                             }
                                         });
 
                             } else {
                                 // Signed out, show unauthenticated UI.
+                                showDialogLayout(DialogMode.SIGN_BUTTONS);
                                 Utils.log("SIGNEDOUT");
                             }
 //                        }
                     }
                 }
+                break;
+            case CREATE_DRAWER:
+                DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
+                adder.add(R.id.drawer_section_miscellaneous, R.string.user_profile, R.string.user_profile, R.drawable.ic_person_black_24dp).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        State.getInstance().fire(SHOW_USER_PROFILE);
+                        return false;
+                    }
+                });
+                break;
+            case MAP_READY:
+                doGlobalSync();
+                break;
+            case SHOW_USER_PROFILE:
+                showAccountDialog();
+                break;
+            case SYNC_PROFILE:
                 break;
 
         }
@@ -166,6 +203,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
     public void showAccountDialog() {
 
+        if(dialog != null && dialog.isShowing()) dialog.dismiss();
 //        if(dialog == null) {
         dialog = new CustomDialog(context);
         dialog.setLayout(R.layout.dialog_user_profile);
@@ -176,8 +214,8 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 System.out.println(item);
                 switch(item.getItemId()) {
                     case R.id.sign_out:
-
                         FirebaseAuth.getInstance().signOut();
+                        showAccountDialog();
                         break;
                 }
                 return false;
@@ -185,20 +223,58 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         });
 //        }
 
-        Account account = fetchAccount();
+        final Account account = fetchAccount();
         if (account != null) {
             dialog.setMenu(R.menu.dialog_user_profile_menu);
-        } else {
-            ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layoutSignButtons);
-            layout.setVisibility(View.VISIBLE);
 
+            showDialogLayout(DialogMode.PROFILE);
+
+            final ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_profile);
+            if(account.getName() != null) {
+                ((TextView) layout.findViewById(R.id.tv_name)).setText(account.getName());
+            }
+            if(account.getEmail() != null) {
+                ((TextView) layout.findViewById(R.id.tv_email)).setText(account.getEmail());
+            }
+            final ImageView ivAvatar = (ImageView) layout.findViewById(R.id.iv_avatar);
+
+            if(account.getPhotoUrl() != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            avatarMode(AvatarMode.LOADING);
+                            final Bitmap bitmap = Utils.getImageBitmap(account.getPhotoUrl().toString());
+                            if (bitmap != null) {
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ivAvatar.setImageBitmap(bitmap);
+                                        ivAvatar.invalidate();
+
+                                        avatarMode(AvatarMode.AVATAR);
+                                    }
+                                });
+                            } else {
+                                avatarMode(AvatarMode.PLACEHOLDER);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            avatarMode(AvatarMode.PLACEHOLDER);
+                        }
+                    }
+                }).start();
+            }
+        } else {
+            showDialogLayout(DialogMode.SIGN_BUTTONS);
+
+            ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_sign_buttons);
             dialog.hideMenu();
 
             layout.findViewById(R.id.button_sign_with_facebook).setOnClickListener(onSignFacebookClickListener);
             layout.findViewById(R.id.button_sign_with_google).setOnClickListener(new OnSignGoogleClickListener());
             layout.findViewById(R.id.button_sign_with_twitter).setOnClickListener(onSignTwitterClickListener);
             layout.findViewById(R.id.button_sign_with_email).setOnClickListener(onSignEmailClickListener);
-
         }
 
         dialog.setTitle(R.string.user_profile);
@@ -229,6 +305,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 account.setEmailVerified(currentUser.isEmailVerified());
             }
             Log.i("ACCOUNT", Misc.toStringDeep(account));
+            Log.i("ID", FirebaseInstanceId.getInstance().getId());
         }
 //        var data = firebase.auth().currentUser;
 //        if(data) {
@@ -262,49 +339,66 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         this.account = account;
     }
 
-    class OnSignGoogleClickListener implements OnClickListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Utils.log("onConnectionFailed:"+connectionResult.getErrorMessage());
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Utils.log("onConnected:"+bundle);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Utils.log("onConnectionSuspended:"+i);
+
+    }
+
+
+    class OnSignGoogleClickListener implements OnClickListener {
 
         @Override
         public void onClick(View v) {
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(context.getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build();
-            mGoogleApiClient = new GoogleApiClient.Builder(context)
-                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                    .addConnectionCallbacks(OnSignGoogleClickListener.this)
-                    .addOnConnectionFailedListener(OnSignGoogleClickListener.this)
-                    .build();
+            showDialogLayout(DialogMode.SIGNING);
+            if(dialog != null) {
+                ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_google);
+            }
+
+            if(mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.clearDefaultAccountAndReconnect();
+            } else {
+                mGoogleApiClient.connect();
+            }
 
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            if (mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.clearDefaultAccountAndReconnect();
-            }
+//            context.startActivity(signInIntent);
             context.startActivityForResult(signInIntent, 117);
 
         }
 
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Utils.log("onConnectionFailed:"+connectionResult.getErrorMessage());
-        }
-
-        @Override
-        public void onConnected(@Nullable Bundle bundle) {
-            System.out.println("onConnected:"+bundle);
-            mGoogleApiClient.clearDefaultAccountAndReconnect();
-        }
-
-        @Override
-        public void onConnectionSuspended(int i) {
-            System.out.println("onConnectionSuspended:"+i);
-
-        }
     };
 
     OnClickListener onSignTwitterClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            TwitterLoginButton mLoginButton = (TwitterLoginButton) dialog.getLayout().findViewById(R.id.twitter_button);
+            mLoginButton.setCallback(new Callback<TwitterSession>() {
+                @Override
+                public void success(Result<TwitterSession> result) {
+                    Log.d("tw", "twitterLogin:success" + result);
+//                    handleTwitterSession(result.data);
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                    Log.w("tw", "twitterLogin:failure", exception);
+//                    updateUI(null);
+                }
+            });
+            mLoginButton.callOnClick();
         }
     };
 
@@ -314,5 +408,64 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             System.out.println("sign with email");
         }
     };
+
+    private enum DialogMode {
+        SIGN_BUTTONS, PROFILE, SIGNING
+    }
+    private void showDialogLayout(final DialogMode mode) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(dialog == null) return;
+                switch(mode) {
+                    case PROFILE:
+                        dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.VISIBLE);
+                        break;
+                    case SIGN_BUTTONS:
+                        dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.VISIBLE);
+                        break;
+                    case SIGNING:
+                        dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
+        });
+    }
+
+    private enum AvatarMode {
+        AVATAR, PLACEHOLDER, LOADING
+    }
+    private void avatarMode(final AvatarMode mode) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(dialog == null) return;
+                switch(mode) {
+                    case AVATAR:
+                        dialog.getLayout().findViewById(R.id.iv_avatar_placeholder).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.pb_avatar_loading).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_avatar).setVisibility(View.VISIBLE);
+                        break;
+                    case LOADING:
+                        dialog.getLayout().findViewById(R.id.iv_avatar_placeholder).setVisibility(View.INVISIBLE);
+                        dialog.getLayout().findViewById(R.id.pb_avatar_loading).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.iv_avatar).setVisibility(View.GONE);
+                        break;
+                    case PLACEHOLDER:
+                        dialog.getLayout().findViewById(R.id.iv_avatar_placeholder).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.pb_avatar_loading).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_avatar).setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+    }
+
 
 }

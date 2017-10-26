@@ -80,7 +80,7 @@ public class SyncFBTest {
             State.getInstance().setDeviceId(State.getInstance().getDeviceId());
             State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
 
-            Log.d("UserID",Misc.getEncryptedHash(State.getInstance().getDeviceId()));
+            Log.d("UserID",State.getInstance().getDeviceId());
 
             tracking = new MyTrackingFB(link);
             State.getInstance().setTracking(tracking);
@@ -97,7 +97,7 @@ public class SyncFBTest {
         sync = new SyncFB()
                 .setDebug(true)
                 .setType(SyncFB.Type.ACCOUNT_PRIVATE)
-                .setUid(Misc.getEncryptedHash(State.getInstance().getDeviceId()))
+                .setUid(State.getInstance().getDeviceId())
                 .setUserNumber("0")
                 .setOnGetValue(new Callable2<Object, String, Object>() {
                     @Override
@@ -686,7 +686,7 @@ public class SyncFBTest {
 
     @Test
     public void getUid() throws Exception {
-        assertEquals(Misc.getEncryptedHash(State.getInstance().getDeviceId()), sync.getUid());
+        assertEquals(State.getInstance().getDeviceId(), sync.getUid());
     }
 
     @Test

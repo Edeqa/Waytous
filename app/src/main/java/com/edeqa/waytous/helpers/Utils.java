@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
@@ -26,12 +27,17 @@ import com.google.maps.android.SphericalUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.List;
 
@@ -44,6 +50,7 @@ import static com.edeqa.waytous.Constants.USER_LATITUDE;
 import static com.edeqa.waytous.Constants.USER_LONGITUDE;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
+import static com.google.common.io.ByteStreams.copy;
 
 
 /**
@@ -373,5 +380,33 @@ public class Utils {
     public static String getWrappedHttpsPort(){
         return OPTIONS.getHttpsPortMasked() == 443 ? "" : ":" + OPTIONS.getHttpsPortMasked();
     }
+
+    public static Bitmap getImageBitmap(String url) {
+        Bitmap mIcon11 = null;
+        try {
+            InputStream in = new java.net.URL(url).openStream();
+            mIcon11 = BitmapFactory.decodeStream(in);
+        } catch (Exception e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+        return mIcon11;
+
+//        Bitmap bm = null;
+//        try {
+//            URL aURL = new URL(url);
+//            URLConnection conn = aURL.openConnection();
+//            conn.connect();
+//            InputStream is = conn.getInputStream();
+//            BufferedInputStream bis = new BufferedInputStream(is);
+//            bm = BitmapFactory.decodeStream(bis);
+//            bis.close();
+//            is.close();
+//        } catch (IOException e) {
+//            Log.e("Utils", "Error getting bitmap", e); //NON-NLS
+//        }
+//        return bm;
+    }
+
 
 }

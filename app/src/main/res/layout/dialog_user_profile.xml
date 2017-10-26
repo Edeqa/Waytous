@@ -14,7 +14,7 @@
               android:weightSum="1">
 
     <LinearLayout
-        android:id="@+id/layoutSignButtons"
+        android:id="@+id/layout_sign_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -42,6 +42,12 @@
             android:layout_weight="1"
             android:text="@string/sign_in_with_twitter"/>
 
+        <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/twitter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
         <Button
             android:id="@+id/button_sign_with_email"
             android:layout_width="match_parent"
@@ -51,10 +57,33 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/layout_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_avatar_placeholder"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitCenter"
+            android:tint="@android:color/darker_gray"
+            android:tintMode="src_atop"
+            app:srcCompat="@drawable/ic_navigation_twinks_black_24dp"/>
+
+        <ProgressBar
+            android:id="@+id/pb_avatar_loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignLeft="@id/iv_avatar_placeholder"
+            android:layout_alignStart="@id/iv_avatar_placeholder"
+            android:layout_alignTop="@id/iv_avatar_placeholder"
+            android:padding="20dp"/>
 
         <ImageView
             android:id="@+id/iv_avatar"
@@ -63,9 +92,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:tint="@android:color/darker_gray"
-            android:tintMode="src_atop"
-            app:srcCompat="@drawable/ic_navigation_twinks_black_24dp"/>
+            android:scaleType="fitCenter"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/tv_name"
@@ -76,9 +104,10 @@
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/iv_avatar"
             android:layout_toRightOf="@+id/iv_avatar"
-            android:paddingLeft="@dimen/com_facebook_share_button_padding_left"
-            android:textAlignment="textEnd"
             android:gravity="end"
+            android:paddingLeft="@dimen/com_facebook_share_button_padding_left"
+            android:paddingStart="@dimen/com_facebook_share_button_padding_left"
+            android:textAlignment="textEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             tools:text="Name of user is very long text for test how this text will be shown in the dialog"/>
 
@@ -93,9 +122,33 @@
             android:layout_toRightOf="@+id/iv_avatar"
             android:gravity="end"
             android:paddingLeft="@dimen/com_facebook_share_button_padding_left"
+            android:paddingStart="@dimen/com_facebook_share_button_padding_left"
             android:textAlignment="textEnd"
             android:textSize="12sp"
             tools:text="&lt;user@mail.com&gt;"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_signing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/progressBar3"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:id="@+id/tv_signing"
+            android:layout_marginTop="@dimen/material_baseline_grid_3x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressBar3"
+            android:layout_centerHorizontal="true"
+            tools:text="Signing using Google"/>
     </RelativeLayout>
 
 </LinearLayout>

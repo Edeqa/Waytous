@@ -226,5 +226,6 @@
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in_with_twitter">Sign in with Twitter</string>
     <string name="sign_in_with_e_mail">Sign in with e-mail</string>
+    <string name="signing_in_with_google">Signing in with Google</string>
 
 </resources>
