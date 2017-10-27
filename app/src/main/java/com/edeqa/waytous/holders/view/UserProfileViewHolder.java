@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.edeqa.helpers.Misc;
+import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -27,6 +28,11 @@ import com.edeqa.waytous.helpers.Account;
 import com.edeqa.waytous.helpers.CustomDialog;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.Utils;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -37,9 +43,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -58,33 +66,23 @@ import static com.edeqa.waytous.helpers.Events.SYNC_PROFILE;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class UserProfileViewHolder extends AbstractViewHolder implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class UserProfileViewHolder extends AbstractViewHolder {
 
     public static final String SHOW_USER_PROFILE = "show_user_profile"; //NON-NLS
 
     public static final String TYPE = "user_profile";
+    private final Signer signer;
 
     private CustomDialog dialog;
-    private OnSignGoogleClickListener onSignGoogleClickListener;
-    GoogleApiClient mGoogleApiClient;
+
     private Account account;
 
     public UserProfileViewHolder(final MainActivity context) {
         super(context);
 
+        System.out.println("INITIALIZUSERPRO");
         Twitter.initialize(context);
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        mGoogleApiClient.connect();
-
+        signer = new Signer();
 
         new Thread(new Runnable() {
             @Override
@@ -95,7 +93,7 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
                     setAccount((Account) object);
                 }
 
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                /*FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 System.out.println("CURRENTUSER:"+currentUser);
 
                 FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -106,7 +104,7 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
 //                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 //                        System.out.println("CURRENTUSER2:"+currentUser);
                     }
-                });
+                });*/
             }
         }).start();
     }
@@ -130,47 +128,7 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
                     int requestCode = m.getInt("requestCode");
                     int resultCode = m.getInt("resultCode");
                     Intent data = m.getParcelable("data");
-                    Utils.log("ACTIVITY_RESULT:"+requestCode+":"+resultCode+":"+data);
-                    if (requestCode == 117) {
-//                        if(CallbackManagerImpl.RequestCodeOffset.Share.toRequestCode() == requestCode) {
-
-                            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
-                            Utils.log("handleSignInResult:" + result.isSuccess());
-                            if (result.isSuccess()) {
-                                // Signed in successfully, show authenticated UI.
-                                GoogleSignInAccount acct = result.getSignInAccount();
-
-                                Log.i("SIGNEDINAS:",acct.getId()+":"+acct.getIdToken());
-
-                                final FirebaseAuth auth = FirebaseAuth.getInstance();
-                                AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-                                auth.signInWithCredential(credential)
-                                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                                if (task.isSuccessful()) {
-                                                    // Sign in success, update UI with the signed-in user's information
-                                                    FirebaseUser user = auth.getCurrentUser();
-                                                    Utils.log("signInWithCredential:success:"+user);
-
-                                                    showDialogLayout(DialogMode.PROFILE);
-                                                } else {
-                                                    // If sign in fails, display a message to the user.
-                                                    Utils.log("signInWithCredential:failure", task.getException());
-
-                                                    showDialogLayout(DialogMode.SIGN_BUTTONS);
-                                                }
-                                            }
-                                        });
-
-                            } else {
-                                // Signed out, show unauthenticated UI.
-                                showDialogLayout(DialogMode.SIGN_BUTTONS);
-                                Utils.log("SIGNEDOUT");
-                            }
-//                        }
-                    }
+                    signer.onActivityResult(requestCode, resultCode, data);
                 }
                 break;
             case CREATE_DRAWER:
@@ -227,7 +185,8 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
         if (account != null) {
             dialog.setMenu(R.menu.dialog_user_profile_menu);
 
-            showDialogLayout(DialogMode.PROFILE);
+            switchDialogLayout(DialogMode.PROFILE);
+            signProviderMode(account.getSignProvider());
 
             final ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_profile);
             if(account.getName() != null) {
@@ -236,6 +195,7 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
             if(account.getEmail() != null) {
                 ((TextView) layout.findViewById(R.id.tv_email)).setText(account.getEmail());
             }
+
             final ImageView ivAvatar = (ImageView) layout.findViewById(R.id.iv_avatar);
 
             if(account.getPhotoUrl() != null) {
@@ -266,15 +226,53 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
                 }).start();
             }
         } else {
-            showDialogLayout(DialogMode.SIGN_BUTTONS);
+            switchDialogLayout(DialogMode.SIGN_BUTTONS);
 
             ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_sign_buttons);
             dialog.hideMenu();
 
-            layout.findViewById(R.id.button_sign_with_facebook).setOnClickListener(onSignFacebookClickListener);
-            layout.findViewById(R.id.button_sign_with_google).setOnClickListener(new OnSignGoogleClickListener());
-            layout.findViewById(R.id.button_sign_with_twitter).setOnClickListener(onSignTwitterClickListener);
-            layout.findViewById(R.id.button_sign_with_email).setOnClickListener(onSignEmailClickListener);
+            layout.findViewById(R.id.button_sign_with_facebook).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signer.setMode(SignProviderMode.FACEBOOK);
+                    signer.setCallbackElement(dialog.getLayout().findViewById(R.id.button_sign_with_facebook_origin));
+                    signer.sign();
+                    if(dialog != null) {
+                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_facebook);
+                    }
+                }
+            });
+            layout.findViewById(R.id.button_sign_with_google).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signer.setMode(SignProviderMode.GOOGLE);
+                    signer.sign();
+                    if(dialog != null) {
+                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_google);
+                    }
+                }
+            });
+            layout.findViewById(R.id.button_sign_with_twitter).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signer.setMode(SignProviderMode.TWITTER);
+                    signer.setCallbackElement(dialog.getLayout().findViewById(R.id.button_sign_with_twitter_origin));
+                    signer.sign();
+                    if(dialog != null) {
+                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_twitter);
+                    }
+                }
+            });
+            layout.findViewById(R.id.button_sign_with_email).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    signer.setMode(SignProviderMode.EMAIL);
+//                    signer.sign();
+//                    if(dialog != null) {
+//                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_twitter);
+//                    }
+                }
+            });
         }
 
         dialog.setTitle(R.string.user_profile);
@@ -307,15 +305,6 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
             Log.i("ACCOUNT", Misc.toStringDeep(account));
             Log.i("ID", FirebaseInstanceId.getInstance().getId());
         }
-//        var data = firebase.auth().currentUser;
-//        if(data) {
-//            user = {};
-//            data.providerData.forEach(function(item){
-//                user = u.cloneAsObject(item);
-//                return false;
-//            });
-//            user.uid = data.uid;
-//        }
         return account;
     }
 
@@ -324,12 +313,6 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
             State.getInstance().fire(SYNC_PROFILE);
         }
     }
-
-    OnClickListener onSignFacebookClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-        }
-    };
 
     public Account getAccount() {
         return account;
@@ -340,79 +323,200 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
     }
 
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Utils.log("onConnectionFailed:"+connectionResult.getErrorMessage());
-    }
+    private class Signer implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        private AuthCredential credential;
+        private SignProviderMode mode;
+        private TwitterLoginButton twitterLoginButton;
+        private CallbackManager facebookCallbackManager;
+        private GoogleApiClient googleApiClient;
+        private LoginButton facebookLoginButton;
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Utils.log("onConnected:"+bundle);
-    }
+        Signer() {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(context.getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            googleApiClient = new GoogleApiClient.Builder(context)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+            googleApiClient.connect();
+        }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Utils.log("onConnectionSuspended:"+i);
+        void sign() {
+            switchDialogLayout(DialogMode.SIGNING);
+            switch (mode) {
+                case EMAIL:
+                    break;
+                case FACEBOOK:
+                    facebookCallbackManager = CallbackManager.Factory.create();
+                    facebookLoginButton.setReadPermissions("email", "public_profile");
+                    facebookLoginButton.registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
+                        @Override
+                        public void onSuccess(LoginResult loginResult) {
+                            credential = FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
+                            signToFirebase();
+                        }
 
-    }
+                        @Override
+                        public void onCancel() {
+                            onFailureListener.call("Cancelled");
+                        }
 
+                        @Override
+                        public void onError(FacebookException error) {
+                            error.printStackTrace();
+                            onFailureListener.call(error);
+                        }
+                    });
+                    facebookLoginButton.callOnClick();
+                    break;
+                case GOOGLE:
+                    if(googleApiClient.isConnected()) {
+                        googleApiClient.clearDefaultAccountAndReconnect();
+                    } else {
+                        googleApiClient.connect();
+                    }
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+                    context.startActivityForResult(signInIntent, 117);
 
-    class OnSignGoogleClickListener implements OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            showDialogLayout(DialogMode.SIGNING);
-            if(dialog != null) {
-                ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_google);
+                    break;
+                case NONE:
+                    break;
+                case TWITTER:
+                    twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+                        @Override
+                        public void success(Result<TwitterSession> result) {
+                            credential = TwitterAuthProvider.getCredential(result.data.getAuthToken().token, result.data.getAuthToken().secret);
+                            signToFirebase();
+                        }
+                        @Override
+                        public void failure(TwitterException exception) {
+                            onFailureListener.call(exception);
+                        }
+                    });
+                    twitterLoginButton.callOnClick();
+                    break;
             }
-
-            if(mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.clearDefaultAccountAndReconnect();
-            } else {
-                mGoogleApiClient.connect();
-            }
-
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-//            context.startActivity(signInIntent);
-            context.startActivityForResult(signInIntent, 117);
 
         }
 
-    };
-
-    OnClickListener onSignTwitterClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            TwitterLoginButton mLoginButton = (TwitterLoginButton) dialog.getLayout().findViewById(R.id.twitter_button);
-            mLoginButton.setCallback(new Callback<TwitterSession>() {
+        void signToFirebase() {
+            FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
-                public void success(Result<TwitterSession> result) {
-                    Log.d("tw", "twitterLogin:success" + result);
-//                    handleTwitterSession(result.data);
-                }
-
-                @Override
-                public void failure(TwitterException exception) {
-                    Log.w("tw", "twitterLogin:failure", exception);
-//                    updateUI(null);
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+//                                FirebaseUser user = auth.getCurrentUser();
+//                                Utils.log("signInWithCredential:success:"+user);
+//
+                        onSuccessListener.run();
+                    } else {
+                        onFailureListener.call(task.getException());
+                    }
                 }
             });
-            mLoginButton.callOnClick();
-        }
-    };
 
-    OnClickListener onSignEmailClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            System.out.println("sign with email");
         }
-    };
+
+        public SignProviderMode getMode() {
+            return mode;
+        }
+
+        public void setMode(SignProviderMode mode) {
+            this.mode = mode;
+        }
+
+        void onActivityResult(int requestCode, int resultCode, Intent data) {
+            switch (mode) {
+                case EMAIL:
+                    break;
+                case FACEBOOK:
+                    if(facebookCallbackManager != null) {
+                        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+                    }
+                    break;
+                case GOOGLE:
+                    if (requestCode == 117) {
+                        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                        if (result.isSuccess()) {
+                            GoogleSignInAccount acct = result.getSignInAccount();
+                            credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+                            signToFirebase();
+                        } else {
+                            onFailureListener.call("SIGNEDOUT");
+                        }
+                    }
+                    break;
+                case NONE:
+                    break;
+                case TWITTER:
+                    if(twitterLoginButton != null) {
+                        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+                    }
+                    break;
+            }
+        }
+
+        public void setCallbackElement(Object element) {
+            if(element == null) return;
+            if(element instanceof TwitterLoginButton) {
+                twitterLoginButton = (TwitterLoginButton) element;
+            } else if(element instanceof LoginButton) {
+                facebookLoginButton = (LoginButton) element;
+            }
+        }
+
+        Runnable1 onFailureListener = new Runnable1(){
+            @Override
+            public void call(Object arg) {
+                Utils.err(arg);
+                switchDialogLayout(DialogMode.SIGN_BUTTONS);
+            }
+        };
+
+        Runnable onSuccessListener = new Runnable(){
+            @Override
+            public void run() {
+                if(dialog != null && dialog.isShowing()) {
+                    showAccountDialog();
+//                    switchDialogLayout(DialogMode.SIGN_BUTTONS);
+                }
+
+//                FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+//                    @Override
+//                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+////                        Utils.log("onAuthStateChanged:"+firebaseAuth);
+////                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+////                        System.out.println("CURRENTUSER2:"+currentUser);
+//                    }
+//                });
+            }
+        };
+
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            Utils.log("onConnectionFailed:"+connectionResult.getErrorMessage());
+        }
+
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            Utils.log("onConnected:"+bundle);
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+            Utils.log("onConnectionSuspended:"+i);
+
+        }
+
+    }
 
     private enum DialogMode {
         SIGN_BUTTONS, PROFILE, SIGNING
     }
-    private void showDialogLayout(final DialogMode mode) {
+    private void switchDialogLayout(final DialogMode mode) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -448,7 +552,7 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
                 if(dialog == null) return;
                 switch(mode) {
                     case AVATAR:
-                        dialog.getLayout().findViewById(R.id.iv_avatar_placeholder).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_avatar_placeholder).setVisibility(View.INVISIBLE);
                         dialog.getLayout().findViewById(R.id.pb_avatar_loading).setVisibility(View.GONE);
                         dialog.getLayout().findViewById(R.id.iv_avatar).setVisibility(View.VISIBLE);
                         break;
@@ -461,6 +565,73 @@ public class UserProfileViewHolder extends AbstractViewHolder implements GoogleA
                         dialog.getLayout().findViewById(R.id.iv_avatar_placeholder).setVisibility(View.VISIBLE);
                         dialog.getLayout().findViewById(R.id.pb_avatar_loading).setVisibility(View.GONE);
                         dialog.getLayout().findViewById(R.id.iv_avatar).setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+    }
+
+    private enum SignProviderMode {
+        GOOGLE, EMAIL, FACEBOOK, TWITTER, NONE
+    }
+    private void signProviderMode(String mode) {
+        switch(mode) {
+            case "email":
+                signProviderMode(SignProviderMode.EMAIL);
+                break;
+            case "facebook.com":
+                signProviderMode(SignProviderMode.FACEBOOK);
+                break;
+            case "google.com":
+                signProviderMode(SignProviderMode.GOOGLE);
+                break;
+            case "twitter.com":
+                signProviderMode(SignProviderMode.TWITTER);
+                break;
+            default:
+                signProviderMode(SignProviderMode.NONE);
+        }
+    }
+    private void signProviderMode(final SignProviderMode mode) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(dialog == null) return;
+                switch(mode) {
+                    case EMAIL:
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_email).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_facebook).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_google).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_twitter).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_provider_icon).setVisibility(View.VISIBLE);
+                        break;
+                    case FACEBOOK:
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_email).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_facebook).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_google).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_twitter).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_provider_icon).setVisibility(View.VISIBLE);
+                        break;
+                    case GOOGLE:
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_email).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_facebook).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_google).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_twitter).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_provider_icon).setVisibility(View.VISIBLE);
+                        break;
+                    case NONE:
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_email).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_facebook).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_google).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_twitter).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.layout_provider_icon).setVisibility(View.GONE);
+                        break;
+                    case TWITTER:
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_email).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_facebook).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_google).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.iv_sign_provider_twitter).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.layout_provider_icon).setVisibility(View.VISIBLE);
                         break;
                 }
             }
