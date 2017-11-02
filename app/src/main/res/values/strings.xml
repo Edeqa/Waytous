@@ -228,6 +228,8 @@
     <string name="sign_in_with_twitter">Sign in with Twitter</string>
     <string name="sign_in_with_e_mail">Sign in with e-mail</string>
     <string name="signing_in_with_email">Signing in with email</string>
+    <string name="signing_up_with_email">Signing up with email</string>
+    <string name="resetting_password">Resetting password email</string>
     <string name="signing_in_with_facebook">Signing in with Facebook</string>
     <string name="signing_in_with_google">Signing in with Google</string>
     <string name="signing_in_with_twitter">Signing in with Twitter</string>

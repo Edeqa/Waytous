@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.edeqa.helpers.interfaces.Callable1;
@@ -181,6 +182,10 @@ public class CustomDialog {
         return content;
     }
 
+    public Button getButton(int whichButton) {
+        return dialog.getButton(whichButton);
+    }
+
     public void setMenu(int menu) {
         this.menu = menu;
         if(menu > 0) showMenu();
@@ -276,8 +281,10 @@ public class CustomDialog {
     }
 
     public void dismiss() {
-        dialog.dismiss();
-        dialog = null;
+        if(dialog != null) {
+            dialog.dismiss();
+            dialog = null;
+        }
     }
 
     public boolean isShowing() {

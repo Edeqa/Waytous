@@ -8,17 +8,23 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -56,6 +62,12 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import java.net.NetPermission;
+import java.util.HashMap;
+
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_NEUTRAL;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESULT;
 import static com.edeqa.waytous.helpers.Events.CREATE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.MAP_READY;
@@ -185,7 +197,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         if (account != null) {
             dialog.setMenu(R.menu.dialog_user_profile_menu);
 
-            switchDialogLayout(DialogMode.PROFILE);
+            switchDialogLayout(DialogMode.PROFILE, null);
             signProviderMode(account.getSignProvider());
 
             final ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_profile);
@@ -226,53 +238,174 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 }).start();
             }
         } else {
-            switchDialogLayout(DialogMode.SIGN_BUTTONS);
+            switchDialogLayout(DialogMode.SIGN_BUTTONS, null);
 
             ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_sign_buttons);
             dialog.hideMenu();
 
+            layout.findViewById(R.id.button_sign_with_email).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signer.setMode(SignProviderMode.EMAIL);
+
+                    switchDialogLayout(DialogMode.SIGN_IN_EMAIL, null);
+
+                    final TextInputLayout etEmail = (TextInputLayout) dialog.getLayout().findViewById(R.id.et_email);
+                    final TextInputLayout etPassword = (TextInputLayout) dialog.getLayout().findViewById(R.id.et_password);
+                    final TextInputLayout etConfirmPassword = (TextInputLayout) dialog.getLayout().findViewById(R.id.et_confirm_password);
+
+                    class Listeners {
+                        OnClickListener onClickListenerSignIn = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                etEmail.setErrorEnabled(false);
+                                etPassword.setErrorEnabled(false);
+                                if (etEmail.getEditText().getText().toString().length() == 0) {
+                                    etEmail.setError("Enter e-mail.");
+                                    etEmail.requestFocus();
+                                } else if (etPassword.getEditText().getText().toString().length() == 0) {
+                                    etPassword.setError("Enter password.");
+                                    etPassword.requestFocus();
+                                } else {
+                                    switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_email));
+                                    signer.setMode(SignProviderMode.EMAIL);
+                                    signer.setCallbackElement(new HashMap<String, String>() {{
+                                        put("login", etEmail.getEditText().getText().toString());
+                                        put("password", etPassword.getEditText().getText().toString());
+                                    }});
+                                    signer.sign();
+                                }
+                            }
+                        };
+                        OnClickListener onClickListenerSignUpTry = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                etEmail.setErrorEnabled(false);
+                                etPassword.setErrorEnabled(false);
+                                etConfirmPassword.setErrorEnabled(false);
+                                if (etEmail.getEditText().getText().toString().length() == 0) {
+                                    etEmail.setError("Enter e-mail.");
+                                    etEmail.requestFocus();
+                                } else if (etPassword.getEditText().getText().toString().length() == 0) {
+                                    etPassword.setError("Enter password.");
+                                    etPassword.requestFocus();
+                                } else if (etConfirmPassword.getEditText().getText().toString().length() == 0) {
+                                    etConfirmPassword.setError("Confirm password.");
+                                    etConfirmPassword.requestFocus();
+                                } else if (!etPassword.getEditText().getText().toString().equals(etConfirmPassword.getEditText().getText().toString())) {
+                                    etConfirmPassword.setError("Password not confirmed.");
+                                    etConfirmPassword.requestFocus();
+//                                    switchDialogLayout(DialogMode.ERROR, "Password not confirmed.");
+                                } else {
+                                    switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_up_with_email));
+                                    FirebaseAuth.getInstance()
+                                            .createUserWithEmailAndPassword(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString())
+                                            .addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                                    if (task.isSuccessful()) {
+                                                        signer.onSuccessListener.run();
+                                                    } else {
+                                                        onClickListenerBack.onClick(null);
+                                                        switchDialogLayout(DialogMode.ERROR, task.getException().getMessage());
+                                                    }
+                                                }
+                                            });
+                                }
+                            }
+                        };
+                        OnClickListener onClickListenerResetTry = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                etEmail.setErrorEnabled(false);
+                                if (etEmail.getEditText().getText().toString().length() == 0) {
+                                    etEmail.setError("Enter e-mail.");
+                                    etEmail.requestFocus();
+                                } else {
+                                    switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.resetting_password));
+                                    FirebaseAuth.getInstance().sendPasswordResetEmail(etEmail.getEditText().getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(context, "E-mail with instructions has sent.", Toast.LENGTH_SHORT).show();
+                                                dialog.dismiss();
+                                            } else {
+                                                onClickListenerBack.onClick(null);
+                                                switchDialogLayout(DialogMode.ERROR, task.getException().getMessage());
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        };
+                        OnClickListener onClickListenerBack = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                etEmail.setErrorEnabled(false);
+                                etPassword.setErrorEnabled(false);
+                                etConfirmPassword.setErrorEnabled(false);
+                                switchDialogLayout(DialogMode.SIGN_IN_EMAIL, null);
+                                etEmail.requestFocus();
+                                dialog.getButton(BUTTON_POSITIVE).setOnClickListener(onClickListenerSignIn);
+                                dialog.getButton(BUTTON_NEGATIVE).setOnClickListener(onClickListenerSignUp);
+                            }
+                        };
+                        OnClickListener onClickListenerSignUp = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                etEmail.setErrorEnabled(false);
+                                etPassword.setErrorEnabled(false);
+                                etConfirmPassword.setErrorEnabled(false);
+                                switchDialogLayout(DialogMode.SIGN_UP_EMAIL, null);
+                                dialog.getButton(BUTTON_POSITIVE).setOnClickListener(onClickListenerSignUpTry);
+                                dialog.getButton(BUTTON_NEGATIVE).setOnClickListener(onClickListenerBack);
+                            }
+                        };
+                    }
+
+                    final Listeners listeners = new Listeners();
+
+                    listeners.onClickListenerBack.onClick(null);
+
+                    dialog.getLayout().findViewById(R.id.button_forgot_password).setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            switchDialogLayout(DialogMode.RESET_EMAIL, null);
+                            dialog.getButton(BUTTON_POSITIVE).setOnClickListener(listeners.onClickListenerResetTry);
+                            dialog.getButton(BUTTON_NEGATIVE).setOnClickListener(listeners.onClickListenerBack);
+                        }
+                    });
+
+
+                }
+            });
             layout.findViewById(R.id.button_sign_with_facebook).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_facebook));
                     signer.setMode(SignProviderMode.FACEBOOK);
                     signer.setCallbackElement(dialog.getLayout().findViewById(R.id.button_sign_with_facebook_origin));
                     signer.sign();
-                    if(dialog != null) {
-                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_facebook);
-                    }
                 }
             });
             layout.findViewById(R.id.button_sign_with_google).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_google));
                     signer.setMode(SignProviderMode.GOOGLE);
                     signer.sign();
-                    if(dialog != null) {
-                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_google);
-                    }
                 }
             });
             layout.findViewById(R.id.button_sign_with_twitter).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_twitter));
                     signer.setMode(SignProviderMode.TWITTER);
                     signer.setCallbackElement(dialog.getLayout().findViewById(R.id.button_sign_with_twitter_origin));
                     signer.sign();
-                    if(dialog != null) {
-                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_twitter);
-                    }
                 }
             });
-            layout.findViewById(R.id.button_sign_with_email).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    signer.setMode(SignProviderMode.EMAIL);
-//                    signer.sign();
-//                    if(dialog != null) {
-//                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(R.string.signing_in_with_twitter);
-//                    }
-                }
-            });
+
         }
 
         dialog.setTitle(R.string.user_profile);
@@ -330,6 +463,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         private CallbackManager facebookCallbackManager;
         private GoogleApiClient googleApiClient;
         private LoginButton facebookLoginButton;
+        private HashMap<String, String> credentials;
 
         Signer() {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -345,9 +479,19 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         }
 
         void sign() {
-            switchDialogLayout(DialogMode.SIGNING);
+//            switchDialogLayout(DialogMode.SIGNING, null);
             switch (mode) {
                 case EMAIL:
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(credentials.get("login"), credentials.get("password")).addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        onSuccessListener.run();
+                                    } else {
+                                        onFailureListener.call(task.getException());
+                                    }
+                                }
+                            });
                     break;
                 case FACEBOOK:
                     facebookCallbackManager = CallbackManager.Factory.create();
@@ -361,12 +505,11 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
                         @Override
                         public void onCancel() {
-                            onFailureListener.call("Cancelled");
+                            onFailureListener.call(new Exception("Cancelled"));
                         }
 
                         @Override
                         public void onError(FacebookException error) {
-                            error.printStackTrace();
                             onFailureListener.call(error);
                         }
                     });
@@ -445,7 +588,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                             credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
                             signToFirebase();
                         } else {
-                            onFailureListener.call("SIGNEDOUT");
+                            onFailureListener.call(new Exception("SIGNEDOUT"));
                         }
                     }
                     break;
@@ -465,14 +608,22 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 twitterLoginButton = (TwitterLoginButton) element;
             } else if(element instanceof LoginButton) {
                 facebookLoginButton = (LoginButton) element;
+            } else if(element instanceof HashMap) {
+                credentials = (HashMap<String,String>) element;
             }
         }
 
-        Runnable1 onFailureListener = new Runnable1(){
+        Runnable1<Throwable> onFailureListener = new Runnable1<Throwable>(){
             @Override
-            public void call(Object arg) {
+            public void call(Throwable arg) {
                 Utils.err(arg);
-                switchDialogLayout(DialogMode.SIGN_BUTTONS);
+                if(SignProviderMode.EMAIL.equals(mode)) {
+                    switchDialogLayout(DialogMode.SIGN_IN_EMAIL, null);
+                } else {
+                    switchDialogLayout(DialogMode.SIGN_BUTTONS, null);
+                }
+                switchDialogLayout(DialogMode.ERROR, arg.getMessage());
+                arg.printStackTrace();
             }
         };
 
@@ -514,28 +665,106 @@ public class UserProfileViewHolder extends AbstractViewHolder {
     }
 
     private enum DialogMode {
-        SIGN_BUTTONS, PROFILE, SIGNING
+        SIGN_BUTTONS, PROFILE, SIGNING, ERROR, SIGN_IN_EMAIL, SIGN_UP_EMAIL, RESET_EMAIL
     }
-    private void switchDialogLayout(final DialogMode mode) {
+    private void switchDialogLayout(final DialogMode mode, final String message) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 if(dialog == null) return;
+
+                if(mode.equals(DialogMode.ERROR)) {
+                    ((TextView) dialog.getLayout().findViewById(R.id.tv_error)).setText(message);
+                    dialog.getLayout().findViewById(R.id.layout_error).setVisibility(View.VISIBLE);
+                    return;
+                }
+
+                dialog.getLayout().findViewById(R.id.layout_error).setVisibility(View.GONE);
+                dialog.getLayout().findViewById(R.id.layout_email).setVisibility(View.GONE);
+                dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.GONE);
+                dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.GONE);
+                dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.GONE);
+
+                dialog.getButton(BUTTON_POSITIVE).setVisibility(View.GONE);
+                dialog.getButton(BUTTON_NEGATIVE).setVisibility(View.GONE);
+                dialog.getButton(BUTTON_NEUTRAL).setVisibility(View.GONE);
+
                 switch(mode) {
                     case PROFILE:
-                        dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.GONE);
-                        dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.GONE);
                         dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setText("Close");
+
                         break;
                     case SIGN_BUTTONS:
-                        dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.GONE);
-                        dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.GONE);
                         dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setText("Close");
+                        break;
+                    case RESET_EMAIL:
+                        dialog.getLayout().findViewById(R.id.layout_email).setVisibility(View.VISIBLE);
+
+                        dialog.getLayout().findViewById(R.id.et_email).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.et_password).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.et_confirm_password).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.button_forgot_password).setVisibility(View.GONE);
+
+                        dialog.getLayout().findViewById(R.id.et_email).requestFocus();
+
+                        dialog.getLayout().findViewById(R.id.et_email).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setText("Reset");
+
+                        dialog.getButton(BUTTON_NEGATIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_NEGATIVE).setText("Back");
+
+                        dialog.getButton(BUTTON_NEUTRAL).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_NEUTRAL).setText("Close");
+                        break;
+                    case SIGN_IN_EMAIL:
+                        dialog.getLayout().findViewById(R.id.layout_email).setVisibility(View.VISIBLE);
+
+                        dialog.getLayout().findViewById(R.id.et_email).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.et_password).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.et_confirm_password).setVisibility(View.GONE);
+                        dialog.getLayout().findViewById(R.id.button_forgot_password).setVisibility(View.VISIBLE);
+
+                        dialog.getLayout().findViewById(R.id.et_email).requestFocus();
+
+                        dialog.getButton(BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setText("Sign in");
+
+                        dialog.getButton(BUTTON_NEGATIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_NEGATIVE).setText("Sign up");
+
+                        dialog.getButton(BUTTON_NEUTRAL).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_NEUTRAL).setText("Close");
+                        break;
+                    case SIGN_UP_EMAIL:
+                        dialog.getLayout().findViewById(R.id.layout_email).setVisibility(View.VISIBLE);
+
+                        dialog.getLayout().findViewById(R.id.et_email).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.et_password).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.et_confirm_password).setVisibility(View.VISIBLE);
+                        dialog.getLayout().findViewById(R.id.button_forgot_password).setVisibility(View.GONE);
+
+                        dialog.getLayout().findViewById(R.id.et_email).requestFocus();
+
+                        dialog.getButton(BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setText("Sign up");
+
+                        dialog.getButton(BUTTON_NEGATIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_NEGATIVE).setText("Back");
+
+                        dialog.getButton(BUTTON_NEUTRAL).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_NEUTRAL).setText("Close");
                         break;
                     case SIGNING:
-                        dialog.getLayout().findViewById(R.id.layout_profile).setVisibility(View.GONE);
-                        dialog.getLayout().findViewById(R.id.layout_sign_buttons).setVisibility(View.GONE);
                         dialog.getLayout().findViewById(R.id.layout_signing).setVisibility(View.VISIBLE);
+                        ((TextView) dialog.getLayout().findViewById(R.id.tv_signing)).setText(message);
+
+                        dialog.getButton(BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+                        dialog.getButton(BUTTON_POSITIVE).setText("Close");
                         break;
                 }
             }
@@ -572,7 +801,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
     }
 
     private enum SignProviderMode {
-        GOOGLE, EMAIL, FACEBOOK, TWITTER, NONE
+        GOOGLE, FACEBOOK, TWITTER, NONE, EMAIL
     }
     private void signProviderMode(String mode) {
         switch(mode) {

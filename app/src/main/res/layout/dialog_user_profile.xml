@@ -27,13 +27,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/sign_in_with_facebook"/>
+
         <com.facebook.login.widget.LoginButton
             android:id="@+id/button_sign_with_facebook_origin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
             android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
             android:visibility="gone"/>
 
         <Button
@@ -49,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/sign_in_with_twitter"/>
+
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
             android:id="@+id/button_sign_with_twitter_origin"
             android:layout_width="wrap_content"
@@ -105,10 +107,10 @@
 
         <LinearLayout
             android:id="@+id/layout_provider_icon"
-            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/material_baseline_grid_1x"
             android:paddingStart="@dimen/material_baseline_grid_1x"
             >
@@ -119,18 +121,21 @@
                 android:layout_height="@dimen/material_tooltip_text_size"
                 app:srcCompat="@drawable/ic_twitter_logo_blue_24dp"
                 />
+
             <ImageView
                 android:id="@+id/iv_sign_provider_facebook"
                 android:layout_width="@dimen/material_tooltip_text_size"
                 android:layout_height="@dimen/material_tooltip_text_size"
                 app:srcCompat="@drawable/ic_facebook_logo_blue_24dp"
                 />
+
             <ImageView
                 android:id="@+id/iv_sign_provider_google"
                 android:layout_width="@dimen/material_tooltip_text_size"
                 android:layout_height="@dimen/material_tooltip_text_size"
                 app:srcCompat="@drawable/ic_google_logo_color_24dp"
                 />
+
             <ImageView
                 android:id="@+id/iv_sign_provider_email"
                 android:layout_width="@dimen/material_tooltip_text_size"
@@ -145,25 +150,25 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/iv_avatar_placeholder"
-            android:layout_toStartOf="@+id/layout_provider_icon"
             android:layout_toLeftOf="@+id/layout_provider_icon"
+            android:layout_toRightOf="@+id/iv_avatar_placeholder"
+            android:layout_toStartOf="@+id/layout_provider_icon"
             android:gravity="end"
             android:paddingLeft="@dimen/material_baseline_grid_2x"
             android:paddingStart="@dimen/material_baseline_grid_2x"
             android:textAlignment="textEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            tools:text="Name of user is very long text for test how this text will be shown in the dialog"
-            android:layout_toRightOf="@+id/iv_avatar_placeholder"/>
+            tools:text="Name of user is very long text for test how this text will be shown in the dialog"/>
 
         <TextView
             android:id="@+id/tv_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/layout_provider_icon"
-            android:layout_toLeftOf="@+id/layout_provider_icon"
             android:layout_below="@+id/tv_name"
             android:layout_toEndOf="@+id/iv_avatar_placeholder"
+            android:layout_toLeftOf="@+id/layout_provider_icon"
             android:layout_toRightOf="@+id/iv_avatar_placeholder"
+            android:layout_toStartOf="@+id/layout_provider_icon"
             android:gravity="end"
             android:paddingLeft="@dimen/material_baseline_grid_2x"
             android:paddingStart="@dimen/material_baseline_grid_2x"
@@ -172,6 +177,78 @@
             tools:text="&lt;user@mail.com&gt;"/>
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="E-mail"
+                android:inputType="textEmailAddress"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/et_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm password"
+                android:inputType="textPassword"/>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/button_forgot_password"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Forgot password?"
+            android:textAppearance="@style/TextAppearance.AppCompat"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/material_baseline_grid_2x">
+
+        <TextView
+            android:id="@+id/tv_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/material_color_red_900"
+            tools:text="Error text"/>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/layout_signing"
@@ -185,14 +262,16 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"/>
+
         <TextView
             android:id="@+id/tv_signing"
-            android:layout_marginTop="@dimen/material_baseline_grid_3x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/progressBar3"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/material_baseline_grid_3x"
             tools:text="Signing using Google"/>
+
     </RelativeLayout>
 
 </LinearLayout>
