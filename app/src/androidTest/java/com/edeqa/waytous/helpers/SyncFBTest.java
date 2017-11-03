@@ -26,25 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.edeqa.waytous.Constants.OPTIONS;
-import static com.edeqa.waytous.Constants.REQUEST_KEY;
-import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
 import static com.edeqa.waytous.Constants.REQUEST_SIGN_PROVIDER;
-import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
-import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
-import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
-import static com.edeqa.waytous.Constants.USER_ACCURACY;
-import static com.edeqa.waytous.Constants.USER_ALTITUDE;
-import static com.edeqa.waytous.Constants.USER_BEARING;
-import static com.edeqa.waytous.Constants.USER_JOINED;
-import static com.edeqa.waytous.Constants.USER_LATITUDE;
-import static com.edeqa.waytous.Constants.USER_LONGITUDE;
-import static com.edeqa.waytous.Constants.USER_MESSAGE;
-import static com.edeqa.waytous.Constants.USER_NUMBER;
-import static com.edeqa.waytous.Constants.USER_PROVIDER;
-import static com.edeqa.waytous.Constants.USER_SPEED;
 import static com.edeqa.waytous.Firebase.SYNCED;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
@@ -76,11 +60,11 @@ public class SyncFBTest {
             String link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
 
 //            String deviceId = "test:"+ Misc.getUnique();
-//            State.getInstance().setDeviceId(deviceId);
-            State.getInstance().setDeviceId(State.getInstance().getDeviceId());
+//            State.getInstance().setUid(deviceId);
+            State.getInstance().setUid(State.getInstance().fetchUid());
             State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
 
-            Log.d("UserID",State.getInstance().getDeviceId());
+            Log.d("UserID",State.getInstance().fetchUid());
 
             tracking = new MyTrackingFB(link);
             State.getInstance().setTracking(tracking);
@@ -97,7 +81,7 @@ public class SyncFBTest {
         sync = new SyncFB()
                 .setDebug(true)
                 .setType(SyncFB.Type.ACCOUNT_PRIVATE)
-                .setUid(State.getInstance().getDeviceId())
+                .setUid(State.getInstance().fetchUid())
                 .setUserNumber("0")
                 .setOnGetValue(new Callable2<Object, String, Object>() {
                     @Override
@@ -686,7 +670,7 @@ public class SyncFBTest {
 
     @Test
     public void getUid() throws Exception {
-        assertEquals(State.getInstance().getDeviceId(), sync.getUid());
+        assertEquals(State.getInstance().fetchUid(), sync.getUid());
     }
 
     @Test

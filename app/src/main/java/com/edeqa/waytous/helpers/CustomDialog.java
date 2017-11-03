@@ -146,22 +146,24 @@ public class CustomDialog {
 
         dialog.show();
 
-        if (isFlat()) {
-            Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
-        } else {
-            Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
-        }
+        resize();
+//        if (isFlat()) {
+//            Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
+//        } else {
+//            Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
+//        }
 
         dialog.getWindow().getDecorView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 int oldHeight = oldBottom - oldTop; // bottom exclusive, top inclusive
                 if(v.getHeight() != oldHeight) {
-                    if (isFlat()) {
-                        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
-                    } else {
-                        Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
-                    }
+                    resize();
+//                    if (isFlat()) {
+//                        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
+//                    } else {
+//                        Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
+//                    }
                 }
             }
         });
@@ -336,7 +338,12 @@ public class CustomDialog {
     }
 
     public void resize() {
-        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
+        if (isFlat()) {
+            Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
+        } else {
+            Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
+        }
+//        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     public void setContext(MainActivity context) {

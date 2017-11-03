@@ -58,7 +58,7 @@
             android:visibility="gone"/>
 
         <Button
-            android:id="@+id/button_sign_with_email"
+            android:id="@+id/button_sign_with_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -82,7 +82,9 @@
             android:scaleType="fitCenter"
             android:tint="@android:color/darker_gray"
             android:tintMode="src_atop"
-            app:srcCompat="@drawable/ic_navigation_twinks_black_24dp"/>
+            app:srcCompat="@drawable/ic_navigation_twinks_black_24dp"
+            tools:visibility="visible"
+            android:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/pb_avatar_loading"
@@ -137,49 +139,82 @@
                 />
 
             <ImageView
-                android:id="@+id/iv_sign_provider_email"
+                android:id="@+id/iv_sign_provider_password_unverified"
                 android:layout_width="@dimen/material_tooltip_text_size"
                 android:layout_height="@dimen/material_tooltip_text_size"
                 app:srcCompat="@drawable/ic_mail_outline_black_24dp"
                 />
+
+            <ImageView
+                android:id="@+id/iv_sign_provider_password_verified"
+                android:layout_width="@dimen/material_tooltip_text_size"
+                android:layout_height="@dimen/material_tooltip_text_size"
+                app:srcCompat="@drawable/ic_verified_user_black_24dp"
+                />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_name"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/iv_avatar_placeholder"
-            android:layout_toLeftOf="@+id/layout_provider_icon"
             android:layout_toRightOf="@+id/iv_avatar_placeholder"
+            android:layout_toLeftOf="@+id/layout_provider_icon"
             android:layout_toStartOf="@+id/layout_provider_icon"
-            android:gravity="end"
-            android:paddingLeft="@dimen/material_baseline_grid_2x"
-            android:paddingStart="@dimen/material_baseline_grid_2x"
-            android:textAlignment="textEnd"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            tools:text="Name of user is very long text for test how this text will be shown in the dialog"/>
+            >
 
-        <TextView
-            android:id="@+id/tv_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_name"
-            android:layout_toEndOf="@+id/iv_avatar_placeholder"
-            android:layout_toLeftOf="@+id/layout_provider_icon"
-            android:layout_toRightOf="@+id/iv_avatar_placeholder"
-            android:layout_toStartOf="@+id/layout_provider_icon"
-            android:gravity="end"
-            android:paddingLeft="@dimen/material_baseline_grid_2x"
-            android:paddingStart="@dimen/material_baseline_grid_2x"
-            android:textAlignment="textEnd"
-            android:textSize="12sp"
-            tools:text="&lt;user@mail.com&gt;"/>
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingLeft="@dimen/material_baseline_grid_2x"
+                android:paddingStart="@dimen/material_baseline_grid_2x"
+                android:textAlignment="textEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                tools:text="Name of user is very long text for test how this text will be shown in the dialog"/>
+
+            <TextView
+                android:id="@+id/tv_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingLeft="@dimen/material_baseline_grid_2x"
+                android:paddingStart="@dimen/material_baseline_grid_2x"
+                android:textAlignment="textEnd"
+                android:textSize="12sp"
+                tools:text="&lt;user@mail.com&gt;"/>
+
+            <ProgressBar
+                android:id="@+id/pb_verification_sending"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingTop="@dimen/material_baseline_grid_2x"/>
+
+            <TextView
+                android:id="@+id/tv_verification_email_sent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingLeft="@dimen/material_baseline_grid_1x"
+                android:paddingStart="@dimen/material_baseline_grid_1x"
+                android:paddingTop="@dimen/material_baseline_grid_2x"
+                android:text="Verification e-mail has sent to your address. Please follow the link in this email, otherwise your account will be deleted after 30 days of inactivity."
+                android:textAlignment="textStart"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+        </LinearLayout>
+
+
+
 
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/layout_email"
+        android:id="@+id/layout_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

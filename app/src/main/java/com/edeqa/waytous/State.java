@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TooManyListenersException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
@@ -47,6 +46,8 @@ import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.holders.property.PropertiesHolder.PREFERENCE_MY_NAME;
 
 public class State extends MultiDexApplication {
+
+    public static final String PREFERENCE_UID = "uid"; //NON-NLS
 
     private static State instance = null;
 
@@ -59,7 +60,7 @@ public class State extends MultiDexApplication {
     private GeoTrackFilter gpsFilter;
     private Notification notification;
 
-    private String deviceId;
+    private String uid;
     private String token;
     private boolean gpsAccessAllowed;
     private boolean gpsAccessRequested;
@@ -86,8 +87,6 @@ public class State extends MultiDexApplication {
 
     @Override
     public void onCreate() {
-
-//        Constants.OPTIONS = new Options(new String[]{""+BuildConfig.DEBUG});
         try {
             InputStream stream = getAssets().open("options.json"); //NON-NLS
 
@@ -101,6 +100,7 @@ public class State extends MultiDexApplication {
         instance = this;
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setUid(getStringPreference(PREFERENCE_UID,null));
 
         try {
             systemPropertyBus = new EventBus<>("SystemPropertyHolder"); //NON-NLS
@@ -213,17 +213,21 @@ public class State extends MultiDexApplication {
         return tracking != null &&  Events.TRACKING_ACTIVE.equals(tracking.getStatus());
     }
 
-    public String getDeviceId() {
-//        System.out.println("DEVICEID:"+deviceId);
-        if(deviceId == null) {
-            deviceId = FirebaseInstanceId.getInstance().getToken();//getStringPreference("device_id", null);
-//            if(deviceId == null) {
-//                deviceId = FirebaseInstanceId.getInstance().getToken();
-//                deviceId = UUID.randomUUID().toString();
-//                setPreference("device_id", deviceId);
+    public String getUid() {
+        return uid;
+    }
+
+    public String fetchUid() {
+//        System.out.println("DEVICEID:"+uid);
+        if(getUid() == null) {
+            setUid(FirebaseInstanceId.getInstance().getToken());//getStringPreference("device_id", null);
+//            if(uid == null) {
+//                uid = FirebaseInstanceId.getInstance().getToken();
+//                uid = UUID.randomUUID().toString();
+//                setPreference("device_id", uid);
 //            }
         }
-        return deviceId;
+        return getUid();
     }
 
     public String getToken() {
@@ -359,7 +363,6 @@ public class State extends MultiDexApplication {
     }
 
     public void fire(String EVENT, Object object){
-
         Log.i("State","====>>> "+EVENT+":"+object); //NON-NLS
 //        Log.i("State","====>>> "+EVENT+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]); //NON-NLS
         switch(EVENT){
@@ -430,7 +433,12 @@ public class State extends MultiDexApplication {
         return androidRunner;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public void saveUid(String uid) {
+        setUid(uid);
+        setPreference(PREFERENCE_UID, uid);
     }
 }

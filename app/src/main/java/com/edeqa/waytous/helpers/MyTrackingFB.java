@@ -4,7 +4,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
@@ -577,14 +576,14 @@ public class MyTrackingFB implements Tracking {
                     }
                 }
                 put(REQUEST_TOKEN, getToken());
-                String deviceId = State.getInstance().getDeviceId();
-                if(deviceId.length() > 40) deviceId = Misc.getEncryptedHash(deviceId);
-                put(REQUEST_UID, deviceId);
+                String uid = State.getInstance().fetchUid();
+                if(uid.length() > 40) uid = Misc.getEncryptedHash(uid);
+                put(REQUEST_UID, uid);
             }
             if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                String deviceId = State.getInstance().getDeviceId();
-                if(deviceId.length() > 40) deviceId = Misc.getEncryptedHash(deviceId);
-                put(REQUEST_UID, deviceId);
+                String uid = State.getInstance().fetchUid();
+                if(uid.length() > 40) uid = Misc.getEncryptedHash(uid);
+                put(REQUEST_UID, uid);
             }
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
@@ -612,9 +611,9 @@ public class MyTrackingFB implements Tracking {
                     case RESPONSE_STATUS_CHECK:
                         if (o.has(RESPONSE_CONTROL)) {
                             String control = o.getString(RESPONSE_CONTROL);
-                            String deviceId = State.getInstance().getDeviceId();
-                            if(deviceId.length() > 40) deviceId = Misc.getEncryptedHash(deviceId);
-                            String hash = Misc.getEncryptedHash(control + ":" + deviceId);
+                            String uid = State.getInstance().fetchUid();
+                            if(uid.length() > 40) uid = Misc.getEncryptedHash(uid);
+                            String hash = Misc.getEncryptedHash(control + ":" + uid);
                             put(REQUEST,REQUEST_CHECK_USER);
                             put(REQUEST_HASH,hash);
                             send();

@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/verify_email"
+        android:title="@string/verify_email"/>
+    <item
         android:id="@+id/update_name"
         android:title="@string/update_your_name"/>
     <item

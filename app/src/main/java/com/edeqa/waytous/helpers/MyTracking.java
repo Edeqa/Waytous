@@ -105,10 +105,10 @@ public class MyTracking implements Tracking {
                     }
                 }
                 put(REQUEST_TOKEN, getToken());
-                put(REQUEST_UID, State.getInstance().getDeviceId());
+                put(REQUEST_UID, State.getInstance().fetchUid());
             }
             if(!TRACKING_RECONNECTING.equals(getStatus())) {
-                put(REQUEST_UID, State.getInstance().getDeviceId());
+                put(REQUEST_UID, State.getInstance().fetchUid());
             }
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
@@ -131,8 +131,8 @@ public class MyTracking implements Tracking {
                     case RESPONSE_STATUS_CHECK:
                         if (o.has(RESPONSE_CONTROL)) {
                             String control = o.getString(RESPONSE_CONTROL);
-                            String deviceId = State.getInstance().getDeviceId();
-                            String hash = Misc.getEncryptedHash(control + ":" + deviceId);
+                            String uid = State.getInstance().fetchUid();
+                            String hash = Misc.getEncryptedHash(control + ":" + uid);
                             put(REQUEST,REQUEST_CHECK_USER);
                             put(REQUEST_HASH,hash);
                             send();

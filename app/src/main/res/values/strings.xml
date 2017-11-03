@@ -227,8 +227,8 @@
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in_with_twitter">Sign in with Twitter</string>
     <string name="sign_in_with_e_mail">Sign in with e-mail</string>
-    <string name="signing_in_with_email">Signing in with email</string>
-    <string name="signing_up_with_email">Signing up with email</string>
+    <string name="signing_in_with_password">Signing in with email</string>
+    <string name="signing_up_with_password">Signing up with email</string>
     <string name="resetting_password">Resetting password email</string>
     <string name="signing_in_with_facebook">Signing in with Facebook</string>
     <string name="signing_in_with_google">Signing in with Google</string>
@@ -237,5 +237,6 @@
     <string name="synchronize">Synchronize</string>
     <string name="sign_out">Sign out</string>
     <string name="signed_with_s">Signed with %s</string>
+    <string name="verify_email">Verify e-mail</string>
 
 </resources>

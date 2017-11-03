@@ -155,7 +155,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         }
         dialog.show();
-        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
+        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, Utils.MATCH_SCREEN);
     }
 
     private AppBarLayout setupToolbar() {

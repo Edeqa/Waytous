@@ -86,7 +86,7 @@ public class MyTrackingFBTest {
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
 
         String deviceId = "test:"+ Misc.getUnique();
-        State.getInstance().setDeviceId(deviceId);
+        State.getInstance().setUid(deviceId);
         State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
 
         tracking = new MyTrackingFB();
@@ -149,7 +149,7 @@ public class MyTrackingFBTest {
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
 
         String deviceId = "test:"+ Misc.getUnique();
-        State.getInstance().setDeviceId(deviceId);
+        State.getInstance().setUid(deviceId);
         State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
 
         tracking = new MyTrackingFB(link);
