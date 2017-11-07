@@ -448,16 +448,24 @@ public class MyTracking implements Tracking {
         sendUpdate();
     }
 
+    @Override
     public String getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(String status) {
         this.status = status;
     }
 
+    @Override
     public void setTrackingListener(TrackingCallback trackingListener) {
         this.trackingListener = trackingListener;
+    }
+
+    @Override
+    public TrackingCallback getTrackingListener() {
+        return trackingListener;
     }
 
     public void postMessage(JSONObject json) {

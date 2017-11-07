@@ -334,13 +334,13 @@ public class Utils {
         String tag = "Utils";
         int count = 0;
         for (Object aText : text) {
-            if(aText instanceof Serializable) {
+            if(aText == null) {
+                str += "null ";
+            } else if(aText instanceof Serializable) {
                 str += aText.toString() + " ";
             } else if((count++) == 0) {
 //                str += aText.getClass().getSimpleName() + ": ";
                 tag = aText.getClass().getSimpleName();
-            } else if(aText == null) {
-                str += "null ";
             } else {
                 str += aText.toString() + " ";
             }
@@ -354,7 +354,9 @@ public class Utils {
         Throwable e = null;
         int count = 0;
         for (Object aText : text) {
-            if (aText instanceof Throwable) {
+            if(aText == null) {
+                str += "null ";
+            } else if (aText instanceof Throwable) {
                 str += aText + " ";
                 e = (Throwable) aText;
             } else if(aText instanceof Serializable) {
@@ -362,8 +364,6 @@ public class Utils {
             } else if((count++) == 0) {
                 tag = aText.getClass().getSimpleName();
 //                str += aText.getClass().getSimpleName() + ": ";
-            } else if(aText == null) {
-                str += "null ";
             } else {
                 str += aText.toString() + " ";
             }

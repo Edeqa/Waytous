@@ -48,6 +48,8 @@ public interface Tracking {
 
     void setTrackingListener(TrackingCallback trackingListener);
 
+    TrackingCallback getTrackingListener();
+
     void postMessage(JSONObject json);
 
     String getToken();

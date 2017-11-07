@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:minWidth="@dimen/material_dialog_width_minimum"
-    android:paddingBottom="@dimen/material_dialog_content_area_padding_vertical"
-    android:paddingLeft="@dimen/material_dialog_content_area_padding_horizontal"
-    android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal"
-    android:paddingTop="@dimen/material_dialog_content_area_padding_vertical"
-    >
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              android:minWidth="@dimen/material_dialog_width_minimum"
+              android:paddingBottom="@dimen/material_dialog_content_area_padding_vertical"
+              android:paddingLeft="@dimen/material_dialog_content_area_padding_horizontal"
+              android:paddingRight="@dimen/material_dialog_content_area_padding_horizontal">
 
     <TextView
         android:id="@+id/tv_exception"
@@ -22,12 +20,14 @@
 
     <EditText
         android:id="@+id/et_exception_trace"
-        tools:text="Sample stacktrace"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:textSize="12sp"
+        android:layout_height="wrap_content"
         android:background="#dddddd"
+        android:cursorVisible="false"
         android:inputType="none"
-        android:cursorVisible="false"/>
+        android:textSize="12sp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        tools:text="Sample stacktrace"/>
 
 </LinearLayout>

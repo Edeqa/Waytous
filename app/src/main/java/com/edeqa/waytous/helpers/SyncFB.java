@@ -98,8 +98,8 @@ public class SyncFB implements Sync {
     };
     private Runnable2<Mode, String> onFinish = new Runnable2<Mode, String>() {
         @Override
-        public void call(Mode key, String value) {
-            System.out.println("Finish: " + key + ", [mode]:" + value); //NON-NLS
+        public void call(Mode mode, String key) {
+            System.out.println("Finish: " + key + ", [mode]:" + mode); //NON-NLS
         }
     };
     private Runnable2<String, Throwable> onError = new Runnable2<String, Throwable>() {

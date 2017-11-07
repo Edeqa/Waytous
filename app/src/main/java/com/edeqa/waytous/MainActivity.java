@@ -77,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public final static String PREFERENCE_INTRO = "intro";  //NON-NLS
 
+    public final static String ACTIVITY_RESULT_REQUEST_CODE = "requestCode";  //NON-NLS
+    public final static String ACTIVITY_RESULT_RESULT_CODE = "resultCode";  //NON-NLS
+    public final static String ACTIVITY_RESULT_DATA = "data";  //NON-NLS
+
     private GoogleMap map;
     private SupportMapFragment mapFragment;
     private State state;
@@ -217,14 +221,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Bundle m = new Bundle();
-        m.putInt("requestCode",requestCode);
-        m.putInt("resultCode",resultCode);
-        m.putParcelable("data",data);
+        m.putInt(ACTIVITY_RESULT_REQUEST_CODE,requestCode);
+        m.putInt(ACTIVITY_RESULT_RESULT_CODE,resultCode);
+        m.putParcelable(ACTIVITY_RESULT_DATA,data);
         state.fire(ACTIVITY_RESULT, m);
     }
 

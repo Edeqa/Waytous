@@ -48,6 +48,7 @@ import static com.edeqa.waytous.holders.property.PropertiesHolder.PREFERENCE_MY_
 public class State extends MultiDexApplication {
 
     public static final String PREFERENCE_UID = "uid"; //NON-NLS
+    public static final String PREFERENCE_SIGN_PROVIDER = "sign_provider"; //NON-NLS
 
     private static State instance = null;
 
@@ -61,11 +62,11 @@ public class State extends MultiDexApplication {
     private Notification notification;
 
     private String uid;
+    private String signProvider;
     private String token;
     private boolean gpsAccessAllowed;
     private boolean gpsAccessRequested;
     private boolean serviceBound;
-
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder binder) {
@@ -75,6 +76,7 @@ public class State extends MultiDexApplication {
             serviceBound = false;
         }
     };
+
     private EventBus<AbstractPropertyHolder> systemPropertyBus;
     private EventBus<AbstractViewHolder> systemViewBus;
     private EventBus.Runner androidRunner;
@@ -441,4 +443,25 @@ public class State extends MultiDexApplication {
         setUid(uid);
         setPreference(PREFERENCE_UID, uid);
     }
+
+    public void saveSignProvider(String signProvider) {
+        setSignProvider(signProvider);
+        setPreference(PREFERENCE_SIGN_PROVIDER, signProvider);
+    }
+
+    public void setSignProvider(String signProvider) {
+        this.signProvider = signProvider;
+    }
+
+    public String getSignProvider() {
+        return signProvider;
+    }
+
+    public String fetchSignProvider() {
+        if(getSignProvider() == null) {
+            return "anonymous"; //NON-NLS
+        }
+        return getSignProvider();
+    }
+
 }

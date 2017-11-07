@@ -48,6 +48,7 @@ public class SavedLocation extends AbstractSavedItem {
     private String username;
     private String provider;
     private long timestamp;
+    private long synced;
     private String address;
     private BitmapDataObject bitmap;
 
@@ -182,6 +183,8 @@ public class SavedLocation extends AbstractSavedItem {
     public String toString() {
         return "{ timestamp: " + new Date(timestamp).toString()
                 + ", number: "+getNumber()
+                + (key != null ? ", key: "+key : "")
+                + (synced != 0 ? ", synced: "+new Date(synced).toString() : "")
                 + (username != null ? ", username: "+username : "")
                 + (title != null ? ", title: "+title : "")
                 + (latitude != 0 ? ", latitude: "+latitude : "")
@@ -205,6 +208,14 @@ public class SavedLocation extends AbstractSavedItem {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    public long getSynced() {
+        return synced;
+    }
+
+    public void setSynced(long synced) {
+        this.synced = synced;
     }
 
     static public class SavedLocationsAdapter extends AbstractSavedItemsAdapter {

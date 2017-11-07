@@ -238,5 +238,16 @@
     <string name="sign_out">Sign out</string>
     <string name="signed_with_s">Signed with %s</string>
     <string name="verify_email">Verify e-mail</string>
+    <string name="you_want_to_change_your_name_to_s">You want to change your name in Waytous to %s. Continue?</string>
+    <string name="enter_email">Enter e-mail.</string>
+    <string name="enter_password">Enter password.</string>
+    <string name="confirm_password">Confirm password.</string>
+    <string name="password_not_confirmed">Password not confirmed.</string>
+    <string name="email_with_instructions_has_sent">E-mail with instructions has sent.</string>
+    <string name="sign_cancelled">Sign cancelled</string>
+    <string name="reset">Reset</string>
+    <string name="back">Back</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
 
 </resources>

@@ -21,6 +21,8 @@ import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Callable1;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Runnable3;
+import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -30,13 +32,16 @@ import com.edeqa.waytous.helpers.CustomListDialog;
 import com.edeqa.waytous.helpers.MyUser;
 import com.edeqa.waytous.helpers.SavedLocation;
 import com.edeqa.waytous.helpers.ShareSender;
+import com.edeqa.waytous.helpers.SyncFB;
 import com.edeqa.waytous.helpers.SystemMessage;
 import com.edeqa.waytous.helpers.Utils;
+import com.edeqa.waytous.interfaces.Sync;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.json.JSONException;
@@ -44,7 +49,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static com.edeqa.waytous.Constants.REQUEST_KEY;
@@ -78,6 +85,7 @@ import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
+import static com.edeqa.waytous.helpers.Events.SYNC_PROFILE;
 
 
 /**
@@ -345,6 +353,64 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             reloadCursor();
                         }
                     },500);
+                }
+                break;
+            case SYNC_PROFILE:
+                try {
+                    final ArrayList<Map<String,Object>> values = new ArrayList<>();
+                    SyncFB sync = new SyncFB()
+                            .setType(Sync.Type.ACCOUNT_PRIVATE)
+                            .setKey(REQUEST_SAVED_LOCATION)
+                            .setUid(State.getInstance().fetchUid())
+                            .setReference(FirebaseDatabase.getInstance().getReference())
+                            .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
+                                @Override
+                                public void call(String key, Object newLocation, Object oldLocation) {
+                                    Utils.log("LOCALVALUE:" + key,  newLocation,  oldLocation);
+                                }
+                            })
+                            .setOnSaveRemoteValue(new Runnable3<String, Object, Object>() {
+                                @Override
+                                public void call(String key, Object newLocation, Object oldLocation) {
+                                    Utils.log("REMOTEVALUE:" + key,  newLocation,  oldLocation);
+
+                                }
+                            })
+                            .setOnFinish(new Runnable2<Sync.Mode, String>() {
+                                @Override
+                                public void call(Sync.Mode mode, String key) {
+                                    Utils.log("RESULT", values);
+                                }
+                            });
+
+                    if(sync.ready()) {
+                        Map<String,Object> fake;
+
+                        Cursor cursor = SavedLocation.getDb().getAll();
+                        cursor.moveToFirst();
+                        while (!cursor.isLast()) {
+                            fake = new HashMap<>();
+                            SavedLocation location = SavedLocation.getItemByCursor(cursor);
+                            Utils.log("LOCATION:", location);
+
+                            fake.put(Firebase.KEYS, location.getKey());
+                            fake.put(Firebase.TIMESTAMP, location.getTimestamp());
+                            fake.put(Firebase.SYNCED, location.getSynced());
+                            fake.put(USER_PROVIDER, location.getProvider());
+                            fake.put(USER_DESCRIPTION, location.getTitle());
+                            fake.put(USER_ADDRESS, location.getAddress());
+                            fake.put(USER_LATITUDE, location.getLatitude());
+                            fake.put(USER_LONGITUDE, location.getLongitude());
+                            fake.put(USER_NAME, location.getUsername());
+                            Utils.log("FAKE:", fake);
+                            cursor.moveToNext();
+                        }
+
+                        sync.syncValues(values);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
         }
@@ -833,7 +899,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         myUser.fire(SAVE_LOCATION);
-
                     }
                 });
             }

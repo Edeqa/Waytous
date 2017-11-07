@@ -485,6 +485,11 @@ public class MyTrackingFB implements Tracking {
     }
 
     @Override
+    public TrackingCallback getTrackingListener() {
+        return trackingListener;
+    }
+
+    @Override
     public void postMessage(JSONObject json) {
         trackingListener.onMessage(json);
     }
@@ -585,14 +590,10 @@ public class MyTrackingFB implements Tracking {
                 if(uid.length() > 40) uid = Misc.getEncryptedHash(uid);
                 put(REQUEST_UID, uid);
             }
+            put(REQUEST_SIGN_PROVIDER, state.fetchSignProvider());
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
             put(REQUEST_OS, "android");
-
-            String signProvider = /*u.load(REQUEST.SIGN_PROVIDER) || */"anonymous";
-            if(signProvider != null) {
-                put(REQUEST_SIGN_PROVIDER, signProvider);
-            }
 
             if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
                 put(USER_NAME,state.getMe().getProperties().getName());
