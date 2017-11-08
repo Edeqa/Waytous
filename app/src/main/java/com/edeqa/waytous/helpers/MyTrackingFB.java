@@ -421,6 +421,7 @@ public class MyTrackingFB implements Tracking {
                 if(getOnSendFailure() != null) getOnSendFailure().call(new Throwable("Error sending: " + o)); //NON-NLS
             }
         } catch (JSONException e) {
+            Utils.err("Invalid JSON: " + (o != null ? o.toString() : "null")); //NON-NLS
             e.printStackTrace();
         }
     }

@@ -578,19 +578,20 @@ public class SyncFB implements Sync {
             if(x == null) {
                 continue;
             }
-            String key;
+            String key = null;
             if(x instanceof Map) {
                 if (((Map) x).containsKey(Firebase.KEYS)) {
                     key = (String) ((Map) x).get(Firebase.KEYS);
-                } else {
+                }
+                if(key == null) {
                     key = getReference().push().getKey();
                 }
+                updates.put(key, x);
             } else {
                 getOnError().call(getKey(), new Exception("Some of local values is not an object, use 'syncValue' for each one."));
                 getOnFinish().call(getMode(), getKey());
                 return;
             }
-            updates.put(key, x);
         }
 
         _ref.child(getKey()).addListenerForSingleValueEvent(new ValueEventListener() {

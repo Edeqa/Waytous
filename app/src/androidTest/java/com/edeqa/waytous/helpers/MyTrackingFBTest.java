@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import static com.edeqa.waytous.Constants.OPTIONS;
+import static com.edeqa.waytous.Constants.REQUEST;
 import static com.edeqa.waytous.Constants.REQUEST_KEY;
 import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
@@ -98,6 +99,7 @@ public class MyTrackingFBTest {
             syncObject.wait();
         }
 
+        tracking.put(REQUEST, "test");
         tracking.put("BOOLEAN", true);
         tracking.put("NUMBER", 1);
         tracking.put("STRING", "test");
@@ -131,6 +133,7 @@ public class MyTrackingFBTest {
             syncObject.wait();
         }
 
+        tracking.put(REQUEST, "test");
         tracking.put("BOOLEAN", true);
         tracking.put("NUMBER", 1);
         tracking.put("STRING", "test");
@@ -162,6 +165,7 @@ public class MyTrackingFBTest {
             syncObject.wait();
         }
 
+        tracking.put(REQUEST, "test");
         tracking.put("BOOLEAN", true);
         tracking.put("NUMBER", 1);
         tracking.put("STRING", "test");
@@ -190,6 +194,7 @@ public class MyTrackingFBTest {
             syncObject.wait();
         }
 
+        tracking.put(REQUEST, "test");
         tracking.put("BOOLEAN", true);
         tracking.put("NUMBER", 1);
         tracking.put("STRING", "test");
@@ -219,6 +224,7 @@ public class MyTrackingFBTest {
             syncObject.wait();
         }
 
+        tracking.put(REQUEST, "test");
         tracking.put("BOOLEAN", true);
         tracking.put("NUMBER", 1);
         tracking.put("STRING", "test");
@@ -248,6 +254,7 @@ public class MyTrackingFBTest {
             syncObject.wait();
         }
 
+        tracking.put(REQUEST, "test");
         tracking.put("BOOLEAN", true);
         tracking.put("NUMBER", 1);
         tracking.put("STRING", "test");

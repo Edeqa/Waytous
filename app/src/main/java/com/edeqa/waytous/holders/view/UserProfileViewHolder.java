@@ -194,10 +194,9 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                 });
                                 break;
                             case R.id.sync:
-                                System.out.println(item);
+                                doGlobalSync();
                                 break;
                             case R.id.update_name:
-                                System.out.println(item);
                                 AlertDialog updateNameDialog = new AlertDialog.Builder(context).create();
                                 if(account == null) account = fetchAccount();
                                 updateNameDialog.setTitle(R.string.update_your_name);
@@ -555,6 +554,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         private String link;
 
         Signer() {
+            mode = Account.SignProvider.NONE;
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(context.getString(R.string.default_web_client_id))
                     .requestEmail()

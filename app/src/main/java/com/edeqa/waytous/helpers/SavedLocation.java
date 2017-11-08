@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
@@ -29,6 +30,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
+
+import static com.edeqa.waytous.Constants.USER_LATITUDE;
+import static com.edeqa.waytous.Constants.USER_LONGITUDE;
+import static com.edeqa.waytous.Constants.USER_PROVIDER;
+import static com.edeqa.waytous.Firebase.KEYS;
+import static com.edeqa.waytous.Firebase.SYNCED;
 
 
 /**
@@ -39,6 +47,11 @@ import java.util.Date;
 public class SavedLocation extends AbstractSavedItem {
 
     public static final String LOCATION = "location";
+
+    public static final String DESCRIPTION = "d";
+    public static final String ADDRESS = "a";
+    public static final String USERNAME = "n";
+    public static final String NUMBER = "number";
     static final long serialVersionUID =-6395904747332820022L;
 
     private String key;
@@ -177,6 +190,34 @@ public class SavedLocation extends AbstractSavedItem {
                 }
             }
         } );
+    }
+
+    public void delete(Context context) {
+        setAddress(null);
+        setUsername(null);
+        setBitmap(null);
+        setTitle(null);
+        setLongitude(0);
+        setLatitude(0);
+        setDeleted(true);
+        save(context);
+    }
+
+    public static SavedLocation newLocation(Context context, Map map) {
+        SavedLocation location = new SavedLocation(context);
+
+        if(map.containsKey(Firebase.KEYS)) try { location.setKey((String) map.get(Firebase.KEYS)); } catch (Exception e) {}
+        if(map.containsKey(USER_LATITUDE)) try { location.setLatitude((Double) map.get(USER_LATITUDE)); } catch (Exception e) {}
+        if(map.containsKey(USER_LONGITUDE)) try { location.setLongitude((Double) map.get(USER_LONGITUDE)); } catch (Exception e) {}
+        if(map.containsKey(Firebase.SYNCED)) try { location.setSynced((Long) map.get(Firebase.SYNCED)); } catch (Exception e) {}
+        if(map.containsKey(USER_PROVIDER)) try { location.setProvider((String) map.get(USER_PROVIDER)); } catch (Exception e) {}
+        if(map.containsKey(DESCRIPTION)) try { location.setTitle((String) map.get(DESCRIPTION)); } catch (Exception e) {}
+        if(map.containsKey(ADDRESS)) try { location.setAddress((String) map.get(ADDRESS)); } catch (Exception e) {}
+        if(map.containsKey(USERNAME)) try { location.setUsername((String) map.get(USERNAME)); } catch (Exception e) {}
+        if(map.containsKey(NUMBER)) try { location.setNumber((Long) map.get(NUMBER)); } catch (Exception e) {}
+        if(map.containsKey(DELETED)) try { location.setDeleted((Boolean) map.get(DELETED)); } catch (Exception e) {}
+
+        return location;
     }
 
     @SuppressWarnings("HardCodedStringLiteral")

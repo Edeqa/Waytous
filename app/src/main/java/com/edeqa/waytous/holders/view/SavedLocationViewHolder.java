@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Callable1;
+import com.edeqa.helpers.interfaces.Callable2;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.helpers.interfaces.Runnable3;
@@ -48,6 +50,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +78,9 @@ import static com.edeqa.waytous.Constants.USER_NAME;
 import static com.edeqa.waytous.Constants.USER_NUMBER;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
+import static com.edeqa.waytous.Firebase.KEYS;
+import static com.edeqa.waytous.Firebase.SYNCED;
+import static com.edeqa.waytous.Firebase.TIMESTAMP;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
@@ -86,6 +93,7 @@ import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SYNC_PROFILE;
+import static junit.framework.Assert.assertTrue;
 
 
 /**
@@ -189,6 +197,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         loc.setUsername(finalName);
                         loc.setAddress(finalAddress);
                         loc.setKey(finalKey);
+                        loc.setSynced(new Date().getTime());
                         loc.save(context);
 
                         reloadCursor();
@@ -212,6 +221,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         final SavedLocation loc = new SavedLocation(context);
                         loc.setKey(finalKey);
                         loc.setDeleted(true);
+                        loc.setSynced(new Date().getTime());
                         loc.save(context);
                     }
                 });
@@ -333,14 +343,8 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         saved = SavedLocation.getItemByPosition(position);
                         if(adapter != null) adapter.notifyItemRemoved(position);
                     }
-                    saved.setAddress(null);
-                    saved.setBitmap(null);
-                    saved.setTitle(null);
-                    saved.setLongitude(0);
-                    saved.setLatitude(0);
-                    saved.setDeleted(true);
-                    saved.save(context);
-//                    SavedLocation.getDb().deleteByItem(saved);
+                    saved.setSynced(new Date().getTime());
+                    saved.delete(context);
                     State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new Runnable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
@@ -363,23 +367,46 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             .setKey(REQUEST_SAVED_LOCATION)
                             .setUid(State.getInstance().fetchUid())
                             .setReference(FirebaseDatabase.getInstance().getReference())
+                            .setOnGetValue(new Callable2<Object, String, Object>() {
+                                @Override
+                                public Object call(String key, Object value) {
+                                    return value;
+                                }
+                            })
                             .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
                                 @Override
                                 public void call(String key, Object newLocation, Object oldLocation) {
-                                    Utils.log("LOCALVALUE:" + key,  newLocation,  oldLocation);
+                                    Utils.log("LOCALVALUE:" + key, newLocation,  oldLocation);
+                                    if(newLocation instanceof Map) {
+                                        if (((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
+                                            SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
+                                            loc.save(context);
+                                        } else {
+                                            SavedLocation loc = SavedLocation.getItemByFieldValue("key", (String) ((Map) newLocation).get(KEYS));
+                                            loc.delete(context);
+                                        }
+                                    }
                                 }
                             })
                             .setOnSaveRemoteValue(new Runnable3<String, Object, Object>() {
                                 @Override
                                 public void call(String key, Object newLocation, Object oldLocation) {
                                     Utils.log("REMOTEVALUE:" + key,  newLocation,  oldLocation);
-
+                                    if(newLocation instanceof Map && ((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
+                                        SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
+                                        loc.save(context);
+                                    }
                                 }
                             })
                             .setOnFinish(new Runnable2<Sync.Mode, String>() {
                                 @Override
                                 public void call(Sync.Mode mode, String key) {
-                                    Utils.log("RESULT", values);
+                                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            reloadCursor();
+                                        }
+                                    },500);
                                 }
                             });
 
@@ -388,24 +415,28 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         Cursor cursor = SavedLocation.getDb().getAll();
                         cursor.moveToFirst();
-                        while (!cursor.isLast()) {
+                        while (!cursor.isAfterLast()) {
                             fake = new HashMap<>();
                             SavedLocation location = SavedLocation.getItemByCursor(cursor);
-                            Utils.log("LOCATION:", location);
+                            if(location != null) {
+                                Utils.log("LOCATION:", location);
 
-                            fake.put(Firebase.KEYS, location.getKey());
-                            fake.put(Firebase.TIMESTAMP, location.getTimestamp());
-                            fake.put(Firebase.SYNCED, location.getSynced());
-                            fake.put(USER_PROVIDER, location.getProvider());
-                            fake.put(USER_DESCRIPTION, location.getTitle());
-                            fake.put(USER_ADDRESS, location.getAddress());
-                            fake.put(USER_LATITUDE, location.getLatitude());
-                            fake.put(USER_LONGITUDE, location.getLongitude());
-                            fake.put(USER_NAME, location.getUsername());
-                            Utils.log("FAKE:", fake);
-                            cursor.moveToNext();
+                                fake.put(KEYS, location.getKey());
+                                if(location.getTimestamp() > 0) fake.put(Firebase.TIMESTAMP, location.getTimestamp());
+                                if(location.getSynced() > 0) fake.put(SYNCED, location.getSynced());
+                                if(location.getProvider() != null) fake.put(USER_PROVIDER, location.getProvider());
+                                if(location.getTitle() != null) fake.put(SavedLocation.DESCRIPTION, location.getTitle());
+                                if(location.getAddress() != null) fake.put(SavedLocation.ADDRESS, location.getAddress());
+                                if(location.getLatitude() != 0D) fake.put(USER_LATITUDE, location.getLatitude());
+                                if(location.getLongitude() != 0D) fake.put(USER_LONGITUDE, location.getLongitude());
+                                if(location.getUsername() != null) fake.put(SavedLocation.USERNAME, location.getUsername());
+                                if(location.getNumber() != 0) fake.put(SavedLocation.NUMBER, location.getNumber());
+
+                                values.add(fake);
+                                Utils.log("FAKE:", fake);
+                                cursor.moveToNext();
+                            }
                         }
-
                         sync.syncValues(values);
                     }
 
@@ -588,6 +619,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         }
                     });
                 }
+                savedLocation.setSynced(new Date().getTime());
                 savedLocation.save(context);
                 reloadCursor();
 
