@@ -105,11 +105,11 @@ public class IntroViewHolder extends AbstractViewHolder {
                         rect.offset(view.getWidth()/2-50, view.getHeight()/2+25);
                         break;
                     case IntroRule.LINK_TO_OPTIONS_MENU:
-                        Toolbar toolbar = (Toolbar) context.findViewById(R.id.toolbar);
+                        Toolbar toolbar = context.findViewById(R.id.toolbar);
                         action = TapTarget.forToolbarOverflow(toolbar, title, rule.getDescription()).transparentTarget(true);
                         break;
                     case IntroRule.LINK_TO_DRAWER_BUTTON:
-                        toolbar = (Toolbar) context.findViewById(R.id.toolbar);
+                        toolbar = context.findViewById(R.id.toolbar);
                         action = TapTarget.forToolbarNavigationIcon(toolbar, title, rule.getDescription()).transparentTarget(true);
                         break;
                     case IntroRule.LINK_TO_OPTIONS_MENU_ITEM:

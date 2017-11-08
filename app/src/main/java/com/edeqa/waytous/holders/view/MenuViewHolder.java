@@ -79,7 +79,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                         View layoutDialogSetMyName = context.getLayoutInflater().inflate(R.layout.dialog_set_my_name, null);
 
                         builder.setView(layoutDialogSetMyName);
-                        final EditText etMyName = (EditText) layoutDialogSetMyName.findViewById(R.id.et_my_name);
+                        final EditText etMyName = layoutDialogSetMyName.findViewById(R.id.et_my_name);
                         String name = State.getInstance().getStringPreference(PropertiesHolder.PREFERENCE_MY_NAME,"");
 
                         if(name != null && name.length()>0){

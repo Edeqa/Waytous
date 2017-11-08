@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/Helpers/Helpers.iml" filepath="$PROJECT_DIR$/Helpers/Helpers.iml" />
       <module fileurl="file://$PROJECT_DIR$/Waytous.iml" filepath="$PROJECT_DIR$/Waytous.iml" />
       <module fileurl="file://$PROJECT_DIR$/WaytousFramework/WaytousFramework.iml" filepath="$PROJECT_DIR$/WaytousFramework/WaytousFramework.iml" />
-      <module fileurl="file://$PROJECT_DIR$/WaytousServer/WaytousServer.iml" filepath="$PROJECT_DIR$/WaytousServer/WaytousServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

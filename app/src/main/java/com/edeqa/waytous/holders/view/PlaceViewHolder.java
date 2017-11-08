@@ -370,7 +370,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
 
     private void setupToolbar() {
-        Toolbar toolbar = (Toolbar) context.findViewById(R.id.toolbar);
+        Toolbar toolbar = context.findViewById(R.id.toolbar);
 
         mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .enableAutoManage(context, 0, this)
@@ -454,8 +454,8 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_place, null);
 
-        final EditText etTitle = (EditText) content.findViewById(R.id.et_place_title);
-        final EditText etComment = (EditText) content.findViewById(R.id.et_place_description);
+        final EditText etTitle = content.findViewById(R.id.et_place_title);
+        final EditText etComment = content.findViewById(R.id.et_place_description);
         etTitle.setText(user.getProperties().getDisplayName());
         etComment.setText(user.getProperties().getDescription());
 

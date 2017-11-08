@@ -52,7 +52,7 @@ public class InfoViewHolder extends AbstractViewHolder<InfoViewHolder.InfoView> 
     }
 
     private void setView() {
-        view = (TextView) context.findViewById(R.id.tv_info);
+        view = context.findViewById(R.id.tv_info);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
         params.bottomMargin = Utils.adaptedSize(context, 64);
 //        params.setMargins(Utils.adaptedSize(context,8), 0, Utils.adaptedSize(context, 8), Utils.adaptedSize(context, 50));
         layoutGpsStatus.setLayoutParams(params);
-        layoutSatellites = (ViewGroup) layoutGpsStatus.findViewById(R.id.layout_satellites);
+        layoutSatellites = layoutGpsStatus.findViewById(R.id.layout_satellites);
         layoutGpsStatus.findViewById(R.id.info).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,7 +134,7 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
                 break;
             case SHOW_NMEA_STATUS:
 //                layoutGpsStatus.findViewById(R.id.layout_nmea_info).setVisibility(View.GONE);
-                ViewGroup mainView = (ViewGroup) context.findViewById(R.id.content);
+                ViewGroup mainView = context.findViewById(R.id.content);
                 mainView.addView(layoutGpsStatus);
                 layoutGpsStatus.setVisibility(View.VISIBLE);
                 ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).addGpsStatusListener(this);
@@ -142,7 +142,7 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
             case HIDE_NMEA_STATUS:
                 layoutGpsStatus.setVisibility(View.INVISIBLE);
                 ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).removeGpsStatusListener(this);
-                mainView = (ViewGroup) context.findViewById(R.id.content);
+                mainView = context.findViewById(R.id.content);
                 mainView.removeView(layoutGpsStatus);
 
                 break;
@@ -198,14 +198,14 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT);
                     view.setLayoutParams(params);
 
-                    ProgressBar bar = (ProgressBar) view.findViewById(R.id.bar);
+                    ProgressBar bar = view.findViewById(R.id.bar);
 
 //                    bar.setMax(50);
                     bar.setProgress((int) entry.getSnr());
 //                    bar.setProgress(entry.);
 
-                    TextView number = (TextView) view.findViewById(R.id.number);
-                    TextView snr = (TextView) view.findViewById(R.id.snr);
+                    TextView number = view.findViewById(R.id.number);
+                    TextView snr = view.findViewById(R.id.snr);
                     snr.setText(String.valueOf(entry.getSnr()));
                     number.setText(String.valueOf(entry.getPrn()));//+"\n"+/*entry.getAzimuth()+"\n"+*/entry.getElevation()+"\n"+
 //                            (entry.usedInFix() ? "F" : "-") +
@@ -233,14 +233,14 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT);
                     view.setLayoutParams(params);
 
-                    ProgressBar bar = (ProgressBar) view.findViewById(R.id.bar);
+                    ProgressBar bar = view.findViewById(R.id.bar);
 
 //                    bar.setMax(50);
                     bar.setProgress((int) entry.getSnr());
 //                    bar.setProgress(entry.);
 
-                    TextView number = (TextView) view.findViewById(R.id.number);
-                    TextView snr = (TextView) view.findViewById(R.id.snr);
+                    TextView number = view.findViewById(R.id.number);
+                    TextView snr = view.findViewById(R.id.snr);
                     snr.setText(String.valueOf(+entry.getSnr()));
                     number.setText(String.valueOf(entry.getPrn()));//+"\n"+/*entry.getAzimuth()+"\n"+*/entry.getElevation()+"\n"+
 //                            (entry.usedInFix() ? "F" : "-") +

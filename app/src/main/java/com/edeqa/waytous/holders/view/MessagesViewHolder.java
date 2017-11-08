@@ -226,7 +226,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null);
 
-        final EditText etMessage = (EditText) content.findViewById(R.id.et_message);
+        final EditText etMessage = content.findViewById(R.id.et_message);
         etMessage.setText(text);
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
@@ -614,7 +614,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
     private LinearLayout setupFooter(View content) {
         final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
-        ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
+        ViewGroup placeFooter = content.findViewById(R.id.layout_footer);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutFooter.setLayoutParams(params);
@@ -844,8 +844,8 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
             View view = context.getLayoutInflater().inflate(R.layout.dialog_welcome_message, null);
 
-            final EditText etMessage = (EditText) view.findViewById(R.id.et_welcome_message);
-            final CheckBox cbSaveAsDefault = (CheckBox) view.findViewById(R.id.cb_save_as_default);
+            final EditText etMessage = view.findViewById(R.id.et_welcome_message);
+            final CheckBox cbSaveAsDefault = view.findViewById(R.id.cb_save_as_default);
 
             etMessage.setText(State.getInstance().getStringPreference(WELCOME_MESSAGE, ""));
 

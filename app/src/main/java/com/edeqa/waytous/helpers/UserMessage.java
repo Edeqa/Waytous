@@ -321,14 +321,14 @@ public class UserMessage extends AbstractSavedItem {
 
             private UserMessageViewHolder(View view) {
                 super(view);
-                tvUsername = (TextView) view.findViewById(R.id.tv_username);
-                tvTimestamp = (TextView) view.findViewById(R.id.tvTimestamp);
-                tvMessageBody = (TextView) view.findViewById(R.id.tv_message_body);
-                layoutMessageButtons = (LinearLayout) view.findViewById(R.id.layout_message_buttons);
-                ibMessageShare = (ImageButton) view.findViewById(R.id.ib_message_share);
-                ibMessageReply = (ImageButton) view.findViewById(R.id.ib_message_reply);
-                ibMessageDelete = (ImageButton) view.findViewById(R.id.ib_message_delete);
-                ivMessageDelivered = (ImageView) view.findViewById(R.id.iv_message_delivered);
+                tvUsername = view.findViewById(R.id.tv_username);
+                tvTimestamp = view.findViewById(R.id.tvTimestamp);
+                tvMessageBody = view.findViewById(R.id.tv_message_body);
+                layoutMessageButtons = view.findViewById(R.id.layout_message_buttons);
+                ibMessageShare = view.findViewById(R.id.ib_message_share);
+                ibMessageReply = view.findViewById(R.id.ib_message_reply);
+                ibMessageDelete = view.findViewById(R.id.ib_message_delete);
+                ivMessageDelivered = view.findViewById(R.id.iv_message_delivered);
             }
         }
 

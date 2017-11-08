@@ -128,7 +128,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
 
         context.getLayoutInflater().inflate(R.layout.dialog_custom, null);
 
-        RecyclerView list = (RecyclerView) content.findViewById(R.id.list_items);
+        RecyclerView list = content.findViewById(R.id.list_items);
 
         adapter = new SettingsAdapter(list);
 
@@ -160,7 +160,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
 
     private AppBarLayout setupToolbar() {
         AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
-        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
+        toolbar = layoutToolbar.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         if(toolbar.getNavigationIcon() != null) toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -352,15 +352,15 @@ public class SettingsViewHolder extends AbstractViewHolder {
 
             private SettingViewHolder(View view) {
                 super(view);
-                layoutHeader = (LinearLayout) view.findViewById(R.id.layout_header);
-                layoutPreference = (LinearLayout) view.findViewById(R.id.layout_preference);
-                layoutWidget = (LinearLayout) view.findViewById(R.id.layout_widget);
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvHeaderTitle = (TextView) view.findViewById(R.id.tv_header_title);
-                tvSummary = (TextView) view.findViewById(R.id.tv_summary);
-                tvHeaderSummary = (TextView) view.findViewById(R.id.tv_header_summary);
-                ivRightArrow = (ImageView) view.findViewById(R.id.iv_right_arrow);
-                cbCheckbox = (CheckBox) view.findViewById(R.id.cb_checkbox);
+                layoutHeader = view.findViewById(R.id.layout_header);
+                layoutPreference = view.findViewById(R.id.layout_preference);
+                layoutWidget = view.findViewById(R.id.layout_widget);
+                tvTitle = view.findViewById(R.id.tv_title);
+                tvHeaderTitle = view.findViewById(R.id.tv_header_title);
+                tvSummary = view.findViewById(R.id.tv_summary);
+                tvHeaderSummary = view.findViewById(R.id.tv_header_summary);
+                ivRightArrow = view.findViewById(R.id.iv_right_arrow);
+                cbCheckbox = view.findViewById(R.id.cb_checkbox);
             }
         }
     }

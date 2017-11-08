@@ -590,8 +590,8 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_saved_location, null);
 
-        final EditText etTitle = (EditText) content.findViewById(R.id.et_saved_location_title);
-        final EditText etComment = (EditText) content.findViewById(R.id.et_saved_location_comment);
+        final EditText etTitle = content.findViewById(R.id.et_saved_location_title);
+        final EditText etComment = content.findViewById(R.id.et_saved_location_comment);
         etTitle.setText(savedLocation.getUsername());
         etComment.setText(savedLocation.getTitle());
 

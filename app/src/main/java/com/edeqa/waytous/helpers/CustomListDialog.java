@@ -18,7 +18,7 @@ public class CustomListDialog extends CustomDialog {
     public CustomListDialog(MainActivity context) {
         super(context);
 
-        list = (RecyclerView) content.findViewById(R.id.list_items);
+        list = content.findViewById(R.id.list_items);
     }
 
     public void setAdapter(RecyclerView.Adapter adapter) {

@@ -44,7 +44,7 @@ public class ExceptionActivity extends AppCompatActivity {
         String exName = crashInfo.exceptionClassName;
         String causeName = crashInfo.stackTrace;
 
-        TextView text = (TextView) content.findViewById(R.id.tv_exception);
+        TextView text = content.findViewById(R.id.tv_exception);
 
         CharSequence boldExName = createSpanned(exName, new StyleSpan(Typeface.BOLD));
         CharSequence boldCauseName = createSpanned(causeName, new StyleSpan(Typeface.BOLD));
@@ -54,7 +54,7 @@ public class ExceptionActivity extends AppCompatActivity {
                 new CharSequence[] { boldExName, boldCauseName });
         text.setText(crashMessage);
 
-        EditText etExceptionTrace = (EditText) content.findViewById(R.id.et_exception_trace);
+        EditText etExceptionTrace = content.findViewById(R.id.et_exception_trace);
 
         final StringWriter textException = new StringWriter();
         exception.printStackTrace(new PrintWriter(textException));

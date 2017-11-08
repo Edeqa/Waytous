@@ -415,14 +415,14 @@ public class SavedLocation extends AbstractSavedItem {
 
             private ViewHolder(View view) {
                 super(view);
-                tvUsername = (TextView) view.findViewById(R.id.tv_saved_location_username);
-                tvTimestamp = (TextView) view.findViewById(R.id.tv_saved_location_timestamp);
-                tvAddressShort = (TextView) view.findViewById(R.id.tv_saved_location_address_short);
-                tvAddress = (TextView) view.findViewById(R.id.tv_saved_location_address);
-                tvComment = (TextView) view.findViewById(R.id.tv_saved_location_comment);
-                ibImage = (ImageButton) view.findViewById(R.id.ib_saved_location_image);
-                ibExpand = (ImageButton) view.findViewById(R.id.ib_expand_address);
-                ibCollapse = (ImageButton) view.findViewById(R.id.ib_collapse_address);
+                tvUsername = view.findViewById(R.id.tv_saved_location_username);
+                tvTimestamp = view.findViewById(R.id.tv_saved_location_timestamp);
+                tvAddressShort = view.findViewById(R.id.tv_saved_location_address_short);
+                tvAddress = view.findViewById(R.id.tv_saved_location_address);
+                tvComment = view.findViewById(R.id.tv_saved_location_comment);
+                ibImage = view.findViewById(R.id.ib_saved_location_image);
+                ibExpand = view.findViewById(R.id.ib_expand_address);
+                ibCollapse = view.findViewById(R.id.ib_collapse_address);
 
                 tvUsername.setOnTouchListener(onTouchListener);
                 view.findViewById(R.id.layout_address).setOnTouchListener(onTouchListener);

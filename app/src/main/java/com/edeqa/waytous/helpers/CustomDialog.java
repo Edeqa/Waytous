@@ -69,10 +69,10 @@ public class CustomDialog {
             dialog = new AlertDialog.Builder(context).create();
         }
         dialog.setCustomTitle(layoutToolbar);
-        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
+        toolbar = layoutToolbar.findViewById(R.id.toolbar);
 
         if (getFooter() != null) {
-            ViewGroup placeFooter = (ViewGroup) content.findViewById(R.id.layout_footer);
+            ViewGroup placeFooter = content.findViewById(R.id.layout_footer);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             getFooter().setLayoutParams(params);
@@ -175,7 +175,7 @@ public class CustomDialog {
     }
 
     public void setLayout(int layout) {
-        LinearLayout layoutItems = (LinearLayout) content.findViewById(R.id.layout_items);
+        LinearLayout layoutItems = content.findViewById(R.id.layout_items);
         View view = context.getLayoutInflater().inflate(layout, null);
         layoutItems.addView(view);
     }

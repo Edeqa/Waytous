@@ -96,7 +96,7 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) drawer.findViewById(R.id.nav_view);
+        navigationView = drawer.findViewById(R.id.nav_view);
 
         for(int i = 0; i < ids.length; i++) {
             if(navigationView.getMenu().findItem(ids[i]) == null) {
@@ -137,7 +137,7 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
             case ACTIVITY_RESUME:
                 State.getInstance().fire(CREATE_DRAWER, itemsHolder);
 
-                ibPrimary = (ImageButton) navigationView.findViewById(R.id.ibPrim);
+                ibPrimary = navigationView.findViewById(R.id.ibPrim);
                 ibPrimary.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

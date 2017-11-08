@@ -62,12 +62,12 @@ public class FabViewHolder extends AbstractViewHolder {
     }
 
     public void setView(View view) {
-        fabButtons = (LinearLayoutCompat) view.findViewById(R.id.fab_buttons);
+        fabButtons = view.findViewById(R.id.fab_buttons);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         close(false);
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab = view.findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_gps_off_white_24dp);
         fab.setOnClickListener(onInitialClickListener);
 
@@ -237,7 +237,7 @@ public class FabViewHolder extends AbstractViewHolder {
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_share_link, null);
 
-        LinearLayout layoutButtons = (LinearLayout) content.findViewById(R.id.layoutShareButtons);
+        LinearLayout layoutButtons = content.findViewById(R.id.layoutShareButtons);
 
         Map<String,Object> m = new HashMap<>();
         m.put("layout", layoutButtons);

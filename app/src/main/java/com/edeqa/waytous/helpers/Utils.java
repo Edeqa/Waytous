@@ -27,8 +27,6 @@ import com.google.maps.android.SphericalUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,12 +35,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.List;
 
-import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.OPTIONS;
+import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.USER_ACCURACY;
 import static com.edeqa.waytous.Constants.USER_ALTITUDE;
 import static com.edeqa.waytous.Constants.USER_BEARING;
@@ -50,7 +47,6 @@ import static com.edeqa.waytous.Constants.USER_LATITUDE;
 import static com.edeqa.waytous.Constants.USER_LONGITUDE;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
-import static com.google.common.io.ByteStreams.copy;
 
 
 /**

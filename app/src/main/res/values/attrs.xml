@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DayTheme">
+    <declare-styleable name="AppTheme.NoActionBar">
         <attr name="buttonPerson" format="reference"/>
         <attr name="buttonLocation" format="reference"/>
         <attr name="buttonTextColor" format="reference"/>

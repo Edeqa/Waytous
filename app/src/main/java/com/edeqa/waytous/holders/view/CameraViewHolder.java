@@ -76,7 +76,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
     private enum MultiUsersOrientation {
         NORTH,
-        USER;
+        USER
 //        public static MultiUsersOrientation fromString (String string) {
 //            try {
 //                return valueOf(string);
@@ -127,7 +127,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 
         setMap(context.getMap());
         setScaleView((MapScaleView) context.findViewById(R.id.scale_view));
-        bRecenter = (Button) context.findViewById(R.id.buttonRecenter);
+        bRecenter = context.findViewById(R.id.buttonRecenter);
         bRecenter.setOnClickListener(onRecenterClick);
     }
 

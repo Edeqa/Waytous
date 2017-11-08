@@ -23,7 +23,7 @@
 
     <style name="MenuLabelsStyle">
         <item name="android:background">@drawable/semi_transparent_background</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/material_color_white</item>
         <item name="android:textSize">14sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
@@ -43,7 +43,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="fabSize">normal</item>
-        <item name="android:tint">@android:color/white</item>
+        <item name="android:tint">@color/material_color_white</item>
         <item name="rippleColor">@color/colorPrimaryDark</item>
         <item name="backgroundTint">@color/colorPrimary</item>
         <item name="android:paddingBottom">8dp</item>
@@ -59,7 +59,7 @@
         <item name="android:elevation">2dp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:padding">5dip</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/material_color_white</item>
         <item name="android:typeface">normal</item>
         <item name="android:paddingBottom">16dp</item>
 
@@ -74,25 +74,25 @@
     </style>
 
     <style name="DayTheme" parent="AppTheme.NoActionBar">
-        <item name="attr/buttonTextColor">@android:color/black</item>
-        <item name="attr/buttonPerson">@drawable/ic_person_black_24dp</item>
-        <item name="attr/buttonLocation">@drawable/ic_pin_drop_black_24dp</item>
+        <item type="attr" name="buttonLocation" tools:ignore="DuplicateDefinition">@drawable/ic_pin_drop_black_24dp</item>
+        <item type="attr" name="buttonPerson" tools:ignore="DuplicateDefinition">@drawable/ic_person_black_24dp</item>
+        <item type="attr" name="buttonTextColor" tools:ignore="DuplicateDefinition">@color/material_color_black</item>
     </style>
 
     <style name="NightTheme" parent="AppTheme.NoActionBar">
-        <item name="attr/buttonLocation">@drawable/ic_pin_drop_black_24dp</item>
-        <item name="attr/buttonTextColor">@android:color/white</item>
-        <item name="attr/buttonPerson">@drawable/ic_person_white_24dp</item>
+        <item type="attr" name="buttonLocation" tools:ignore="DuplicateDefinition">@drawable/ic_pin_drop_black_24dp</item>
+        <item type="attr" name="buttonPerson" tools:ignore="DuplicateDefinition">@drawable/ic_person_white_24dp</item>
+        <item type="attr" name="buttonTextColor" tools:ignore="DuplicateDefinition">@color/material_color_white</item>
     </style>
 
     <style name="iconNavigationMarkerTextDay">
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@color/material_color_black</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment" tools:ignore="NewApi">center</item>
     </style>
 
     <style name="iconNavigationMarkerTextNight">
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/material_color_white</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment" tools:ignore="NewApi">center</item>
     </style>

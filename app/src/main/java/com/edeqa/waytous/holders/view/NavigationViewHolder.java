@@ -278,9 +278,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
 
         @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_navigation_options_driving, null);
 
-        final CheckBox cbAvoidHighways = (CheckBox) content.findViewById(R.id.cb_navigation_avoid_highways);
-        final CheckBox cbAvoidTolls = (CheckBox) content.findViewById(R.id.cb_navigation_avoid_tolls);
-        final CheckBox cbAvoidFerries = (CheckBox) content.findViewById(R.id.cb_navigation_avoid_ferries);
+        final CheckBox cbAvoidHighways = content.findViewById(R.id.cb_navigation_avoid_highways);
+        final CheckBox cbAvoidTolls = content.findViewById(R.id.cb_navigation_avoid_tolls);
+        final CheckBox cbAvoidFerries = content.findViewById(R.id.cb_navigation_avoid_ferries);
 
         if(type != R.id.ib_navigation_driving) {
             cbAvoidHighways.setVisibility(View.GONE);

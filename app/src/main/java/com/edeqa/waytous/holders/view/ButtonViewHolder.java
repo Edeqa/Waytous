@@ -302,7 +302,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 layout.addView(button, index);
             }
 
-            title = ((TextView) button.findViewById(R.id.tv_button_title));
+            title = button.findViewById(R.id.tv_button_title);
             String titleText = (myUser.getProperties().getNumber()==0 ? "*" : "") + myUser.getProperties().getDisplayName();
 
             title.setText(titleText);

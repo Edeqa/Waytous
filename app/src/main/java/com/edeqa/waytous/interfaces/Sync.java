@@ -104,7 +104,7 @@ public interface Sync {
 
     Sync setGroup(String group);
 
-    public enum Type {
+    enum Type {
         ACCOUNT_PRIVATE("account-private"),
         USER_PUBLIC("user-public");
 
@@ -117,7 +117,7 @@ public interface Sync {
         }
     }
 
-    public enum Mode {
+    enum Mode {
         ADD_REMOTE("ra"),
         UPDATE_REMOTE("ru"),
         OVERRIDE_REMOTE("ro"),

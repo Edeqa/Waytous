@@ -405,11 +405,11 @@ public class SettingItem<T> {
             dialog.setTitle(getTitle());
 
             View view = context.getLayoutInflater().inflate(R.layout.dialog_preference_text, null);
-            final EditText etText = (EditText) view.findViewById(R.id.et_text);
+            final EditText etText = view.findViewById(R.id.et_text);
 
             etText.setText(value);
             if(getMessage() != null) {
-                TextView tvMessage = (TextView) view.findViewById(R.id.tv_message);
+                TextView tvMessage = view.findViewById(R.id.tv_message);
                 tvMessage.setText(getMessage());
                 tvMessage.setVisibility(View.VISIBLE);
             }
@@ -544,7 +544,7 @@ public class SettingItem<T> {
             dialog.setTitle(getTitle());
 
             View view = context.getLayoutInflater().inflate(R.layout.dialog_preference_list, null);
-            final ListView list = (ListView) view.findViewById(android.R.id.list);
+            final ListView list = view.findViewById(android.R.id.list);
 
             final ArrayList<String> labels = new ArrayList<>(fetchLabels());
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice, labels);
@@ -575,7 +575,7 @@ public class SettingItem<T> {
             }
 
             if(getMessage() != null) {
-                TextView tvMessage = (TextView) view.findViewById(R.id.tv_message);
+                TextView tvMessage = view.findViewById(R.id.tv_message);
                 tvMessage.setText(getMessage());
                 tvMessage.setVisibility(View.VISIBLE);
             }

@@ -130,9 +130,9 @@ public class TrackingViewHolder extends AbstractViewHolder<TrackingViewHolder.Tr
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
         final View content = context.getLayoutInflater().inflate(R.layout.dialog_terms_of_service, null);
 
-        TextView tvMessageCreate = (TextView) content.findViewById(R.id.tv_message_create);
-        TextView tvMessageJoin = (TextView) content.findViewById(R.id.tv_message_join);
-        final CheckBox cbConfirm = (CheckBox) content.findViewById(R.id.cb_terms_of_service_confirm);
+        TextView tvMessageCreate = content.findViewById(R.id.tv_message_create);
+        TextView tvMessageJoin = content.findViewById(R.id.tv_message_join);
+        final CheckBox cbConfirm = content.findViewById(R.id.cb_terms_of_service_confirm);
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         context.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
