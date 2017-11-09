@@ -380,10 +380,14 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                     if(newLocation instanceof Map) {
                                         if (((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
                                             SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
-                                            loc.save(context);
+                                            if(loc != null) {
+                                                loc.save(context);
+                                            }
                                         } else {
                                             SavedLocation loc = SavedLocation.getItemByFieldValue("key", (String) ((Map) newLocation).get(KEYS));
-                                            loc.delete(context);
+                                            if(loc != null) {
+                                                loc.delete(context);
+                                            }
                                         }
                                     }
                                 }
