@@ -11,7 +11,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;

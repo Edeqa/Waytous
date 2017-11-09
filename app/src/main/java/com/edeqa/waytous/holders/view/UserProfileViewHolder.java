@@ -690,12 +690,14 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 case GOOGLE:
                     if (requestCode == 117) {
                         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                        if (result.isSuccess()) {
-                            GoogleSignInAccount acct = result.getSignInAccount();
-                            credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-                            signToFirebase();
-                        } else {
-                            onFailureListener.call(new Exception(context.getString(R.string.sign_cancelled)));
+                        if (result != null) {
+                            if (result.isSuccess()) {
+                                GoogleSignInAccount acct = result.getSignInAccount();
+                                credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+                                signToFirebase();
+                            } else {
+                                onFailureListener.call(new Exception(context.getString(R.string.sign_cancelled)));
+                            }
                         }
                     }
                     break;
