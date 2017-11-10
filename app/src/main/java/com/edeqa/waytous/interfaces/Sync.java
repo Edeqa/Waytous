@@ -13,13 +13,16 @@ import java.util.Map;
  * Created 10/16/2017.
  */
 
+@SuppressWarnings({"HardCodedStringLiteral", "unused"})
 public interface Sync {
+    @SuppressWarnings("unused")
     String CREATE_KEY = "$create_key$";
 
     String getUserNumber();
 
     Sync setUserNumber(String userNumber);
 
+    @SuppressWarnings({"UnusedReturnValue", "SameParameterValue"})
     Sync setUserNumber(int userNumber);
 
     void getValues();
@@ -48,6 +51,7 @@ public interface Sync {
 
     void watchChanges(Callable2<Object, String, Object> onChangeValue);
 
+    @SuppressWarnings("SameParameterValue")
     Sync setDebug(boolean debug);
 
     Sync setOnGetValue(Callable2<Object,String,Object> onGetValue);

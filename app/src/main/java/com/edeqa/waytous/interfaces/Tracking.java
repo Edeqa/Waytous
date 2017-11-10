@@ -9,7 +9,7 @@ import org.json.JSONObject;
  */
 public interface Tracking {
 
-    String TRACKING_URI = "uri";
+    String TRACKING_URI = "uri"; //NON-NLS
 
     void start();
 
