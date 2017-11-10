@@ -232,6 +232,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
     @Override
     public boolean onEvent(String event, Object object) {
+        System.out.println(event);
         switch (event) {
             case CREATE_OPTIONS_MENU:
                 Menu optionsMenu = (Menu) object;
