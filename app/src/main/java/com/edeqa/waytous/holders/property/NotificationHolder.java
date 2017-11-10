@@ -84,17 +84,15 @@ public class NotificationHolder extends AbstractPropertyHolder {
         PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
         PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WaytousService.class).putExtra("mode", "stop"),0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            notification = new NotificationCompat.Builder(state)
-                    .setVisibility(Notification.VISIBILITY_SECRET)
-                    .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
-                    .setSmallIcon(R.drawable.ic_notification_twinks)
-    //                .setAutoCancel(true)
-    //                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
-                    .addAction(R.drawable.ic_notification_clear, state.getString(R.string.stop), pendingStopIntent)
-                    .setContentIntent(pendingIntent)
-                    .setPriority(Notification.PRIORITY_HIGH);
-        }
+        notification = new NotificationCompat.Builder(state)
+                .setVisibility(Notification.VISIBILITY_SECRET)
+                .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.ic_notification_twinks)
+//                .setAutoCancel(true)
+//                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
+                .addAction(R.drawable.ic_notification_clear, state.getString(R.string.stop), pendingStopIntent)
+                .setContentIntent(pendingIntent)
+                .setPriority(Notification.PRIORITY_HIGH);
 
         state.setNotification(notification.build());
 
