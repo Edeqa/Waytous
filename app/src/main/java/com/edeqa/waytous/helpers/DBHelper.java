@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.view.SoundEffectConstants;
 
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 
@@ -23,7 +22,7 @@ import java.util.TreeMap;
  * Created 12/20/2016.
  */
 
-@SuppressWarnings("TryWithIdenticalCatches")
+@SuppressWarnings({"TryWithIdenticalCatches", "HardCodedStringLiteral", "WeakerAccess"})
 public class DBHelper<T extends AbstractSavedItem> {
 
     private static final int DB_VERSION = 1;
@@ -35,8 +34,6 @@ public class DBHelper<T extends AbstractSavedItem> {
     private DBOpenHelper mDBHelper;
     private SQLiteDatabase mDB;
     private HashMap<String, HashMap<String,Restriction>> restrictions;
-    private String selection = null;
-    private String[] selectionArgs = null;
 
     public DBHelper(Context context, String itemType, Class<?> item){
         this.context = context;
@@ -74,24 +71,33 @@ public class DBHelper<T extends AbstractSavedItem> {
 
     public Cursor getAll() {
         String selection = "(deleted_ IS NULL OR NOT deleted_)";
-        String[] selectionArgs = null;//{"1"};
+        return getWithTerms(selection);
+    }
 
+    public Cursor getAllWithDeleted() {
+        String selection = "";
+        return getWithTerms(selection);
+    }
+
+    private Cursor getWithTerms(String selection) {
+        String[] selectionArgs = new String[0];
         if(restrictions != null && restrictions.containsKey(fields.itemType)) {
             ArrayList<String> args = new ArrayList<>();
             HashMap<String, Restriction> rest = restrictions.get(fields.itemType);
+            StringBuilder selectionBuilder = new StringBuilder(selection);
             for(Map.Entry<String,Restriction> entry: rest.entrySet()) {
-                if(selection.length() > 0) {
-                    selection += " AND ";
+                if(selectionBuilder.length() > 0) {
+                    selectionBuilder.append(" AND ");
                 }
-                selection += "(" + entry.getValue().getSelection() + ")";
+                selectionBuilder.append("(").append(entry.getValue().getSelection()).append(")");
                 args.addAll(Arrays.asList(entry.getValue().getArgs()));
             }
+            selection = selectionBuilder.toString();
             selectionArgs = args.toArray(new String[args.size()]);
         }
         if(!mDB.isOpen()){
             mDB = mDBHelper.getWritableDatabase();
         }
-
         return mDB.query(fields.itemType, null, selection, selectionArgs, null, null, null);
     }
 
@@ -367,22 +373,23 @@ public class DBHelper<T extends AbstractSavedItem> {
 
         @SuppressWarnings("WeakerAccess")
         public String getCreateString() {
-            String res = "create table " + itemType + "(_id integer primary key autoincrement, ";
+            StringBuilder resBuilder = new StringBuilder("create table " + itemType + "(_id integer primary key autoincrement, ");
             for(Map.Entry<String,FieldOptions> x: fields.entrySet()){
-                res += x.getValue().name + "_ " + x.getValue().type;
-                if(!x.getKey().equals(fields.lastKey())) res += ", ";
+                resBuilder.append(x.getValue().name).append("_ ").append(x.getValue().type);
+                if(!x.getKey().equals(fields.lastKey())) resBuilder.append(", ");
             }
+            String res = resBuilder.toString();
             res += ")";
             return res;
         }
 
         public String getUpdateString(ArrayList<FieldOptions> newFields) {
-            String res = "";
+            StringBuilder res = new StringBuilder();
             for(FieldOptions x: newFields){
-                res += "alter table " + itemType + " add column ";
-                res += x.name + "_ " + x.type + ";\n";
+                res.append("alter table ").append(itemType).append(" add column ");
+                res.append(x.name).append("_ ").append(x.type).append(";\n");
             }
-            return res;
+            return res.toString();
         }
 
         class FieldOptions {

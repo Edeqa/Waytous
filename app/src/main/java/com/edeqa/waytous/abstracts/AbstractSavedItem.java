@@ -21,12 +21,14 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
 
     static final long serialVersionUID = -6395904747332820032L;
 
+    public static final String KEY = "key";
+    public static final String SEARCH = "search";
     public static final String DELETED = "x";
 
     static transient private Map<String,Integer> count = new HashMap<>();
     static transient private Map<String,DBHelper> dbHelpers = new HashMap<>();
 
-    private transient static String LAST = "last";
+    private static String LAST = "last";
     protected transient Context context;
     transient private String itemType;
     transient private long number;

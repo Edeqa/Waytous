@@ -38,6 +38,7 @@ import static com.edeqa.waytous.interfaces.Sync.Mode.UPDATE_REMOTE;
  * Created 10/10/2017.
  */
 
+@SuppressWarnings("unchecked")
 public class SyncFB implements Sync {
 
     private boolean debug;
@@ -308,6 +309,7 @@ public class SyncFB implements Sync {
                 switch (mode) {
                     case UPDATE_LOCAL:
                         boolean process = false;
+                        //noinspection StatementWithEmptyBody
                         if(remote == null) {
                         } else if(Misc.isEmpty(local)) {
                             process = true;
@@ -358,10 +360,12 @@ public class SyncFB implements Sync {
                         process = false;
                         if(Misc.isEmpty(remote) && !Misc.isEmpty(local)) {
                             if(local instanceof Map) {
+                                //noinspection unchecked
                                 ((Map) local).put(Firebase.SYNCED, ServerValue.TIMESTAMP);
                             }
                             process = true;
-                        } else if(!Misc.isEmpty(remote) && Misc.isEmpty(local)) {
+                        } else //noinspection StatementWithEmptyBody
+                            if(!Misc.isEmpty(remote) && Misc.isEmpty(local)) {
                         } else {
                             if(local instanceof Map && ((Map) local).containsKey(Firebase.SYNCED)
                                     && (ServerValue.TIMESTAMP.equals(((Map) local).get(Firebase.SYNCED)) || Long.valueOf(((Map) local).get(Firebase.SYNCED).toString()) > Long.valueOf(((Map) remote).get(Firebase.SYNCED).toString()))) {
@@ -404,6 +408,7 @@ public class SyncFB implements Sync {
                     case OVERRIDE_REMOTE:
                         if(!Misc.isEmpty(local)) {
                             if(local instanceof Map && local != ServerValue.TIMESTAMP) {
+                                //noinspection unchecked
                                 ((Map) local).put(Firebase.SYNCED, ServerValue.TIMESTAMP);
                             }
                             updates.put(key, local);
@@ -476,7 +481,7 @@ public class SyncFB implements Sync {
                             } else {
                                 localTimestamp = State.getInstance().getLongPreference("synced_"+getType(), 0); //NON-NLS
                             }
-                            Long remoteTimestamp = 0L;
+                            Long remoteTimestamp;
                             if(remote instanceof Map) {
                                 if(((Map) remote).containsKey(Firebase.SYNCED)) {
                                     remoteTimestamp = (Long) ((Map) remote).get(Firebase.SYNCED);
@@ -719,6 +724,7 @@ public class SyncFB implements Sync {
                 item.put(Firebase.VALUE, "[" + value.getClass().getSimpleName() + "]");
             }
         }
+        //noinspection ConstantConditions
         getRef(null).child(Firebase.HISTORY).push().setValue(item);
     }
 

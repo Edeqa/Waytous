@@ -40,6 +40,7 @@ public class IntroViewHolder extends AbstractViewHolder {
     private ShowcaseView sv;
 
 
+    @SuppressWarnings("unused")
     public IntroViewHolder(MainActivity context) {
         super(context);
 
@@ -87,8 +88,6 @@ public class IntroViewHolder extends AbstractViewHolder {
             if(title == null) title = "";
             if(rule.getViewId() > 0) {
                 view = context.findViewById(rule.getViewId());
-            } else if(rule.getViewTag() != null) {
-//                view = context.findViewById(R.layout.content_main).findViewWithTag(rule.getViewTag());
             }
             if(rule.getLinkTo() > 0){
                 switch(rule.getLinkTo()) {

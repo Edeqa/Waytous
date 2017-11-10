@@ -131,7 +131,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
         switch (event) {
             case ACTIVITY_RESUME:
                 if(dialog != null && dialog.isShowing()) {
-                    System.out.println("DO RESIZE:"+dialog);
                     dialog.getFooter().setVisibility(State.getInstance().tracking_active() ? View.VISIBLE: View.GONE);
                     dialog.setContext((MainActivity) object);
                     dialog.resize();
@@ -158,6 +157,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 }
                 newMessage(to,false,"");
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                assert notificationManager != null;
                 notificationManager.cancel(1977);
                 break;
             case SHOW_MESSAGES:
@@ -224,7 +224,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             dialog.setTitle(context.getString(privateMessage ? R.string.private_message_to_s : R.string.reply_to_s, toUser.getProperties().getDisplayName()));
         }
 
-        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null);
+        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_new_message, null); //NON-NLS
 
         final EditText etMessage = content.findViewById(R.id.et_message);
         etMessage.setText(text);
@@ -344,6 +344,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         State.getInstance().fire(SEND_MESSAGE, mm);
 
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        assert imm != null;
                         imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
                         reloadCursor();
@@ -376,7 +377,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         fontSize = State.getInstance().getIntegerPreference(PREFERENCE_FONT_SIZE, 12);
 
         if(hideSystemMessages) {
-            UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE});
+            UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE}); //NON-NLS
         }
         context.getSupportLoaderManager().initLoader(2, null, adapter);
 
@@ -416,7 +417,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
             @Override
             public void call(final Integer position) {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
-                Utils.log(MessagesViewHolder.this, "showMessages:", "item="+item);
+                Utils.log(MessagesViewHolder.this, "showMessages:", "item="+item); //NON-NLS
 
                 new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
             }
@@ -647,6 +648,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
 //                        State.getInstance().fire(SEND_MESSAGE, m);
 
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        assert imm != null;
                         imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
                         reloadCursor();
@@ -883,11 +885,11 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 case R.id.hide_system_messages:
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, true);
                     hideSystemMessages = true;
-                    UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE});
+                    UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE}); //NON-NLS
                     reloadCursor();
                     break;
                 case R.id.show_system_messages:
-                    UserMessage.getDb().removeRestriction("user");
+                    UserMessage.getDb().removeRestriction("user"); //NON-NLS
                     hideSystemMessages = false;
                     State.getInstance().setPreference(PREFERENCE_HIDE_SYSTEM_MESSAGES, false);
                     reloadCursor();

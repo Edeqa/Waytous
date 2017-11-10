@@ -31,7 +31,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_DISABLED;
  * Created 11/24/16.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue", "unused"})
 public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.StreetsView> implements OnStreetViewPanoramaReadyCallback {
 
     private View streetViewLayout;

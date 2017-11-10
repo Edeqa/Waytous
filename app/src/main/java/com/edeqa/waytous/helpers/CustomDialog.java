@@ -29,7 +29,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * Created 8/10/2017.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class CustomDialog {
 
     private MainActivity context;
@@ -52,7 +52,6 @@ public class CustomDialog {
     private String neutralString;
     private DialogInterface.OnClickListener neutralListener;
     private DialogInterface.OnCancelListener onCancelListener;
-    private boolean showMenu = false;
 
     public CustomDialog(MainActivity context) {
         this.context = context;
@@ -210,6 +209,7 @@ public class CustomDialog {
         return title;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public void setFlat(boolean flat) {
         this.flat = flat;
     }
@@ -328,6 +328,7 @@ public class CustomDialog {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     public void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
         this.onCancelListener = onCancelListener;
         if(dialog != null) dialog.setOnCancelListener(onCancelListener);
@@ -343,7 +344,6 @@ public class CustomDialog {
         } else {
             Utils.resizeDialog(context, dialog, WRAP_CONTENT, WRAP_CONTENT);
         }
-//        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     public void setContext(MainActivity context) {
@@ -351,14 +351,12 @@ public class CustomDialog {
     }
 
     public void showMenu() {
-        showMenu = true;
         if(toolbar != null) {
             toolbar.showOverflowMenu();
         }
     }
 
     public void hideMenu() {
-        showMenu = false;
         if(toolbar != null) {
             toolbar.hideOverflowMenu();
         }

@@ -6,7 +6,6 @@ import android.location.Location;
 import android.util.Log;
 
 import com.edeqa.helpers.interfaces.Runnable2;
-import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;

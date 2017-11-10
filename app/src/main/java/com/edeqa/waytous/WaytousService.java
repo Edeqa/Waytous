@@ -24,6 +24,7 @@ public class WaytousService extends Service {
         state.setService(this);
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
         id = startId;

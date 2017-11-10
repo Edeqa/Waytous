@@ -20,6 +20,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
  * Created 12/30/16.
  */
 
+@SuppressWarnings("unused")
 public class NetworkStateChangeReceiver extends BroadcastReceiver {
 
     private Tracking tracking;
@@ -32,6 +33,7 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
     public NetworkStateChangeReceiver(Tracking tracking) {
         this.tracking = tracking;
         ConnectivityManager connectivity = (ConnectivityManager) State.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivity != null;
         NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
 
         if(networkInfo != null) {
@@ -49,10 +51,12 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
 
             Bundle extras = intent.getExtras();
 
-            NetworkInfo info = extras.getParcelable("networkInfo");
+            assert extras != null;
+            NetworkInfo info = extras.getParcelable("networkInfo"); //NON-NLS
 
+            assert info != null;
             if (info.getState() == NetworkInfo.State.CONNECTED) {
-                if(!connected) {
+//                if(!connected) {
                     /*switch (tracking.getStatus()) {
                         case TRACKING_RECONNECTING:
                                 System.out.println("RECONNECT");
@@ -71,18 +75,18 @@ public class NetworkStateChangeReceiver extends BroadcastReceiver {
                             State.getInstance().fire(TRACKING_ERROR);
                             break;
                     }*/
-                }
+//                }
                 connected = true;
             } else {
                 if(connected) {
                     switch (tracking.getStatus()) {
                         case TRACKING_ACTIVE:
-                            Utils.log(this, "onReceive:", "TRACKING_ACTIVE");
+                            Utils.log(this, "onReceive:", "TRACKING_ACTIVE"); //NON-NLS
                             tracking.setStatus(TRACKING_RECONNECTING);
                             State.getInstance().fire(TRACKING_RECONNECTING);
                             break;
                         case TRACKING_CONNECTING:
-                            Utils.log(this, "onReceive:", "TRACKING_CONNECTING");
+                            Utils.log(this, "onReceive:", "TRACKING_CONNECTING"); //NON-NLS
                             tracking.setStatus(TRACKING_ERROR);
                             State.getInstance().fire(TRACKING_ERROR);
                             break;

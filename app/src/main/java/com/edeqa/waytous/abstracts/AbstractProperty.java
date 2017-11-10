@@ -12,6 +12,7 @@ import com.edeqa.waytous.interfaces.Entity;
  * Created 11/24/16.
  */
 
+@SuppressWarnings("unchecked")
 abstract public class AbstractProperty extends AbstractEntityHolder implements Entity {
     protected Context context;
     protected MyUser myUser;

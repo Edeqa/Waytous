@@ -49,7 +49,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
@@ -74,7 +73,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_STOP;
  * Created 10/21/17.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "ConstantConditions"})
 public class UserProfileViewHolder extends AbstractViewHolder {
 
     public static final String SHOW_USER_PROFILE = "show_user_profile"; //NON-NLS
@@ -193,7 +192,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                     }
                                 });
                                 break;
-                            case R.id.sync:
+                            case R.id.synchronize:
                                 doGlobalSync();
                                 break;
                             case R.id.update_name:
@@ -229,7 +228,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
                     switchDialogLayout(DialogMode.PROFILE, null);
 
-                    final ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_profile);
+                    final ViewGroup layout = dialog.getLayout().findViewById(R.id.layout_profile);
                     if(account.getName() != null) {
                         ((TextView) layout.findViewById(R.id.tv_name)).setText(account.getName());
                         layout.findViewById(R.id.tv_name).setVisibility(View.VISIBLE);
@@ -250,7 +249,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                         dialog.getLayout().findViewById(R.id.iv_sign_provider_password_verified).setVisibility(View.GONE);
                     }
 
-                    final ImageView ivAvatar = (ImageView) layout.findViewById(R.id.iv_avatar);
+                    final ImageView ivAvatar = layout.findViewById(R.id.iv_avatar);
 
                     if(account.getPhotoUrl() != null) {
                         new Thread(new Runnable() {
@@ -284,7 +283,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 } else {
                     switchDialogLayout(DialogMode.SIGN_BUTTONS, null);
 
-                    ViewGroup layout = (ViewGroup) dialog.getLayout().findViewById(R.id.layout_sign_buttons);
+                    ViewGroup layout = dialog.getLayout().findViewById(R.id.layout_sign_buttons);
                     dialog.hideMenu();
 
                     layout.findViewById(R.id.button_sign_with_password).setOnClickListener(new OnClickListener() {
@@ -294,10 +293,11 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
                             switchDialogLayout(DialogMode.SIGN_IN_PASSWORD, null);
 
-                            final TextInputLayout etEmail = (TextInputLayout) dialog.getLayout().findViewById(R.id.et_email);
-                            final TextInputLayout etPassword = (TextInputLayout) dialog.getLayout().findViewById(R.id.et_password);
-                            final TextInputLayout etConfirmPassword = (TextInputLayout) dialog.getLayout().findViewById(R.id.et_confirm_password);
+                            final TextInputLayout etEmail = dialog.getLayout().findViewById(R.id.et_email);
+                            final TextInputLayout etPassword = dialog.getLayout().findViewById(R.id.et_password);
+                            final TextInputLayout etConfirmPassword = dialog.getLayout().findViewById(R.id.et_confirm_password);
 
+                            @SuppressWarnings("ConstantConditions")
                             class Listeners {
                                 OnClickListener onClickListenerSignIn = new OnClickListener() {
                                     @Override
@@ -313,6 +313,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                         } else {
                                             switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_password));
                                             signer.setMode(Account.SignProvider.PASSWORD);
+                                            //noinspection serial
                                             signer.setCallbackElement(new HashMap<String, String>() {{
                                                 put(Signer.LOGIN, etEmail.getEditText().getText().toString());
                                                 put(Signer.PASSWORD, etPassword.getEditText().getText().toString());
@@ -531,10 +532,6 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         });
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
     public void setAccount(Account account) {
         this.account = account;
     }
@@ -588,7 +585,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                     break;
                 case FACEBOOK:
                     facebookCallbackManager = CallbackManager.Factory.create();
-                    facebookLoginButton.setReadPermissions("email", "public_profile");
+                    facebookLoginButton.setReadPermissions("email", "public_profile"); //NON-NLS
                     facebookLoginButton.registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
                         @Override
                         public void onSuccess(LoginResult loginResult) {
@@ -718,6 +715,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             } else if(element instanceof LoginButton) {
                 facebookLoginButton = (LoginButton) element;
             } else if(element instanceof HashMap) {
+                //noinspection unchecked
                 credentials = (HashMap<String,String>) element;
             }
         }
@@ -752,11 +750,9 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 if(account != null) {
                     State.getInstance().saveUid(account.getUid());
                     State.getInstance().saveSignProvider(account.getSignProvider().toString());
-                    System.out.println("MODE:"+account.getSignProvider()+":"+account.getUid());
                 } else {
                     State.getInstance().saveUid(null);
                     State.getInstance().saveSignProvider(null);
-                    System.out.println("ANONYMOUS MODE:"+FirebaseInstanceId.getInstance().getToken());
                 }
 
                 if(link != null) {
@@ -769,17 +765,17 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Utils.log("onConnectionFailed:"+connectionResult.getErrorMessage());
+            Utils.log("onConnectionFailed:"+connectionResult.getErrorMessage()); //NON-NLS
         }
 
         @Override
         public void onConnected(@Nullable Bundle bundle) {
-            Utils.log("onConnected:"+bundle);
+            Utils.log("onConnected:"+bundle); //NON-NLS
         }
 
         @Override
         public void onConnectionSuspended(int i) {
-            Utils.log("onConnectionSuspended:"+i);
+            Utils.log("onConnectionSuspended:"+i); //NON-NLS
 
         }
 

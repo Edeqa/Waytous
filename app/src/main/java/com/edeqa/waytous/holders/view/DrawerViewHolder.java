@@ -40,6 +40,7 @@ import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 /**
  * Created 11/27/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.DrawerView> {
 
     public static final String TYPE = DrawerViewHolder.class.getSimpleName();

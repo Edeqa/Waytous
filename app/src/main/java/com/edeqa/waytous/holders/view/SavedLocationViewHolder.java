@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -50,8 +49,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +77,6 @@ import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
 import static com.edeqa.waytous.Firebase.KEYS;
 import static com.edeqa.waytous.Firebase.SYNCED;
-import static com.edeqa.waytous.Firebase.TIMESTAMP;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
@@ -93,7 +89,6 @@ import static com.edeqa.waytous.helpers.Events.MARKER_CLICK;
 import static com.edeqa.waytous.helpers.Events.PREPARE_DRAWER;
 import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 import static com.edeqa.waytous.helpers.Events.SYNC_PROFILE;
-import static junit.framework.Assert.assertTrue;
 
 
 /**
@@ -183,7 +178,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                 final AlertDialog dialog = new AlertDialog.Builder(context).create();
                 dialog.setTitle(context.getString(R.string.add_location));
-                dialog.setMessage(context.getString(R.string.you_have_got_the_location_from_s, State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName(), finalName == null ? "" : finalName, finalAddress == null ? "" : ", address: " + finalAddress, finalDescription == null ? "" : ", description: " + finalDescription));
+                dialog.setMessage(context.getString(R.string.you_have_got_the_location_from_s, State.getInstance().getUsers().getUsers().get(number).getProperties().getDisplayName(), finalName == null ? "" : finalName, finalAddress == null ? context.getString(R.string.address_unknown) : finalAddress, finalDescription == null ? context.getString(R.string.not_described) : finalDescription));
 
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
@@ -199,6 +194,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         loc.setKey(finalKey);
                         loc.setSynced(new Date().getTime());
                         loc.save(context);
+                        State.getInstance().fire(SYNC_PROFILE);
 
                         reloadCursor();
                         //noinspection unchecked
@@ -223,6 +219,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         loc.setDeleted(true);
                         loc.setSynced(new Date().getTime());
                         loc.save(context);
+                        State.getInstance().fire(SYNC_PROFILE);
                     }
                 });
                 dialog.show();
@@ -257,7 +254,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 break;
             case PREPARE_DRAWER:
                 adder = (DrawerViewHolder.ItemsHolder) object;
-                SavedLocation.getDb().removeRestriction("search");
+                SavedLocation.getDb().removeRestriction("search"); //NON-NLS
                 int count = SavedLocation.getCount();
                 adder.findItem(R.string.locations).setVisible(count > 0);
                 break;
@@ -334,17 +331,17 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 break;
             case DELETE_SAVED_LOCATION:
                 if(object != null){
-                    int position = -1;
                     SavedLocation saved;
                     if(object instanceof SavedLocation) {
                         saved = (SavedLocation) object;
                     } else {
-                        position = (int) object;
+                        int position = (int) object;
                         saved = SavedLocation.getItemByPosition(position);
                         if(adapter != null) adapter.notifyItemRemoved(position);
                     }
                     saved.setSynced(new Date().getTime());
                     saved.delete(context);
+                    State.getInstance().fire(SYNC_PROFILE);
                     State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new Runnable2<Integer, MyUser>() {
                         @Override
                         public void call(Integer number, MyUser myUser) {
@@ -376,7 +373,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
                                 @Override
                                 public void call(String key, Object newLocation, Object oldLocation) {
-                                    Utils.log("LOCALVALUE:" + key, newLocation,  oldLocation);
                                     if(newLocation instanceof Map) {
                                         if (((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
                                             SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
@@ -384,7 +380,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                                 loc.save(context);
                                             }
                                         } else {
-                                            SavedLocation loc = SavedLocation.getItemByFieldValue("key", (String) ((Map) newLocation).get(KEYS));
+                                            SavedLocation loc = SavedLocation.getItemByFieldValue(SavedLocation.KEY, (String) ((Map) newLocation).get(KEYS));
                                             if(loc != null) {
                                                 loc.delete(context);
                                             }
@@ -395,7 +391,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             .setOnSaveRemoteValue(new Runnable3<String, Object, Object>() {
                                 @Override
                                 public void call(String key, Object newLocation, Object oldLocation) {
-                                    Utils.log("REMOTEVALUE:" + key,  newLocation,  oldLocation);
                                     if(newLocation instanceof Map && ((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
                                         SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
                                         loc.save(context);
@@ -417,14 +412,12 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     if(sync.ready()) {
                         Map<String,Object> fake;
 
-                        Cursor cursor = SavedLocation.getDb().getAll();
+                        Cursor cursor = SavedLocation.getDb().getAllWithDeleted();
                         cursor.moveToFirst();
                         while (!cursor.isAfterLast()) {
                             fake = new HashMap<>();
                             SavedLocation location = SavedLocation.getItemByCursor(cursor);
                             if(location != null) {
-                                Utils.log("LOCATION:", location);
-
                                 fake.put(KEYS, location.getKey());
                                 if(location.getTimestamp() > 0) fake.put(Firebase.TIMESTAMP, location.getTimestamp());
                                 if(location.getSynced() > 0) fake.put(SYNCED, location.getSynced());
@@ -437,7 +430,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                 if(location.getNumber() != 0) fake.put(SavedLocation.NUMBER, location.getNumber());
 
                                 values.add(fake);
-                                Utils.log("FAKE:", fake);
                                 cursor.moveToNext();
                             }
                         }
@@ -575,9 +567,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
     private void setFilterAndReload(String filter) {
         if(filter != null && filter.length() > 0) {
-            SavedLocation.getDb().addRestriction("search","title_ LIKE ? OR username_ LIKE ? OR address_ LIKE ?", new String[]{"%"+filter+"%", "%"+filter+"%", "%"+filter+"%"});
+            SavedLocation.getDb().addRestriction(SavedLocation.SEARCH,"title_ LIKE ? OR username_ LIKE ? OR address_ LIKE ?", new String[]{"%"+filter+"%", "%"+filter+"%", "%"+filter+"%"}); //NON-NLS
         } else {
-            SavedLocation.getDb().removeRestriction("search");
+            SavedLocation.getDb().removeRestriction(SavedLocation.SEARCH);
         }
         reloadCursor();
     }
@@ -592,7 +584,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
 
-        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_saved_location, null);
+        @SuppressLint("InflateParams") final View content = context.getLayoutInflater().inflate(R.layout.dialog_saved_location, null); //NON-NLS
 
         final EditText etTitle = content.findViewById(R.id.et_saved_location_title);
         final EditText etComment = content.findViewById(R.id.et_saved_location_comment);
@@ -625,6 +617,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 }
                 savedLocation.setSynced(new Date().getTime());
                 savedLocation.save(context);
+                State.getInstance().fire(SYNC_PROFILE);
                 reloadCursor();
 
             }
@@ -657,8 +650,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
         @Override
         public List<String> events() {
-            List<String> list = new ArrayList<>();
-            return list;
+            return new ArrayList<>();
         }
 
         SavedLocationView(MyUser myUser){
@@ -882,6 +874,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         loc.setTimestamp(new Date().getTime());
                         loc.setUsername(myUser.getProperties().getDisplayName());
                         loc.save(context);
+                        State.getInstance().fire(SYNC_PROFILE);
 
                         //noinspection unchecked
                         new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Runnable1() {

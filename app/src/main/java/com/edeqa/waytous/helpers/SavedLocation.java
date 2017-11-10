@@ -43,7 +43,7 @@ import static com.edeqa.waytous.Firebase.SYNCED;
  * Created 12/4/16.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "HardCodedStringLiteral"})
 public class SavedLocation extends AbstractSavedItem {
 
     public static final String LOCATION = "location";
@@ -194,28 +194,29 @@ public class SavedLocation extends AbstractSavedItem {
 
     public void delete(Context context) {
         setAddress(null);
-        setUsername(null);
         setBitmap(null);
-        setTitle(null);
-        setLongitude(0);
-        setLatitude(0);
         setDeleted(true);
+        setLatitude(0);
+        setLongitude(0);
+        setProvider(null);
+        setTitle(null);
+        setUsername(null);
         save(context);
     }
 
     public static SavedLocation newLocation(Context context, Map map) {
         SavedLocation location = new SavedLocation(context);
 
-        if(map.containsKey(Firebase.KEYS)) try { location.setKey((String) map.get(Firebase.KEYS)); } catch (Exception e) {}
-        if(map.containsKey(USER_LATITUDE)) try { location.setLatitude((Double) map.get(USER_LATITUDE)); } catch (Exception e) {}
-        if(map.containsKey(USER_LONGITUDE)) try { location.setLongitude((Double) map.get(USER_LONGITUDE)); } catch (Exception e) {}
-        if(map.containsKey(Firebase.SYNCED)) try { location.setSynced((Long) map.get(Firebase.SYNCED)); } catch (Exception e) {}
-        if(map.containsKey(USER_PROVIDER)) try { location.setProvider((String) map.get(USER_PROVIDER)); } catch (Exception e) {}
-        if(map.containsKey(DESCRIPTION)) try { location.setTitle((String) map.get(DESCRIPTION)); } catch (Exception e) {}
-        if(map.containsKey(ADDRESS)) try { location.setAddress((String) map.get(ADDRESS)); } catch (Exception e) {}
-        if(map.containsKey(USERNAME)) try { location.setUsername((String) map.get(USERNAME)); } catch (Exception e) {}
-        if(map.containsKey(NUMBER)) try { location.setNumber((Long) map.get(NUMBER)); } catch (Exception e) {}
-        if(map.containsKey(DELETED)) try { location.setDeleted((Boolean) map.get(DELETED)); } catch (Exception e) {}
+        if(map.containsKey(Firebase.KEYS)) try { location.setKey((String) map.get(Firebase.KEYS)); } catch (Exception ignored) {}
+        if(map.containsKey(USER_LATITUDE)) try { location.setLatitude((Double) map.get(USER_LATITUDE)); } catch (Exception ignored) {}
+        if(map.containsKey(USER_LONGITUDE)) try { location.setLongitude((Double) map.get(USER_LONGITUDE)); } catch (Exception ignored) {}
+        if(map.containsKey(Firebase.SYNCED)) try { location.setSynced((Long) map.get(Firebase.SYNCED)); } catch (Exception ignored) {}
+        if(map.containsKey(USER_PROVIDER)) try { location.setProvider((String) map.get(USER_PROVIDER)); } catch (Exception ignored) {}
+        if(map.containsKey(DESCRIPTION)) try { location.setTitle((String) map.get(DESCRIPTION)); } catch (Exception ignored) {}
+        if(map.containsKey(ADDRESS)) try { location.setAddress((String) map.get(ADDRESS)); } catch (Exception ignored) {}
+        if(map.containsKey(USERNAME)) try { location.setUsername((String) map.get(USERNAME)); } catch (Exception ignored) {}
+        if(map.containsKey(NUMBER)) try { location.setNumber((Long) map.get(NUMBER)); } catch (Exception ignored) {}
+        if(map.containsKey(DELETED)) try { location.setDeleted((Boolean) map.get(DELETED)); } catch (Exception ignored) {}
 
         return location;
     }

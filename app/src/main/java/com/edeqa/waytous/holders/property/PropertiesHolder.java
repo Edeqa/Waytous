@@ -30,7 +30,6 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_COLOR;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
-import static com.edeqa.waytous.helpers.Events.MAKE_DISABLED;
 import static com.edeqa.waytous.helpers.Events.MAKE_ENABLED;
 import static com.edeqa.waytous.helpers.Events.MAKE_INACTIVE;
 import static com.edeqa.waytous.helpers.Events.MOVING_AWAY_FROM;
@@ -180,6 +179,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
         return new Properties(myUser);
     }
 
+    @SuppressWarnings("unused")
     public class Properties extends AbstractProperty {
         private HashMap<String, Serializable> external = new HashMap<>();
 

@@ -1,5 +1,6 @@
 package com.edeqa.waytous.holders.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.GpsSatellite;
@@ -35,7 +36,7 @@ import static com.edeqa.waytous.helpers.Events.PREPARE_OPTIONS_MENU;
 /**
  * Created 01/13/17.
  */
-@SuppressWarnings({"deprecation", "WeakerAccess"})
+@SuppressWarnings({"deprecation", "WeakerAccess", "unused"})
 public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatus.Listener {
 
     public static final String SHOW_NMEA_STATUS = "show_nmea_status"; //NON-NLS
@@ -93,6 +94,8 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
+    @SuppressLint("MissingPermission")
     @Override
     public boolean onEvent(String event, Object object) {
         switch (event) {
@@ -157,7 +160,7 @@ public class NmeaStatusViewHolder extends AbstractViewHolder implements GpsStatu
 
     @Override
     public void onGpsStatusChanged(int event) {
-        GpsStatus mStatus = ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).getGpsStatus(null);
+        @SuppressWarnings("ConstantConditions") @SuppressLint("MissingPermission") GpsStatus mStatus = ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).getGpsStatus(null); //NON-NLS
         switch (event) {
             case GpsStatus.GPS_EVENT_STARTED:
 //                info = "gps started";

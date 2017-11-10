@@ -33,7 +33,7 @@ import static com.edeqa.waytous.helpers.SmoothInterpolated.TIME_ELAPSED;
  * Created 11/24/16.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackView> {
     private static final String TYPE = "track"; //NON-NLS
 

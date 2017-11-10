@@ -16,6 +16,7 @@ import static com.edeqa.waytous.helpers.SettingItem.PAGE;
  * Created 8/7/2017.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class PreferenceDividerDecoration extends RecyclerView.ItemDecoration {
 
     private final Paint mPaint;

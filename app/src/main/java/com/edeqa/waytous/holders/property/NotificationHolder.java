@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 
@@ -83,15 +84,17 @@ public class NotificationHolder extends AbstractPropertyHolder {
         PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
         PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WaytousService.class).putExtra("mode", "stop"),0);
 
-        notification = new NotificationCompat.Builder(state)
-                .setVisibility(Notification.VISIBILITY_SECRET)
-                .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.drawable.ic_notification_twinks)
-//                .setAutoCancel(true)
-//                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
-                .addAction(R.drawable.ic_notification_clear, state.getString(R.string.stop), pendingStopIntent)
-                .setContentIntent(pendingIntent)
-                .setPriority(Notification.PRIORITY_HIGH);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notification = new NotificationCompat.Builder(state)
+                    .setVisibility(Notification.VISIBILITY_SECRET)
+                    .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
+                    .setSmallIcon(R.drawable.ic_notification_twinks)
+    //                .setAutoCancel(true)
+    //                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
+                    .addAction(R.drawable.ic_notification_clear, state.getString(R.string.stop), pendingStopIntent)
+                    .setContentIntent(pendingIntent)
+                    .setPriority(Notification.PRIORITY_HIGH);
+        }
 
         state.setNotification(notification.build());
 
@@ -145,6 +148,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
                         update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW, null);
                     }
                 } else {
+                    assert user != null;
                     update(state.getString(R.string.user_s_is_online, user.getProperties().getDisplayName()), DEFAULT_LIGHTS, PRIORITY_LOW, null);
                 }
                 break;
@@ -171,11 +175,13 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 if(notification != null){
                     if(MainActivity.isVisible()) notification.priority = Notification.PRIORITY_LOW;
                     NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+                    assert notificationManager != null;
                     notificationManager.notify(1977, notification);
                 }
                 break;
             case HIDE_CUSTOM_NOTIFICATION:
                 NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+                assert notificationManager != null;
                 notificationManager.cancel(1977);
                 break;
             case CREATE_SETTINGS:
@@ -243,6 +249,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         notification.setVibrate(new long[]{0L, 0L});
 
         NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
         notificationManager.notify(1976, notification.build());
 
         notificationClearHandler.removeCallbacks(notificationClearRunnable);
@@ -252,6 +259,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
     private void updateIcon(int resource) {
         notification.setSmallIcon(resource);
         NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
         notificationManager.notify(1976, notification.build());
     }
 
@@ -267,6 +275,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             }
             NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
 //            notificationManager.notify(1976, notification.build());
+            assert notificationManager != null;
             notificationManager.cancel(1976);
         }
     };
@@ -325,6 +334,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String,String> getNotificationSounds() {
         Map items = new LinkedHashMap();
         RingtoneManager manager = new RingtoneManager(State.getInstance());

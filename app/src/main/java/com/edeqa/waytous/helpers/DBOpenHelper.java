@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 @SuppressWarnings("WeakerAccess")
 public class DBOpenHelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "database";
+    private static final String DB_NAME = "database"; //NON-NLS
 
     private static DBOpenHelper instance;
 

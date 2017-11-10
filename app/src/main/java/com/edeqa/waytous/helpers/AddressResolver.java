@@ -16,6 +16,7 @@ import java.util.Date;
  * Created 8/22/17.
  */
 
+@SuppressWarnings("unused")
 public class AddressResolver {
 
     private final Context context;

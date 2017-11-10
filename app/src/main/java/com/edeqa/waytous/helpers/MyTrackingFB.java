@@ -102,8 +102,10 @@ import static org.apache.http.conn.ssl.SSLSocketFactory.TLS;
 
 public class MyTrackingFB implements Tracking {
 
+    @SuppressWarnings("unused")
     private static final String LOG = "MyTrackingFB"; //NON-NLS
 
+    @SuppressWarnings("unused")
     private final static int CONNECTION_TIMEOUT = 5;
     private final static int RECONNECTION_DELAY = 5;
 
@@ -119,7 +121,6 @@ public class MyTrackingFB implements Tracking {
 
     private String status = TRACKING_DISABLED;
     private String token;
-    private String uid;
 
     private boolean newTracking;
     private ScheduledFuture<?> scheduled;
@@ -396,7 +397,7 @@ public class MyTrackingFB implements Tracking {
                 if(data.containsKey(RESPONSE_PRIVATE)) {
                     String to = String.valueOf(data.get(RESPONSE_PRIVATE));
                     data.remove(RESPONSE_PRIVATE);
-                    data.put("from", state.getMe().getProperties().getNumber());
+                    data.put("from", state.getMe().getProperties().getNumber()); //NON-NLS
                     path = Firebase.PRIVATE + "/" + type + "/" + to;
                 } else {
                     path = Firebase.PUBLIC + "/" + type + "/" + state.getMe().getProperties().getNumber();
@@ -421,6 +422,7 @@ public class MyTrackingFB implements Tracking {
                 if(getOnSendFailure() != null) getOnSendFailure().call(new Throwable("Error sending: " + o)); //NON-NLS
             }
         } catch (JSONException e) {
+            //noinspection ConstantConditions
             Utils.err("Invalid JSON: " + (o != null ? o.toString() : "null")); //NON-NLS
             e.printStackTrace();
         }
@@ -510,6 +512,7 @@ public class MyTrackingFB implements Tracking {
         return "http://" + serverUri.getHost() + (OPTIONS.getHttpPortMasked() == 80 ? "" : ":" + OPTIONS.getHttpPortMasked()) + "/track/" + getToken(); //NON-NLS
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private DatabaseReference registerChildListener(DatabaseReference ref, ChildEventListener listener, int limit) {
         if(limit >=0) {
             if(limit > 1000) limit = 1000;
@@ -594,7 +597,7 @@ public class MyTrackingFB implements Tracking {
             put(REQUEST_SIGN_PROVIDER, state.fetchSignProvider());
             put(REQUEST_MODEL, Build.MODEL);
             put(REQUEST_MANUFACTURER, Build.MANUFACTURER);
-            put(REQUEST_OS, "android");
+            put(REQUEST_OS, "android"); //NON-NLS
 
             if(state.getMe().getProperties().getName() != null && state.getMe().getProperties().getName().length()>0){
                 put(USER_NAME,state.getMe().getProperties().getName());
@@ -742,8 +745,7 @@ public class MyTrackingFB implements Tracking {
                                    WebSocketFrame clientCloseFrame, boolean closedByServer) {
             Utils.log("MyTrackingFB","onDisconnected:websocket:"+websocket+", closeByServer=" + closedByServer+", isNewTracking="+newTracking); //NON-NLS
 
-            if (closedByServer) {
-            } else if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
+            if(!closedByServer && serverCloseFrame == null && clientCloseFrame != null) {
                 if(newTracking) {
                     trackingListener.onStop();
                 } else {
@@ -876,8 +878,8 @@ public class MyTrackingFB implements Tracking {
                 //noinspection unchecked
                 JSONObject o = new JSONObject((Map<String, String>) dataSnapshot.getValue());
 
-                int from = Integer.parseInt(o.getString("from"));
-                o.remove("from");
+                int from = Integer.parseInt(o.getString("from")); //NON-NLS
+                o.remove("from"); //NON-NLS
                 o.put(RESPONSE_NUMBER, from);
                 o.put(RESPONSE_STATUS, dataSnapshot.getRef().getParent().getParent().getKey());
                 o.put(REQUEST_KEY, dataSnapshot.getKey());
@@ -945,8 +947,6 @@ public class MyTrackingFB implements Tracking {
                     @Override
                     public void call(Integer number, MyUser myUser) {
                         if (myUser.getProperties().isActive() != active) {
-                            System.out.println("DATES:"+myUser.getProperties().getNumber()+":"+(new Date().getTime() - myUser.getProperties().getChanged()));
-
                             try {
                                 JSONObject o = new JSONObject();
                                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);
@@ -973,11 +973,10 @@ public class MyTrackingFB implements Tracking {
     private ValueEventListener usersDataChangedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            Utils.log(this, "usersDataChangedListener:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
-
+            Utils.log(this, "usersDataChangedListener:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue()); //NON-NLS
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
-                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                if(dataSnapshot.getValue() != null) {
                     final long changed = (long) dataSnapshot.getValue();
                     state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
                         @Override

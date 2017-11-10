@@ -25,12 +25,14 @@ import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
 import java.util.Date;
 
 import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 /**
  * Created 12/9/16.
  */
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class UserMessage extends AbstractSavedItem {
 
     public static final int TYPE_MESSAGE = 0;
@@ -39,7 +41,7 @@ public class UserMessage extends AbstractSavedItem {
     public static final int TYPE_USER_JOINED = 3;
     public static final int TYPE_USER_DISMISSED = 4;
     static final long serialVersionUID = -6395904747332820028L;
-    private static final String MESSAGE = "message";
+    private static final String MESSAGE = "message"; //NON-NLS
 
     private String key;
     private String from;
@@ -155,6 +157,7 @@ public class UserMessage extends AbstractSavedItem {
         this.delivery = delivery;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public String toString() {
         return "{ timestamp: " + new Date(timestamp).toString()
                 + ", number: " + getNumber()
@@ -191,6 +194,7 @@ public class UserMessage extends AbstractSavedItem {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //noinspection unchecked
                     onItemClickListener.call(view);
                 }
             });
@@ -232,12 +236,14 @@ public class UserMessage extends AbstractSavedItem {
                             parent.getChildAt(i).findViewById(R.id.layout_message_buttons).setVisibility(GONE);
                         }
 
-                        switch(v){
+                        switch (v) {
                             case VISIBLE:
                                 holder.layoutMessageButtons.setVisibility(View.GONE);
                                 break;
                             case GONE:
                                 holder.layoutMessageButtons.setVisibility(View.VISIBLE);
+                                break;
+                            case INVISIBLE:
                                 break;
                         }
 //                        onItemClickListener.call(item);
@@ -246,6 +252,7 @@ public class UserMessage extends AbstractSavedItem {
                 holder.itemView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
+                        //noinspection unchecked
                         onItemTouchListener.call(motionEvent);
                         return false;
                     }
@@ -277,11 +284,11 @@ public class UserMessage extends AbstractSavedItem {
 
                 if(from != null && from.equals(State.getInstance().getMe().getProperties().getDisplayName())){
                     holder.itemView.setBackgroundColor(Color.argb(32,0,0,255));
-                    holder.ivMessageDelivered.setColorFilter("delivered".equals(item.getDelivery()) ? Color.rgb(0,150,0) : Color.LTGRAY);
+                    holder.ivMessageDelivered.setColorFilter("delivered".equals(item.getDelivery()) ? Color.rgb(0,150,0) : Color.LTGRAY); //NON-NLS
                     holder.ivMessageDelivered.setVisibility(VISIBLE);
                 } else {
                     holder.ivMessageDelivered.setVisibility(GONE);
-                    holder.itemView.setBackgroundColor(android.R.color.background_light);
+                    holder.itemView.setBackgroundColor(context.getResources().getColor(android.R.color.background_light));
                 }
 
             }catch(Exception e){e.printStackTrace();}

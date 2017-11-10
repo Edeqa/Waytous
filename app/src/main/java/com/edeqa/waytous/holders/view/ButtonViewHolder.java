@@ -143,6 +143,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private ButtonViewHolder setMenuLayout(final FlexboxLayout menuLayout) {
         this.menuLayout = menuLayout;
         handlerHideMenu = new Handler();
@@ -270,6 +271,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                 buttonView = R.layout.view_user_button;
             }
 
+            assert inflater != null;
             button = (LinearLayout) inflater.inflate(buttonView, null);
 
             int size = context.getResources().getDimensionPixelOffset(android.R.dimen.app_icon_size);
@@ -399,6 +401,7 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                         final MenuItem item = popup.getMenu().getItem(i);
                         if(!item.isVisible()) continue;
 
+                        assert inflater != null;
                         LinearLayout button = (LinearLayout) inflater.inflate(R.layout.view_user_button, null);
 
                         ((ImageView) button.findViewById(R.id.iv_button_image)).setImageDrawable(item.getIcon());

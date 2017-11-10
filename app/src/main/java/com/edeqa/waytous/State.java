@@ -45,6 +45,7 @@ import static com.edeqa.waytous.helpers.Events.MAKE_ACTIVE;
 import static com.edeqa.waytous.helpers.Events.SELECT_USER;
 import static com.edeqa.waytous.holders.property.PropertiesHolder.PREFERENCE_MY_NAME;
 
+@SuppressWarnings("unused")
 public class State extends MultiDexApplication {
 
     public static final String PREFERENCE_UID = "uid"; //NON-NLS
@@ -140,6 +141,7 @@ public class State extends MultiDexApplication {
                 e.printStackTrace();
             }
             setMe(me);
+            assert me != null;
             me.setUser(true);
             me.fire(SELECT_USER, 0);
 

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +27,7 @@ import java.io.StringWriter;
 
 public class ExceptionActivity extends AppCompatActivity {
 
-    public static final String EXCEPTION = "exception";
+    public static final String EXCEPTION = "exception"; //NON-NLS
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,7 @@ public class ExceptionActivity extends AppCompatActivity {
         final AlertDialog dialog = new AlertDialog.Builder(ExceptionActivity.this).create();
         dialog.setTitle(getString(R.string.app_information));
 
-        @SuppressLint("InflateParams") View content = getLayoutInflater().inflate(R.layout.activity_exception, null);
+        @SuppressLint("InflateParams") View content = getLayoutInflater().inflate(R.layout.activity_exception, null); //NON-NLS
 
         Throwable exception = (Throwable) getIntent().getSerializableExtra(EXCEPTION);
 
@@ -50,7 +51,7 @@ public class ExceptionActivity extends AppCompatActivity {
         CharSequence boldCauseName = createSpanned(causeName, new StyleSpan(Typeface.BOLD));
         CharSequence crashTemplate = getText(R.string.caught_an_exception_s);
         CharSequence crashMessage = TextUtils.replace(crashTemplate,
-                new String[] { "%1$s", "%2$s" },
+                new String[] { "%1$s", "%2$s" }, //NON-NLS
                 new CharSequence[] { boldExName, boldCauseName });
         text.setText(crashMessage);
 
@@ -63,7 +64,7 @@ public class ExceptionActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         etExceptionTrace.setMaxHeight((int) (metrics.heightPixels/1.5));
 
-        etExceptionTrace.setText("In version "+ BuildConfig.VERSION_NAME +"." + BuildConfig.VERSION_CODE +"\n" + textException.toString());
+        etExceptionTrace.setText(getString(R.string.in_version_s_d, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, textException.toString()));
         etExceptionTrace.setMovementMethod(new ScrollingMovementMethod());
 
         etExceptionTrace.setRawInputType(InputType.TYPE_CLASS_TEXT);
@@ -77,39 +78,20 @@ public class ExceptionActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        Intent intent = null;
-                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue")
+                        Intent intent;
+                        //noinspection HardCodedStringLiteral
+                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue") //NON-NLS
                                 .buildUpon()
                                 .appendQueryParameter("project", "WTU")
                                 .appendQueryParameter("summary", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
-//                                    .appendQueryParameter("description", getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE))
                                 .appendQueryParameter("description", textException.toString())
                                 .build());
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        }
                         startActivity(intent);
 
-/*
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setData(Uri.parse("mailto:"));
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.email)});
-                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
-                        intent.putExtra(Intent.EXTRA_TEXT, textException.toString());
-*/
-
-/*
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setData(Uri.parse("mailto:"));
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.email)});
-                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.uncaught_exception_in_waytous, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
-                        intent.putExtra(Intent.EXTRA_TEXT, textException.toString());
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-
-                        startActivity(Intent.createChooser(intent, getString(R.string.send_report_about_an_error)));
-*/
                     }
                 }).start();
                 finish();

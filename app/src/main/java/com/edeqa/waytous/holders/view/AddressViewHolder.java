@@ -23,7 +23,7 @@ import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 /**
  * Created 11/18/16.
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("unused")
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
 
     private static final String TYPE = "address"; //NON-NLS
@@ -133,6 +133,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             return true;
         }
 
+        @SuppressWarnings("WeakerAccess")
         public void resolveAddress(final Location location) {
             if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                 callback.call(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 /**
  * Created 11/18/16.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 abstract public class AbstractViewHolder<T extends AbstractView> extends AbstractPropertyHolder {
 
     protected transient MainActivity context;

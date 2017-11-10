@@ -381,6 +381,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private DistanceMark fetchDistanceMark(MyUser user1, MyUser user2) {
         for(DistanceMark entry: marks) {
             if(user1 == entry.firstUser && user2 == entry.secondUser) return entry;

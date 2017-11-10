@@ -26,9 +26,9 @@ public class NotificationService extends FirebaseMessagingService {
         Map<String, String> data = remoteMessage.getData();
         if(State.getInstance().tracking_disabled()) return;
 
-        if(data != null && data.containsKey("data")) {
+        if(data != null && data.containsKey("data")) { //NON-NLS
             try {
-                final JSONObject json = new JSONObject(data.get("data"));
+                final JSONObject json = new JSONObject(data.get("data")); //NON-NLS
                 if(json.has(RESPONSE_TOKEN)) {
                     String token = json.getString(RESPONSE_TOKEN);
                     if (!token.equals(State.getInstance().getTracking().getToken())) {

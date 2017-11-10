@@ -14,6 +14,7 @@ import static com.edeqa.waytous.helpers.Account.SignProvider.TWITTER;
  * Created 10/21/17.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Account implements Serializable{
 
     private static final long serialVersionUID = 8336921607194270112L;
@@ -47,6 +48,7 @@ public class Account implements Serializable{
         this.signProvider = signProvider;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public void setSignProvider(String signProvider) {
         if(signProvider != null) {
             switch(signProvider) {
@@ -118,6 +120,7 @@ public class Account implements Serializable{
         this.emailVerified = emailVerified;
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public enum SignProvider {
         GOOGLE("google.com"), FACEBOOK("facebook.com"), TWITTER("twitter.com"), NONE("anonymous"), PASSWORD("password");
         private String id;

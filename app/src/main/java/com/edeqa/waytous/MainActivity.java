@@ -32,9 +32,6 @@ import com.edeqa.waytous.holders.view.SettingsViewHolder;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
 import com.edeqa.waytous.holders.view.TrackingViewHolder;
 import com.edeqa.waytous.holders.view.UserProfileViewHolder;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -82,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public final static String ACTIVITY_RESULT_DATA = "data";  //NON-NLS
 
     private GoogleMap map;
-    private SupportMapFragment mapFragment;
     private State state;
     private static boolean isVisible = false;
 
@@ -100,14 +96,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         state = State.getInstance();
 
-        if(OPTIONS.isDebugMode()){
+//        if(OPTIONS.isDebugMode()){
 //            getSharedPreferences("intro", MODE_PRIVATE).edit().clear().commit();
 //            state.setPreference("intro",false);
-        }
+//        }
 
         Utils.log(this,"BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE + ", flavor=" + BuildConfig.FLAVOR); //NON-NLS
 
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         state.registerEntityHolder(new FabViewHolder(this));
@@ -262,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public boolean checkPermissions(final int requestCode, String[] permissionsForCheck) {
+    public void checkPermissions(final int requestCode, String[] permissionsForCheck) {
         final ArrayList<String> permissions = new ArrayList<>();
         int[] grants = new int[permissionsForCheck.length];
         for (int i = 0; i < permissionsForCheck.length; i++) {
@@ -284,10 +280,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             requestCode);
                 }
             }).show();
-            return false;
         } else {
             onRequestPermissionsResult(requestCode, permissionsForCheck, grants);
-            return true;
         }
     }
 

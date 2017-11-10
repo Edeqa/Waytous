@@ -32,14 +32,13 @@ public class GpsHolder extends AbstractPropertyHolder {
 
     public static final String REQUEST_LOCATION_SINGLE = "request_location_single"; //NON-NLS
 
-    private final LocationGooglePlayServicesProvider provider;
     private final SmartLocation.LocationControl smartLocation;
 
     private long lastGps = 0;
 
     public GpsHolder(Context context) {
         super(context);
-        provider = new LocationGooglePlayServicesProvider();
+        LocationGooglePlayServicesProvider provider = new LocationGooglePlayServicesProvider();
         provider.setCheckLocationSettings(true);
 
         LocationParams.Builder params = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(3).setInterval(1000);

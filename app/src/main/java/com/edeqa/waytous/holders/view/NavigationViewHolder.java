@@ -15,7 +15,6 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 
 import com.edeqa.eventbus.EventBus;
-import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.MainActivity;
@@ -37,18 +36,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
-import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.ui.IconGenerator;
-
-import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import static android.R.id.list;
 import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
 import static com.edeqa.waytous.helpers.Events.CREATE_OPTIONS_MENU;
@@ -64,7 +57,7 @@ import static com.edeqa.waytous.holders.view.SettingsViewHolder.PREPARE_SETTINGS
  * Created 12/29/16.
  */
 
-@SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
+@SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess", "unused"})
 public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolder.NavigationView> implements Serializable {
 
     static final long serialVersionUID = -6395904747332820058L;
@@ -236,6 +229,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         return true;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private NavigationViewHolder setButtonsView(View buttonsView) {
         this.buttonsView = buttonsView;
 
@@ -391,6 +385,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                         case POINTS_BEFORE:
                             break;
                         case POINTS_AFTER:
+                            //noinspection unchecked
                             points = (List<LatLng>) object;
                             track.setPoints(points);
                             trackCenter.setPoints(points);

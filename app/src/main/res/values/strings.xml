@@ -208,7 +208,7 @@
     <string name="you_want_to_minimize_waytous">You want to minimize Waytous. Note that the service will be active in background until you stop it. Continue minimizing?</string>
     <string name="cannot_join_server_is_too_old">Cannot join, server is too old.</string>
     <string name="shows_accuracy_circle_around_the_marker_on_map">Shows accuracy circle around the marker on map.</string>
-    <string name="you_have_got_the_location_from_s" formatted="false">You\'ve got the location from %s: %s%s%s. Add it to your saved locations list?</string>
+    <string name="you_have_got_the_location_from_s" formatted="false">You\'ve got the location from %s: %s, %s; %s. Add it to your saved locations list?</string>
     <string name="i_have_read_and_agree_with_terms_of_service">I\'ve read and agree with terms of service</string>
     <string name="create_group">Create group</string>
     <string name="join_group">Join group</string>
@@ -249,5 +249,8 @@
     <string name="back">Back</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
+    <string name="not_described">not described</string>
+    <string name="address_unknown">address unknown</string>
+    <string name="in_version_s_d">In version %s.%d %s</string>
 
 </resources>

@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.util.List;
 
@@ -53,6 +52,7 @@ import static com.edeqa.waytous.Constants.USER_SPEED;
  * Created 10/8/16.
  */
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Utils {
 
 
@@ -66,45 +66,6 @@ public class Utils {
 //    public static String getEncryptedHash_old(String str) {
 //        return getEncryptedHash(str, 5);
 //    }
-
-    @SuppressWarnings("WeakerAccess")
-    @Nullable
-    public static String getEncryptedHash_old(String str, int type) {
-        String sType;
-        switch (type) {
-            case 1:
-                sType = "SHA-1";
-                break;
-            case 5:
-                sType = "MD5";
-                break;
-            case 256:
-                sType = "SHA-256";
-                break;
-            case 384:
-                sType = "SHA-384";
-                break;
-            case 512:
-                sType = "SHA-512";
-                break;
-            default:
-                sType = "SHA-512";
-        }
-
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance(sType);
-            messageDigest.update(str.getBytes("UTF-8"));
-            byte[] bytes = messageDigest.digest();
-            StringBuilder buffer = new StringBuilder();
-            for (byte b : bytes) {
-                buffer.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
-            }
-            return buffer.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     @SuppressWarnings("WeakerAccess")
     public static float[] getColorMatrix(int color) {
@@ -315,56 +276,69 @@ public class Utils {
                 width = displaymetrics.widthPixels;
             }
             if(height == MATCH_SCREEN) {
-                height = displaymetrics.heightPixels;
+                int result = 0;
+                try {
+                    int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android"); //NON-NLS
+                    if (resourceId > 0) {
+                        result = activity.getResources().getDimensionPixelSize(resourceId);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                height = displaymetrics.heightPixels - result;
             }
         }
+        //noinspection ConstantConditions
         dialog.getWindow().setLayout(width, height);
     }
 
-    public static int adaptedSize(Context context,int size) {
+    @SuppressWarnings("SameParameterValue")
+    public static int adaptedSize(Context context, int size) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, context.getResources().getDisplayMetrics());
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public static void log(Object... text) {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         String tag = "Utils";
         int count = 0;
         for (Object aText : text) {
             if(aText == null) {
-                str += "null ";
+                str.append("null ");
             } else if(aText instanceof Serializable) {
-                str += aText.toString() + " ";
+                str.append(aText.toString()).append(" ");
             } else if((count++) == 0) {
 //                str += aText.getClass().getSimpleName() + ": ";
                 tag = aText.getClass().getSimpleName();
             } else {
-                str += aText.toString() + " ";
+                str.append(aText.toString()).append(" ");
             }
         }
-        Log.i(tag, str);
+        Log.i(tag, str.toString());
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     public static void err(Object... text) {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         String tag = "Utils";
         Throwable e = null;
         int count = 0;
         for (Object aText : text) {
             if(aText == null) {
-                str += "null ";
+                str.append("null ");
             } else if (aText instanceof Throwable) {
-                str += aText + " ";
+                str.append(aText).append(" ");
                 e = (Throwable) aText;
             } else if(aText instanceof Serializable) {
-                str += aText.toString() + " ";
+                str.append(aText.toString()).append(" ");
             } else if((count++) == 0) {
                 tag = aText.getClass().getSimpleName();
 //                str += aText.getClass().getSimpleName() + ": ";
             } else {
-                str += aText.toString() + " ";
+                str.append(aText.toString()).append(" ");
             }
         }
-        Log.e(tag, str);
+        Log.e(tag, str.toString());
         if(e != null) e.printStackTrace();
     }
 
@@ -383,7 +357,7 @@ public class Utils {
             InputStream in = new java.net.URL(url).openStream();
             mIcon11 = BitmapFactory.decodeStream(in);
         } catch (Exception e) {
-            Log.e("Error", e.getMessage());
+            Log.e("Error", e.getMessage()); //NON-NLS
             e.printStackTrace();
         }
         return mIcon11;

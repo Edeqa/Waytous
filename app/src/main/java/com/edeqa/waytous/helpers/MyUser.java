@@ -138,6 +138,7 @@ public class MyUser {
     private void createProperties(){
         Iterator<String> iter = State.getInstance().getUserPropertyHolders().keySet().iterator();
 
+        //noinspection WhileLoopReplaceableByForEach
         while(iter.hasNext()) {
             String type = iter.next();
             if(properties.containsKey(type)) continue;
@@ -161,6 +162,7 @@ public class MyUser {
                     Log.v(TYPE,"createViews:"+getProperties().getNumber()+":"+getProperties().getDisplayName());
 
                     Iterator<Map.Entry<String, AbstractViewHolder>> iterator = State.getInstance().getUserViewHolders().entrySet().iterator();
+                    //noinspection WhileLoopReplaceableByForEach
                     while(iterator.hasNext()) {
                         Map.Entry<String, AbstractViewHolder> entry = iterator.next();
                         String type = entry.getKey();

@@ -16,7 +16,7 @@ public class NotificationIDService extends FirebaseInstanceIdService {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-        Utils.log(this, "onTokenRefresh:", refreshedToken);
+        Utils.log(this, "onTokenRefresh:", refreshedToken); //NON-NLS
 
         State.getInstance().setPreference(REQUEST_UID, refreshedToken);
     }

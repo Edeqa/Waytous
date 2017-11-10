@@ -11,7 +11,7 @@ import com.edeqa.waytous.helpers.MyUser;
 /**
  * Created 11/30/16.
  */
-@SuppressWarnings("HardCodedStringLiteral")
+@SuppressWarnings({"HardCodedStringLiteral", "unused"})
 public class LoggerHolder extends AbstractPropertyHolder {
     private static final String TYPE = "LoggerHolder";
 

@@ -17,6 +17,7 @@ import com.edeqa.helpers.interfaces.Runnable1;
  * Created 11/26/16.
  */
 
+@SuppressWarnings({"HardCodedStringLiteral", "unused"})
 public class LightSensorManager implements SensorEventListener {
 
     public static final String DAY = "day";
@@ -37,6 +38,7 @@ public class LightSensorManager implements SensorEventListener {
 
     public LightSensorManager(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         lowPassFilter = new LowPassFilter(SMOOTHING);
     }

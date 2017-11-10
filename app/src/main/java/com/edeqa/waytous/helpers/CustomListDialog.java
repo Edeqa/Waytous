@@ -9,7 +9,7 @@ import com.edeqa.waytous.R;
  * Created 10/21/2017.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class CustomListDialog extends CustomDialog {
 
     private RecyclerView list;

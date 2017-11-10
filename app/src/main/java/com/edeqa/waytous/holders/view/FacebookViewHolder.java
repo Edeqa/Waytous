@@ -42,7 +42,6 @@ import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
 public class FacebookViewHolder extends AbstractViewHolder {
 
     private CallbackManager callbackManager;
-    private LinearLayout fab;
     private String welcomeMessage;
     private AlertDialog shareDialog;
 

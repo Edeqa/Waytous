@@ -3,6 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.content.Context;
 import android.content.Intent;
 
+import com.edeqa.helpers.Mime;
 import com.edeqa.waytous.R;
 
 
@@ -19,7 +20,7 @@ public class ShareSender {
         this.context = context;
 
         share = new Intent(Intent.ACTION_SEND);
-        share.setType("text/plain");
+        share.setType(Mime.TEXT_PLAIN);
         share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
     }

@@ -68,6 +68,7 @@ import static com.edeqa.waytous.helpers.Events.TRACKING_RECONNECTING;
  * Created 10/8/16.
  */
 
+@SuppressWarnings("ALL")
 public class MyTracking implements Tracking {
 
     private final static int CONNECTION_TIMEOUT = 5;
@@ -91,7 +92,6 @@ public class MyTracking implements Tracking {
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
             super.onConnected(websocket, headers);
             if(TRACKING_DISABLED.equals(getStatus())) return;
-            Log.i("MyTracking","onConnected");
             if(newTracking) {
                 put(REQUEST, REQUEST_NEW_GROUP);
             } else {

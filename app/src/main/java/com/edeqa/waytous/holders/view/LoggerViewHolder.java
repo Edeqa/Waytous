@@ -12,7 +12,7 @@ import com.edeqa.waytous.helpers.MyUser;
 /**
  * Created 11/30/16.
  */
-@SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess"})
+@SuppressWarnings({"HardCodedStringLiteral", "WeakerAccess", "unused"})
 public class LoggerViewHolder extends AbstractViewHolder<LoggerViewHolder.LoggerView> {
     private static final String TYPE = "LoggerViewHolder";
 

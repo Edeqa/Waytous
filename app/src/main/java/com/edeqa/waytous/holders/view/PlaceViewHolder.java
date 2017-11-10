@@ -108,6 +108,7 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
         Object m = State.getInstance().getPropertiesHolder().loadFor(getType());
         if(m != null) {
+            //noinspection unchecked
             places = (ArrayList<Map<String,Serializable>>) m;
             if(places != null) {
                 for (Map<String, Serializable> x : places) {

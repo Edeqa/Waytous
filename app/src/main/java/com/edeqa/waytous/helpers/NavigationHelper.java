@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
  * Created 9/17/17.
  */
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
 public class NavigationHelper implements Serializable {
 
     private static final long serialVersionUID = -6978147387428739440L;
@@ -450,6 +450,7 @@ public class NavigationHelper implements Serializable {
         return apiKey;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public NavigationHelper setApiKey(String apiKey) {
         this.apiKey = apiKey;
         return this;
@@ -485,6 +486,7 @@ public class NavigationHelper implements Serializable {
         return activeRoute;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public NavigationHelper setActiveRoute(int activeRoute) {
         this.activeRoute = activeRoute;
         return this;

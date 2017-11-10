@@ -49,7 +49,7 @@ import static com.edeqa.waytous.interfaces.Tracking.TRACKING_URI;
 /**
  * Created 11/20/16.
  */
-@SuppressWarnings({"deprecation", "WeakerAccess", "HardCodedStringLiteral"})
+@SuppressWarnings({"deprecation", "WeakerAccess", "HardCodedStringLiteral", "unused", "UnusedReturnValue"})
 public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.CameraView> {
 
     public static final String TYPE = CameraViewHolder.class.getSimpleName();
@@ -537,6 +537,7 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                     orientationChanged = true;
                     onChangeLocation(myUser.getLocation());
                     if(orientation == CAMERA_ORIENTATION_PERSPECTIVE && State.getInstance().getUsers().getCountSelectedTotal() == 1) {
+                        //noinspection ConstantConditions
                         mapFragment.getView().postDelayed(new Runnable() {
                             @Override
                             public void run() {

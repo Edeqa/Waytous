@@ -230,7 +230,6 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             final float finalRotation = location.getBearing();
 
             final double[] circleValues = new double[3];
-            final double finalRadius;
             if(circle != null) {
                 circleValues[0] = circle.getRadius(); // startradius
                 circleValues[1] = location.getAccuracy(); //finalradius

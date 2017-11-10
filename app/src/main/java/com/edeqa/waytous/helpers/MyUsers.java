@@ -27,6 +27,7 @@ import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
  * Created 10/23/16.
  */
 
+@SuppressWarnings({"WeakerAccess", "ForLoopReplaceableByForEach", "unused"})
 public class MyUsers {
     private Map<Integer,MyUser> users;
     private int myNumber = 0;
@@ -36,6 +37,7 @@ public class MyUsers {
         users = new ConcurrentHashMap<>();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public MyUser setMe() {
         if(users.containsKey(myNumber)){
             users.remove(myNumber);
@@ -74,6 +76,7 @@ public class MyUsers {
             if (myNumber != 0) {
                 forUser(0, callback);
             }
+            //noinspection ForLoopReplaceableByForEach
             for (Iterator<Map.Entry<Integer, MyUser>> iterator = users.entrySet().iterator(); iterator.hasNext(); ) {
                 Map.Entry<Integer, MyUser> entry = iterator.next();
                 if (entry.getKey() == myNumber || entry.getKey() == 0) continue;

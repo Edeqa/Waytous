@@ -25,7 +25,7 @@ import java.util.Set;
  * Created 7/28/17.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class SettingItem<T> {
 
     public static final int GROUP = 0;
@@ -219,6 +219,7 @@ public class SettingItem<T> {
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static class Checkbox extends SettingItem<Boolean> {
         private boolean checked;
 
@@ -336,7 +337,8 @@ public class SettingItem<T> {
 
                 }
             }
-            if(callback != null) callback.call(this);
+            if(callback != null) //noinspection unchecked
+                callback.call(this);
             return this;
 
         }

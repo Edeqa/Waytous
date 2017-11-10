@@ -19,15 +19,16 @@ import com.edeqa.helpers.interfaces.Runnable1;
 /**
  * Created 8/10/2017.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> extends RecyclerView.Adapter implements LoaderManager.LoaderCallbacks<Cursor> {
 
     protected final Context context;
-    private final LinearLayoutManager layoutManager;
-    private final RecyclerView list;
-    protected Cursor cursor;
     protected Runnable1<T> onItemClickListener;
     protected Runnable1<T> onItemTouchListener;
-    protected Runnable1<Cursor> onCursorReloadListener;
+
+    private final RecyclerView list;
+    private Cursor cursor;
+    private Runnable1<Cursor> onCursorReloadListener;
     private View emptyView;
 
 
@@ -42,7 +43,7 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
         list.setItemAnimator(itemAnimator);
 
-        layoutManager = new LinearLayoutManager(context);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
 
         list.setLayoutManager(layoutManager);
 
@@ -56,8 +57,7 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
 
     @Override
     public int getItemCount() {
-        int count = cursor != null ? cursor.getCount() : 0;
-        return count;
+        return cursor != null ? cursor.getCount() : 0;
     }
 
     public Cursor getItem(final int position) {
@@ -134,7 +134,8 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
                 }
                 if (direction == ItemTouchHelper.RIGHT && dX > 0) {
                     itemView.setAlpha(1 - dX / (itemView.getWidth() / 2));
-                } else if (direction == ItemTouchHelper.LEFT && dX < 0) {
+                } else //noinspection StatementWithEmptyBody
+                    if (direction == ItemTouchHelper.LEFT && dX < 0) {
 //                        itemView.setAlpha(1+dX / (itemView.getWidth()));
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
