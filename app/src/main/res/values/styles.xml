@@ -36,7 +36,6 @@
         <item name="android:layout_gravity">right</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:clickable">true</item>
-        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="FabButtonStyle">
@@ -46,9 +45,8 @@
         <item name="android:tint">@color/material_color_white</item>
         <item name="rippleColor">@color/colorPrimaryDark</item>
         <item name="backgroundTint">@color/colorPrimary</item>
-        <item name="android:paddingBottom">8dp</item>
-
-
+        <item name="android:layout_marginTop">@dimen/material_baseline_grid_1x</item>
+        <item name="android:layout_marginBottom">@dimen/material_baseline_grid_1x</item>
     </style>
 
     <style name="FabTextStyle">
@@ -61,10 +59,7 @@
         <item name="android:padding">5dip</item>
         <item name="android:textColor">@color/material_color_white</item>
         <item name="android:typeface">normal</item>
-        <item name="android:paddingBottom">16dp</item>
-
     </style>
-
 
     <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="windowActionBar">false</item>

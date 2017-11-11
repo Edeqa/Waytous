@@ -28,12 +28,13 @@
         android:ellipsize="marquee"
         android:fontFamily="sans-serif-condensed"
         android:gravity="left|center_horizontal"
-        android:maxLines="1"
+        android:singleLine="true"
         android:maxWidth="@android:dimen/app_icon_size"
         android:textAllCaps="false"
         android:textColor="?attr/buttonTextColor"
         android:textSize="10sp"
         android:typeface="sans"
+        android:textAlignment="center"
         tools:ignore="SmallSp"
         tools:text="Username Long Long Name"/>
 

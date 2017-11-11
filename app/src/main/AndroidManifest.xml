@@ -54,7 +54,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:launchMode="singleInstance"
             android:theme="@style/DayTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -565,24 +565,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         }
 
         void sign() {
-           switch (mode) {
-                case PASSWORD:
-                    signReady(new Runnable() {
-                        @Override
-                        public void run() {
-                            FirebaseAuth.getInstance().signInWithEmailAndPassword(credentials.get(Signer.LOGIN), credentials.get(Signer.PASSWORD)).addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        onSuccessListener.run();
-                                    } else {
-                                        onFailureListener.call(task.getException());
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    break;
+            switch (mode) {
                 case FACEBOOK:
                     facebookCallbackManager = CallbackManager.Factory.create();
                     facebookLoginButton.setReadPermissions("email", "public_profile"); //NON-NLS
@@ -616,6 +599,23 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
                     break;
                 case NONE:
+                    break;
+                case PASSWORD:
+                    signReady(new Runnable() {
+                        @Override
+                        public void run() {
+                            FirebaseAuth.getInstance().signInWithEmailAndPassword(credentials.get(Signer.LOGIN), credentials.get(Signer.PASSWORD)).addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        onSuccessListener.run();
+                                    } else {
+                                        onFailureListener.call(task.getException());
+                                    }
+                                }
+                            });
+                        }
+                    });
                     break;
                 case TWITTER:
                     twitterLoginButton.setCallback(new Callback<TwitterSession>() {
@@ -677,8 +677,6 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
         void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (mode) {
-                case PASSWORD:
-                    break;
                 case FACEBOOK:
                     if(facebookCallbackManager != null) {
                         facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
@@ -699,6 +697,8 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                     }
                     break;
                 case NONE:
+                    break;
+                case PASSWORD:
                     break;
                 case TWITTER:
                     if(twitterLoginButton != null) {
