@@ -43,7 +43,6 @@ public class UserMessage extends AbstractSavedItem {
     static final long serialVersionUID = -6395904747332820028L;
     private static final String MESSAGE = "message"; //NON-NLS
 
-    private String key;
     private String from;
     private String to;
     private String body;
@@ -165,16 +164,8 @@ public class UserMessage extends AbstractSavedItem {
                 + (from != null ? ", from: "+from : "")
                 + (to != null ? ", to: "+to : "")
                 + (body != null ? ", body: ["+body + "]" : "")
-                + (key != null ? ", key: ["+key + "]" : "")
+                + (getKey() != null ? ", key: ["+getKey() + "]" : "")
                 + " }";
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {

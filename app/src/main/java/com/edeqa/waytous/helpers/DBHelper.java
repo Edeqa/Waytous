@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 
 import java.io.Serializable;
@@ -75,7 +76,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     public Cursor getAllWithDeleted() {
-        String selection = "";
+        String selection = null;
         return getWithTerms(selection);
     }
 
@@ -180,7 +181,6 @@ public class DBHelper<T extends AbstractSavedItem> {
                 e.printStackTrace();
             }
         }
-
         if(!mDB.isOpen()){
             mDB = mDBHelper.getWritableDatabase();
         }
@@ -212,7 +212,7 @@ public class DBHelper<T extends AbstractSavedItem> {
     @SuppressWarnings("WeakerAccess")
     public T load(Cursor cursor) {
         T item = null;
-        if(cursor.getCount() < 1) return null;
+        if(cursor.isAfterLast()) return null;
         try {
             //noinspection unchecked
             item = (T) fields.classType.getConstructor(Context.class).newInstance(context);

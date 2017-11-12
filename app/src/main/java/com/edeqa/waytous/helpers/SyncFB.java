@@ -649,7 +649,6 @@ public class SyncFB implements Sync {
                     };
 
                     for(Map.Entry<String,Object> x : updates.entrySet()) {
-
                         SyncFB sync = new SyncFB().setType(getType()).setChild(getKey()).setKey(x.getKey());
                         sync._ref = getRef(getKey());
 

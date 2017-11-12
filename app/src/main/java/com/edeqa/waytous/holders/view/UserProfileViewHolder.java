@@ -493,7 +493,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 account.setName(currentUser.getDisplayName());
                 account.setEmail(currentUser.getEmail());
                 if(currentUser.getProviders() != null && currentUser.getProviders().size() > 0) {
-                    account.setSignProvider(currentUser.getProviders().get(0));
+                    account.setSignProvider(SignProvider.parse(currentUser.getProviders().get(0)));
                 }
                 account.setPhotoUrl(currentUser.getPhotoUrl());
                 account.setUid(currentUser.getUid());

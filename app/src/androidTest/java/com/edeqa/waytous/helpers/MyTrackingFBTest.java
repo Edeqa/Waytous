@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.waytous.SignProvider;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 
@@ -87,6 +88,7 @@ public class MyTrackingFBTest {
         link = "http://" + OPTIONS.getServerHost() + Utils.getWrappedHttpPort() + "/track/" + TOKEN;
 
         String deviceId = "test:"+ Misc.getUnique();
+        State.getInstance().setSignProvider(SignProvider.ADMIN.toString());
         State.getInstance().setUid(deviceId);
         State.getInstance().getMe().getProperties().setName("Test " + Math.round(Math.round(Math.random()*100)));
 

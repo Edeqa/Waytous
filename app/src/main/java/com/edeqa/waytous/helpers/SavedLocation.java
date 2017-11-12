@@ -12,12 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
@@ -27,9 +29,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.edeqa.waytous.Constants.USER_LATITUDE;
@@ -37,6 +41,7 @@ import static com.edeqa.waytous.Constants.USER_LONGITUDE;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Firebase.KEYS;
 import static com.edeqa.waytous.Firebase.SYNCED;
+import static com.edeqa.waytous.Firebase.TIMESTAMP;
 
 
 /**
@@ -52,16 +57,15 @@ public class SavedLocation extends AbstractSavedItem {
     public static final String ADDRESS = "a";
     public static final String USERNAME = "n";
     public static final String NUMBER = "number";
+
     static final long serialVersionUID =-6395904747332820022L;
 
-    private String key;
     private double latitude;
     private double longitude;
     private String title;
     private String username;
     private String provider;
     private long timestamp;
-    private long synced;
     private String address;
     private BitmapDataObject bitmap;
 
@@ -183,7 +187,6 @@ public class SavedLocation extends AbstractSavedItem {
                                 }
                             })
                             .resolve();
-
                 }
                 if(listItem.getBitmap() == null && (listItem.getLatitude() != 0.0 || listItem.getLongitude() != 0.0)) {
                     new Thread(new LoadBitmap(context, listItem, null)).start();
@@ -204,19 +207,38 @@ public class SavedLocation extends AbstractSavedItem {
         save(context);
     }
 
+    public Map<String,Object> fetchMap() {
+        Map<String,Object> map = new HashMap<>();
+
+        if(getAddress() != null) map.put(ADDRESS, getAddress());
+        if(getTitle() != null) map.put(DESCRIPTION, getTitle());
+        if(isDeleted()) map.put(DELETED, true);
+        if(getKey() != null) map.put(KEYS, getKey());
+        if(getNumber() != 0) map.put(NUMBER, getNumber());
+        if(getSynced() > 0) map.put(SYNCED, getSynced());
+        if(getTimestamp() > 0) map.put(TIMESTAMP, getTimestamp());
+        if(getLatitude() != 0D) map.put(USER_LATITUDE, getLatitude());
+        if(getLongitude() != 0D) map.put(USER_LONGITUDE, getLongitude());
+        if(getProvider() != null) map.put(USER_PROVIDER, getProvider());
+        if(getUsername() != null) map.put(USERNAME, getUsername());
+
+        return map;
+    }
+
     public static SavedLocation newLocation(Context context, Map map) {
         SavedLocation location = new SavedLocation(context);
 
-        if(map.containsKey(Firebase.KEYS)) try { location.setKey((String) map.get(Firebase.KEYS)); } catch (Exception ignored) {}
+        if(map.containsKey(ADDRESS)) try { location.setAddress((String) map.get(ADDRESS)); } catch (Exception ignored) {}
+        if(map.containsKey(DELETED)) try { location.setDeleted((Boolean) map.get(DELETED)); } catch (Exception ignored) {}
+        if(map.containsKey(DESCRIPTION)) try { location.setTitle((String) map.get(DESCRIPTION)); } catch (Exception ignored) {}
+        if(map.containsKey(KEYS)) try { location.setKey((String) map.get(KEYS)); } catch (Exception ignored) {}
+        if(map.containsKey(NUMBER)) try { location.setNumber((Long) map.get(NUMBER)); } catch (Exception ignored) {}
+        if(map.containsKey(SYNCED)) try { location.setSynced((Long) map.get(SYNCED)); } catch (Exception ignored) {}
+        if(map.containsKey(TIMESTAMP)) try { location.setTimestamp((Long) map.get(TIMESTAMP)); } catch (Exception ignored) {}
         if(map.containsKey(USER_LATITUDE)) try { location.setLatitude((Double) map.get(USER_LATITUDE)); } catch (Exception ignored) {}
         if(map.containsKey(USER_LONGITUDE)) try { location.setLongitude((Double) map.get(USER_LONGITUDE)); } catch (Exception ignored) {}
-        if(map.containsKey(Firebase.SYNCED)) try { location.setSynced((Long) map.get(Firebase.SYNCED)); } catch (Exception ignored) {}
         if(map.containsKey(USER_PROVIDER)) try { location.setProvider((String) map.get(USER_PROVIDER)); } catch (Exception ignored) {}
-        if(map.containsKey(DESCRIPTION)) try { location.setTitle((String) map.get(DESCRIPTION)); } catch (Exception ignored) {}
-        if(map.containsKey(ADDRESS)) try { location.setAddress((String) map.get(ADDRESS)); } catch (Exception ignored) {}
         if(map.containsKey(USERNAME)) try { location.setUsername((String) map.get(USERNAME)); } catch (Exception ignored) {}
-        if(map.containsKey(NUMBER)) try { location.setNumber((Long) map.get(NUMBER)); } catch (Exception ignored) {}
-        if(map.containsKey(DELETED)) try { location.setDeleted((Boolean) map.get(DELETED)); } catch (Exception ignored) {}
 
         return location;
     }
@@ -225,8 +247,9 @@ public class SavedLocation extends AbstractSavedItem {
     public String toString() {
         return "{ timestamp: " + new Date(timestamp).toString()
                 + ", number: "+getNumber()
-                + (key != null ? ", key: "+key : "")
-                + (synced != 0 ? ", synced: "+new Date(synced).toString() : "")
+                + (getKey() != null ? ", key: "+getKey() : "")
+                + (isDeleted() ? ", deleted: "+true : "")
+                + (getSynced() != 0 ? ", synced: "+new Date(getSynced()).toString() : "")
                 + (username != null ? ", username: "+username : "")
                 + (title != null ? ", title: "+title : "")
                 + (latitude != 0 ? ", latitude: "+latitude : "")
@@ -236,28 +259,12 @@ public class SavedLocation extends AbstractSavedItem {
                 + " }";
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     public String getProvider() {
         return provider;
     }
 
     public void setProvider(String provider) {
         this.provider = provider;
-    }
-
-    public long getSynced() {
-        return synced;
-    }
-
-    public void setSynced(long synced) {
-        this.synced = synced;
     }
 
     static public class SavedLocationsAdapter extends AbstractSavedItemsAdapter {
@@ -341,7 +348,6 @@ public class SavedLocation extends AbstractSavedItem {
                                     });
                                 }
                             })).start();
-
                             item.save(context);
                         }
                     }
@@ -442,6 +448,7 @@ public class SavedLocation extends AbstractSavedItem {
             this.savedLocation = savedLocation;
             this.callback = callback;
         }
+
         @Override
         public void run() {
             String URL = "http://maps.google.com/maps/api/staticmap?center=" +savedLocation.getLatitude() + "," + savedLocation.getLongitude() + "&zoom=15&size=200x200&sensor=false" +
@@ -454,7 +461,6 @@ public class SavedLocation extends AbstractSavedItem {
 
                 final Bitmap bmp = BitmapFactory.decodeStream(in);
                 in.close();
-
                 savedLocation.setBitmap(new BitmapDataObject(bmp));
                 savedLocation.save(context);
 
@@ -462,7 +468,6 @@ public class SavedLocation extends AbstractSavedItem {
                     callback.call(bmp);
                 }
             } catch (IllegalStateException | IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

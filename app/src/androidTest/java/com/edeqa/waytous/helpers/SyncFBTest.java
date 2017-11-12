@@ -7,6 +7,7 @@ import com.edeqa.helpers.interfaces.Callable2;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.helpers.interfaces.Runnable3;
 import com.edeqa.waytous.Firebase;
+import com.edeqa.waytous.SignProvider;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 import com.google.firebase.database.FirebaseDatabase;
@@ -167,8 +168,8 @@ public class SyncFBTest {
         assertEquals("p/ch", ((Map)resultValue).get(Firebase.KEYS));
         assertEquals(SyncFB.Mode.OVERRIDE_REMOTE.toString(), ((Map)resultValue).get(Firebase.MODE));
         Long value = (Long) ((Map)resultValue).get(Firebase.VALUE);
-        assertTrue(value > 1507670266313L);
-        assertTrue(value < (new Date().getTime() + 10000));
+        assertTrue(value >= 1507670266313L);
+        assertTrue(value <= (new Date().getTime() + 10000));
 
     }
 
@@ -185,7 +186,7 @@ public class SyncFBTest {
         waitObject();
 
         assertEquals("sign-provider", resultKey);
-        assertEquals("anonymous", resultValue);
+        assertEquals("admin", resultValue);
 
     }
 
@@ -508,8 +509,10 @@ public class SyncFBTest {
         // - fourth value doesn't have SYNCED-value
 
         values.get(0).put("c","c1");
+
         values.get(1).put("c","c2");
         values.get(1).put(Firebase.SYNCED, (long) values.get(1).get(Firebase.SYNCED) + 10);
+
         values.get(2).put("c","c2");
         values.get(2).put(Firebase.SYNCED, (long) values.get(1).get(Firebase.SYNCED) - 10);
 

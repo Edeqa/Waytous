@@ -359,7 +359,6 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 break;
             case SYNC_PROFILE:
                 try {
-                    final ArrayList<Map<String,Object>> values = new ArrayList<>();
                     SyncFB sync = new SyncFB()
                             .setType(Sync.Type.ACCOUNT_PRIVATE)
                             .setKey(REQUEST_SAVED_LOCATION)
@@ -378,6 +377,8 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                         if (((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
                                             SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
                                             if(loc != null) {
+                                                loc.setKey(key);
+                                                System.out.println("SAVELOCAL:"+Misc.toStringDeep(loc));
                                                 loc.save(context);
                                             }
                                         } else {
@@ -411,26 +412,14 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             });
 
                     if(sync.ready()) {
-                        Map<String,Object> fake;
-
+                        ArrayList<Map<String,Object>> values = new ArrayList<>();
                         Cursor cursor = SavedLocation.getDb().getAllWithDeleted();
+
                         cursor.moveToFirst();
                         while (!cursor.isAfterLast()) {
-                            fake = new HashMap<>();
                             SavedLocation location = SavedLocation.getItemByCursor(cursor);
                             if(location != null) {
-                                fake.put(KEYS, location.getKey());
-                                if(location.getTimestamp() > 0) fake.put(Firebase.TIMESTAMP, location.getTimestamp());
-                                if(location.getSynced() > 0) fake.put(SYNCED, location.getSynced());
-                                if(location.getProvider() != null) fake.put(USER_PROVIDER, location.getProvider());
-                                if(location.getTitle() != null) fake.put(SavedLocation.DESCRIPTION, location.getTitle());
-                                if(location.getAddress() != null) fake.put(SavedLocation.ADDRESS, location.getAddress());
-                                if(location.getLatitude() != 0D) fake.put(USER_LATITUDE, location.getLatitude());
-                                if(location.getLongitude() != 0D) fake.put(USER_LONGITUDE, location.getLongitude());
-                                if(location.getUsername() != null) fake.put(SavedLocation.USERNAME, location.getUsername());
-                                if(location.getNumber() != 0) fake.put(SavedLocation.NUMBER, location.getNumber());
-
-                                values.add(fake);
+                                values.add(location.fetchMap());
                                 cursor.moveToNext();
                             }
                         }

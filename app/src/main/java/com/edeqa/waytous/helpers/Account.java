@@ -50,30 +50,6 @@ public class Account implements Serializable{
         this.signProvider = signProvider;
     }
 
-    @SuppressWarnings("HardCodedStringLiteral")
-    public void setSignProvider(String signProvider) {
-        if(signProvider != null) {
-            switch(signProvider) {
-                case "google.com":
-                    setSignProvider(GOOGLE);
-                    break;
-                case "facebook.com":
-                    setSignProvider(FACEBOOK);
-                    break;
-                case "twitter.com":
-                    setSignProvider(TWITTER);
-                    break;
-                case "password":
-                    setSignProvider(PASSWORD);
-                    break;
-                default:
-                    setSignProvider(NONE);
-            }
-        } else {
-            setSignProvider(SignProvider.NONE);
-        }
-    }
-
     public Long getSynced() {
         return synced;
     }

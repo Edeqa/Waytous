@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.CursorLoader;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.helpers.DBHelper;
 
@@ -32,6 +33,9 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     protected transient Context context;
     transient private String itemType;
     transient private long number;
+
+    private String key;
+    private long synced;
     private boolean deleted;
 
     protected AbstractSavedItem() {
@@ -144,4 +148,21 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;// ? 1 : 0;
     }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public long getSynced() {
+        return synced;
+    }
+
+    public void setSynced(long synced) {
+        this.synced = synced;
+    }
+
 }
