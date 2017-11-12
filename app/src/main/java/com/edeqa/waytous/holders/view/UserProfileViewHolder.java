@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
+import com.edeqa.waytous.SignProvider;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
@@ -223,7 +224,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 });
 
                 final Account account = fetchAccount();
-                if (account != null && account.getSignProvider() != null && !Account.SignProvider.NONE.equals(account.getSignProvider())) {
+                if (account != null && account.getSignProvider() != null && !SignProvider.NONE.equals(account.getSignProvider())) {
                     dialog.setMenu(R.menu.dialog_user_profile_menu);
 
                     switchDialogLayout(DialogMode.PROFILE, null);
@@ -289,7 +290,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                     layout.findViewById(R.id.button_sign_with_password).setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            signer.setMode(Account.SignProvider.PASSWORD);
+                            signer.setMode(SignProvider.PASSWORD);
 
                             switchDialogLayout(DialogMode.SIGN_IN_PASSWORD, null);
 
@@ -312,7 +313,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                             etPassword.requestFocus();
                                         } else {
                                             switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_password));
-                                            signer.setMode(Account.SignProvider.PASSWORD);
+                                            signer.setMode(SignProvider.PASSWORD);
                                             //noinspection serial
                                             signer.setCallbackElement(new HashMap<String, String>() {{
                                                 put(Signer.LOGIN, etEmail.getEditText().getText().toString());
@@ -434,7 +435,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                         @Override
                         public void onClick(View v) {
                             switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_facebook));
-                            signer.setMode(Account.SignProvider.FACEBOOK);
+                            signer.setMode(SignProvider.FACEBOOK);
                             signer.setCallbackElement(dialog.getLayout().findViewById(R.id.button_sign_with_facebook_origin));
                             signer.sign();
                         }
@@ -443,7 +444,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                         @Override
                         public void onClick(View v) {
                             switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_google));
-                            signer.setMode(Account.SignProvider.GOOGLE);
+                            signer.setMode(SignProvider.GOOGLE);
                             signer.sign();
                         }
                     });
@@ -451,7 +452,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                         @Override
                         public void onClick(View v) {
                             switchDialogLayout(DialogMode.SIGNING, context.getString(R.string.signing_in_with_twitter));
-                            signer.setMode(Account.SignProvider.TWITTER);
+                            signer.setMode(SignProvider.TWITTER);
                             signer.setCallbackElement(dialog.getLayout().findViewById(R.id.button_sign_with_twitter_origin));
                             signer.sign();
                         }
@@ -469,7 +470,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 if(dialog.getMenu() != null) {
                     MenuItem menuItemVerifyEmail = dialog.getMenu().findItem(R.id.verify_email);
                     if(menuItemVerifyEmail != null) {
-                        if(account != null && Account.SignProvider.PASSWORD.equals(account.getSignProvider()) && !account.isEmailVerified()) {
+                        if(account != null && SignProvider.PASSWORD.equals(account.getSignProvider()) && !account.isEmailVerified()) {
                             menuItemVerifyEmail.setVisible(true);
                         } else {
                             menuItemVerifyEmail.setVisible(false);
@@ -542,7 +543,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         public static final String PASSWORD = "password"; //NON-NLS
 
         private AuthCredential credential;
-        private Account.SignProvider mode;
+        private SignProvider mode;
         private TwitterLoginButton twitterLoginButton;
         private CallbackManager facebookCallbackManager;
         private GoogleApiClient googleApiClient;
@@ -551,7 +552,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         private String link;
 
         Signer() {
-            mode = Account.SignProvider.NONE;
+            mode = SignProvider.NONE;
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(context.getString(R.string.default_web_client_id))
                     .requestEmail()
@@ -667,11 +668,11 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             });
         }
 
-        public Account.SignProvider getMode() {
+        public SignProvider getMode() {
             return mode;
         }
 
-        public void setMode(Account.SignProvider mode) {
+        public void setMode(SignProvider mode) {
             this.mode = mode;
         }
 
@@ -724,7 +725,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             @Override
             public void call(Throwable arg) {
                 Utils.err(arg);
-                if(Account.SignProvider.PASSWORD.equals(mode)) {
+                if(SignProvider.PASSWORD.equals(mode)) {
                     switchDialogLayout(DialogMode.SIGN_IN_PASSWORD, null);
                 } else {
                     switchDialogLayout(DialogMode.SIGN_BUTTONS, null);
@@ -918,7 +919,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
         });
     }
 
-    private void signProviderMode(final Account.SignProvider mode) {
+    private void signProviderMode(final SignProvider mode) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

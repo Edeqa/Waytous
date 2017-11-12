@@ -2,13 +2,15 @@ package com.edeqa.waytous.helpers;
 
 import android.net.Uri;
 
+import com.edeqa.waytous.SignProvider;
+
 import java.io.Serializable;
 
-import static com.edeqa.waytous.helpers.Account.SignProvider.FACEBOOK;
-import static com.edeqa.waytous.helpers.Account.SignProvider.GOOGLE;
-import static com.edeqa.waytous.helpers.Account.SignProvider.NONE;
-import static com.edeqa.waytous.helpers.Account.SignProvider.PASSWORD;
-import static com.edeqa.waytous.helpers.Account.SignProvider.TWITTER;
+import static com.edeqa.waytous.SignProvider.FACEBOOK;
+import static com.edeqa.waytous.SignProvider.GOOGLE;
+import static com.edeqa.waytous.SignProvider.NONE;
+import static com.edeqa.waytous.SignProvider.PASSWORD;
+import static com.edeqa.waytous.SignProvider.TWITTER;
 
 /**
  * Created 10/21/17.
@@ -118,18 +120,6 @@ public class Account implements Serializable{
 
     public void setEmailVerified(boolean emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    @SuppressWarnings("HardCodedStringLiteral")
-    public enum SignProvider {
-        GOOGLE("google.com"), FACEBOOK("facebook.com"), TWITTER("twitter.com"), NONE("anonymous"), PASSWORD("password");
-        private String id;
-        SignProvider(String id) {
-            this.id = id;
-        }
-        public String toString() {
-            return id;
-        }
     }
 
     @SuppressWarnings("HardCodedStringLiteral")
