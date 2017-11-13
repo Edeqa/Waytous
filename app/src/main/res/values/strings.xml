@@ -252,5 +252,6 @@
     <string name="not_described">not described</string>
     <string name="address_unknown">address unknown</string>
     <string name="in_version_s_d">In version %s.%d %s</string>
+    <string name="asset_statements" translatable="false">[{\n  \"relation\": [\"delegate_permission/common.handle_all_urls\"],\n  \"target\": {\n    \"namespace\": \"web\",\n    \"site\": \"https://waytous.net\",\n  }\n}]</string>
 
 </resources>

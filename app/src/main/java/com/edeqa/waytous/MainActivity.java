@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            state.setPreference("intro",false);
 //        }
 
-        Utils.log(this,"BUILDCONFIG: debug="+ BuildConfig.DEBUG +", build_type=" + BuildConfig.BUILD_TYPE + ", flavor=" + BuildConfig.FLAVOR); //NON-NLS
+        Utils.log(this, "BUILDCONFIG: debug=" + BuildConfig.DEBUG + ", build_type=" + BuildConfig.BUILD_TYPE + ", flavor=" + BuildConfig.FLAVOR); //NON-NLS
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new TrackingViewHolder(this));
 
         state.fire(ACTIVITY_CREATE, this);
+
     }
 
     @Override
