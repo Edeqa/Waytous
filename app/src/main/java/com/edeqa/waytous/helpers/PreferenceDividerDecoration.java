@@ -20,7 +20,7 @@ import static com.edeqa.waytous.helpers.SettingItem.PAGE;
 public class PreferenceDividerDecoration extends RecyclerView.ItemDecoration {
 
     private final Paint mPaint;
-    private int heightGroup;
+    private final int heightGroup;
     private int heightOther;
 
     public PreferenceDividerDecoration(Context context) {

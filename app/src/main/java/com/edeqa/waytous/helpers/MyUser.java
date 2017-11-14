@@ -37,9 +37,9 @@ public class MyUser {
     private final EventBus<AbstractView> viewBus;
     private final EventBus<AbstractProperty> propertyBus;
 
-    private Map<String,AbstractProperty> properties;
-    private Map<String,AbstractView> views;
-    private ArrayList<Location> locations;
+    private final Map<String,AbstractProperty> properties;
+    private final Map<String,AbstractView> views;
+    private final ArrayList<Location> locations;
     private Location location;
     private AtomicBoolean continueFiring = new AtomicBoolean();
     private long counter;

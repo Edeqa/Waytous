@@ -109,14 +109,14 @@ public class MyTrackingFB implements Tracking {
     private final static int CONNECTION_TIMEOUT = 5;
     private final static int RECONNECTION_DELAY = 5;
 
-    private Map<DatabaseReference, Object> refs;
+    private final Map<DatabaseReference, Object> refs;
 
-    private State state;
+    private final State state;
     private URI serverUri;
     private TrackingCallback trackingListener;
     private WebSocket webSocket;
     private JSONObject builder;
-    private FirebaseDatabase database;
+    private final FirebaseDatabase database;
     private DatabaseReference ref;
 
     private String status = TRACKING_DISABLED;
@@ -563,7 +563,7 @@ public class MyTrackingFB implements Tracking {
     }
 
     @SuppressWarnings("FieldCanBeLocal")
-    private WebSocketAdapter webSocketListener = new WebSocketAdapter() {
+    private final WebSocketAdapter webSocketListener = new WebSocketAdapter() {
 
         @Override
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
@@ -762,7 +762,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ValueEventListener groupListener = new ValueEventListener() {
+    private final ValueEventListener groupListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
         }
@@ -783,7 +783,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ChildEventListener usersDataListener = new ChildEventListener() {
+    private final ChildEventListener usersDataListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 //            System.out.println("usersDataListenerADDED:"+dataSnapshot.getValue().getClass()+":"+dataSnapshot.getKey()+":"+dataSnapshot.getValue()+":"+s);
@@ -836,7 +836,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ChildEventListener userPublicDataListener = new ChildEventListener() {
+    private final ChildEventListener userPublicDataListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 //            System.out.println("userDependentListenerADDED:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
@@ -870,7 +870,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ChildEventListener userPrivateDataListener = new ChildEventListener() {
+    private final ChildEventListener userPrivateDataListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 //            System.out.println("userPrivateAdded:"+dataSnapshot.getKey()+":"+dataSnapshot.getRef().getParent().getParent().getKey()+":"+dataSnapshot.getValue()+":"+s);
@@ -910,7 +910,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ValueEventListener usersDataNameListener = new ValueEventListener() {
+    private final ValueEventListener usersDataNameListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
 //            Utils.log(MyTrackingFB.this, "usersDataNameListenerChanged:", "dataSnapShot="+dataSnapshot); //NON-NLS
@@ -935,7 +935,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ValueEventListener usersDataActiveListener = new ValueEventListener() {
+    private final ValueEventListener usersDataActiveListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
 //            System.out.println("usersDataActiveListenerChanged:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());
@@ -970,7 +970,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ValueEventListener usersDataChangedListener = new ValueEventListener() {
+    private final ValueEventListener usersDataChangedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             Utils.log(this, "usersDataChangedListener:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue()); //NON-NLS
@@ -1003,7 +1003,7 @@ public class MyTrackingFB implements Tracking {
         }
     };
 
-    private ValueEventListener userActiveListener = new ValueEventListener() {
+    private final ValueEventListener userActiveListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
 //            System.out.println("usersDataActiveListenerChanged:"+dataSnapshot.getRef().getParent().getKey()+":"+dataSnapshot.getValue());

@@ -180,7 +180,7 @@ public class FabViewHolder extends AbstractViewHolder {
         return rules;
     }
 
-    private OnClickListener onInitialClickListener = new View.OnClickListener() {
+    private final OnClickListener onInitialClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             State.getInstance().setGpsAccessRequested(false);
@@ -188,7 +188,7 @@ public class FabViewHolder extends AbstractViewHolder {
         }
     };
 
-    private OnClickListener onClickListener = new OnClickListener() {
+    private final OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
             close(true);
@@ -203,7 +203,7 @@ public class FabViewHolder extends AbstractViewHolder {
         }
     };
 
-    private OnClickListener onMainClickListener = new OnClickListener() {
+    private final OnClickListener onMainClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
             if(isFabMenuOpen){

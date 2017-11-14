@@ -208,7 +208,7 @@ public class TrackingHolder extends AbstractPropertyHolder {
         return null;
     }
 
-    private TrackingCallback onTrackingListener = new TrackingCallback() {
+    private final TrackingCallback onTrackingListener = new TrackingCallback() {
 
         @Override
         public void onCreating() {

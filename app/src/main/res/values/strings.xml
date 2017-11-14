@@ -127,7 +127,6 @@
     <string name="share_the_message">Share the message</string>
     <string name="clear_all_messages">Clear all messages?</string>
     <string name="please_install_a_navigation_application">Please install a navigation application.</string>
-    <string name="address_request_template" formatted="false"><![CDATA[http://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f&zoom=18&addressdetails=1]]></string>
     <string name="logo_link">https://github.com/tujger/WhereAmINow/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true</string>
     <string name="click_here_to_follow_me_using_s">Click here to follow me using %s.</string>
     <string name="follow_me_with_s">Follow me with %s</string>
@@ -253,5 +252,12 @@
     <string name="address_unknown">address unknown</string>
     <string name="in_version_s_d">In version %s.%d %s</string>
     <string name="asset_statements" translatable="false">[{\n  \"relation\": [\"delegate_permission/common.handle_all_urls\"],\n  \"target\": {\n    \"namespace\": \"web\",\n    \"site\": \"https://waytous.net\",\n  }\n}]</string>
+    <string name="re_center">Re-center</string>
+    <string name="type_the_message_here">Type the message here</string>
+    <string name="how_would_you_like_to_share_this_link">How would you like to share this link?</string>
+    <string name="select">Select…</string>
+    <string name="verification_email_has_sent_to_your_address">Verification e-mail has sent to your address. Please follow the link in this email, otherwise your account will be deleted after 30 days of inactivity.</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
 
 </resources>

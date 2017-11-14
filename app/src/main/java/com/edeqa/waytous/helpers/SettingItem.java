@@ -271,11 +271,6 @@ public class SettingItem<T> {
             setType(GROUP);
         }
 
-        @Override
-        public void onClick(Runnable1 runnable) {
-
-        }
-
         public Group add(SettingItem item) {
             switch (item.getType()) {
                 case SettingItem.GROUP:

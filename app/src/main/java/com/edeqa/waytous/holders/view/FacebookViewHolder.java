@@ -105,7 +105,7 @@ public class FacebookViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 //            fab.close(true);

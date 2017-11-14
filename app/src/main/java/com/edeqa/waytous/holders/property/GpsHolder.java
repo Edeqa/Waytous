@@ -88,7 +88,7 @@ public class GpsHolder extends AbstractPropertyHolder {
         return null;
     }
 
-    private OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
+    private final OnLocationUpdatedListener locationUpdateListener = new OnLocationUpdatedListener() {
         @Override
         public void onLocationUpdated(Location location) {
             if(location == null) return;

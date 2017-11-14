@@ -24,7 +24,7 @@
         android:id="@+id/textView23"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="How would you like to share this link?"/>
+        android:text="@string/how_would_you_like_to_share_this_link"/>
 
     <TextView
         android:id="@+id/tvLink"
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:drawableLeftCompat="@drawable/ic_share_black_24dp"
-        android:text="Select..."/>
+        android:text="@string/select"/>
 
     <LinearLayout
         android:id="@+id/layoutShareButtons"
@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:drawableLeftCompat="@drawable/ic_mail_outline_black_24dp"
-        android:text="E-mail"/>
+        android:text="@string/email"/>
 
     <Button
         android:id="@+id/bCancel"

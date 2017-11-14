@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.edeqa.helpers.Misc;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 
 import java.io.Serializable;
@@ -407,8 +406,8 @@ public class DBHelper<T extends AbstractSavedItem> {
     }
 
     class Restriction {
-        private String selection;
-        private String[] args;
+        private final String selection;
+        private final String[] args;
 
         Restriction(String selection, String[] args) {
             this.selection = selection;

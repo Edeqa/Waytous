@@ -23,7 +23,6 @@ import com.edeqa.helpers.interfaces.Callable2;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.helpers.interfaces.Runnable3;
-import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -50,7 +49,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +74,6 @@ import static com.edeqa.waytous.Constants.USER_NUMBER;
 import static com.edeqa.waytous.Constants.USER_PROVIDER;
 import static com.edeqa.waytous.Constants.USER_SPEED;
 import static com.edeqa.waytous.Firebase.KEYS;
-import static com.edeqa.waytous.Firebase.SYNCED;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NAME;
 import static com.edeqa.waytous.helpers.Events.CHANGE_NUMBER;
 import static com.edeqa.waytous.helpers.Events.CREATE_CONTEXT_MENU;
@@ -791,7 +788,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         new ShareSender(context).send(context.getString(R.string.share_location_to), context.getString(R.string.look_at_s, user.getProperties().getDisplayName()),
 //                                "https://www.google.com/maps/@"+savedLocation.getLatitude()+","+savedLocation.getLongitude()+",14z");
-                                String.format("http://maps.google.com/maps?z=14&q=loc:%s,%s", savedLocation.getLatitude(), savedLocation.getLongitude()));
+                                String.format("http://maps.google.com/maps?z=14&q=loc:%s,%s", savedLocation.getLatitude(), savedLocation.getLongitude())); //NON-NLS
 
 //                        http://maps.google.com/maps?z=14&q=loc:38.93440628051758,-77.35896301269531
 //                                "http://maps.google.com/maps?z=14&ll=" + savedLocation.getLatitude() + "," + savedLocation.getLongitude());

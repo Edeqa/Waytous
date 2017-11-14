@@ -23,7 +23,7 @@
         android:layout_height="100dp"
         android:ems="10"
         android:gravity="top"
-        android:hint="Type the message here"
+        android:hint="@string/type_the_message_here"
         android:imeOptions="actionDone"
         android:inputType="textMultiLine"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas mollis enim nec erat sagittis cursus. Donec urna quam, semper in malesuada pharetra, placerat id turpis. Nulla facilisi. Sed pulvinar neque ac consectetur fermentum. Nulla nec orci elit. Donec pretium mauris ut metus laoreet, eget mattis odio fringilla. Nulla odio augue, tincidunt et mollis in, varius eget sapien. Donec aliquet tellus odio, non consectetur elit interdum eu. Proin rhoncus sagittis nisl, id suscipit dolor mollis at. Pellentesque bibendum varius est, vel pulvinar erat commodo et. Fusce pellentesque volutpat arcu. Duis quis lorem diam. Pellentesque enim nunc, malesuada vel convallis quis, viverra quis dolor. Ut eget nisi a enim pretium pretium vitae id ex. Vestibulum sit amet nisl vel tellus feugiat interdum id sit amet arcu. Nunc vulputate justo malesuada orci tempor mattis."/>

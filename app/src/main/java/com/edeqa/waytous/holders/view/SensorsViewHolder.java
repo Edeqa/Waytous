@@ -46,7 +46,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
 
     private GoogleMap map;
 
-    private Runnable1<String> onEnvironmentChangeListener = new Runnable1<String>() {
+    private final Runnable1<String> onEnvironmentChangeListener = new Runnable1<String>() {
         @Override
         public void call(String environment) {
             switch(environment){

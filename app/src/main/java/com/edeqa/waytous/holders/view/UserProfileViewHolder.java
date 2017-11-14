@@ -300,7 +300,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
                             @SuppressWarnings("ConstantConditions")
                             class Listeners {
-                                OnClickListener onClickListenerSignIn = new OnClickListener() {
+                                final OnClickListener onClickListenerSignIn = new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         etEmail.setErrorEnabled(false);
@@ -323,7 +323,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                         }
                                     }
                                 };
-                                OnClickListener onClickListenerSignUpTry = new OnClickListener() {
+                                final OnClickListener onClickListenerSignUpTry = new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         etEmail.setErrorEnabled(false);
@@ -365,7 +365,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                         }
                                     }
                                 };
-                                OnClickListener onClickListenerResetTry = new OnClickListener() {
+                                final OnClickListener onClickListenerResetTry = new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         etEmail.setErrorEnabled(false);
@@ -390,7 +390,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                         }
                                     }
                                 };
-                                OnClickListener onClickListenerBack = new OnClickListener() {
+                                final OnClickListener onClickListenerBack = new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         etEmail.setErrorEnabled(false);
@@ -402,7 +402,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                         dialog.getButton(BUTTON_NEGATIVE).setOnClickListener(onClickListenerSignUp);
                                     }
                                 };
-                                OnClickListener onClickListenerSignUp = new OnClickListener() {
+                                final OnClickListener onClickListenerSignUp = new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         etEmail.setErrorEnabled(false);
@@ -721,7 +721,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             }
         }
 
-        Runnable1<Throwable> onFailureListener = new Runnable1<Throwable>(){
+        final Runnable1<Throwable> onFailureListener = new Runnable1<Throwable>(){
             @Override
             public void call(Throwable arg) {
                 Utils.err(arg);
@@ -740,7 +740,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             }
         };
 
-        Runnable onSuccessListener = new Runnable(){
+        final Runnable onSuccessListener = new Runnable(){
             @Override
             public void run() {
                 if(dialog != null && dialog.isShowing()) {

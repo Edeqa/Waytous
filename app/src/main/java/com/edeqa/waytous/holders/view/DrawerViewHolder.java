@@ -49,9 +49,9 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private ImageButton ibPrimary;
-    private ItemsHolder itemsHolder;
+    private final ItemsHolder itemsHolder;
 
-    private static int[] ids = new int[]{
+    private static final int[] ids = new int[]{
             R.id.drawer_section_primary,
             R.id.drawer_section_communication,
             R.id.drawer_section_share,

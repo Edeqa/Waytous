@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return map;
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {

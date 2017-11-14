@@ -12,16 +12,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
 import com.edeqa.waytous.abstracts.AbstractSavedItemsAdapter;
@@ -29,7 +26,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
@@ -399,7 +395,7 @@ public class SavedLocation extends AbstractSavedItem {
             private final ImageButton ibImage;
             private final ImageButton ibExpand;
             private final ImageButton ibCollapse;
-            View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+            final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
                 float prevY = -1;
 
                 @Override
@@ -439,9 +435,9 @@ public class SavedLocation extends AbstractSavedItem {
     }
 
     private static class LoadBitmap implements Runnable {
-        private SavedLocation savedLocation;
-        private Context context;
-        private Runnable1<Bitmap> callback;
+        private final SavedLocation savedLocation;
+        private final Context context;
+        private final Runnable1<Bitmap> callback;
 
         LoadBitmap(Context context, SavedLocation savedLocation, Runnable1<Bitmap> callback){
             this.context = context;
@@ -451,8 +447,7 @@ public class SavedLocation extends AbstractSavedItem {
 
         @Override
         public void run() {
-            String URL = "http://maps.google.com/maps/api/staticmap?center=" +savedLocation.getLatitude() + "," + savedLocation.getLongitude() + "&zoom=15&size=200x200&sensor=false" +
-                    "&markers=color:darkgreen|"+savedLocation.getLatitude()+","+savedLocation.getLongitude();
+            String URL = String.format("https://maps.google.com/maps/api/staticmap?center=%1$s,%2$s&zoom=15&size=200x200&sensor=false&markers=color:darkgreen|%1$s,%2$s", savedLocation.getLatitude(), savedLocation.getLongitude());
 
             try {
                 URL url = new URL(URL);

@@ -26,8 +26,6 @@ import java.util.Date;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
-import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
-import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;

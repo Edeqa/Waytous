@@ -811,7 +811,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         }
     }
 
-    private Runnable1<MotionEvent> onTouchListener = new Runnable1<MotionEvent>() {
+    private final Runnable1<MotionEvent> onTouchListener = new Runnable1<MotionEvent>() {
         @Override
         public void call(MotionEvent motionEvent) {
             if(action != null) action.cancel();
@@ -838,7 +838,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         }
     };
 
-    private MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
+    private final MenuItem.OnMenuItemClickListener onMenuItemSetWelcomeMessageClickListener = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             final AlertDialog dialog = new AlertDialog.Builder(context).create();
@@ -878,7 +878,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         }
     };
 
-    private Toolbar.OnMenuItemClickListener onDialogMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
+    private final Toolbar.OnMenuItemClickListener onDialogMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()) {

@@ -58,7 +58,7 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
         return TYPE;
     }
 
-    private GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
+    private final GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(final Marker marker) {
             State.getInstance().fire(MARKER_CLICK, marker);

@@ -5,7 +5,6 @@ import android.location.Location;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.waytous.R;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
@@ -92,7 +91,7 @@ public class AddressResolver {
 //                    callback.call("...");
 
                 try {
-                    String req = context.getString(R.string.address_request_template, current.latitude, current.longitude);
+                    String req = String.format("https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f&zoom=18&addressdetails=1", current.latitude, current.longitude); //NON-NLS
                     if(user != null) {
                         Utils.log(AddressResolver.this, "User:", user.getProperties().getNumber() + "|" + user.getProperties().getDisplayName(), "Request:", req); //NON-NLS
                     } else {

@@ -6,12 +6,6 @@ import com.edeqa.waytous.SignProvider;
 
 import java.io.Serializable;
 
-import static com.edeqa.waytous.SignProvider.FACEBOOK;
-import static com.edeqa.waytous.SignProvider.GOOGLE;
-import static com.edeqa.waytous.SignProvider.NONE;
-import static com.edeqa.waytous.SignProvider.PASSWORD;
-import static com.edeqa.waytous.SignProvider.TWITTER;
-
 /**
  * Created 10/21/17.
  */

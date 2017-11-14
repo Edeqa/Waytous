@@ -202,7 +202,7 @@
                 android:paddingLeft="@dimen/material_baseline_grid_1x"
                 android:paddingStart="@dimen/material_baseline_grid_1x"
                 android:paddingTop="@dimen/material_baseline_grid_2x"
-                android:text="Verification e-mail has sent to your address. Please follow the link in this email, otherwise your account will be deleted after 30 days of inactivity."
+                android:text="@string/verification_email_has_sent_to_your_address"
                 android:textAlignment="textStart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
@@ -229,7 +229,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="E-mail"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -241,7 +241,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -253,7 +253,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Confirm password"
+                android:hint="@string/confirm_password"
                 android:inputType="textPassword"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -263,7 +263,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Forgot password?"
+            android:text="@string/forgot_password"
             android:textAppearance="@style/TextAppearance.AppCompat"/>
 
     </LinearLayout>

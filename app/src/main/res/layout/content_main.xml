@@ -185,7 +185,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:text="Re-center"
+        android:text="@string/re_center"
         android:visibility="gone"
         tools:visibility="visible"/>
 
