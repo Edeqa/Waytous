@@ -133,6 +133,7 @@ dependencies {
     api 'com.android.support:design:27.0.1'
     api 'com.android.support:multidex:1.0.2'
     api 'com.android.support:recyclerview-v7:27.0.1'
+    api 'com.android.support:support-annotations:27.0.1'
     api 'com.android.support:support-compat:27.0.1'
     api 'com.facebook.android:facebook-android-sdk:4.23.0'
     api 'com.getkeepsafe.taptargetview:taptargetview:1.10.0'
@@ -160,7 +161,6 @@ dependencies {
 
     testApi 'junit:junit:4.12'
     androidTestApi 'junit:junit:4.12'
-    androidTestApi 'com.android.support:support-annotations:27.0.1'
     androidTestApi 'com.android.support.test:runner:1.0.1'
     androidTestApi 'com.android.support.test.espresso:espresso-core:3.0.1'
 }

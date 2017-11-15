@@ -12,8 +12,8 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="C:\Users\eduardm\AndroidStudioProjects\Waytous\EventBus" vcs="Git" />
-    <mapping directory="C:\Users\eduardm\AndroidStudioProjects\Waytous\Helpers" vcs="Git" />
-    <mapping directory="C:\Users\eduardm\AndroidStudioProjects\Waytous\WaytousFramework" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/EventBus" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Helpers" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/WaytousFramework" vcs="Git" />
   </component>
 </project>
