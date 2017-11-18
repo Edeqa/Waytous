@@ -1,6 +1,5 @@
 package com.edeqa.waytous.holders.view;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +25,7 @@ import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -39,16 +39,17 @@ import static com.edeqa.waytous.holders.property.MessagesHolder.WELCOME_MESSAGE;
  * Created 12/03/16.
  */
 @SuppressWarnings("HardCodedStringLiteral")
-public class FacebookViewHolder extends AbstractViewHolder {
+public class SocialViewHolder extends AbstractViewHolder {
 
     private CallbackManager callbackManager;
     private String welcomeMessage;
     private AlertDialog shareDialog;
 
-    public FacebookViewHolder(MainActivity context) {
+    public SocialViewHolder(MainActivity context) {
         super(context);
         FacebookSdk.sdkInitialize(context.getApplicationContext());
         AppEventsLogger.activateApp(context);
+        Twitter.initialize(context);
     }
 
     @Override
@@ -75,11 +76,19 @@ public class FacebookViewHolder extends AbstractViewHolder {
                 LinearLayout layout = (LinearLayout) d.get("layout");
                 shareDialog = (AlertDialog) d.get("dialog");
 
-                @SuppressLint("InflateParams") final Button button = (Button) context.getLayoutInflater().inflate(R.layout.view_share_button, null);
+                Button button = (Button) context.getLayoutInflater().inflate(R.layout.view_share_button, null);
 
                 button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_facebook_black, 0, 0, 0);
                 button.setText(R.string.share_to_facebook);
-                button.setOnClickListener(onClickListener);
+                button.setOnClickListener(onFacebookClickListener);
+
+                layout.addView(button);
+
+                button = (Button) context.getLayoutInflater().inflate(R.layout.view_share_button, null);
+
+                button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twitter_black, 0, 0, 0);
+                button.setText(R.string.share_to_twitter);
+                button.setOnClickListener(onTwitterClickListener);
 
                 layout.addView(button);
 
@@ -105,7 +114,7 @@ public class FacebookViewHolder extends AbstractViewHolder {
         return true;
     }
 
-    private final View.OnClickListener onClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onFacebookClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 //            fab.close(true);
@@ -129,23 +138,34 @@ public class FacebookViewHolder extends AbstractViewHolder {
                 shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
                     @Override
                     public void onSuccess(Sharer.Result result) {
-                        Utils.log(FacebookViewHolder.this, "onClickListener:", "Facebook onsuccess");
+                        Utils.log(SocialViewHolder.this, "onFacebookClickListener:", "Facebook onsuccess");
                     }
 
                     @Override
                     public void onCancel() {
-                        Utils.log(FacebookViewHolder.this, "onClickListener:", "Facebook oncancel");
+                        Utils.log(SocialViewHolder.this, "onFacebookClickListener:", "Facebook oncancel");
                     }
 
                     @Override
                     public void onError(FacebookException error) {
-                        Utils.log(FacebookViewHolder.this, "onClickListener:", "Facebook onerror");
+                        Utils.log(SocialViewHolder.this, "onFacebookClickListener:", "Facebook onerror");
 
                     }
                 });
-                Utils.log(FacebookViewHolder.this, "onClickListener:", "CallbackManager="+callbackManager);
+                Utils.log(SocialViewHolder.this, "onFacebookClickListener:", "CallbackManager="+callbackManager);
                 shareDialog.show(linkContent);
             }
+        }
+    };
+
+    private final View.OnClickListener onTwitterClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            shareDialog.dismiss();
+            String tweetUrl = String.format("https://twitter.com/intent/tweet?text=%s&url=%s", context.getString(R.string.follow_me_with_s, context.getString(R.string.app_name)), State.getInstance().getTracking().getTrackingUri());
+
+            Uri uri = Uri.parse(tweetUrl);
+            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
         }
     };
 

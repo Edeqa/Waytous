@@ -49,6 +49,7 @@
     <string name="share_link">Share link</string>
     <string name="share_location">Share location</string>
     <string name="share_to_facebook">Share to Facebook</string>
+    <string name="share_to_twitter">Share to Twitter</string>
     <string name="navigate_on_maps">Navigate on maps</string>
     <string name="change_orientation">Change orientation</string>
     <string name="share">Share</string>

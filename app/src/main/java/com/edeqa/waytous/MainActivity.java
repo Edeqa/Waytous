@@ -26,7 +26,7 @@ import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.holders.view.CameraViewHolder;
 import com.edeqa.waytous.holders.view.DrawerViewHolder;
 import com.edeqa.waytous.holders.view.FabViewHolder;
-import com.edeqa.waytous.holders.view.FacebookViewHolder;
+import com.edeqa.waytous.holders.view.SocialViewHolder;
 import com.edeqa.waytous.holders.view.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.view.SettingsViewHolder;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         state.registerEntityHolder(new FabViewHolder(this));
         state.registerEntityHolder(new DrawerViewHolder(this));
         state.registerEntityHolder(new SnackbarViewHolder(this));
-        state.registerEntityHolder(new FacebookViewHolder(this));
+        state.registerEntityHolder(new SocialViewHolder(this));
         state.registerEntityHolder(new UserProfileViewHolder(this));
         state.registerEntityHolder(new SettingsViewHolder(this));
         state.registerEntityHolder(new TrackingViewHolder(this));
@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         new MapButtonsViewHolder(this);
 
         LinkedList<String> classes = new LinkedList<>();
-//        classes.add("FacebookViewHolder");
+//        classes.add("SocialViewHolder");
         classes.add("ButtonViewHolder");
         classes.add("MenuViewHolder");
         classes.add("MarkerViewHolder");
