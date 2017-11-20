@@ -16,3 +16,4 @@ test-results
 /app/sensitive.gradle
 /app/src/debug/
 /app/src/release/
+/app/release/

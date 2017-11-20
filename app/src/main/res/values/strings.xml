@@ -15,10 +15,6 @@
     <string name="report">Report</string>
     <string name="close">Close</string>
     <string name="settings">Settings</string>
-
-    <string name="facebook_app_id">1226806074062997</string>
-    <string name="fb_login_protocol_scheme">fb1226806074062997</string>
-
     <string name="save_location">Save location</string>
     <string name="locations">Locations</string>
     <string name="show_track">Show track</string>

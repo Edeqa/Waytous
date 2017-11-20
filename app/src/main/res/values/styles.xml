@@ -69,15 +69,23 @@
     </style>
 
     <style name="DayTheme" parent="AppTheme.NoActionBar">
-        <item type="attr" name="buttonLocation" tools:ignore="DuplicateDefinition">@drawable/ic_pin_drop_black_24dp</item>
+        <item name="buttonLocation">@drawable/ic_pin_drop_black_24dp</item>
+        <item name="buttonPerson">@drawable/ic_person_black_24dp</item>
+        <item name="buttonTextColor">@android:color/black</item>
+        <!--<item type="attr" name="buttonLocation" tools:ignore="DuplicateDefinition">@drawable/ic_pin_drop_black_24dp</item>
         <item type="attr" name="buttonPerson" tools:ignore="DuplicateDefinition">@drawable/ic_person_black_24dp</item>
-        <item type="attr" name="buttonTextColor" tools:ignore="DuplicateDefinition">@color/material_color_black</item>
+        <item type="attr" name="buttonTextColor" tools:ignore="DuplicateDefinition">@color/material_color_black</item>-->
     </style>
 
     <style name="NightTheme" parent="AppTheme.NoActionBar">
+        <item name="buttonLocation">@drawable/ic_pin_drop_black_24dp</item>
+        <item name="buttonPerson">@drawable/ic_person_white_24dp</item>
+        <item name="buttonTextColor">@android:color/white</item>
+<!--
         <item type="attr" name="buttonLocation" tools:ignore="DuplicateDefinition">@drawable/ic_pin_drop_black_24dp</item>
         <item type="attr" name="buttonPerson" tools:ignore="DuplicateDefinition">@drawable/ic_person_white_24dp</item>
         <item type="attr" name="buttonTextColor" tools:ignore="DuplicateDefinition">@color/material_color_white</item>
+-->
     </style>
 
     <style name="iconNavigationMarkerTextDay">
