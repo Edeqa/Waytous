@@ -356,10 +356,13 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 break;
             case SYNC_PROFILE:
                 try {
+                    String uid = State.getInstance().fetchUid();
+                    if(uid.length() > 40) uid = Misc.getEncryptedHash(uid);
+
                     SyncFB sync = new SyncFB()
                             .setType(Sync.Type.ACCOUNT_PRIVATE)
                             .setKey(REQUEST_SAVED_LOCATION)
-                            .setUid(State.getInstance().fetchUid())
+                            .setUid(uid)
                             .setReference(FirebaseDatabase.getInstance().getReference())
                             .setOnGetValue(new Callable2<Object, String, Object>() {
                                 @Override

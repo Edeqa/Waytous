@@ -646,7 +646,7 @@ public class MyTrackingFB implements Tracking {
 
                                             Utils.log(MyTrackingFB.this, "onTextMessage:", "Snapshot=" + authResult.getUser().getUid()); //NON-NLS
 
-                                            ref = database.getReference().child(getToken());
+                                            ref = database.getReference().child(Firebase.SECTION_GROUPS).child(getToken());
 
 
                                             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();

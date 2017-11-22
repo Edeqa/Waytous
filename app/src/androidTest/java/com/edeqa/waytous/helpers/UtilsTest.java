@@ -34,6 +34,7 @@ import static junit.framework.Assert.assertEquals;
  * Created 9/8/2017.
  */
 public class UtilsTest {
+
     private Location location;
     private JSONObject jsonLocation;
     private long timestamp;
@@ -193,6 +194,19 @@ public class UtilsTest {
     @Test
     public void getWrappedHttpsPort() throws Exception {
         assertEquals(":" + OPTIONS.getHttpsPort(), Utils.getWrappedHttpsPort());
+    }
+
+    @Test
+    public void restrictPrecision() throws Exception {
+
+        double valueShorter = 0.123;
+        double valueExact = 0.12345;
+        double valueLonger = 0.123456789;
+
+        assertEquals(.123, Utils.restrictPrecision(valueShorter, 5));
+        assertEquals(.12345, Utils.restrictPrecision(valueExact, 5));
+        assertEquals(.12345, Utils.restrictPrecision(valueLonger, 5));
+
     }
 
 }

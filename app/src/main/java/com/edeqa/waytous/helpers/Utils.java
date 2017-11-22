@@ -96,14 +96,20 @@ public class Utils {
     public static JSONObject locationToJson(Location location) throws JSONException {
         JSONObject json = new JSONObject();
         json.put(USER_PROVIDER,location.getProvider());
-        json.put(USER_LATITUDE,location.getLatitude());
-        json.put(USER_LONGITUDE,location.getLongitude());
-        json.put(USER_ALTITUDE,location.getAltitude());
-        json.put(USER_ACCURACY,location.getAccuracy());
-        json.put(USER_BEARING,location.getBearing());
-        json.put(USER_SPEED,location.getSpeed());
+        json.put(USER_LATITUDE,restrictPrecision(location.getLatitude(), 5));
+        json.put(USER_LONGITUDE,restrictPrecision(location.getLongitude(), 5));
+        json.put(USER_ALTITUDE,restrictPrecision(location.getAltitude(),5));
+        json.put(USER_ACCURACY,restrictPrecision(location.getAccuracy(), 1));
+        json.put(USER_BEARING,restrictPrecision(location.getBearing(),1));
+        json.put(USER_SPEED,restrictPrecision(location.getSpeed(),1));
         json.put(REQUEST_TIMESTAMP,location.getTime());
         return json;
+    }
+
+    public static double restrictPrecision(double value, int floating) {
+        long multi = (long) Math.pow(10, floating);
+        long l = (long) (value * multi);
+        return l * 1D /multi;
     }
 
     public static Drawable renderDrawable(Context context, int resource, int color){
