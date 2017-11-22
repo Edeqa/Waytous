@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_facebook_black"
             android:text="@string/sign_in_with_facebook"/>
 
         <com.facebook.login.widget.LoginButton
@@ -42,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_google_black"
             android:text="@string/sign_in_with_google"/>
 
         <Button
@@ -49,6 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_twitter_black"
             android:text="@string/sign_in_with_twitter"/>
 
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
@@ -62,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
             android:text="@string/sign_in_with_e_mail"/>
     </LinearLayout>
 

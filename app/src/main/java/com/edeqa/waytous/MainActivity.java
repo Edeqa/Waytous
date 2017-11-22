@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
 
     /**
-     * Due to onBackPressed() fires Evtnts.BACK_PRESSED this method calls super.onBackPressed() for holders purposes.
+     * Due to onBackPressed() fires Events.BACK_PRESSED this method calls super.onBackPressed() for holders purposes.
      */
     public void onBackPressedSuper() {
         super.onBackPressed();
