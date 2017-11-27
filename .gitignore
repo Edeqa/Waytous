@@ -17,3 +17,4 @@ test-results
 /app/src/debug/
 /app/src/release/
 /app/release/
+/.idea/workspace.xml
