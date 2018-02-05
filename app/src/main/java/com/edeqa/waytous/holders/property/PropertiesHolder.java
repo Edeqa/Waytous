@@ -338,6 +338,10 @@ public class PropertiesHolder extends AbstractPropertyHolder {
             return active;
         }
 
+        public void setActive(boolean active) {
+            this.active = active;
+        }
+
         public void setColor(int color) {
             this.color = color;
         }

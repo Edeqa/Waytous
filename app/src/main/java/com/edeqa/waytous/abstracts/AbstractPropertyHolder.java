@@ -12,12 +12,12 @@ import org.json.JSONObject;
 /**
  * Created 11/18/16.
  */
-abstract public class AbstractPropertyHolder extends AbstractEntityHolder<Context> implements EntityHolder<AbstractProperty> {
+abstract public class AbstractPropertyHolder extends AbstractEntityHolder implements EntityHolder<AbstractProperty> {
 
     protected Context context;
 
     protected AbstractPropertyHolder(Context context){
-        super(context);
+        super();
         this.context = context;
     }
 

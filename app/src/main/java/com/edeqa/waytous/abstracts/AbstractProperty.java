@@ -13,19 +13,23 @@ import com.edeqa.waytous.interfaces.Entity;
  */
 
 @SuppressWarnings("unchecked")
-abstract public class AbstractProperty extends AbstractEntityHolder implements Entity {
+abstract public class AbstractProperty extends AbstractEntityHolder implements Entity<Context> {
     protected Context context;
     protected MyUser myUser;
 
     protected AbstractProperty(MyUser myUser){
-        super(myUser);
+        super();
         this.myUser = myUser;
     }
 
     protected AbstractProperty(Context context, MyUser myUser){
-        super(context);
+        super();
         this.context = context;
         this.myUser = myUser;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     @Override

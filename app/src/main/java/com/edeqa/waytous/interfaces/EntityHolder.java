@@ -19,7 +19,7 @@ public interface EntityHolder<T extends Entity> {
 
     T create(MyUser myUser);
 
-    boolean onEvent(String event, Object object);
+    boolean onEvent(String event, Object object) throws Exception;
 
     void perform(JSONObject o) throws JSONException;
 

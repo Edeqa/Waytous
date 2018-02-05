@@ -1,5 +1,6 @@
 package com.edeqa.waytous.abstracts;
 
+import android.content.Context;
 import android.location.Location;
 
 import com.edeqa.waytous.MainActivity;
@@ -11,7 +12,7 @@ import com.edeqa.waytous.interfaces.Entity;
  * Created 11/24/16.
  */
 
-abstract public class AbstractView extends AbstractProperty implements Entity {
+abstract public class AbstractView extends AbstractProperty implements Entity<Context> {
     protected MainActivity context;
 
     protected AbstractView(MyUser myUser){

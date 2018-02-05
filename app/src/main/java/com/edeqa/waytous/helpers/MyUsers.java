@@ -96,6 +96,7 @@ public class MyUsers {
         users.remove(myNumber);
         myNumber = newNumber;
         users.put(myNumber, State.getInstance().getMe());
+        State.getInstance().getMe().getProperties().setNumber(myNumber);
         users.get(myNumber).fire(CHANGE_NUMBER,myNumber);
     }
 

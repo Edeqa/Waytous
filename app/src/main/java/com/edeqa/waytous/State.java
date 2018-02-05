@@ -122,6 +122,7 @@ public class State extends MultiDexApplication {
             }
         };
 
+        systemPropertyBus.setRunner(androidRunner);
         systemViewBus.setRunner(androidRunner);
 
         registerEntityHolder(new PropertiesHolder(this)); // ---> need to be first!
@@ -319,7 +320,6 @@ public class State extends MultiDexApplication {
     }
 
     public void registerEntityHolder(AbstractPropertyHolder holder) {
-
         if(holder.getType() != null) {
             if (holder instanceof AbstractViewHolder) {
                 if (holder.dependsOnEvent()) {

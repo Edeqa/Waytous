@@ -413,7 +413,7 @@ public class MyTrackingFB implements Tracking {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Utils.err(MyTrackingFB.this, "send:", e.getMessage(),e); //NON-NLS
+                        Utils.err(MyTrackingFB.this, "send:", ref, e.getMessage(), e); //NON-NLS
                         if(getOnSendFailure() != null) getOnSendFailure().call(e);
                     }
                 });
@@ -658,21 +658,19 @@ public class MyTrackingFB implements Tracking {
                                                         updates.put(Firebase.ACTIVE, true);
                                                         updates.put(Firebase.CHANGED, ServerValue.TIMESTAMP);
                                                         ref.child(Firebase.USERS).child(Firebase.PUBLIC)
-                                                                .child("" + state.getMe().getProperties().getNumber())
+                                                                .child("" + state.getUsers().getMyNumber())
                                                                 .updateChildren(updates);
                                                     }
                                                 }
                                             }, 0, 1, TimeUnit.MINUTES);
 
                                             registerValueListener(ref.child(Firebase.OPTIONS).child(Firebase.CREATED), groupListener);
-
                                             registerValueListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC).child("" + state.getUsers().getMyNumber()).child(Firebase.ACTIVE), userActiveListener);
-
                                             registerChildListener(ref.child(Firebase.USERS).child(Firebase.PUBLIC), usersDataListener, -1);
 
                                             for (Map.Entry<String, AbstractPropertyHolder> entry : state.getAllHolders().entrySet()) {
                                                 if(entry.getValue().isSaveable()) {
-                                                    registerChildListener(ref.child(Firebase.PRIVATE).child(entry.getKey()).child("" + state.getMe().getProperties().getNumber()), userPrivateDataListener, -1);
+                                                    registerChildListener(ref.child(Firebase.PRIVATE).child(entry.getKey()).child("" + state.getUsers().getMyNumber()), userPrivateDataListener, -1);
                                                 }
                                             }
 

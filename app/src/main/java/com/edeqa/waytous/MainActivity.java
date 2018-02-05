@@ -82,11 +82,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private State state;
     private static boolean isVisible = false;
 
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         setContentView(R.layout.activity_main);
 

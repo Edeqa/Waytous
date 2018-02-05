@@ -1,8 +1,6 @@
 package com.edeqa.waytous.helpers;
 
 import android.location.Location;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.edeqa.eventbus.EventBus;
@@ -22,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 /**
  * Created 9/18/16.
@@ -34,14 +32,13 @@ public class MyUser {
 
     private static final String TYPE = "MyUser";
 
-    private final EventBus<AbstractView> viewBus;
     private final EventBus<AbstractProperty> propertyBus;
+    private final EventBus<AbstractView> viewBus;
 
     private final Map<String,AbstractProperty> properties;
     private final Map<String,AbstractView> views;
     private final ArrayList<Location> locations;
     private Location location;
-    private AtomicBoolean continueFiring = new AtomicBoolean();
     private long counter;
     private boolean user;
 
@@ -51,6 +48,7 @@ public class MyUser {
         views = new LinkedHashMap<>();
 
         propertyBus = new EventBus<>("properties_" + String.valueOf(this.hashCode()));
+        propertyBus.setRunner(State.getInstance().getAndroidRunner());
         viewBus = new EventBus<>("views_" + String.valueOf(this.hashCode()));
         viewBus.setRunner(State.getInstance().getAndroidRunner());
 //        propertyBus.setRunner(State.getInstance().getAndroidRunner());
@@ -155,11 +153,11 @@ public class MyUser {
     }
 
     public void createViews(){
-        if(getProperties().isActive()) {
 //            removeViews();
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                public void run() {
-                    Log.v(TYPE,"createViews:"+getProperties().getNumber()+":"+getProperties().getDisplayName());
+        viewBus.postRunnable(new Runnable() {
+            public void run() {
+                if(getProperties().isActive()) {
+//                    Log.v(TYPE,"createViews:"+getProperties().getNumber()+":"+getProperties().getDisplayName());
 
                     Iterator<Map.Entry<String, AbstractViewHolder>> iterator = State.getInstance().getUserViewHolders().entrySet().iterator();
                     //noinspection WhileLoopReplaceableByForEach
@@ -181,9 +179,8 @@ public class MyUser {
                         }
                     }
                 }
-            });
-        }
-
+            }
+        });
     }
 
     public void fire(final String EVENT){
@@ -191,7 +188,7 @@ public class MyUser {
     }
 
     public void fire(final String EVENT, final Object object){
-        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object);
+        Log.i(TYPE,"--->>> "+EVENT+": "+getProperties().getNumber()+" ["+getProperties().getDisplayName()+"]: "+object);
 //        Log.i(TYPE,"--->>> "+EVENT+":"+getProperties().getNumber()+"|"+getProperties().getDisplayName()+":"+object+" //"+Thread.currentThread().getStackTrace()[3]+";"+Thread.currentThread().getStackTrace()[4]);
         propertyBus.post(EVENT, object);
         viewBus.post(EVENT, object);
@@ -233,7 +230,7 @@ public class MyUser {
                 }
             }
         }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        viewBus.postRunnable(new Runnable() {
             public void run() {
                 for (Map.Entry<String, AbstractView> entry : views.entrySet()) {
                     if (getProperties().isActive() && entry.getValue() == null) {
@@ -255,7 +252,7 @@ public class MyUser {
     }
 
     public void removeViews(){
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        viewBus.postRunnable(new Runnable() {
             public void run() {
                 Log.v(TYPE,"removeViews:" + getProperties().getNumber() + ":" + getProperties().getDisplayName());
                 for (Map.Entry<String, AbstractViewHolder> entry : State.getInstance().getUserViewHolders().entrySet()) {
