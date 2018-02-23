@@ -124,7 +124,7 @@
     <string name="share_the_message">Share the message</string>
     <string name="clear_all_messages">Clear all messages?</string>
     <string name="please_install_a_navigation_application">Please install a navigation application.</string>
-    <string name="logo_link">https://github.com/tujger/WhereAmINow/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true</string>
+    <string name="logo_link">https://www.waytous.net/icons/android-chrome-144x144.png</string>
     <string name="click_here_to_follow_me_using_s">Click here to follow me using %s.</string>
     <string name="follow_me_with_s">Follow me with %s</string>
     <string name="private_message_to_s">Private message to %s</string>

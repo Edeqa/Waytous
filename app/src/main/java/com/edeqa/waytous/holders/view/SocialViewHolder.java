@@ -24,6 +24,9 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
 import com.facebook.share.widget.ShareDialog;
 import com.twitter.sdk.android.core.Twitter;
 
