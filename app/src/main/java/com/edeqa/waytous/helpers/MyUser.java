@@ -10,7 +10,7 @@ import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.abstracts.AbstractView;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.holders.property.PropertiesHolder;
-import com.edeqa.waytous.interfaces.Entity;
+import com.edeqa.waytous.interfaces.Property;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 
@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
-import java.util.logging.Level;
 
 /**
  * Created 9/18/16.
@@ -194,7 +193,7 @@ public class MyUser {
         viewBus.post(EVENT, object);
 
 /*        continueFiring.set(true);
-        for(Map.Entry<String,Entity> entry: properties.entrySet()){
+        for(Map.Entry<String,Property> entry: properties.entrySet()){
             if(entry.getValue() instanceof AbstractProperty){
                 try {
                     if(!continueFiring.get()) break;
@@ -206,7 +205,7 @@ public class MyUser {
         }
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                for(Map.Entry<String,Entity> entry: properties.entrySet()){
+                for(Map.Entry<String,Property> entry: properties.entrySet()){
                     if(entry.getValue() instanceof AbstractView){
                         try {
                             if(!continueFiring.get()) break;
@@ -272,14 +271,14 @@ public class MyUser {
         return (PropertiesHolder.Properties) properties.get(PropertiesHolder.TYPE);
     }
 
-    public Entity getProperty(String TYPE) {
+    public Property getProperty(String TYPE) {
         if(properties.containsKey(TYPE)){
             return properties.get(TYPE);
         }
         return null;
     }
 
-    public Entity getView(String TYPE) {
+    public Property getView(String TYPE) {
         if(views.containsKey(TYPE)){
             return views.get(TYPE);
         }

@@ -12,7 +12,7 @@ import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
-import com.edeqa.waytous.interfaces.EntityHolder;
+import com.edeqa.waytous.interfaces.PropertyHolder;
 import com.edeqa.waytous.interfaces.Tracking;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -376,7 +376,7 @@ public class MyTrackingFB implements Tracking {
                     return;
                 }
 
-                EntityHolder holder = state.getAllHolders().get(type);
+                PropertyHolder holder = state.getAllHolders().get(type);
 
                 if(holder == null || !holder.isSaveable()) return;
 

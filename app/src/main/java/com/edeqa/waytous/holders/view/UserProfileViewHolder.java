@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable1;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -500,6 +501,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                 account.setUid(currentUser.getUid());
                 account.setAnonymous(currentUser.isAnonymous());
                 account.setEmailVerified(currentUser.isEmailVerified());
+                if(account.getSignProvider().equals(SignProvider.NONE)) account = null;
             }
         }
         return account;

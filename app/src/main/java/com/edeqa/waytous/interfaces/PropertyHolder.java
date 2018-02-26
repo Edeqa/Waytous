@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * Created 11/18/16.
  */
 
-public interface EntityHolder<T extends Entity> {
+public interface PropertyHolder<T extends Property> {
 
     String getType();
 

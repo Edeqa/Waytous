@@ -132,7 +132,7 @@ public class MenuViewHolder extends AbstractViewHolder {
                                         .setTitle(context.getString(R.string.waytous_web_service)).setMessage("http://www.waytous.net"))
                                 .add(new SettingItem.Label("copyright")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://www.edeqa.com")))
-                                        .setTitle("Copyright (c) 2017 Edeqa").setMessage("http://www.edeqa.com"))
+                                        .setTitle("Copyright © 2017-18 Edeqa").setMessage("http://www.edeqa.com"))
                                 .add(new SettingItem.Label("report")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://waytous.myjetbrains.com/youtrack/newIssue?project=WTU")))
                                         .setTitle(context.getString(R.string.report_an_issue)).setMessage(context.getString(R.string.click_here_to_report_about_error_odd_behaviour_or_some_great_idea))))
@@ -141,19 +141,22 @@ public class MenuViewHolder extends AbstractViewHolder {
                         .add(new SettingItem.Page("third_party").setTitle(context.getString(R.string.third_party_components)).setPriority(0)
                                 .add(new SettingItem.Label("amis")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TangoAgency/material-intro-screen")))
-                                        .setTitle(context.getString(R.string.android_material_intro_screen)))
-                                .add(new SettingItem.Label("jws")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TooTallNate/Java-WebSocket")))
-                                        .setTitle(context.getString(R.string.java_websockets)))
+                                        .setTitle("Android Material Intro Screen"))
                                 .add(new SettingItem.Label("msv")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/pengrad/MapScaleView")))
-                                        .setTitle(context.getString(R.string.map_scale_view)))
+                                        .setTitle("Map Scale View"))
+                                .add(new SettingItem.Label("jws")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TakahikoKawasaki/nv-websocket-client")))
+                                        .setTitle("nv-websocket-client"))
                                 .add(new SettingItem.Label("sll")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/mrmans0n/smart-location-lib")))
-                                        .setTitle(context.getString(R.string.smart_location_library)))
+                                        .setTitle("Smart Location Library"))
+                                .add(new SettingItem.Label("scv")
+                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/amlcurran/ShowcaseView")))
+                                        .setTitle("ShowcaseView"))
                                 .add(new SettingItem.Label("ttv")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/KeepSafe/TapTargetView")))
-                                        .setTitle(context.getString(R.string.taptargetview))));
+                                        .setTitle("TapTargetView")));
 
                 item.add(about);
 

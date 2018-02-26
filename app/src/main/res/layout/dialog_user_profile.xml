@@ -21,12 +21,11 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <Button
+        <com.edeqa.waytous.helpers.CustomButton
             android:id="@+id/button_sign_with_facebook"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_facebook_black"
+            app:drawableLeftCompat="@drawable/ic_facebook_black"
             android:text="@string/sign_in_with_facebook"/>
 
         <com.facebook.login.widget.LoginButton
@@ -38,20 +37,18 @@
             android:layout_marginTop="30dp"
             android:visibility="gone"/>
 
-        <Button
+        <com.edeqa.waytous.helpers.CustomButton
             android:id="@+id/button_sign_with_google"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_google_black"
+            app:drawableLeftCompat="@drawable/ic_google_black"
             android:text="@string/sign_in_with_google"/>
 
-        <Button
+        <com.edeqa.waytous.helpers.CustomButton
             android:id="@+id/button_sign_with_twitter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_twitter_black"
+            app:drawableLeftCompat="@drawable/ic_twitter_black"
             android:text="@string/sign_in_with_twitter"/>
 
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
@@ -60,13 +57,13 @@
             android:layout_height="wrap_content"
             android:visibility="gone"/>
 
-        <Button
+        <com.edeqa.waytous.helpers.CustomButton
             android:id="@+id/button_sign_with_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_mail_outline_black_24dp"
+            app:drawableLeftCompat="@drawable/ic_mail_outline_black_24dp"
             android:text="@string/sign_in_with_e_mail"/>
+
     </LinearLayout>
 
     <RelativeLayout
@@ -122,13 +119,6 @@
             >
 
             <ImageView
-                android:id="@+id/iv_sign_provider_twitter"
-                android:layout_width="@dimen/material_tooltip_text_size"
-                android:layout_height="@dimen/material_tooltip_text_size"
-                app:srcCompat="@drawable/ic_twitter_logo_blue_24dp"
-                />
-
-            <ImageView
                 android:id="@+id/iv_sign_provider_facebook"
                 android:layout_width="@dimen/material_tooltip_text_size"
                 android:layout_height="@dimen/material_tooltip_text_size"
@@ -140,6 +130,13 @@
                 android:layout_width="@dimen/material_tooltip_text_size"
                 android:layout_height="@dimen/material_tooltip_text_size"
                 app:srcCompat="@drawable/ic_google_logo_color_24dp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_sign_provider_twitter"
+                android:layout_width="@dimen/material_tooltip_text_size"
+                android:layout_height="@dimen/material_tooltip_text_size"
+                app:srcCompat="@drawable/ic_twitter_logo_blue_24dp"
                 />
 
             <ImageView
@@ -197,25 +194,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:paddingTop="@dimen/material_baseline_grid_2x"/>
-
-            <TextView
-                android:id="@+id/tv_verification_email_sent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:paddingLeft="@dimen/material_baseline_grid_1x"
-                android:paddingStart="@dimen/material_baseline_grid_1x"
-                android:paddingTop="@dimen/material_baseline_grid_2x"
-                android:text="@string/verification_email_has_sent_to_your_address"
-                android:textAlignment="textStart"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
         </LinearLayout>
-
-
-
-
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_verification_email_sent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:paddingLeft="@dimen/material_baseline_grid_1x"
+        android:paddingStart="@dimen/material_baseline_grid_1x"
+        android:text="@string/verification_email_has_sent_to_your_address"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
     <LinearLayout
         android:id="@+id/layout_password"

@@ -5,7 +5,7 @@ import android.location.Location;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.waytous.helpers.MyUser;
-import com.edeqa.waytous.interfaces.Entity;
+import com.edeqa.waytous.interfaces.Property;
 
 
 /**
@@ -13,7 +13,7 @@ import com.edeqa.waytous.interfaces.Entity;
  */
 
 @SuppressWarnings("unchecked")
-abstract public class AbstractProperty extends AbstractEntityHolder implements Entity<Context> {
+abstract public class AbstractProperty extends AbstractEntityHolder implements Property<Context> {
     protected Context context;
     protected MyUser myUser;
 

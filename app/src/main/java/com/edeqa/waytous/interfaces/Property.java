@@ -6,7 +6,7 @@ import android.location.Location;
  * Created 11/18/16.
  */
 
-public interface Entity<T> {
+public interface Property<T> {
 
     void setContext(T context);
 

@@ -3,7 +3,7 @@ package com.edeqa.waytous.abstracts;
 import android.content.Context;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
-import com.edeqa.waytous.interfaces.EntityHolder;
+import com.edeqa.waytous.interfaces.PropertyHolder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Created 11/18/16.
  */
-abstract public class AbstractPropertyHolder extends AbstractEntityHolder implements EntityHolder<AbstractProperty> {
+abstract public class AbstractPropertyHolder extends AbstractEntityHolder implements PropertyHolder<AbstractProperty> {
 
     protected Context context;
 
