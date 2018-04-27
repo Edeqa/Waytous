@@ -1,6 +1,7 @@
 package com.edeqa.waytous.holders.property;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 
@@ -27,6 +29,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
 import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
 import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
@@ -51,6 +54,10 @@ import static com.edeqa.waytous.holders.view.SettingsViewHolder.CREATE_SETTINGS;
  */
 @SuppressWarnings({"WeakerAccess", "HardCodedStringLiteral"})
 public class NotificationHolder extends AbstractPropertyHolder {
+
+    public static final String NOTIFICATION_CHANNEL_ID_SERVICE = "com.edeqa.waytous_service";
+    public static final String NOTIFICATION_CHANNEL_ID_TASK = "com.edeqa.waytous_task";
+
 
     public static final String SHOW_CUSTOM_NOTIFICATION = "show_custom_notification";
     public static final String HIDE_CUSTOM_NOTIFICATION = "hide_custom_notification";
@@ -78,12 +85,16 @@ public class NotificationHolder extends AbstractPropertyHolder {
         this.state = state;
 
         Intent notificationIntent = new Intent(state, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(state, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingStopIntent = PendingIntent.getService(state, (int) System.currentTimeMillis(), new Intent(state, WaytousService.class).putExtra("mode", "stop"),0);
 
-        notification = new NotificationCompat.Builder(state)
+        initChannel(state);
+
+        notification = new NotificationCompat.Builder(state, NOTIFICATION_CHANNEL_ID_TASK)
                 .setVisibility(Notification.VISIBILITY_SECRET)
                 .setLargeIcon(BitmapFactory.decodeResource(state.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.ic_notification_twinks)
@@ -91,11 +102,21 @@ public class NotificationHolder extends AbstractPropertyHolder {
 //                .addAction(R.drawable.ic_notification_twinks, "View", pendingIntent)
                 .addAction(R.drawable.ic_notification_clear, state.getString(R.string.stop), pendingStopIntent)
                 .setContentIntent(pendingIntent)
+                .setContentTitle("Waytous Title")
+                .setContentText("Waytous text")
                 .setPriority(Notification.PRIORITY_HIGH);
 
         state.setNotification(notification.build());
 
         notificationClearHandler = new Handler();
+    }
+
+    private void initChannel(State state) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager nm = (NotificationManager) state.getSystemService(NOTIFICATION_SERVICE);
+            nm.createNotificationChannel(new NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, "Waytous Service", NotificationManager.IMPORTANCE_DEFAULT));
+            nm.createNotificationChannel(new NotificationChannel(NOTIFICATION_CHANNEL_ID_TASK, "Waytous Info", NotificationManager.IMPORTANCE_DEFAULT));
+        }
     }
 
     @Override
@@ -171,13 +192,13 @@ public class NotificationHolder extends AbstractPropertyHolder {
                 final Notification notification = (Notification) object;
                 if(notification != null){
                     if(MainActivity.isVisible()) notification.priority = Notification.PRIORITY_LOW;
-                    NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+                    NotificationManager notificationManager = (NotificationManager) state.getSystemService(NOTIFICATION_SERVICE);
                     assert notificationManager != null;
                     notificationManager.notify(1977, notification);
                 }
                 break;
             case HIDE_CUSTOM_NOTIFICATION:
-                NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager notificationManager = (NotificationManager) state.getSystemService(NOTIFICATION_SERVICE);
                 assert notificationManager != null;
                 notificationManager.cancel(1977);
                 break;
@@ -213,6 +234,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         return true;
     }
 
+
     @Override
     public boolean dependsOnUser() {
         return true;
@@ -245,7 +267,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
         notification.setWhen(new Date().getTime());
         notification.setVibrate(new long[]{0L, 0L});
 
-        NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) state.getSystemService(NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.notify(1976, notification.build());
 
@@ -255,7 +277,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     private void updateIcon(int resource) {
         notification.setSmallIcon(resource);
-        NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) state.getSystemService(NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.notify(1976, notification.build());
     }
@@ -270,7 +292,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
             } else {
                 notification.setDefaults(DEFAULT_LIGHTS);
             }
-            NotificationManager notificationManager = (NotificationManager) state.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) state.getSystemService(NOTIFICATION_SERVICE);
 //            notificationManager.notify(1976, notification.build());
             assert notificationManager != null;
             notificationManager.cancel(1976);

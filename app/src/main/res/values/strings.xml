@@ -111,7 +111,7 @@
     <string name="alert">Alert</string>
     <string name="continue_string">Continue</string>
     <string name="connecting">Connecting…</string>
-    <string name="application_must_continuously_get_your_locations">Application must continuously get your locations. It seems using the GPS-sensor. Please grant application to access your location.</string>
+    <string name="application_must_continuously_get_your_locations">Application must continuously get your locations. That means using the GPS-sensor. Please grant application to access your location.</string>
     <string name="gps_access_is_not_granted">GPS access is not granted.</string>
     <string name="application_needs_the_enabled_location_services">Application needs the enabled location services. Please enable it on the next screen.</string>
     <string name="user_has_joined_the_group">User has joined the group.</string>

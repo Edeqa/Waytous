@@ -133,11 +133,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         registerReceiver(receiver, intentFilter);
 
-        if(!state.getBooleanPreference(PREFERENCE_INTRO,false)){
+        /*if(!state.getBooleanPreference(PREFERENCE_INTRO,false)){
             state.setPreference(PREFERENCE_INTRO,true);
             startActivityForResult(new Intent(MainActivity.this, IntroActivity.class), 1);
             return;
-        }
+        }*/
 
         if(!state.isGpsAccessRequested()) {
             state.setGpsAccessRequested(true);
