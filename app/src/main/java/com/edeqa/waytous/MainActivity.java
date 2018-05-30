@@ -1,9 +1,6 @@
 package com.edeqa.waytous;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -26,10 +23,10 @@ import com.edeqa.waytous.helpers.Utils;
 import com.edeqa.waytous.holders.view.CameraViewHolder;
 import com.edeqa.waytous.holders.view.DrawerViewHolder;
 import com.edeqa.waytous.holders.view.FabViewHolder;
-import com.edeqa.waytous.holders.view.SocialViewHolder;
 import com.edeqa.waytous.holders.view.MapButtonsViewHolder;
 import com.edeqa.waytous.holders.view.SettingsViewHolder;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
+import com.edeqa.waytous.holders.view.SocialViewHolder;
 import com.edeqa.waytous.holders.view.TrackingViewHolder;
 import com.edeqa.waytous.holders.view.UserProfileViewHolder;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,24 +34,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import io.nlopez.smartlocation.SmartLocation;
 
-import static com.edeqa.waytous.Constants.BROADCAST;
-import static com.edeqa.waytous.Constants.BROADCAST_MESSAGE;
 import static com.edeqa.waytous.Constants.OPTIONS;
-import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
-import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
-import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
-import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
-import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ERROR;
-import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_CREATE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_DESTROY;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -130,9 +116,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onResume();
         isVisible = true;
 
-        IntentFilter intentFilter = new IntentFilter(BROADCAST);
-        registerReceiver(receiver, intentFilter);
-
         /*if(!state.getBooleanPreference(PREFERENCE_INTRO,false)){
             state.setPreference(PREFERENCE_INTRO,true);
             startActivityForResult(new Intent(MainActivity.this, IntroActivity.class), 1);
@@ -152,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPause() {
         super.onPause();
         state.fire(ACTIVITY_PAUSE);
-        unregisterReceiver(receiver);
         isVisible = false;
     }
 
@@ -418,68 +400,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public GoogleMap getMap() {
         return map;
     }
-
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                String r = intent.getStringExtra(BROADCAST_MESSAGE);
-                if(r != null && r.length() > 0) {
-                    JSONObject o = new JSONObject(r);
-                    if (!o.has(RESPONSE_STATUS)) return;
-
-                    switch (o.getString(RESPONSE_STATUS)) {
-                        case RESPONSE_STATUS_ACCEPTED:
-                            SmartLocation.with(MainActivity.this).location().stop();
-                            if (o.has(RESPONSE_NUMBER)) {
-                                state.getUsers().forMe(new Runnable2<Integer, MyUser>() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.createViews();
-                                    }
-                                });
-                            }
-                            if (o.has(RESPONSE_INITIAL)) {
-                                state.getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
-                                    @Override
-                                    public void call(Integer number, MyUser myUser) {
-                                        myUser.createViews();
-                                    }
-                                });
-                            }
-                            break;
-                        case RESPONSE_STATUS_ERROR:
-                            break;
-                        case RESPONSE_STATUS_UPDATED:
-                            /*if (o.has(USER_DISMISSED)) {
-                                int number = o.getInt(USER_DISMISSED);
-                                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
-                                    @Override
-                                    public void call(Integer number, final MyUser myUser) {
-                                        myUser.removeViews();
-                                    }
-                                });
-                                if(State.getInstance().getUsers().getCountSelectedTotal() == 0) {
-                                    State.getInstance().getMe().fire(SELECT_SINGLE_USER);
-                                }
-                            }*/
-                            /*if (o.has(USER_JOINED)) {
-                                int number = o.getInt(USER_JOINED);
-                                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
-                                    @Override
-                                    public void call(Integer number, final MyUser myUser) {
-                                        myUser.createViews();
-                                    }
-                                });
-                            }*/
-                            break;
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
 
     /**
      * Due to onBackPressed() fires Events.BACK_PRESSED this method calls super.onBackPressed() for holders purposes.

@@ -3,6 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.annotation.SuppressLint;
 import android.location.Location;
 
+import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.Runnable2;
 import com.edeqa.waytous.State;
 
@@ -63,7 +64,11 @@ public class MyUsers {
 
     public void forUser(int number,Runnable2<Integer, MyUser> callback) {
         if(users.containsKey(number) && users.get(number) != null){
-            callback.call(number,users.get(number));
+            try {
+                callback.call(number, users.get(number));
+            } catch(Exception e) {
+                Utils.err("MyUsers","failed:", e); //NON-NLS
+            }
         }
     }
 

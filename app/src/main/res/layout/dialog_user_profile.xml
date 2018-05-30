@@ -206,7 +206,8 @@
         android:paddingStart="@dimen/material_baseline_grid_1x"
         android:text="@string/verification_email_has_sent_to_your_address"
         android:textAlignment="textStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/layout_password"

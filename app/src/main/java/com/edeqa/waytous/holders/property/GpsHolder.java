@@ -21,6 +21,7 @@ import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 
 import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_RESUME;
 import static com.edeqa.waytous.helpers.Events.TRACKING_ACTIVE;
@@ -79,6 +80,9 @@ public class GpsHolder extends AbstractPropertyHolder {
                 sendLocation(smartLocation.getLastLocation());
                 smartLocation.continuous().start(locationUpdateListener);
                 break;
+            case RESPONSE_STATUS_ACCEPTED:
+                smartLocation.stop();
+                break;
         }
         return true;
     }
@@ -110,6 +114,8 @@ public class GpsHolder extends AbstractPropertyHolder {
             }
             sendLocation(location);
         }
+
+
     };
 
     private void sendLocation(Location location) {

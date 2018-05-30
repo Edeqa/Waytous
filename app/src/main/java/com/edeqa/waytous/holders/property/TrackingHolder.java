@@ -30,8 +30,10 @@ import static com.edeqa.waytous.Constants.REQUEST_LEAVE;
 import static com.edeqa.waytous.Constants.REQUEST_TIMESTAMP;
 import static com.edeqa.waytous.Constants.REQUEST_TRACKING;
 import static com.edeqa.waytous.Constants.REQUEST_WELCOME_MESSAGE;
+import static com.edeqa.waytous.Constants.RESPONSE_INITIAL;
 import static com.edeqa.waytous.Constants.RESPONSE_NUMBER;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS;
+import static com.edeqa.waytous.Constants.RESPONSE_STATUS_ACCEPTED;
 import static com.edeqa.waytous.Constants.RESPONSE_STATUS_UPDATED;
 import static com.edeqa.waytous.Constants.RESPONSE_TOKEN;
 import static com.edeqa.waytous.Constants.USER_DISMISSED;
@@ -275,6 +277,24 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 Log.i(TYPE, "onMessage: " + o.toString()); //NON-NLS
                 String responseStatus = o.getString(RESPONSE_STATUS);
                 switch (responseStatus) {
+                    case RESPONSE_STATUS_ACCEPTED:
+                        if (o.has(RESPONSE_NUMBER)) {
+                            State.getInstance().getUsers().forMe(new Runnable2<Integer, MyUser>() {
+                                @Override
+                                public void call(Integer number, MyUser myUser) {
+                                    myUser.createViews();
+                                }
+                            });
+                        }
+                        if (o.has(RESPONSE_INITIAL)) {
+                            State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                                @Override
+                                public void call(Integer number, MyUser myUser) {
+                                    myUser.createViews();
+                                }
+                            });
+                        }
+                        break;
                     case RESPONSE_STATUS_UPDATED:
                         if (o.has(USER_DISMISSED)) {
                             int number = o.getInt(USER_DISMISSED);
