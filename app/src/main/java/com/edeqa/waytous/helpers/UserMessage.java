@@ -279,7 +279,7 @@ public class UserMessage extends AbstractSavedItem {
                     holder.ivMessageDelivered.setVisibility(VISIBLE);
                 } else {
                     holder.ivMessageDelivered.setVisibility(GONE);
-                    holder.itemView.setBackgroundColor(context.getResources().getColor(android.R.color.background_light));
+//                    holder.itemView.setBackgroundColor(context.getResources().getColor(android.R.color.background_light));
                 }
 
             }catch(Exception e){e.printStackTrace();}
