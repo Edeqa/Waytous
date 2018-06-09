@@ -256,5 +256,6 @@
     <string name="verification_email_has_sent_to_your_address">Verification e-mail has sent to your address. Please follow the link in this email, otherwise your account will be deleted after 30 days of inactivity.</string>
     <string name="password">Password</string>
     <string name="forgot_password">Forgot password?</string>
+    <string name="private_s_s">(private) %s: %s</string>
 
 </resources>

@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -79,7 +78,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
     private UserMessage.UserMessagesAdapter adapter;
     private SmoothInterpolated action;
-//    private Toolbar toolbar;
     private RecyclerView list;
     private CustomListDialog dialog;
 
@@ -164,11 +162,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 State.getInstance().fire(HIDE_CUSTOM_NOTIFICATION);
                 showMessages();
                 break;
-//            case TOKEN_CHANGED:
-//                if(adapter != null){
-//                    adapter.notifyDataSetChanged();
-//                }
-//                break;
             case CREATE_DRAWER:
                 DrawerViewHolder.ItemsHolder adder = (DrawerViewHolder.ItemsHolder) object;
                 adder.add(R.id.drawer_section_communication, R.string.chat, R.string.chat, R.drawable.ic_chat_black_24dp)
@@ -180,14 +173,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
                             }
                         });
                 break;
-/*
-            case PREPARE_DRAWER:
-                adder = (DrawerViewHolder.ItemsHolder) object;
-                UserMessage.getDb().removeRestriction("search");
-                int count = UserMessage.getCount();
-                adder.findItem(R.string.chat).setVisible(count > 0);
-                break;
-*/
             case PREPARE_FAB:
                 final FabViewHolder fab = (FabViewHolder) object;
                 if(State.getInstance().tracking_active()) {
@@ -242,16 +227,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
                                     .setToUser(toUser)
                                     .setType(TYPE_PRIVATE);
                             toUser.fire(SEND_MESSAGE, mm);
-
-//                            UserMessage m = new UserMessage(context);
-//                            m.setFrom(State.getInstance().getMe());
-//                            m.setBody(etMessage.getText().toString());
-//                            m.setDelivery(Utils.getUnique());
-//                            m.setTo(toUser);
-//                            m.setType(TYPE_PRIVATE);
-//                            m.save(null);
-//
-//                            toUser.fire(SEND_MESSAGE, m);
                         } else {
                             SystemMessage mm = new SystemMessage(context)
                                     .setFromUser(State.getInstance().getMe())
@@ -259,14 +234,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
                                     .setDelivery(Misc.getUnique());
 
                             State.getInstance().fire(SEND_MESSAGE, mm);
-
-//                            UserMessage m = new UserMessage(context);
-//                            m.setFrom(State.getInstance().getMe());
-//                            m.setBody(etMessage.getText().toString());
-//                            m.setDelivery(Utils.getUnique());
-//                            m.save(null);
-//
-//                            State.getInstance().fire(SEND_MESSAGE, m);
                         }
                         reloadCursor();
                     } else {
@@ -429,9 +396,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
                 MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
                 if(to != null) {
-                    ((EditText) dialog.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getBody());
+                    ((EditText) dialog.getFooter().findViewById(R.id.et_message_send)).setText(String.format("> %s", item.getBody()));
                 } else {
-                    ((EditText) dialog.getFooter().findViewById(R.id.et_message_send)).setText("> " + item.getFrom() + ":\n> " + item.getBody());
+                    ((EditText) dialog.getFooter().findViewById(R.id.et_message_send)).setText(String.format("> %s:\n> %s", item.getFrom(), item.getBody()));
                 }
             }
         });
@@ -469,215 +436,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
         makeDialogTransparent();
 
         setFilterAndReload(filterMessage);
-
-
-/*        dialog = new AlertDialog.Builder(context).create();
-
-        dialog.setCustomTitle(setupToolbar());
-
-        if(hideSystemMessages) {
-            UserMessage.getDb().addRestriction("user", "type_ = ? or type_ = ?", new String[]{""+UserMessage.TYPE_MESSAGE,""+ TYPE_PRIVATE});
-        }
-        context.getSupportLoaderManager().initLoader(2, null, adapter);
-
-        adapter.setOnItemClickListener(new Runnable1<UserMessage>() {
-            @Override
-            public void call(UserMessage message) {
-                reloadCursor();
-            }
-        });
-
-        adapter.setOnItemShareListener(new Runnable1<Integer>() {
-            @Override
-            public void call(final Integer position) {
-                UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
-                Utils.log(MessagesViewHolder.this, "showMessages:", "item="+item);
-
-                new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
-            }
-        });
-        adapter.setOnItemReplyListener(new Runnable1<Integer>() {
-            @Override
-            public void call(final Integer position) {
-                UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
-
-                MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
-                if(to != null) {
-                    ((EditText) layoutFooter.findViewById(R.id.et_message_send)).setText("> " + item.getBody());
-                } else {
-                    ((EditText) layoutFooter.findViewById(R.id.et_message_send)).setText("> " + item.getFrom() + ":\n> " + item.getBody());
-                }
-            }
-        });
-        adapter.setOnItemDeleteListener(new Runnable1<Integer>() {
-            @Override
-            public void call(final Integer position) {
-                UserMessage.getDb().deleteByPosition(position);
-                adapter.notifyItemRemoved(position);
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        donotscroll = true;
-                        reloadCursor();
-                    }
-                }, 500);
-            }
-        });
-
-        adapter.setOnItemTouchListener(onTouchListener);
-
-        adapter.setOnCursorReloadListener(new Runnable1<Cursor>() {
-            @Override
-            public void call(Cursor cursor) {
-                if(toolbar != null) {
-                    toolbar.setTitle(context.getString(R.string.chat_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
-                    if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
-                    donotscroll = false;
-                }
-            }
-        });
-
-        dialog.setView(content);
-
-        drawable = new ColorDrawable(Color.WHITE);
-        if(dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(drawable);
-        }
-
-        dialog.show();
-
-        Utils.resizeDialog(context, dialog, Utils.MATCH_SCREEN, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        dialog.getWindow().getDecorView().setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                onTouchListener.call(motionEvent);
-                return false;
-            }
-        });
-
-        makeDialogTransparent();
-
-        setFilterAndReload(filterMessage);*/
-    }
-
-    /*private AppBarLayout setupToolbar() {
-
-        AppBarLayout layoutToolbar = (AppBarLayout) context.getLayoutInflater().inflate(R.layout.view_action_bar, null);
-        toolbar = (Toolbar) layoutToolbar.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
-        toolbar.getNavigationIcon().setColorFilter(Color.WHITE,mMode);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-                dialog = null;
-            }
-        });
-
-        toolbar.inflateMenu(R.menu.dialog_messages_menu);
-        final MenuItem searchItem = toolbar.getMenu().findItem(R.id.search_message);
-        searchItem.getIcon().setColorFilter(Color.WHITE,mMode);
-
-        final Runnable1<String> setFilter = new Runnable1<String>() {
-            @Override
-            public void call(String text) {
-                setFilterAndReload(text);
-            }
-        };
-        final SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(!searchView.isIconified()) {
-                    searchView.setIconified(true);
-                }
-                searchItem.collapseActionView();
-                filterMessage = query;
-                setFilter.call(filterMessage);
-                return false;
-            }
-            @Override
-            public boolean onQueryTextChange(String s) {
-                filterMessage = s;
-                setFilter.call(filterMessage);
-                return false;
-            }
-        });
-
-        prepareToolbarMenu();
-
-        toolbar.setOnMenuItemClickListener(onDialogMenuItemClickListener);
-
-        return layoutToolbar;
-    }*/
-
-    private LinearLayout setupFooter(View content) {
-        final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
-        ViewGroup placeFooter = content.findViewById(R.id.layout_footer);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutFooter.setLayoutParams(params);
-
-        placeFooter.addView(layoutFooter);
-        if(State.getInstance().tracking_active()) {
-            placeFooter.setVisibility(View.VISIBLE);
-        } else {
-            placeFooter.setVisibility(View.GONE);
-        }
-
-        final Runnable1<EditText> sender = new Runnable1<EditText>() {
-            @Override
-            public void call(EditText et) {
-                if (et.getText().toString().length() > 0) {
-                    if(State.getInstance().tracking_active()) {
-                        SystemMessage mm = new SystemMessage(context)
-                                .setFromUser(State.getInstance().getMe())
-                                .setText(et.getText().toString())
-                                .setDelivery(Misc.getUnique());
-                        State.getInstance().fire(SEND_MESSAGE, mm);
-
-
-//                        UserMessage m = new UserMessage(context);
-//                        m.setFrom(State.getInstance().getMe());
-//                        m.setBody(et.getText().toString());
-//                        m.setDelivery(Utils.getUnique());
-//                        m.save(null);
-//
-//                        State.getInstance().fire(SEND_MESSAGE, m);
-
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        assert imm != null;
-                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-                        reloadCursor();
-                    } else {
-                        new SystemMessage(context).setText(context.getString(R.string.cannot_send_message_because_of_network_is_unavailable)).showSnack();
-                    }
-                }
-                et.setText("");
-            }
-        };
-
-        layoutFooter.findViewById(R.id.ib_message_send).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
-            }
-        });
-        layoutFooter.findViewById(R.id.ib_message_send).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
-                dialog.dismiss();
-                dialog = null;
-                return true;
-            }
-        });
-
-        layoutFooter.setVisibility(View.VISIBLE);
-        return layoutFooter;
     }
 
     @SuppressWarnings("HardCodedStringLiteral")
@@ -778,7 +536,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText("(private) " + myUser.getProperties().getDisplayName() + ": " + text).setDuration(10000).setAction(context.getString(R.string.reply),new Runnable1() {
+                        new SystemMessage(context).setText(String.format(context.getString(R.string.private_s_s), myUser.getProperties().getDisplayName(), text)).setDuration(10000).setAction(context.getString(R.string.reply),new Runnable1() {
                             @Override
                             public void call(Object arg) {
                                 newMessage(myUser, true, "");
@@ -925,7 +683,6 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             UserMessage.clear();
-//                            if(adapter != null) adapter.notifyDataSetChanged();
                             reloadCursor();
                         }
                     });
@@ -946,5 +703,4 @@ public class MessagesViewHolder extends AbstractViewHolder {
             return false;
         }
     };
-
 }
