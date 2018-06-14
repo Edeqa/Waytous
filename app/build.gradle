@@ -18,7 +18,7 @@ android {
         applicationId "com.edeqa.waytous"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 60
+        versionCode 62
         versionName "2.0"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

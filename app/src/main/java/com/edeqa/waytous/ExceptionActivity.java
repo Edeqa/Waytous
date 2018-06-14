@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.ApplicationErrorReport;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +34,7 @@ public class ExceptionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         final AlertDialog dialog = new AlertDialog.Builder(ExceptionActivity.this).create();
         dialog.setTitle(getString(R.string.app_information));

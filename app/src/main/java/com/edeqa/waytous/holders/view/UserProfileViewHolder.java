@@ -696,6 +696,8 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                 credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
                                 signToFirebase();
                             } else {
+                                Utils.err("Sign cancelled", Misc.toStringDeep(result.getStatus()));
+                                System.err.println(result.getStatus());
                                 onFailureListener.call(new Exception(context.getString(R.string.sign_cancelled)));
                             }
                         }
