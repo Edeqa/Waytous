@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 
@@ -49,7 +49,7 @@ public class SettingItem<T> {
     private String messageHtml;
     private int type;
     private String[] depended;
-    protected Runnable1<T> callback;
+    protected Consumer<T> callback;
     private int priority;
 
     public static void setSharedPreferences(SharedPreferences sharedPreferences) {
@@ -165,7 +165,7 @@ public class SettingItem<T> {
                 '}';
     }
 
-    public void onClick(Runnable1<T> runnable) {
+    public void onClick(Consumer<T> runnable) {
 
     }
 
@@ -173,11 +173,11 @@ public class SettingItem<T> {
         return getMessage();
     }
 
-    public Runnable1<T> getCallback() {
+    public Consumer<T> getCallback() {
         return callback;
     }
 
-    public SettingItem setCallback(Runnable1<T> callback) {
+    public SettingItem setCallback(Consumer<T> callback) {
         this.callback = callback;
         return this;
     }
@@ -239,11 +239,11 @@ public class SettingItem<T> {
         }
 
         @Override
-        public void onClick(Runnable1<Boolean> runnable) {
+        public void onClick(Consumer<Boolean> runnable) {
             checked = !checked;
             sharedPreferences.edit().putBoolean(id, checked).apply();
-            if(callback != null) callback.call(checked);
-            if(runnable != null) runnable.call(checked);
+            if(callback != null) callback.accept(checked);
+            if(runnable != null) runnable.accept(checked);
         }
 
         @Override
@@ -333,7 +333,7 @@ public class SettingItem<T> {
                 }
             }
             if(callback != null) //noinspection unchecked
-                callback.call(this);
+                callback.accept(this);
             return this;
 
         }
@@ -371,9 +371,9 @@ public class SettingItem<T> {
         }
 
         @Override
-        public void onClick(Runnable1<String> runnable) {
+        public void onClick(Consumer<String> runnable) {
             if(callback != null) {
-                callback.call(id);
+                callback.accept(id);
             }
         }
 
@@ -397,7 +397,7 @@ public class SettingItem<T> {
         }
 
         @Override
-        public void onClick(final Runnable1<String> runnable) {
+        public void onClick(final Consumer<String> runnable) {
             final AlertDialog dialog = new AlertDialog.Builder(context).create();
             dialog.setTitle(getTitle());
 
@@ -421,8 +421,8 @@ public class SettingItem<T> {
                     } else {
                         sharedPreferences.edit().putString(id, value).apply();
                     }
-                    if(callback != null) callback.call(value);
-                    if(runnable != null) runnable.call(value);
+                    if(callback != null) callback.accept(value);
+                    if(runnable != null) runnable.accept(value);
                 }
             });
 
@@ -489,7 +489,7 @@ public class SettingItem<T> {
 
         private String value;
         private Map<String,String> items = new LinkedHashMap<>();
-        private Runnable1<String> onItemSelectedCallback;
+        private Consumer<String> onItemSelectedCallback;
 
         public List(String id) {
             super(id);
@@ -536,7 +536,7 @@ public class SettingItem<T> {
         }
 
         @Override
-        public void onClick(final Runnable1<String> runnable) {
+        public void onClick(final Consumer<String> runnable) {
             final AlertDialog dialog = new AlertDialog.Builder(context).create();
             dialog.setTitle(getTitle());
 
@@ -553,7 +553,7 @@ public class SettingItem<T> {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if(onItemSelectedCallback != null) {
                         value = fetchValue(labels.get(position));
-                        onItemSelectedCallback.call(value);
+                        onItemSelectedCallback.accept(value);
                     }
                 }
 
@@ -587,8 +587,8 @@ public class SettingItem<T> {
                     } else {
                         sharedPreferences.edit().putString(id, value).apply();
                     }
-                    if(callback != null) callback.call(value);
-                    if(runnable != null) runnable.call(value);
+                    if(callback != null) callback.accept(value);
+                    if(runnable != null) runnable.accept(value);
                 }
             });
 
@@ -613,7 +613,7 @@ public class SettingItem<T> {
             return getMessage();
         }
 
-        public SettingItem.List setOnItemSelectedCallback(Runnable1<String> onItemSelectedCallback) {
+        public SettingItem.List setOnItemSelectedCallback(Consumer<String> onItemSelectedCallback) {
             this.onItemSelectedCallback = onItemSelectedCallback;
             return this;
         }

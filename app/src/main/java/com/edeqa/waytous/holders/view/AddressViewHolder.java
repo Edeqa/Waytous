@@ -4,8 +4,8 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -27,13 +27,13 @@ import static com.edeqa.waytous.helpers.Events.UNSELECT_USER;
 public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.AddressView> {
 
     private static final String TYPE = "address"; //NON-NLS
-    private Runnable1<String> callback;
+    private Consumer<String> callback;
 
     public AddressViewHolder(final MainActivity context) {
         super(context);
-        setCallback(new Runnable1<String>() {
+        setCallback(new Consumer<String>() {
             @Override
-            public void call(String text) {
+            public void accept(String text) {
                 if(context.getSupportActionBar() != null) {
                     context.getSupportActionBar().setSubtitle(text);
                 }
@@ -53,7 +53,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         return new AddressView(context, myUser);
     }
 
-    public AddressViewHolder setCallback(Runnable1<String> callback) {
+    public AddressViewHolder setCallback(Consumer<String> callback) {
         this.callback = callback;
         return this;
     }
@@ -61,7 +61,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
     private void setTitle(final String text){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                callback.call(text);
+                callback.accept(text);
             }
         });
     }
@@ -82,9 +82,9 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
             geocoding = SmartLocation.with(context).geocoding();
             addressResolver = new AddressResolver(context);
             addressResolver.setUser(myUser);
-            addressResolver.setCallback(new Runnable1<String>() {
+            addressResolver.setCallback(new Consumer<String>() {
                 @Override
-                public void call(String formattedAddress) {
+                public void accept(String formattedAddress) {
                     lastKnownAddress = formattedAddress;
                     if(State.getInstance().getUsers().getCountSelectedTotal() == 1 && myUser.getProperties().isSelected()) {
                         setTitle(formattedAddress);
@@ -116,11 +116,11 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                 case SELECT_USER:
                 case UNSELECT_USER:
                     if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
-                        callback.call(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                        callback.accept(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));
                     } else {
-                        State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forSelectedUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 ((AddressView) myUser.getView(TYPE)).resolveAddress(myUser.getLocation());
                             }
                         });
@@ -136,10 +136,10 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
         @SuppressWarnings("WeakerAccess")
         public void resolveAddress(final Location location) {
             if(State.getInstance().getUsers().getCountSelectedTotal() > 1) {
-                callback.call(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));
+                callback.accept(context.getString(R.string.d_selected, State.getInstance().getUsers().getCountSelectedTotal()));
                 return;
             } else if(myUser.getProperties().isSelected() && location == null) {
-                callback.call(null);
+                callback.accept(null);
             }
 
             if(lastKnownAddress != null) setTitle(lastKnownAddress);
@@ -153,7 +153,7 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
 
                     *//*try {
                         if(location == null) {
-                            callback.call(null);
+                            callback.accept(null);
                             return;
                         }
                         geocoding.reverse(location, new OnReverseGeocodingListener() {
@@ -165,9 +165,9 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                                         parts.add(list.get(0).getAddressLine(i));
                                     }
                                     String formatted = TextUtils.join(", ", parts);
-                                    callback.call(formatted); //NON-NLS
+                                    callback.accept(formatted); //NON-NLS
                                 } else {
-                                    callback.call(null);
+                                    callback.accept(null);
                                 }
                             }
 
@@ -175,12 +175,12 @@ public class AddressViewHolder extends AbstractViewHolder<AddressViewHolder.Addr
                     } catch(Exception e) {
                         Utils.err(AddressView.this, "User:", myUser.getProperties().getNumber(), "resolveAddress:", e.getMessage()); //NON-NLS
                         if(location == null) {
-                            callback.call(null);
+                            callback.accept(null);
                             return;
                         }
                     }*//*
 
-//                    callback.call("...");
+//                    callback.accept("...");
 
                     try {
                         String req = context.getString(R.string.address_request_template, location.getLatitude(), location.getLongitude());

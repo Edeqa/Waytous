@@ -5,7 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -132,9 +132,9 @@ public class StreetsViewHolder extends AbstractViewHolder<StreetsViewHolder.Stre
             }
         });
 
-        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
             @Override
-            public void call(Integer number, MyUser myUser) {
+            public void accept(Integer number, MyUser myUser) {
                 if(myUser.getProperties().isSelected()) {
                     myUser.getView(getType()).onChangeLocation(myUser.getLocation());
                 }

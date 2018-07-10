@@ -31,7 +31,7 @@ public class IntroActivity extends MaterialIntroActivity {
                 .buttonsColor(R.color.colorAccent)
                 .image(R.drawable.intro_picture_1)
                 .title("Sometimes...")
-                .description("...we have to follow somebody, - walking, driving, bicycling, anyway. We can not know the destination point just because our leader leads us. But it is very easy to loss him! We can call and ask his location or we can be...")
+                .description("...we have to follow somebody, - walking, driving, bicycling, anyway. We can not know the destination point just because our leader leads us. But it is very easy to loss him! We can accept and ask his location or we can be...")
                 .build());
 
         addSlide(new SlideFragmentBuilder()

@@ -3,7 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.util.Log;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.SignProvider;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
@@ -268,9 +268,9 @@ public class MyTrackingFBTest {
             }
         });
 
-        tracking.setOnSendFailure(new Runnable1<Throwable>() {
+        tracking.setOnSendFailure(new Consumer<Throwable>() {
             @Override
-            public void call(Throwable error) {
+            public void accept(Throwable error) {
                 System.out.println("ERRERR:");
 
             }

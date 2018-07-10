@@ -1,7 +1,7 @@
 package com.edeqa.waytous.helpers;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.State;
 
 import org.junit.Before;
@@ -39,15 +39,15 @@ public class SystemMessageTest {
                 .setText(TEXT)
                 .setDelivery(Misc.getUnique())
                 .setToUser(userTo)
-                .setOnClickListener(new Runnable1<String>() {
+                .setOnClickListener(new Consumer<String>() {
                     @Override
-                    public void call(String arg) {
+                    public void accept(String arg) {
                         assertEquals("setOnClickListener:" + TEXT, arg);
                     }
                 })
-                .setType(TYPE_PRIVATE).setCallback(new Runnable1<String>() {
+                .setType(TYPE_PRIVATE).setCallback(new Consumer<String>() {
                     @Override
-                    public void call(String arg) {
+                    public void accept(String arg) {
                         assertEquals(TEXT, arg);
                     }
                 });
@@ -71,14 +71,14 @@ public class SystemMessageTest {
 
     @Test
     public void setAction() throws Exception {
-        systemMessage.setAction("TITLE", new Runnable1<String>() {
+        systemMessage.setAction("TITLE", new Consumer<String>() {
             @Override
-            public void call(String arg) {
+            public void accept(String arg) {
                 assertEquals("TITLE", systemMessage.getTitle());
                 assertEquals(TEXT, arg);
             }
         });
-        systemMessage.getAction().call(TEXT);
+        systemMessage.getAction().accept(TEXT);
     }
 
     @Test
@@ -94,19 +94,19 @@ public class SystemMessageTest {
 
     @Test
     public void getOnClickListener() throws Exception {
-        systemMessage.getOnClickListener().call("setOnClickListener:" + TEXT);
+        systemMessage.getOnClickListener().accept("setOnClickListener:" + TEXT);
 
     }
 
     @Test
     public void setOnClickListener() throws Exception {
-        systemMessage.setOnClickListener(new Runnable1<String>() {
+        systemMessage.setOnClickListener(new Consumer<String>() {
             @Override
-            public void call(String arg) {
+            public void accept(String arg) {
                 assertEquals("setOnClickListener", arg);
             }
         });
-        systemMessage.getOnClickListener().call("setOnClickListener");
+        systemMessage.getOnClickListener().accept("setOnClickListener");
 
     }
 
@@ -118,7 +118,7 @@ public class SystemMessageTest {
 
     @Test
     public void getAction() throws Exception {
-        systemMessage.getCallback().call(TEXT);
+        systemMessage.getCallback().accept(TEXT);
     }
 
     @Test

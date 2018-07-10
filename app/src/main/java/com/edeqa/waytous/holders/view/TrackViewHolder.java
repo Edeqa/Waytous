@@ -6,8 +6,8 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Consumer;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -77,9 +77,9 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 optionsMenu.add(Menu.NONE, R.string.show_tracks, Menu.NONE, R.string.show_tracks).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 myUser.fire(SHOW_TRACK);
                             }
                         });
@@ -90,9 +90,9 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 optionsMenu.add(Menu.NONE, R.string.hide_tracks, Menu.NONE, R.string.hide_tracks).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 myUser.fire(HIDE_TRACK);
                             }
                         });
@@ -104,9 +104,9 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 optionsMenu = (Menu) object;
                 final MenuItem menuItemShowTracks = optionsMenu.findItem(R.string.show_tracks);
                 menuItemShowTracks.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         TrackView trackView = ((TrackView) myUser.getView(TYPE));
                         if(trackView != null && !trackView.showtrack) {
                             menuItemShowTracks.setVisible(true);
@@ -115,9 +115,9 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                 });
                 final MenuItem menuItemHideTracks = optionsMenu.findItem(R.string.hide_tracks);
                 menuItemHideTracks.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         TrackView trackView = ((TrackView) myUser.getView(TYPE));
                         if(trackView != null && trackView.showtrack) {
                             menuItemHideTracks.setVisible(true);
@@ -165,9 +165,9 @@ public class TrackViewHolder extends AbstractViewHolder<TrackViewHolder.TrackVie
                             counter = myUser.getLocations().size();
 
                             final Location startPosition = myUser.getLocations().get(myUser.getLocations().size() - 2);
-                            new SmoothInterpolated(new Runnable1<Float[]>() {
+                            new SmoothInterpolated(new Consumer<Float[]>() {
                                 @Override
-                                public void call(Float[] value) {
+                                public void accept(Float[] value) {
                                     LatLng current = new LatLng(
                                             startPosition.getLatitude()*(1-value[TIME_ELAPSED])+location.getLatitude()*value[TIME_ELAPSED],
                                             startPosition.getLongitude()*(1-value[TIME_ELAPSED])+location.getLongitude()*value[TIME_ELAPSED]);

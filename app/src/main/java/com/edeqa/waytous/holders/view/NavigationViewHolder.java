@@ -15,8 +15,8 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 
 import com.edeqa.eventbus.EventBus;
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -131,9 +131,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 optionsMenu.add(Menu.NONE, R.string.hide_navigations, Menu.NONE, R.string.hide_navigations).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 NavigationView view = ((NavigationView) myUser.getView(TYPE));
                                 if(view != null && view.showNavigation) {
                                     myUser.fire(HIDE_NAVIGATION);
@@ -148,9 +148,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 optionsMenu = (Menu) object;
                 final MenuItem menuItemHideNavigations = optionsMenu.findItem(R.string.hide_navigations);
                 menuItemHideNavigations.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         NavigationView view = ((NavigationView) myUser.getView(TYPE));
                         if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
@@ -164,9 +164,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                 handlerHideButtons.postDelayed(hideButtons, 5000);
                 break;
             case CAMERA_UPDATED:
-                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
                             buttonsView.setVisibility(View.VISIBLE);
                             handlerHideButtons.removeCallbacks(hideButtons);
@@ -196,9 +196,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                                 .setValue(mode.toString())
                                 .setTitle(R.string.mode).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL)
                                 .setMessage(context.getString(R.string.select_your_preferred_navigation_mode))
-                                .setCallback(new Runnable1<String>() {
+                                .setCallback(new Consumer<String>() {
                                     @Override
-                                    public void call(String arg) {
+                                    public void accept(String arg) {
                                         View v = new View(context);
                                         switch (NavigationHelper.Mode.valueOf(arg)) {
                                             case WALKING:
@@ -255,9 +255,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
     }
 
     private void updateAll() {
-        State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+        State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
             @Override
-            public void call(Integer number, MyUser myUser) {
+            public void accept(Integer number, MyUser myUser) {
                 NavigationView view = (NavigationView) myUser.getView(TYPE);
                 if(view != null && view.showNavigation){
                     view.navigationHelper.setMode(mode);
@@ -364,15 +364,15 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     }
                 }
             });
-            navigationHelper.setOnRequest(new Runnable1<String>() {
+            navigationHelper.setOnRequest(new Consumer<String>() {
                 @Override
-                public void call(String req) {
+                public void accept(String req) {
                     Utils.log(NavigationView.this, "User:", myUser.getProperties().getNumber()+"|"+myUser.getProperties().getDisplayName(), "Request:",req);
                 }
             });
-            navigationHelper.setOnUpdate(new Runnable2<NavigationHelper.Type, Object>() {
+            navigationHelper.setOnUpdate(new BiConsumer<NavigationHelper.Type, Object>() {
                 @Override
-                public void call(NavigationHelper.Type type, Object object) {
+                public void accept(NavigationHelper.Type type, Object object) {
                     switch (type) {
                         case DISTANCE:
                             distance = object.toString();
@@ -416,9 +416,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
                     marker.remove();
                     marker = null;
                     buttonsView.setVisibility(View.INVISIBLE);
-                    State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             if(myUser!= null && myUser.getView(TYPE) != null && ((NavigationView)myUser.getView(TYPE)).track != null) {
                                 buttonsView.setVisibility(View.VISIBLE);
                                 handlerHideButtons.removeCallbacks(hideButtons);
@@ -455,9 +455,9 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
         @Override
         public void onChangeLocation(final Location location) {
             if(myUser == State.getInstance().getMe()) {
-                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         NavigationView view = (NavigationView) myUser.getView(TYPE);
 
                         if(view != null && view.showNavigation) {

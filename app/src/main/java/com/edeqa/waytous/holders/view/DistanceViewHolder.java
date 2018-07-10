@@ -8,8 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Consumer;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -83,9 +83,9 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 optionsMenu.add(Menu.NONE, R.string.show_distances, Menu.NONE, R.string.show_distances).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 State.getInstance().fire(SHOW_DISTANCES);
                             }
                         });
@@ -96,9 +96,9 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 optionsMenu.add(Menu.NONE, R.string.hide_distances, Menu.NONE, R.string.hide_distances).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 State.getInstance().fire(HIDE_DISTANCES);
                             }
                         });
@@ -112,18 +112,18 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                 optionsMenu.findItem(R.string.hide_distances).setVisible(marks.size() > 0);
                 break;
             case SHOW_DISTANCES:
-                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, final MyUser user) {
+                    public void accept(Integer number, final MyUser user) {
                         user.fire(SHOW_DISTANCE);
                     }
                 });
                 break;
             case TRACKING_DISABLED:
             case HIDE_DISTANCES:
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.fire(HIDE_DISTANCE);
                     }
                 });
@@ -224,7 +224,7 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
                     fetchDistanceMark(State.getInstance().getMe(),myUser);
                     /*State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(),new MyUsers.Callback() {
                         @Override
-                        public void call(Integer number, MyUser user) {
+                        public void accept(Integer number, MyUser user) {
                             if(user != myUser) {
                                 fetchDistanceMark(myUser, user);
 
@@ -313,9 +313,9 @@ public class DistanceViewHolder extends AbstractViewHolder<DistanceViewHolder.Di
             final LatLng secondUserInitial = line.getPoints().get(1);
 
             if(animate) {
-                new SmoothInterpolated(new Runnable1<Float[]>() {
+                new SmoothInterpolated(new Consumer<Float[]>() {
                     @Override
-                    public void call(Float[] value) {
+                    public void accept(Float[] value) {
                         if (line != null && marker != null) {
                             LatLng firstCurrent = new LatLng(
                                     firstUserInitial.latitude * (1 - value[TIME_ELAPSED]) + firstPosition().latitude * value[TIME_ELAPSED],

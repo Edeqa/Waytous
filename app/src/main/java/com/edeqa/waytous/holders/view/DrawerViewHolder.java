@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -142,9 +142,9 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
                 ibPrimary.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        State.getInstance().getUsers().forMe(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forMe(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser user) {
+                            public void accept(Integer number, MyUser user) {
                                 closeDrawer();
                                 user.fire(SELECT_SINGLE_USER);
                             }
@@ -246,9 +246,9 @@ public class DrawerViewHolder extends AbstractViewHolder<DrawerViewHolder.Drawer
                     if (State.getInstance().getUsers().getCountSelectedTotal() > 1) {
                         actionBar.setTitle(R.string.app_name);
                     } else {
-                        State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forSelectedUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 String title = myUser.getProperties().getDisplayName();
                                 if (myUser != State.getInstance().getMe()) {
                                     long delta = new Date().getTime() - myUser.getProperties().getChanged();

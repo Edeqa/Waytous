@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.edeqa.helpers.interfaces.Callable1;
+import com.edeqa.helpers.interfaces.Function;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 
@@ -39,7 +39,7 @@ public class CustomDialog {
     private boolean flat;
     private AlertDialog dialog;
     private Toolbar toolbar;
-    private Callable1<Boolean,String> searchListener;
+    private Function<String, Boolean> searchListener;
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener;
     private View footer;
     private View.OnTouchListener onTouchListener;
@@ -103,12 +103,12 @@ public class CustomDialog {
                             searchView.setIconified(true);
                         }
                         searchItem.collapseActionView();
-                        return getSearchListener().call(query);
+                        return getSearchListener().apply(query);
                     }
 
                     @Override
                     public boolean onQueryTextChange(String s) {
-                        return getSearchListener().call(s);
+                        return getSearchListener().apply(s);
                     }
                 });
             }
@@ -235,11 +235,11 @@ public class CustomDialog {
         }
     };
 
-    public Callable1<Boolean, String> getSearchListener() {
+    public Function<String, Boolean> getSearchListener() {
         return searchListener;
     }
 
-    public void setSearchListener(Callable1<Boolean, String> searchListener) {
+    public void setSearchListener(Function<String, Boolean> searchListener) {
         this.searchListener = searchListener;
     }
 

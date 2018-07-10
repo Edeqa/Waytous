@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -102,9 +102,9 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                 if(b != null && b.getString(getType(), null).equals(getType())){
                     if(marker.getTag() != null) {
                         int number = b.getInt(RESPONSE_NUMBER);
-                        State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 if(myUser.getProperties().isSelected() && State.getInstance().getUsers().getCountSelectedTotal() == 1) {
                                     myUser.fire(MARKER_CLICK);
                                 } else {
@@ -118,13 +118,13 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
                 item.add(new SettingItem.Group(getType()).setTitle(context.getString(R.string.marker)));
-                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(getType()).setMessage(context.getString(R.string.shows_accuracy_circle_around_the_marker_on_map)).setCallback(new Runnable1<Boolean>() {
+                item.add(new SettingItem.Checkbox(PREFERENCE_MARKER_ACCURACY).setTitle(context.getString(R.string.accuracy_circle)).setGroupId(getType()).setMessage(context.getString(R.string.shows_accuracy_circle_around_the_marker_on_map)).setCallback(new Consumer<Boolean>() {
                     @Override
-                    public void call(Boolean arg) {
+                    public void accept(Boolean arg) {
                         showAccuracy = arg;
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer arg1, MyUser user) {
+                            public void accept(Integer arg1, MyUser user) {
                                 user.removeViews();
                                 user.createViews();
                             }
@@ -235,9 +235,9 @@ public class MarkerViewHolder extends AbstractViewHolder<MarkerViewHolder.Marker
                 circleValues[1] = location.getAccuracy(); //finalradius
             }
 
-            new SmoothInterpolated(new Runnable1<Float[]>() {
+            new SmoothInterpolated(new Consumer<Float[]>() {
                 @Override
-                public void call(Float[] value) {
+                public void accept(Float[] value) {
                     final LatLng currentPosition = new LatLng(
                             startPosition.latitude*(1-value[TIME_ELAPSED])+finalPosition.latitude*value[TIME_ELAPSED],
                             startPosition.longitude*(1-value[TIME_ELAPSED])+finalPosition.longitude*value[TIME_ELAPSED]);

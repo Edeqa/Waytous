@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -15,7 +14,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -299,12 +298,12 @@ public class NotificationHolder extends AbstractPropertyHolder {
         }
     };
 
-    private Runnable1<String> previewSound = new Runnable1<String>() {
+    private Consumer<String> previewSound = new Consumer<String>() {
 
         public Ringtone player;
 
         @Override
-        public void call(String arg) {
+        public void accept(String arg) {
             if(arg != null && arg.length() > 0) {
                 if(player != null) {
                     player.stop();

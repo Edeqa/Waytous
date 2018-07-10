@@ -3,7 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.holders.view.SnackbarViewHolder;
 
@@ -21,9 +21,9 @@ public class SystemMessage<T> {
     private String delivery;
     private int type;
     private int duration = Snackbar.LENGTH_LONG;
-    private Runnable1<T> callback;
-    private Runnable1<T> onClickListener;
-    private Runnable1<T> action;
+    private Consumer<T> callback;
+    private Consumer<T> onClickListener;
+    private Consumer<T> action;
 
     public SystemMessage(Context context) {
         this.context = context;
@@ -42,7 +42,7 @@ public class SystemMessage<T> {
         return title;
     }
 
-    public SystemMessage setAction(String title, Runnable1<T> action) {
+    public SystemMessage setAction(String title, Consumer<T> action) {
         this.title = title;
         this.action = action;
         return this;
@@ -57,11 +57,11 @@ public class SystemMessage<T> {
         return this;
     }
 
-    public Runnable1<T> getOnClickListener() {
+    public Consumer<T> getOnClickListener() {
         return onClickListener;
     }
 
-    public SystemMessage setOnClickListener(Runnable1<T> callback) {
+    public SystemMessage setOnClickListener(Consumer<T> callback) {
         this.onClickListener = callback;
         return this;
     }
@@ -73,7 +73,7 @@ public class SystemMessage<T> {
         }
     }
 
-    public Runnable1 getAction() {
+    public Consumer getAction() {
         return action;
     }
 
@@ -117,11 +117,11 @@ public class SystemMessage<T> {
         return context;
     }
 
-    public Runnable1<T> getCallback() {
+    public Consumer<T> getCallback() {
         return callback;
     }
 
-    public SystemMessage setCallback(Runnable1<T> callback) {
+    public SystemMessage setCallback(Consumer<T> callback) {
         this.callback = callback;
         return this;
     }

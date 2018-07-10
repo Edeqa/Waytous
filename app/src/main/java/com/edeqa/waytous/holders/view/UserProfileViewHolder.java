@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.SignProvider;
@@ -583,12 +583,12 @@ public class UserProfileViewHolder extends AbstractViewHolder {
 
                         @Override
                         public void onCancel() {
-                            onFailureListener.call(new Exception(context.getString(R.string.sign_cancelled)));
+                            onFailureListener.accept(new Exception(context.getString(R.string.sign_cancelled)));
                         }
 
                         @Override
                         public void onError(FacebookException error) {
-                            onFailureListener.call(error);
+                            onFailureListener.accept(error);
                         }
                     });
                     facebookLoginButton.callOnClick();
@@ -615,7 +615,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                                     if (task.isSuccessful()) {
                                         onSuccessListener.run();
                                     } else {
-                                        onFailureListener.call(task.getException());
+                                        onFailureListener.accept(task.getException());
                                     }
                                 }
                             });
@@ -631,7 +631,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                         }
                         @Override
                         public void failure(TwitterException exception) {
-                            onFailureListener.call(exception);
+                            onFailureListener.accept(exception);
                         }
                     });
                     twitterLoginButton.callOnClick();
@@ -664,7 +664,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                             if (task.isSuccessful()) {
                                 onSuccessListener.run();
                             } else {
-                                onFailureListener.call(task.getException());
+                                onFailureListener.accept(task.getException());
                             }
                         }
                     });
@@ -698,7 +698,7 @@ public class UserProfileViewHolder extends AbstractViewHolder {
                             } else {
                                 Utils.err("Sign cancelled", Misc.toStringDeep(result.getStatus()));
                                 System.err.println(result.getStatus());
-                                onFailureListener.call(new Exception(context.getString(R.string.sign_cancelled)));
+                                onFailureListener.accept(new Exception(context.getString(R.string.sign_cancelled)));
                             }
                         }
                     }
@@ -727,9 +727,9 @@ public class UserProfileViewHolder extends AbstractViewHolder {
             }
         }
 
-        final Runnable1<Throwable> onFailureListener = new Runnable1<Throwable>(){
+        final Consumer<Throwable> onFailureListener = new Consumer<Throwable>(){
             @Override
-            public void call(Throwable arg) {
+            public void accept(Throwable arg) {
                 Utils.err(arg);
                 if(SignProvider.PASSWORD.equals(mode)) {
                     switchDialogLayout(DialogMode.SIGN_IN_PASSWORD, null);

@@ -3,8 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.annotation.SuppressLint;
 import android.location.Location;
 
-import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.State;
 
 import org.json.JSONException;
@@ -49,12 +48,12 @@ public class MyUsers {
         return State.getInstance().getMe();
     }
 
-    public void forAllUsers(Runnable2<Integer, MyUser> callback) {
+    public void forAllUsers(BiConsumer<Integer, MyUser> callback) {
         forMe(callback);
         forAllUsersExceptMe(callback);
     }
 
-    public void forSelectedUsers(Runnable2<Integer, MyUser> callback) {
+    public void forSelectedUsers(BiConsumer<Integer, MyUser> callback) {
         for (Map.Entry<Integer, MyUser> entry : users.entrySet()) {
             MyUser user = entry.getValue();
             if (user == null || user.getProperties() == null || !user.getProperties().isSelected()) continue;
@@ -62,21 +61,21 @@ public class MyUsers {
         }
     }
 
-    public void forUser(int number,Runnable2<Integer, MyUser> callback) {
+    public void forUser(int number,BiConsumer<Integer, MyUser> callback) {
         if(users.containsKey(number) && users.get(number) != null){
             try {
-                callback.call(number, users.get(number));
+                callback.accept(number, users.get(number));
             } catch(Exception e) {
                 Utils.err("MyUsers","failed:", e); //NON-NLS
             }
         }
     }
 
-    public void forMe(Runnable2<Integer, MyUser> callback) {
+    public void forMe(BiConsumer<Integer, MyUser> callback) {
         forUser(myNumber,callback);
     }
 
-    public void forAllUsersExceptMe(Runnable2<Integer, MyUser> callback) {
+    public void forAllUsersExceptMe(BiConsumer<Integer, MyUser> callback) {
         try {
             if (myNumber != 0) {
                 forUser(0, callback);

@@ -195,7 +195,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                                 @Override
                                 public void onClick(View view) {
                                     //noinspection unchecked
-                                    m.getAction().call(SnackbarViewHolder.this);
+                                    m.getAction().accept(SnackbarViewHolder.this);
                                 }
                             }).show();
                             if(m.getOnClickListener() != null) {
@@ -204,7 +204,7 @@ public class SnackbarViewHolder extends AbstractViewHolder {
                                     public void onClick(View view) {
                                         snackbar.dismiss();
                                         //noinspection unchecked
-                                        m.getOnClickListener().call(SnackbarViewHolder.this);
+                                        m.getOnClickListener().accept(SnackbarViewHolder.this);
                                     }
                                 });
                             }

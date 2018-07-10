@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.Constants;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -146,9 +146,9 @@ public class MessagesHolder extends AbstractPropertyHolder {
                 if(UserMessage.getItemByFieldValue("key", key) != null) return;
             }
 
-            State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
+            State.getInstance().getUsers().forUser(number,new BiConsumer<Integer, MyUser>() {
                 @Override
-                public void call(Integer number, MyUser myUser) {
+                public void accept(Integer number, MyUser myUser) {
                     UserMessage m = new UserMessage(context);
                     m.setBody(text);
                     try {

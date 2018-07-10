@@ -25,8 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Consumer;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -116,9 +116,9 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
                 item.add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100));
-                item.add(new SettingItem.Checkbox(PREFERENCE_SHOW_LABELS_IN_CONTEXT_MENU).setValue(showLabelsInContextMenu).setTitle(R.string.show_labels_in_context_menu).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL).setCallback(new Runnable1<Boolean>() {
+                item.add(new SettingItem.Checkbox(PREFERENCE_SHOW_LABELS_IN_CONTEXT_MENU).setValue(showLabelsInContextMenu).setTitle(R.string.show_labels_in_context_menu).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL).setCallback(new Consumer<Boolean>() {
                     @Override
-                    public void call(Boolean arg) {
+                    public void accept(Boolean arg) {
                         showLabelsInContextMenu = arg;
                     }
                 }));
@@ -224,9 +224,9 @@ public class ButtonViewHolder extends AbstractViewHolder<ButtonViewHolder.Button
                     case DragEvent.ACTION_DROP:
                         ClipData data = dragEvent.getClipData();
                         int number = Integer.valueOf(String.valueOf(data.getItemAt(0).getText()));
-                        State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser user) {
+                            public void accept(Integer number, MyUser user) {
                                 user.fire(DROPPED_TO_USER, myUser);
                             }
                         });

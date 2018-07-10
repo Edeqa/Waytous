@@ -3,9 +3,9 @@ package com.edeqa.waytous.helpers;
 import android.support.annotation.NonNull;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Callable2;
-import com.edeqa.helpers.interfaces.Runnable2;
-import com.edeqa.helpers.interfaces.Runnable3;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.BiFunction;
+import com.edeqa.helpers.interfaces.TriConsumer;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.Sync;
@@ -42,71 +42,71 @@ import static com.edeqa.waytous.interfaces.Sync.Mode.UPDATE_REMOTE;
 public class SyncFB implements Sync {
 
     private boolean debug;
-    private Callable2<Object, String, Object> onGetValue = new Callable2<Object, String, Object>() {
+    private BiFunction<String, Object, Object> onGetValue = new BiFunction<String, Object, Object>() {
         @Override
-        public Object call(String key, Object value) {
+        public Object apply(String key, Object value) {
             if(isDebug()) System.out.println("Got value: " + key + ", [value]:" + value); //NON-NLS
             return null;
         }
     };
-    private Runnable2<String, Object> onAddRemoteValue = new Runnable2<String, Object>() {
+    private BiConsumer<String, Object> onAddRemoteValue = new BiConsumer<String, Object>() {
         @Override
-        public void call(String key, Object value) {
+        public void accept(String key, Object value) {
             if(isDebug()) System.out.println("Added remote: " + key + ", [value]:" + value); //NON-NLS
         }
     };
-    private Runnable3<String, Object, Object> onUpdateRemoteValue = new Runnable3<String, Object, Object>() {
+    private TriConsumer<String, Object, Object> onUpdateRemoteValue = new TriConsumer<String, Object, Object>() {
         @Override
-        public void call(String key, Object newValue, Object oldValue) {
+        public void accept(String key, Object newValue, Object oldValue) {
             if(isDebug()) System.out.println("Updated remote: " + key + ", [new]:" + newValue + ", [old]:" + oldValue); //NON-NLS
         }
     };
-    private Runnable2<String, Object> onRemoveRemoteValue = new Runnable2<String, Object>() {
+    private BiConsumer<String, Object> onRemoveRemoteValue = new BiConsumer<String, Object>() {
         @Override
-        public void call(String key, Object value) {
+        public void accept(String key, Object value) {
             if(isDebug()) System.out.println("Removed remote: " + key + ", [value]:" + value); //NON-NLS
         }
     };
-    private Runnable3<String, Object, Object> onSaveRemoteValue = new Runnable3<String, Object, Object>() {
+    private TriConsumer<String, Object, Object> onSaveRemoteValue = new TriConsumer<String, Object, Object>() {
         @Override
-        public void call(String key, Object newValue, Object oldValue) {
+        public void accept(String key, Object newValue, Object oldValue) {
             if(isDebug()) System.out.println("Saved remote: " + key + ", [new]:" + newValue + ", [old]:" + oldValue); //NON-NLS
         }
     };
-    private Runnable2<String, Object> onAddLocalValue = new Runnable2<String, Object>() {
+    private BiConsumer<String, Object> onAddLocalValue = new BiConsumer<String, Object>() {
         @Override
-        public void call(String key, Object value) {
+        public void accept(String key, Object value) {
             if(isDebug()) System.out.println("Added local: " + key + ", [value]:" + value); //NON-NLS
         }
     };
-    private Runnable3<String, Object, Object> onUpdateLocalValue = new Runnable3<String, Object, Object>() {
+    private TriConsumer<String, Object, Object> onUpdateLocalValue = new TriConsumer<String, Object, Object>() {
         @Override
-        public void call(String key, Object newValue, Object oldValue) {
+        public void accept(String key, Object newValue, Object oldValue) {
             if(isDebug()) System.out.println("Updated local: " + key + ", [new]:" + newValue + ", [old]:" + oldValue); //NON-NLS
         }
     };
-    private Runnable2<String, Object> onRemoveLocalValue = new Runnable2<String, Object>() {
+    private BiConsumer<String, Object> onRemoveLocalValue = new BiConsumer<String, Object>() {
         @Override
-        public void call(String key, Object value) {
+        public void accept(String key, Object value) {
             if(isDebug()) System.out.println("Removed local: " + key + ", [value]:" + value); //NON-NLS
         }
     };
-    private Runnable3<String, Object, Object> onSaveLocalValue = new Runnable3<String, Object, Object>() {
+    private TriConsumer<String, Object, Object> onSaveLocalValue = new TriConsumer<String, Object, Object>() {
         @Override
-        public void call(String key, Object newValue, Object oldValue) {
+        public void accept(String key, Object newValue, Object oldValue) {
             if(isDebug()) System.out.println("Saved local: " + key + ", [new]:" + newValue + ", [old]:" + oldValue); //NON-NLS
         }
     };
-    private Runnable2<Mode, String> onFinish = new Runnable2<Mode, String>() {
+    private BiConsumer<Mode, String> onFinish = new BiConsumer<Mode, String>() {
         @Override
-        public void call(Mode mode, String key) {
+        public void accept(Mode mode, String key) {
             System.out.println("Finish: " + key + ", [mode]:" + mode); //NON-NLS
         }
     };
-    private Runnable2<String, Throwable> onError = new Runnable2<String, Throwable>() {
+    private BiConsumer<String, Throwable> onError = new BiConsumer<String, Throwable>() {
         @SuppressWarnings("HardCodedStringLiteral")
         @Override
-        public void call(String key, Throwable error) {
+        public void accept(String key, Throwable error) {
             System.err.println("Error: " + key);
             error.printStackTrace();
         }
@@ -148,20 +148,20 @@ public class SyncFB implements Sync {
             @Override
             public void onDataChange(DataSnapshot data) {
                 if(data.getValue() == null) {
-                    getOnFinish().call(SKIP, getKey());
+                    getOnFinish().accept(SKIP, getKey());
                 } else if(data.getValue() instanceof Map){
                     for (DataSnapshot child : data.getChildren()) {
-                        getOnGetValue().call(child.getKey(), child.getValue());
+                        getOnGetValue().apply(child.getKey(), child.getValue());
                     }
-                    getOnFinish().call(GET_REMOTE, getKey());
+                    getOnFinish().accept(GET_REMOTE, getKey());
                 } else {
-                    getOnError().call(getKey(), new Exception("Not an object or array, use 'getValue' instead."));
+                    getOnError().accept(getKey(), new Exception("Not an object or array, use 'getValue' instead."));
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                getOnError().call(getKey(), databaseError.toException());
+                getOnError().accept(getKey(), databaseError.toException());
             }
         });
     }
@@ -178,22 +178,22 @@ public class SyncFB implements Sync {
     private DatabaseReference getRef(String child) {
         DatabaseReference ref = null;
         if(getReference() == null) {
-            onError.call(getKey(), new Exception("Reference not defined."));
+            onError.accept(getKey(), new Exception("Reference not defined."));
             return null;
         }
         switch(type) {
             case ACCOUNT_PRIVATE:
                 if(getUid() == null) {
-                    onError.call(getKey(), new Exception("UID not defined."));
+                    onError.accept(getKey(), new Exception("UID not defined."));
                 } else {
                     ref = getReference().child(Firebase.SECTION_USERS).child(getUid()).child(Firebase.PRIVATE);
                 }
                 break;
             case USER_PUBLIC:
                 if(getGroup() == null) {
-                    onError.call(getKey(), new Exception("Group not defined."));
+                    onError.accept(getKey(), new Exception("Group not defined."));
                 } else if(getUserNumber() == null) {
-                    onError.call(getKey(), new Exception("UserNumber not defined."));
+                    onError.accept(getKey(), new Exception("UserNumber not defined."));
                 } else {
                     ref = getReference().child(getGroup()).child(Firebase.USERS).child(Firebase.PUBLIC).child(getUserNumber());
                 }
@@ -201,7 +201,7 @@ public class SyncFB implements Sync {
 
         }
         if(ref == null) {
-            onError.call(getKey(), new Exception("Firebase database reference not defined."));
+            onError.accept(getKey(), new Exception("Firebase database reference not defined."));
         }
         if(ref != null && child != null) {
             ref = ref.child(child);
@@ -216,23 +216,23 @@ public class SyncFB implements Sync {
         _getValue(getKey(), getOnGetValue(), getOnFinish(), getOnError());
     }
 
-    private void _getValue(final String key, final Callable2<Object, String, Object> onGetValue, final Runnable2<Mode, String> onFinish, final Runnable2<String, Throwable> onError) {
+    private void _getValue(final String key, final BiFunction<String, Object, Object> onGetValue, final BiConsumer<Mode, String> onFinish, final BiConsumer<String, Throwable> onError) {
         if(key == null) {
-            onError.call(getKey(), new Exception("Key not defined."));
-            if(onFinish != null) onFinish.call(getMode(), getKey());
+            onError.accept(getKey(), new Exception("Key not defined."));
+            if(onFinish != null) onFinish.accept(getMode(), getKey());
             return;
         }
         this._ref.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot data) {
-                onGetValue.call(data.getKey(), data.getValue());
-                if(onFinish != null) onFinish.call(getMode(), data.getKey());
+                onGetValue.apply(data.getKey(), data.getValue());
+                if(onFinish != null) onFinish.accept(getMode(), data.getKey());
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                onError.call(key, error.toException());
-                if(onFinish != null) onFinish.call(getMode(), key);
+                onError.accept(key, error.toException());
+                if(onFinish != null) onFinish.accept(getMode(), key);
             }
         });
     }
@@ -241,10 +241,10 @@ public class SyncFB implements Sync {
     public void syncValue(Object value) {
         _ref = getRef(getChild());
         if(_ref == null) return;
-        _syncValue(UPDATE_BOTH, value, getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), onSaveRemoteValueWithTimestamp, getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), getOnSaveLocalValue(), new Runnable2<Mode, String>() {
+        _syncValue(UPDATE_BOTH, value, getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), onSaveRemoteValueWithTimestamp, getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), getOnSaveLocalValue(), new BiConsumer<Mode, String>() {
             @Override
-            public void call(Mode mode, String key) {
-                getOnFinish().call(mode, key);
+            public void accept(Mode mode, String key) {
+                getOnFinish().accept(mode, key);
                 State.getInstance().setPreference("synced_" + getType(), new Date().getTime()); //NON-NLS
             }
         }, getOnError());
@@ -278,31 +278,31 @@ public class SyncFB implements Sync {
         _syncValue(REMOVE_LOCAL, null, getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), getOnSaveRemoteValue(), getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), getOnSaveLocalValue(), getOnFinish(), getOnError());
     }
 
-    private void _syncValue(final Mode mode, final Object newValue, final Callable2<Object, String, Object> onGetValue, final Runnable2<String,Object> onAddRemoteValue, final Runnable3<String,Object,Object> onUpdateRemoteValue, final Runnable2<String,Object> onRemoveRemoteValue, final Runnable3<String, Object, Object> onSaveRemoteValue, final Runnable2<String,Object> onAddLocalValue, final Runnable3<String,Object,Object> onUpdateLocalValue, final Runnable2<String,Object> onRemoveLocalValue, final Runnable3<String,Object,Object> onSaveLocalValue, final Runnable2<Mode, String> onFinish, final Runnable2<String, Throwable> onError) {
+    private void _syncValue(final Mode mode, final Object newValue, final BiFunction<String, Object, Object> onGetValue, final BiConsumer<String,Object> onAddRemoteValue, final TriConsumer<String,Object,Object> onUpdateRemoteValue, final BiConsumer<String,Object> onRemoveRemoteValue, final TriConsumer<String, Object, Object> onSaveRemoteValue, final BiConsumer<String,Object> onAddLocalValue, final TriConsumer<String,Object,Object> onUpdateLocalValue, final BiConsumer<String,Object> onRemoveLocalValue, final TriConsumer<String,Object,Object> onSaveLocalValue, final BiConsumer<Mode, String> onFinish, final BiConsumer<String, Throwable> onError) {
 
         setMode(mode);
 
-        _getValue(getKey(), new Callable2<Object, String, Object>() {
+        _getValue(getKey(), new BiFunction<String, Object, Object>() {
             @Override
-            public Object call(final String key, final Object remote) {
+            public Object apply(final String key, final Object remote) {
 
                 Map<String, Object> updates = new HashMap<>();
 
                 Object local = newValue;
                 if(mode != REMOVE_REMOTE) {
                     if (local == null) {
-                        local = onGetValue.call(key, remote);
+                        local = onGetValue.apply(key, remote);
                     }
                     if (local == null) {
-                        onError.call(key, new Exception("Local value not defined, define it or use 'ongetvalue'."));
+                        onError.accept(key, new Exception("Local value not defined, define it or use 'ongetvalue'."));
                         return null;
                     }
                     if (!Misc.isEmpty(remote) && !remote.getClass().equals(local.getClass()) && local != ServerValue.TIMESTAMP) {
-                        onError.call(key, new Exception("Remote value [" + remote.getClass().getSimpleName() + "] is not equivalent to local value [" + local.getClass().getSimpleName() + "], use 'syncValues' for sync objects."));
+                        onError.accept(key, new Exception("Remote value [" + remote.getClass().getSimpleName() + "] is not equivalent to local value [" + local.getClass().getSimpleName() + "], use 'syncValues' for sync objects."));
                         return null;
                     }
                     if (local.equals(remote)) {
-                        onFinish.call(SKIP, key);
+                        onFinish.accept(SKIP, key);
                         return null;
                     }
                 }
@@ -321,39 +321,39 @@ public class SyncFB implements Sync {
                         }
                         if(process) {
                             if(Misc.isEmpty(local)) {
-                                onUpdateLocalValue.call(key, remote, local);
-                                onSaveLocalValue.call(key, remote, local);
-                                onFinish.call(UPDATE_LOCAL, key);
+                                onUpdateLocalValue.accept(key, remote, local);
+                                onSaveLocalValue.accept(key, remote, local);
+                                onFinish.accept(UPDATE_LOCAL, key);
                             } else {
-                                onAddLocalValue.call(key, remote);
-                                onSaveLocalValue.call(key, remote, null);
-                                onFinish.call(ADD_LOCAL, key);
+                                onAddLocalValue.accept(key, remote);
+                                onSaveLocalValue.accept(key, remote, null);
+                                onFinish.accept(ADD_LOCAL, key);
                             }
                         } else {
-                            onFinish.call(SKIP, key);
+                            onFinish.accept(SKIP, key);
                         }
                         break;
                     case OVERRIDE_LOCAL:
                         /*if(!(local instanceof String)) {
-                            onError.call(key, new Exception("Mode OVERRIDE_LOCAL allowed only for strings."));
+                            onError.accept(key, new Exception("Mode OVERRIDE_LOCAL allowed only for strings."));
                             return null;
                         }*/
                         if(!Misc.isEmpty(local)) {
-                            onUpdateLocalValue.call(key, remote, local);
-                            onSaveLocalValue.call(key, remote, local);
-                            onFinish.call(OVERRIDE_LOCAL, key);
+                            onUpdateLocalValue.accept(key, remote, local);
+                            onSaveLocalValue.accept(key, remote, local);
+                            onFinish.accept(OVERRIDE_LOCAL, key);
                         } else {
-                            onAddLocalValue.call(key, remote);
-                            onSaveLocalValue.call(key, remote, null);
-                            onFinish.call(ADD_LOCAL, key);
+                            onAddLocalValue.accept(key, remote);
+                            onSaveLocalValue.accept(key, remote, null);
+                            onFinish.accept(ADD_LOCAL, key);
                         }
                         break;
                     case REMOVE_LOCAL:
                         if(!Misc.isEmpty(local)) {
-                            onRemoveLocalValue.call(getKey(), local);
-                            onFinish.call(REMOVE_LOCAL, getKey());
+                            onRemoveLocalValue.accept(getKey(), local);
+                            onFinish.accept(REMOVE_LOCAL, getKey());
                         } else {
-                            onFinish.call(SKIP, getKey());
+                            onFinish.accept(SKIP, getKey());
                         }
                         break;
                     case UPDATE_REMOTE:
@@ -377,19 +377,19 @@ public class SyncFB implements Sync {
                             _ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    _getValue(getKey(), new Callable2<Object, String, Object>() {
+                                    _getValue(getKey(), new BiFunction<String, Object, Object>() {
                                         @Override
-                                        public Object call(String key, Object updated) {
+                                        public Object apply(String key, Object updated) {
                                             if(!Misc.isEmpty(remote)) {
                                                 registerHistory(UPDATE_REMOTE, _ref.getKey() + "/" + key, updated);
-                                                onUpdateRemoteValue.call(key, updated, remote);
-                                                onSaveRemoteValue.call(key, updated, remote);
-                                                onFinish.call(UPDATE_REMOTE, key);
+                                                onUpdateRemoteValue.accept(key, updated, remote);
+                                                onSaveRemoteValue.accept(key, updated, remote);
+                                                onFinish.accept(UPDATE_REMOTE, key);
                                             } else {
                                                 registerHistory(ADD_REMOTE, _ref.getKey() + "/" + key, updated);
-                                                onAddRemoteValue.call(key, updated);
-                                                onSaveRemoteValue.call(key, updated, null);
-                                                onFinish.call(ADD_REMOTE, key);
+                                                onAddRemoteValue.accept(key, updated);
+                                                onSaveRemoteValue.accept(key, updated, null);
+                                                onFinish.accept(ADD_REMOTE, key);
                                             }
                                             return null;
                                         }
@@ -398,11 +398,11 @@ public class SyncFB implements Sync {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    onError.call(key, e);
+                                    onError.accept(key, e);
                                 }
                             });
                         } else {
-                            onFinish.call(SKIP, key);
+                            onFinish.accept(SKIP, key);
                         }
                         break;
                     case OVERRIDE_REMOTE:
@@ -415,19 +415,19 @@ public class SyncFB implements Sync {
                             _ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    _getValue(getKey(), new Callable2<Object, String, Object>() {
+                                    _getValue(getKey(), new BiFunction<String, Object, Object>() {
                                         @Override
-                                        public Object call(String key, Object updated) {
+                                        public Object apply(String key, Object updated) {
                                             if(!Misc.isEmpty(remote)) {
                                                 registerHistory(OVERRIDE_REMOTE, _ref.getKey() + "/" + key, updated);
-                                                onUpdateRemoteValue.call(key, updated, remote);
-                                                onSaveRemoteValue.call(key, updated, remote);
-                                                onFinish.call(OVERRIDE_REMOTE, key);
+                                                onUpdateRemoteValue.accept(key, updated, remote);
+                                                onSaveRemoteValue.accept(key, updated, remote);
+                                                onFinish.accept(OVERRIDE_REMOTE, key);
                                             } else {
                                                 registerHistory(ADD_REMOTE, _ref.getKey() + "/" + key, updated);
-                                                onAddRemoteValue.call(key, updated);
-                                                onSaveRemoteValue.call(key, updated, null);
-                                                onFinish.call(ADD_REMOTE, key);
+                                                onAddRemoteValue.accept(key, updated);
+                                                onSaveRemoteValue.accept(key, updated, null);
+                                                onFinish.accept(ADD_REMOTE, key);
                                             }
                                             return null;
                                         }
@@ -436,11 +436,11 @@ public class SyncFB implements Sync {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    onError.call(key, e);
+                                    onError.accept(key, e);
                                 }
                             });
                         } else {
-                            onFinish.call(SKIP, key);
+                            onFinish.accept(SKIP, key);
                         }
                         break;
                     case REMOVE_REMOTE:
@@ -449,17 +449,17 @@ public class SyncFB implements Sync {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     registerHistory(REMOVE_REMOTE, _ref.getKey() + "/" + key, remote);
-                                    onRemoveRemoteValue.call(getKey(), remote);
-                                    onFinish.call(REMOVE_REMOTE, getKey());
+                                    onRemoveRemoteValue.accept(getKey(), remote);
+                                    onFinish.accept(REMOVE_REMOTE, getKey());
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    onError.call(key, e);
+                                    onError.accept(key, e);
                                 }
                             });
                         } else {
-                            onFinish.call(SKIP, getKey());
+                            onFinish.accept(SKIP, getKey());
                         }
                         break;
                     case UPDATE_BOTH:
@@ -502,13 +502,13 @@ public class SyncFB implements Sync {
                         }
                         if(processLocal) {
                             if(!Misc.isEmpty(local)) {
-                                onUpdateLocalValue.call(getKey(), remote, local);
-                                onSaveLocalValue.call(getKey(), remote, local);
-                                onFinish.call(UPDATE_LOCAL, getKey());
+                                onUpdateLocalValue.accept(getKey(), remote, local);
+                                onSaveLocalValue.accept(getKey(), remote, local);
+                                onFinish.accept(UPDATE_LOCAL, getKey());
                             } else {
-                                onAddLocalValue.call(getKey(), remote);
-                                onSaveLocalValue.call(getKey(), remote, null);
-                                onFinish.call(ADD_LOCAL, getKey());
+                                onAddLocalValue.accept(getKey(), remote);
+                                onSaveLocalValue.accept(getKey(), remote, null);
+                                onFinish.accept(ADD_LOCAL, getKey());
                             }
                         } else if(processRemote) {
                             if(local instanceof Map && local != ServerValue.TIMESTAMP) {
@@ -520,19 +520,19 @@ public class SyncFB implements Sync {
                             _ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    _getValue(getKey(), new Callable2<Object, String, Object>() {
+                                    _getValue(getKey(), new BiFunction<String, Object, Object>() {
                                         @Override
-                                        public Object call(String key, Object updated) {
+                                        public Object apply(String key, Object updated) {
                                             if(!Misc.isEmpty(remote)) {
                                                 registerHistory(UPDATE_REMOTE, _ref.getKey() + "/" + key, updated);
-                                                onUpdateRemoteValue.call(key, updated, remote);
-                                                onSaveRemoteValue.call(key, updated, remote);
-                                                onFinish.call(UPDATE_REMOTE, key);
+                                                onUpdateRemoteValue.accept(key, updated, remote);
+                                                onSaveRemoteValue.accept(key, updated, remote);
+                                                onFinish.accept(UPDATE_REMOTE, key);
                                             } else {
                                                 registerHistory(ADD_REMOTE, _ref.getKey() + "/" + key, updated);
-                                                onAddRemoteValue.call(key, updated);
-                                                onSaveRemoteValue.call(key, updated, null);
-                                                onFinish.call(ADD_REMOTE, key);
+                                                onAddRemoteValue.accept(key, updated);
+                                                onSaveRemoteValue.accept(key, updated, null);
+                                                onFinish.accept(ADD_REMOTE, key);
                                             }
                                             return updated;
                                         }
@@ -541,15 +541,15 @@ public class SyncFB implements Sync {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    onError.call(key, e);
+                                    onError.accept(key, e);
                                 }
                             });
                         } else {
-                            onFinish.call(SKIP, getKey());
+                            onFinish.accept(SKIP, getKey());
                         }
                         break;
                     default:
-                        onError.call(key, new Exception("Mode not defined"));
+                        onError.accept(key, new Exception("Mode not defined"));
                         break;
                 }
                 return null;
@@ -593,8 +593,8 @@ public class SyncFB implements Sync {
                 }
                 updates.put(key, x);
             } else {
-                getOnError().call(getKey(), new Exception("Some of local values is not an object, use 'syncValue' for each one."));
-                getOnFinish().call(getMode(), getKey());
+                getOnError().accept(getKey(), new Exception("Some of local values is not an object, use 'syncValue' for each one."));
+                getOnFinish().accept(getMode(), getKey());
                 return;
             }
         }
@@ -607,8 +607,8 @@ public class SyncFB implements Sync {
                 final int[] counters = {0, updates.size(), 0, 0};
                 if(value != null) {
                     if(!(value instanceof Map)) {
-                        getOnError().call(getKey(), new Exception("Remote value is not an object, use 'syncValue'."));
-                        getOnFinish().call(getMode(), getKey());
+                        getOnError().accept(getKey(), new Exception("Remote value is not an object, use 'syncValue'."));
+                        getOnFinish().accept(getMode(), getKey());
                         return;
                     } else {
                         for (DataSnapshot x : data.getChildren()) {
@@ -621,9 +621,9 @@ public class SyncFB implements Sync {
                 }
 
                 if(updates.size() > 0) {
-                    Runnable2<Mode, String> _onFinish = new Runnable2<Mode, String>() {
+                    BiConsumer<Mode, String> _onFinish = new BiConsumer<Mode, String>() {
                         @Override
-                        public void call(Mode mode, String key) {
+                        public void accept(Mode mode, String key) {
                             switch (mode) {
                                 case UPDATE_REMOTE:
                                 case OVERRIDE_REMOTE:
@@ -641,7 +641,7 @@ public class SyncFB implements Sync {
                             }
                             counters[0]++;
                             if(counters[0] == counters[1]) {
-                                getOnFinish().call(mode, key);
+                                getOnFinish().accept(mode, key);
                                 State.getInstance().setPreference("synced_" + getType(), new Date().getTime()); //NON-NLS
                                 updateTimestamp();
                             }
@@ -652,9 +652,9 @@ public class SyncFB implements Sync {
                         SyncFB sync = new SyncFB().setType(getType()).setChild(getKey()).setKey(x.getKey());
                         sync._ref = getRef(getKey());
 
-                        Runnable3<String, Object, Object> onSaveLocal = new Runnable3<String, Object, Object>() {
+                        TriConsumer<String, Object, Object> onSaveLocal = new TriConsumer<String, Object, Object>() {
                             @Override
-                            public void call(String key, Object newValue, Object oldValue) {
+                            public void accept(String key, Object newValue, Object oldValue) {
                                 Map<String,Object> newMap = (Map) newValue;
 //                                if(oldValue != null && oldValue instanceof Map && ((Map) oldValue).containsKey(Firebase.SYNCED) && ((Map) oldValue).get(Firebase.SYNCED) == newMap.get(Firebase.SYNCED)) {
 //                                    return;
@@ -669,12 +669,12 @@ public class SyncFB implements Sync {
                                 } else {
                                     values.add(newMap);
                                 }
-                                getOnSaveLocalValue().call(key, newMap, oldValue);
+                                getOnSaveLocalValue().accept(key, newMap, oldValue);
                             }
                         };
-                        Runnable3<String, Object, Object> onSaveRemote = new Runnable3<String, Object, Object>() {
+                        TriConsumer<String, Object, Object> onSaveRemote = new TriConsumer<String, Object, Object>() {
                             @Override
-                            public void call(String key, Object newValue, Object oldValue) {
+                            public void accept(String key, Object newValue, Object oldValue) {
                                 Map<String,Object> newMap = (Map) newValue;
                                 newMap.put(Firebase.KEYS, key);
                                 if(updates.containsKey(key) && updates.get(key) != null && updates.get(key) instanceof Map && !Misc.isEmpty(updates.get(key))) {
@@ -683,7 +683,7 @@ public class SyncFB implements Sync {
                                 } else {
                                     values.add(newMap);
                                 }
-                                getOnSaveRemoteValue().call(key, newMap, oldValue);
+                                getOnSaveRemoteValue().accept(key, newMap, oldValue);
                             }
                         };
                         sync._syncValue(UPDATE_BOTH, x.getValue(), getOnGetValue(), getOnAddRemoteValue(), getOnUpdateRemoteValue(), getOnRemoveRemoteValue(), onSaveRemote, getOnAddLocalValue(), getOnUpdateLocalValue(), getOnRemoveLocalValue(), onSaveLocal, _onFinish, getOnError());
@@ -693,8 +693,8 @@ public class SyncFB implements Sync {
 
             @Override
             public void onCancelled(DatabaseError error) {
-                getOnError().call(getKey(), error.toException());
-                getOnFinish().call(getMode(), getKey());
+                getOnError().accept(getKey(), error.toException());
+                getOnFinish().accept(getMode(), getKey());
             }
         });
     }
@@ -727,10 +727,10 @@ public class SyncFB implements Sync {
         getRef(null).child(Firebase.HISTORY).push().setValue(item);
     }
 
-    private Runnable3<String, Object, Object> onSaveRemoteValueWithTimestamp = new Runnable3<String, Object, Object>() {
+    private TriConsumer<String, Object, Object> onSaveRemoteValueWithTimestamp = new TriConsumer<String, Object, Object>() {
         @Override
-        public void call(String key, Object newValue, Object oldValue) {
-            getOnSaveRemoteValue().call(key, newValue, oldValue);
+        public void accept(String key, Object newValue, Object oldValue) {
+            getOnSaveRemoteValue().accept(key, newValue, oldValue);
             updateTimestamp();
         }
     };
@@ -755,12 +755,12 @@ public class SyncFB implements Sync {
     }
 
     @Override
-    public void watch(String key, Callable2<Object,String,Object> onChangeValue) {
+    public void watch(String key, BiFunction<String, Object, Object> onChangeValue) {
         // TODO
     }
 
     @Override
-    public void watchChanges(Callable2<Object,String,Object> onChangeValue) {
+    public void watchChanges(BiFunction<String, Object, Object> onChangeValue) {
         // TODO
     }
 
@@ -774,112 +774,112 @@ public class SyncFB implements Sync {
         return this;
     }
 
-    private Callable2<Object, String, Object> getOnGetValue() {
+    private BiFunction<String, Object, Object> getOnGetValue() {
         return onGetValue;
     }
 
     @Override
-    public SyncFB setOnGetValue(Callable2<Object,String,Object> onGetValue) {
+    public SyncFB setOnGetValue(BiFunction<String, Object, Object> onGetValue) {
         this.onGetValue = onGetValue;
         return this;
     }
 
-    private Runnable2<String,Object> getOnAddRemoteValue() {
+    private BiConsumer<String,Object> getOnAddRemoteValue() {
         return onAddRemoteValue;
     }
 
     @Override
-    public SyncFB setOnAddRemoteValue(Runnable2<String, Object> onAddRemoteValue) {
+    public SyncFB setOnAddRemoteValue(BiConsumer<String, Object> onAddRemoteValue) {
         this.onAddRemoteValue = onAddRemoteValue;
         return this;
     }
 
-    private Runnable3<String,Object,Object> getOnUpdateRemoteValue() {
+    private TriConsumer<String,Object,Object> getOnUpdateRemoteValue() {
         return onUpdateRemoteValue;
     }
 
     @Override
-    public SyncFB setOnUpdateRemoteValue(Runnable3<String, Object, Object> onUpdateRemoteValue) {
+    public SyncFB setOnUpdateRemoteValue(TriConsumer<String, Object, Object> onUpdateRemoteValue) {
         this.onUpdateRemoteValue = onUpdateRemoteValue;
         return this;
     }
 
-    private Runnable2<String,Object> getOnRemoveRemoteValue() {
+    private BiConsumer<String,Object> getOnRemoveRemoteValue() {
         return onRemoveRemoteValue;
     }
 
     @Override
-    public SyncFB setOnRemoveRemoteValue(Runnable2<String, Object> onRemoveRemoteValue) {
+    public SyncFB setOnRemoveRemoteValue(BiConsumer<String, Object> onRemoveRemoteValue) {
         this.onRemoveRemoteValue = onRemoveRemoteValue;
         return this;
     }
 
-    private Runnable3<String,Object,Object> getOnSaveRemoteValue() {
+    private TriConsumer<String,Object,Object> getOnSaveRemoteValue() {
         return onSaveRemoteValue;
     }
 
     @Override
-    public SyncFB setOnSaveRemoteValue(Runnable3<String, Object, Object> onSaveRemoteValue) {
+    public SyncFB setOnSaveRemoteValue(TriConsumer<String, Object, Object> onSaveRemoteValue) {
         this.onSaveRemoteValue = onSaveRemoteValue;
         return this;
     }
 
-    private Runnable2<String,Object> getOnAddLocalValue() {
+    private BiConsumer<String,Object> getOnAddLocalValue() {
         return onAddLocalValue;
     }
 
     @Override
-    public SyncFB setOnAddLocalValue(Runnable2<String, Object> onAddLocalValue) {
+    public SyncFB setOnAddLocalValue(BiConsumer<String, Object> onAddLocalValue) {
         this.onAddLocalValue = onAddLocalValue;
         return this;
     }
 
-    private Runnable3<String,Object,Object> getOnUpdateLocalValue() {
+    private TriConsumer<String,Object,Object> getOnUpdateLocalValue() {
         return onUpdateLocalValue;
     }
 
     @Override
-    public SyncFB setOnUpdateLocalValue(Runnable3<String, Object, Object> onUpdateLocalValue) {
+    public SyncFB setOnUpdateLocalValue(TriConsumer<String, Object, Object> onUpdateLocalValue) {
         this.onUpdateLocalValue = onUpdateLocalValue;
         return this;
     }
 
-    private Runnable2<String,Object> getOnRemoveLocalValue() {
+    private BiConsumer<String,Object> getOnRemoveLocalValue() {
         return onRemoveLocalValue;
     }
 
     @Override
-    public SyncFB setOnRemoveLocalValue(Runnable2<String, Object> onRemoveLocalValue) {
+    public SyncFB setOnRemoveLocalValue(BiConsumer<String, Object> onRemoveLocalValue) {
         this.onRemoveLocalValue = onRemoveLocalValue;
         return this;
     }
 
-    private Runnable3<String,Object,Object> getOnSaveLocalValue() {
+    private TriConsumer<String,Object,Object> getOnSaveLocalValue() {
         return onSaveLocalValue;
     }
 
     @Override
-    public SyncFB setOnSaveLocalValue(Runnable3<String, Object, Object> onSaveLocalValue) {
+    public SyncFB setOnSaveLocalValue(TriConsumer<String, Object, Object> onSaveLocalValue) {
         this.onSaveLocalValue = onSaveLocalValue;
         return this;
     }
 
-    private Runnable2<Mode, String> getOnFinish() {
+    private BiConsumer<Mode, String> getOnFinish() {
         return onFinish;
     }
 
     @Override
-    public SyncFB setOnFinish(Runnable2<Mode, String> onFinish) {
+    public SyncFB setOnFinish(BiConsumer<Mode, String> onFinish) {
         this.onFinish = onFinish;
         return this;
     }
 
-    private Runnable2<String, Throwable> getOnError() {
+    private BiConsumer<String, Throwable> getOnError() {
         return onError;
     }
 
     @Override
-    public SyncFB setOnError(Runnable2<String, Throwable> onError) {
+    public SyncFB setOnError(BiConsumer<String, Throwable> onError) {
         this.onError = onError;
         return this;
     }

@@ -1,8 +1,8 @@
 package com.edeqa.waytous.interfaces;
 
-import com.edeqa.helpers.interfaces.Callable2;
-import com.edeqa.helpers.interfaces.Runnable2;
-import com.edeqa.helpers.interfaces.Runnable3;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.BiFunction;
+import com.edeqa.helpers.interfaces.TriConsumer;
 import com.edeqa.waytous.helpers.SyncFB;
 import com.google.firebase.database.DatabaseReference;
 
@@ -47,34 +47,34 @@ public interface Sync {
 
     void syncValues(ArrayList<Map<String, Object>> values);
 
-    void watch(String key, Callable2<Object, String, Object> onChangeValue);
+    void watch(String key, BiFunction<String, Object, Object> onChangeValue);
 
-    void watchChanges(Callable2<Object, String, Object> onChangeValue);
+    void watchChanges(BiFunction<String, Object, Object> onChangeValue);
 
     @SuppressWarnings("SameParameterValue")
     Sync setDebug(boolean debug);
 
-    Sync setOnGetValue(Callable2<Object,String,Object> onGetValue);
+    Sync setOnGetValue(BiFunction<String, Object, Object> onGetValue);
 
-    Sync setOnAddRemoteValue(Runnable2<String, Object> onAddRemoteValue);
+    Sync setOnAddRemoteValue(BiConsumer<String, Object> onAddRemoteValue);
 
-    Sync setOnUpdateRemoteValue(Runnable3<String, Object, Object> onUpdateRemoteValue);
+    Sync setOnUpdateRemoteValue(TriConsumer<String, Object, Object> onUpdateRemoteValue);
 
-    Sync setOnRemoveRemoteValue(Runnable2<String, Object> onRemoveRemoteValue);
+    Sync setOnRemoveRemoteValue(BiConsumer<String, Object> onRemoveRemoteValue);
 
-    Sync setOnSaveRemoteValue(Runnable3<String, Object, Object> onSaveRemoteValue);
+    Sync setOnSaveRemoteValue(TriConsumer<String, Object, Object> onSaveRemoteValue);
 
-    Sync setOnAddLocalValue(Runnable2<String, Object> onAddLocalValue);
+    Sync setOnAddLocalValue(BiConsumer<String, Object> onAddLocalValue);
 
-    Sync setOnUpdateLocalValue(Runnable3<String, Object, Object> onUpdateLocalValue);
+    Sync setOnUpdateLocalValue(TriConsumer<String, Object, Object> onUpdateLocalValue);
 
-    Sync setOnRemoveLocalValue(Runnable2<String, Object> onRemoveLocalValue);
+    Sync setOnRemoveLocalValue(BiConsumer<String, Object> onRemoveLocalValue);
 
-    Sync setOnSaveLocalValue(Runnable3<String, Object, Object> onSaveLocalValue);
+    Sync setOnSaveLocalValue(TriConsumer<String, Object, Object> onSaveLocalValue);
 
-    Sync setOnFinish(Runnable2<Mode, String> onFinish);
+    Sync setOnFinish(BiConsumer<Mode, String> onFinish);
 
-    Sync setOnError(Runnable2<String, Throwable> onError);
+    Sync setOnError(BiConsumer<String, Throwable> onError);
 
     DatabaseReference getReference();
 

@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.BuildConfig;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
@@ -115,9 +115,9 @@ public class MenuViewHolder extends AbstractViewHolder {
             case CREATE_SETTINGS:
                 SettingItem.Page item = (SettingItem.Page) object;
                 item.add(new SettingItem.Group(SettingsViewHolder.PREFERENCES_GENERAL).setTitle(R.string.general).setPriority(100));
-                item.add(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(R.string.menu_set_my_name).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL).setCallback(new Runnable1<String>() {
+                item.add(new SettingItem.Text(PropertiesHolder.PREFERENCE_MY_NAME).setTitle(R.string.menu_set_my_name).setGroupId(SettingsViewHolder.PREFERENCES_GENERAL).setCallback(new Consumer<String>() {
                     @Override
-                    public void call(String arg) {
+                    public void accept(String arg) {
                         State.getInstance().getMe().fire(CHANGE_NAME,arg);
                     }
                 }));

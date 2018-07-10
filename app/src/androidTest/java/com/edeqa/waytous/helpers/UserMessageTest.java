@@ -2,7 +2,7 @@ package com.edeqa.waytous.helpers;
 
 import android.database.Cursor;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.State;
 
 import org.junit.After;
@@ -64,9 +64,9 @@ public class UserMessageTest {
 //            userMessageRegular.setNumber(10000);
             userMessageRegular.setFrom(userFrom);
             userMessageRegular.setTo(userTo1);
-            userMessageRegular.save(new Runnable1() {
+            userMessageRegular.save(new Consumer() {
                 @Override
-                public void call(Object arg) {
+                public void accept(Object arg) {
                     synchronized (sync) {
                         sync.notify();
                     }
@@ -84,9 +84,9 @@ public class UserMessageTest {
 //        userMessagePrivate.setNumber(20000);
         userMessagePrivate.setFrom(userFrom);
         userMessagePrivate.setTo(userTo2);
-        userMessagePrivate.save(new Runnable1() {
+        userMessagePrivate.save(new Consumer() {
             @Override
-            public void call(Object arg) {
+            public void accept(Object arg) {
                 synchronized (sync) {
                     sync.notify();
                 }

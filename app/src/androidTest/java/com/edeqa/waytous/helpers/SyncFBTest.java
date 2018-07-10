@@ -3,11 +3,10 @@ package com.edeqa.waytous.helpers;
 import android.util.Log;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Callable2;
-import com.edeqa.helpers.interfaces.Runnable2;
-import com.edeqa.helpers.interfaces.Runnable3;
+import com.edeqa.helpers.interfaces.BiFunction;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.TriConsumer;
 import com.edeqa.waytous.Firebase;
-import com.edeqa.waytous.SignProvider;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.interfaces.TrackingCallback;
 import com.google.firebase.database.FirebaseDatabase;
@@ -84,35 +83,35 @@ public class SyncFBTest {
                 .setType(SyncFB.Type.ACCOUNT_PRIVATE)
                 .setUid(State.getInstance().fetchUid())
                 .setUserNumber("0")
-                .setOnGetValue(new Callable2<Object, String, Object>() {
+                .setOnGetValue(new BiFunction<String, Object, Object>() {
                     @Override
-                    public Object call(String key, Object value) {
+                    public Object apply(String key, Object value) {
                         System.out.println("Got value: " + key + ", [value]: " + value);
                         resultKey = key;
                         resultValue = value;
                         return value;
                     }
                 })
-                .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
+                .setOnSaveLocalValue(new TriConsumer<String, Object, Object>() {
                     @Override
-                    public void call(String key, Object newValue, Object oldValue) {
+                    public void accept(String key, Object newValue, Object oldValue) {
                         System.out.println("Save local: " + key + ", [new]: " + newValue + ", [old]: " + oldValue);
                         resultKey = key;
                         resultValue = newValue;
                     }
                 })
-                .setOnFinish(new Runnable2<SyncFB.Mode, String>() {
+                .setOnFinish(new BiConsumer<SyncFB.Mode, String>() {
                     @Override
-                    public void call(SyncFB.Mode mode, String key) {
+                    public void accept(SyncFB.Mode mode, String key) {
                         System.out.println("Finish: " + key + ", [mode]: " + mode);
                         synchronized (syncObject) {
                             syncObject.notify();
                         }
                     }
                 })
-                .setOnError(new Runnable2<String, Throwable>() {
+                .setOnError(new BiConsumer<String, Throwable>() {
                     @Override
-                    public void call(String key, Throwable error) {
+                    public void accept(String key, Throwable error) {
                         System.err.println("Error: " + key);
                         error.printStackTrace();
 

@@ -5,14 +5,12 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.edeqa.eventbus.EventBus;
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Consumer;
+import com.edeqa.helpers.interfaces.BiConsumer;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -61,15 +59,15 @@ public class NavigationHelperTest {
                 assertEquals(true, navigationHelper.isActive());
             }
         });
-        navigationHelper.setOnRequest(new Runnable1<String>() {
+        navigationHelper.setOnRequest(new Consumer<String>() {
             @Override
-            public void call(String address) {
+            public void accept(String address) {
                 assertEquals("https://maps.googleapis.com/maps/api/directions/json?origin=38.9343,-77.3591&destination=38.9423,-77.3247&mode=driving&avoid=tolls", address);
             }
         });
-        navigationHelper.setOnUpdate(new Runnable2<NavigationHelper.Type, Object>() {
+        navigationHelper.setOnUpdate(new BiConsumer<NavigationHelper.Type, Object>() {
             @Override
-            public void call(NavigationHelper.Type type, Object object) {
+            public void accept(NavigationHelper.Type type, Object object) {
                 switch(type) {
                     case DISTANCE:
                         assertEquals("3.8 mi", object.toString());
@@ -102,9 +100,9 @@ public class NavigationHelperTest {
                 }
             }
         });
-        navigationHelper.setOnError(new Runnable1<Throwable>() {
+        navigationHelper.setOnError(new Consumer<Throwable>() {
             @Override
-            public void call(Throwable error) {
+            public void accept(Throwable error) {
                 assertEquals("", error.getMessage());
                 synchronized (syncObject){
                     syncObject.notify();
@@ -140,15 +138,15 @@ public class NavigationHelperTest {
             syncObject.wait();
         }
 
-        navigationHelper.setOnRequest(new Runnable1<String>() {
+        navigationHelper.setOnRequest(new Consumer<String>() {
             @Override
-            public void call(String address) {
+            public void accept(String address) {
                 assertEquals("https://maps.googleapis.com/maps/api/directions/json?origin=38.9343,-77.3591&destination=38.9423,-77.3247&mode=driving&avoid=tolls&waypoints=43.50011,-75.7988", address);
             }
         });
-        navigationHelper.setOnUpdate(new Runnable2<NavigationHelper.Type, Object>() {
+        navigationHelper.setOnUpdate(new BiConsumer<NavigationHelper.Type, Object>() {
             @Override
-            public void call(NavigationHelper.Type type, Object object) {
+            public void accept(NavigationHelper.Type type, Object object) {
                 switch(type) {
                     case DISTANCE:
 //                        assertEquals("383.4 mi", object.toString());

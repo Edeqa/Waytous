@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.R;
 
 
@@ -14,7 +14,7 @@ import com.edeqa.waytous.R;
 public class ContinueDialog {
     private final Context context;
     private String message;
-    private Runnable1 callback;
+    private Consumer callback;
 
     public ContinueDialog(Context context) {
         this.context = context;
@@ -25,7 +25,7 @@ public class ContinueDialog {
         return this;
     }
 
-    public ContinueDialog setCallback(Runnable1 callback){
+    public ContinueDialog setCallback(Consumer callback){
         this.callback = callback;
         return this;
     }
@@ -41,7 +41,7 @@ public class ContinueDialog {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //noinspection unchecked
-                callback.call(null);
+                callback.accept(null);
             }
         });
 

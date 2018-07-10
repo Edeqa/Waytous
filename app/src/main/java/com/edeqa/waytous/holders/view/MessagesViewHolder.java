@@ -21,8 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Callable1;
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Function;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -286,7 +286,7 @@ public class MessagesViewHolder extends AbstractViewHolder {
         dialog.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                onTouchListener.call(motionEvent);
+                onTouchListener.accept(motionEvent);
                 return false;
             }
         });
@@ -294,9 +294,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
         final LinearLayout layoutFooter = (LinearLayout) context.getLayoutInflater().inflate(R.layout.view_message_send, null);
         dialog.setFooter(layoutFooter);
 
-        final Runnable1<EditText> sender = new Runnable1<EditText>() {
+        final Consumer<EditText> sender = new Consumer<EditText>() {
             @Override
-            public void call(EditText et) {
+            public void accept(EditText et) {
                 if (et.getText().toString().length() > 0) {
                     if(et.getText().toString().length() > MESSAGE_MAX_LENGTH) {
                         Toast.makeText(context, R.string.too_long_message, Toast.LENGTH_SHORT).show();
@@ -326,13 +326,13 @@ public class MessagesViewHolder extends AbstractViewHolder {
         layoutFooter.findViewById(R.id.ib_message_send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+                sender.accept((EditText)layoutFooter.findViewById(R.id.et_message_send));
             }
         });
         layoutFooter.findViewById(R.id.ib_message_send).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                sender.call((EditText)layoutFooter.findViewById(R.id.et_message_send));
+                sender.accept((EditText)layoutFooter.findViewById(R.id.et_message_send));
                 dialog.dismiss();
                 dialog = null;
                 return true;
@@ -350,9 +350,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         layoutFooter.setVisibility(View.VISIBLE);
 
-        dialog.setSearchListener(new Callable1<Boolean, String>() {
+        dialog.setSearchListener(new Function<String, Boolean>() {
             @Override
-            public Boolean call(String query) {
+            public Boolean apply(String query) {
                 filterMessage = query;
                 setFilterAndReload(query);
                 return false;
@@ -360,9 +360,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
         });
 
         adapter.setFontSize(fontSize);
-        adapter.setOnRightSwipeListener(new Runnable1<Integer>() {
+        adapter.setOnRightSwipeListener(new Consumer<Integer>() {
             @Override
-            public void call(final Integer position) {
+            public void accept(final Integer position) {
                 UserMessage.getDb().deleteByPosition(position);
                 adapter.notifyItemRemoved(position);
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -374,24 +374,24 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 }, 500);
             }
         });
-        adapter.setOnItemClickListener(new Runnable1<UserMessage>() {
+        adapter.setOnItemClickListener(new Consumer<UserMessage>() {
             @Override
-            public void call(UserMessage message) {
+            public void accept(UserMessage message) {
                 reloadCursor();
             }
         });
-        adapter.setOnItemShareListener(new Runnable1<Integer>() {
+        adapter.setOnItemShareListener(new Consumer<Integer>() {
             @Override
-            public void call(final Integer position) {
+            public void accept(final Integer position) {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
                 Utils.log(MessagesViewHolder.this, "showMessages:", "item="+item); //NON-NLS
 
                 new ShareSender(context).send(context.getString(R.string.share_the_message), item.getFrom(), item.getFrom() + ":\n" + item.getBody());
             }
         });
-        adapter.setOnItemReplyListener(new Runnable1<Integer>() {
+        adapter.setOnItemReplyListener(new Consumer<Integer>() {
             @Override
-            public void call(final Integer position) {
+            public void accept(final Integer position) {
                 UserMessage item = UserMessage.getItemByCursor(UserMessage.getDb().getByPosition(position));
 
                 MyUser to = State.getInstance().getUsers().findUserByName(item.getFrom());
@@ -402,9 +402,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
                 }
             }
         });
-        adapter.setOnItemDeleteListener(new Runnable1<Integer>() {
+        adapter.setOnItemDeleteListener(new Consumer<Integer>() {
             @Override
-            public void call(final Integer position) {
+            public void accept(final Integer position) {
                 UserMessage.getDb().deleteByPosition(position);
                 adapter.notifyItemRemoved(position);
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -419,9 +419,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
 
         adapter.setOnItemTouchListener(onTouchListener);
 
-        adapter.setOnCursorReloadListener(new Runnable1<Cursor>() {
+        adapter.setOnCursorReloadListener(new Consumer<Cursor>() {
             @Override
-            public void call(Cursor cursor) {
+            public void accept(Cursor cursor) {
                 dialog.setTitle(context.getString(R.string.chat_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
                 if(!donotscroll) list.scrollToPosition(cursor.getCount() - 1);
                 donotscroll = false;
@@ -453,9 +453,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
         if(notTransparentWindow) {
             dialog.setAlpha(255);
         } else {
-            new SmoothInterpolated(new Runnable1<Float[]>() {
+            new SmoothInterpolated(new Consumer<Float[]>() {
                 @Override
-                public void call(final Float[] value) {
+                public void accept(final Float[] value) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         public void run() {
                         dialog.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));
@@ -514,14 +514,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         UserMessage m = (UserMessage) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction(context.getString(R.string.reply),new Runnable1() {
+                        new SystemMessage(context).setText(myUser.getProperties().getDisplayName() + ": " + m.getBody()).setDuration(10000).setAction(context.getString(R.string.reply),new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 newMessage(myUser, false,"");
                             }
-                        }).setOnClickListener(new Runnable1() {
+                        }).setOnClickListener(new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 State.getInstance().fire(SHOW_MESSAGES);
                             }
                         }).showSnack();
@@ -536,14 +536,14 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         String text = (String) object;
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText(String.format(context.getString(R.string.private_s_s), myUser.getProperties().getDisplayName(), text)).setDuration(10000).setAction(context.getString(R.string.reply),new Runnable1() {
+                        new SystemMessage(context).setText(String.format(context.getString(R.string.private_s_s), myUser.getProperties().getDisplayName(), text)).setDuration(10000).setAction(context.getString(R.string.reply),new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 newMessage(myUser, true, "");
                             }
-                        }).setOnClickListener(new Runnable1() {
+                        }).setOnClickListener(new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 State.getInstance().fire(SHOW_MESSAGES);
                             }
                         }).showSnack();
@@ -569,9 +569,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
         }
     }
 
-    private final Runnable1<MotionEvent> onTouchListener = new Runnable1<MotionEvent>() {
+    private final Consumer<MotionEvent> onTouchListener = new Consumer<MotionEvent>() {
         @Override
-        public void call(MotionEvent motionEvent) {
+        public void accept(MotionEvent motionEvent) {
             if(action != null) action.cancel();
             if(!notTransparentWindow) {
                 switch (motionEvent.getAction()) {
@@ -579,9 +579,9 @@ public class MessagesViewHolder extends AbstractViewHolder {
                         dialog.setAlpha(255);
                         break;
                     case 1:
-                        action = new SmoothInterpolated(new Runnable1<Float[]>() {
+                        action = new SmoothInterpolated(new Consumer<Float[]>() {
                             @Override
-                            public void call(final Float[] value) {
+                            public void accept(final Float[] value) {
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     public void run() {
                                         dialog.setAlpha((int) (255 - 155 * value[CURRENT_VALUE]));

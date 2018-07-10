@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractSavedItem;
@@ -171,9 +171,9 @@ public class UserMessage extends AbstractSavedItem {
     static public class UserMessagesAdapter extends AbstractSavedItemsAdapter {
 
         private Integer fontSize;
-        private Runnable1<Integer> onItemDeleteListener;
-        private Runnable1<Integer> onItemShareListener;
-        private Runnable1<Integer> onItemReplyListener;
+        private Consumer<Integer> onItemDeleteListener;
+        private Consumer<Integer> onItemShareListener;
+        private Consumer<Integer> onItemReplyListener;
 
         public UserMessagesAdapter(Context context, RecyclerView list) {
             super(context, list);
@@ -186,7 +186,7 @@ public class UserMessage extends AbstractSavedItem {
                 @Override
                 public void onClick(View view) {
                     //noinspection unchecked
-                    onItemClickListener.call(view);
+                    onItemClickListener.accept(view);
                 }
             });
             return new UserMessageViewHolder(v);
@@ -237,14 +237,14 @@ public class UserMessage extends AbstractSavedItem {
                             case INVISIBLE:
                                 break;
                         }
-//                        onItemClickListener.call(item);
+//                        onItemClickListener.accept(item);
                     }
                 });
                 holder.itemView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         //noinspection unchecked
-                        onItemTouchListener.call(motionEvent);
+                        onItemTouchListener.accept(motionEvent);
                         return false;
                     }
                 });
@@ -253,7 +253,7 @@ public class UserMessage extends AbstractSavedItem {
                     public void onClick(View view) {
                         holder.layoutMessageButtons.setVisibility(GONE);
                         int position = (int) holder.itemView.getTag();
-                        onItemShareListener.call(position);
+                        onItemShareListener.accept(position);
                     }
                 });
                 holder.ibMessageReply.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +261,7 @@ public class UserMessage extends AbstractSavedItem {
                     public void onClick(View view) {
                         holder.layoutMessageButtons.setVisibility(GONE);
                         int position = (int) holder.itemView.getTag();
-                        onItemReplyListener.call(position);
+                        onItemReplyListener.accept(position);
                     }
                 });
                 holder.ibMessageDelete.setOnClickListener(new View.OnClickListener() {
@@ -269,7 +269,7 @@ public class UserMessage extends AbstractSavedItem {
                     public void onClick(View view) {
                         holder.layoutMessageButtons.setVisibility(GONE);
                         int position = (int) holder.itemView.getTag();
-                        onItemDeleteListener.call(position);
+                        onItemDeleteListener.accept(position);
                     }
                 });
 
@@ -289,15 +289,15 @@ public class UserMessage extends AbstractSavedItem {
             this.fontSize = fontSize;
         }
 
-        public void setOnItemDeleteListener(Runnable1<Integer> onItemDeleteListener) {
+        public void setOnItemDeleteListener(Consumer<Integer> onItemDeleteListener) {
             this.onItemDeleteListener = onItemDeleteListener;
         }
 
-        public void setOnItemShareListener(Runnable1<Integer> onItemShareListener) {
+        public void setOnItemShareListener(Consumer<Integer> onItemShareListener) {
             this.onItemShareListener = onItemShareListener;
         }
 
-        public void setOnItemReplyListener(Runnable1<Integer> onItemReplyListener) {
+        public void setOnItemReplyListener(Consumer<Integer> onItemReplyListener) {
             this.onItemReplyListener = onItemReplyListener;
         }
 

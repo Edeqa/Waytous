@@ -3,8 +3,8 @@ package com.edeqa.waytous.holders.view;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -46,9 +46,9 @@ public class SensorsViewHolder extends AbstractViewHolder {
 
     private GoogleMap map;
 
-    private final Runnable1<String> onEnvironmentChangeListener = new Runnable1<String>() {
+    private final Consumer<String> onEnvironmentChangeListener = new Consumer<String>() {
         @Override
-        public void call(String environment) {
+        public void accept(String environment) {
             switch(environment){
                 case DAY:
                     if(!DAY.equals(currentEnvironment)) {
@@ -69,7 +69,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
     public SensorsViewHolder(final MainActivity context) {
         super(context);
 
-        onEnvironmentChangeListener.call(DAY);
+        onEnvironmentChangeListener.accept(DAY);
         lightSensor = new LightSensorManager(context);
         lightSensor.setOnEnvironmentChangeListener(onEnvironmentChangeListener);
 
@@ -119,7 +119,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //                System.out.println("SCREENOFF1");
                 lightSensor.disable();
-                onEnvironmentChangeListener.call(DAY);
+                onEnvironmentChangeListener.accept(DAY);
                 break;
             case ACTIVITY_PAUSE:
                 context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -132,7 +132,7 @@ public class SensorsViewHolder extends AbstractViewHolder {
                     context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     lightSensor.enable();
                 } else {
-                    onEnvironmentChangeListener.call(DAY);
+                    onEnvironmentChangeListener.accept(DAY);
                 }
                 break;
             case USER_JOINED:
@@ -154,16 +154,16 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 if(map != null) map.setMapStyle(null);
                 State.getInstance().getPropertiesHolder().saveFor(getType(), null);
 
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.removeViews();
                     }
                 });
                 context.setTheme(R.style.DayTheme);
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.createViews();
                     }
                 });
@@ -175,16 +175,16 @@ public class SensorsViewHolder extends AbstractViewHolder {
                 if(map != null) map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night));
                 State.getInstance().getPropertiesHolder().saveFor(getType(), null);
 
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.removeViews();
                     }
                 });
                 context.setTheme(R.style.NightTheme);
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.createViews();
                     }
                 });

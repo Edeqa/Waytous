@@ -14,7 +14,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 
 /**
  * Created 8/10/2017.
@@ -23,12 +23,12 @@ import com.edeqa.helpers.interfaces.Runnable1;
 abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> extends RecyclerView.Adapter implements LoaderManager.LoaderCallbacks<Cursor> {
 
     protected final Context context;
-    protected Runnable1<T> onItemClickListener;
-    protected Runnable1<T> onItemTouchListener;
+    protected Consumer<T> onItemClickListener;
+    protected Consumer<T> onItemTouchListener;
 
     private final RecyclerView list;
     private Cursor cursor;
-    private Runnable1<Cursor> onCursorReloadListener;
+    private Consumer<Cursor> onCursorReloadListener;
     private View emptyView;
 
 
@@ -87,15 +87,15 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
 
     public abstract void onBindViewHolder(final RecyclerView.ViewHolder holder, final Cursor cursor);
 
-    public void setOnRightSwipeListener(Runnable1<Integer> callback) {
+    public void setOnRightSwipeListener(Consumer<Integer> callback) {
         enableSwipe(ItemTouchHelper.RIGHT, callback);
     }
 
-    public void setOnLeftSwipeListener(Runnable1<Integer> callback) {
+    public void setOnLeftSwipeListener(Consumer<Integer> callback) {
         enableSwipe(ItemTouchHelper.LEFT, callback);
     }
 
-    public void setOnCursorReloadListener(Runnable1<Cursor> callback) {
+    public void setOnCursorReloadListener(Consumer<Cursor> callback) {
         this.onCursorReloadListener = callback;
     }
 
@@ -111,7 +111,7 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
         return cursor.getLong(cursor.getColumnIndex(fieldName + "_"));
     }
 
-    private void enableSwipe(final int direction, final Runnable1<Integer> callback) {
+    private void enableSwipe(final int direction, final Consumer<Integer> callback) {
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, direction) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -121,7 +121,7 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = list.getChildLayoutPosition(viewHolder.itemView);
-                callback.call(position);
+                callback.accept(position);
             }
 
             @Override
@@ -145,11 +145,11 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
         itemTouchHelper.attachToRecyclerView(list);
     }
 
-    public void setOnItemClickListener(Runnable1<T> onItemClickListener) {
+    public void setOnItemClickListener(Consumer<T> onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public void setOnItemTouchListener(Runnable1<T> onItemTouchListener) {
+    public void setOnItemTouchListener(Consumer<T> onItemTouchListener) {
         this.onItemTouchListener = onItemTouchListener;
     }
 
@@ -159,7 +159,7 @@ abstract public class AbstractSavedItemsAdapter<T extends AbstractSavedItem> ext
     public void onLoadFinished(Loader loader, Cursor cursor) {
         swapCursor(cursor);
         if (onCursorReloadListener != null) {
-            onCursorReloadListener.call(cursor);
+            onCursorReloadListener.accept(cursor);
         }
     }
 

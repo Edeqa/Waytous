@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -137,9 +137,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 optionsMenu.add(Menu.NONE, R.string.hide_places, Menu.NONE, R.string.hide_places).setVisible(false).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 myUser.fire(HIDE_PLACE);
                             }
                         });
@@ -152,9 +152,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                 optionsMenu = (Menu) object;
                 final MenuItem menuItemHideNavigations = optionsMenu.findItem(R.string.hide_places);
                 menuItemHideNavigations.setVisible(false);
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         PlaceView view = ((PlaceView) myUser.getView(getType()));
                         /*if(view != null && view.showNavigation) {
                             menuItemHideNavigations.setVisible(true);
@@ -182,9 +182,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
 
                     x.createViews();
                     State.getInstance().fire(USER_JOINED, x);
-                    State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             myUser.createViews();
                             myUser.fire(SELECT_USER);
                         }
@@ -231,9 +231,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                                 if (x.containsKey("id") && place.getId().equals(x.get("id"))) {
                                     int number = (int) x.get("number");
 
-                                    State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                                    State.getInstance().getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                                         @Override
-                                        public void call(Integer number, MyUser myUser) {
+                                        public void accept(Integer number, MyUser myUser) {
                                             myUser.fire(MAKE_ACTIVE);
                                             myUser.fire(SELECT_USER);
                                             myUser.fire(NavigationViewHolder.SHOW_NAVIGATION);
@@ -390,9 +390,9 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
         searchItem.setActionView(searchView);
         searchItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-        final Runnable1<String> setFilter = new Runnable1<String>() {
+        final Consumer<String> setFilter = new Consumer<String>() {
             @Override
-            public void call(String text) {
+            public void accept(String text) {
                 System.out.println("FILTER:"+text);
             }
         };
@@ -404,12 +404,12 @@ public class PlaceViewHolder extends AbstractViewHolder<PlaceViewHolder.PlaceVie
                     searchView.setIconified(true);
                 }
                 searchItem.collapseActionView();
-                setFilter.call(query);
+                setFilter.accept(query);
                 return false;
             }
             @Override
             public boolean onQueryTextChange(String s) {
-                setFilter.call(s);
+                setFilter.accept(s);
                 return false;
             }
         });*/

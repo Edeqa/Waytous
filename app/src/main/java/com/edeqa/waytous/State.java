@@ -15,7 +15,7 @@ import android.util.Log;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
 import com.edeqa.eventbus.EventBus;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.abstracts.AbstractPropertyHolder;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.Events;
@@ -177,9 +177,9 @@ public class State extends MultiDexApplication {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        users.forAllUsers(new Runnable2<Integer, MyUser>() {
+        users.forAllUsers(new BiConsumer<Integer, MyUser>() {
             @Override
-            public void call(Integer number, MyUser myUser) {
+            public void accept(Integer number, MyUser myUser) {
                 myUser.removeViews();
                 myUser.createViews();
             }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.CursorLoader;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.helpers.DBHelper;
 
 import java.io.Serializable;
@@ -103,17 +103,17 @@ abstract public class AbstractSavedItem<T extends AbstractSavedItem> implements 
         dbHelpers.get(itemType).clear();
     }
 
-    public void save(Runnable1<T> onSaveCallback) {
+    public void save(Consumer<T> onSaveCallback) {
         dbHelpers.get(itemType).save(this);
         if(onSaveCallback != null) {
-            onSaveCallback.call((T) this);
+            onSaveCallback.accept((T) this);
         }
     }
 
-    public void delete(Runnable1<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
+    public void delete(Consumer<AbstractSavedItem<? extends AbstractSavedItem>> onDeleteCallback){
         dbHelpers.get(itemType).deleteByItem(this);
         if(onDeleteCallback != null) {
-            onDeleteCallback.call(this);
+            onDeleteCallback.accept(this);
         }
     }
 

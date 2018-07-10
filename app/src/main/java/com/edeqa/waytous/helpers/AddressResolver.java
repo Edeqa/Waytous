@@ -4,7 +4,7 @@ import android.content.Context;
 import android.location.Location;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
@@ -23,7 +23,7 @@ public class AddressResolver {
     private MyUser user;
     private LatLng latLng;
     private LatLng current;
-    private Runnable1<String> callback;
+    private Consumer<String> callback;
     private long lastRequestTimestamp;
 
     public AddressResolver(Context context) {
@@ -32,7 +32,7 @@ public class AddressResolver {
     }
 
     public void resolve(boolean force) {
-        callback.call("...");
+        callback.accept("...");
         resolve();
     }
 
@@ -61,7 +61,7 @@ public class AddressResolver {
 
                     /*try {
                         if(location == null) {
-                            callback.call(null);
+                            callback.accept(null);
                             return;
                         }
                         geocoding.reverse(location, new OnReverseGeocodingListener() {
@@ -73,9 +73,9 @@ public class AddressResolver {
                                         parts.add(list.get(0).getAddressLine(i));
                                     }
                                     String formatted = TextUtils.join(", ", parts);
-                                    callback.call(formatted); //NON-NLS
+                                    callback.accept(formatted); //NON-NLS
                                 } else {
-                                    callback.call(null);
+                                    callback.accept(null);
                                 }
                             }
 
@@ -83,12 +83,12 @@ public class AddressResolver {
                     } catch(Exception e) {
                         Utils.err(AddressView.this, "User:", myUser.getProperties().getNumber(), "resolveAddress:", e.getMessage()); //NON-NLS
                         if(location == null) {
-                            callback.call(null);
+                            callback.accept(null);
                             return;
                         }
                     }*/
 
-//                    callback.call("...");
+//                    callback.accept("...");
 
                 try {
                     String req = String.format("https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f&zoom=18&addressdetails=1", current.latitude, current.longitude); //NON-NLS
@@ -101,11 +101,11 @@ public class AddressResolver {
                     Utils.log(AddressResolver.this, "Response:", res); //NON-NLS
                     if(res.length() > 0) {
                         JSONObject address = new JSONObject(res);
-                        callback.call(address.getString("display_name")); //NON-NLS
+                        callback.accept(address.getString("display_name")); //NON-NLS
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    callback.call(null);
+                    callback.accept(null);
                 }
             }
         }).start();
@@ -139,11 +139,11 @@ public class AddressResolver {
         return location;
     }
 
-    private Runnable1 getCallback() {
+    private Consumer getCallback() {
         return callback;
     }
 
-    public AddressResolver setCallback(Runnable1<String> callback) {
+    public AddressResolver setCallback(Consumer<String> callback) {
         this.callback = callback;
         return this;
     }

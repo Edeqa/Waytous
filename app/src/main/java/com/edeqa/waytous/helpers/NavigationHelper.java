@@ -4,8 +4,8 @@ import android.location.Location;
 
 import com.edeqa.eventbus.EventBus;
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
@@ -45,15 +45,15 @@ public class NavigationHelper implements Serializable {
 
     private transient Runnable onStart;
     private transient Runnable onStop;
-    private transient Runnable1<String> onRequest;
-    private transient Runnable2<Type, Object> onUpdate;
-    private transient Runnable1<Throwable> onErrorThrowable = new Runnable1<Throwable>() {
+    private transient Consumer<String> onRequest;
+    private transient BiConsumer<Type, Object> onUpdate;
+    private transient Consumer<Throwable> onErrorThrowable = new Consumer<Throwable>() {
         @Override
-        public void call(Throwable arg) {
+        public void accept(Throwable arg) {
             arg.printStackTrace();
         }
     };
-    private transient Runnable2<Integer, String> onError;
+    private transient BiConsumer<Integer, String> onError;
 
     private volatile transient Location startLocation;
     private transient Location previousStartLocation;
@@ -157,7 +157,7 @@ public class NavigationHelper implements Serializable {
                     }
 
                     if(onRequest != null) {
-                        onRequest.call(req);
+                        onRequest.accept(req);
                     }
 
                     lastTry = new Date().getTime();
@@ -183,17 +183,17 @@ public class NavigationHelper implements Serializable {
                                     @Override
                                     public void run() {
                                         Route route = routes.get(getActiveRoute());
-                                        onUpdate.call(Type.DISTANCE, route.fetchDistance());
-                                        onUpdate.call(Type.DURATION, route.fetchDuration());
+                                        onUpdate.accept(Type.DISTANCE, route.fetchDistance());
+                                        onUpdate.accept(Type.DURATION, route.fetchDuration());
 
                                         if(routes.get(getActiveRoute()).getLegs().size() > 1) {
-                                            onUpdate.call(Type.POINTS_BEFORE, PolyUtil.simplify(route.getLegs().get(0).getPoints(), 50));
-                                            onUpdate.call(Type.POINTS_AFTER, PolyUtil.simplify(route.getLegs().get(1).getPoints(), 50));
+                                            onUpdate.accept(Type.POINTS_BEFORE, PolyUtil.simplify(route.getLegs().get(0).getPoints(), 50));
+                                            onUpdate.accept(Type.POINTS_AFTER, PolyUtil.simplify(route.getLegs().get(1).getPoints(), 50));
                                         } else {
-                                            onUpdate.call(Type.POINTS_BEFORE, new ArrayList<LatLng>());
-                                            onUpdate.call(Type.POINTS_AFTER, route.getPoints());
+                                            onUpdate.accept(Type.POINTS_BEFORE, new ArrayList<LatLng>());
+                                            onUpdate.accept(Type.POINTS_AFTER, route.getPoints());
                                         }
-                                        onUpdate.call(Type.POINTS, route.getPoints());
+                                        onUpdate.accept(Type.POINTS, route.getPoints());
                                     }
                                 });
                             }
@@ -222,7 +222,7 @@ public class NavigationHelper implements Serializable {
             runner.post(new Runnable() {
                 @Override
                 public void run() {
-                    onErrorThrowable.call(new JSONException(message));
+                    onErrorThrowable.accept(new JSONException(message));
                 }
             });
         }
@@ -230,7 +230,7 @@ public class NavigationHelper implements Serializable {
             runner.post(new Runnable() {
                 @Override
                 public void run() {
-                    onError.call(errorCode, message);
+                    onError.accept(errorCode, message);
                 }
             });
         }
@@ -241,7 +241,7 @@ public class NavigationHelper implements Serializable {
             runner.post(new Runnable() {
                 @Override
                 public void run() {
-                    onUpdate.call(Type.UPDATED, null);
+                    onUpdate.accept(Type.UPDATED, null);
                 }
             });
         }
@@ -306,7 +306,7 @@ public class NavigationHelper implements Serializable {
         if(onStop != null) runner.post(onStop);
     }
 
-    /*public void fetchInfo(Type type, Runnable2<Type, Object> callback) {
+    /*public void fetchInfo(Type type, BiConsumer<Type, Object> callback) {
         switch(type) {
             case DISTANCE:
                 break;
@@ -364,11 +364,11 @@ public class NavigationHelper implements Serializable {
         return this;
     }
 
-    public Runnable2 getOnUpdate() {
+    public BiConsumer getOnUpdate() {
         return onUpdate;
     }
 
-    public NavigationHelper setOnUpdate(Runnable2<Type, Object> onUpdate) {
+    public NavigationHelper setOnUpdate(BiConsumer<Type, Object> onUpdate) {
         this.onUpdate = onUpdate;
         return this;
     }
@@ -418,11 +418,11 @@ public class NavigationHelper implements Serializable {
         return this;
     }
 
-    public Runnable1 getOnRequest() {
+    public Consumer getOnRequest() {
         return onRequest;
     }
 
-    public NavigationHelper setOnRequest(Runnable1<String> onRequest) {
+    public NavigationHelper setOnRequest(Consumer<String> onRequest) {
         this.onRequest = onRequest;
         return this;
     }
@@ -455,20 +455,20 @@ public class NavigationHelper implements Serializable {
         return this;
     }
 
-    public Runnable2<Integer, String> getOnError() {
+    public BiConsumer<Integer, String> getOnError() {
         return onError;
     }
 
-    public NavigationHelper setOnError(Runnable2<Integer, String> onError) {
+    public NavigationHelper setOnError(BiConsumer<Integer, String> onError) {
         this.onError = onError;
         return this;
     }
 
-    public Runnable1<Throwable> getOnErrorThrowable() {
+    public Consumer<Throwable> getOnErrorThrowable() {
         return onErrorThrowable;
     }
 
-    public NavigationHelper setOnError(Runnable1<Throwable> onError) {
+    public NavigationHelper setOnError(Consumer<Throwable> onError) {
         this.onErrorThrowable = onError;
         return this;
     }

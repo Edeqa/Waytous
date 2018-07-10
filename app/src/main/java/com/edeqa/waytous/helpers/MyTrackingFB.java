@@ -6,8 +6,8 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.Firebase;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -125,7 +125,7 @@ public class MyTrackingFB implements Tracking {
     private boolean newTracking;
     private ScheduledFuture<?> scheduled;
     private Runnable onSendSuccess;
-    private Runnable1<Throwable> onSendFailure;
+    private Consumer<Throwable> onSendFailure;
 
 
     public MyTrackingFB() {
@@ -414,12 +414,12 @@ public class MyTrackingFB implements Tracking {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Utils.err(MyTrackingFB.this, "send:", ref, e.getMessage(), e); //NON-NLS
-                        if(getOnSendFailure() != null) getOnSendFailure().call(e);
+                        if(getOnSendFailure() != null) getOnSendFailure().accept(e);
                     }
                 });
             } else {
                 Utils.log(MyTrackingFB.this, "send:", "Error sending"); //NON-NLS
-                if(getOnSendFailure() != null) getOnSendFailure().call(new Throwable("Error sending: " + o)); //NON-NLS
+                if(getOnSendFailure() != null) getOnSendFailure().accept(new Throwable("Error sending: " + o)); //NON-NLS
             }
         } catch (JSONException e) {
             //noinspection ConstantConditions
@@ -539,11 +539,11 @@ public class MyTrackingFB implements Tracking {
     }
 
     @Override
-    public void setOnSendFailure(Runnable1<Throwable> onSendFailure) {
+    public void setOnSendFailure(Consumer<Throwable> onSendFailure) {
         this.onSendFailure = onSendFailure;
     }
 
-    private Runnable1<Throwable> getOnSendFailure() {
+    private Consumer<Throwable> getOnSendFailure() {
         return onSendFailure;
     }
 
@@ -915,9 +915,9 @@ public class MyTrackingFB implements Tracking {
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final String name = String.valueOf(dataSnapshot.getValue());
-                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                state.getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         if (!name.equals("" + myUser.getProperties().getName())) {
                             myUser.fire(CHANGE_NAME, name);
                         }
@@ -941,9 +941,9 @@ public class MyTrackingFB implements Tracking {
             try {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 final boolean active = Boolean.parseBoolean(String.valueOf(dataSnapshot.getValue()));
-                state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                state.getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         if (myUser.getProperties().isActive() != active) {
                             try {
                                 JSONObject o = new JSONObject();
@@ -976,9 +976,9 @@ public class MyTrackingFB implements Tracking {
                 int number = Integer.parseInt(dataSnapshot.getRef().getParent().getKey());
                 if(dataSnapshot.getValue() != null) {
                     final long changed = (long) dataSnapshot.getValue();
-                    state.getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                    state.getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             try {
                                 JSONObject o = new JSONObject();
                                 o.put(RESPONSE_STATUS, RESPONSE_STATUS_UPDATED);

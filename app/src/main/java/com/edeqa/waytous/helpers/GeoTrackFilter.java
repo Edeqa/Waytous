@@ -34,7 +34,7 @@ package com.edeqa.waytous.helpers;
 /* To use these functions:
 
  1. Start with a KalmanFilter created by alloc_filter_velocity2d.
- 2. At fixed intervals, call update_velocity2d with the lat/long.
+ 2. At fixed intervals, accept update_velocity2d with the lat/long.
  3. At any time, to get an estimate for the current position,
  bearing, or speed, use the functions:
  get_lat_long

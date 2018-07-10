@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -160,9 +160,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                 if(State.getInstance().getUsers().getCountSelectedTotal()==0){
                     State.getInstance().getMe().fire(SELECT_USER);
                 }
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         if(myUser.getProperties().isActive() && myUser.getProperties().isSelected()) {
                             setCameraView((CameraView) myUser.getView(CameraViewHolder.this.getType()));
                             update();
@@ -177,9 +177,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
                         @Override
                         public void onClick(View view) {
                             fab.close(true);
-                            State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser myUser) {
+                                public void accept(Integer number, MyUser myUser) {
                                     if(myUser.getProperties().isActive()) {
                                         myUser.fire(SELECT_USER);
                                     }
@@ -253,9 +253,9 @@ public class CameraViewHolder extends AbstractViewHolder<CameraViewHolder.Camera
 //                    final LatLngBounds newBounds = new LatLngBounds();
 
                     final ArrayList<LatLng> points = new ArrayList<>();
-                    State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forSelectedUsers(new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser user) {
+                        public void accept(Integer number, MyUser user) {
                             Location loc = user.getLocation();
                             if(loc != null) {
                                 double lng = center.longitude + (loc.getLongitude() - center.longitude) * Math.cos(alpha * Math.PI / 180)

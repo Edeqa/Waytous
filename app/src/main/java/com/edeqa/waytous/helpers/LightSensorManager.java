@@ -10,7 +10,7 @@ import android.hardware.TriggerEvent;
 import android.hardware.TriggerEventListener;
 import android.os.Build;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 
 
 /**
@@ -33,7 +33,7 @@ public class LightSensorManager implements SensorEventListener {
     private final Sensor lightSensor;
     private final LowPassFilter lowPassFilter;
 
-    private Runnable1 environmentChangeCallback;
+    private Consumer environmentChangeCallback;
     private Environment currentEnvironment;
 
     public LightSensorManager(Context context) {
@@ -65,7 +65,7 @@ public class LightSensorManager implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
-    public void setOnEnvironmentChangeListener(Runnable1 callback){
+    public void setOnEnvironmentChangeListener(Consumer callback){
         environmentChangeCallback = callback;
     }
 
@@ -92,11 +92,11 @@ public class LightSensorManager implements SensorEventListener {
             switch (currentEnvironment) {
                 case DAY:
                     //noinspection unchecked
-                    environmentChangeCallback.call(DAY);
+                    environmentChangeCallback.accept(DAY);
                     break;
                 case NIGHT:
                     //noinspection unchecked
-                    environmentChangeCallback.call(NIGHT);
+                    environmentChangeCallback.accept(NIGHT);
                     break;
             }
         }

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.util.Log;
 
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
@@ -96,9 +96,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
         final Location location = Utils.jsonToLocation(o);
         int number = o.getInt(USER_NUMBER);
 
-        State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
+        State.getInstance().getUsers().forUser(number,new BiConsumer<Integer, MyUser>() {
             @Override
-            public void call(Integer number, MyUser myUser) {
+            public void accept(Integer number, MyUser myUser) {
                 myUser.addLocation(location);
             }
         });
@@ -173,9 +173,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 }
                 break;
             case TRACKING_STOP:
-                State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.removeViews();
                     }
                 });
@@ -279,17 +279,17 @@ public class TrackingHolder extends AbstractPropertyHolder {
                 switch (responseStatus) {
                     case RESPONSE_STATUS_ACCEPTED:
                         if (o.has(RESPONSE_NUMBER)) {
-                            State.getInstance().getUsers().forMe(new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forMe(new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser myUser) {
+                                public void accept(Integer number, MyUser myUser) {
                                     myUser.createViews();
                                 }
                             });
                         }
                         if (o.has(RESPONSE_INITIAL)) {
-                            State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser myUser) {
+                                public void accept(Integer number, MyUser myUser) {
                                     myUser.createViews();
                                 }
                             });
@@ -298,9 +298,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                     case RESPONSE_STATUS_UPDATED:
                         if (o.has(USER_DISMISSED)) {
                             int number = o.getInt(USER_DISMISSED);
-                            State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forUser(number,new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, final MyUser user) {
+                                public void accept(Integer number, final MyUser user) {
                                     user.fire(MAKE_INACTIVE);
                                     State.getInstance().fire(USER_DISMISSED,user);
                                 }
@@ -308,9 +308,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         } else if (o.has(USER_JOINED)) {
                             int number = o.getInt(USER_JOINED);
                             State.getInstance().getUsers().addUser(o);
-                            State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forUser(number,new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser user) {
+                                public void accept(Integer number, MyUser user) {
                                     if(!user.getProperties().isActive()) {
                                         user.fire(MAKE_ACTIVE);
                                         State.getInstance().fire(USER_JOINED, user);
@@ -323,9 +323,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                             if(o.has(REQUEST_TIMESTAMP)) timestamp = o.getLong(REQUEST_TIMESTAMP);
 
                             final long finalTimestamp = timestamp;
-                            State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser user) {
+                                public void accept(Integer number, MyUser user) {
                                     long delta = (new Date().getTime() - finalTimestamp) / 1000;
                                     if(delta > 3600) {
                                         user.fire(MAKE_INACTIVE, finalTimestamp);
@@ -342,9 +342,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                     case REQUEST_LEAVE:
                         if (o.has(USER_NUMBER)) {
                             int number = o.getInt(USER_NUMBER);
-                            State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, final MyUser user) {
+                                public void accept(Integer number, final MyUser user) {
                                     user.fire(MAKE_INACTIVE);
                                     State.getInstance().fire(USER_LEFT,user);
                                 }
@@ -355,9 +355,9 @@ public class TrackingHolder extends AbstractPropertyHolder {
                         if (o.has(USER_NAME)) {
                             int number = o.getInt(USER_NUMBER);
                             final String name = o.getString(USER_NAME);
-                            State.getInstance().getUsers().forUser(number,new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forUser(number,new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser user) {
+                                public void accept(Integer number, MyUser user) {
                                     user.fire(CHANGE_NAME,(name != null && name.length()>0) ? name : null);
                                 }
                             });

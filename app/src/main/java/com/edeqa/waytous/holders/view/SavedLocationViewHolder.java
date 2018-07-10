@@ -18,11 +18,11 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.edeqa.helpers.Misc;
-import com.edeqa.helpers.interfaces.Callable1;
-import com.edeqa.helpers.interfaces.Callable2;
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
-import com.edeqa.helpers.interfaces.Runnable3;
+import com.edeqa.helpers.interfaces.BiConsumer;
+import com.edeqa.helpers.interfaces.Function;
+import com.edeqa.helpers.interfaces.BiFunction;
+import com.edeqa.helpers.interfaces.Consumer;
+import com.edeqa.helpers.interfaces.TriConsumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -195,14 +195,14 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         reloadCursor();
                         //noinspection unchecked
-                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Runnable1() {
+                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
                             }
-                        }).setOnClickListener(new Runnable1() {
+                        }).setOnClickListener(new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATIONS);
                             }
                         }).showSnack();
@@ -262,9 +262,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     if(marker.getTag() != null) {
                         int number = b.getInt(RESPONSE_NUMBER);
                         if(number > 10000) {
-                            State.getInstance().getUsers().forUser(number, new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forUser(number, new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser myUser) {
+                                public void accept(Integer number, MyUser myUser) {
                                     myUser.fire(MARKER_CLICK, marker);
                                 }
                             });
@@ -295,23 +295,23 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 
                         x.createViews();
                         State.getInstance().fire(USER_JOINED, x);
-                        State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forUser(x.getProperties().getNumber(),new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 myUser.createViews();
 //                                myUser.fire(SELECT_USER);
 
                                 //noinspection unchecked
                                 new SystemMessage(context).setText(savedLocation.getUsername() + (
                                         savedLocation.getTitle() != null && savedLocation.getTitle().length() > 0 ? ": "+savedLocation.getTitle() : ""
-                                        )).setAction(context.getString(R.string.edit), new Runnable1() {
+                                        )).setAction(context.getString(R.string.edit), new Consumer() {
                                     @Override
-                                    public void call(Object arg) {
+                                    public void accept(Object arg) {
                                         editLocation(savedLocation);
                                     }
-                                }).setOnClickListener(new Runnable1() {
+                                }).setOnClickListener(new Consumer() {
                                     @Override
-                                    public void call(Object arg) {
+                                    public void accept(Object arg) {
                                         State.getInstance().fire(SHOW_SAVED_LOCATIONS);
                                     }
                                 }).showSnack();
@@ -339,9 +339,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                     saved.setSynced(new Date().getTime());
                     saved.delete(context);
                     State.getInstance().fire(SYNC_PROFILE);
-                    State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forUser((int) (saved.getNumber() + 10000), new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             myUser.fire(HIDE_SAVED_LOCATION);
                         }
                     });
@@ -363,15 +363,15 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                             .setKey(REQUEST_SAVED_LOCATION)
                             .setUid(uid)
                             .setReference(FirebaseDatabase.getInstance().getReference())
-                            .setOnGetValue(new Callable2<Object, String, Object>() {
+                            .setOnGetValue(new BiFunction<String, Object, Object>() {
                                 @Override
-                                public Object call(String key, Object value) {
+                                public Object apply(String key, Object value) {
                                     return value;
                                 }
                             })
-                            .setOnSaveLocalValue(new Runnable3<String, Object, Object>() {
+                            .setOnSaveLocalValue(new TriConsumer<String, Object, Object>() {
                                 @Override
-                                public void call(String key, Object newLocation, Object oldLocation) {
+                                public void accept(String key, Object newLocation, Object oldLocation) {
                                     if(newLocation instanceof Map) {
                                         if (((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
                                             SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
@@ -389,18 +389,18 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                                     }
                                 }
                             })
-                            .setOnSaveRemoteValue(new Runnable3<String, Object, Object>() {
+                            .setOnSaveRemoteValue(new TriConsumer<String, Object, Object>() {
                                 @Override
-                                public void call(String key, Object newLocation, Object oldLocation) {
+                                public void accept(String key, Object newLocation, Object oldLocation) {
                                     if(newLocation instanceof Map && ((Map) newLocation).size() > 2 && ((Map) newLocation).containsKey(USER_LATITUDE)) {
                                         SavedLocation loc = SavedLocation.newLocation(context, (Map) newLocation);
                                         loc.save(context);
                                     }
                                 }
                             })
-                            .setOnFinish(new Runnable2<Sync.Mode, String>() {
+                            .setOnFinish(new BiConsumer<Sync.Mode, String>() {
                                 @Override
-                                public void call(Sync.Mode mode, String key) {
+                                public void accept(Sync.Mode mode, String key) {
                                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -459,9 +459,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         dialog.setMenu(R.menu.dialog_saved_locations_menu);
         dialog.setFlat(true);
 
-        dialog.setSearchListener(new Callable1<Boolean, String>() {
+        dialog.setSearchListener(new Function<String, Boolean>() {
             @Override
-            public Boolean call(String query) {
+            public Boolean apply(String query) {
                 filterMessage = query;
                 setFilterAndReload(query);
                 return false;
@@ -469,44 +469,44 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         });
 
         context.getSupportLoaderManager().initLoader(1, null, adapter);
-        adapter.setOnLeftSwipeListener(new Runnable1<Integer>() {
+        adapter.setOnLeftSwipeListener(new Consumer<Integer>() {
             @Override
-            public void call(final Integer position) {
+            public void accept(final Integer position) {
                 reloadCursor();
                 editLocation(SavedLocation.getItemByPosition(position));
             }
         });
-        adapter.setOnRightSwipeListener(new Runnable1<Integer>() {
+        adapter.setOnRightSwipeListener(new Consumer<Integer>() {
             @Override
-            public void call(final Integer position) {
+            public void accept(final Integer position) {
                 State.getInstance().fire(DELETE_SAVED_LOCATION, position);
             }
         });
-        adapter.setOnCursorReloadListener(new Runnable1<Cursor>() {
+        adapter.setOnCursorReloadListener(new Consumer<Cursor>() {
             @Override
-            public void call(Cursor cursor) {
+            public void accept(Cursor cursor) {
                     dialog.setTitle(context.getString(R.string.locations_d, cursor.getCount()) + (filterMessage != null && filterMessage.length() > 0 ? " ["+filterMessage+"]" : ""));
             }
         });
 
         adapter.notifyDataSetChanged();
-        adapter.setOnItemClickListener(new Runnable1<SavedLocation>() {
+        adapter.setOnItemClickListener(new Consumer<SavedLocation>() {
             @Override
-            public void call(SavedLocation savedLocation) {
+            public void accept(SavedLocation savedLocation) {
                 State.getInstance().fire(SHOW_SAVED_LOCATION, savedLocation);
                 dialog.dismiss();
             }
         });
-        adapter.setOnLocationClickListener(new Runnable1<SavedLocation>() {
+        adapter.setOnLocationClickListener(new Consumer<SavedLocation>() {
             @Override
-            public void call(final SavedLocation savedLocation) {
+            public void accept(final SavedLocation savedLocation) {
                 State.getInstance().fire(SHOW_SAVED_LOCATION, savedLocation);
                 State.getInstance().fire(new Runnable() {
                     @Override
                     public void run() {
-                        State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Runnable2<Integer, MyUser>() {
+                        State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new BiConsumer<Integer, MyUser>() {
                             @Override
-                            public void call(Integer number, MyUser myUser) {
+                            public void accept(Integer number, MyUser myUser) {
                                 myUser.fire(NavigationViewHolder.SHOW_NAVIGATION);
                             }
                         });
@@ -531,9 +531,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(R.string.hide_all), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.fire(HIDE_SAVED_LOCATION);
                     }
                 });
@@ -586,9 +586,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
             public void onClick(DialogInterface dialogInterface, int i) {
                 if(etTitle.getText().toString().length() > 0) {
                     savedLocation.setUsername(etTitle.getText().toString());
-                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             myUser.fire(CHANGE_NAME, savedLocation.getUsername());
                             myUser.removeViews();
                             myUser.createViews();
@@ -597,9 +597,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                 }
                 if(etComment.getText().toString().length() > 0) {
                     savedLocation.setTitle(etComment.getText().toString());
-                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forUser((int)savedLocation.getNumber() + 10000, new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             myUser.getProperties().setDescription(etComment.getText().toString());
                         }
                     });
@@ -770,7 +770,7 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
 /*
                     State.getInstance().getUsers().forUser(myUser.getProperties().getNumber(), new MyUsers.Callback() {
                         @Override
-                        public void call(Integer number, MyUser myUser) {
+                        public void accept(Integer number, MyUser myUser) {
                             if(isSavedLocation(myUser)) {
                                 myUser.removeViews();
                                 myUser.fire(MAKE_INACTIVE);
@@ -866,14 +866,14 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
                         State.getInstance().fire(SYNC_PROFILE);
 
                         //noinspection unchecked
-                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Runnable1() {
+                        new SystemMessage(context).setText(context.getString(R.string.location_saved)).setAction(context.getString(R.string.show), new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATION, loc);
                             }
-                        }).setOnClickListener(new Runnable1() {
+                        }).setOnClickListener(new Consumer() {
                             @Override
-                            public void call(Object arg) {
+                            public void accept(Object arg) {
                                 State.getInstance().fire(SHOW_SAVED_LOCATIONS);
                             }
                         }).showSnack();
@@ -913,9 +913,9 @@ public class SavedLocationViewHolder extends AbstractViewHolder<SavedLocationVie
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             if(State.getInstance().getUsers().getCountSelected() == 1) {
-                State.getInstance().getUsers().forSelectedUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forSelectedUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         myUser.fire(SAVE_LOCATION);
                     }
                 });

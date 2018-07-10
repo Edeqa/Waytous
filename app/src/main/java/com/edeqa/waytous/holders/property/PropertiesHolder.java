@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
 import com.edeqa.waytous.abstracts.AbstractProperty;
@@ -78,9 +78,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
     public boolean onEvent(String event, Object object) {
         switch(event){
             case TRACKING_ACTIVE:
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> value = (HashMap<String, Serializable>) myUser.getProperties().loadFor(TYPE);
                         if(value != null) {
                             if(value.containsKey(SELECTED)) {
@@ -100,7 +100,7 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                 });
                 /*State.getInstance().getUsers().forAllUsers(new MyUsers.Callback() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> value = (HashMap<String, Serializable>) myUser.getProperties().loadFor(TYPE);
                         if(value != null) {
                             if(value.containsKey(SELECTED)) {
@@ -114,9 +114,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
 
                 break;
             case ACTIVITY_PAUSE:
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         HashMap<String, Serializable> m = new HashMap<>();
                         m.put(SELECTED, myUser.getProperties().isSelected());
                         m.put(IMAGE_RESOURCE, myUser.getProperties().getImageResource());
@@ -125,9 +125,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                 });
                 break;
             case ACTIVITY_RESUME:
-                State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                     @Override
-                    public void call(Integer number, MyUser myUser) {
+                    public void accept(Integer number, MyUser myUser) {
                         if(myUser.getProperties().selected) {
                             myUser.fire(SELECT_USER);
                         }
@@ -221,9 +221,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                     @Override
                     public void run() {
                         if(myUser == State.getInstance().getMe()) {
-                            State.getInstance().getUsers().forAllUsersExceptMe(new Runnable2<Integer, MyUser>() {
+                            State.getInstance().getUsers().forAllUsersExceptMe(new BiConsumer<Integer, MyUser>() {
                                 @Override
-                                public void call(Integer number, MyUser user) {
+                                public void accept(Integer number, MyUser user) {
                                     if(user.getProperties().isActive()) {
                                         checkDistance(myUser, user);
                                     }
@@ -246,9 +246,9 @@ public class PropertiesHolder extends AbstractPropertyHolder {
                 case SELECT_SINGLE_USER:
                     myUser.getProperties().selected = true;
                     final ArrayList<MyUser> unselected = new ArrayList<>();
-                    State.getInstance().getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+                    State.getInstance().getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
                         @Override
-                        public void call(Integer number, MyUser user) {
+                        public void accept(Integer number, MyUser user) {
                             if(user != myUser && user.getProperties().isSelected()) {
                                 user.getProperties().selected = false;
                                 unselected.add(user);

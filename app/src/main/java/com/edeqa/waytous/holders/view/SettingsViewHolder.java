@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.edeqa.helpers.interfaces.Runnable1;
+import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
 import com.edeqa.waytous.R;
 import com.edeqa.waytous.State;
@@ -66,9 +66,9 @@ public class SettingsViewHolder extends AbstractViewHolder {
 
         settingItem = new SettingItem.Page(PREFERENCES_GENERAL);
         //noinspection unchecked
-        settingItem.setCallback(new Runnable1() {
+        settingItem.setCallback(new Consumer() {
             @Override
-            public void call(Object arg) {
+            public void accept(Object arg) {
                 if(adapter != null) {
                     adapter.notifyDataSetChanged();
                 }
@@ -249,7 +249,7 @@ public class SettingsViewHolder extends AbstractViewHolder {
                             @Override
                             public void onClick(View v) {
                                 SettingItem.Label x = (SettingItem.Label) item;
-                                x.getCallback().call(x.fetchId());
+                                x.getCallback().accept(x.fetchId());
                             }
                         });
                     } else {
@@ -270,9 +270,9 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ((SettingItem.Text)item).onClick(new Runnable1<String>() {
+                            ((SettingItem.Text)item).onClick(new Consumer<String>() {
                                 @Override
-                                public void call(String arg) {
+                                public void accept(String arg) {
                                     System.out.println("CLICKED:"+arg+":"+item); //NON-NLS
                                     adapter.notifyDataSetChanged();
                                 }
@@ -289,9 +289,9 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ((SettingItem.Checkbox)item).onClick(new Runnable1<Boolean>() {
+                            ((SettingItem.Checkbox)item).onClick(new Consumer<Boolean>() {
                                 @Override
-                                public void call(Boolean arg) {
+                                public void accept(Boolean arg) {
                                     System.out.println("CLICKED:"+item); //NON-NLS
                                     adapter.notifyDataSetChanged();
                                 }
@@ -304,9 +304,9 @@ public class SettingsViewHolder extends AbstractViewHolder {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ((SettingItem.List)item).onClick(new Runnable1<String>() {
+                            ((SettingItem.List)item).onClick(new Consumer<String>() {
                                 @Override
-                                public void call(String arg) {
+                                public void accept(String arg) {
                                     System.out.println("CLICKED:"+item+":"+arg); //NON-NLS
                                     adapter.notifyDataSetChanged();
                                 }

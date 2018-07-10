@@ -14,8 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.widget.Toast;
 
-import com.edeqa.helpers.interfaces.Runnable1;
-import com.edeqa.helpers.interfaces.Runnable2;
+import com.edeqa.helpers.interfaces.Consumer;
+import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.abstracts.AbstractViewHolder;
 import com.edeqa.waytous.helpers.ContinueDialog;
 import com.edeqa.waytous.helpers.MyUser;
@@ -146,9 +146,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        state.getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+        state.getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
             @Override
-            public void call(Integer number, MyUser myUser) {
+            public void accept(Integer number, MyUser myUser) {
                 myUser.removeViews();
             }
         });
@@ -257,9 +257,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (permissions.size() > 0) {
             Thread.dumpStack();
-            new ContinueDialog(this).setMessage(getString(R.string.application_must_continuously_get_your_locations)).setCallback(new Runnable1<Void>() {
+            new ContinueDialog(this).setMessage(getString(R.string.application_must_continuously_get_your_locations)).setCallback(new Consumer<Void>() {
                 @Override
-                public void call(Void arg) {
+                public void accept(Void arg) {
                     ActivityCompat.requestPermissions(MainActivity.this,
                             permissions.toArray(new String[permissions.size()]),
                             requestCode);
@@ -303,9 +303,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(map == null) return;
 
         if(!SmartLocation.with(MainActivity.this).location().state().locationServicesEnabled()){
-            new ContinueDialog(this).setMessage(getString(R.string.application_needs_the_enabled_location_services)).setCallback(new Runnable1() {
+            new ContinueDialog(this).setMessage(getString(R.string.application_needs_the_enabled_location_services)).setCallback(new Consumer() {
                 @Override
-                public void call(Object arg) {
+                public void accept(Object arg) {
                     Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(myIntent);
                 }
@@ -382,9 +382,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.getUiSettings().setIndoorLevelPickerEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
-        state.getUsers().forAllUsers(new Runnable2<Integer, MyUser>() {
+        state.getUsers().forAllUsers(new BiConsumer<Integer, MyUser>() {
             @Override
-            public void call(Integer number, MyUser myUser) {
+            public void accept(Integer number, MyUser myUser) {
                 myUser.createViews();
             }
         });
