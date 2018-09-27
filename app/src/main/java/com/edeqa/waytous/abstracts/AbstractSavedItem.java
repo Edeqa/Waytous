@@ -2,7 +2,7 @@ package com.edeqa.waytous.abstracts;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.content.CursorLoader;
+import androidx.loader.content.CursorLoader;
 
 import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.helpers.DBHelper;

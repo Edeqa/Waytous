@@ -3,7 +3,7 @@ package com.edeqa.waytous.holders.view;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -139,9 +139,9 @@ public class MenuViewHolder extends AbstractViewHolder {
                         .add(new SettingItem.Page("legal_information").setTitle(context.getString(R.string.legal_information))
                                 .add(new SettingItem.Label("legal_text").setTitle(R.string.legal_information_body)))
                         .add(new SettingItem.Page("third_party").setTitle(context.getString(R.string.third_party_components)).setPriority(0)
-                                .add(new SettingItem.Label("amis")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TangoAgency/material-intro-screen")))
-                                        .setTitle("Android Material Intro Screen"))
+//                                .add(new SettingItem.Label("amis")
+//                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/TangoAgency/material-intro-screen")))
+//                                        .setTitle("Android Material Intro Screen"))
                                 .add(new SettingItem.Label("msv")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/pengrad/MapScaleView")))
                                         .setTitle("Map Scale View"))
@@ -150,13 +150,13 @@ public class MenuViewHolder extends AbstractViewHolder {
                                         .setTitle("nv-websocket-client"))
                                 .add(new SettingItem.Label("sll")
                                         .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/mrmans0n/smart-location-lib")))
-                                        .setTitle("Smart Location Library"))
-                                .add(new SettingItem.Label("scv")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/amlcurran/ShowcaseView")))
-                                        .setTitle("ShowcaseView"))
-                                .add(new SettingItem.Label("ttv")
-                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/KeepSafe/TapTargetView")))
-                                        .setTitle("TapTargetView")));
+                                        .setTitle("Smart Location Library")));
+//                                .add(new SettingItem.Label("scv")
+//                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/amlcurran/ShowcaseView")))
+//                                        .setTitle("ShowcaseView"))
+//                                .add(new SettingItem.Label("ttv")
+//                                        .setIntent(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/KeepSafe/TapTargetView")))
+//                                        .setTitle("TapTargetView")));
 
                 item.add(about);
 

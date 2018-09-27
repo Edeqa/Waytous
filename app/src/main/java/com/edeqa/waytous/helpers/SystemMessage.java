@@ -1,7 +1,7 @@
 package com.edeqa.waytous.helpers;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 
 import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.State;

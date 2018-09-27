@@ -2,7 +2,7 @@ package com.edeqa.waytous.holders.view;
 
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
