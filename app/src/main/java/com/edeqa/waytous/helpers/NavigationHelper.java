@@ -39,7 +39,7 @@ public class NavigationHelper implements Serializable {
     public static int afterFailDelay = 2;
 
     @SuppressWarnings("HardCodedStringLiteral")
-    private static final String pattern = "https://maps.googleapis.com/maps/api/directions/json?origin=%g,%g&destination=%g,%g&mode=%s";
+    private static final String pattern = "https://maps.googleapis.com/maps/api/directions/json?origin=%g,%g&destination=%g,%g&mode=%s&key=%s";
 
     private transient EventBus.Runner runner;
 
@@ -145,7 +145,7 @@ public class NavigationHelper implements Serializable {
 
                 String res = null;
                 try {
-                    String req = String.format(pattern, getStartLocation().getLatitude(), getStartLocation().getLongitude(), getEndLocation().getLatitude(), getEndLocation().getLongitude(), mode.toString().toLowerCase());
+                    String req = String.format(pattern, getStartLocation().getLatitude(), getStartLocation().getLongitude(), getEndLocation().getLatitude(), getEndLocation().getLongitude(), mode.toString().toLowerCase(), getApiKey());
 
                     if(isAvoidHighways()) req += "&avoid=highways";
                     if(isAvoidTolls()) req += "&avoid=tolls";
@@ -203,7 +203,7 @@ public class NavigationHelper implements Serializable {
                             failsCount ++;
                             if(failsCount > maxFailsCount)
 
-                            throwError(ERROR_OVER_QUERY_LIMIT, message);
+                                throwError(ERROR_OVER_QUERY_LIMIT, message);
                             break;
                     }
 
