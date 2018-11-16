@@ -331,6 +331,7 @@ public class NavigationViewHolder extends AbstractViewHolder<NavigationViewHolde
             super(NavigationViewHolder.this.context, myUser);
 
             navigationHelper = new NavigationHelper();
+            navigationHelper.setApiKey(context.getString(R.string.google_maps_key));
             navigationHelper.setOnStart(new Runnable() {
                 @Override
                 public void run() {
