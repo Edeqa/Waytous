@@ -2,7 +2,7 @@ package com.edeqa.waytous.holders.view;
 
 import android.os.Handler;
 import android.os.Looper;
-import com.google.android.material.snackbar.Snackbar;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.edeqa.waytous.MainActivity;

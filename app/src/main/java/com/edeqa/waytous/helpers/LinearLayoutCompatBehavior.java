@@ -1,9 +1,9 @@
 package com.edeqa.waytous.helpers;
 
 import android.content.Context;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.snackbar.Snackbar.SnackbarLayout;
-import androidx.appcompat.widget.LinearLayoutCompat;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar.SnackbarLayout;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.view.View;
 

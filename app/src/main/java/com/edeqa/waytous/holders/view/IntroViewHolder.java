@@ -162,6 +162,7 @@ public class IntroViewHolder extends AbstractViewHolder {
 //                                showcaseView.setAlpha(0.0f);
                             }
 
+                            @Override
                             public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
                                 Utils.log(IntroViewHolder.this, "performRule:", "onShowcaseViewTouchBlocked");
                             }

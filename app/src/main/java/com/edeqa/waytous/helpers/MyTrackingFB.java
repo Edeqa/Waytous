@@ -3,7 +3,7 @@ package com.edeqa.waytous.helpers;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.BiConsumer;

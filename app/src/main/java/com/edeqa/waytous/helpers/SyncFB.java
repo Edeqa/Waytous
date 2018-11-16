@@ -1,6 +1,6 @@
 package com.edeqa.waytous.helpers;
 
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 
 import com.edeqa.helpers.Misc;
 import com.edeqa.helpers.interfaces.BiConsumer;

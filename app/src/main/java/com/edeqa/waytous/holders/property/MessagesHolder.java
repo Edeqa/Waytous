@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import androidx.core.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.edeqa.helpers.interfaces.BiConsumer;
 import com.edeqa.waytous.Constants;
@@ -24,9 +24,9 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
-import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
-import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
+import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static com.edeqa.waytous.Constants.REQUEST_DELIVERY_CONFIRMATION;
 import static com.edeqa.waytous.Constants.REQUEST_MESSAGE;
 import static com.edeqa.waytous.Constants.REQUEST_PUSH;
@@ -60,7 +60,7 @@ public class MessagesHolder extends AbstractPropertyHolder {
     public static final String USER_MESSAGE = "user_message"; //NON-NLS
     public static final String WELCOME_MESSAGE = "welcome_message"; //NON-NLS
     private final Context context;
-    private final androidx.core.app.NotificationCompat.Builder notification;
+    private final android.support.v4.app.NotificationCompat.Builder notification;
 
 //    private ArrayList<UserMessage> messages = new ArrayList<>();
     private boolean showNotifications = true;

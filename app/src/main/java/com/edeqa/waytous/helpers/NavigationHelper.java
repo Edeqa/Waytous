@@ -203,7 +203,7 @@ public class NavigationHelper implements Serializable {
                             failsCount ++;
                             if(failsCount > maxFailsCount)
 
-                                throwError(ERROR_OVER_QUERY_LIMIT, message);
+                            throwError(ERROR_OVER_QUERY_LIMIT, message);
                             break;
                     }
 

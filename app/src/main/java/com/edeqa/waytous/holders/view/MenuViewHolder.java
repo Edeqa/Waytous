@@ -3,7 +3,7 @@ package com.edeqa.waytous.holders.view;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.appcompat.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
