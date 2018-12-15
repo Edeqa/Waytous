@@ -12,7 +12,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import androidx.core.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.edeqa.helpers.interfaces.Consumer;
 import com.edeqa.waytous.MainActivity;
@@ -29,11 +29,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
-import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
-import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
-import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
-import static androidx.core.app.NotificationCompat.PRIORITY_LOW;
+import static android.support.v4.app.NotificationCompat.DEFAULT_ALL;
+import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
+import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
 import static com.edeqa.waytous.Constants.USER_DISMISSED;
 import static com.edeqa.waytous.Constants.USER_JOINED;
 import static com.edeqa.waytous.helpers.Events.ACTIVITY_PAUSE;
@@ -71,7 +71,7 @@ public class NotificationHolder extends AbstractPropertyHolder {
 
     private final State state;
 
-    private androidx.core.app.NotificationCompat.Builder notification;
+    private android.support.v4.app.NotificationCompat.Builder notification;
     private Handler notificationClearHandler;
 
     private long lastCloseNotifyTime = 0;

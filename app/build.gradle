@@ -24,7 +24,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         testApplicationId "com.edeqa.waytous_test"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        testInstrumentationRunner "android.test.InstrumentationTestRunner"
         testHandleProfiling true
         testFunctionalTest true
@@ -135,34 +135,41 @@ dependencies {
     api 'agency.tango.android:material-intro-screen:0.0.5'
     // https://github.com/AoDevBlue/MaterialValues
     api 'blue.aodev:material-values:1.1.1'
-    api 'com.android.support.constraint:constraint-layout:1.1.2'
-    api 'com.android.support:animated-vector-drawable:27.1.1'
-    api 'com.android.support:appcompat-v7:27.1.1'
-    api 'com.android.support:cardview-v7:27.1.1'
-    api 'com.android.support:customtabs:27.1.1'
-    api 'com.android.support:design:27.1.1'
+    api 'com.android.support.constraint:constraint-layout:1.1.3'
+    api 'com.android.support:animated-vector-drawable:28.0.0'
+    api 'com.android.support:appcompat-v7:28.0.0'
+    api 'com.android.support:cardview-v7:28.0.0'
+    api 'com.android.support:customtabs:28.0.0'
+    api 'com.android.support:design:28.0.0'
     api 'com.android.support:multidex:1.0.3'
-    api 'com.android.support:recyclerview-v7:27.1.1'
-    api 'com.android.support:support-annotations:27.1.1'
-    api 'com.android.support:support-compat:27.1.1'
-    api 'com.facebook.android:facebook-core:4.27.0'
-    api 'com.facebook.android:facebook-login:4.27.0'
-    api 'com.facebook.android:facebook-share:4.27.0'
+    api 'com.android.support:recyclerview-v7:28.0.0'
+    api 'com.android.support:support-annotations:28.0.0'
+    api 'com.android.support:support-media-compat:28.0.0'
+    api 'com.android.support:support-compat:28.0.0'
+    api 'com.facebook.android:facebook-core:4.36.1', {
+        exclude group:'com.android.support'
+    }
+    api 'com.facebook.android:facebook-login:4.36.1', {
+        exclude group:'com.android.support'
+    }
+    api 'com.facebook.android:facebook-share:4.36.1', {
+        exclude group:'com.android.support'
+    }
     api 'com.getkeepsafe.taptargetview:taptargetview:1.10.0'
     api 'com.github.amlcurran.showcaseview:library:5.4.3'
-    api 'com.github.pengrad:mapscaleview:1.3.1'
-    api 'com.google.android.gms:play-services-auth:15.0.1'
+    api 'com.github.pengrad:mapscaleview:1.4.1'
+    api 'com.google.android.gms:play-services-auth:16.0.0'
     api 'com.google.android.gms:play-services-base:15.0.1'
     api 'com.google.android.gms:play-services-drive:15.0.1'
     api 'com.google.android.gms:play-services-location:15.0.1'
     api 'com.google.android.gms:play-services-maps:15.0.1'
     api 'com.google.android.gms:play-services-places:15.0.1'
-    api 'com.google.android:flexbox:0.3.1'
+    api 'com.google.android:flexbox:1.0.0'
 //    api 'com.google.code.findbugs:jsr305:3.0.2'
-    api 'com.google.firebase:firebase-auth:16.0.2'
-    api 'com.google.firebase:firebase-core:16.0.1'
-    api 'com.google.firebase:firebase-database:16.0.1'
-    api 'com.google.firebase:firebase-messaging:17.0.0'
+    api 'com.google.firebase:firebase-auth:16.0.3'
+    api 'com.google.firebase:firebase-core:16.0.3'
+    api 'com.google.firebase:firebase-database:16.0.2'
+    api 'com.google.firebase:firebase-messaging:17.3.2'
 //    api 'com.google.gms:google-services:4.0.1'
     api 'com.google.maps.android:android-maps-utils:0.5'
     api 'com.neovisionaries:nv-websocket-client:2.5'
@@ -170,7 +177,7 @@ dependencies {
     // smart location https://github.com/mrmans0n/smart-location-lib
     api 'io.nlopez.smartlocation:library:3.3.3'
 
-    releaseApi 'com.google.firebase:firebase-crash:16.0.1'
+    releaseApi 'com.google.firebase:firebase-crash:16.2.0'
 
     //noinspection GradleDynamicVersion
     testImplementation 'junit:junit:+'

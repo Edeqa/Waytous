@@ -1,7 +1,7 @@
 package com.edeqa.waytous.holders.view;
 
 import android.content.DialogInterface;
-import androidx.appcompat.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.CheckBox;

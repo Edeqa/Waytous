@@ -10,7 +10,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import androidx.multidex.MultiDexApplication;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.edeqa.eventbus.AbstractEntityHolder;
