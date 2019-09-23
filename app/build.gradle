@@ -109,9 +109,17 @@ task switchToRelease(type: Copy) {
 //    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
 //}
 
-afterEvaluate {
-    processDebugGoogleServices.dependsOn switchToDebug
-    processReleaseGoogleServices.dependsOn switchToRelease
+//afterEvaluate {
+//    processDebugGoogleServices.dependsOn switchToDebug
+//    processReleaseGoogleServices.dependsOn switchToRelease
+//}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'assembleDebug') {
+        task.dependsOn 'switchToDebug'
+    } else if (task.name == 'assembleRelease') {
+        task.dependsOn 'switchToRelease'
+    }
 }
 
 dependencies {
